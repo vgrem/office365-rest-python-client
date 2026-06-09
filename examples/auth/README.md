@@ -18,12 +18,15 @@ flowchart TD
 
     C --> G{User present to interact?}
     G -->|Yes| H[Interactive auth\nsupports MFA, SSO]
-    G -->|No, script or CI| I["ROPC (password grant)\nno MFA, legacy"]
+    G -->|No| I{Has a browser?}
+    I -->|Yes, visit URL| N[Device code flow\nheadless CLI, SSH,\nremote server]
+    I -->|No browser at all| O["ROPC (password grant)\nno MFA, legacy"]
 
     E --> J[with_certificate.py]
     F --> K[with_client_secret.py]
     H --> L[interactive.py]
-    I --> M[with_user_creds.py]
+    N --> P[with_device_flow.py]
+    O --> M[with_user_creds.py]
 
     style A fill:#1a73e8,color:#fff
     style B fill:#e8f0fe
@@ -43,6 +46,7 @@ flowchart TD
 | **Client secret** | `with_client_secret(client_id, secret)` | Daemons, cron jobs, CI/CD — app-only access | — | [`with_client_secret.py`](./with_client_secret.py) |
 | **Client certificate** | `with_certificate(client_id, thumbprint, key)` | Production daemons — app-only, no shared secret | — | [`with_client_cert.py`](./with_client_cert.py) |
 | **Interactive** | `with_token_interactive(client_id)` | Desktop apps, CLI tools — user signed-in | ✅ | [`interactive.py`](./interactive.py) |
+| **Device code** | `with_device_flow(client_id)` | Headless CLI, SSH, remote servers — user visits a URL | ✅ | [`with_device_flow.py`](./with_device_flow.py) |
 | **ROPC (password)** | `with_username_and_password(client_id, user, pass)` | Automated scripts — user context, no interactivity | ✗ | [`with_user_creds.py`](./with_user_creds.py) |
 | **National cloud** | `AzureEnvironment.USGovernmentHigh` | GCC High, DoD, China — applies to any flow above | varies | [`gcc_high.py`](./gcc_high.py) |
 

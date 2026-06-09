@@ -110,6 +110,22 @@ class GraphRequest(ODataRequest):
         self._auth_context.with_username_and_password(client_id, username, password)
         return self
 
+    def with_device_flow(self, client_id: str) -> GraphRequest:
+        """
+        Initialize with device code flow authentication.
+
+        Useful for CLI tools and headless environments. The user authenticates
+        by visiting a URL on another device and entering the displayed code.
+
+        Args:
+            client_id: The OAuth client ID of the calling application
+
+        Returns:
+            self: Supports fluent method chaining
+        """
+        self._auth_context.with_device_flow(client_id)
+        return self
+
     def authenticate_request(self, request: RequestOptions) -> None:
         """
         Authenticate the request by adding a bearer token.

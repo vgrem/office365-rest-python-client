@@ -171,6 +171,19 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().with_username_and_password(client_id, username, password)
         return self
 
+    def with_device_flow(self, client_id: str) -> Self:
+        """
+        Initialize with device code flow authentication.
+
+        Useful for CLI tools and headless environments. The user authenticates
+        by visiting a URL on another device and entering the displayed code.
+
+        Args:
+            client_id: Application client ID
+        """
+        self.pending_request().with_device_flow(client_id)
+        return self
+
     def with_transport(
         self,
         proxies: dict[str, str] | None = None,

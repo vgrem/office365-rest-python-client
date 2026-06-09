@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
@@ -45,6 +46,29 @@ class AuthenticationContext:
         """"""
         self._token_callback = token_callback
         return self
+
+    def with_device_flow(self, client_id: str) -> Self:
+        """Initializes the client via device code flow.
+
+        Useful for CLI tools and headless environments. The user authenticates
+        by visiting a URL on another device and entering the displayed code.
+
+        Args:
+            client_id: The OAuth client id of the calling application.
+        """
+        import msal
+
+        app = msal.PublicClientApplication(client_id, authority=self.authority_url)
+
+        def _acquire_token():
+            flow = app.initiate_device_flow(scopes=self._scopes)
+            if "user_code" not in flow:
+                raise ValueError(f"Failed to create device flow: {flow}")
+            print(flow["message"])
+            sys.stdout.flush()
+            return app.acquire_token_by_device_flow(flow)
+
+        return self.with_access_token(_acquire_token)
 
     def with_certificate(self, client_id: str, thumbprint: str, private_key: str):
         """Initializes the confidential client with client certificate
