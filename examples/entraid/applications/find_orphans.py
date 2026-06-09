@@ -18,6 +18,8 @@ https://learn.microsoft.com/en-us/graph/api/resources/application
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
+_DISPLAY_LIMIT = 20
+
 
 def find_apps_without_owners() -> tuple[list[dict], list[dict]]:
     """Find apps and service principals without owners.
@@ -88,10 +90,10 @@ def main():
 
     if sps:
         print(f"\nService principals without owners ({len(sps)}):\n")
-        for s in sorted(sps, key=lambda x: x["name"].lower())[:20]:
+        for s in sorted(sps, key=lambda x: x["name"].lower())[:_DISPLAY_LIMIT]:
             print(f"  {s['name']}")
-        if len(sps) > 20:
-            print(f"  ... and {len(sps) - 20} more")
+        if len(sps) > _DISPLAY_LIMIT:
+            print(f"  ... and {len(sps) - _DISPLAY_LIMIT} more")
 
     print(f"\nTotal orphaned: {total} — review and assign owners.")
 

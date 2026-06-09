@@ -68,7 +68,7 @@ def main():
     for s in staff[:3]:
         name = s.properties.get("displayName", "?")
         email = s.properties.get("emailAddress", "?")
-        availability = biz.get_staff_availability(
+        biz.get_staff_availability(
             staff_ids=[s.id],
             start_date=datetime.now(timezone.utc),
             end_date=datetime.now(timezone.utc) + timedelta(days=7),

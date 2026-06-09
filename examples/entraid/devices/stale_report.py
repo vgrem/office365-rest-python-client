@@ -20,6 +20,8 @@ from datetime import datetime, timedelta, timezone
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
+_DISPLAY_LIMIT = 30
+
 
 def find_stale_devices(days_threshold: int = 180) -> list[dict]:
     """Find registered devices without sign-in activity.
@@ -75,12 +77,12 @@ def main():
     print(f"Stale devices (no sign-in in 180+ days): {len(devices)}\n")
     print(f"{'Device':30s} {'OS':20s} {'Trust Type':15s} {'Last Sign-in':15s} {'Days'}")
     print("-" * 85)
-    for d in devices[:30]:
+    for d in devices[:_DISPLAY_LIMIT]:
         last = d["last_signin"].strftime("%Y-%m-%d")
         print(f"{d['name'][:28]:30s} {d['os'][:18]:20s} {d['trust_type'][:13]:15s} {last:15s} {d['days_since']:>4d}")
 
-    if len(devices) > 30:
-        print(f"\n... and {len(devices) - 30} more")
+    if len(devices) > _DISPLAY_LIMIT:
+        print(f"\n... and {len(devices) - _DISPLAY_LIMIT} more")
 
     # OS breakdown
     os_counts = {}

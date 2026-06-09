@@ -13,7 +13,7 @@ Requires delegated permission ``SecurityAlert.ReadWrite.All``.
 https://learn.microsoft.com/en-us/graph/api/resources/alert
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
