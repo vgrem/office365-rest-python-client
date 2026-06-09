@@ -11,6 +11,7 @@ files, folders, sharing, sites, lists, pages, term store, and Excel.
 |---|---|---|
 | `Files.ReadWrite` | Upload, download, copy, move files and folders | [Files permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#files-permissions) |
 | `Sites.ReadWrite.All` | Create and manage sites, lists, pages, term store | [Sites permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#sites-permissions) |
+| `Analytics.Read` | Read file activity stats and analytics | [Analytics permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#analytics-permissions) |
 
 ---
 
@@ -59,6 +60,10 @@ flowchart LR
 | **Site pages** | Create and publish modern site pages | [`sitepages/manage.py`](./sitepages/manage.py) | `Sites.ReadWrite.All` |
 | **Term store** | Export groups/sets, import new terms | [`termstore/export_import.py`](termstore/basic_usage.py) | `Sites.ReadWrite.All` |
 | **Excel** | Read tables and ranges with workbook sessions | [`excel/read_table.py`](./excel/read_table.py) | `Files.ReadWrite` |
+| **Files** | Document lifecycle — checkout, upload edits, checkin with comment | [`files/lifecycle.py`](./files/lifecycle.py) | `Files.ReadWrite` |
+| **Files** | Delta query — track changes since last sync | [`files/delta_query.py`](./files/delta_query.py) | `Files.Read` |
+| **Files** | Recycle bin — list deleted items, restore, permanent delete | [`files/recycle_bin.py`](./files/recycle_bin.py) | `Files.ReadWrite.All` |
+| **Files** | Analytics — file activity stats, views/downloads over time | [`files/analytics.py`](./files/analytics.py) | `Files.Read`, `Analytics.Read` |
 
 ---
 
