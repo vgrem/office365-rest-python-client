@@ -38,7 +38,8 @@ def main():
         print(
             f"  {hd.display_name:35s}  status={hd.status.name if hd.status else '?':12s}  "
             f"created_by={created_by:30s}  "
-            f"period={str(hd.review_history_period_start_date_time)[:10] or '?'} → {str(hd.review_history_period_end_date_time)[:10] or '?'}"
+            f"period={str(hd.review_history_period_start_date_time)[:10] or '?'} → "
+            f"{str(hd.review_history_period_end_date_time)[:10] or '?'}"
         )
 
         # Enumerate instances
@@ -51,18 +52,20 @@ def main():
     if not hist_defs:
         print("(No history definitions found.)")
         print()
-        print("To generate an access review history report:")
-        print("""  from office365.directory.identitygovernance.accessreview.history.definition import AccessReviewHistoryDefinition
-  from office365.directory.identitygovernance.accessreview.scope import AccessReviewScope
-  from office365.directory.identitygovernance.accessreview.history.decisionfilter import AccessReviewHistoryDecisionFilter
-
-  definition = AccessReviewHistoryDefinition(client.context)
-  definition.set_property("displayName", "Q1 Access Review History")
-  definition.set_property("scopes", [AccessReviewScope()])
-  definition.set_property("decisions", [AccessReviewHistoryDecisionFilter.approve])
-  ar.history_definitions.add_child(definition)
-  client.execute_query()
-""")
+        print("To generate an access review history report:\n")
+        print("  from office365.directory.identitygovernance.accessreview.history.definition \\")
+        print("      import AccessReviewHistoryDefinition")
+        print("  from office365.directory.identitygovernance.accessreview.scope \\")
+        print("      import AccessReviewScope")
+        print("  from office365.directory.identitygovernance.accessreview.history.decisionfilter \\")
+        print("      import AccessReviewHistoryDecisionFilter")
+        print()
+        print("  definition = AccessReviewHistoryDefinition(client.context)")
+        print('  definition.set_property("displayName", "Q1 Access Review History")')
+        print('  definition.set_property("scopes", [AccessReviewScope()])')
+        print('  definition.set_property("decisions", [AccessReviewHistoryDecisionFilter.approve])')
+        print("  ar.history_definitions.add_child(definition)")
+        print("  client.execute_query()")
 
     # -- Step 3: enumerate access reviews directly via the definitions endpoint --
     # The SDK doesn't expose definitions as a navigation property yet.
