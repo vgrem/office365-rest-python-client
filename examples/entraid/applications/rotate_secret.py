@@ -19,10 +19,7 @@ def main():
     app = client.applications.get_by_app_id(test_client_id)
     result = app.add_password("Rotated secret").execute_query()
 
-    print(f"New secret for {app.display_name or app.app_id}:")
-    print(f"  secretText: {result.value.secretText}")
-    print(f"  keyId:      {result.value.keyId}")
-    # print(f"  expires:    {result.value.end_datetime}")
+    print(f"{app.display_name or app.app_id}: {result.value.secretText}")
 
 
 if __name__ == "__main__":
