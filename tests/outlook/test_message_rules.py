@@ -41,8 +41,7 @@ class TestMessageRules(GraphDelegatedTestCase):
         )
         result = self.client.me.mail_folders["inbox"].message_rules.add("SDK Test Rule", 2, actions).execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertEqual(result.get_property("displayName"), "SDK Test Rule")
-        self.assertIsNotNone(result.get_property("priority"))
+        self.assertEqual(result.display_name, "SDK Test Rule")
         TestMessageRules.target_rule = result
 
     @requires_delegated(
@@ -80,8 +79,8 @@ class TestMessageRules(GraphDelegatedTestCase):
             self.skipTest("No rule created from previous test")
 
         result = rule.get().execute_query()
-        self.assertEqual(result.get_property("actions")["markImportance"], "high")
-        self.assertEqual(result.get_property("displayName"), "SDK Test Rule")
+        self.assertEqual(result.actions.markImportance, Importance.high)
+        self.assertEqual(result.display_name, "SDK Test Rule")
 
     @requires_delegated(
         "MailboxSettings.ReadWrite",

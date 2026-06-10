@@ -1,8 +1,7 @@
 from typing import Any
 
 from office365.entity import Entity
-from office365.entity_collection import EntityCollection
-from office365.outlook.category import OutlookCategory
+from office365.outlook.categories.collection import OutlookCategoryCollection
 from office365.outlook.locale_info import LocaleInfo
 from office365.outlook.timezones.information import TimeZoneInformation
 from office365.runtime.client_result import ClientResult
@@ -40,11 +39,11 @@ class OutlookUser(Entity):
         return return_type
 
     @property
-    def master_categories(self) -> EntityCollection[OutlookCategory]:
+    def master_categories(self) -> OutlookCategoryCollection:
         """A list of categories defined for the user."""
         return self.properties.get(
             "masterCategories",
-            EntityCollection(self.context, OutlookCategory, ResourcePath("masterCategories", self.resource_path)),
+            OutlookCategoryCollection(self.context, ResourcePath("masterCategories", self.resource_path)),
         )
 
     def get_property(self, name: str, default_value: Any = None):

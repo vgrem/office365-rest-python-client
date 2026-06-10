@@ -29,7 +29,7 @@ class TestRooms(GraphApplicationTestCase):
             self.skipTest("No room lists found")
 
         for room_list in result:
-            self.assertIsNotNone(room_list.get_property("displayName"))
+            self.assertIsNotNone(room_list.display_name)
             break
 
     @requires_application("Place.Read.All")
@@ -45,7 +45,7 @@ class TestRooms(GraphApplicationTestCase):
                 self.assertIsNotNone(rooms)
                 if len(rooms) > 0:
                     room = rooms[0]
-                    self.assertIsNotNone(room.get_property("displayName"))
+                    self.assertIsNotNone(room.display_name)
                 break
             except Exception:
                 continue

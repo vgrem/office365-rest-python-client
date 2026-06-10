@@ -241,7 +241,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
-    def get_onedrive_usage_storage(self, period):
+    def get_onedrive_usage_storage(self, period) -> ClientResult[bytes]:
         """Get the trend on the amount of storage you are using in OneDrive for Business.
 
         Args:
@@ -253,7 +253,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
-    def get_mailbox_usage_detail(self, period):
+    def get_mailbox_usage_detail(self, period) -> ClientResult[bytes]:
         """Get details about mailbox usage.
 
         Args:

@@ -19,7 +19,7 @@ class MessageRuleActions(ClientValue):
     forwardAsAttachmentTo: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Recipient))
     forwardTo: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Recipient))
     markAsRead: bool | None = None
-    markImportance: Importance | None = None
+    markImportance: Importance | None = Importance.normal
     moveToFolder: str | None = None
     permanentDelete: bool | None = None
     redirectTo: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Recipient))

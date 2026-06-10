@@ -39,7 +39,7 @@ class TestPeople(GraphDelegatedTestCase):
             self.skipTest("No people results found")
 
         for person in people:
-            self.assertIsNotNone(person.get_property("displayName"))
+            self.assertIsNotNone(person.display_name)
             emails = person.get_property("emailAddresses")
             if emails:
                 self.assertGreaterEqual(len(emails), 0)
