@@ -37,7 +37,7 @@ def main():
     print(f"Apps with expired secrets: {len(expired)}\n")
     for name, cred in expired:
         print(f"  {name}")
-        print(f"    hint={cred.hint}  key_id={cred.key_id}  expired={cred.end_date_time}")
+        print(f"    hint={cred.hint}  key_id={cred.keyId}  expired={cred.endDateTime}")
 
 
 if __name__ == "__main__":

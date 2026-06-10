@@ -76,6 +76,24 @@ class PropertyBuilder:
                     ],
                 )
         elif self._client_type.is_primitive_type:
+            if self.client_type_name == "datetime":
+                return ast.Call(
+                    func=ast.Name(id="field", ctx=ast.Load()),
+                    args=[],
+                    keywords=[
+                        ast.keyword(
+                            arg="default_factory",
+                            value=ast.Lambda(
+                                args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
+                                body=ast.Attribute(
+                                    value=ast.Name(id="datetime", ctx=ast.Load()),
+                                    attr="min",
+                                    ctx=ast.Load(),
+                                ),
+                            ),
+                        )
+                    ],
+                )
             return ast.Constant(value=None)
         else:
             return ast.Call(
