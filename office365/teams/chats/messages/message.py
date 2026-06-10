@@ -8,6 +8,7 @@ from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.channels.iIdentity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
@@ -32,6 +33,7 @@ class ChatMessage(Entity):
         """
         return self.properties.get("body", ItemBody())
 
+    @odata(name="channelIdentity")
     @property
     def channel_identity(self) -> ChannelIdentity:
         """
@@ -46,16 +48,19 @@ class ChatMessage(Entity):
         """
         return self.properties.get("chatId", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """Timestamp of when the chat message was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="deletedDateTime")
     @property
     def deleted_datetime(self) -> datetime:
         """Read only. Timestamp at which the chat message was deleted, or null if not deleted."""
         return self.properties.get("deletedDateTime", datetime.min)
 
+    @odata(name="eventDetail")
     @property
     def event_detail(self) -> EventMessageDetail:
         """If present, represents details of an event that happened in a chat, a channel, or a team,

@@ -13,6 +13,7 @@ from office365.runtime.types.odata_property import odata
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.channels.channel import Channel
 from office365.teams.channels.collection import ChannelCollection
+from office365.teams.clonableteamparts import ClonableTeamParts
 from office365.teams.fun_settings import TeamFunSettings
 from office365.teams.guest_settings import TeamGuestSettings
 from office365.teams.members.conversation_collection import ConversationMemberCollection
@@ -263,9 +264,37 @@ class Team(Entity):
         self.context.add_query(qry)
         return self
 
-    def clone(self) -> Self:
-        """Create a copy of a team. This operation also creates a copy of the corresponding group."""
-        qry = ServiceOperationQuery(self, "clone")
+    def clone(
+        self,
+        display_name: str,
+        parts_to_clone: ClonableTeamParts,
+        visibility: TeamVisibilityType,
+        description: str | None = None,
+        mail_nickname: str | None = None,
+        classification: str | None = None,
+    ) -> Self:
+        """Create a copy of a team. This operation also creates a copy of the corresponding group.
+
+        Args:
+            display_name: The display name for the cloned team.
+            parts_to_clone: The parts of the team to clone.
+            visibility: The visibility of the cloned team.
+            description: The description for the cloned team.
+            mail_nickname: The mail nickname for the cloned team.
+            classification: The classification for the cloned team.
+        """
+        payload = {
+            "displayName": display_name,
+            "partsToClone": parts_to_clone.name,
+            "visibility": visibility.name,
+        }
+        if description is not None:
+            payload["description"] = description
+        if mail_nickname is not None:
+            payload["mailNickname"] = mail_nickname
+        if classification is not None:
+            payload["classification"] = classification
+        qry = ServiceOperationQuery(self, "clone", None, payload, None, None)
         self.context.add_query(qry)
         return self
 
