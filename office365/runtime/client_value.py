@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple
 
@@ -7,7 +8,7 @@ from typing_extensions import Self
 
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
-from office365.runtime.utilities import parse_enum
+from office365.runtime.utilities import parse_datetime, parse_enum
 
 
 class ClientValue:
@@ -32,6 +33,8 @@ class ClientValue:
                 setattr(self, k, prop_val)
             else:
                 setattr(self, k, parse_enum(type(prop_val), v))
+        elif isinstance(prop_val, datetime):
+            setattr(self, k, parse_datetime(v))
         else:
             setattr(self, k, v)
         return self
@@ -68,6 +71,8 @@ class ClientValue:
             from office365.runtime.client_value_collection import ClientValueCollection
 
             if val is None:
+                return False
+            elif isinstance(val, datetime) and val == datetime.min:
                 return False
             elif isinstance(val, ClientValueCollection) and len(val) == 0:
                 return False

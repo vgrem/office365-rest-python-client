@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import mimetypes
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from functools import wraps
 from typing import Any, Dict, Optional, Tuple, Union
@@ -93,6 +93,15 @@ def parse_enum(enum_type: type[Enum], value: str | int) -> Optional[Enum]:
             return None
 
 
+def _normalize_datetime_string(value: str) -> str:
+    """Truncate or pad fractional seconds to exactly 6 digits for %f compatibility."""
+    if "." not in value:
+        return value
+    before, _, after = value.partition(".")
+    frac = after.rstrip("Z")[:6].ljust(6, "0")
+    return f"{before}.{frac}{'Z' if after.endswith('Z') else ''}"
+
+
 def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
     """
     Converts string representations of Edm.DateTime/Edm.DateTimeOffset to datetime.
@@ -120,9 +129,15 @@ def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
         "%Y-%m-%d",  # Date only
     ]
 
+    if isinstance(value, str):
+        value = _normalize_datetime_string(value)
+
     for fmt in known_formats:
         try:
-            return datetime.strptime(value, fmt)
+            result = datetime.strptime(value, fmt)
+            if result.tzinfo is None and fmt.endswith("Z"):
+                result = result.replace(tzinfo=timezone.utc)
+            return result
         except ValueError:
             continue
     return None

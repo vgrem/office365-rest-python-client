@@ -22,7 +22,7 @@ def main():
     print(f"New secret for {app.display_name or app.app_id}:")
     print(f"  secretText: {result.value.secretText}")
     print(f"  keyId:      {result.value.keyId}")
-    print(f"  expires:    {result.value.end_date_time}")
+    # print(f"  expires:    {result.value.end_datetime}")
 
 
 if __name__ == "__main__":

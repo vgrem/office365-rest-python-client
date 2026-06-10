@@ -6,6 +6,7 @@ from office365.directory.objects.object import DirectoryObject
 from office365.intune.devices.alternative_security_id import AlternativeSecurityId
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Device(DirectoryObject):
@@ -26,6 +27,7 @@ class Device(DirectoryObject):
         role can set this property."""
         return self.properties.get("accountEnabled", None)
 
+    @odata(name="alternativeSecurityIds")
     @property
     def alternative_security_ids(self) -> ClientValueCollection[AlternativeSecurityId]:
         """For internal use only."""
@@ -56,6 +58,7 @@ class Device(DirectoryObject):
         """Ownership of the device. This property is set by Intune. Possible values are: unknown, company, personal."""
         return self.properties.get("deviceOwnership", None)
 
+    @odata(name="memberOf")
     @property
     def member_of(self) -> DirectoryObjectCollection:
         """Groups and administrative units that this device is a member of."""
@@ -64,6 +67,7 @@ class Device(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("memberOf", self.resource_path)),
         )
 
+    @odata(name="registeredOwners")
     @property
     def registered_owners(self) -> DirectoryObjectCollection:
         """The user that cloud joined the device or registered their personal device.
@@ -74,6 +78,7 @@ class Device(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("registeredOwners", self.resource_path)),
         )
 
+    @odata(name="registeredUsers")
     @property
     def registered_users(self) -> DirectoryObjectCollection:
         """Collection of registered users of the device. For cloud joined devices and registered personal devices,
@@ -84,6 +89,7 @@ class Device(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("registeredUsers", self.resource_path)),
         )
 
+    @odata(name="transitiveMemberOf")
     @property
     def transitive_member_of(self) -> DirectoryObjectCollection:
         """Get groups, directory roles that the user is a member of. This API request is transitive, and will also
@@ -92,17 +98,3 @@ class Device(DirectoryObject):
             "transitiveMemberOf",
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "alternativeSecurityIds": self.alternative_security_ids,
-                "approximateLastSignInDateTime": self.approximate_last_signin_datetime,
-                "complianceExpirationDateTime": self.compliance_expiration_datetime,
-                "memberOf": self.member_of,
-                "registeredOwners": self.registered_owners,
-                "registeredUsers": self.registered_users,
-                "transitiveMemberOf": self.transitive_member_of,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

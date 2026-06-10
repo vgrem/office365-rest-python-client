@@ -23,4 +23,3 @@ class Shift(ChangeTrackedEntity):
         The shared version of this shift that is viewable by both employees and managers.
         """
         return self.properties.get("sharedShift", ShiftItem())
-
