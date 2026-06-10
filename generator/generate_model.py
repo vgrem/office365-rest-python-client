@@ -156,10 +156,10 @@ def generate_graph_model(cp: ConfigParser) -> None:
 
 
 if __name__ == "__main__":
-    graph_cfg = ConfigParser()
-    graph_cfg.read(Path(__file__).parent / "settings.graph.cfg")
-    generate_graph_model(graph_cfg)
+    # graph_cfg = ConfigParser()
+    # graph_cfg.read(Path(__file__).parent / "settings.graph.cfg")
+    # generate_graph_model(graph_cfg)
 
-    # sharepoint_cfg = ConfigParser()
-    # sharepoint_cfg.read(Path(__file__).parent / "settings.sharepoint.cfg")
-    # generate_sharepoint_model(sharepoint_cfg)
+    sharepoint_cfg = ConfigParser()
+    sharepoint_cfg.read(Path(__file__).parent / "settings.sharepoint.cfg")
+    generate_sharepoint_model(sharepoint_cfg)

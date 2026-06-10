@@ -142,7 +142,7 @@ class FileCollection(EntityCollection[File]):
         """
         return_type = File(self.context)
         self.add_child(return_type)
-        params = FileCreationInformation(url=url, overwrite=overwrite)
+        params = FileCreationInformation(Url=url, Overwrite=overwrite)
         qry = ServiceOperationQuery(self, "add", params.to_json(), content, None, return_type)  # type: ignore[arg-type]
         self.context.add_query(qry)
         return return_type

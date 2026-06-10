@@ -4,7 +4,7 @@ from enum import Enum
 class BaseType(Enum):
     """Specifies the base type for a list."""
 
-    None_ = -1
+    Unknown = -1
 
     GenericList = 0
     """Specifies a base type for lists that do not correspond to another base type in this enumeration."""

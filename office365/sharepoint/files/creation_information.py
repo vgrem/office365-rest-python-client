@@ -17,13 +17,13 @@ class FileCreationInformation(ClientValue):
         content (str | bytes | None): Specifies the binary content of the file to be added.
     """
 
-    url: str | None = None
-    overwrite: bool = False
-    content: str | bytes | None = None
-    xor_hash: str | None = None
+    Content: bytes | None = None
+    Overwrite: bool | None = None
+    Url: str | None = None
+    XorHash: str | None = None
 
     def to_json(self, json_format=None):
-        return {"overwrite": self.overwrite, "url": self.url}
+        return {"overwrite": self.Overwrite, "url": self.Url}
 
     @property
     def entity_type_name(self):

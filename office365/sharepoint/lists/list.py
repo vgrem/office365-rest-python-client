@@ -663,13 +663,15 @@ class List(SecurableObject):
         return_type = File(self.context)
         self.root_folder.files.add_child(return_type)
 
-        def _root_folder_loaded():
-            assert self.root_folder.server_relative_url is not None
-            page_url = self.root_folder.server_relative_url + "/" + page_name
+        def _create_wiki_page(url: str | None):
+            assert url is not None
+            page_url = "/".join([url, page_name])
             wiki_props = WikiPageCreationInformation(ServerRelativeUrl=page_url, WikiHtmlContent=page_content)
             Utility.create_wiki_page_in_context_web(self.context, wiki_props, return_type)
 
-        self.ensure_property("RootFolder").after_execute(lambda _: _root_folder_loaded())
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(
+            lambda f: _create_wiki_page(f.server_relative_url)
+        )
         return return_type
 
     def add_item_using_path(self, leaf_name: str, object_type: int, folder_url: str) -> ListItem:
@@ -1141,6 +1143,7 @@ class List(SecurableObject):
             ListItemCollection(self.context, ResourcePath("items", self.resource_path)),
         )
 
+    @odata(name="RootFolder")
     @property
     def root_folder(self) -> Folder:
         """Get a root folder"""
@@ -1221,6 +1224,7 @@ class List(SecurableObject):
         """
         return self.properties.get("IsSystemList", None)
 
+    @odata(name="UserCustomActions")
     @property
     def user_custom_actions(self) -> UserCustomActionCollection:
         """Gets the User Custom Actions that are associated with the list."""
@@ -1229,6 +1233,7 @@ class List(SecurableObject):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
+    @odata(name="VersionPolicies")
     @property
     def version_policies(self) -> VersionPolicyManager:
         """ """
@@ -1250,6 +1255,7 @@ class List(SecurableObject):
             FormCollection(self.context, ResourcePath("forms", self.resource_path)),
         )
 
+    @odata(name="ParentWeb")
     @property
     def parent_web(self):
         """Gets a value that specifies the web where list resides."""
@@ -1435,6 +1441,7 @@ class List(SecurableObject):
             UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
+    @odata(name="ParentWebPath")
     @property
     def parent_web_path(self) -> SPResPath:
         """Returns the path of the parent web for the list."""

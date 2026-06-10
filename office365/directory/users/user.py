@@ -514,6 +514,7 @@ class User(DirectoryObject):
         if self._parent_collection is not None:
             self._parent_collection.remove_child(self)
         if permanent_delete:
+            assert self.id is not None
             deleted_user = self.context.directory.deleted_users[self.id]
             deleted_user.delete_object()
         return self
@@ -603,6 +604,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("lastPasswordChangeDateTime", datetime.min)
 
+    @odata(name="createdObjects")
     @property
     def created_objects(self) -> DirectoryObjectCollection:
         """Directory objects created by this user."""
