@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -11,4 +12,4 @@ class ActionSet(ClientValue):
     actions: ClientValueCollection[AdaptiveCardAction] = field(
         default_factory=lambda: ClientValueCollection(AdaptiveCardAction)
     )
-    horizontal_alignment: Optional[str] = None
+    horizontalAlignment: str | None = None

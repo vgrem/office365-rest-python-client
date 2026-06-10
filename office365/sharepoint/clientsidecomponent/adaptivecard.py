@@ -16,12 +16,12 @@ class AdaptiveCard(ClientValue):
     """An adaptive card."""
 
     body: ClientValueCollection[CardElement] = field(default_factory=lambda: ClientValueCollection(CardElement))
-    correlation_id: Optional[str] = None
-    hide_original_body: Optional[bool] = None
     originator: Optional[str] = None
     padding: Optional[Padding] = None
     rtl: Optional[bool] = None
-    type_: Optional[str] = None
     version: Optional[str] = None
     autoInvokeAction: AutoInvokeAction = field(default_factory=AutoInvokeAction)
     autoInvokeOptions: AutoInvokeOptions = field(default_factory=AutoInvokeOptions)
+    correlationId: str | None = None
+    hideOriginalBody: bool | None = None
+    type: str | None = None

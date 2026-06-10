@@ -202,6 +202,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """Get the trend in the number of active OneDrive users.
 
@@ -215,6 +216,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_activity_user_detail(self, period: str):
         """Get details about OneDrive activity by user.
 
@@ -227,6 +229,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_usage_file_counts(self, period: str) -> ClientResult[Report]:
         """Get the total number of files across all sites and how many are active files. A file is considered active
         if it has been saved, synced, modified, or shared within the specified time period.
@@ -241,7 +244,8 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
-    def get_onedrive_usage_storage(self, period) -> ClientResult[bytes]:
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
+    def get_onedrive_usage_storage(self, period) -> ClientResult[Report]:
         """Get the trend on the amount of storage you are using in OneDrive for Business.
 
         Args:
@@ -251,9 +255,10 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getOneDriveUsageStorage", period)
         self.context.add_query(qry)
-        return qry.return_type
+        return qry.return_type  # type: ignore[return-type]
 
-    def get_mailbox_usage_detail(self, period) -> ClientResult[bytes]:
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
+    def get_mailbox_usage_detail(self, period) -> ClientResult[Report]:
         """Get details about mailbox usage.
 
         Args:
@@ -263,8 +268,9 @@ class ReportRoot(Entity):
         """
         qry = create_report_query(self, "getMailboxUsageDetail", period)
         self.context.add_query(qry)
-        return qry.return_type
+        return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_mailbox_usage_mailbox_counts(self, period: str) -> ClientResult[bytes]:
         """Get the total number of user mailboxes in your organization and how many are active each day of the reporting
         period. A mailbox is considered active if the user sent or read any email.
@@ -279,6 +285,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_mailbox_usage_quota_status_mailbox_counts(self, period: str):
         """Args:
         period (str): Specifies the length of time over which the report is aggregated. The supported values
@@ -302,6 +309,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_user_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """Get the number of Microsoft Teams users by activity type. The activity types are number
         of teams chat messages, private chat messages, calls, or meetings.
@@ -314,6 +322,7 @@ class ReportRoot(Entity):
         assert qry.return_type is not None
         return qry.return_type  # type: ignore[return-type]
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_user_counts(self, period: str):
         """Get the trend in the number of active users. A user is considered active if he or she has executed a
         file activity (save, sync, modify, or share) or visited a page within the specified time period.
@@ -327,6 +336,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return qry.return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_user_detail(self, period: str):
         """Get details about SharePoint activity by user.
 

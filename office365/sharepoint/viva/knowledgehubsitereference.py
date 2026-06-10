@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
+from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class KnowledgeHubSiteReference(ClientValue):
-    site_id: Optional[str] = None
-    url: Optional[str] = None
-    web_id: Optional[str] = None
+    SiteId: UUID | None = None
+    Url: str | None = None
+    WebId: UUID | None = None

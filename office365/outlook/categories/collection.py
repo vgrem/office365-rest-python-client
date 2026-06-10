@@ -10,7 +10,7 @@ class OutlookCategoryCollection(EntityCollection[OutlookCategory]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, OutlookCategory, resource_path)
 
-    def add(self, display_name: str, color: str | None,  **kwargs: Any) -> OutlookCategory:
+    def add(self, display_name: str, color: str | None, **kwargs: Any) -> OutlookCategory:
         """Create a new category object.
 
         Args:

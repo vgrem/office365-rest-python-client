@@ -1,27 +1,14 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.sharepoint.clientsidecomponent.card_element import CardElement
 
 
 class AdaptiveCardImage(CardElement):
-    def __init__(
-        self,
-        alt_text: Optional[str] = None,
-        background_color: Optional[str] = None,
-        height: Optional[str] = None,
-        horizontal_alignment: Optional[str] = None,
-        size: Optional[str] = None,
-        style: Optional[str] = None,
-        url: Optional[str] = None,
-        width: Optional[str] = None,
-    ):
-        """"""
-        super().__init__()
-        self.altText = alt_text
-        self.backgroundColor = background_color
-        self.height = height
-        self.horizontalAlignment = horizontal_alignment
-        self.size = size
-        self.style = style
-        self.url = url
-        self.width = width
+    backgroundColor: str | None = None
+    height: str | None = None
+    horizontalAlignment: str | None = None
+    size: str | None = None
+    style: str | None = None
+    url: str | None = None
+    width: str | None = None
+    altText: str | None = None
