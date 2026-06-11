@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,7 +9,7 @@ from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 
 @dataclass
 class PublishSnippetPayload(ClientValue):
-    placeholders: ClientValueCollection[PlaceholderV2] = field(
+    Placeholders: ClientValueCollection[PlaceholderV2] = field(
         default_factory=lambda: ClientValueCollection(PlaceholderV2)
     )
-    url: Optional[str] = None
+    Url: str | None = None

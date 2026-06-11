@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional, cast
 
 from typing_extensions import Self
@@ -58,12 +60,12 @@ class SitePage(BaseSitePage):
         If the page is checked out, check in the page and publish it. If the page is checked out to the caller
         of this API, the page is automatically checked in and then published."""
 
-        def _page_loaded():
-            if self.name is not None:
-                list_item = self._pages_list.items.get_by_name(self.name)
-                list_item.drive_item.checkin(message)
+        def _checkin(name: str | None):
+            assert name is not None
+            list_item = self._pages_list.items.get_by_name(name)
+            list_item.drive_item.checkin(message)
 
-        self.ensure_property("name").after_execute(lambda _: _page_loaded())
+        self.ensure_property("name").after_execute(lambda _: _checkin(self.name))
         return self
 
     @require_permission(

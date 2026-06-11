@@ -7,7 +7,7 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class RecipientLimitsInfo(ClientValue):
-    alias_only: int | None = None
-    email_only: int | None = None
-    mixed_recipients: int | None = None
-    object_id_only: int | None = None
+    AliasOnly: int | None = None
+    EmailOnly: int | None = None
+    MixedRecipients: int | None = None
+    ObjectIdOnly: int | None = None

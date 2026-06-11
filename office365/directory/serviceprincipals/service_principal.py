@@ -25,6 +25,7 @@ from office365.runtime.paths.appid import AppIdPath
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class ServicePrincipal(DirectoryObject):
@@ -258,6 +259,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("accountEnabled", None)
 
+    @odata(name="alternativeNames")
     @property
     def alternative_names(self):
         """
@@ -289,6 +291,7 @@ class ServicePrincipal(DirectoryObject):
         Not nullable."""
         return self.properties.get("appRoleAssignmentRequired", None)
 
+    @odata(name="appRoleAssignedTo")
     @property
     def app_role_assigned_to(self) -> AppRoleAssignmentCollection:
         """
@@ -299,6 +302,7 @@ class ServicePrincipal(DirectoryObject):
             AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignedTo", self.resource_path)),
         )
 
+    @odata(name="appRoleAssignments")
     @property
     def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get an event collection or an appRoleAssignments."""
@@ -322,6 +326,7 @@ class ServicePrincipal(DirectoryObject):
         """Home page or landing page of the application"""
         return self.properties.get("homepage", None)
 
+    @odata(name="keyCredentials")
     @property
     def key_credentials(self):
         """
@@ -348,6 +353,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("logoutUrl", None)
 
+    @odata(name="notificationEmailAddresses")
     @property
     def notification_email_addresses(self) -> StringCollection:
         """
@@ -390,6 +396,7 @@ class ServicePrincipal(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
         )
 
+    @odata(name="oauth2PermissionScopes")
     @property
     def oauth2_permission_scopes(self) -> ClientValueCollection[PermissionScope]:
         """
@@ -398,6 +405,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("oauth2PermissionScopes", ClientValueCollection(PermissionScope))
 
+    @odata(name="oauth2PermissionGrants")
     @property
     def oauth2_permission_grants(self) -> DeltaCollection[OAuth2PermissionGrant]:
         """"""
@@ -410,6 +418,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="createdObjects")
     @property
     def created_objects(self):
         """Directory objects created by this service principal."""
@@ -418,6 +427,7 @@ class ServicePrincipal(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("createdObjects", self.resource_path)),
         )
 
+    @odata(name="ownedObjects")
     @property
     def owned_objects(self):
         """Directory objects that are owned by this service principal."""
@@ -447,23 +457,12 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("tokenEncryptionKeyId", None)
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "appRoles": self.app_roles,
-                "appRoleAssignedTo": self.app_role_assigned_to,
-                "appRoleAssignments": self.app_role_assignments,
-                "created_objects": self.created_objects,
-                "keyCredentials": self.key_credentials,
-                "oauth2PermissionScopes": self.oauth2_permission_scopes,
-                "ownedObjects": self.owned_objects,
-                "oauth2PermissionGrants": self.oauth2_permission_grants,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
-
     def set_property(self, name, value, persist_changes=True):
         if self._resource_path is None and name == "appId":
             assert self.parent_collection is not None
             self._resource_path = AppIdPath(value, self.parent_collection.resource_path)
         return super().set_property(name, value, persist_changes)
+
+    @property
+    def entity_type_name(self):
+        return "microsoft.graph.ServicePrincipal"

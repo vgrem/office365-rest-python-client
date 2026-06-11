@@ -68,8 +68,8 @@ class TestApplication(GraphDelegatedTestCase):
         app_name = create_unique_name("App")
         new_app = self.client.applications.add(app_name).execute_query()
         self.assertIsNotNone(new_app.resource_path)
-        self.assertIsNotNone(new_app.get_property("id"))
-        self.assertEqual(new_app.get_property("displayName"), app_name)
+        self.assertIsNotNone(new_app.id)
+        self.assertEqual(new_app.display_name, app_name)
         TestApplication.target_app = new_app
 
     @requires_delegated(

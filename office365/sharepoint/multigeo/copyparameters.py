@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
+from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class MultiGeoCopyParameters(ClientValue):
-    binary_payload: Optional[bytes] = None
-    job_id: Optional[str] = None
-    user_id: Optional[int] = None
+    binaryPayload: bytes | None = None
+    jobId: UUID | None = None
+    userId: int | None = None

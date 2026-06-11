@@ -6,6 +6,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.sharing.invitation.link import LinkInvitation
 from office365.sharepoint.sharing.principal import Principal
+from office365.sharepoint.sitedesigns.main_link_details import MainLinkDetails
 
 
 @dataclass
@@ -74,6 +75,8 @@ class SharingLinkInfo(ClientValue):
     Scope: int | None = None
     ShareId: str | None = None
     SharingLinkStatus: int | None = None
+    LinkAclState: int | None = None
+    MainLinkDetails: MainLinkDetails = field(default_factory=MainLinkDetails)
 
     def __str__(self):
         return self.Url or ""

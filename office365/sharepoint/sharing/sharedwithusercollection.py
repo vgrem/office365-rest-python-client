@@ -9,4 +9,4 @@ from office365.sharepoint.sharing.shared_with_user import SharedWithUser
 
 @dataclass
 class SharedWithUserCollection(ClientValue):
-    items: ClientValueCollection[SharedWithUser] = field(default_factory=lambda: ClientValueCollection(SharedWithUser))
+    Items: ClientValueCollection[SharedWithUser] = field(default_factory=lambda: ClientValueCollection(SharedWithUser))

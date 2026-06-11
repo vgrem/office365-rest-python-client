@@ -7,9 +7,9 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class RelatedItem(ClientValue):
-    icon_url: str | None = None
-    item_id: int | None = None
-    list_id: str | None = None
-    title: str | None = None
-    url: str | None = None
-    web_id: str | None = None
+    IconUrl: str | None = None
+    ItemId: int | None = None
+    ListId: str | None = None
+    Title: str | None = None
+    Url: str | None = None
+    WebId: str | None = None

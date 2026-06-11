@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,3 +11,4 @@ class ScriptSafeDomainEntityData(ClientValue):
     """Microsoft.SharePoint.Client.ScriptSafeDomainEntityData is not applicable"""
 
     domain_name: Optional[str] = None
+    DomainName: str | None = None

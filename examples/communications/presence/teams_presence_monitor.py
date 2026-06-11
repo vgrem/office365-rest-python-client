@@ -28,7 +28,6 @@ from typing import Dict, List, Optional
 
 from office365.graph_client import GraphClient
 
-
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -46,6 +45,7 @@ BUSY_ACTIVITIES = {"InACall", "InAConferenceCall", "InAMeeting", "Presenting"}
 # ---------------------------------------------------------------------------
 # Business logic helpers
 # ---------------------------------------------------------------------------
+
 
 def is_available(presence) -> bool:
     """Determine if a user is considered 'available' for routing."""
@@ -70,6 +70,7 @@ def agent_status_summary(presence) -> str:
 # ---------------------------------------------------------------------------
 # Core operations
 # ---------------------------------------------------------------------------
+
 
 def get_presence_for_user(client: GraphClient, user_id: str):
     """Get presence for a single user by ID or UPN."""
@@ -110,6 +111,7 @@ def set_agent_available(client: GraphClient, user_id: str):
 # Scenario 1: snapshot — check current team status
 # ---------------------------------------------------------------------------
 
+
 def snapshot_team_status(client: GraphClient, agents: List[str]):
     """One-shot display of every agent's current presence."""
     print("=== Team presence snapshot ===")
@@ -122,6 +124,7 @@ def snapshot_team_status(client: GraphClient, agents: List[str]):
 # ---------------------------------------------------------------------------
 # Scenario 2: monitor — poll for state changes
 # ---------------------------------------------------------------------------
+
 
 def monitor_team_status(client: GraphClient, agents: List[str], cycles: int = 5):
     """Poll presence for a team and report state changes."""
@@ -159,6 +162,7 @@ def monitor_team_status(client: GraphClient, agents: List[str], cycles: int = 5)
 # Scenario 3: round-robin availability check for routing
 # ---------------------------------------------------------------------------
 
+
 def find_available_agent(client: GraphClient, agents: List[str]) -> Optional[str]:
     """Return the first available agent (useful for automatic call routing)."""
     presences = get_presences_for_team(client, agents)
@@ -171,6 +175,7 @@ def find_available_agent(client: GraphClient, agents: List[str]) -> Optional[str
 # ---------------------------------------------------------------------------
 # Scenario 4: set status message on shift start
 # ---------------------------------------------------------------------------
+
 
 def start_shift(client: GraphClient, user_id: str, agent_name: str):
     """Begin shift: set available presence with a status message."""
@@ -201,7 +206,7 @@ if __name__ == "__main__":
     # client = GraphClient(tenant).with_client_secret(client_id, client_secret)
     #
     # Option C: device code (interactive, works with MFA)
-    client = GraphClient(tenant).with_device_flow(client_id="your_client_id")
+    client = GraphClient().with_device_flow(client_id="your_client_id")
     # (For brevity replace with real credentials above)
 
     # ------------------------------------------------------------------

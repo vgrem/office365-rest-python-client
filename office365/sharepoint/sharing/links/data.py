@@ -55,3 +55,5 @@ class SharingLinkData(ClientValue):
     RestrictToExistingRelationships: bool | None = None
     ShareId: str | None = None
     TrackLinkUsers: bool | None = None
+    IsMainLink: bool | None = None
+    LinkScope: int | None = None

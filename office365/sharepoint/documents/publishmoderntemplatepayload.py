@@ -19,3 +19,5 @@ class PublishModernTemplatePayload(ClientValue):
     Snippets: ClientValueCollection[Snippet] = field(default_factory=lambda: ClientValueCollection(Snippet))
     Url: Optional[str] = None
     DocumentLocation: DocumentLocation = field(default_factory=DocumentLocation)
+    IsAssociatedWithDocForms: bool | None = None
+    ProcessConditionalFields: bool | None = None
