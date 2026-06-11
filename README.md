@@ -63,6 +63,8 @@ pip install git+https://github.com/vgrem/office365-rest-python-client.git
 > Legacy flows (ACS, SAML) are fully retired as of April/May 2026.
 >
 > [ACS retirement notice](https://aka.ms/retirement/acs/support) | [SAML retirement MC1184649](https://learn.microsoft.com/en-us/sharepoint/dev/security/saml-auth-retirement)
+>
+> Migrating from SAML? See [examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py](examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py)
 
 Two clients, different auth capabilities:
 
@@ -81,7 +83,7 @@ Two clients, different auth capabilities:
 | **Device code** | `with_device_flow(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) |
 | **NTLM** (on-prem only) | `with_user_credentials(username, password)` | Delegated | — | ✅ On-prem only | [Example](examples/sharepoint/auth/legacy/with_ntlm.py) |
 | **Client secret** (Azure AD) | `with_client_secret(tenant, client_id, secret)` | App-only | — | ❌ Not documented | [Microsoft's own migration guidance](https://mc.merill.net/message/MC1184649) confirms: replace legacy ACS auth with OAuth2 client credentials flow using certificates, not client secrets, for SharePoint access. |
-| ~~SAML user auth~~ | `with_user_credentials(username, password)` | Delegated | ❌ | 🚫 Retired May 2026 | [MC1184649](https://learn.microsoft.com/en-us/sharepoint/dev/security/saml-auth-retirement) |
+| ~~SAML user auth~~ | `with_user_credentials(username, password)` | Delegated | ❌ | 🚫 Retired May 2026 | [Migration guide](examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py) |
 | ~~ACS app-only~~ | `with_credentials(ClientCredential(...))` | App-only | — | 🚫 Retired Apr 2026 | [Notice](https://aka.ms/retirement/acs/support) |
 
 ### GraphClient — Microsoft Graph auth
