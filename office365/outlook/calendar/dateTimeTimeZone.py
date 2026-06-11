@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 
 import pytz
 
@@ -21,10 +22,15 @@ class DateTimeTimeZone(ClientValue):
     timeZone: str | None = None
 
     def __repr__(self):
-        return f"{self.dateTime or ''}, {self.timeZone or ''}"
+        return f"DateTimeTimeZone(dateTime={self.dateTime!r}, timeZone={self.timeZone!r})"
+
+    def __str__(self):
+        if self.dateTime and self.timeZone:
+            return f"{self.dateTime} ({self.timeZone})"
+        return self.dateTime or ""
 
     @staticmethod
-    def parse(dt):
+    def parse(dt: datetime) -> DateTimeTimeZone:
         """Parses from datetime
 
         Args:

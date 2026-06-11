@@ -33,16 +33,15 @@ def main():
         {"title": "Verify Graph API permissions", "isChecked": False},
         {"title": "Test with client credentials", "isChecked": True},
     ]:
-        cl = task.checklist_items.add(title=item["title"], isChecked=item["isChecked"]).execute_query()
+        cl = task.checklist_items.add(displayName=item["title"], isChecked=item["isChecked"]).execute_query()
         print(f"  {cl.display_name}: {'checked' if cl.is_checked else 'unchecked'}")
 
     all_tasks = task_list.tasks.get().execute_query()
     print(f"\nAll tasks ({len(all_tasks)}):")
     for t in all_tasks:
-        print(f"  {t.status.name if t.status else '?':10s}  {t.title}")
+        print(f"  {t.status}  {t.title}")
 
-    task.set_property("status", "completed")
-    task.update().execute_query()
+    task.set_property("status", "completed").update().execute_query()
     print(f"\n{task.title} completed")
 
 

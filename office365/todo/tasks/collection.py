@@ -6,6 +6,8 @@ from office365.delta_collection import DeltaCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.item_body import ItemBody
+from office365.runtime.paths.v4.entity import EntityPath
+from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.todo.tasks.task import TodoTask
 
 
@@ -23,23 +25,26 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
         body: str | ItemBody | None = None,
         **kwargs,
     ):
-        kwargs["title"] = title
+        return_type = TodoTask(self.context, EntityPath(None, self.resource_path))
+        return_type.set_property("title", title)
 
         if due_date_time is not None:
             if isinstance(due_date_time, datetime):
-                kwargs["dueDateTime"] = DateTimeTimeZone.parse(due_date_time)
+                return_type.set_property("dueDateTime", DateTimeTimeZone.parse(due_date_time))
             elif isinstance(due_date_time, DateTimeTimeZone):
-                kwargs["dueDateTime"] = due_date_time
-            else:
-                kwargs["dueDateTime"] = DateTimeTimeZone.parse(due_date_time)
+                return_type.set_property("dueDateTime", due_date_time)
+            elif isinstance(due_date_time, datetime):
+                return_type.set_property("dueDateTime", DateTimeTimeZone.parse(due_date_time))
 
         if importance is not None:
-            kwargs["importance"] = importance
+            return_type.set_property("importance", importance)
 
         if body is not None:
             if isinstance(body, str):
-                kwargs["body"] = ItemBody.text(body)
+                return_type.set_property("body", ItemBody.text(body))
             elif isinstance(body, ItemBody):
-                kwargs["body"] = body
+                return_type.set_property("body", body)
 
-        return super().add(**kwargs)  # type: ignore[arg-type]
+        qry = CreateEntityQuery(self, return_type.to_json(), return_type)
+        self.context.add_query(qry)
+        return return_type
