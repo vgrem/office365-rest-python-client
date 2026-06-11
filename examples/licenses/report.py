@@ -25,8 +25,7 @@ for s in skus:
     print(f"  {s.sku_part_number:30s}  enabled: {enabled:5d}  used: {consumed:5d}")
 
 # 2. Find unlicensed users
-all_users = client.users.get_all().select(["displayName", "userPrincipalName", "assignedLicenses"]).execute_query()
-unlicensed = [u for u in all_users if not u.assigned_licenses]
-print(f"\nUnlicensed users: {len(unlicensed)}")
-for u in unlicensed[:10]:
+users = client.users.get_unlicensed().top(100).select(["displayName", "userPrincipalName"]).execute_query()
+print(f"\nUnlicensed users: {len(users)}")
+for u in users:
     print(f"  {u.display_name or '':30s}  {u.user_principal_name}")

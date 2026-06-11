@@ -20,6 +20,28 @@ class UserCollection(CountCollection[User]):
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
+    def get_unlicensed(self):
+        """Get users with no assigned licenses (client-side filter)."""
+
+        def _loaded(col: UserCollection):
+            for user in col:
+                if user.assigned_licenses:
+                    self.remove_child(user)
+
+        self.ensure_property("assignedLicenses").after_execute(_loaded)
+        return self
+
+    def get_licensed(self):
+        """Get users with assigned licenses (client-side filter)."""
+
+        def _loaded(col: UserCollection):
+            for user in col:
+                if not user.assigned_licenses:
+                    self.remove_child(user)
+
+        self.ensure_property("assignedLicenses").after_execute(_loaded)
+        return self
+
     @require_permission(
         delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["User.ReadWrite.All", "Directory.ReadWrite.All"],
