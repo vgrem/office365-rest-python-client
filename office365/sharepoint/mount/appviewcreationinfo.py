@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
+from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class AppViewCreationInfo(ClientValue):
-    app_id: Optional[str] = None
-    is_private: Optional[bool] = None
-    title: Optional[str] = None
+    AppId: UUID | None = None
+    IsPrivate: bool | None = None
+    Title: str | None = None

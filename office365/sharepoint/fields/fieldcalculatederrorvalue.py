@@ -7,4 +7,4 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class FieldCalculatedErrorValue(ClientValue):
-    error_message: str | None = None
+    ErrorMessage: str | None = None

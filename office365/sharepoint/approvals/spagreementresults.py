@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class SPAgreementResults(ClientValue):
-    results: Optional[dict] = None
+    Results: dict | None = field(default_factory=dict)

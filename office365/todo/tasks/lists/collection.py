@@ -19,7 +19,7 @@ class TodoTaskListCollection(DeltaCollection[TodoTaskList]):
         return super().add(displayName=display_name)
 
     def get_or_add(self, display_name: str) -> TodoTaskList:
-        """Gets existing set by name or creates a new one (idempotent)."""
+        """Gets existing Task List by name or creates a new one (idempotent)."""
         return_type = TodoTaskList(self.context, EntityPath(None, self.resource_path))
         self.add_child(return_type)
 
