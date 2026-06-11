@@ -26,8 +26,5 @@ class TodoTaskListCollection(DeltaCollection[TodoTaskList]):
             else:
                 return_type.copy_from(col[0])
 
-
         self.filter(f"displayName eq '{display_name}'").after_execute(_get_or_add)
         return return_type
-
-

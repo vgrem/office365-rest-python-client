@@ -27,7 +27,7 @@ class TodoTask(Entity):
         return self.title or self.entity_type_name or ""
 
     @property
-    def body(self):
+    def body(self) -> ItemBody:
         """The task body that typically contains information about the task."""
         return self.properties.get("body", ItemBody())
 

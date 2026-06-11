@@ -17,12 +17,12 @@ def main():
     task_list = client.me.todo.lists.get_or_add("SDK Demo Tasks").execute_query()
     print(f"Task list: {task_list.display_name}\n")
 
-    due = (datetime.now(timezone.utc) + timedelta(days=3)).isoformat()
+    due = datetime.now(timezone.utc) + timedelta(days=3)
     task = task_list.tasks.add(
         title="Review SDK documentation",
         due_date_time=due,
         importance=Importance.high,
-        body="Final review before release."
+        body="Final review before release.",
     ).execute_query()
     print(f"\nTask: {task.title}")
     print(f"  Due: {task.due_date_time}")
