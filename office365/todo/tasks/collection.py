@@ -18,7 +18,7 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
     def add(
         self,
         title: str,
-        due_date_time: datetime | DateTimeTimeZone | str | None = None,
+        due_date_time: datetime | DateTimeTimeZone | None = None,
         importance: Importance | None = None,
         body: str | ItemBody | None = None,
         **kwargs,
@@ -31,7 +31,7 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
             elif isinstance(due_date_time, DateTimeTimeZone):
                 kwargs["dueDateTime"] = due_date_time
             else:
-                kwargs["dueDateTime"] = due_date_time
+                kwargs["dueDateTime"] = DateTimeTimeZone.parse(due_date_time)
 
         if importance is not None:
             kwargs["importance"] = importance

@@ -34,7 +34,7 @@ def main():
         {"title": "Test with client credentials", "isChecked": True},
     ]:
         cl = task.checklist_items.add(title=item["title"], isChecked=item["isChecked"]).execute_query()
-        print(f"  {cl.title}: {'checked' if cl.is_checked else 'unchecked'}")
+        print(f"  {cl.display_name}: {'checked' if cl.is_checked else 'unchecked'}")
 
     all_tasks = task_list.tasks.get().execute_query()
     print(f"\nAll tasks ({len(all_tasks)}):")
