@@ -42,9 +42,9 @@ class BasePermissions(ClientValue):
             bit_pos = perm.value - 1
             mask = 1 << (bit_pos % self._BITS_PER_INT)
             if bit_pos < self._BITS_PER_INT:
-                self.High |= mask
-            elif self._BITS_PER_INT <= bit_pos < self._MAX_BITS:
                 self.Low |= mask
+            elif self._BITS_PER_INT <= bit_pos < self._MAX_BITS:
+                self.High |= mask
 
     def has(self, perm: Union[PermissionKind, int]) -> bool:
         """Checks if permission is set with support for both enum and integer values."""
@@ -58,7 +58,7 @@ class BasePermissions(ClientValue):
         if not 0 <= bit_pos < self._MAX_BITS:
             return False
         mask = 1 << (bit_pos % self._BITS_PER_INT)
-        return bool(self.High & mask) if bit_pos < self._BITS_PER_INT else bool(self.Low & mask)
+        return bool(self.Low & mask) if bit_pos < self._BITS_PER_INT else bool(self.High & mask)
 
     def clear_all(self):
         """Clears all permissions for the current instance."""
