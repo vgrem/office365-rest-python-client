@@ -43,4 +43,4 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
                 params["body"] = body
 
         params.update(kwargs)
-        return super().add(**params)
+        return super().add(**params)  # type: ignore[arg-type]
