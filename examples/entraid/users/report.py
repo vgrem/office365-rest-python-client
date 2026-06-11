@@ -22,7 +22,8 @@ for u in users:
     print(f"  {u.display_name:30s}  {u.user_principal_name}")
 
 # 2. Users without assigned licenses
-unlicensed = client.users.filter("assignedLicenses/$count eq 0").top(10).get().execute_query()
+all_users = client.users.get_all().select(["displayName", "userPrincipalName"]).execute_query()
+unlicensed = [u for u in all_users if not u.assigned_licenses]
 print(f"\nUnlicensed accounts: {len(unlicensed)}")
-for u in unlicensed:
-    print(f"  {u.display_name:30s}  {u.user_principal_name}")
+for u in unlicensed[:10]:
+    print(f"  {u.display_name or '':30s}  {u.user_principal_name}")

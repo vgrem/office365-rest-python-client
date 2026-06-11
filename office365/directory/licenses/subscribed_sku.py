@@ -58,11 +58,13 @@ class SubscribedSku(Entity):
         """
         return self.properties.get("skuPartNumber", None)
 
+    @odata(name="prepaidUnits")
     @property
     def prepaid_units(self) -> LicenseUnitsDetail:
         """Information about the number and status of prepaid licenses."""
         return self.properties.get("prepaidUnits", LicenseUnitsDetail())
 
+    @odata(name="servicePlans")
     @property
     def service_plans(self) -> ClientValueCollection[ServicePlanInfo]:
         """Information about the service plans that are available with the SKU. Not nullable"""
@@ -73,13 +75,3 @@ class SubscribedSku(Entity):
     def subscription_ids(self) -> StringCollection:
         """The IDs of the subscriptions associated with this SKU."""
         return self.properties.get("subscriptionIds", StringCollection())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "prepaidUnits": self.prepaid_units,
-                "servicePlans": self.service_plans,
-                "subscriptionIds": self.subscription_ids,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

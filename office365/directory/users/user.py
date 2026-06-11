@@ -752,11 +752,13 @@ class User(DirectoryObject):
             "activities", UserActivityCollection(self.context, ResourcePath("activities", self.resource_path))
         )
 
+    @odata(name="assignedLicenses")
     @property
     def assigned_licenses(self) -> ClientValueCollection[AssignedLicense]:
         """The licenses that are assigned to the user, including inherited (group-based) licenses."""
         return self.properties.get("assignedLicenses", ClientValueCollection(AssignedLicense))
 
+    @odata(name="followedSites")
     @property
     def followed_sites(self) -> EntityCollection[Site]:
         """ """
@@ -1292,6 +1294,7 @@ class User(DirectoryObject):
         """Gets the showInAddressList property"""
         return self.properties.get("showInAddressList", None)
 
+    @odata(name="signInSessionsValidFromDateTime")
     @property
     def sign_in_sessions_valid_from_date_time(self) -> datetime:
         """Gets the signInSessionsValidFromDateTime property"""
@@ -1357,6 +1360,7 @@ class User(DirectoryObject):
         """Gets the skills property"""
         return self.properties.get("skills", StringCollection(None))
 
+    @odata(name="onPremisesSyncBehavior")
     @property
     def on_premises_sync_behavior(self) -> OnPremisesSyncBehavior:
         """Gets the onPremisesSyncBehavior property"""
@@ -1365,6 +1369,7 @@ class User(DirectoryObject):
             OnPremisesSyncBehavior(self.context, ResourcePath("onPremisesSyncBehavior", self.resource_path)),
         )
 
+    @odata(name="scopedRoleMemberOf")
     @property
     def scoped_role_member_of(self) -> EntityCollection[ScopedRoleMembership]:
         """Gets the scopedRoleMemberOf property"""
@@ -1385,6 +1390,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="calendarView")
     @property
     def calendar_view(self) -> EntityCollection[Event]:
         """Gets the calendarView property"""
@@ -1400,6 +1406,7 @@ class User(DirectoryObject):
             "drives", EntityCollection[Drive](self.context, Drive, ResourcePath("drives", self.resource_path))
         )
 
+    @odata(name="managedAppRegistrations")
     @property
     def managed_app_registrations(self) -> EntityCollection[ManagedAppRegistration]:
         """Gets the managedAppRegistrations property"""
@@ -1410,6 +1417,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="permissionGrants")
     @property
     def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """Gets the permissionGrants property"""
