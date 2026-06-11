@@ -6,7 +6,7 @@ from office365.directory.extensions.extension import Extension
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.todo.tasks.task import TodoTask
+from office365.todo.tasks.collection import TodoTaskCollection
 
 
 class TodoTaskList(Entity):
@@ -29,11 +29,11 @@ class TodoTaskList(Entity):
         )
 
     @property
-    def tasks(self) -> EntityCollection[TodoTask]:
+    def tasks(self) -> TodoTaskCollection:
         """The tasks in this task list."""
         return self.properties.get(
             "tasks",
-            EntityCollection(self.context, TodoTask, ResourcePath("tasks", self.resource_path)),
+            TodoTaskCollection(self.context, ResourcePath("tasks", self.resource_path)),
         )
 
     @property
