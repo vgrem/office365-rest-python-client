@@ -45,21 +45,21 @@ class TodoTask(Entity):
 
     @odata(name="completedDateTime")
     @property
-    def completed_date_time(self) -> Optional[DateTimeTimeZone]:
+    def completed_date_time(self) -> DateTimeTimeZone:
         """The date and time when the task was completed."""
-        return self.properties.get("completedDateTime", None)
+        return self.properties.get("completedDateTime", DateTimeTimeZone())
 
     @odata(name="createdDateTime")
     @property
-    def created_date_time(self) -> Optional[datetime]:
+    def created_date_time(self) -> datetime:
         """The date and time when the task was created."""
-        return self.properties.get("createdDateTime", None)
+        return self.properties.get("createdDateTime", datetime.min)
 
     @odata(name="dueDateTime")
     @property
-    def due_date_time(self) -> Optional[DateTimeTimeZone]:
+    def due_date_time(self) -> DateTimeTimeZone:
         """The date and time when the task is due."""
-        return self.properties.get("dueDateTime", None)
+        return self.properties.get("dueDateTime", DateTimeTimeZone())
 
     @odata(name="hasAttachments")
     @property
@@ -81,9 +81,9 @@ class TodoTask(Entity):
 
     @odata(name="lastModifiedDateTime")
     @property
-    def last_modified_date_time(self) -> Optional[datetime]:
+    def last_modified_date_time(self) -> datetime:
         """The date and time when the task was last modified."""
-        return self.properties.get("lastModifiedDateTime", None)
+        return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @odata(name="recurrence")
     @property
@@ -93,15 +93,15 @@ class TodoTask(Entity):
 
     @odata(name="reminderDateTime")
     @property
-    def reminder_date_time(self) -> Optional[DateTimeTimeZone]:
+    def reminder_date_time(self) -> DateTimeTimeZone:
         """The date and time for the reminder of the task."""
-        return self.properties.get("reminderDateTime", None)
+        return self.properties.get("reminderDateTime", DateTimeTimeZone())
 
     @odata(name="startDateTime")
     @property
-    def start_date_time(self) -> Optional[DateTimeTimeZone]:
+    def start_date_time(self) -> DateTimeTimeZone:
         """The date and time when the task is scheduled to start."""
-        return self.properties.get("startDateTime", None)
+        return self.properties.get("startDateTime", DateTimeTimeZone())
 
     @odata(name="status")
     @property

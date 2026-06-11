@@ -24,9 +24,7 @@ def main():
         importance=Importance.high,
         body="Final review before release.",
     ).execute_query()
-    print(f"\nTask: {task.title}")
-    print(f"  Due: {task.due_date_time}")
-    print(f"  Importance: {task.importance}")
+    print(f"\nTask: {task.title}  Due: {task.due_date_time}  Importance: {task.importance}")
 
     for item in [
         {"title": "Check all examples parse", "isChecked": False},
