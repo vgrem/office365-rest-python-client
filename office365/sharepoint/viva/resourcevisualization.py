@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class ResourceVisualization(ClientValue):
-    acronym: Optional[str] = None
-    color: Optional[str] = None
-    preview_image_url: Optional[str] = None
+    Acronym: str | None = None
+    Color: str | None = None
+    PreviewImageUrl: str | None = None

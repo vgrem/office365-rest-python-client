@@ -19,22 +19,18 @@ https://learn.microsoft.com/en-us/graph/api/team-clone
 
 import sys
 import time
-from typing import Optional
 
 from office365.graph_client import GraphClient
-from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.teams.clonableteamparts import ClonableTeamParts
-from tests import create_unique_name, test_client_id, test_password, test_tenant, test_username
-
-# Which parts to copy (combine with | for any subset)
-CLONE_PARTS = [ClonableTeamParts.apps, ClonableTeamParts.tabs, ClonableTeamParts.settings, ClonableTeamParts.channels]
+from office365.teams.team import Team
+from tests import test_client_id, test_password, test_tenant, test_username
 
 
-def poll_clone_completion(client: GraphClient, team_id: str, max_wait_sec: int = 120) -> bool:
+def poll_clone_completion(team: Team, max_wait_sec: int = 120) -> bool:
     """Poll the team's operations list waiting for a clone to succeed/fail."""
     for attempt in range(1, (max_wait_sec // 10) + 1):
         time.sleep(10)
-        ops = client.teams[team_id].operations.get().execute_query()
+        ops = team.operations.get().execute_query()
         for op in ops:
             print(f"    [{attempt * 10}s] Operation status: {op.status}")
             if op.status == "succeeded":
@@ -57,16 +53,21 @@ def main():
     source_team = teams[0]
     print(f"Source team: {source_team.display_name}")
 
-    print(f"Cloning (this may take 60+ seconds)...\n")
-    target_team = source_team.clone().execute_query()
+    print("Cloning (this may take 60+ seconds)...\n")
+    target_team = source_team.clone(
+        f"{source_team.display_name}_cloned",
+        f"{source_team.display_name}_cloned",
+        ClonableTeamParts.channels,
+        source_team.visibility,
+    ).execute_query()
 
     # — Step 4: poll for completion via the source team's operations —
-    succeeded = poll_clone_completion(client, source_team.id)
+    succeeded = poll_clone_completion(source_team)
 
     if succeeded:
-        print(f"\n✅ Clone succeeded — '{target_team.display_name}' is ready.")
+        print(f"\n Clone succeeded — '{target_team.display_name}' is ready.")
     else:
-        print("\n❌ Clone failed or timed out.")
+        print("\n Clone failed or timed out.")
 
 
 if __name__ == "__main__":

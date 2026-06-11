@@ -9,6 +9,6 @@ from office365.sharepoint.documents.customizedformspage import CustomizedFormsPa
 
 @dataclass
 class CustomizedFormsPageCollection(ClientValue):
-    items: ClientValueCollection[CustomizedFormsPage] = field(
+    Items: ClientValueCollection[CustomizedFormsPage] = field(
         default_factory=lambda: ClientValueCollection(CustomizedFormsPage)
     )

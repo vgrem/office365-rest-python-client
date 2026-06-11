@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class ColumnTypeInfo(ClientValue):
-    placeholder_id: Optional[str] = None
-    translated_placeholder_type: Optional[str] = None
+    PlaceholderId: str | None = None
+    TranslatedPlaceholderType: str | None = None

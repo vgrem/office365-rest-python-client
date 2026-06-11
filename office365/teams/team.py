@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -105,7 +107,7 @@ class Team(Entity):
         return self.properties.get("isArchived", None)
 
     @property
-    def visibility(self) -> Optional[TeamVisibilityType]:
+    def visibility(self) -> TeamVisibilityType:
         """The visibility of the group and team. Defaults to Public."""
         return self.properties.get("visibility", TeamVisibilityType.unknown)
 
@@ -116,6 +118,7 @@ class Team(Entity):
         as an opaque blob, and not parsed."""
         return self.properties.get("webUrl", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self):
         """Timestamp at which the team was created."""
@@ -266,11 +269,11 @@ class Team(Entity):
 
     def clone(
         self,
+        mail_nickname: str,
         display_name: str,
         parts_to_clone: ClonableTeamParts,
         visibility: TeamVisibilityType,
         description: str | None = None,
-        mail_nickname: str | None = None,
         classification: str | None = None,
     ) -> Self:
         """Create a copy of a team. This operation also creates a copy of the corresponding group.

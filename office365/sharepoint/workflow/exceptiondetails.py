@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class ExceptionDetails(ClientValue):
-    message: Optional[str] = None
-    stack_trace: Optional[str] = None
+    ErrorCode: str | None = None
+    IsExpectedException: bool | None = None
+    Message: str | None = None
+    StackTrace: str | None = None

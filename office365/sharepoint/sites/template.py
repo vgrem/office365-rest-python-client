@@ -9,3 +9,4 @@ from office365.runtime.client_value import ClientValue
 @dataclass
 class SiteTemplate(ClientValue):
     name: Optional[str] = None
+    Name: str | None = None

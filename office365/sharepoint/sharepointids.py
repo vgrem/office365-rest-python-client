@@ -17,6 +17,10 @@ class SharePointIds(ClientValue):
     listItemId: Optional[str] = None
     listItemUniqueId: Optional[str] = None
     tenantId: Optional[str] = None
+    HubSiteId: str | None = None
+    SiteId: str | None = None
+    SiteUrl: str | None = None
+    WebId: str | None = None
 
     @property
     def entity_type_name(self):

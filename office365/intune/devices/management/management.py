@@ -15,6 +15,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class DeviceManagement(Entity):
@@ -32,6 +33,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="auditEvents")
     @property
     def audit_events(self) -> AuditEventCollection:
         """"""
@@ -40,6 +42,7 @@ class DeviceManagement(Entity):
             AuditEventCollection(self.context, ResourcePath("auditEvents", self.resource_path)),
         )
 
+    @odata(name="virtualEndpoint")
     @property
     def virtual_endpoint(self) -> VirtualEndpoint:
         """"""
@@ -48,6 +51,7 @@ class DeviceManagement(Entity):
             VirtualEndpoint(self.context, ResourcePath("virtualEndpoint", self.resource_path)),
         )
 
+    @odata(name="termsAndConditions")
     @property
     def terms_and_conditions(self) -> EntityCollection[TermsAndConditions]:
         """"""
@@ -60,6 +64,7 @@ class DeviceManagement(Entity):
             ),
         )
 
+    @odata(name="deviceCategories")
     @property
     def device_categories(self) -> EntityCollection[DeviceCategory]:
         """"""
@@ -72,6 +77,7 @@ class DeviceManagement(Entity):
             ),
         )
 
+    @odata(name="deviceEnrollmentConfigurations")
     @property
     def device_enrollment_configurations(self) -> EntityCollection[DeviceEnrollmentConfiguration]:
         """"""
@@ -84,10 +90,12 @@ class DeviceManagement(Entity):
             ),
         )
 
+    @odata(name="intuneBrand")
     @property
     def intune_brand(self) -> IntuneBrand:
         return self.properties.get("intuneBrand", IntuneBrand())
 
+    @odata(name="managedDevices")
     @property
     def managed_devices(self) -> EntityCollection[ManagedDevice]:
         """"""
@@ -107,17 +115,3 @@ class DeviceManagement(Entity):
             "reports",
             DeviceManagementReports(self.context, ResourcePath("reports", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "auditEvents": self.audit_events,
-                "deviceCategories": self.device_categories,
-                "deviceEnrollmentConfigurations": self.device_enrollment_configurations,
-                "intuneBrand": self.intune_brand,
-                "managedDevices": self.managed_devices,
-                "termsAndConditions": self.terms_and_conditions,
-                "virtualEndpoint": self.virtual_endpoint,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
