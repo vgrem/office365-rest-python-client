@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from office365.directory.extensions.customextensionclientconfiguration import CustomExtensionClientConfiguration
+from office365.directory.extensions.custom.clientconfiguration import CustomExtensionClientConfiguration
 from office365.directory.identitygovernance.entitlementmanagement.custom_extension_behavior_on_error import (
     CustomExtensionBehaviorOnError,
 )

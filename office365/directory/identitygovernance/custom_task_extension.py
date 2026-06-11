@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from office365.directory.extensions.customextensioncallbackconfiguration import CustomExtensionCallbackConfiguration
+from office365.directory.extensions.custom.callbackconfiguration import CustomExtensionCallbackConfiguration
 from office365.directory.users.user import User
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from office365.directory.extensions.customextensiondata import CustomExtensionData
+from office365.directory.extensions.custom.data import CustomExtensionData
 from office365.runtime.client_value import ClientValue
 
 

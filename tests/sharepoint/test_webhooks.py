@@ -32,7 +32,8 @@ class TestSPWebHooks(SPTestCase):
         target_list = TestSPWebHooks.target_list
         if not target_list:
             self.skipTest("No target list from setup")
-        subscription = target_list.subscriptions.add(self.push_service_url).execute_query()
+        expiration = datetime.utcnow() + timedelta(days=30)
+        subscription = target_list.subscriptions.add(self.push_service_url, expiration).execute_query()
         self.assertIsNotNone(subscription.notification_url)
         TestSPWebHooks.target_subscription = subscription
 

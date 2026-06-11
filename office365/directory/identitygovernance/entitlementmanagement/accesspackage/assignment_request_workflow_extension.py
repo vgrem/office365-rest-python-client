@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.extensions.customextensioncallbackconfiguration import CustomExtensionCallbackConfiguration
+from office365.directory.extensions.custom.callbackconfiguration import CustomExtensionCallbackConfiguration
 from office365.entity import Entity
 
 

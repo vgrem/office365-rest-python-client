@@ -1,3 +1,8 @@
+from datetime import datetime
+from typing import Optional
+
+from typing_extensions import Self
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
@@ -17,9 +22,10 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         """Gets the subscription with the specified ID."""
         return Subscription(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
-    def add(self, parameters):
+    def add(self, parameters, expiration_date_time: Optional[datetime] = None):
         """Args:
         parameters (SubscriptionInformation or str): Subscription information object or notification string
+        expiration_date_time (datetime or None): Subscription expiration date
         """
         return_type = Subscription(self.context)
         self.add_child(return_type)
@@ -33,18 +39,26 @@ class SubscriptionCollection(EntityCollection[Subscription]):
             self.context.add_query(qry)
 
         if isinstance(parameters, SubscriptionInformation):
+            if expiration_date_time is not None:
+                parameters.expirationDateTime = expiration_date_time
             _create_and_add_query(parameters)
         else:
 
             def _parent_loaded():
                 assert self._parent is not None
-                _create_and_add_query(SubscriptionInformation(parameters, self._parent.properties["Id"]))
+                _create_and_add_query(
+                    SubscriptionInformation(
+                        parameters,
+                        self._parent.properties["Id"],
+                        expirationDateTime=expiration_date_time,
+                    )
+                )
 
             assert self._parent is not None
             self._parent.ensure_property("Id").after_execute(lambda _: _parent_loaded())
         return return_type
 
-    def remove(self, subscription_id):
+    def remove(self, subscription_id) -> Self:
         """Removes the subscription with the specified subscriptionId from the collection.
 
         Args:

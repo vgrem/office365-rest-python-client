@@ -23,7 +23,7 @@ class GroupLifecyclePolicy(Entity):
         Args:
             group_id (str): The identifier of the group to remove from the policy.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bool](self.context)
         payload = {"groupId": group_id}
         qry = ServiceOperationQuery(self, "addGroup", None, payload, None, return_type)
         self.context.add_query(qry)
@@ -35,7 +35,7 @@ class GroupLifecyclePolicy(Entity):
         Args:
             group_id (str): The identifier of the group to add to the policy.
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bool](self.context)
         payload = {"groupId": group_id}
         qry = ServiceOperationQuery(self, "removeGroup", None, payload, None, return_type)
         self.context.add_query(qry)
