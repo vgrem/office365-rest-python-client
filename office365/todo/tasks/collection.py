@@ -23,24 +23,23 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
         body: str | ItemBody | None = None,
         **kwargs,
     ):
-        params = {"title": title}
+        kwargs["title"] = title
 
         if due_date_time is not None:
             if isinstance(due_date_time, datetime):
-                params["dueDateTime"] = DateTimeTimeZone.parse(due_date_time)
+                kwargs["dueDateTime"] = DateTimeTimeZone.parse(due_date_time)
             elif isinstance(due_date_time, DateTimeTimeZone):
-                params["dueDateTime"] = due_date_time
+                kwargs["dueDateTime"] = due_date_time
             else:
-                params["dueDateTime"] = due_date_time
+                kwargs["dueDateTime"] = due_date_time
 
         if importance is not None:
-            params["importance"] = importance
+            kwargs["importance"] = importance
 
         if body is not None:
             if isinstance(body, str):
-                params["body"] = ItemBody.text(body)
+                kwargs["body"] = ItemBody.text(body)
             elif isinstance(body, ItemBody):
-                params["body"] = body
+                kwargs["body"] = body
 
-        params.update(kwargs)
-        return super().add(**params)  # type: ignore[arg-type]
+        return super().add(**kwargs)  # type: ignore[arg-type]
