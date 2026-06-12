@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -12,3 +14,4 @@ class ThemeData(ClientValue):
     themeJson: Optional[str] = None
     id: Optional[int] = None
     isVisible: Optional[bool] = None
+    editable: bool | None = None

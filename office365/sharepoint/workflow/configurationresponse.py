@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -8,17 +9,17 @@ from office365.sharepoint.workflow.configureduserinfo import ConfiguredUserInfo
 
 @dataclass
 class WorkflowConfigurationResponse(ClientValue):
-    approvers: ClientValueCollection[ConfiguredUserInfo] = field(
+    Approvers: ClientValueCollection[ConfiguredUserInfo] = field(
         default_factory=lambda: ClientValueCollection(ConfiguredUserInfo)
     )
-    category_id: Optional[str] = None
-    category_name: Optional[str] = None
-    configuration_id: Optional[int] = None
-    country: Optional[str] = None
-    e_sign_needed: Optional[bool] = None
-    language: Optional[str] = None
-    reviewers: ClientValueCollection[ConfiguredUserInfo] = field(
+    CategoryID: str | None = None
+    CategoryName: str | None = None
+    ConfigurationID: int | None = None
+    Country: str | None = None
+    ESignNeeded: bool | None = None
+    Language: str | None = None
+    Reviewers: ClientValueCollection[ConfiguredUserInfo] = field(
         default_factory=lambda: ClientValueCollection(ConfiguredUserInfo)
     )
-    source: Optional[str] = None
-    type: Optional[str] = None
+    Source: str | None = None
+    Type: str | None = None

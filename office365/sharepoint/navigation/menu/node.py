@@ -18,13 +18,13 @@ class MenuNode(ClientValue):
     CurrentLCID: int | None = None
     IsDeleted: bool | None = None
     IsHidden: bool | None = None
-    Key = None
     Nodes: ClientValueCollection[MenuNode] | None = None
-    NodeType = None
-    OpenInNewWindow = None
     SimpleUrl: str | None = None
     Title: str | None = None
     Translations: ClientValueCollection[SPResourceEntry] | None = None
     CustomProperties: dict | None = None
     FriendlyUrlSegment: str | None = None
     IsTitleForExistingLanguage: bool | None = None
+    Key: str | None = None
+    NodeType: int | None = None
+    OpenInNewWindow: bool | None = None

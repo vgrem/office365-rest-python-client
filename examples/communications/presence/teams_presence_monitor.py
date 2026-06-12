@@ -11,47 +11,53 @@ from datetime import datetime, timedelta, timezone
 from time import sleep
 from typing import Optional
 
+from office365.communications.presences.presence import Presence
 from office365.graph_client import GraphClient
+from tests import test_admin_principal_name, test_client_id, test_tenant
 
 POLL_INTERVAL = 30
 BUSY_ACTIVITIES = {"InACall", "InAConferenceCall", "InAMeeting", "Presenting"}
 
 
-def is_available(presence) -> bool:
-    availability = presence.get_property("availability")
-    activity = presence.get_property("activity")
-    if not availability or not activity:
+def is_available(presence: Presence) -> bool:
+    if not presence.availability or not presence.activity:
         return False
-    if availability in ("DoNotDisturb", "Offline", "PresenceUnknown"):
+    if presence.availability in ("DoNotDisturb", "Offline", "PresenceUnknown"):
         return False
-    if activity in BUSY_ACTIVITIES | {"OffWork", "OutOfOffice"}:
+    if presence.activity in BUSY_ACTIVITIES | {"OffWork", "OutOfOffice"}:
         return False
     return True
 
 
-def agent_status_summary(presence) -> str:
-    a = presence.get_property("availability") or "Unknown"
-    b = presence.get_property("activity") or "Unknown"
+def agent_status_summary(presence: Presence) -> str:
+    a = presence.availability or "Unknown"
+    b = presence.activity or "Unknown"
     return f"availability={a}, activity={b}"
 
 
 def take_agent_offline(client: GraphClient, user_id: str):
     expires = datetime.now(timezone.utc) + timedelta(hours=9)
     client.communications.presences[user_id].set_user_preferred_presence(
-        availability="DoNotDisturb", activity="OffWork", expiration_duration="PT9H",
+        availability="DoNotDisturb",
+        activity="OffWork",
+        expiration_duration="PT9H",
     ).execute_query()
     client.communications.presences[user_id].set_status_message(
-        message="Shift ended", expiry=expires,
+        message="Shift ended",
+        expiry=expires,
     ).execute_query()
 
 
 def start_shift(client: GraphClient, user_id: str):
     expires = datetime.now(timezone.utc) + timedelta(hours=9)
     client.communications.presences[user_id].set_user_preferred_presence(
-        availability="Available", activity="Available", expiration_duration="PT9H",
+        availability="Available",
+        activity="Available",
+        expiration_duration="PT9H",
     ).execute_query()
     client.communications.presences[user_id].set_status_message(
-        message="Online and ready", expiry=expires,
+        message="Online and ready",
+        expiry=expires,
     ).execute_query()
 
 
@@ -81,7 +87,7 @@ def monitor_presence(client: GraphClient, agents: list[str], cycles: int = 3):
 
 
 def main():
-    client = GraphClient().with_device_flow(client_id="your_client_id")
+    client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
     agents = ["alice@company.com", "bob@company.com", "carol@company.com"]
 
     presences = client.communications.get_presences_by_user_id(agents).execute_query()

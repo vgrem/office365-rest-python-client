@@ -20,6 +20,10 @@ class Device(DirectoryObject):
         return self.device_id or self.entity_type_name
 
     @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Device"
+
+    @property
     def account_enabled(self) -> Optional[bool]:
         """true if the account is enabled; otherwise, false. Required. Default is true.
 

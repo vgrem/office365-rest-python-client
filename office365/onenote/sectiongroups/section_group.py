@@ -7,6 +7,7 @@ from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
 from office365.onenote.notebooks.notebook import Notebook
 from office365.onenote.sections.section import OnenoteSection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class SectionGroup(OnenoteEntityHierarchyModel):
@@ -24,6 +25,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
         """The URL for the sections navigation property, which returns all the sections in the section group."""
         return self.properties.get("sectionsUrl", None)
 
+    @odata(name="parentNotebook")
     @property
     def parent_notebook(self) -> Notebook:
         """The notebook that contains the section group. Read-only."""
@@ -44,6 +46,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
             ),
         )
 
+    @odata(name="sectionGroups")
     @property
     def section_groups(self) -> EntityCollection[SectionGroup]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
@@ -55,12 +58,3 @@ class SectionGroup(OnenoteEntityHierarchyModel):
                 ResourcePath("sectionGroups", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "parentNotebook": self.parent_notebook,
-                "sectionGroups": self.section_groups,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

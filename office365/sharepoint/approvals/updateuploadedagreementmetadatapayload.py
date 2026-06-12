@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class UpdateUploadedAgreementMetadataPayload(ClientValue):
-    agreement_number: Optional[str] = None
-    agreement_url: Optional[str] = None
-    category: Optional[str] = None
-    country: Optional[str] = None
-    is_draft: Optional[bool] = None
-    is_existing_agreement: Optional[bool] = None
-    language: Optional[str] = None
-    state: Optional[str] = None
+    AgreementNumber: str | None = None
+    AgreementUrl: str | None = None
+    Category: str | None = None
+    Country: str | None = None
+    IsDraft: bool | None = None
+    IsExistingAgreement: bool | None = None
+    Language: str | None = None
+    State: str | None = None
