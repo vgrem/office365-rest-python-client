@@ -40,6 +40,6 @@ class TestManagedDevices(GraphDelegatedTestCase):
             result = self.client.device_management.managed_devices.top(5).get().execute_query()
             self.assertIsNotNone(result.resource_path)
             if len(result) > 0:
-                self.assertIsNotNone(result[0].get_property("deviceName"))
+                self.assertIsNotNone(result[0].device_name)
         except Exception as e:
             self.skipTest(f"Cannot list managed devices tenant-wide: {e}")

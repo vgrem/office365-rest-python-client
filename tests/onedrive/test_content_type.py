@@ -48,7 +48,7 @@ class TestContentType(GraphDelegatedTestCase):
         name = "docSet" + uuid.uuid4().hex
         ct = self.client.sites.root.content_types.add(name, "0x0120D520").execute_query()
         self.assertIsNotNone(ct.resource_path)
-        self.assertIsNotNone(ct.get_property("id"))
+        self.assertIsNotNone(ct.id)
         TestContentType.target_ct = ct
 
     @requires_delegated(

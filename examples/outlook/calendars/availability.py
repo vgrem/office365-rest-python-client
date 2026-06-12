@@ -26,7 +26,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 
 # 1. Find suggested meeting times
 suggestions = client.me.find_meeting_times().execute_query()
-for s in suggestions.value.meeting_time_suggestions or []:
+for s in suggestions.value.meetingTimeSuggestions or []:
     times = s.meeting_time_slot
     print(f"  Suggested: {times.start.date_time} — {times.end.date_time}")
 
