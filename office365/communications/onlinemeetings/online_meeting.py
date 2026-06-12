@@ -13,6 +13,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class OnlineMeeting(OnlineMeetingBase):
@@ -83,25 +84,17 @@ class OnlineMeeting(OnlineMeetingBase):
     def subject(self, value: str) -> None:
         self.set_property("subject", value)
 
+    @odata(name="startDateTime")
     @property
     def start_datetime(self):
         """Gets the meeting start time in UTC."""
         return self.properties.get("startDateTime", datetime.min)
 
-    @start_datetime.setter
-    def start_datetime(self, value: datetime) -> None:
-        """Sets the meeting start time in UTC."""
-        self.set_property("startDateTime", value.isoformat())
-
+    @odata(name="endDateTime")
     @property
     def end_datetime(self):
         """Gets the meeting end time in UTC."""
         return self.properties.get("endDateTime", datetime.min)
-
-    @end_datetime.setter
-    def end_datetime(self, value: datetime) -> None:
-        """Sets the meeting end time in UTC."""
-        self.set_property("endDateTime", value.isoformat())
 
     @property
     def join_information(self) -> ItemBody:

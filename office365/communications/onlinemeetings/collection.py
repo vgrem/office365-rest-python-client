@@ -8,7 +8,6 @@ from office365.communications.onlinemeetings.participants import MeetingParticip
 from office365.communications.onlinemeetings.recordings.call import CallRecording
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value import ClientValue
-from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
@@ -37,17 +36,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             end_datetime (datetime): The meeting end time in UTC.
             subject (str): The subject of the online meeting.
         """
-        return_type = OnlineMeeting(self.context)
-        self.add_child(return_type)
-        payload = {
-            "startDateTime": start_datetime,
-            "endDateTime": end_datetime,
-            "subject": subject,
-            **kwargs,
-        }
-        qry = CreateEntityQuery(self, payload, return_type)
-        self.context.add_query(qry)
-        return return_type
+        return super().add(subject=subject, startDateTime=start_datetime, endDateTime=end_datetime, **kwargs)
 
     def create_or_get(
         self,

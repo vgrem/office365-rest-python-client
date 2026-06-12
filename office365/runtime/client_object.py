@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import datetime
+from datetime import datetime
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
@@ -297,7 +297,7 @@ class ClientObject:
                 self._properties[name] = typed_value
             else:
                 self._properties[name] = value
-        elif isinstance(typed_value, datetime.datetime):
+        elif isinstance(typed_value, datetime):
             self._properties[name] = parse_datetime(value)
         elif isinstance(typed_value, Enum):
             if value is None:
@@ -433,6 +433,8 @@ class ClientObject:
                 json[k] = v.to_json(json_format)
             elif isinstance(v, Enum):
                 json[k] = v.value
+            elif isinstance(v, datetime):
+                json[k] = v.isoformat()
 
         if json and include_control_info:
             if isinstance(json_format, JsonLightFormat):

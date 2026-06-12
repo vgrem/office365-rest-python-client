@@ -311,6 +311,7 @@ class ServicePrincipal(DirectoryObject):
             AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignments", self.resource_path)),
         )
 
+    @odata(name="appRoles")
     @property
     def app_roles(self):
         """The roles exposed by the application which this service principal represents."""
