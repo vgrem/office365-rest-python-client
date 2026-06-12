@@ -30,38 +30,42 @@ class TeamsAsyncOperation(Entity):
     def poll_for_status(
         self,
         status_type: TeamsAsyncOperationStatus = TeamsAsyncOperationStatus.succeeded,
-        max_polling_count: int = 5,
-        polling_interval_secs: int = 15,
+        timeout_sec: int = 180,
+        polling_interval: int = 15,
         success_callback: Callable[[TeamsAsyncOperation], None] | None = None,
         failure_callback: Callable[[TeamsAsyncOperation], None] | None = None,
     ) -> Self:
-        """Poll to check for completion of an async Teams create call
+        """Poll to check for completion of an async Teams operation.
 
         Args:
-            polling_interval_secs (int):
-            max_polling_count (int):
-            status_type (TeamsAsyncOperationStatus): The status to wait for
-            success_callback ((TeamsAsyncOperation)-> None): Called on success with the operation
-            failure_callback ((TeamsAsyncOperation)-> None): Called on timeout
+            status_type: The status to wait for (default succeeded)
+            timeout_sec: Maximum seconds to wait (default 180)
+            polling_interval: Seconds between polls (default 15)
+            success_callback: Called on success with the populated operation
+            failure_callback: Called on timeout or failed status
         """
+        deadline = time.time() + timeout_sec
 
-        def _poll_for_status(polling_number: int) -> None:
-            if polling_number > max_polling_count:
-                if callable(failure_callback):
-                    failure_callback(self)
-                else:
-                    raise TimeoutError("The maximum polling count has been reached")
-
-            def _verify_status(return_type: TeamsAsyncOperation):
-                if return_type.status != status_type:
-                    time.sleep(polling_interval_secs)
-                    _poll_for_status(polling_number + 1)
-                elif callable(success_callback):
-                    success_callback(return_type)
-
+        def _poll():
             self.get().after_execute(_verify_status, execute_first=True)
 
-        _poll_for_status(1)
+        def _verify_status(return_type: TeamsAsyncOperation):
+            if return_type.status == status_type:
+                if callable(success_callback):
+                    success_callback(return_type)
+                return
+            if return_type.status == TeamsAsyncOperationStatus.failed:
+                if callable(failure_callback):
+                    failure_callback(return_type)
+                return
+            if time.time() >= deadline:
+                if callable(failure_callback):
+                    failure_callback(self)
+                return
+            time.sleep(polling_interval)
+            _poll()
+
+        _poll()
         return self
 
     @odata(name="attemptsCount")
