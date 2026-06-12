@@ -1,5 +1,5 @@
 """
-Create and list Teams online meetings.
+Create Teams online meetings with join links.
 
 Requires delegated permission OnlineMeetings.ReadWrite.All.
 """
@@ -31,11 +31,6 @@ def main():
 
     print(f"Created: {meeting.subject}  {meeting.join_web_url}")
     print(f"Created: {meeting2.subject}  {meeting2.join_web_url}  chat={meeting2.allow_meeting_chat}")
-
-    recent = client.me.online_meetings.get().execute_query()
-    print(f"\nRecent meetings: {len(recent)}")
-    for m in recent:
-        print(f"  {m.start_datetime}  {m.subject}")
 
 
 if __name__ == "__main__":
