@@ -1,10 +1,11 @@
-from dataclasses import dataclass
-from typing import Optional
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class SPRuleAction(ClientValue):
-    action_params: Optional[dict] = None
-    action_type: Optional[int] = None
+    ActionParams: dict | None = field(default_factory=dict)
+    ActionType: int | None = None

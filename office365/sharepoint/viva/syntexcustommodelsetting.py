@@ -1,25 +1,24 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.viva.syntexcustommodeldeploymentproperties import (
-    SyntexCustomModelDeploymentProperties,
-)
+from office365.sharepoint.viva.syntexcustommodeldeploymentproperties import SyntexCustomModelDeploymentProperties
 
 
 @dataclass
 class SyntexCustomModelSetting(ClientValue):
-    analyzer_id: Optional[str] = None
-    azure_resource_id: Optional[str] = None
-    deployment_name: Optional[str] = None
-    deployment_properties: SyntexCustomModelDeploymentProperties = field(
+    AnalyzerId: str | None = None
+    AzureResourceId: str | None = None
+    DeploymentName: str | None = None
+    DeploymentProperties: SyntexCustomModelDeploymentProperties = field(
         default_factory=SyntexCustomModelDeploymentProperties
     )
-    endpoint: Optional[str] = None
-    endpoint_type: Optional[int] = None
-    is_disabled: Optional[bool] = None
-    task_type: Optional[int] = None
-    unique_id: Optional[str] = None
-    unique_name: Optional[str] = None
-    updated: Optional[datetime] = None
+    Endpoint: str | None = None
+    EndpointType: int | None = None
+    IsDisabled: bool | None = None
+    TaskType: int | None = None
+    UniqueId: str | None = None
+    UniqueName: str | None = None
+    Updated: datetime | None = field(default_factory=lambda: datetime.min)

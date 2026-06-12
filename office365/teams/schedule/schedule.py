@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.groups.group import SchedulingGroup
 from office365.teams.schedule.shifts.open.change_request import OpenShiftChangeRequest
 from office365.teams.schedule.shifts.shift import Shift
@@ -12,7 +15,7 @@ class Schedule(Entity):
     and timeOff objects within a team."""
 
     @property
-    def time_zone(self):
+    def time_zone(self) -> str | None:
         """Indicates the time zone of the shifts team using tz database format. Required."""
         return self.properties.get("timeZone", None)
 
@@ -20,6 +23,7 @@ class Schedule(Entity):
     def time_zone(self, value):
         self.set_property("timeZone", value)
 
+    @odata(name="openShiftChangeRequests")
     @property
     def open_shift_change_requests(self) -> EntityCollection[OpenShiftChangeRequest]:
         """The shifts in the shifts."""
@@ -40,6 +44,7 @@ class Schedule(Entity):
             EntityCollection(self.context, Shift, ResourcePath("shifts", self.resource_path)),
         )
 
+    @odata(name="schedulingGroups")
     @property
     def scheduling_groups(self) -> EntityCollection[SchedulingGroup]:
         """The logical grouping of users in the shifts (usually by role)."""
@@ -52,6 +57,7 @@ class Schedule(Entity):
             ),
         )
 
+    @odata(name="timeOffReasons")
     @property
     def time_off_reasons(self) -> EntityCollection[TimeOffReason]:
         """The set of reasons for a time off in the schedule."""
@@ -63,13 +69,3 @@ class Schedule(Entity):
                 ResourcePath("timeOffReasons", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "openShiftChangeRequests": self.open_shift_change_requests,
-                "schedulingGroups": self.scheduling_groups,
-                "timeOffReasons": self.time_off_reasons,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

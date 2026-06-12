@@ -9,6 +9,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.teams.channels.membership_type import ChannelMembershipType
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
 from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
@@ -75,6 +76,7 @@ class Channel(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> Optional[datetime]:
         """
@@ -115,8 +117,9 @@ class Channel(Entity):
         """The ID of the Microsoft Entra tenant."""
         return self.properties.get("tenantId", None)
 
+    @odata(name="membershipType")
     @property
-    def membership_type(self) -> Optional[ChannelMembershipType]:
+    def membership_type(self) -> ChannelMembershipType:
         """
         The type of the channel. Can be set during creation and can't be changed.
         The possible values are: standard, private, unknownFutureValue, shared. The default value is standard.
@@ -132,6 +135,7 @@ class Channel(Entity):
         opaque blob, and not parsed. Read-only."""
         return self.properties.get("webUrl", None)
 
+    @odata(name="filesFolder")
     @property
     def files_folder(self) -> DriveItem:
         """Get the metadata for the location where the files of a channel are stored."""
@@ -168,6 +172,7 @@ class Channel(Entity):
             ),
         )
 
+    @odata(name="sharedWithTeams")
     @property
     def shared_with_teams(self) -> EntityCollection[SharedWithChannelTeamInfo]:
         """A collection of teams with which a channel is shared."""
@@ -179,16 +184,6 @@ class Channel(Entity):
                 ResourcePath("sharedWithTeams", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdDateTime": self.created_datetime,
-                "filesFolder": self.files_folder,
-                "sharedWithTeams": self.shared_with_teams,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

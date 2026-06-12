@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 
@@ -15,9 +16,6 @@ class TenantAppInformation(ClientValue):
         creation_time (datetime.datetime): Specifies the creation time for the tenant-scoped app.
     """
 
-    AppPrincipalId = None
-    AppWebFullUrl = None
-    CreationTime = None
     IconAbsoluteUrl: str | None = None
     IconFallbackAbsoluteUrl: str | None = None
     Id: str | None = None
@@ -27,3 +25,6 @@ class TenantAppInformation(ClientValue):
     RemoteAppUrl: str | None = None
     Status: int | None = None
     Title: str | None = None
+    AppPrincipalId: str | None = None
+    AppWebFullUrl: str | None = None
+    CreationTime: datetime | None = field(default_factory=lambda: datetime.min)

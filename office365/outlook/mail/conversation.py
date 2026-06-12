@@ -6,6 +6,7 @@ from office365.entity_collection import EntityCollection
 from office365.outlook.mail.conversation_thread import ConversationThread
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Conversation(Entity):
@@ -22,8 +23,9 @@ class Conversation(Entity):
         """
         return self.properties.get("hasAttachments", None)
 
+    @odata(name="lastDeliveredDateTime")
     @property
-    def last_delivered_datetime(self) -> Optional[datetime]:
+    def last_delivered_datetime(self) -> datetime:
         """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time."""
         return self.properties.get("lastDeliveredDateTime", datetime.min)
 
@@ -55,16 +57,11 @@ class Conversation(Entity):
             "threads", EntityCollection(self.context, ConversationThread, ResourcePath("threads", self.resource_path))
         )
 
+    @odata(name="lastDeliveredDateTime")
     @property
     def last_delivered_date_time(self) -> datetime:
         """Gets the lastDeliveredDateTime property"""
         return self.properties.get("lastDeliveredDateTime", datetime.min)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"lastDeliveredDateTime": self.last_delivered_datetime}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

@@ -4,6 +4,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.teams.apps.user_scope_installation import UserScopeTeamsAppInstallation
 from office365.teams.associated_info import AssociatedTeamInfo
 
@@ -34,6 +35,7 @@ class UserTeamwork(Entity):
         """
         return self.properties.get("region", None)
 
+    @odata(name="associatedTeams")
     @property
     def associated_teams(self) -> EntityCollection[AssociatedTeamInfo]:
         """
@@ -48,6 +50,7 @@ class UserTeamwork(Entity):
             ),
         )
 
+    @odata(name="installedApps")
     @property
     def installed_apps(self) -> EntityCollection[UserScopeTeamsAppInstallation]:
         """
@@ -62,7 +65,7 @@ class UserTeamwork(Entity):
             ),
         )
 
-    def send_activity_notification(self, topic, activity_type, chain_id, preview_text, template_parameters=None):
+    def send_activity_notification(self, topic, activity_type, chain_id: int, preview_text, template_parameters=None):
         """Send an activity feed notification in the scope of a team. For more details about sending notifications
         and the requirements for doing so, see sending Teams activity notifications.
 
@@ -86,12 +89,3 @@ class UserTeamwork(Entity):
         qry = ServiceOperationQuery(self, "sendActivityNotification", None, payload)
         self.context.add_query(qry)
         return self
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "associatedTeams": self.associated_teams,
-                "installedApps": self.installed_apps,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
