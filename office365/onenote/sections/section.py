@@ -9,6 +9,7 @@ from office365.onenote.operations.onenote import OnenoteOperation
 from office365.onenote.pages.links import PageLinks
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onenote.pages.page import OnenotePage
@@ -73,6 +74,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             EntityCollection(self.context, OnenotePage, ResourcePath("pages", self.resource_path)),
         )
 
+    @odata(name="parentNotebook")
     @property
     def parent_notebook(self):
         """
@@ -85,6 +87,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             Notebook(self.context, ResourcePath("parentNotebook", self.resource_path)),
         )
 
+    @odata(name="parentSectionGroup")
     @property
     def parent_section_group(self) -> SectionGroup:
         """
@@ -96,12 +99,3 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             "parentSectionGroup",
             SectionGroup(self.context, ResourcePath("parentSectionGroup", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "parentNotebook": self.parent_notebook,
-                "parentSectionGroup": self.parent_section_group,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

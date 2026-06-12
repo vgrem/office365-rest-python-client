@@ -14,10 +14,15 @@ class SubscriptionInformation(ClientValue):
 
     notificationUrl: Optional[str] = None
     resource: Optional[str] = None
-    expirationDateTime: Optional[datetime] = None
+    expirationDateTime: datetime = field(default_factory=lambda: datetime.min)
     clientState: Optional[str] = None
     resourceData: Optional[str] = None
     scenarios: StringCollection = field(default_factory=StringCollection)
+
+    def to_json(self, json_format=None):
+        json = super().to_json(json_format)
+        json["expirationDateTime"] = self.expirationDateTime.isoformat()
+        return json
 
     @property
     def entity_type_name(self):

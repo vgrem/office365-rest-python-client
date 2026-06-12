@@ -1,13 +1,14 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class Hashtag(ClientValue):
-    actor: Optional[str] = None
-    application: Optional[str] = None
-    label: Optional[str] = None
-    timestamp: datetime = datetime.min
+    Actor: str | None = None
+    Application: str | None = None
+    Label: str | None = None
+    Timestamp: datetime | None = field(default_factory=lambda: datetime.min)

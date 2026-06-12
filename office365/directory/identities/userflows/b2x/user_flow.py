@@ -10,6 +10,7 @@ from office365.directory.identities.userflows.user_attribute_assignment import (
 from office365.directory.identities.userflows.user_flow import IdentityUserFlow
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class B2XIdentityUserFlow(IdentityUserFlow):
@@ -21,6 +22,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
     use to authenticate, along with which attributes are collected as part of the sign up process.
     """
 
+    @odata(name="identityProviders")
     @property
     def identity_providers(self) -> EntityCollection[IdentityProvider]:
         """TThe identity providers included in the user flow."""
@@ -47,6 +49,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
             ),
         )
 
+    @odata(name="userAttributeAssignments")
     @property
     def user_attribute_assignments(
         self,
@@ -67,12 +70,3 @@ class B2XIdentityUserFlow(IdentityUserFlow):
         the value can only be signUpOrSignIn and cannot be modified after creation.
         """
         return self.properties.get("userFlowType", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "identityProviders": self.identity_providers,
-                "userAttributeAssignments": self.user_attribute_assignments,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

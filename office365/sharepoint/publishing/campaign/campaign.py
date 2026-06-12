@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.sharepointids import SharePointIds
+from office365.sharepoint.publishing.sharepointids import SharePointIds
 
 
 class Campaign(Entity):

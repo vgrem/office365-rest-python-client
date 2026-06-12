@@ -125,6 +125,7 @@ class TestSharePointWeb(SPTestCase):
         if not target_user:
             self.skipTest("No target user from previous test")
         self.assertIsNotNone(target_user.id)
+        assert target_user.id is not None
         result_user = self.client.web.get_user_by_id(target_user.id).get().execute_query()
         self.assertEqual(result_user.login_name, target_user.login_name)
 

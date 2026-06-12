@@ -8,6 +8,6 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class VersionPolicySelectionParameters(ClientValue):
-    file_types_selected: StringCollection = field(default_factory=StringCollection)
-    select_all_file_types: bool | None = None
-    select_default: bool | None = None
+    FileTypesSelected: StringCollection = field(default_factory=StringCollection)
+    SelectAllFileTypes: bool | None = None
+    SelectDefault: bool | None = None

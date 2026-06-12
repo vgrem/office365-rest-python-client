@@ -7,5 +7,5 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class FolderCollectionAddParameters(ClientValue):
-    ensure_unique_file_name: bool | None = None
-    overwrite: bool | None = None
+    EnsureUniqueFileName: bool | None = None
+    Overwrite: bool | None = None

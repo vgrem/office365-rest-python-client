@@ -6,6 +6,7 @@ from office365.directory.audit.signins.signin import SignIn
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class AuditLogRoot(Entity):
@@ -13,6 +14,7 @@ class AuditLogRoot(Entity):
     It doesn't contain any usable properties.
     """
 
+    @odata(name="directoryAudits")
     @property
     def directory_audits(self) -> EntityCollection[DirectoryAudit]:
         """
@@ -57,9 +59,3 @@ class AuditLogRoot(Entity):
                 ResourcePath("provisioning", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"directoryAudits": self.directory_audits}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

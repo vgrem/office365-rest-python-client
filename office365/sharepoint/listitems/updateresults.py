@@ -9,7 +9,7 @@ from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateV
 
 @dataclass
 class ListItemUpdateResults(ClientValue):
-    updated_data: str | None = None
-    update_results: ClientValueCollection[ListItemFormUpdateValue] = field(
+    UpdatedData: str | None = None
+    UpdateResults: ClientValueCollection[ListItemFormUpdateValue] = field(
         default_factory=lambda: ClientValueCollection(ListItemFormUpdateValue)
     )

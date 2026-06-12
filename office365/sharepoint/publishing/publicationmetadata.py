@@ -4,7 +4,7 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.publishing.amplify.amplifiedchannels import AmplifiedChannels as _AmplifiedChannels
-from office365.sharepoint.sharepointids import SharePointIds as _SharePointIds
+from office365.sharepoint.publishing.sharepointids import SharePointIds as _SharePointIds
 
 
 @dataclass

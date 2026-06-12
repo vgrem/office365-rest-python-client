@@ -5,6 +5,7 @@ from office365.directory.audit.activity_initiator import AuditActivityInitiator
 from office365.directory.audit.target_resource import TargetResource
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 
 class DirectoryAudit(Entity):
@@ -13,6 +14,7 @@ class DirectoryAudit(Entity):
     def __repr__(self):
         return self.activity_display_name or self.entity_type_name
 
+    @odata(name="activityDateTime")
     @property
     def activity_datetime(self) -> datetime:
         """Indicates the date and time the activity was performed."""
@@ -49,6 +51,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("correlationId", None)
 
+    @odata(name="initiatedBy")
     @property
     def initiated_by(self):
         """
@@ -87,6 +90,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("resultReason", None)
 
+    @odata(name="targetResources")
     @property
     def target_resources(self) -> ClientValueCollection[TargetResource]:
         """
@@ -95,13 +99,3 @@ class DirectoryAudit(Entity):
         and $filter (startswith) for displayName.
         """
         return self.properties.get("targetResources", ClientValueCollection(TargetResource))
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "activityDateTime": self.activity_datetime,
-                "initiatedBy": self.initiated_by,
-                "targetResources": self.target_resources,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

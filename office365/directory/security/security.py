@@ -19,6 +19,7 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class Security(Entity):
@@ -47,6 +48,7 @@ class Security(Entity):
             AlertCollection(self.context, ResourcePath("alerts", self.resource_path)),
         )
 
+    @odata(name="alerts_v2")
     @property
     def alerts_v2(self) -> EntityCollection[Alert]:
         """A collection of alerts in Microsoft 365 Defender."""
@@ -60,6 +62,7 @@ class Security(Entity):
         """"""
         return self.properties.get("cases", CasesRoot(self.context, ResourcePath("cases", self.resource_path)))
 
+    @odata(name="attackSimulation")
     @property
     def attack_simulation(self) -> AttackSimulationRoot:
         """"""
@@ -85,6 +88,7 @@ class Security(Entity):
             LabelsRoot(self.context, ResourcePath("labels", self.resource_path)),
         )
 
+    @odata(name="subjectRightsRequests")
     @property
     def subject_rights_requests(self) -> EntityCollection[SubjectRightsRequest]:
         """Get a list of the subjectRightsRequest objects and their properties."""
@@ -97,6 +101,7 @@ class Security(Entity):
             ),
         )
 
+    @odata(name="secureScoreControlProfiles")
     @property
     def secure_score_control_profiles(
         self,
@@ -119,6 +124,7 @@ class Security(Entity):
             TriggersRoot(self.context, ResourcePath("triggers", self.resource_path)),
         )
 
+    @odata(name="triggerTypes")
     @property
     def trigger_types(self) -> TriggerTypesRoot:
         """"""
@@ -127,6 +133,7 @@ class Security(Entity):
             TriggerTypesRoot(self.context, ResourcePath("triggerTypes", self.resource_path)),
         )
 
+    @odata(name="threatIntelligence")
     @property
     def threat_intelligence(self) -> ThreatIntelligence:
         """"""
@@ -134,19 +141,6 @@ class Security(Entity):
             "threatIntelligence",
             ThreatIntelligence(self.context, ResourcePath("threatIntelligence", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "alerts_v2": self.alerts_v2,
-                "attackSimulation": self.attack_simulation,
-                "subjectRightsRequests": self.subject_rights_requests,
-                "secureScoreControlProfiles": self.secure_score_control_profiles,
-                "triggerTypes": self.trigger_types,
-                "threatIntelligence": self.threat_intelligence,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

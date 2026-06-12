@@ -3,9 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.files.versions.policyselectionparameters import (
-    VersionPolicySelectionParameters,
-)
+from office365.sharepoint.files.versions.policyselectionparameters import VersionPolicySelectionParameters
 
 
 @dataclass
@@ -16,3 +14,9 @@ class FileVersionBatchDeleteParameters(ClientValue):
     major_version_limit: int | None = None
     major_with_minor_versions_limit: int | None = None
     sync_list_policy: bool | None = None
+    BatchDeleteMode: int | None = None
+    DeleteOlderThanDays: int | None = None
+    FileTypeSelections: VersionPolicySelectionParameters = field(default_factory=VersionPolicySelectionParameters)
+    MajorVersionLimit: int | None = None
+    MajorWithMinorVersionsLimit: int | None = None
+    SyncListPolicy: bool | None = None
