@@ -24,6 +24,7 @@ from office365.teams.members.conversation_collection import ConversationMemberCo
 from office365.teams.members.settings import TeamMemberSettings
 from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.operations.async_operation import TeamsAsyncOperation
+from office365.teams.operations.async_status import TeamsAsyncOperationStatus
 from office365.teams.schedule.schedule import Schedule
 from office365.teams.specialization import TeamSpecialization
 from office365.teams.summary import TeamSummary
@@ -53,7 +54,7 @@ class Team(Entity):
         def _loaded():
             if self._pending_operation is None:
                 raise RuntimeError("No pending async operation to wait for. Call clone() or create() first.")
-            self._pending_operation.poll_for_status(status_type="succeeded")
+            self._pending_operation.poll_for_status(status_type=TeamsAsyncOperationStatus.succeeded)
 
         self.ensure_property("id").after_execute(lambda _: _loaded())
         self.execute_query()
