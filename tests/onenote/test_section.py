@@ -50,13 +50,13 @@ class TestSection(GraphDelegatedTestCase):
         notebook_name = create_unique_name("SDK Test Notebook")
         notebook = self.client.me.onenote.notebooks.add(notebook_name).execute_query()
         self.assertIsNotNone(notebook.resource_path)
-        self.assertEqual(notebook.get_property("displayName"), notebook_name)
+        self.assertEqual(notebook.display_name, notebook_name)
         TestSection.target_notebook = notebook
 
         section_name = create_unique_name("SDK Test Section")
         section = notebook.sections.add(displayName=section_name).execute_query()
         self.assertIsNotNone(section.resource_path)
-        self.assertEqual(section.get_property("displayName"), section_name)
+        self.assertEqual(section.display_name, section_name)
         TestSection.target_section = section
 
     @requires_delegated(
@@ -72,7 +72,7 @@ class TestSection(GraphDelegatedTestCase):
 
         new_name = create_unique_name("SDK Updated Section")
         section.set_property("displayName", new_name).update().execute_query()
-        self.assertEqual(section.get_property("displayName"), new_name)
+        self.assertEqual(section.display_name, new_name)
 
     @requires_delegated(
         "Notes.Read",
@@ -87,9 +87,9 @@ class TestSection(GraphDelegatedTestCase):
         if not section:
             self.skipTest("No section created from previous test")
 
-        self.assertIsNotNone(section.get_property("displayName"))
-        self.assertIsNotNone(section.get_property("createdDateTime"))
-        self.assertIsNotNone(section.get_property("isDefault"))
+        self.assertIsNotNone(section.display_name)
+        self.assertIsNotNone(section.created_datetime)
+        self.assertIsNotNone(section.is_default)
 
     @requires_delegated(
         "Notes.Read",

@@ -39,3 +39,7 @@ class Notebook(OnenoteEntityHierarchyModel):
                 ResourcePath("sectionGroups", self.resource_path),
             ),
         )
+
+    @property
+    def entity_type_name(self):
+        return None  # type: ignore

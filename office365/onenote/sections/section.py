@@ -99,3 +99,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             "parentSectionGroup",
             SectionGroup(self.context, ResourcePath("parentSectionGroup", self.resource_path)),
         )
+
+    @property
+    def entity_type_name(self):
+        return None  # type: ignore

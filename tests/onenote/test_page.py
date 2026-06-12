@@ -60,10 +60,10 @@ class TestPage(GraphDelegatedTestCase):
         if not page:
             self.skipTest("No page created from previous test")
 
-        self.assertIsNotNone(page.get_property("title"))
-        self.assertIsNotNone(page.get_property("createdDateTime"))
+        self.assertIsNotNone(page.title)
+        self.assertIsNotNone(page.created_datetime)
         # links should contain parentNotebook and parentSection URLs
-        self.assertIsNotNone(page.get_property("links"))
+        self.assertIsNotNone(page.links)
 
     @requires_delegated(
         "Notes.Read",
@@ -94,7 +94,7 @@ class TestPage(GraphDelegatedTestCase):
         if not page:
             self.skipTest("No page created from previous test")
 
-        title = page.get_property("title")
+        title = page.title
         if title:
             self.assertIsInstance(title, str)
             self.assertGreater(len(title), 0)
