@@ -59,15 +59,7 @@ def main():
         f"{source_team.display_name}_cloned",
         ClonableTeamParts.channels,
         source_team.visibility,
-    ).execute_query()
-
-    # — Step 4: poll for completion via the source team's operations —
-    succeeded = poll_clone_completion(source_team)
-
-    if succeeded:
-        print(f"\n Clone succeeded — '{target_team.display_name}' is ready.")
-    else:
-        print("\n Clone failed or timed out.")
+    ).execute_query_and_wait()
 
 
 if __name__ == "__main__":

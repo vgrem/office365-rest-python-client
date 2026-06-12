@@ -3,12 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Dict, Optional
 
+import requests
 from typing_extensions import Self
 
 from office365.directory.permissions.grants.resource_specific import ResourceSpecificPermissionGrant
 from office365.directory.profile_photo import ProfilePhoto
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -36,19 +38,25 @@ class Team(Entity):
     """A team in Microsoft Teams is a collection of channel objects. A channel represents a topic, and therefore a
     logical isolation of discussion, within a team."""
 
+    def __init__(self, context, resource_path=None):
+        super().__init__(context, resource_path)
+        self._pending_operation: TeamsAsyncOperation | None = None
+
     def __str__(self):
         return self.display_name or self.entity_type_name
 
-    def execute_query_and_wait(self):
+    def execute_query_and_wait(self) -> Self:
         """
         Submit request(s) to the server and waits until operation is completed
         """
 
         def _loaded():
-            self.operations[0].poll_for_status(status_type="succeeded")
+            if self._pending_operation is None:
+                raise RuntimeError("No pending async operation to wait for. Call clone() or create() first.")
+            self._pending_operation.poll_for_status(status_type="succeeded")
 
         self.ensure_property("id").after_execute(lambda _: _loaded())
-        self.context.execute_query()
+        self.execute_query()
         return self
 
     def delete_object(self, permanent_delete=False):
@@ -63,11 +71,13 @@ class Team(Entity):
         self.ensure_property("id").after_execute(lambda _: _delete_object())
         return self
 
+    @odata(name="funSettings")
     @property
     def fun_settings(self) -> TeamFunSettings:
         """Settings to configure use of Giphy, memes, and stickers in the team."""
         return self.properties.get("funSettings", TeamFunSettings())
 
+    @odata(name="memberSettings")
     @property
     def member_settings(self) -> TeamMemberSettings:
         """Settings to configure whether members can perform certain actions, for example,
@@ -219,6 +229,7 @@ class Team(Entity):
         """The template this team was created from"""
         return self.properties.get("template", TeamsTemplate(self.context, ResourcePath("template", self.resource_path)))
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
@@ -298,7 +309,16 @@ class Team(Entity):
         if classification is not None:
             payload["classification"] = classification
         qry = ServiceOperationQuery(self, "clone", None, payload, None, None)
-        self.context.add_query(qry)
+
+        def _process_response(resp: requests.Response) -> None:
+            loc = resp.headers.get("Location", None)
+            if loc is not None:
+                operation_path = ODataPathBuilder.parse_url(loc)
+                operation = TeamsAsyncOperation(self.context, operation_path)
+                self.operations.add_child(operation)
+                self._pending_operation = operation
+
+        self.context.add_query(qry).after_execute(_process_response, include_response=True)
         return self
 
     def send_activity_notification(

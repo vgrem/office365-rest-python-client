@@ -1,7 +1,11 @@
 import time
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
+from office365.teams.operations.error import OperationError
+from office365.teams.operations.type import TeamsAsyncOperationType
 
 
 class TeamsAsyncOperation(Entity):
@@ -54,6 +58,40 @@ class TeamsAsyncOperation(Entity):
         _poll_for_status(1)
         return self
 
+    @odata(name="attemptsCount")
+    @property
+    def attempts_count(self) -> Optional[int]:
+        """Number of times the operation was attempted before being marked as succeeded or failed."""
+        return self.properties.get("attemptsCount", None)
+
+    @odata(name="createdDateTime")
+    @property
+    def created_date_time(self) -> Optional[datetime]:
+        """Date and time when the operation was created."""
+        return self.properties.get("createdDateTime", None)
+
+    @property
+    def error(self) -> Optional[OperationError]:
+        """Error information if the operation failed."""
+        return self.properties.get("error", None)
+
+    @odata(name="lastActionDateTime")
+    @property
+    def last_action_date_time(self) -> Optional[datetime]:
+        """Date and time when the operation was last updated."""
+        return self.properties.get("lastActionDateTime", None)
+
+    @odata(name="operationType")
+    @property
+    def operation_type(self) -> Optional[TeamsAsyncOperationType]:
+        """The type of the operation."""
+        return self.properties.get("operationType", None)
+
+    @property
+    def status(self) -> Optional[str]:
+        """Operation status."""
+        return self.properties.get("status", None)
+
     @property
     def target_resource_id(self) -> Optional[str]:
         """The ID of the object that's created or modified as result of this async operation, typically a team."""
@@ -65,8 +103,3 @@ class TeamsAsyncOperation(Entity):
         This URL should be treated as an opaque value and not parsed into its component paths.
         """
         return self.properties.get("targetResourceLocation", None)
-
-    @property
-    def status(self) -> Optional[str]:
-        """Operation status."""
-        return self.properties.get("status", None)

@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Session(Entity):
@@ -32,6 +33,7 @@ class Session(Entity):
         """Gets the caller property"""
         return self.properties.get("caller", Endpoint())
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> datetime:
         """Gets the endDateTime property"""
@@ -47,6 +49,7 @@ class Session(Entity):
         """Gets the modalities property"""
         return self.properties.get("modalities", ClientValueCollection[Modality](Modality))
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> datetime:
         """Gets the startDateTime property"""

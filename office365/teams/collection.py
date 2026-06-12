@@ -55,6 +55,7 @@ class TeamCollection(EntityCollection[Team]):
             operation_path = ODataPathBuilder.parse_url(loc)
             operation = TeamsAsyncOperation(self.context, operation_path)
             return_type.operations.add_child(operation)
+            return_type._pending_operation = operation
 
         payload = {
             "displayName": display_name,
