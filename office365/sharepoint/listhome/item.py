@@ -25,5 +25,5 @@ class ListHomeItem(ClientValue):
     webTemplateConfiguration: Optional[str] = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.ListHome.ListHomeItem"

@@ -1,14 +1,14 @@
-from typing import Optional
+from __future__ import annotations
+
+from uuid import UUID
 
 from office365.sharepoint.sitescripts.creation_info import SiteScriptCreationInfo
 
 
 class SiteScriptUpdateInfo(SiteScriptCreationInfo):
-    def __init__(self, id_: Optional[str] = None, version: Optional[int] = None):
-        super().__init__()
-        self.Id = id_
-        self.Version = version
+    Id: UUID | None = None
+    Version: int | None = None
 
     @property
-    def entity_type_name(self) -> str:  # type: ignore[override]
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptUpdateInfo"

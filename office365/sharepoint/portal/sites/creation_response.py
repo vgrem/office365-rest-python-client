@@ -12,14 +12,10 @@ class SPSiteCreationResponse(ClientValue):
     SiteId: Optional[str] = None
     SiteStatus: SiteStatus = SiteStatus.Unknown
     SiteUrl: Optional[str] = None
+    RawSiteProvisionState: int | None = None
 
     def __repr__(self) -> str:
-        return (
-            f"SPSiteCreationResponse("
-            f"site_id={self.SiteId!r}, "
-            f"site_status={self.SiteStatus!r}, "
-            f"site_url={self.SiteUrl!r})"
-        )
+        return f"(site_id={self.SiteId!r}, site_status={self.SiteStatus!r}, site_url={self.SiteUrl!r})"
 
     @property
     def entity_type_name(self):

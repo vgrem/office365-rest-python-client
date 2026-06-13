@@ -13,5 +13,5 @@ class SiteScriptCreationInfo(ClientValue):
     Title: Optional[str] = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptCreationInfo"

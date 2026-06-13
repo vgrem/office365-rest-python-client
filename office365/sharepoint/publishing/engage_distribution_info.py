@@ -12,3 +12,8 @@ class EngageDistributionInfo(ClientValue):
     RawThreadId: str | None = None
     ThreadId: str | None = None
     ThreadStarterId: str | None = None
+    DestinationType: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "SP.Publishing.EngageDistributionInfo"

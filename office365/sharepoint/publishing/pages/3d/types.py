@@ -1,13 +1,11 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 
 
 class SitePage3DFieldsData(SitePageFieldsData):
-    def __init__(self, space_content: Optional[str] = None):
-        super().__init__()
-        self.SpaceContent = space_content
+    SpaceContent: str | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self) -> str:
         return "SP.Publishing.SitePage3DFieldsData"

@@ -9,6 +9,9 @@ class LogActivityExtraProperties(ClientValue):
     CampaignMetadata: Optional[str] = None
     IsWebWelcomePage: Optional[bool] = None
     LinkUrlClicked: Optional[str] = None
+    SPOWebPartInstanceId: str | None = None
+    SPOWebPartManifestId: str | None = None
+    SPOWebPartSubComponentId: str | None = None
 
     @property
     def entity_type_name(self):

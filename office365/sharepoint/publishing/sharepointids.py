@@ -2,16 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Optional
+from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class SharePointIds(ClientValue):
-    hub_site_id: Optional[str] = None
-    site_id: Optional[str] = None
-    site_url: Optional[str] = None
-    web_id: Optional[str] = None
     listId: Optional[str] = None
     uniqueId: Optional[str] = None
     listItemId: Optional[str] = None
@@ -21,6 +18,8 @@ class SharePointIds(ClientValue):
     SiteId: str | None = None
     SiteUrl: str | None = None
     WebId: str | None = None
+    siteId: UUID | None = None
+    webId: UUID | None = None
 
     @property
     def entity_type_name(self):

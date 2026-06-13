@@ -3,6 +3,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass, field
 from typing import Optional
+from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -29,21 +30,6 @@ class SiteDesignCreationInfo(ClientValue):
     Description: str | None = None
     WebTemplate: str | None = None
     SiteScriptIds: ClientValueCollection[uuid.UUID] | None = None
-    DesignPackageId = None
-    DesignType = None
-    InternalName = None
-    IsDefault = None
-    IsOutOfBoxTemplate = None
-    IsTenantAdminOnly = None
-    ListColor = None
-    ListIcon = None
-    PreviewImageAltText = None
-    PreviewImageUrl = None
-    RequiresClassConnected = None
-    RequiresGroupConnected = None
-    RequiresSyntexLicense = None
-    RequiresTeamsConnected = None
-    RequiresYammerConnected = None
     SupportedWebTemplates: StringCollection | None = None
     ExpandedPreviewImages: ClientValueCollection[SiteDesignImage] = field(
         default_factory=lambda: ClientValueCollection(SiteDesignImage)
@@ -60,7 +46,23 @@ class SiteDesignCreationInfo(ClientValue):
     TemplateAssets: Optional[StringCollection] = None
     TemplateFeatures: Optional[StringCollection] = None
     ThumbnailUrl: Optional[str] = None
+    DesignPackageId: UUID | None = None
+    DesignType: int | None = None
+    InternalName: str | None = None
+    IsCreationOnly: bool | None = None
+    IsDefault: bool | None = None
+    IsOutOfBoxTemplate: bool | None = None
+    IsTenantAdminOnly: bool | None = None
+    ListColor: int | None = None
+    ListIcon: int | None = None
+    PreviewImageAltText: str | None = None
+    PreviewImageUrl: str | None = None
+    RequiresClassConnected: bool | None = None
+    RequiresGroupConnected: bool | None = None
+    RequiresSyntexLicense: bool | None = None
+    RequiresTeamsConnected: bool | None = None
+    RequiresYammerConnected: bool | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteDesignCreationInfo"

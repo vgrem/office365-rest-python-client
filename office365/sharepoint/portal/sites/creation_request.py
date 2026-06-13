@@ -5,6 +5,7 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
+from office365.sharepoint.teams.sp_team_channel_capabilities import SPTeamChannelCapabilities
 
 
 @dataclass
@@ -28,6 +29,7 @@ class SPSiteCreationRequest(ClientValue):
     TeamsChannelType: Optional[int] = None
     TimeZoneId: Optional[int] = None
     WebTemplateExtensionId: Optional[str] = None
+    ChannelCapabilities: SPTeamChannelCapabilities = field(default_factory=SPTeamChannelCapabilities)
 
     @property
     def entity_type_name(self):

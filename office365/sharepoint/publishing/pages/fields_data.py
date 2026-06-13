@@ -6,14 +6,10 @@ from datetime import datetime
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.sharepoint.publishing.pages.boostproperties import (
-    SitePageBoostProperties,
-)
+from office365.sharepoint.publishing.pages.boostproperties import SitePageBoostProperties
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.collaborator import SitePageCollaborator
-from office365.sharepoint.publishing.sitepageauthoringmetadata import (
-    SitePageAuthoringMetadata,
-)
+from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAuthoringMetadata
 
 
 @dataclass
@@ -51,11 +47,12 @@ class SitePageFieldsData(ClientValue):
     Modified: datetime | None = None
     TeamsTranspileContent: str | None = None
     WebTranspileContent: str | None = None
+    PublicationMetadata: str | None = None
 
     def __post_init__(self):
         if isinstance(self.PublishStartDate, datetime):
             self.PublishStartDate = self.PublishStartDate.isoformat()
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.Publishing.SitePageFieldsData"

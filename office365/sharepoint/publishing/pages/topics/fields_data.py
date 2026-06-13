@@ -1,22 +1,14 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 
 
 class TopicPageFieldsData(SitePageFieldsData):
-    def __init__(
-        self,
-        entity_id=None,
-        entity_relations=None,
-        entity_type: Optional[str] = None,
-        verified_topic_allowed_editors: Optional[str] = None,
-    ):
-        super().__init__()
-        self.EntityId = entity_id
-        self.EntityRelations = entity_relations
-        self.EntityType = entity_type
-        self.VerifiedTopicAllowedEditors = verified_topic_allowed_editors
+    EntityId: str | None = None
+    EntityRelations: str | None = None
+    EntityType: str | None = None
+    VerifiedTopicAllowedEditors: str | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "SP.Publishing.TopicPageFieldsData"

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from office365.onedrive.driveitems.source import DriveItemSource
 from office365.onedrive.files.system_info import FileSystemInfo
@@ -28,11 +28,11 @@ class DriveItemUploadableProperties(ClientValue):
         return self._fileSize
 
     def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any]:
-        payload =  super().to_json(json_format)
+        payload = super().to_json(json_format)
         payload.pop("driveItemSource", None)
         payload.pop("mediaSource", None)
         return payload
 
     @property
     def entity_type_name(self) -> str:
-        return None # type: ignore
+        return None  # type: ignore

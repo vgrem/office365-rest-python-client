@@ -14,7 +14,9 @@ class BaseGptRequestOptions(ClientValue):
     Stop: Optional[str] = None
     Temperature: Optional[float] = None
     TopP: Optional[float] = None
+    MaxCompletionTokens: int | None = None
+    ReasoningEffort: str | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Internal.BaseGptRequestOptions"
