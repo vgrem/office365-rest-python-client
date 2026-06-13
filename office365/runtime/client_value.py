@@ -76,6 +76,9 @@ class ClientValue:
                 return False
             elif isinstance(val, ClientValueCollection) and len(val) == 0:
                 return False
+            elif isinstance(val, ClientValue):
+                if not any(v is not None for v in vars(val).values()):
+                    return False
             return True
 
         result = {k: v for k, v in self if _is_valid_value(v)}

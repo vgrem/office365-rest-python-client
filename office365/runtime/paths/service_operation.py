@@ -30,6 +30,14 @@ class ServiceOperationPath(ResourcePath):
         self._parameters = parameters
 
     @property
+    def delimiter(self):
+        from office365.onedrive.internal.paths.url import UrlPath
+
+        if isinstance(self.parent, UrlPath):
+            return ""
+        return "/"
+
+    @property
     def segment(self) -> str:
         """Gets the OData path segment for this service operation."""
         return ODataPathBuilder.build_segment(self)
