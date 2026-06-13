@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from functools import partial
+from io import IOBase
+from os import PathLike
 from os.path import isfile, join
 from typing import IO, AnyStr, Callable
 
@@ -383,17 +385,12 @@ class DriveItem(BaseItem):
         self.context.add_query(qry).before_execute(_modify_query)
         return return_type
 
-    def upload_file(self, path_or_file: str | IO) -> DriveItem:
-        """Uploads a file"""
-        if isinstance(path_or_file, IO):
-            content = path_or_file.read()
-            name = os.path.basename(path_or_file.name)
-            return self.upload(name, content)
-        else:
-            with open(path_or_file, "rb") as f:
-                content = f.read()
-            name = os.path.basename(path_or_file)
-            return self.upload(name, content)
+    def upload_file(self, path_or_file: str | PathLike | IOBase) -> DriveItem:
+        """Uploads a file (up to ~4MB; use resumable_upload for larger files)."""
+        if isinstance(path_or_file, IOBase):
+            return self.upload(os.path.basename(path_or_file.name), path_or_file.read())
+        with open(path_or_file, "rb") as f:
+            return self.upload(os.path.basename(str(path_or_file)), f.read())
 
     def upload_folder(self, path: str, file_uploaded: Callable[["DriveItem"], None] | None = None) -> DriveItem:
         """Uploads a folder"""
