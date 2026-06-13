@@ -1,4 +1,4 @@
-from office365.sharepoint.multigeo.move_job_entity_data import MoveJobEntityData
+from office365.sharepoint.multigeo.service.move_job_entity_data import MoveJobEntityData
 
 
 class SiteMoveJobEntityData(MoveJobEntityData):

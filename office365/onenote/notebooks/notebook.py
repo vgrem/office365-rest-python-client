@@ -41,5 +41,5 @@ class Notebook(OnenoteEntityHierarchyModel):
         )
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return None  # type: ignore

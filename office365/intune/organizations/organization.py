@@ -11,6 +11,7 @@ from office365.intune.provisioned_plan import ProvisionedPlan
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Organization(DirectoryObject):
@@ -19,6 +20,7 @@ class Organization(DirectoryObject):
     which operate and are provisioned at the tenant-level.
     """
 
+    @odata(name="assignedPlans")
     @property
     def assigned_plans(self) -> ClientValueCollection[AssignedPlan]:
         """The plans that are assigned to the organization."""
@@ -31,6 +33,7 @@ class Organization(DirectoryObject):
             OrganizationalBranding(self.context, ResourcePath("branding", self.resource_path)),
         )
 
+    @odata(name="businessPhones")
     @property
     def business_phones(self) -> StringCollection:
         """
@@ -47,6 +50,7 @@ class Organization(DirectoryObject):
             EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
+    @odata(name="certificateBasedAuthConfiguration")
     @property
     def certificate_based_auth_configuration(self) -> EntityCollection[CertificateBasedAuthConfiguration]:
         """Navigation property to manage certificate-based authentication configuration.
@@ -61,23 +65,13 @@ class Organization(DirectoryObject):
             ),
         )
 
+    @odata(name="provisionedPlans")
     @property
     def provisioned_plans(self) -> ClientValueCollection[ProvisionedPlan]:
         return self.properties.get("provisionedPlans", ClientValueCollection(ProvisionedPlan))
 
+    @odata(name="verifiedDomains")
     @property
     def verified_domains(self) -> ClientValueCollection[VerifiedDomain]:
         """The collection of domains associated with this tenant."""
         return self.properties.get("verifiedDomains", ClientValueCollection(VerifiedDomain))
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "assignedPlans": self.assigned_plans,
-                "certificateBasedAuthConfiguration": self.certificate_based_auth_configuration,
-                "businessPhones": self.business_phones,
-                "provisionedPlans": self.provisioned_plans,
-                "verifiedDomains": self.verified_domains,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

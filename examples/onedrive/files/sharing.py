@@ -31,7 +31,7 @@ item = items[0]
 
 # 1. Create an anonymous view link
 link = item.create_link("view", "anonymous").execute_query()
-print(f"Anonymous link: {link.link.web_url}")
+print(f"Anonymous link: {link.link.webUrl}")
 
 # 2. Send a sharing invitation to a user
 invite = item.invite(
@@ -45,5 +45,4 @@ print(f"Invitation sent to: {test_user_principal_name}")
 permissions = item.permissions.get().execute_query()
 print(f"Permissions ({len(permissions)}):")
 for p in permissions:
-    roles = p.roles or []
-    print(f"  ID: {p.id}  roles: {', '.join(roles)}")
+    print(f"  ID: {p.id}  roles: {', '.join(p.roles)}")

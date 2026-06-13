@@ -2,9 +2,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
-from office365.sharepoint.multigeo.storage_quota import StorageQuota
-from office365.sharepoint.multigeo.unified_group import UnifiedGroup
-from office365.sharepoint.multigeo.user_personal_site_location import (
+from office365.sharepoint.multigeo.service.storage_quota import StorageQuota
+from office365.sharepoint.multigeo.service.unified_group import UnifiedGroup
+from office365.sharepoint.multigeo.service.user_personal_site_location import (
     UserPersonalSiteLocation,
 )
 

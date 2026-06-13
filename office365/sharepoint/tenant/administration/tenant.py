@@ -1053,7 +1053,7 @@ class Tenant(Entity):
     def multi_geo(self):
         """ """
 
-        from office365.sharepoint.multigeo.services import MultiGeoServices
+        from office365.sharepoint.multigeo.service.services import MultiGeoServices
 
         return MultiGeoServices(self.context)
 

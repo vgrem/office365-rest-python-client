@@ -2,7 +2,9 @@ from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.multigeo.geomovetenantpropertycompatibilitycheck import GeoMoveTenantPropertyCompatibilityCheck
+from office365.sharepoint.multigeo.service.geomovetenantpropertycompatibilitycheck import (
+    GeoMoveTenantPropertyCompatibilityCheck,
+)
 
 
 class GeoMoveTenantCompatibilityCheck(Entity):

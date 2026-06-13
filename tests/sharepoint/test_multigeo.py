@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.sharepoint.multigeo.api_versions import MultiGeoApiVersions
+from office365.sharepoint.multigeo.service.api_versions import MultiGeoApiVersions
 
 from tests.sharepoint.sharepoint_case import SPTestCase
 

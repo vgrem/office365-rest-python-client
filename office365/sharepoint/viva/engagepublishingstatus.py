@@ -15,6 +15,11 @@ class VivaEngagePublishingStatus(ClientValue):
         default_factory=lambda: ClientValueCollection(ClientAmplifyResult)
     )
     Status: Optional[int] = None
+    CrossPostScenario: int | None = None
+    DestinationType: int | None = None
+    RawThreadId: str | None = None
+    ThreadId: str | None = None
+    ThreadStarterId: str | None = None
 
     @property
     def entity_type_name(self):
