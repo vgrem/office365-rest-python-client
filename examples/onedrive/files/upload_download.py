@@ -4,6 +4,8 @@ Upload a file to OneDrive, then download it back.
 Requires delegated permission Files.ReadWrite.
 """
 
+import os
+import tempfile
 from pathlib import Path
 
 from office365.graph_client import GraphClient
@@ -16,8 +18,8 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 
 uploaded = client.me.drive.root.upload_file(local_path).execute_query()
 
-download_path = Path(__file__).parent / file_name
+download_path = os.path.join(tempfile.gettempdir(), file_name)
 with open(download_path, "wb") as f:
     uploaded.download(f).execute_query()
 
-print(f"Uploaded and downloaded: {file_name}  ({download_path.stat().st_size:,} bytes)")
+print(f"Uploaded and downloaded: {file_name}  ({os.path.getsize(download_path):,} bytes)")
