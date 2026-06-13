@@ -388,7 +388,7 @@ class DriveItem(BaseItem):
     def upload_file(self, path_or_file: str | PathLike | IOBase) -> DriveItem:
         """Uploads a file (up to ~4MB; use resumable_upload for larger files)."""
         if isinstance(path_or_file, IOBase):
-            return self.upload(os.path.basename(path_or_file.name), path_or_file.read())
+            return self.upload(os.path.basename(getattr(path_or_file, "name", "")), path_or_file.read())
         with open(path_or_file, "rb") as f:
             return self.upload(os.path.basename(str(path_or_file)), f.read())
 
