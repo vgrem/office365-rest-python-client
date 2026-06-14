@@ -7,17 +7,11 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
-from office365.sharepoint.publishing.pages.dependency_metadata import (
-    SitePageDependencyMetadata,
-)
+from office365.sharepoint.publishing.pages.dependency_metadata import SitePageDependencyMetadata
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 from office365.sharepoint.publishing.pages.metadata import SitePageMetadata
-from office365.sharepoint.publishing.pages.sharepagepreviewbyemailfieldsdata import (
-    SharePagePreviewByEmailFieldsData,
-)
-from office365.sharepoint.translation.status_collection import (
-    TranslationStatusCollection,
-)
+from office365.sharepoint.publishing.pages.sharepagepreviewbyemailfieldsdata import SharePagePreviewByEmailFieldsData
+from office365.sharepoint.translation.status_collection import TranslationStatusCollection
 
 
 class SitePage(SitePageMetadata):
@@ -29,13 +23,13 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
-    def copy(self):
+    def copy(self) -> Self:
         """Creates a copy of the current Site Page and returns the resulting new SitePage."""
         qry = ServiceOperationQuery(self, "Copy")
         self.context.add_query(qry)
         return self
 
-    def discard_page(self):
+    def discard_page(self) -> Self:
         """Discards the current checked out version of the Site Page.  Returns the resulting SitePage after discard."""
         qry = ServiceOperationQuery(self, "DiscardPage", return_type=self)
         self.context.add_query(qry)
@@ -47,9 +41,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
-    def get_dependency_metadata(
-        self,
-    ) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
+    def get_dependency_metadata(self) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(SitePageDependencyMetadata))
         qry = ServiceOperationQuery(self, "GetDependencyMetadata", return_type=return_type)
@@ -79,10 +71,7 @@ class SitePage(SitePageMetadata):
             topic_header (str):
         """
         payload = SitePageFieldsData(
-            Title=title,
-            CanvasContent1=canvas_content,
-            BannerImageUrl=banner_image_url,
-            TopicHeader=topic_header,
+            Title=title, CanvasContent1=canvas_content, BannerImageUrl=banner_image_url, TopicHeader=topic_header
         )
         qry = ServiceOperationQuery(self, "SavePage", None, payload, "pageStream")
         self.context.add_query(qry)
@@ -99,10 +88,7 @@ class SitePage(SitePageMetadata):
             topic_header (str):
         """
         payload = SitePageFieldsData(
-            Title=title,
-            CanvasContent1=canvas_content,
-            BannerImageUrl=banner_image_url,
-            TopicHeader=topic_header,
+            Title=title, CanvasContent1=canvas_content, BannerImageUrl=banner_image_url, TopicHeader=topic_header
         )
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "SaveDraft", None, payload, "sitePage", return_type)
@@ -120,10 +106,7 @@ class SitePage(SitePageMetadata):
             topic_header (str):
         """
         payload = SitePageFieldsData(
-            Title=title,
-            CanvasContent1=canvas_content,
-            BannerImageUrl=banner_image_url,
-            TopicHeader=topic_header,
+            Title=title, CanvasContent1=canvas_content, BannerImageUrl=banner_image_url, TopicHeader=topic_header
         )
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "SavePageAsDraft", None, payload, "pageStream", return_type)
@@ -172,7 +155,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return result
 
-    def publish(self):
+    def publish(self) -> ClientResult[bool]:
         """
         Publishes a major version of the current Site Page.  Returns TRUE on success, FALSE otherwise.
         """
@@ -187,13 +170,13 @@ class SitePage(SitePageMetadata):
         Args:
             publish_start_date (datetime.datetime): The pending publication scheduled date
         """
-        payload = SitePageFieldsData(PublishStartDate=publish_start_date)
+        payload = SitePageFieldsData(PublishStartDate=publish_start_date.isoformat())
         result = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "SchedulePublish", None, payload, "sitePage", result)
         self.context.add_query(qry)
         return result
 
-    def share_page_preview_by_email(self, message, recipient_emails):
+    def share_page_preview_by_email(self, message: str, recipient_emails: list[str]) -> Self:
         """Args:
         message (str):
         recipient_emails (list[str]):
@@ -238,10 +221,9 @@ class SitePage(SitePageMetadata):
     @property
     def translations(self) -> TranslationStatusCollection:
         return self.properties.get(
-            "Translations",
-            TranslationStatusCollection(self.context, ResourcePath("Translations", self.resource_path)),
+            "Translations", TranslationStatusCollection(self.context, ResourcePath("Translations", self.resource_path))
         )
 
     @property
-    def entity_type_name(self) -> str:  # type: ignore[override]
+    def entity_type_name(self) -> str:
         return "SP.Publishing.SitePage"

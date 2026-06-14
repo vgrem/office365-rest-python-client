@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
@@ -17,13 +17,13 @@ class SPClientSideComponentQueryResult(ClientValue):
         manifest_type (str | None):
     """
 
-    component_type: str | None = None
-    manifest: str | None = None
-    manifest_type: str | None = None
-    id_: str | None = None
-    manifest_activated_time: datetime | None = None
-    name: str | None = None
-    status: int | None = None
+    ComponentType: int | None = None
+    Id: str | None = None
+    Manifest: str | None = None
+    ManifestActivatedTime: datetime | None = field(default_factory=lambda: datetime.min)
+    ManifestType: int | None = None
+    Name: str | None = None
+    Status: int | None = None
 
     @property
     def entity_type_name(self):

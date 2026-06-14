@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -10,6 +12,7 @@ class NewsItemReference(ClientValue):
     LibraryId: Optional[str] = None
     SiteId: Optional[str] = None
     WebId: Optional[str] = None
+    Type: str | None = None
 
     @property
     def entity_type_name(self):

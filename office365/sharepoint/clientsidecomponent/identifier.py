@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
 
@@ -9,11 +9,8 @@ from office365.runtime.client_value import ClientValue
 class SPClientSideComponentIdentifier(ClientValue):
     """This identifier uniquely identifies a component."""
 
-    id_: str | None = field(default=None)
     version: str | None = None
-
-    def __post_init__(self):
-        self.id = self.id_
+    id: str | None = None
 
     def __repr__(self):
         return self.id or self.entity_type_name

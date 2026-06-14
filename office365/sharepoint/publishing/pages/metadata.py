@@ -109,7 +109,7 @@ class SitePageMetadata(Entity):
         return self.properties.get("TopicHeader", None)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "SP.Publishing.SitePageMetadata"
 
     def get_property(self, name, default_value=None):
