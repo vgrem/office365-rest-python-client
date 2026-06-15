@@ -7,9 +7,7 @@ from office365.runtime.client_value import ClientValue
 from office365.sharepoint.tenant.administration.contentmanagementassessmentpolicyreportdetails import (
     ContentManagementAssessmentPolicyReportDetails as CMAPolicyDetails,
 )
-from office365.sharepoint.tenant.administration.reports.sitepermissionsdetails import (
-    SitePermissionsReportDetails,
-)
+from office365.sharepoint.tenant.administration.reports.sitepermissionsdetails import SitePermissionsReportDetails
 
 
 @dataclass
@@ -29,7 +27,8 @@ class ContentManagementAssessmentResults(ClientValue):
     sitePermissionsReportQueuedTime: datetime | None = None
     sitePermissionsReportResultState: int | None = None
     totalCountOfSitesInTenant: str | None = None
+    isEligible: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.TenantAdmin.ContentManagementAssessmentResults"

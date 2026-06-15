@@ -3,9 +3,7 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.containers.active.memberproperties import (
-    SPActiveContainerMemberProperties,
-)
+from office365.sharepoint.containers.active.memberproperties import SPActiveContainerMemberProperties
 
 
 @dataclass
@@ -41,6 +39,7 @@ class SPActiveContainerProperties(ClientValue):
     Writers: ClientValueCollection[SPActiveContainerMemberProperties] = field(
         default_factory=lambda: ClientValueCollection(SPActiveContainerMemberProperties)
     )
+    ContainerRedirectUrl: str | None = None
 
     @property
     def entity_type_name(self):

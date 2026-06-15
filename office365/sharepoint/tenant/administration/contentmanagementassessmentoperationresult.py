@@ -9,7 +9,9 @@ from office365.runtime.client_value import ClientValue
 class ContentManagementAssessmentOperationResult(ClientValue):
     dataAccessGovernanceErrorMessage: str | None = None
     siteLifecycleManagementErrorMessage: str | None = None
+    siteLifecycleManagementPolicyResultState: int | None = None
+    sitePermissionsReportResultState: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.TenantAdmin.ContentManagementAssessmentOperationResult"

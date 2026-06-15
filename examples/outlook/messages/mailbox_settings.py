@@ -18,24 +18,17 @@ from tests import test_client_id, test_password, test_tenant, test_username
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # Read current mailbox settings
-settings = client.me.mailbox_settings.get().execute_query()
-print(f"Current automatic replies: {settings.automatic_replies_status}")
+me = client.me.select(["MailboxSettings"]).get().execute_query()
+print(f"Current automatic replies: {me.mailbox_settings.automaticRepliesSetting}")
 
-# Enable scheduled automatic replies
-settings.set_property(
-    "automaticRepliesSetting",
-    {
-        "status": "scheduled",
-        "scheduledStartDateTime": {
-            "dateTime": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
-            "timeZone": "UTC",
-        },
-        "scheduledEndDateTime": {
-            "dateTime": (datetime.utcnow() + timedelta(days=7)).isoformat(),
-            "timeZone": "UTC",
-        },
-        "internalReplyMessage": "I'm out of the office this week.",
-        "externalReplyMessage": "I'm out of the office. Please contact my manager.",
-    },
-).update().execute_query()
+start = datetime.now()
+end = start + timedelta(days=5)
+me.enable_automatic_replies_setting(
+    status="scheduled",
+    scheduled_start_datetime=start,
+    scheduled_end_datetime=end,
+    internal_reply_message="I'm out of the office this week.",
+    external_reply_message="I'm out of the office. Please contact my manager.",
+).execute_query()
+
 print("Automatic replies enabled")

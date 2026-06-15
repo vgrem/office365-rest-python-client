@@ -25,10 +25,9 @@ from tests import (
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # 1. Find suggested meeting times
-suggestions = client.me.find_meeting_times().execute_query()
-for s in suggestions.value.meetingTimeSuggestions or []:
-    times = s.meeting_time_slot
-    print(f"  Suggested: {times.start.date_time} — {times.end.date_time}")
+result = client.me.find_meeting_times().execute_query()
+for s in result.value.meetingTimeSuggestions:
+    print(f"  Suggested: {s.meetingTimeSlot.start} — {s.meetingTimeSlot.end}")
 
 # 2. Get free/busy schedule for a user
 end_time = datetime.now()
@@ -38,7 +37,7 @@ schedule = client.me.calendar.get_schedule(
     start_time=start_time,
     end_time=end_time,
 ).execute_query()
-for item in schedule.value or []:
-    print(f"\n  Schedule for: {item.schedule_id}")
-    for slot in item.availability_view or []:
-        print(f"    {slot.status}: {slot.start.date_time} — {slot.end.date_time}")
+for item in schedule.value:
+    print(f"\n  Schedule for: {item.scheduleId}")
+    for slot in item.scheduleItems:
+        print(f"    {slot.status}: {slot.start} — {slot.end}")

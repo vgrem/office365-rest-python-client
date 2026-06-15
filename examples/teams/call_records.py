@@ -15,8 +15,7 @@ def main():
     print(f"Call records: {len(records)}\n")
 
     for r in records:
-        org = r.organizer.user.user_principal_name if r.organizer and r.organizer.user else "?"
-        print(f"  {r.start_date_time}  {r.type_.name}  organizer={org}")
+        print(f"  {r.start_date_time}  {r.type_.name}  organizer={r.organizer.user}")
 
     if records:
         print()

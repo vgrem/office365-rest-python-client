@@ -30,7 +30,8 @@ def main():
 
     if member_ids:
         tag = team.tags.add(
-            displayName=TAG_NAME, description=TAG_DESCRIPTION,
+            displayName=TAG_NAME,
+            description=TAG_DESCRIPTION,
             members=[{"userId": uid} for uid in member_ids],
         ).execute_query()
         print(f"Tag created: {tag.display_name}  ({len(member_ids)} members)")
