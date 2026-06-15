@@ -1,6 +1,4 @@
-from typing import Any, Optional
-
-from typing_extensions import Self
+from typing import Optional
 
 from office365.communications.onlinemeetings.provider_type import OnlineMeetingProviderType
 from office365.directory.extensions.extended_property import (
@@ -21,6 +19,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Calendar(Entity):
@@ -123,8 +122,9 @@ class Calendar(Entity):
         """
         return self.properties.get("color", None)
 
+    @odata(name="defaultOnlineMeetingProvider")
     @property
-    def default_online_meeting_provider(self) -> Optional[OnlineMeetingProviderType]:
+    def default_online_meeting_provider(self) -> OnlineMeetingProviderType:
         """
         The default online meeting provider for meetings sent from this calendar.
         Possible values are: unknown, skypeForBusiness, skypeForConsumer, teamsForBusiness.
@@ -171,6 +171,7 @@ class Calendar(Entity):
         """The events in the calendar. Navigation property. Read-only."""
         return self.properties.get("events", EventCollection(self.context, ResourcePath("events", self.resource_path)))
 
+    @odata(name="calendarView")
     @property
     def calendar_view(self) -> EventCollection:
         """The calendar view for the calendar. Navigation property. Read-only."""
@@ -178,6 +179,7 @@ class Calendar(Entity):
             "calendarView", EventCollection(self.context, ResourcePath("calendarView", self.resource_path))
         )
 
+    @odata(name="calendarPermissions")
     @property
     def calendar_permissions(self) -> CalendarPermissionCollection:
         """The permissions of the users with whom the calendar is shared."""
@@ -186,6 +188,7 @@ class Calendar(Entity):
             CalendarPermissionCollection(self.context, ResourcePath("calendarPermissions", self.resource_path)),
         )
 
+    @odata(name="multiValueExtendedProperties")
     @property
     def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the Calendar."""
@@ -198,6 +201,7 @@ class Calendar(Entity):
             ),
         )
 
+    @odata(name="singleValueExtendedProperties")
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the calendar. Read-only. Nullable."""
@@ -214,18 +218,6 @@ class Calendar(Entity):
     def hex_color(self) -> Optional[str]:
         """Gets the hexColor property"""
         return self.properties.get("hexColor", None)
-
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_mapping = {
-                "allowedOnlineMeetingProviders": self.allowed_online_meeting_providers,
-                "calendarView": self.calendar_view,
-                "calendarPermissions": self.calendar_permissions,
-                "multiValueExtendedProperties": self.multi_value_extended_properties,
-                "singleValueExtendedProperties": self.single_value_extended_properties,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

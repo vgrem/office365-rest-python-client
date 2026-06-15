@@ -12,5 +12,5 @@ class BaseRawDataSources(ClientValue):
     Metadata: BaseMetadata = field(default_factory=BaseMetadata)
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Administration.TenantAdmin.Copilot.BaseRawDataSources"
