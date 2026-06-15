@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from typing_extensions import Self
@@ -54,6 +54,7 @@ from office365.onenote.onenote import Onenote
 from office365.outlook.calendar.attendees.base import AttendeeBase
 from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
+from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.calendar.events.reminder import Reminder
 from office365.outlook.calendar.group import CalendarGroup
@@ -85,6 +86,7 @@ from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.duration import Duration
 from office365.runtime.types.odata_property import odata
 from office365.teams.chats.collection import ChatCollection
 from office365.teams.collection import TeamCollection
@@ -396,10 +398,10 @@ class User(DirectoryObject):
 
     def find_meeting_times(
         self,
-        attendees: list[AttendeeBase] | None = None,
+        attendees: list[str] | None = None,
         location_constraint: LocationConstraint | None = None,
         time_constraint: TimeConstraint | None = None,
-        meeting_duration: str | None = None,
+        meeting_duration: Duration | str | timedelta | None = None,
         max_candidates: int | None = None,
         is_organizer_optional: bool | None = None,
         return_suggestion_reasons: bool | None = None,
@@ -439,11 +441,15 @@ class User(DirectoryObject):
             minimum_attendee_percentage (float): The minimum required confidence for a time slot to be returned
               in the response. It is a % value ranging from 0 to 100. Optional.
         """
+        if isinstance(meeting_duration, timedelta):
+            meeting_duration = Duration.parse(meeting_duration)
         payload = {
-            "attendees": ClientValueCollection(AttendeeBase, attendees),
+            "attendees": ClientValueCollection(
+                AttendeeBase, [AttendeeBase(emailAddress=EmailAddress(a)) for a in attendees or []]
+            ),
             "locationConstraint": location_constraint,
             "timeConstraint": time_constraint,
-            "meeting_duration": meeting_duration,
+            "meetingDuration": meeting_duration,
             "maxCandidates": max_candidates,
             "isOrganizerOptional": is_organizer_optional,
             "returnSuggestionReasons": return_suggestion_reasons,
