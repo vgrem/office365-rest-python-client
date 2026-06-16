@@ -110,9 +110,9 @@ class MigrationAssessor(ClientObject):
 
                 if self._check_fields:
                     lst.fields.get().after_execute(lambda col, lst=lst: self._assess_fields(lst, col, return_type.value))
-                if self._check_paths or self._check_files:
-                    lst.items.select(["FileRef", "FileLeafRef"]).get_all().after_execute(
-                        self._assess_items
+                if (self._check_paths or self._check_files) and lst.base_type == 1:
+                    lst.items.select(["FileRef", "FileLeafRef", "File/Length"]).expand(["File"]).get().after_execute(
+                        lambda col, lst=lst: self._assess_items(col, return_type.value)
                     )
                 if self._check_permissions:
                     lst.items.select(["HasUniqueRoleAssignments", "FileRef"]).get_all().after_execute(
@@ -183,7 +183,7 @@ class MigrationAssessor(ClientObject):
             report.total_files += 1
             path = item.properties.get("FileRef", "")
             name = item.properties.get("FileLeafRef", "")
-            size = int(item.properties.get("File_x0020_Size", 0) or 0)
+            size = item.file.length if item.file and item.file.length else 0
             report.total_size_gb += size / 1024 / 1024 / 1024
 
             # path length
