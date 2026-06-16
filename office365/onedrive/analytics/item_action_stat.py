@@ -11,6 +11,10 @@ class ItemActionStat(ClientValue):
 
     actionCount: int | None = None
     actorCount: int | None = None
+    accessCount: int | None = None
+    viewCount: int | None = None
+    shareCount: int | None = None
+    downloadCount: int | None = None
 
     @property
     def entity_type_name(self) -> str:

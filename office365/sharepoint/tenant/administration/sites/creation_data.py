@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
@@ -5,9 +7,9 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class SiteCreationData(ClientValue):
-    Count = None
-    SiteCreationSourceGuid = None
+    Count: int | None = None
+    SiteCreationSourceGuid: str | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteCreationData"

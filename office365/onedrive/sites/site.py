@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Optional, Union
-
-from typing_extensions import Self
+from typing import Optional, Union
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
@@ -26,6 +24,7 @@ from office365.onenote.onenote import Onenote
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class Site(BaseItem):
@@ -100,11 +99,13 @@ class Site(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="siteCollection")
     @property
     def site_collection(self) -> SiteCollection:
         """Provides details about the site's site collection. Available only on the root site."""
         return self.properties.get("siteCollection", SiteCollection())
 
+    @odata(name="sharepointIds")
     @property
     def sharepoint_ids(self) -> SharePointIds:
         """Returns identifiers useful for SharePoint REST compatibility."""
@@ -124,6 +125,7 @@ class Site(BaseItem):
             "columns", ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self)
         )
 
+    @odata(name="externalColumns")
     @property
     def external_columns(self) -> ColumnDefinitionCollection:
         """The collection of columns under this site."""
@@ -132,6 +134,7 @@ class Site(BaseItem):
             ColumnDefinitionCollection(self.context, ResourcePath("externalColumns", self.resource_path), self),
         )
 
+    @odata(name="contentTypes")
     @property
     def content_types(self) -> ContentTypeCollection:
         """The collection of content types under this site."""
@@ -202,11 +205,13 @@ class Site(BaseItem):
         """The list that contains the site pages."""
         return self.lists.get_by_name("Site Pages")
 
+    @odata(name="termStore")
     @property
     def term_store(self) -> Store:
         """The default termStore under this site."""
         return self.properties.get("termStore", Store(self.context, ResourcePath("termStore", self.resource_path)))
 
+    @odata(name="termStores")
     @property
     def term_stores(self) -> EntityCollection[Store]:
         """The collection of termStores under this site."""
@@ -228,18 +233,6 @@ class Site(BaseItem):
     def root(self) -> Root:
         """Gets the root property"""
         return self.properties.get("root", Root())
-
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_mapping = {
-                "contentTypes": self.content_types,
-                "externalColumns": self.external_columns,
-                "siteCollection": self.site_collection,
-                "termStore": self.term_store,
-                "termStores": self.term_stores,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

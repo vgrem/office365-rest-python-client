@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
@@ -11,10 +13,10 @@ class HubSitePermission(ClientValue):
     rights (int):
     """
 
-    DisplayName = None
-    PrincipalName = None
-    Rights = None
+    DisplayName: str | None = None
+    PrincipalName: str | None = None
+    Rights: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.HubSitePermission"

@@ -46,8 +46,8 @@ class TestOutlookEvent(GraphDelegatedTestCase):
             end=when + timedelta(hours=1),
             attendees=[test_user_principal_name],
         ).execute_query()
-        self.assertIsNotNone(result.get_property("id"))
-        self.assertEqual(result.get_property("subject"), "Let's go for lunch")
+        self.assertIsNotNone(result.id)
+        self.assertEqual(result.subject, "Let's go for lunch")
         TestOutlookEvent.target_event = result
 
     @requires_delegated(
@@ -73,11 +73,11 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         if not event:
             self.skipTest("No event created from previous test")
 
-        self.assertIsNotNone(event.get_property("subject"))
-        self.assertIsNotNone(event.get_property("start"))
-        self.assertIsNotNone(event.get_property("end"))
-        self.assertIsNotNone(event.get_property("attendees"))
-        self.assertIsNotNone(event.get_property("organizer"))
+        self.assertIsNotNone(event.subject)
+        self.assertIsNotNone(event.start)
+        self.assertIsNotNone(event.end)
+        self.assertIsNotNone(event.attendees)
+        self.assertIsNotNone(event.organizer)
 
     @requires_delegated(
         "Calendars.ReadWrite",
@@ -120,7 +120,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         if not event:
             self.skipTest("No event created from previous test")
 
-        event_id = event.get_property("id")
+        event_id = event.id
         event.delete_object().execute_query()
 
         remaining = self.client.me.events.get().execute_query()
@@ -141,7 +141,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
             start=when,
             end=when + timedelta(hours=1),
         ).execute_query()
-        self.assertIsNotNone(result.get_property("id"))
+        self.assertIsNotNone(result.id)
 
         # Set recurrence pattern after creation
         result.set_property(

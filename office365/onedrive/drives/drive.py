@@ -16,6 +16,7 @@ from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class Drive(BaseItem):
@@ -95,6 +96,7 @@ class Drive(BaseItem):
         """
         return self.properties.get("driveType", None)
 
+    @odata(name="sharepointIds")
     @property
     def sharepoint_ids(self) -> SharePointIds:
         """Returns identifiers useful for SharePoint REST compatibility."""

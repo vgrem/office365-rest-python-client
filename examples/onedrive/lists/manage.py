@@ -23,7 +23,7 @@ client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test
 
 # 1. Create a document library
 list_name = create_unique_name("ProjectAssets")
-lib = client.sites.root.lists.add(list_name, ListTemplateType.documentLibrary).execute_query()
+lib = client.sites.root.lists.add(list_name, ListTemplateType.genericList).execute_query()
 print(f"List created: {lib.display_name}")
 
 # 2. Add a text column
@@ -32,7 +32,7 @@ print(f"  Column: {col.display_name}")
 
 # 3. Create an item with custom column value
 item = lib.items.add(Title="Q4 Report", Category="Finance").execute_query()
-print(f"  Item: {item.display_name} (id: {item.id})")
+print(f"  Item: {item.name} (id: {item.id})")
 
 # 4. Read items back
 items = lib.items.get().execute_query()

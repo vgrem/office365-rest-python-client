@@ -15,6 +15,7 @@ class LLMColumnInfo(ClientValue):
     CustomParametersJson: Optional[str] = None
     IsEnabled: Optional[bool] = None
     Prompt: Optional[str] = None
+    PreventOverwrite: bool | None = None
 
     @property
     def entity_type_name(self):

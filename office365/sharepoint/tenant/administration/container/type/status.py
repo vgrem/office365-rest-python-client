@@ -11,7 +11,8 @@ class SPContainerTypeStatus(ClientValue):
     ContainerTypeId: UUID | None = None
     IsActiveBillingProfile: bool | None = None
     IsArchivable: bool | None = None
+    BillingClassification: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeStatus"

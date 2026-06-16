@@ -3,6 +3,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class CalendarPermission(Entity):
@@ -20,6 +21,7 @@ class CalendarPermission(Entity):
     object and create another sharee or delegate in an Outlook client.
     """
 
+    @odata(name="allowedRoles")
     @property
     def allowed_roles(self) -> StringCollection:
         """
@@ -29,6 +31,7 @@ class CalendarPermission(Entity):
         """
         return self.properties.get("allowedRoles", StringCollection())
 
+    @odata(name="emailAddress")
     @property
     def email_address(self) -> EmailAddress:
         """
@@ -57,12 +60,3 @@ class CalendarPermission(Entity):
     def role(self) -> Optional[str]:
         """Current permission level of the calendar sharee or delegate."""
         return self.properties.get("role", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "allowedRoles": self.allowed_roles,
-                "emailAddress": self.email_address,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

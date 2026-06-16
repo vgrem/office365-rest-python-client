@@ -31,7 +31,7 @@ class TestMailFolders(GraphDelegatedTestCase):
         """Creating a mail folder with a display name should succeed."""
         result = self.client.me.mail_folders.add("SDK_Test_MailFolder", True).execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertEqual(result.get_property("displayName"), "SDK_Test_MailFolder")
+        self.assertEqual(result.display_name, "SDK_Test_MailFolder")
         TestMailFolders.target_folder = result
 
     @requires_delegated(
@@ -58,9 +58,9 @@ class TestMailFolders(GraphDelegatedTestCase):
         if not folder:
             self.skipTest("No folder created from previous test")
 
-        self.assertIsNotNone(folder.get_property("displayName"))
-        self.assertIsNotNone(folder.get_property("parentFolderId"))
-        self.assertIsNotNone(folder.get_property("childFolderCount"))
+        self.assertIsNotNone(folder.display_name)
+        self.assertIsNotNone(folder.parent_folder_id)
+        self.assertIsNotNone(folder.child_folder_count)
 
     @requires_delegated(
         "Mail.ReadWrite",

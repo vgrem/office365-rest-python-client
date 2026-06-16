@@ -1,34 +1,24 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class CreatePolicyRequest(ClientValue):
-    """Args:
-    is_preview_run (bool):
-    policy_custom_name (str):
-    policy_definition_details (str):
-    policy_description (str):
-    policy_frequency_unit (int):
-    policy_frequency_value (int):
-    policy_id (str):
-    policy_tags (str):
-    policy_template (str):
-    policy_type (int):
-    """
-
-    isPreviewRun = None
-    policyCustomName = None
-    policyDefinitionDetails = None
-    policyDescription = None
-    policyFrequencyUnit = None
-    policyFrequencyValue = None
-    policyId = None
-    policyTags = None
-    policyTemplate = None
-    policyType = None
+    isPreviewRun: bool | None = None
+    policyCustomName: str | None = None
+    policyDefinitionDetails: str | None = None
+    policyDescription: str | None = None
+    policyFrequencyUnit: int | None = None
+    policyFrequencyValue: int | None = None
+    policyId: UUID | None = None
+    policyTags: str | None = None
+    policyTemplate: int | None = None
+    policyType: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.CreatePolicyRequest"

@@ -85,7 +85,7 @@ class Workbook(Entity):
         return self
 
     @property
-    def application(self):
+    def application(self) -> WorkbookApplication:
         """"""
         return self.properties.get(
             "application",
@@ -105,7 +105,7 @@ class Workbook(Entity):
         )
 
     @property
-    def functions(self):
+    def functions(self) -> WorkbookFunctions:
         """"""
         return self.properties.get(
             "functions",

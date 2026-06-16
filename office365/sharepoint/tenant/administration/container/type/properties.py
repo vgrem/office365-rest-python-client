@@ -4,9 +4,7 @@ from dataclasses import dataclass, field
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.tenant.administration.container.type.billingproperties import (
-    SPContainerTypeBillingProperties,
-)
+from office365.sharepoint.tenant.administration.container.type.billingproperties import SPContainerTypeBillingProperties
 
 
 @dataclass
@@ -26,7 +24,8 @@ class SPContainerTypeProperties(ClientValue):
     Region: str | None = None
     ResourceGroup: str | None = None
     SPContainerTypeBillingClassification: int | None = None
+    IsArchiveEnabled: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeProperties"

@@ -22,6 +22,7 @@ class SharePointIds(ClientValue):
     webId: UUID | None = None
     ListId: str | None = None
     ListItemUniqueId: str | None = None
+    siteUrl: str | None = None
 
     @property
     def entity_type_name(self):

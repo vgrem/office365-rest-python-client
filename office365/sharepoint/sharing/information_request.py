@@ -13,6 +13,7 @@ class SharingInformationRequest(ClientValue):
     maxLinkMembersToReturn: int | None = None
     maxPrincipalsToReturn: int | None = None
     populateInheritedLinks: bool | None = None
+    populateMainLinkTree: bool | None = None
 
     @property
     def entity_type_name(self):

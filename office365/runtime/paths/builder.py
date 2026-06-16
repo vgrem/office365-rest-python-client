@@ -22,6 +22,7 @@ class ODataPathBuilder:
         "#": "%23",
         "&": "%26",
         "'": "''",
+        "*": "%2A",
     }
 
     @staticmethod

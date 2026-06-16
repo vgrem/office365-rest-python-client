@@ -13,6 +13,8 @@ class ItemSharingSettings(ClientValue):
     itemName: str | None = None
     itemType: int | None = None
     parentId: str | None = None
+    blockMembersCanShare: bool | None = None
+    blockSharingPushdown: bool | None = None
 
     @property
     def entity_type_name(self):

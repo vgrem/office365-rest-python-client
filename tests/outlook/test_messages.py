@@ -43,9 +43,9 @@ class TestOutlookMessages(GraphDelegatedTestCase):
     def test_01_create_draft_message(self):
         """Creating a draft message without recipients should succeed."""
         draft = self.client.me.messages.add(subject="Meet for lunch?", body="The new cafeteria is open.").execute_query()
-        self.assertIsNotNone(draft.get_property("id"))
-        self.assertEqual(draft.get_property("subject"), "Meet for lunch?")
-        self.assertEqual(draft.get_property("isDraft"), True)
+        self.assertIsNotNone(draft.id)
+        self.assertEqual(draft.subject, "Meet for lunch?")
+        self.assertEqual(draft.is_draft, True)
         TestOutlookMessages.target_message = draft
 
     @requires_delegated(

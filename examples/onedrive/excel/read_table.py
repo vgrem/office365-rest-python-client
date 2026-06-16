@@ -18,7 +18,7 @@ from tests import test_client_id, test_password, test_tenant, test_username
 client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
 # Find an Excel file
-items = client.me.drive.search("*.xlsx").execute_query()
+items = client.me.drive.search("xlsx").execute_query()
 if len(items) == 0:
     sys.exit("No Excel files found. Upload one first.")
 

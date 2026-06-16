@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional, Self
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
@@ -102,6 +102,12 @@ class BaseItem(Entity):
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
+
+    def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
+        super().set_property(name, value, persist_changes)
+        if name == "parentReference":
+            pass
+        return self
 
     def get_property(self, name, default_value=None):
         if default_value is None:

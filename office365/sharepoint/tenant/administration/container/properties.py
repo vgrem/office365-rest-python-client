@@ -5,7 +5,7 @@ from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 @dataclass
@@ -47,7 +47,13 @@ class SPContainerProperties(ClientValue):
     TransferFromPrincipalOwnerIdentifier: str | None = None
     Writers: StringCollection = field(default_factory=lambda: StringCollection())
     RestrictContentOrgWideSearch: bool | None = None
+    ClearRestrictedAccessControl: bool | None = None
+    ContainerRedirectUrl: str | None = None
+    EnableRestrictedAccessControl: bool | None = None
+    RestrictedAccessControlGroups: GuidCollection = field(default_factory=GuidCollection)
+    RestrictedAccessControlGroupsToAdd: GuidCollection = field(default_factory=GuidCollection)
+    RestrictedAccessControlGroupsToRemove: GuidCollection = field(default_factory=GuidCollection)
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerProperties"

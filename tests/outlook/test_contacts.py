@@ -36,7 +36,7 @@ class TestOutlookContacts(GraphDelegatedTestCase):
             "+1 732 555 0102",
         ).execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertEqual(result.get_property("displayName"), "Pavel Bansky")
+        self.assertEqual(result.display_name, "Pavel Bansky")
         TestOutlookContacts.target_contact = result
 
     @requires_delegated(

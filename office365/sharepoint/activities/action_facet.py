@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.activities.facets.add_to_onedrive import AddToOneDriveFacet
+from office365.sharepoint.activities.facets.archive_facet import ArchiveFacet
 from office365.sharepoint.activities.facets.checkin import CheckinFacet
 from office365.sharepoint.activities.facets.checkout import CheckoutFacet
 from office365.sharepoint.activities.facets.create import CreateFacet
@@ -13,9 +14,8 @@ from office365.sharepoint.activities.facets.edit import EditFacet
 from office365.sharepoint.activities.facets.get_comment import GetCommentFacet
 from office365.sharepoint.activities.facets.get_mention import GetMentionFacet
 from office365.sharepoint.activities.facets.move import MoveFacet
-from office365.sharepoint.activities.facets.point_in_time_restore import (
-    PointInTimeRestoreFacet,
-)
+from office365.sharepoint.activities.facets.point_in_time_restore import PointInTimeRestoreFacet
+from office365.sharepoint.activities.facets.reactivate_facet import ReactivateFacet
 from office365.sharepoint.activities.facets.rename import RenameFacet
 from office365.sharepoint.activities.facets.sharing import SharingFacet
 from office365.sharepoint.activities.facets.task_completed import TaskCompletedFacet
@@ -49,8 +49,10 @@ class ActionFacet(ClientValue):
     taskCreated: TaskCreatedFacet = field(default_factory=TaskCreatedFacet)
     taskReassigned: TaskReassignedFacet = field(default_factory=TaskReassignedFacet)
     taskReopened: TaskReopenedFacet = field(default_factory=TaskReopenedFacet)
+    archive: ArchiveFacet = field(default_factory=ArchiveFacet)
+    reactivate: ReactivateFacet = field(default_factory=ReactivateFacet)
 
-    def __repr__(self):  # type: ignore[override]
+    def __repr__(self):
         return self.facet_type or ""
 
     @property

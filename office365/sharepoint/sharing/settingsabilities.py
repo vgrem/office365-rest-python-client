@@ -12,6 +12,8 @@ class SharingSettingsAbilities(ClientValue):
     canGetItemMembersCanShare: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
     canManageBlockSharingPushDown: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
     canManageItemMembersCanShare: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canManageBlockMembersCanShare: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canManageBlockSharingPushdown: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
 
     @property
     def entity_type_name(self):

@@ -7,14 +7,9 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class SmtpServer(ClientValue):
-    """Args:
-    value (str):
-    is_readonly (bool):
-    """
-
-    Value = None
     IsReadOnly: bool | None = None
+    Value: str | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SmtpServer"

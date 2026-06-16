@@ -10,6 +10,8 @@ class UpdateCardElement(ClientValue):
     is_visible: bool | None = None
     type_: str | None = None
     value: str | None = None
+    isVisible: bool | None = None
+    type: str | None = None
 
     @property
     def entity_type_name(self):

@@ -13,14 +13,14 @@ class SiteAdministratorsInfo(ClientValue):
     name (str):
     """
 
-    email = None
-    loginName = None
-    name = None
     userPrincipalName: str | None = None
+    email: str | None = None
+    loginName: str | None = None
+    name: str | None = None
 
     def __str__(self):
         return self.name or self.entity_type_name
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteAdministratorsInfo"

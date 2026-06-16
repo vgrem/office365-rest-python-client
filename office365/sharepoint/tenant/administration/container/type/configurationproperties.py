@@ -24,7 +24,9 @@ class SPContainerTypeConfigurationProperties(ClientValue):
     OwningAppId: UUID | None = None
     WhoCanShareAnonymousAllowList: GuidCollection = field(default_factory=GuidCollection)
     WhoCanShareAuthenticatedGuestAllowList: GuidCollection = field(default_factory=GuidCollection)
+    IsArchiveEnabled: int | None = None
+    ShouldUseLegacyItemWebUrl: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPContainerTypeConfigurationProperties"

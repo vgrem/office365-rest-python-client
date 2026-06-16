@@ -11,6 +11,7 @@ class ElementUpdate(ClientValue):
     action: str | None = None
     element: UpdateCardElement = field(default_factory=UpdateCardElement)
     element_id: str | None = None
+    elementId: str | None = None
 
     @property
     def entity_type_name(self):

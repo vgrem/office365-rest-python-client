@@ -57,6 +57,6 @@ class TestRooms(GraphApplicationTestCase):
         if len(result) == 0:
             self.skipTest("No room lists found")
 
-        name = result[0].get_property("displayName")
+        name = result[0].display_name
         filtered = self.client.room_lists.filter(f"displayName eq '{name}'").get().execute_query()
         self.assertGreaterEqual(len(filtered), 1)

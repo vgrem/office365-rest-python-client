@@ -12,7 +12,10 @@ class UpdateCard(ClientValue):
     card_updates: ClientValueCollection[ElementUpdate] = field(
         default_factory=lambda: ClientValueCollection(ElementUpdate)
     )
-    type_: str | None = None
+    cardUpdates: ClientValueCollection[ElementUpdate] = field(
+        default_factory=lambda: ClientValueCollection(ElementUpdate)
+    )
+    type: str | None = None
 
     @property
     def entity_type_name(self):

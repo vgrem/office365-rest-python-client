@@ -55,8 +55,8 @@ class TestDriveItemPermissions(GraphApplicationTestCase):
             self.skipTest("No drive item available")
 
         permission = item.create_link("view", "anonymous").execute_query()
-        self.assertIsNotNone(permission.get_property("id"))
-        self.assertEqual(permission.get_property("roles")[0], "read")
+        self.assertIsNotNone(permission.id)
+        self.assertEqual(permission.roles[0], "read")
 
     @requires_application("Files.ReadWrite.All", "Sites.ReadWrite.All")
     def test_02_create_company_link(self):
@@ -66,8 +66,8 @@ class TestDriveItemPermissions(GraphApplicationTestCase):
             self.skipTest("No drive item available")
 
         permission = item.create_link("edit", "organization").execute_query()
-        self.assertIsNotNone(permission.get_property("id"))
-        self.assertEqual(permission.get_property("roles")[0], "write")
+        self.assertIsNotNone(permission.id)
+        self.assertEqual(permission.roles[0], "write")
 
     @requires_application("Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All")
     def test_03_list_permissions(self):

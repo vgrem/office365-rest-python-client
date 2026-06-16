@@ -25,6 +25,7 @@ class LinkInfo(ClientValue):
     linkMembers: ClientValueCollection[Principal] = field(default_factory=lambda: ClientValueCollection(Principal))
     linkStatus: int | None = None
     totalLinkMembersCount: int | None = None
+    inheritedFrom: InheritedFrom = field(default_factory=InheritedFrom)
 
     @property
     def entity_type_name(self):

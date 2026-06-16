@@ -11,7 +11,7 @@ class DisableGroupify(ClientValue):
     Value: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.DisableGroupify"
 
 
@@ -21,7 +21,7 @@ class EnableAutoNewsDigest(ClientValue):
     Value: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.EnableAutoNewsDigest"
 
 
@@ -31,7 +31,7 @@ class DisableSelfServiceSiteCreation(ClientValue):
     Value: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.DisableSelfServiceSiteCreation"
 
 
@@ -39,9 +39,9 @@ class DisableSelfServiceSiteCreation(ClientValue):
 class AutoQuotaEnabled(ClientValue):
     """Automatic quota management type"""
 
-    IsReadOnly = None
-    Value = None
+    IsReadOnly: bool | None = None
+    Value: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.AutoQuotaEnabled"

@@ -10,9 +10,11 @@ Tests cover:
 
 from __future__ import annotations
 
-from typing import ClassVar, List, Optional
+from typing import ClassVar, Optional
 
 from office365.onedrive.columns.definition import ColumnDefinition
+from office365.onedrive.columns.text import TextColumn
+from office365.onedrive.lists.list import List
 from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -21,8 +23,8 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestColumn(GraphDelegatedTestCase):
     """List column CRUD in the document library."""
 
-    list_columns: ClassVar[List[ColumnDefinition]] = []
-    doclib: ClassVar[Optional[object]] = None
+    list_columns: ClassVar[list[ColumnDefinition]] = []
+    doclib: ClassVar[Optional[List]] = None
 
     @classmethod
     def setUpClass(cls):
@@ -51,8 +53,8 @@ class TestColumn(GraphDelegatedTestCase):
         name = create_unique_name("TextColumn")
         column = self.doclib.columns.add_text(name).execute_query()
         self.assertIsNotNone(column.resource_path)
-        self.assertEqual(column.get_property("displayName"), name)
-        self.assertEqual(column.get_property("text"), {})
+        self.assertEqual(column.display_name, name)
+        self.assertIsInstance(column.text, TextColumn)
         TestColumn.list_columns.append(column)
 
     @requires_delegated(
@@ -65,8 +67,8 @@ class TestColumn(GraphDelegatedTestCase):
         name = create_unique_name("LookupColumn")
         column = self.doclib.columns.add_lookup(name, self.doclib).execute_query()
         self.assertIsNotNone(column.resource_path)
-        self.assertEqual(column.get_property("displayName"), name)
-        self.assertIsNotNone(column.get_property("lookup"))
+        self.assertEqual(column.display_name, name)
+        self.assertIsNotNone(column.lookup)
         TestColumn.list_columns.append(column)
 
     @requires_delegated(
