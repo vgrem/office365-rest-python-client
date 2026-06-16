@@ -22,8 +22,8 @@ from typing import TYPE_CHECKING
 
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
-from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
+from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.collection import FieldCollection
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.lists.collection import ListCollection
@@ -51,7 +51,7 @@ INVALID_CHARS = set(r'~"#%&*:<>?/\{|}')
 LARGE_FILE_BYTES = 15 * 1024 * 1024 * 1024  # 15GB — SPMT limit
 
 
-class MigrationAssessor(ClientObject):
+class MigrationAssessor(Entity):
     """
     Pre-migration assessment. Surfaces blockers and warnings before
     any data is moved.
@@ -62,10 +62,6 @@ class MigrationAssessor(ClientObject):
             .include_permissions()\
             .execute_query()
 
-        if not report.is_ready:
-            print(report.summary())
-        else:
-            engine.run(...)
     """
 
     def __init__(self, web: Web) -> None:
@@ -183,7 +179,7 @@ class MigrationAssessor(ClientObject):
             report.total_files += 1
             path = item.properties.get("FileRef", "")
             name = item.properties.get("FileLeafRef", "")
-            size = item.file.length if item.file and item.file.length else 0
+            size = item.file.length or 0
             report.total_size_gb += size / 1024 / 1024 / 1024
 
             # path length
