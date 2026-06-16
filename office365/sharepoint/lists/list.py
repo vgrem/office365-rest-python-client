@@ -281,7 +281,7 @@ class List(SecurableObject):
         Args:
             options (dict or None):
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
 
         def _list_loaded():
             assert self.root_folder.server_relative_url is not None
@@ -336,7 +336,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def sync_flow_callback_url(self, flow_id: object) -> FlowSynchronizationResult:
+    def sync_flow_callback_url(self, flow_id: str) -> FlowSynchronizationResult:
         """Args:
         flow_id (str):
         """
@@ -616,9 +616,9 @@ class List(SecurableObject):
     #    """Returns a list of folders in the list"""
     #    return self.items.expand(["Folder"]).get()
 
-    def validate_broken_taxonomy_values(self) -> Self:
-        """Clears the broken taxonomy values"""
-        raise NotImplementedError("validate_broken_taxonomy_values")
+    # def validate_broken_taxonomy_values(self) -> Self:
+    #    """Clears the broken taxonomy values"""
+    #    raise NotImplementedError("validate_broken_taxonomy_values")
 
     def get_items(self, caml_query: Optional[CamlQuery] = None) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query."""
@@ -896,6 +896,11 @@ class List(SecurableObject):
     def allow_deletion(self) -> Optional[bool]:
         """Specifies whether the list could be deleted."""
         return self.properties.get("AllowDeletion", None)
+
+    @property
+    def hidden(self) -> Optional[bool]:
+        """Specifies whether the list is hidden from UI."""
+        return self.properties.get("Hidden", None)
 
     @property
     def base_template(self) -> Optional[int]:

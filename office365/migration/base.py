@@ -1,21 +1,11 @@
 """
-office365.migration.base
-~~~~~~~~~~~~~~~~~~~~~~~~
 Shared types, enums, and the MigrationQuery base class.
-
-MigrationQuery extends ClientQuery so all migration operations
-plug into the existing deferred execution pipeline:
-    operation.execute_query()
-    operation.execute_query_retry()
-    operation.after_execute(callback)
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-
-# ── Enums ─────────────────────────────────────────────────────────────────────
 
 
 class ConflictResolution(str, Enum):
@@ -36,9 +26,6 @@ class ExportFormat(str, Enum):
     CSV = "csv"
     JSON = "json"
     DELTA = "delta"
-
-
-# ── Value types ───────────────────────────────────────────────────────────────
 
 
 @dataclass
