@@ -17,7 +17,7 @@ def main():
     stale = []
 
     for device in client.devices.get().execute_query():
-        last = device.approximate_last_sign_in_date_time
+        last = device.approximate_last_signin_datetime
         if last and last < cutoff:
             stale.append((
                 device.display_name or "Unnamed",

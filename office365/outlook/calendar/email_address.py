@@ -25,4 +25,4 @@ class EmailAddress(ClientValue):
 
     @property
     def entity_type_name(self):
-        return "microsoft.graph.EmailAddress"
+        return None

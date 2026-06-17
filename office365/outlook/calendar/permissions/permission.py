@@ -60,3 +60,7 @@ class CalendarPermission(Entity):
     def role(self) -> Optional[str]:
         """Current permission level of the calendar sharee or delegate."""
         return self.properties.get("role", None)
+
+    @property
+    def entity_type_name(self):
+        return None  # type: ignore

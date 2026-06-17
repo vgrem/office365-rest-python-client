@@ -18,4 +18,4 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 perm = client.me.calendar.calendar_permissions.add(
     "samanthab@adatum.onmicrosoft.com", CalendarRoleType.read
 ).execute_query()
-print(f"Calendar shared — permission ID: {perm.get_property('id')}")
+print(f"Calendar shared — permission ID: {perm.id}")
