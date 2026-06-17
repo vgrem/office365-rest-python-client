@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple
 
@@ -89,6 +89,8 @@ class ClientValue:
                 result[n] = v.value
             elif isinstance(v, bytes):
                 result[n] = v.decode("utf-8")
+            elif isinstance(v, (datetime, date)):
+                result[n] = v.isoformat()
         if json_format is not None and json_format.include_control_information and self.entity_type_name is not None:
             if isinstance(json_format, JsonLightFormat):
                 result[json_format.metadata_type] = {"type": self.entity_type_name}

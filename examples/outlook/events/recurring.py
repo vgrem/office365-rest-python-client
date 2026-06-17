@@ -12,9 +12,6 @@ https://learn.microsoft.com/en-us/graph/api/resources/recurrencepattern
 from datetime import datetime, timedelta
 
 from office365.graph_client import GraphClient
-from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
-from office365.outlook.mail.recurrence_pattern import RecurrencePattern
-from office365.outlook.mail.recurrence_range import RecurrenceRange
 from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
 from tests import test_client_id, test_password, test_tenant, test_username
@@ -30,19 +27,13 @@ event = client.me.calendar.events.add(
     end=when + timedelta(hours=1),
 ).execute_query()
 
-event.set_property(
-    "recurrence",
-    PatternedRecurrence(
-        pattern=RecurrencePattern(
-            type=RecurrencePatternType.weekly.value,
-            interval=1,
-        ),
-        range=RecurrenceRange(
-            type=RecurrenceRangeType.numbered.value,
-            numberOfOccurrences=4,
-            startDate=when.date(),
-        ),
-    ),
+event.set_recurrence(
+    pattern_type=RecurrencePatternType.weekly,
+    days_of_week=["monday", "wednesday", "friday"],
+    interval=1,
+    range_type=RecurrenceRangeType.numbered,
+    occurrences=4,
+    start_date=when.date(),
 ).update().execute_query()
 
 print(f"Recurring event created: {event.subject}  (ID: {event.id})")

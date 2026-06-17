@@ -20,7 +20,8 @@ class SPSyntexApplicationProperties(ClientValue):
     OwningApplicationId: UUID | None = None
     OwningApplicationName: str | None = None
     SharingCapability: int | None = None
+    ItemMajorVersionLimit: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPSyntexApplicationProperties"

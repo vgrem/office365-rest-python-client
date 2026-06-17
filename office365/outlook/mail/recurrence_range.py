@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime
 from dataclasses import dataclass
 
+from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
 from office365.runtime.client_value import ClientValue
 
 
@@ -17,4 +18,4 @@ class RecurrenceRange(ClientValue):
     numberOfOccurrences: int | None = None
     recurrenceTimeZone: str | None = None
     startDate: datetime.date | None = None
-    type: str | None = None
+    type: RecurrenceRangeType | None = None

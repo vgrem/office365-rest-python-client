@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from office365.outlook.calendar.dayofweek import DayOfWeek
+from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
@@ -17,4 +18,4 @@ class RecurrencePattern(ClientValue):
     index: int | None = None
     interval: int | None = None
     month: int | None = None
-    type: str | None = None
+    type: RecurrencePatternType | None = None

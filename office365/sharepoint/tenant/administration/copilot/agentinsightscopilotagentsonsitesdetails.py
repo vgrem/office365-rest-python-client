@@ -16,7 +16,9 @@ class SPOCopilotAgentInsightsCopilotAgentsOnSitesDetails(ClientValue):
     SiteOwner: str | None = None
     Template: str | None = None
     URL: str | None = None
+    AgentCreatedDate: str | None = None
+    CreatedBy: str | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOCopilotAgentInsightsCopilotAgentsOnSitesDetails"

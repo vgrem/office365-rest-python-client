@@ -1,16 +1,19 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 
 
 @dataclass
 class PowerAppsEnvironmentContext(ClientValue):
-    DataverseInstanceUrl = None
-    DisplayName = None
-    IsTestEnvironment = None
-    LastGetEnvironmentError = None
-    Name = None
-    UpdatedUTC = None
+    DataverseInstanceUrl: str | None = None
+    DisplayName: str | None = None
+    IsTestEnvironment: bool | None = None
+    LastGetEnvironmentError: str | None = None
+    Name: str | None = None
+    UpdatedUTC: datetime | None = field(default_factory=lambda: datetime.min)
 
     @property
     def entity_type_name(self) -> str:

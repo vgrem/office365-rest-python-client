@@ -14,14 +14,14 @@ class SPOAppBillingProperties(ClientValue):
     is_activated (bool):
     """
 
-    ApplicationId = None
-    AzureRegion = None
-    IsActivated = None
     ResourceGroup: str | None = None
     SubscriptionId: UUID | None = None
     SubscriptionState: str | None = None
     UsageCharges: str | None = None
+    ApplicationId: UUID | None = None
+    AzureRegion: str | None = None
+    IsActivated: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOAppBillingProperties"

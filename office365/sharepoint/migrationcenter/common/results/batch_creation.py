@@ -8,13 +8,13 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class BatchCreationResult(ClientValue):
-    CreatedCount = None
     CreatedTaskIdList: StringCollection | None = None
-    ErrorCode = None
-    ErrorMessage = None
-    FieldError = None
-    ProcessingMilliseconds = None
-    TotalCount = None
+    CreatedCount: int | None = None
+    ErrorCode: str | None = None
+    ErrorMessage: str | None = None
+    FieldError: str | None = None
+    ProcessingMilliseconds: int | None = None
+    TotalCount: int | None = None
 
     @property
     def entity_type_name(self) -> str:

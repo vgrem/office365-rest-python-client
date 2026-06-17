@@ -19,11 +19,13 @@ def main():
     for device in client.devices.get().execute_query():
         last = device.approximate_last_signin_datetime
         if last and last < cutoff:
-            stale.append((
-                device.display_name or "Unnamed",
-                device.operating_system or "Unknown",
-                last,
-            ))
+            stale.append(
+                (
+                    device.display_name or "Unnamed",
+                    device.operating_system or "Unknown",
+                    last,
+                )
+            )
 
     stale.sort(key=lambda x: x[2])
     print(f"Stale devices (180+ days): {len(stale)}")

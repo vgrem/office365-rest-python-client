@@ -1,5 +1,9 @@
-from datetime import datetime
+from __future__ import annotations
+
+from datetime import date, datetime
 from typing import Optional
+
+from typing_extensions import Self
 
 from office365.communications.onlinemeetings.provider_type import OnlineMeetingProviderType
 from office365.directory.extensions.extended_property import (
@@ -22,6 +26,10 @@ from office365.outlook.mail.location import Location
 from office365.outlook.mail.messages.eventtype import EventType
 from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.outlook.mail.recipient import Recipient
+from office365.outlook.mail.recurrence_pattern import RecurrencePattern
+from office365.outlook.mail.recurrence_range import RecurrenceRange
+from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
+from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -30,6 +38,42 @@ from office365.runtime.types.collections import StringCollection
 
 class Event(OutlookItem):
     """An event in a user calendar, or the default calendar of a Microsoft 365 group."""
+
+    def set_recurrence(
+        self,
+        pattern_type: RecurrencePatternType = RecurrencePatternType.weekly,
+        interval: int = 1,
+        days_of_week: list[str] | None = None,
+        range_type: RecurrenceRangeType = RecurrenceRangeType.numbered,
+        occurrences: int = 4,
+        start_date: date | None = None,
+    ) -> Self:
+        if (
+            pattern_type
+            in (
+                RecurrencePatternType.weekly,
+                RecurrencePatternType.relativeMonthly,
+                RecurrencePatternType.relativeYearly,
+            )
+            and not days_of_week
+        ):
+            raise ValueError(f"days_of_week is required for pattern_type={pattern_type}")
+        self.set_property(
+            "recurrence",
+            PatternedRecurrence(
+                pattern=RecurrencePattern(
+                    type=pattern_type,
+                    daysOfWeek=ClientValueCollection(str, days_of_week),
+                    interval=interval,
+                ),
+                range=RecurrenceRange(
+                    type=range_type,
+                    numberOfOccurrences=occurrences,
+                    startDate=start_date,
+                ),
+            ),
+        )
+        return self
 
     @require_permission(delegated=["Calendars.ReadWrite"])
     def accept(self, send_response, comment=None):

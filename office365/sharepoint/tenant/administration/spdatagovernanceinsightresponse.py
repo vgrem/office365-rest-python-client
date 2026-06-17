@@ -47,7 +47,11 @@ class SPDataGovernanceInsightResponse(ClientValue):
     Variation: str | None = None
     Version: str | None = None
     Workload: str | None = None
+    DetailedEEEUCountOfSitesInReport: int | None = None
+    DetailedEEEURecipients: str | None = None
+    DetailedEEEUReportMaxRowCount: int | None = None
+    DetailedEEEUSchemaVersion: int | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceInsightResponse"
