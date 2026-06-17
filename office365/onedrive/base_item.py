@@ -27,6 +27,11 @@ class BaseItem(Entity):
         return self.properties.get("createdBy", IdentitySet())
 
     @property
+    def deleted(self) -> Optional[bool]:
+        """Indicates that the item was deleted. Present only in delta responses."""
+        return self.properties.get("deleted", None) is not None
+
+    @property
     def created_by_user(self) -> User:
         """Identity of the user who created the item"""
         from office365.directory.users.user import User
