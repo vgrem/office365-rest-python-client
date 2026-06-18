@@ -140,7 +140,7 @@ class File(AbstractFile):
     def get_content(self) -> ClientResult[bytes]:
         """Downloads a file content"""
         return_type = ClientResult(self.context, bytes())
-        qry = FunctionQuery(self, "$value", return_type=return_type)
+        qry = FunctionQuery(self, "$value", return_type=return_type, return_raw_content=True)
         self.context.add_query(qry)
         return return_type
 

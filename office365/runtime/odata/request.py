@@ -92,10 +92,7 @@ class ODataRequest(ClientRequest):
     @staticmethod
     def _is_content_download(query: ClientQuery) -> bool:
         """Check if the query is a raw content download (file content, not OData metadata)."""
-        if isinstance(query, FunctionQuery):
-            name = query.name
-            return name in ("content", "$value")
-        return False
+        return bool(getattr(query, "return_raw_content", False))
 
     def map_json(
         self,
