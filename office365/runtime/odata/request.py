@@ -79,7 +79,7 @@ class ODataRequest(ClientRequest):
 
         content_type = response.headers.get("Content-Type", "").lower().split(";")[0]
 
-        if content_type != "application/json" or self._is_content_download(query):
+        if content_type != "application/json" or self._is_raw_content_query(query):
             if isinstance(return_type, ClientResult):
                 return_type.set_property("__value", response.content)
         else:
@@ -90,9 +90,9 @@ class ODataRequest(ClientRequest):
             self.map_json(response.json(), return_type, json_format)
 
     @staticmethod
-    def _is_content_download(query: ClientQuery) -> bool:
-        """Check if the query is a raw content download (file content, not OData metadata)."""
-        return bool(getattr(query, "return_raw_content", False))
+    def _is_raw_content_query(query: ClientQuery) -> bool:
+        """Check if the query represents a raw content retrieval (e.g. file download)."""
+        return isinstance(query, FunctionQuery) and query.return_raw_content
 
     def map_json(
         self,
