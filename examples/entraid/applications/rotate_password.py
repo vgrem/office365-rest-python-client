@@ -10,9 +10,9 @@ import sys
 from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
 from tests import (
+    test_admin_principal_name,
     test_client_id,
     test_tenant,
-    test_admin_principal_name,
 )
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)

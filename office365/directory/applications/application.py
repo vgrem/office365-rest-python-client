@@ -84,8 +84,8 @@ class Application(DirectoryObject):
         params = KeyCredential(
             usage="Verify",
             type="AsymmetricX509Cert",
-            startDateTime=start_datetime.isoformat(),
-            endDateTime=end_datetime.isoformat(),
+            startDateTime=start_datetime,
+            endDateTime=end_datetime,
             key=base64.b64encode(cert_data).decode("utf-8"),
             displayName=f"CN={display_name}",
         )
