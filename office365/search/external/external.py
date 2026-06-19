@@ -12,9 +12,9 @@ class External(Entity):
         """Get a list of the externalConnection objects and their properties."""
         return self.properties.get(
             "connections",
-            EntityCollection(
-                self.context,
-                ExternalConnection,
-                ResourcePath("connections", self.resource_path),
-            ),
+            EntityCollection(self.context, ExternalConnection, ResourcePath("connections", self.resource_path)),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.externalConnectors.External"

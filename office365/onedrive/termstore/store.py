@@ -11,6 +11,7 @@ from office365.onedrive.termstore.groups.collection import GroupCollection
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.onedrive.termstore.store_exporter import StoreExporter
 from office365.onedrive.termstore.store_importer import StoreImporter
+from office365.onedrive.termstore.terms.collection import TermCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
@@ -18,6 +19,25 @@ from office365.runtime.types.collections import StringCollection
 
 class Store(Entity):
     """Represents a taxonomy term store."""
+
+    def search_term(self, search_label: str) -> TermCollection:
+        return_type = TermCollection(self.context)
+
+        def _on_terms_loaded(terms: TermCollection):
+            for t in terms:
+                if t.display_name == search_label:
+                    return_type.add_child(t)
+
+        def _on_sets_loaded(sets: SetCollection):
+            for s in sets:
+                s.terms.get().after_execute(lambda terms: _on_terms_loaded(terms))
+
+        def _on_groups_loaded(groups: GroupCollection):
+            for g in groups:
+                g.sets.get().after_execute(lambda sets: _on_sets_loaded(sets))
+
+        self.groups.get().after_execute(lambda groups: _on_groups_loaded(groups))
+        return return_type
 
     def export_to_json(self) -> ClientResult[list]:
         return StoreExporter(self).export()

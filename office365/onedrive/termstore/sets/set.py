@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.internal.paths.children import ChildrenPath
@@ -8,6 +10,7 @@ from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.terms.collection import TermCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Set(Entity):
@@ -18,6 +21,21 @@ class Set(Entity):
 
     def __repr__(self):
         return repr(self.localized_names)
+
+    def delete_object(self) -> Self:
+        def _delete_set():
+            super(Set, self).delete_object()
+
+        def _on_terms_loaded(terms: TermCollection):
+            if len(terms) == 0:
+                _delete_set()
+            else:
+                for t in terms:
+                    t.delete_object()
+                self.after_execute(lambda _: _delete_set())
+
+        self.children.expand(["children"]).get().after_execute(_on_terms_loaded)
+        return self
 
     @property
     def children(self) -> TermCollection:
@@ -30,6 +48,7 @@ class Set(Entity):
             ),
         )
 
+    @odata(name="localizedNames")
     @property
     def localized_names(self) -> ClientValueCollection[LocalizedName]:
         """"""
@@ -41,6 +60,7 @@ class Set(Entity):
             return self.localized_names[0].name
         return None
 
+    @odata(name="parentGroup")
     @property
     def parent_group(self):
         """The parent group that contains the set."""
@@ -66,15 +86,6 @@ class Set(Entity):
             "terms",
             TermCollection(self.context, ResourcePath("terms", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "localizedNames": self.localized_names,
-                "parentGroup": self.parent_group,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

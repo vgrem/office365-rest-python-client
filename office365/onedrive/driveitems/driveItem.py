@@ -892,6 +892,11 @@ class DriveItem(BaseItem):
         return self.is_property_available("file")
 
     @property
+    def size(self) -> int | None:
+        """File metadata, if the item is a file."""
+        return self.properties.get("size", None)
+
+    @property
     def shared(self) -> Shared:
         """Indicates that the item has been shared with others and provides information about the shared state
         of the item. Read-only."""

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Self
+
 from office365.entity import Entity
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -7,6 +9,21 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class Group(Entity):
     """Term Group"""
+
+    def delete_object(self) -> Self:
+        def _delete_group():
+            super(Group, self).delete_object()
+
+        def _on_sets_loaded(sets: SetCollection):
+            if len(sets) == 0:
+                _delete_group()
+            else:
+                for s in sets:
+                    s.delete_object()
+                self.after_execute(lambda _: _delete_group())
+
+        self.sets.get().after_execute(_on_sets_loaded)
+        return self
 
     def __str__(self) -> str:
         return self.display_name or ""

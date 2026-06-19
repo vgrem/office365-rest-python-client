@@ -2,6 +2,8 @@ from enum import Enum
 
 
 class ExternalActivityType(Enum):
+    unknown = "0"
+
     viewed = "1"
     modified = "2"
     created = "3"
