@@ -55,7 +55,7 @@ class TestExcelWorksheets(GraphDelegatedTestCase):
         """Protect a worksheet"""
         ws = TestExcelWorksheets.worksheet
         assert ws is not None
-        options = WorkbookWorksheetProtectionOptions(allow_delete_rows=False)
+        options = WorkbookWorksheetProtectionOptions(allowDeleteRows=False)
         ws.protection.protect(options).execute_query()
         result = ws.protection.get().execute_query()
         self.assertFalse(result.options.allowDeleteRows)

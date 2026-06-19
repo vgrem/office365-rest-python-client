@@ -3,12 +3,13 @@ Find application passwords that are expiring soon.
 
 Requires delegated permission Application.Read.All.
 """
+
 import sys
 from datetime import datetime, timedelta, timezone
 
 from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_tenant, test_admin_principal_name
+from tests import test_admin_principal_name, test_client_id, test_tenant
 
 
 def main():

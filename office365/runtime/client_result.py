@@ -13,7 +13,7 @@ from office365.runtime.http.request_options import RequestOptions
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
 
-ClientValueT = TypeVar("ClientValueT", bound=Union[int, float, str, bytes, bool, dict, Enum, ClientValue])
+ClientValueT = TypeVar("ClientValueT", bound=Union[int, float, str, bytes, bool, dict, list, Enum, ClientValue])
 
 
 class ClientResult(Generic[ClientValueT]):
