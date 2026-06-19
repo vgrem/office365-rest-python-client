@@ -56,13 +56,7 @@ class TermCollection(EntityCollection[Term]):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
 
-            def _load_existing(existing: Term):
-                if existing.id is not None:
-                    term.copy_from(existing)
-                else:
-                    self.add(label).after_execute(lambda t: term.copy_from(t))
-
-            self.get_by_label(label).after_execute(_load_existing)
+            self.get_by_label(label).after_execute(lambda existing: term.copy_from(existing), execute_first=True)
 
         term.on_error(_on_name_exists)
         return term

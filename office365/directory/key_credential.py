@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
@@ -31,10 +31,10 @@ class KeyCredential(ClientValue):
 
     customKeyIdentifier: str | None = None
     displayName: str | None = None
-    endDateTime: datetime | str | None = None
+    endDateTime: datetime = field(default_factory=lambda: datetime.min)
     key: str | None = None
     keyId: str | None = None
-    startDateTime: datetime | str | None = None
+    startDateTime: datetime = field(default_factory=lambda: datetime.min)
     type: str | None = None
     usage: str | None = None
 

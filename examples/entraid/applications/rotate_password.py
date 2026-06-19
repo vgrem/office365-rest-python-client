@@ -5,15 +5,21 @@ https://learn.microsoft.com/en-us/graph/api/application-addpassword?view=graph-r
 Requires delegated permission ``Application.ReadWrite.All``.
 """
 
+import sys
+
+from office365.directory.permissions.guard import has_role
 from office365.graph_client import GraphClient
 from tests import (
     test_client_id,
-    test_password,
     test_tenant,
-    test_username,
+    test_admin_principal_name,
 )
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
+if not has_role(client, "Global Administrator", "Privileged Role Administrator"):
+    print("Need Global Administrator or Privileged Role Administrator role to grant permissions.")
+    sys.exit(1)
+
 target_app = client.applications.get_by_app_id(test_client_id)
 result = target_app.add_password("Password friendly name").execute_query()
-print(result.value)
+print(result.value.secretText)

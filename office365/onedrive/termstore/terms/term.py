@@ -50,7 +50,11 @@ class Term(Entity):
         assert self.resource_path is not None and self.resource_path.parent is not None
         return self.properties.get(
             "children",
-            TermCollection(self.context, ChildrenPath(self.resource_path, self.resource_path.parent), self),
+            TermCollection(
+                self.context,
+                ChildrenPath(self.resource_path, self.resource_path.parent),
+                self,
+            ),
         )
 
     @property

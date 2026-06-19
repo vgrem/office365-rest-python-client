@@ -1,4 +1,10 @@
+from __future__ import annotations
+
+import json
+from os import PathLike
 from typing import Optional
+
+from typing_extensions import Self
 
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
@@ -6,6 +12,7 @@ from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.groups.collection import GroupCollection
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.onedrive.termstore.sets.set import Set
+from office365.onedrive.termstore.terms.collection import TermCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 
@@ -30,6 +37,25 @@ class Store(Entity):
 
         self.groups.get().after_execute(_groups_loaded)
         return return_type
+
+    def import_from_json(self, path: str | PathLike) -> Self:
+        """Import term store hierarchy from a JSON file."""
+
+        with open(path) as f:
+            data = json.load(f)
+
+        for group_data in data:
+            group = self.groups.get_or_add(group_data["name"])
+            for set_data in group_data.get("sets", []):
+                term_set = group.sets.get_or_add(set_data["name"])
+                self._import_terms(term_set.children, set_data.get("children", []))
+
+        return self
+
+    def _import_terms(self, collection: TermCollection, terms: list[dict]):
+        for t in terms:
+            node = collection.get_or_add(t["name"])
+            self._import_terms(node.children, t.get("children", []))
 
     @property
     def default_language_tag(self) -> Optional[str]:

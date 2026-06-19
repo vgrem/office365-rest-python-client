@@ -38,7 +38,7 @@ class GroupCollection(EntityCollection[Group]):
         def _on_name_exists(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
-            self.get_by_name(name).after_execute(lambda existing: group.copy_from(existing))
+            self.get_by_name(name).after_execute(lambda existing: group.copy_from(existing), execute_first=True)
 
         group.on_error(_on_name_exists)
         return group

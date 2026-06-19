@@ -8,6 +8,7 @@ from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 if TYPE_CHECKING:
@@ -54,7 +55,7 @@ class SetCollection(EntityCollection[Set]):
             parent_group (office365.onedrive.termstore.group.Group): The parent group that contains the set.
             name (str): Default name (in en-US localization).
         """
-        return_type = Set(self.context)
+        return_type = Set(self.context, EntityPath(None, self.resource_path))
         self.add_child(return_type)
 
         if self._parent_group is not None:
@@ -80,14 +81,7 @@ class SetCollection(EntityCollection[Set]):
         def _on_name_exists(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
-
-            def _load_existing(existing: Set):
-                if existing.get_property("id") is not None:
-                    term_set.copy_from(existing)
-                else:
-                    self.add(name).after_execute(lambda s: term_set.copy_from(s))
-
-            self.get_by_name(name).after_execute(_load_existing)
+            self.get_by_name(name).after_execute(lambda existing: term_set.copy_from(existing), execute_first=True)
 
         term_set.on_error(_on_name_exists)
         return term_set

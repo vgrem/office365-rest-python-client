@@ -1,42 +1,39 @@
 """
-Import a taxonomy hierarchy from a JSON file into a Microsoft Graph term store.
+Import a taxonomy hierarchy into a Microsoft Graph term store from JSON or CSV.
 
 JSON format mirrors the term store model:
   [group { name, sets: [ set { name, children: [ term { name, children: [] } ] } ] }]
 
-Requires delegated permission ``TermStore.ReadWrite.All``.
+CSV format:
+  group,set,term,parent_term
+  Rows are processed in order — parents must appear before children.
 
-Usage:
-    python import_term_set.py
+Requires delegated permission TermStore.ReadWrite.All.
 """
 
-import json
 from pathlib import Path
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
 
-data_file = (Path(__file__).parent / "../../data/regions.json").resolve()
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
-store = client.sites.root.term_store
-
-
-def _import_terms(terms, parent, depth=2):
+def _import_terms(collection, terms):
     for t in terms:
-        node = parent.get_or_add(t["name"]).execute_query()
-        print(f"{'  ' * depth} Term: {t['name']}")
-        for child in t.get("children", []):
-            _import_terms([child], node.children, depth + 1)
+        node = collection.get_or_add(t["name"])
+        _import_terms(node.children, t.get("children", []))
 
 
-with open(data_file) as f:
-    for group_data in json.load(f):
-        group = store.groups.get_or_add(group_data["name"]).execute_query()
-        print(f"Group: {group_data['name']}")
-        for set_data in group_data.get("sets", []):
-            term_set = group.sets.get_or_add(set_data["name"]).execute_query()
-            print(f"  Set: {set_data['name']}")
-            _import_terms(set_data.get("children", []), term_set.children, 2)
+def main():
+    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
-print("Done")
+    json_path = Path("../../data/regions.json")
+    if not json_path.exists():
+        raise FileNotFoundError(json_path)
+
+    store = client.sites.root.term_store
+    store.import_from_json(json_path).execute_query()
+    print(f"Imported from {json_path}")
+
+
+if __name__ == "__main__":
+    main()
