@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
@@ -183,6 +184,61 @@ class GraphClient(ClientRuntimeContext):
             client_id: Application client ID
         """
         self.pending_request().with_device_flow(client_id)
+        return self
+
+    def require_application_permission(self, scope: str) -> Self:
+        """
+        Exit if the application lacks the required Graph application permission.
+
+        Typical usage at the top of example scripts:
+
+            client = (
+                GraphClient(tenant=tenant)
+                .with_client_secret(client_id, secret)
+                .require_application_permission("DeviceManagementConfiguration.Read.All")
+            )
+
+        Args:
+            scope: Application permission name (e.g. "DeviceManagementConfiguration.Read.All")
+        """
+        from office365.directory.permissions.guard import has_app_permission
+        from office365.runtime.client_request_exception import ClientRequestException
+
+        client_id = self.pending_request().authentication_context.client_id
+        try:
+            if not has_app_permission(self, scope, client_id):
+                print(f"Missing required application permission: {scope}")
+                sys.exit(1)
+        except ClientRequestException:
+            print(f"❌ Could not verify permission '{scope}' — ensure Application.Read.All is granted.")
+            sys.exit(1)
+        return self
+
+    def require_role(self, *role_names: str) -> Self:
+        """
+        Exit if the signed-in user lacks at least one of the required directory roles.
+
+        Typical usage:
+
+            client = (
+                GraphClient(tenant=tenant)
+                .with_token_interactive(client_id, admin_upn)
+                .require_role("Global Administrator", "Privileged Role Administrator")
+            )
+
+        Args:
+            *role_names: Directory role display names (e.g. "Global Administrator")
+        """
+        from office365.directory.permissions.guard import has_role
+        from office365.runtime.client_request_exception import ClientRequestException
+
+        try:
+            if not has_role(self, *role_names):
+                print(f"Need one of: {', '.join(role_names)}")
+                sys.exit(1)
+        except ClientRequestException:
+            print("Could not verify roles - ensure RoleManagement.Read.Directory is granted.")
+            sys.exit(1)
         return self
 
     def with_transport(

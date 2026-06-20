@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from typing import Any, Callable, Dict, List, Optional
 
@@ -33,6 +35,7 @@ class AuthenticationContext:
         self._token_cache = token_cache
         self._token_callback = None
         self._environment = environment
+        self._client_id: str | None = None
 
     def acquire_token(self) -> TokenResponse:
         """Acquire access token"""
@@ -56,6 +59,7 @@ class AuthenticationContext:
         Args:
             client_id: The OAuth client id of the calling application.
         """
+        self._client_id = client_id
         import msal
 
         app = msal.PublicClientApplication(client_id, authority=self.authority_url)
@@ -78,6 +82,7 @@ class AuthenticationContext:
             thumbprint (str): Thumbprint
             private_key (str): Private key
         """
+        self._client_id = client_id
         import msal
 
         app = msal.ConfidentialClientApplication(
@@ -104,6 +109,7 @@ class AuthenticationContext:
             client_id (str): The OAuth client id of the calling application.
             client_secret (str): Client secret
         """
+        self._client_id = client_id
         import msal
 
         app = msal.ConfidentialClientApplication(
@@ -126,6 +132,7 @@ class AuthenticationContext:
             client_id (str): The OAuth client id of the calling application.
             username (str): Typically a UPN in the form of an email address.
         """
+        self._client_id = client_id
         import msal
 
         app = msal.PublicClientApplication(client_id, authority=self.authority_url)
@@ -158,6 +165,7 @@ class AuthenticationContext:
             username (str): Typically a UPN in the form of an email address.
             password (str): The password.
         """
+        self._client_id = client_id
         import msal
 
         app = msal.PublicClientApplication(
@@ -180,6 +188,11 @@ class AuthenticationContext:
             return result
 
         return self.with_access_token(_acquire_token)
+
+    @property
+    def client_id(self) -> str | None:
+        """The application (client) ID used for authentication."""
+        return self._client_id
 
     @property
     def authority_url(self) -> str:

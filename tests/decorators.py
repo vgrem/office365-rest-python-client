@@ -12,6 +12,7 @@ from office365.directory.permissions.guard import (
     has_role,
 )
 from office365.graph_client import GraphClient
+from office365.runtime.client_request_exception import ClientRequestException
 
 from tests import test_client_id
 
@@ -35,7 +36,10 @@ def requires_application(*app_roles: str) -> Callable[[T], T]:
             if not client:
                 self.skipTest("No client available for permission check")
 
-            permissions = _cached_app_permissions(client, test_client_id)
+            try:
+                permissions = _cached_app_permissions(client, test_client_id)
+            except ClientRequestException:
+                self.skipTest("Could not verify app permissions — permission check endpoint requires additional scopes")
 
             if not any(role.value in app_roles for role in permissions):
                 required = ", ".join(f"'{r}'" for r in app_roles)
@@ -73,10 +77,13 @@ def requires_delegated(
                 self.skipTest("No client available")
             assert client is not None
 
-            has_scope = any(has_delegated_permission(client, s, test_client_id) for s in scopes)
-            has_require = not require_roles or any(has_role(client, r) for r in require_roles)
-            has_bypass = any(has_role(client, r) for r in (bypass_roles or []))
-            has_license = not require_licenses or any(lic in _cached_licenses(client) for lic in require_licenses)
+            try:
+                has_scope = any(has_delegated_permission(client, s, test_client_id) for s in scopes)
+                has_require = not require_roles or any(has_role(client, r) for r in require_roles)
+                has_bypass = any(has_role(client, r) for r in (bypass_roles or []))
+                has_license = not require_licenses or any(lic in _cached_licenses(client) for lic in require_licenses)
+            except ClientRequestException:
+                self.skipTest("Could not verify permissions — permission check endpoint requires additional scopes")
 
             if has_bypass or (has_scope and has_require and has_license):
                 return test_method(self, *args, **kwargs)
