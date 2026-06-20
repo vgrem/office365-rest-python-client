@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from office365.directory.security.host import Host
 from office365.directory.security.ssl_certificate import SslCertificate
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.security.host import Host
 
 
 class HostPort(Entity):
@@ -40,6 +43,7 @@ class HostPort(Entity):
         """Gets the host property"""
         return self.properties.get("host", Host(self.context, ResourcePath("host", self.resource_path)))
 
+    @odata(name="mostRecentSslCertificate")
     @property
     def most_recent_ssl_certificate(self) -> SslCertificate:
         """Gets the mostRecentSslCertificate property"""

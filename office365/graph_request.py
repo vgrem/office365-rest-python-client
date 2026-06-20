@@ -158,3 +158,7 @@ class GraphRequest(ODataRequest):
     def version(self, value: GraphVersion) -> None:
         """Set the Graph API version."""
         self._version = value
+
+    @property
+    def authentication_context(self) -> AuthenticationContext:
+        return self._auth_context

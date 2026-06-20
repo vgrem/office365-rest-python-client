@@ -9,17 +9,14 @@ Requires application permission ``ThreatAssessment.ReadWrite.All``.
 https://learn.microsoft.com/en-us/graph/api/informationprotection-post-threatassessmentrequests
 """
 
-import sys
-
-from office365.directory.permissions.guard import has_app_permission
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-
-if not has_app_permission(client, "ThreatAssessment.ReadWrite.All", test_client_id):
-    print("Need ThreatAssessment.ReadWrite.All application permission granted to the app.")
-    sys.exit(1)
+client = (
+    GraphClient(tenant=test_tenant)
+    .with_client_secret(test_client_id, test_client_secret)
+    .require_application_permission("ThreatAssessment.ReadWrite.All")
+)
 
 # 1. Assess a URL for phishing
 url_result = client.information_protection.create_url_assessment(

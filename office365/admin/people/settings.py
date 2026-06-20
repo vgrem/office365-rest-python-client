@@ -2,11 +2,13 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.people.profile_card_property import ProfileCardProperty
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PeopleAdminSettings(Entity):
     """Represents a setting to control people-related admin settings in the tenant."""
 
+    @odata(name="profileCardProperties")
     @property
     def profile_card_properties(self) -> EntityCollection[ProfileCardProperty]:
         """Contains a collection of the properties an administrator has defined as visible on the

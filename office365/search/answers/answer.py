@@ -35,5 +35,5 @@ class SearchAnswer(Entity):
         return self.properties.get("webUrl", None)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.search.searchAnswer"

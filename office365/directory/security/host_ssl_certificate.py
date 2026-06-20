@@ -1,19 +1,25 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from office365.directory.security.host import Host
 from office365.directory.security.ssl_certificate import SslCertificate
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.security.host import Host
 
 
 class HostSslCertificate(Entity):
+    @odata(name="firstSeenDateTime")
     @property
     def first_seen_date_time(self) -> datetime:
         """Gets the firstSeenDateTime property"""
         return self.properties.get("firstSeenDateTime", datetime.min)
 
+    @odata(name="lastSeenDateTime")
     @property
     def last_seen_date_time(self) -> datetime:
         """Gets the lastSeenDateTime property"""
@@ -24,6 +30,7 @@ class HostSslCertificate(Entity):
         """Gets the host property"""
         return self.properties.get("host", Host(self.context, ResourcePath("host", self.resource_path)))
 
+    @odata(name="sslCertificate")
     @property
     def ssl_certificate(self) -> SslCertificate:
         """Gets the sslCertificate property"""

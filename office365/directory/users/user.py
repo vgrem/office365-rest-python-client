@@ -623,8 +623,9 @@ class User(DirectoryObject):
         """ """
         return self.properties.get("deviceEnrollmentLimit", None)
 
+    @odata(name="signInActivity")
     @property
-    def sign_in_activity(self):
+    def sign_in_activity(self) -> SignInActivity:
         """Get the last signed-in date and request ID of the sign-in for a given user. Read-only."""
         return self.properties.get("signInActivity", SignInActivity())
 

@@ -15,7 +15,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 class UserProcessingResult(Entity):
     @property
-    def completed_date_time(self) -> datetime:
+    def completed_date_time(self) -> Optional[datetime]:
         """Gets the completedDateTime property"""
         return self.properties.get("completedDateTime", datetime.min)
 
@@ -30,12 +30,12 @@ class UserProcessingResult(Entity):
         return self.properties.get("processingStatus", LifecycleWorkflowProcessingStatus.queued)
 
     @property
-    def scheduled_date_time(self) -> datetime:
+    def scheduled_date_time(self) -> Optional[datetime]:
         """Gets the scheduledDateTime property"""
         return self.properties.get("scheduledDateTime", datetime.min)
 
     @property
-    def started_date_time(self) -> datetime:
+    def started_date_time(self) -> Optional[datetime]:
         """Gets the startedDateTime property"""
         return self.properties.get("startedDateTime", datetime.min)
 

@@ -7,6 +7,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Incident(Entity):
@@ -39,8 +40,9 @@ class Incident(Entity):
         """Array of comments created by the Security Operations (SecOps) team when the incident is managed."""
         return self.properties.get("comments", ClientValueCollection(AlertComment))
 
+    @odata(name="createdDateTime")
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Time when the incident was first created."""
         return self.properties.get("createdDateTime", datetime.min)
 
@@ -55,9 +57,3 @@ class Incident(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.incident"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"createdDateTime": self.created_datetime}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

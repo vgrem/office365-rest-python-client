@@ -1,13 +1,15 @@
-from office365.directory.authentication.conditions.event_listener import (
-    AuthenticationEventListener,
-)
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.directory.identities.api_connector import IdentityApiConnector
 from office365.directory.identities.conditional_access_root import ConditionalAccessRoot
-from office365.directory.identities.providers.base_collection import (
-    IdentityProviderBaseCollection,
-)
+from office365.directory.identities.providers.base_collection import IdentityProviderBaseCollection
 from office365.directory.identities.userflows.attribute import IdentityUserFlowAttribute
 from office365.directory.identities.userflows.b2x.user_flow import B2XIdentityUserFlow
+from office365.directory.security.health_issue import HealthIssue
+from office365.directory.security.identity_accounts import IdentityAccounts
+from office365.directory.security.sensor import Sensor
+from office365.directory.security.sensor_candidate import SensorCandidate
+from office365.directory.security.sensor_candidate_activation_configuration import SensorCandidateActivationConfiguration
+from office365.directory.security.settings_container import SettingsContainer
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -26,18 +28,12 @@ class IdentityContainer(Entity):
         """Represents entry point for API connectors."""
         return self.properties.get(
             "apiConnectors",
-            EntityCollection(
-                self.context,
-                IdentityApiConnector,
-                ResourcePath("apiConnectors", self.resource_path),
-            ),
+            EntityCollection(self.context, IdentityApiConnector, ResourcePath("apiConnectors", self.resource_path)),
         )
 
     @odata(name="authenticationEventListeners")
     @property
-    def authentication_event_listeners(
-        self,
-    ) -> EntityCollection[AuthenticationEventListener]:
+    def authentication_event_listeners(self) -> EntityCollection[AuthenticationEventListener]:
         """Get the collection of authenticationListener resources supported by the onSignupStart event."""
         return self.properties.get(
             "authenticationEventListeners",
@@ -72,11 +68,7 @@ class IdentityContainer(Entity):
         """Represents entry point for B2X/self-service sign-up identity userflows."""
         return self.properties.get(
             "b2xUserFlows",
-            EntityCollection(
-                self.context,
-                B2XIdentityUserFlow,
-                ResourcePath("b2xUserFlows", self.resource_path),
-            ),
+            EntityCollection(self.context, B2XIdentityUserFlow, ResourcePath("b2xUserFlows", self.resource_path)),
         )
 
     @odata(name="userFlowAttributes")
@@ -86,8 +78,62 @@ class IdentityContainer(Entity):
         return self.properties.get(
             "userFlowAttributes",
             EntityCollection(
-                self.context,
-                IdentityUserFlowAttribute,
-                ResourcePath("userFlowAttributes", self.resource_path),
+                self.context, IdentityUserFlowAttribute, ResourcePath("userFlowAttributes", self.resource_path)
             ),
         )
+
+    @property
+    def health_issues(self) -> EntityCollection[HealthIssue]:
+        """Gets the healthIssues property"""
+        return self.properties.get(
+            "healthIssues",
+            EntityCollection[HealthIssue](self.context, HealthIssue, ResourcePath("healthIssues", self.resource_path)),
+        )
+
+    @property
+    def identity_accounts(self) -> EntityCollection[IdentityAccounts]:
+        """Gets the identityAccounts property"""
+        return self.properties.get(
+            "identityAccounts",
+            EntityCollection[IdentityAccounts](
+                self.context, IdentityAccounts, ResourcePath("identityAccounts", self.resource_path)
+            ),
+        )
+
+    @property
+    def sensor_candidate_activation_configuration(self) -> SensorCandidateActivationConfiguration:
+        """Gets the sensorCandidateActivationConfiguration property"""
+        return self.properties.get(
+            "sensorCandidateActivationConfiguration",
+            SensorCandidateActivationConfiguration(
+                self.context, ResourcePath("sensorCandidateActivationConfiguration", self.resource_path)
+            ),
+        )
+
+    @property
+    def sensor_candidates(self) -> EntityCollection[SensorCandidate]:
+        """Gets the sensorCandidates property"""
+        return self.properties.get(
+            "sensorCandidates",
+            EntityCollection[SensorCandidate](
+                self.context, SensorCandidate, ResourcePath("sensorCandidates", self.resource_path)
+            ),
+        )
+
+    @property
+    def sensors(self) -> EntityCollection[Sensor]:
+        """Gets the sensors property"""
+        return self.properties.get(
+            "sensors", EntityCollection[Sensor](self.context, Sensor, ResourcePath("sensors", self.resource_path))
+        )
+
+    @property
+    def settings(self) -> SettingsContainer:
+        """Gets the settings property"""
+        return self.properties.get(
+            "settings", SettingsContainer(self.context, ResourcePath("settings", self.resource_path))
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.IdentityContainer"

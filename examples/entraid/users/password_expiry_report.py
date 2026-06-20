@@ -17,9 +17,19 @@ from tests import test_client_id, test_client_secret, test_tenant
 def main():
     client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
-    users = client.users.select([
-        "id", "userPrincipalName", "displayName", "passwordPolicies", "lastPasswordChangeDateTime",
-    ]).filter("accountEnabled eq true and passwordPolicies ne 'DisablePasswordExpiration'").execute_query()
+    users = (
+        client.users.select(
+            [
+                "id",
+                "userPrincipalName",
+                "displayName",
+                "passwordPolicies",
+                "lastPasswordChangeDateTime",
+            ]
+        )
+        .filter("accountEnabled eq true and passwordPolicies ne 'DisablePasswordExpiration'")
+        .execute_query()
+    )
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=90)
     for u in users:
