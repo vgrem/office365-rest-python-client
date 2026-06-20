@@ -206,6 +206,7 @@ class GraphClient(ClientRuntimeContext):
 
         client_id = self.pending_request().authentication_context.client_id
         try:
+            assert client_id is not None
             if not has_app_permission(self, scope, client_id):
                 print(f"Missing required application permission: {scope}")
                 sys.exit(1)
