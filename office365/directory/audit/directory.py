@@ -53,7 +53,7 @@ class DirectoryAudit(Entity):
 
     @odata(name="initiatedBy")
     @property
-    def initiated_by(self):
+    def initiated_by(self) -> AuditActivityInitiator:
         """
         Indicates information about the user or app initiated the activity.
         """

@@ -18,7 +18,7 @@ def main():
         for cred in app.key_credentials:
             if cred.endDateTime and cred.endDateTime <= cutoff:
                 days = (cred.endDateTime - datetime.now(timezone.utc)).days
-                hint = cred.display_name or cred.key_id or ""
+                hint = cred.displayName or cred.keyId or ""
                 print(f"  {app.display_name}  hint={hint}  expires={cred.endDateTime.date()}  ({days}d)")
 
 

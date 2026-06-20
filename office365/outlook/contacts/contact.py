@@ -134,6 +134,7 @@ class Contact(OutlookItem):
         """Gets the birthday property"""
         return self.properties.get("birthday", datetime.min)
 
+    @odata(name="businessAddress")
     @property
     def business_address(self) -> PhysicalAddress:
         """Gets the businessAddress property"""
@@ -179,6 +180,7 @@ class Contact(OutlookItem):
         """Gets the homePhones property"""
         return self.properties.get("homePhones", StringCollection(None))
 
+    @odata(name="imAddresses")
     @property
     def im_addresses(self) -> StringCollection:
         """Gets the imAddresses property"""
@@ -193,6 +195,10 @@ class Contact(OutlookItem):
     def job_title(self) -> Optional[str]:
         """Gets the jobTitle property"""
         return self.properties.get("jobTitle", None)
+
+    @job_title.setter
+    def job_title(self, value: str):
+        self.set_property("jobTitle", value)
 
     @property
     def middle_name(self) -> Optional[str]:
@@ -224,6 +230,7 @@ class Contact(OutlookItem):
         """Gets the personalNotes property"""
         return self.properties.get("personalNotes", None)
 
+    @odata(name="primaryEmailAddress")
     @property
     def primary_email_address(self) -> EmailAddress:
         """Gets the primaryEmailAddress property"""
@@ -234,6 +241,7 @@ class Contact(OutlookItem):
         """Gets the profession property"""
         return self.properties.get("profession", None)
 
+    @odata(name="secondaryEmailAddress")
     @property
     def secondary_email_address(self) -> EmailAddress:
         """Gets the secondaryEmailAddress property"""
@@ -249,6 +257,7 @@ class Contact(OutlookItem):
         """Gets the surname property"""
         return self.properties.get("surname", None)
 
+    @odata(name="tertiaryEmailAddress")
     @property
     def tertiary_email_address(self) -> EmailAddress:
         """Gets the tertiaryEmailAddress property"""

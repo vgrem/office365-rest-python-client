@@ -62,7 +62,7 @@ from office365.outlook.calendar.location_constraint import LocationConstraint
 from office365.outlook.calendar.meetingtimes.suggestions_result import MeetingTimeSuggestionsResult
 from office365.outlook.calendar.meetingtimes.time_constraint import TimeConstraint
 from office365.outlook.contacts.collection import ContactCollection
-from office365.outlook.contacts.folder import ContactFolder
+from office365.outlook.contacts.folders.collection import ContactFolderCollection
 from office365.outlook.convert_id_result import ConvertIdResult
 from office365.outlook.exchangeidformat import ExchangeIdFormat
 from office365.outlook.mail.folders.collection import MailFolderCollection
@@ -858,11 +858,11 @@ class User(DirectoryObject):
         )
 
     @property
-    def contact_folders(self) -> DeltaCollection[ContactFolder]:
+    def contact_folders(self) -> ContactFolderCollection:
         """Get the contact folder collection in the default Contacts folder of the signed-in user."""
         return self.properties.get(
             "contactFolders",
-            DeltaCollection(self.context, ContactFolder, ResourcePath("contactFolders", self.resource_path)),
+            ContactFolderCollection(self.context, ResourcePath("contactFolders", self.resource_path)),
         )
 
     @property

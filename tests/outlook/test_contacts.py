@@ -60,8 +60,8 @@ class TestOutlookContacts(GraphDelegatedTestCase):
         if not created:
             self.skipTest("No contact created from previous test")
 
-        self.assertIsNotNone(created.get_property("displayName"))
-        self.assertIsNotNone(created.get_property("emailAddresses"))
+        self.assertIsNotNone(created.display_name)
+        self.assertIsNotNone(created.email_addresses)
 
     @requires_delegated(
         "Contacts.ReadWrite",

@@ -22,5 +22,13 @@ class AuditActivityInitiator(ClientValue):
     user: AppIdentity = field(default_factory=AppIdentity)
 
     @property
+    def user_principal_name(self) -> str:
+        """The user principal name if this is a user-initiated activity."""
+        return getattr(self.user, "userPrincipalName", None) or ""
+
+    def __str__(self) -> str:
+        return self.user_principal_name or str(self.user) or str(self.app) or "Unknown"
+
+    @property
     def entity_type_name(self):
         return "microsoft.graph.AuditActivityInitiator"

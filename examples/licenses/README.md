@@ -1,7 +1,7 @@
 # Licensing
 
 Examples for working with Microsoft 365 licenses via Graph API —
-SKU inventory, license assignment, and usage reports.
+SKU inventory, license assignment, service plan management, and usage reports.
 
 ---
 
@@ -21,6 +21,10 @@ SKU inventory, license assignment, and usage reports.
 |---|---|
 | License inventory and unlicensed user report | [`report.py`](./report.py) |
 | License assignment and SKU switch | [`assign.py`](./assign.py) |
+| **Disable a service plan within a license** | [`modify_service_plans.py`](./modify_service_plans.py) |
+| **Remove a license from a user** | [`remove.py`](./remove.py) |
+| **Find all users with a specific SKU** | [`find_licensed.py`](./find_licensed.py) |
+| **Full license usage report** | [`usage_report.py`](./usage_report.py) |
 
 ---
 

@@ -5,53 +5,83 @@ import string
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.user_credential import UserCredential
 
-from tests.config import load_config
+from tests.settings import (
+    admin_site_url as test_admin_site_url,
+)
+from tests.settings import (
+    admin_username as test_admin_principal_name,
+)
+from tests.settings import (
+    cert_thumbprint as test_cert_thumbprint,
+)
+from tests.settings import (
+    client_id as test_client_id,
+)
+from tests.settings import (
+    client_secret as test_client_secret,
+)
+from tests.settings import (
+    password as test_password,
+)
+from tests.settings import (
+    root_site_url as test_root_site_url,
+)
+from tests.settings import (
+    site_url as test_site_url,
+)
+from tests.settings import (
+    team_site_url as test_team_site_url,
+)
+from tests.settings import (
+    tenant as test_tenant,
+)
+from tests.settings import (
+    tenant_prefix as test_tenant_name,
+)
+from tests.settings import (
+    test_user1 as test_user_principal_name,
+)
+from tests.settings import (
+    test_user2 as test_user_principal_name_alt,
+)
+from tests.settings import (
+    username as test_username,
+)
+
+__all__ = [
+    "test_admin_credentials",
+    "test_admin_principal_name",
+    "test_admin_site_url",
+    "test_cert_thumbprint",
+    "test_cert_path",
+    "test_client_credentials",
+    "test_client_id",
+    "test_client_secret",
+    "test_password",
+    "test_root_site_url",
+    "test_site_url",
+    "test_team_site_url",
+    "test_tenant",
+    "test_tenant_name",
+    "test_user_credentials",
+    "test_user_principal_name",
+    "test_user_principal_name_alt",
+    "test_username",
+    "create_unique_name",
+    "create_unique_file_name",
+]
+
+test_client_credentials = ClientCredential(test_client_id, test_client_secret)
+
+test_user_credentials = UserCredential(test_username, test_password)
+test_admin_credentials = UserCredential(test_username, test_password)
+
+test_cert_path = f"{os.path.dirname(__file__)}/selfsigncert.pem"
 
 
 def create_unique_name(prefix: str) -> str:
     return prefix + "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
 
-def create_unique_file_name(prefix, ext):
+def create_unique_file_name(prefix: str, ext: str) -> str:
     return ".".join([create_unique_name(prefix), ext])
-
-
-settings = load_config()
-
-# shortcuts
-test_tenant_name = settings.get("default", "tenant_prefix")
-test_tenant = settings.get("default", "tenant")
-
-test_client_id = settings.get("client_credentials", "client_id")
-test_client_secret = settings.get("client_credentials", "client_secret")
-
-
-test_client_credentials = ClientCredential(
-    settings.get("client_credentials", "client_id"),
-    settings.get("client_credentials", "client_secret"),
-)
-
-test_user_credentials = UserCredential(
-    settings.get("user_credentials", "username"),
-    settings.get("user_credentials", "password"),
-)
-
-test_admin_credentials = UserCredential(
-    settings.get("user_credentials", "username"),
-    settings.get("user_credentials", "password"),
-)
-
-test_site_url = settings.get("default", "site_url")
-test_root_site_url = settings.get("default", "root_site_url")
-test_team_site_url = settings.get("default", "team_site_url")
-test_admin_site_url = settings.get("default", "admin_site_url")
-
-test_user_principal_name = settings.get("users", "test_user1")
-test_user_principal_name_alt = settings.get("users", "test_user2")
-test_admin_principal_name = settings.get("users", "test_user3")
-
-test_cert_thumbprint = settings.get("certificate_credentials", "thumbprint")
-test_cert_path = f"{os.path.dirname(__file__)}/selfsigncert.pem"
-
-test_username = settings.get("user_credentials", "username")
-test_password = settings.get("user_credentials", "password")

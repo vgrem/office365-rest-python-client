@@ -1,13 +1,4 @@
-# OpenClaw workspace files (agent local state)
-.openclaw/
-AGENTS.md
-HEARTBEAT.md
-IDENTITY.md
-SOUL.md
-TOOLS.md
-USER.md
-MEMORY.md
-memory/
+.env
 
 # Python artifacts
 __pycache__/

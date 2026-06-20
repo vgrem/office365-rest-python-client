@@ -24,6 +24,12 @@ class AppIdentity(ClientValue):
     servicePrincipalId: str | None = None
     servicePrincipalName: str | None = None
 
+    def __str__(self) -> str:
+        return self.displayName or self.servicePrincipalName or ""
+
+    def __repr__(self) -> str:
+        return self.appId or self.servicePrincipalId or ""
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.AppIdentity"

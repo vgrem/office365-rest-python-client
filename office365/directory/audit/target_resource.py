@@ -21,6 +21,12 @@ class TargetResource(ClientValue):
         default_factory=lambda: ClientValueCollection(ModifiedProperty)
     )
 
+    def __str__(self) -> str:
+        return self.displayName or self.userPrincipalName or ""
+
+    def __repr__(self) -> str:
+        return self.id or ""
+
     @property
     def entity_type_name(self):
         return "microsoft.graph.TargetResource"

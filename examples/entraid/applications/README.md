@@ -6,7 +6,7 @@ Manage app registrations, certificate credentials, and API permissions.
 
 | What | File | Notes |
 |------|------|-------|
-| **Add certificate** | [`add_cert.py`](./add_cert.py) | Upload a certificate to an app registration |
+| **Add certificate** | [`add_cert.py`](rotate_cert.py) | Upload a certificate to an app registration |
 | **Add password** | [`app_password.py`](rotate_password.py) | Create a client secret for an app |
 | **Get by app ID** | [`get_by_app_id.py`](./get_by_app_id.py) | Find an app registration by its client ID |
 

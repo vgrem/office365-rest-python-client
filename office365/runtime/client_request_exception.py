@@ -26,7 +26,11 @@ class ClientRequestException(RequestException):
             error = {}
 
         details = error.get("details", [])
-        if error.get("code") == "nameAlreadyExists" or any(d.get("code") == "ConflictingObjects" for d in details):
+        if (
+            error.get("code") == "nameAlreadyExists"
+            or error.get("code") == "ErrorFolderExists"
+            or any(d.get("code") == "ConflictingObjects" for d in details)
+        ):
             exc: ClientRequestException = DuplicatedObjectException(response=response)
         else:
             exc = cls(response=response)

@@ -329,12 +329,21 @@ class ServicePrincipal(DirectoryObject):
 
     @odata(name="keyCredentials")
     @property
-    def key_credentials(self):
+    def key_credentials(self) -> ClientValueCollection[KeyCredential]:
         """
         The collection of key credentials associated with the service principal. Not nullable.
         Supports $filter (eq, not, ge, le).
         """
         return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))
+
+    @odata(name="passwordCredentials")
+    @property
+    def password_credentials(self) -> ClientValueCollection[PasswordCredential]:
+        """
+        The collection of password credentials associated with the service principal. Not nullable.
+        Supports $filter (eq, not, ge, le).
+        """
+        return self.properties.setdefault("passwordCredentials", ClientValueCollection(PasswordCredential))
 
     @property
     def login_url(self) -> Optional[str]:
