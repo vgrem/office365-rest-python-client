@@ -13,7 +13,7 @@ https://learn.microsoft.com/en-us/graph/api/resources/mailfolder
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 
 def walk_folders(client: GraphClient, parent_path="inbox", indent=0):
@@ -32,7 +32,7 @@ def walk_folders(client: GraphClient, parent_path="inbox", indent=0):
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     # -- Step 1: create a folder --
     inbox = client.me.mail_folders["inbox"]

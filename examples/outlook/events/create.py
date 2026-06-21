@@ -12,15 +12,9 @@ https://learn.microsoft.com/en-us/graph/api/user-post-events
 from datetime import datetime, timedelta
 
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_user_principal_name,
-    test_username,
-)
+from tests.settings import client_id, password, tenant, user_principal, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 when = datetime.utcnow() + timedelta(days=1)
 event = client.me.calendar.events.add(
@@ -28,6 +22,6 @@ event = client.me.calendar.events.add(
     body="Let's grab lunch together.",
     start=when,
     end=when + timedelta(hours=1),
-    attendees=[test_user_principal_name],
+    attendees=[user_principal],
 ).execute_query()
 print(f"Event created: {event.subject}  (ID: {event.id})")

@@ -24,18 +24,18 @@ if not sku:
 
 print(f"\nAvailable service plans in {sku.sku_part_number}:")
 for p in sku.service_plans:
-    print(f"  [{p.service_plan_name:45s}]  {p.service_plan_id}")
+    print(f"  [{p.servicePlanName:45s}]  {p.servicePlanId}")
 
 # 2. Choose which plans to disable
 plan_name = input("\nService plan name to disable (e.g. EXCHANGE_S_ENTERPRISE): ").strip()
-disabled = [p for p in sku.service_plans if p.service_plan_name == plan_name]
+disabled = [p for p in sku.service_plans if p.servicePlanId == plan_name]
 if not disabled:
     raise SystemExit(f"Service plan '{plan_name}' not found in SKU.")
 
 # 3. Reassign the license with the plan disabled
 user = client.users.get_by_principal_name(test_user_principal_name)
 user.assign_license(
-    add_licenses=[AssignedLicense(skuId=sku.sku_id, disabledPlans=[plan.service_plan_id for plan in disabled])],
+    add_licenses=[AssignedLicense(skuId=sku.sku_id, disabledPlans=[plan.servicePlanId for plan in disabled])],
     remove_licenses=[],
 ).execute_query()
 print(f"\nLicense '{sku.sku_part_number}' updated for {test_user_principal_name}")

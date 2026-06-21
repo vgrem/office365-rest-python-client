@@ -10,20 +10,15 @@ https://learn.microsoft.com/en-us/graph/api/team-put-teams?view=graph-rest-1.0
 """
 
 from office365.graph_client import GraphClient
-from tests import (
-    create_unique_name,
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_username,
-)
+from tests import create_unique_name
+from tests.settings import client_id, password, tenant, username
 
 
 def print_failure(retry_number, ex):
     print(f"  Attempt {retry_number}: Team provisioning still in progress...")
 
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 group_name = create_unique_name("Flight")
 group = client.groups.create_m365(group_name)
 team = group.add_team().execute_query_retry(failure_callback=print_failure)

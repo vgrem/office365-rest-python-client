@@ -20,6 +20,7 @@ class AlertCreationInformation(ClientValue):
     EventType: Optional[int] = None
     EventTypeBitmask: Optional[int] = None
     Filter: Optional[str] = None
+    List: Optional[str] = None
     Properties: Optional[dict] = None
     Status: Optional[int] = None
     Title: Optional[str] = None

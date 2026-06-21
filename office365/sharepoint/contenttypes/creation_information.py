@@ -19,6 +19,5 @@ class ContentTypeCreationInformation(ClientValue):
 
     Name: str
     Description: Optional[str] = None
-    group: Optional[str] = None
     Id: Optional[str] = None
     Group: str | None = None

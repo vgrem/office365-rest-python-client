@@ -10,8 +10,8 @@ Requires delegated permission ``Application.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-app = client.applications.get_by_app_id(test_client_id).get().execute_query()
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+app = client.applications.get_by_app_id(client_id).get().execute_query()
 print(app)

@@ -10,30 +10,17 @@ https://learn.microsoft.com/en-us/graph/api/reportroot-getteamsuseractivityuserc
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 PERIODS = ["D7", "D30", "D90"]
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 print("Teams activity report\n")
-
-# — Team counts per period —
-print("  Team counts by period:")
 for p in PERIODS:
-    report = client.reports.get_teams_team_counts(p).execute_query()
-    print(f"    {p}: {report.value}")
+    counts = client.reports.get_teams_team_counts(p).execute_query()
+    activity = client.reports.get_teams_user_activity_counts(p).execute_query()
+    print(f"  {p}: {counts.value} teams, {activity.value} active users")
 
-print()
-
-# — User activity counts —
-print("  Active users by period:")
-for p in PERIODS:
-    report = client.reports.get_teams_user_activity_counts(p).execute_query()
-    print(f"    {p}: {report.value}")
-
-print()
-
-# — Individual user activity detail (last 90 days) —
 detail = client.reports.get_teams_user_activity_user_counts("D90").execute_query()
-print(f"  Per-user activity (D90): {detail.value}")
+print(f"\n  Per-user activity (D90): {detail.value}")

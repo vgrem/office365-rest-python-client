@@ -74,6 +74,7 @@ from office365.sharepoint.webhooks.subscription_collection import SubscriptionCo
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
+    from office365.sharepoint.webs.web import Web
 
 
 class List(SecurableObject):
@@ -86,6 +87,26 @@ class List(SecurableObject):
 
     def __repr__(self):
         return self.title or self.entity_type_name
+
+    def add_alert(self, title: str, alert_type: int = 1, event_bitmask: int = 1) -> Self:
+        """Create an alert on this list for the current user."""
+
+        def _add_alert(url: str | None) -> None:
+            from office365.sharepoint.alerts.creation_information import AlertCreationInformation
+
+            assert url is not None
+            params = AlertCreationInformation(
+                Title=title,
+                AlertType=alert_type,
+                EventTypeBitmask=event_bitmask,
+                List=url,
+            )
+            self.context.web.current_user.alerts.add(params)
+
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(
+            lambda _: _add_alert(self.root_folder.server_relative_url)
+        )
+        return self
 
     def export(
         self,
@@ -212,20 +233,22 @@ class List(SecurableObject):
     ):
         """Apply a retention label ("compliance tag") to a list."""
 
-        def _set_compliance_tag():
+        def _set_compliance_tag(url: str | None) -> None:
             from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 
-            assert self.root_folder.server_relative_url is not None
+            assert url is not None
             SPPolicyStoreProxy.set_list_compliance_tag(
                 self.context,
-                self.root_folder.server_relative_url,
+                url,
                 compliance_tag_value,
                 block_delete,
                 block_edit,
                 sync_to_items,
             )
 
-        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _set_compliance_tag())
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(
+            lambda _: _set_compliance_tag(self.root_folder.server_relative_url)
+        )
         return self
 
     def get_metadata_navigation_settings(
@@ -1262,7 +1285,7 @@ class List(SecurableObject):
 
     @odata(name="ParentWeb")
     @property
-    def parent_web(self):
+    def parent_web(self) -> Web:
         """Gets a value that specifies the web where list resides."""
         from office365.sharepoint.webs.web import Web
 

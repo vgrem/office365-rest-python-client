@@ -1,4 +1,3 @@
-import os
 import random
 import string
 
@@ -10,6 +9,9 @@ from tests.settings import (
 )
 from tests.settings import (
     admin_username as test_admin_principal_name,
+)
+from tests.settings import (
+    cert_path as test_cert_path,
 )
 from tests.settings import (
     cert_thumbprint as test_cert_thumbprint,
@@ -39,10 +41,10 @@ from tests.settings import (
     tenant_prefix as test_tenant_name,
 )
 from tests.settings import (
-    test_user1 as test_user_principal_name,
+    user_principal as test_user_principal_name,
 )
 from tests.settings import (
-    test_user2 as test_user_principal_name_alt,
+    user_principal_alt as test_user_principal_name_alt,
 )
 from tests.settings import (
     username as test_username,
@@ -75,8 +77,6 @@ test_client_credentials = ClientCredential(test_client_id, test_client_secret)
 
 test_user_credentials = UserCredential(test_username, test_password)
 test_admin_credentials = UserCredential(test_username, test_password)
-
-test_cert_path = f"{os.path.dirname(__file__)}/selfsigncert.pem"
 
 
 def create_unique_name(prefix: str) -> str:

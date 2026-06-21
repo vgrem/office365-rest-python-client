@@ -1,7 +1,8 @@
-# Microsoft Purview (Compliance)
+# Microsoft Purview — Compliance & Information Protection
 
-Examples for working with Microsoft Purview via the Graph Security API —
-eDiscovery, records management, privacy (GDPR/CCPA), and threat assessment.
+Examples for working with Microsoft Purview compliance, records
+management, sensitivity labels, eDiscovery, subject rights, and
+threat assessment.
 
 ---
 
@@ -9,43 +10,52 @@ eDiscovery, records management, privacy (GDPR/CCPA), and threat assessment.
 
 | Permission | Description | Reference |
 |---|---|---|
-| `eDiscovery.ReadWrite.All` | Create and manage eDiscovery cases, custodians, searches | [eDiscovery permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#ediscovery-permissions) |
-| `RecordsManagement.ReadWrite.All` | Create retention labels with behaviors and triggers | [Records management permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#records-management-permissions) |
-| `SubjectRightsRequest.ReadWrite.All` | Create and manage GDPR/CCPA subject rights requests | [SRR permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#subject-rights-request-permissions) |
-| `ThreatAssessment.ReadWrite.All` | Submit URLs and files for threat assessment | [Threat assessment permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#threat-assessment-permissions) |
-
-Admin consent is required for all permissions above.
-
----
-
-## How Purview works
-
-```mermaid
-flowchart LR
-    A[eDiscovery] --> B[Create case]
-    B --> C[Add custodians]
-    C --> D[Run searches]
-    D --> E[Export results]
-    F[Retention labels] --> G[Trigger on content]
-    G --> H[Retain / delete]
-    I[Subject rights] --> J[Privacy requests]
-    K[Threat assessment] --> L[Scan URLs / files]
-```
+| `RecordsManagement.ReadWrite.All` | Create and manage retention labels | [Records management permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#records-management-permissions) |
+| `InformationProtectionPolicy.Read.All` | Read sensitivity labels | |
+| `ThreatAssessment.ReadWrite.All` | Submit URL/file threat assessments | |
+| `eDiscovery.ReadWrite.All` | Create eDiscovery cases and searches | |
+| `SubjectRightsRequest.ReadWrite.All` | Create and manage subject rights requests | |
+| `Sites.ReadWrite.All` | Apply labels to SharePoint files | |
 
 ---
 
-## Patterns
+## Examples
 
-| Category | Scenario | File | Permission |
-|---|---|---|---|
-| **Compliance** | eDiscovery case workflow: create case → add custodian → run search → close | [`ediscovery/create_and_search.py`](./ediscovery/create_and_search.py) | `eDiscovery.ReadWrite.All` |
-| **Records management** | Create retention label with 365-day retention, record behavior, delete disposition | [`records/retention_label.py`](./records/retention_label.py) | `RecordsManagement.ReadWrite.All` |
-| **Privacy / GDPR** | Create a subject rights request for data export under GDPR Article 15 | [`subject_rights/create_request.py`](./subject_rights/create_request.py) | `SubjectRightsRequest.ReadWrite.All` |
-| **Security** | Submit URL and file for phishing/malware threat assessment | [`threat_assessment/scan_url.py`](./threat_assessment/scan_url.py) | `ThreatAssessment.ReadWrite.All` |
-| **Information protection** | List and audit sensitivity labels | [`sensitivity_labels/apply.py`](./sensitivity_labels/apply.py) | `InformationProtectionPolicy.Read.All` |
-| **Information protection** | Sensitivity label usage analytics | [`sensitivity_labels/analytics.py`](./sensitivity_labels/analytics.py) | `InformationProtectionPolicy.Read.All` |
-| **Compliance** | Search partially indexed items (eDiscovery) | [`compliance/search_partially_indexed.py`](./compliance/search_partially_indexed.py) | `eDiscovery.ReadWrite.All` |
-| **Records management** | Auto-apply retention labels to unlabelled files | [`records/auto_apply_label.py`](./records/auto_apply_label.py) | `RecordsManagement.ReadWrite.All` |
+### Records Management
+
+| Scenario | File | Permission |
+|---|---|---|
+| Create a retention label | [`records/retention_label.py`](./records/retention_label.py) | `RecordsManagement.ReadWrite.All` |
+| List retention labels | [`records/list_retention_labels.py`](./records/list_retention_labels.py) | `RecordsManagement.Read.All` |
+| Auto-apply label to unlabeled files (Graph) | [`records/auto_apply_retention_label.py`](./records/auto_apply_retention_label.py) | `RecordsManagement.ReadWrite.All` + `Sites.ReadWrite.All` |
+| Auto-apply label via SharePoint CSOM | [`records/auto_apply_label.py`](./records/auto_apply_label.py) | `RecordsManagement.ReadWrite.All` + `Sites.Read.All` |
+
+### Sensitivity Labels
+
+| Scenario | File | Permission |
+|---|---|---|
+| List sensitivity labels | [`sensitivity_labels/apply.py`](./sensitivity_labels/apply.py) | `InformationProtectionPolicy.Read.All` |
+| Analyze label usage | [`sensitivity_labels/analytics.py`](./sensitivity_labels/analytics.py) | `InformationProtectionPolicy.Read.All` |
+
+### eDiscovery & Compliance
+
+| Scenario | File | Permission |
+|---|---|---|
+| eDiscovery full case workflow | [`ediscovery/create_and_search.py`](./ediscovery/create_and_search.py) | `eDiscovery.ReadWrite.All` |
+| Search partially indexed items | [`compliance/search_partially_indexed.py`](./compliance/search_partially_indexed.py) | `eDiscovery.ReadWrite.All` |
+
+### Subject Rights
+
+| Scenario | File | Permission |
+|---|---|---|
+| Create a subject rights request | [`subject_rights/create_request.py`](./subject_rights/create_request.py) | `SubjectRightsRequest.ReadWrite.All` |
+| List subject rights requests | [`subject_rights/list_requests.py`](./subject_rights/list_requests.py) | `SubjectRightsRequest.Read.All` |
+
+### Threat Assessment
+
+| Scenario | File | Permission |
+|---|---|---|
+| Submit URL/file threat assessment | [`threat_assessment/scan_url.py`](./threat_assessment/scan_url.py) | `ThreatAssessment.ReadWrite.All` |
 
 ---
 
@@ -58,10 +68,9 @@ client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
     "client_id", "client_secret"
 )
 
-# List eDiscovery cases
-cases = client.security.cases.ediscovery_cases.get().execute_query()
-for case in cases:
-    print(f"{case.display_name}  status: {case.status}")
+labels = client.security.labels.retention_labels.get().execute_query()
+for label in labels:
+    print(label.display_name)
 ```
 
 ---
@@ -69,7 +78,7 @@ for case in cases:
 ## Official docs
 
 - [Microsoft Purview overview](https://learn.microsoft.com/en-us/purview)
-- [eDiscovery API](https://learn.microsoft.com/en-us/graph/api/resources/security-ediscoverycase)
-- [Retention labels API](https://learn.microsoft.com/en-us/graph/api/resources/security-retentionlabel)
-- [Subject Rights Request API](https://learn.microsoft.com/en-us/graph/api/resources/security-subjectrightsrequest)
-- [Threat assessment API](https://learn.microsoft.com/en-us/graph/api/resources/threatassessmentrequest)
+- [Records management API](https://learn.microsoft.com/en-us/graph/api/resources/security-recordsmanagement-overview)
+- [eDiscovery API](https://learn.microsoft.com/en-us/graph/api/resources/security-ediscoveryoverview)
+- [Subject rights request API](https://learn.microsoft.com/en-us/graph/api/resources/security-subjectrightsrequest)
+- [Threat assessment API](https://learn.microsoft.com/en-us/graph/api/resources/threatassessment-api-overview)

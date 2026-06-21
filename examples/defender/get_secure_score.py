@@ -9,9 +9,9 @@ https://learn.microsoft.com/en-us/graph/api/security-list-securescorecontrolprof
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 profiles = client.security.secure_score_control_profiles.get().execute_query()
 for profile in profiles:

@@ -1,21 +1,16 @@
 """
 Create a subject rights request (GDPR/CCPA data subject request).
 
-Subject rights requests help manage data subject requests (DSRs)
-under privacy regulations like GDPR, CCPA, and others.
-
 Requires delegated permission ``SubjectRightsRequest.ReadWrite.All``.
 
 https://learn.microsoft.com/en-us/graph/api/security-post-subjectrightsrequests
 """
 
-from office365.directory.security.subjectrightsrequests.identity import (
-    SubjectRightsRequestIdentity,
-)
+from office365.directory.security.subjectrightsrequests.identity import SubjectRightsRequestIdentity
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 request = client.security.subject_rights_requests.add(
     type="export",

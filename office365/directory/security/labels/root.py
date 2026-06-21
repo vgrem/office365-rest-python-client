@@ -7,6 +7,7 @@ from office365.directory.security.labels.retention.collection import RetentionLa
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class LabelsRoot(Entity):
@@ -17,6 +18,7 @@ class LabelsRoot(Entity):
     the retention label and provide additional options to better manage and organize the content.
     """
 
+    @odata(name="retentionLabels")
     @property
     def retention_labels(self) -> RetentionLabelCollection:
         """Represents how customers can manage their data, whether and for how long to retain or delete it."""
@@ -65,6 +67,7 @@ class LabelsRoot(Entity):
             ),
         )
 
+    @odata(name="filePlanReferences")
     @property
     def file_plan_references(self) -> EntityCollection[FilePlanReferenceTemplate]:
         """Gets the filePlanReferences property"""

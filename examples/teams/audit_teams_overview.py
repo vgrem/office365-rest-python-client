@@ -7,11 +7,11 @@ TeamMember.Read.All, and Directory.Read.All.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-teams = client.teams.get().select(["id", "displayName", "visibility", "mailNickname", "description"]).execute_query()
+teams = client.teams.get_all().select(["id", "displayName", "visibility", "mailNickname", "description"]).execute_query()
 print(f"Found {len(teams)} teams\n")
 
 for team in teams:

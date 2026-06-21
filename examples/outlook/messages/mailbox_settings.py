@@ -1,5 +1,5 @@
 """
-Get and enable automatic replies (Out of Office).
+Mailbox settings: read and enable automatic replies (Out of Office).
 
 Shows how to read and update mailbox settings for automatic
 replies.
@@ -13,9 +13,9 @@ https://learn.microsoft.com/en-us/graph/api/user-update-mailboxsettings
 from datetime import datetime, timedelta
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 # Read current mailbox settings
 me = client.me.select(["MailboxSettings"]).get().execute_query()

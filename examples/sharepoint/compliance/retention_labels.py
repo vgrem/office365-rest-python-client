@@ -13,18 +13,18 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/compliance/compli
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 TAG_NAME = "Financial Records"  # Name of a compliance tag to apply
 
 
 def main():
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     # -- Step 1: list all available compliance tags in the site --
-    site = ctx.site.get().execute_query()
-
-    tags = site.get_available_tags().execute_query()
+    tags = ctx.site.get_available_tags().execute_query()
     print(f"Available compliance tags ({len(tags.value)}):\n")
 
     for tag in tags.value:

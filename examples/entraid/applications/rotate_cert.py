@@ -10,13 +10,13 @@ Requires delegated permission ``Application.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 cert_path = "../../selfsigncert.pem"
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-target_app = client.applications.get_by_app_id(test_client_id)
+target_app = client.applications.get_by_app_id(client_id)
 with open(cert_path, "rb") as f:
     cert_data = f.read()
 target_app.add_certificate(cert_data, "Internet Widgits Pty Ltd").execute_query()

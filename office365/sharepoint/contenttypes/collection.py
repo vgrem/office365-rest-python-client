@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from typing import Optional
 
+from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -37,6 +40,17 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             ServiceOperationPath("GetById", [content_type_id], self.resource_path),
             self,
         )
+
+    def get_or_add(self, name: str, description: str | None = None, group: str | None = None) -> ContentType:
+        info = ContentTypeCreationInformation(name, description, group)
+        return_type = self.add(info)
+
+        def _on_name_exists(error: ClientRequestException):
+            if not isinstance(error, DuplicatedObjectException):
+                raise error
+            self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
+
+        return return_type.on_error(_on_name_exists)
 
     def add(self, content_type_info: ContentTypeCreationInformation) -> ContentType:
         """Adds a new content type to the collection and returns a reference to the added SP.ContentType.

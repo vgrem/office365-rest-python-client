@@ -18,7 +18,7 @@ class EmailAddress(ClientValue):
     name: str | None = None
 
     def __str__(self):
-        return self.address or ""
+        return self.name or self.address or "(no email)"
 
     def __repr__(self):
         return f"{self.name or ''} <{self.address or ''}>"

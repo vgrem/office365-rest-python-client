@@ -9,11 +9,11 @@ Requires delegated permission Team.Create or Group.ReadWrite.All.
 
 from office365.graph_client import GraphClient
 from office365.teams.clonableteamparts import ClonableTeamParts
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     teams = client.teams.get().top(1).execute_query()
     if not teams:

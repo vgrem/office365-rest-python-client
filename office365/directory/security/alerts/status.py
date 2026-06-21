@@ -1,4 +1,7 @@
-class AlertStatus:
+from enum import Enum
+
+
+class AlertStatus(Enum):
     """"""
 
     unknown = "0"
@@ -7,7 +10,7 @@ class AlertStatus:
     resolved = "3"
     dismissed = "4"
     unknownFutureValue = "127"
-    new = "2"
+    # new = "2"
 
     @property
     def entity_type_name(self):

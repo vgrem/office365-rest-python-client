@@ -53,6 +53,9 @@ admin_site_url = _optional("OFFICE365_ADMIN_SITE_URL", f"https://{tenant_prefix}
 
 # Optional — only needed for specific scenarios (empty default = skip)
 cert_thumbprint = _optional("OFFICE365_CERT_THUMBPRINT")
-test_user1 = _optional("OFFICE365_TEST_USER1")
-test_user2 = _optional("OFFICE365_TEST_USER2")
+user_principal = _optional("OFFICE365_TEST_USER1")
+user_principal_alt = _optional("OFFICE365_TEST_USER2")
 admin_username = _optional("OFFICE365_ADMIN_USERNAME")
+
+_cert_dir = Path(__file__).parent
+cert_path = str(_cert_dir / "selfsigncert.pem")

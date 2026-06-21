@@ -2,6 +2,7 @@ from office365.directory.security.alerts.alert import Alert
 from office365.directory.security.alerts.collection import AlertCollection
 from office365.directory.security.attacksimulations.root import AttackSimulationRoot
 from office365.directory.security.cases.root import CasesRoot
+from office365.directory.security.data_security.governance import TenantDataSecurityAndGovernance
 from office365.directory.security.hunting_query_results import HuntingQueryResults
 from office365.directory.security.incidents.incident import Incident
 from office365.directory.security.labels.root import LabelsRoot
@@ -69,6 +70,15 @@ class Security(Entity):
         return self.properties.get(
             "attackSimulation",
             AttackSimulationRoot(self.context, ResourcePath("attackSimulation", self.resource_path)),
+        )
+
+    @odata(name="dataSecurityAndGovernance")
+    @property
+    def data_security_and_governance(self) -> TenantDataSecurityAndGovernance:
+        """Provides access to sensitivity labels and other data security settings."""
+        return self.properties.get(
+            "dataSecurityAndGovernance",
+            TenantDataSecurityAndGovernance(self.context, ResourcePath("dataSecurityAndGovernance", self.resource_path)),
         )
 
     @property

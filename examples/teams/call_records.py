@@ -5,11 +5,11 @@ Requires application permission CallRecords.Read.All.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     records = client.communications.call_records.get().execute_query()
     print(f"Call records: {len(records)}\n")
@@ -28,8 +28,7 @@ def main():
             modalities = [m.name for m in s.modalities]
             print(f"  {caller} -> {callee}  modalities={modalities}")
 
-            segments = s.segments.get().execute_query()
-            for seg in segments:
+            for seg in s.segments.get().execute_query():
                 print(f"    segment {seg.id}")
 
 

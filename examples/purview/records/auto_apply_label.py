@@ -20,12 +20,7 @@ from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
 from office365.sharepoint.client_context import ClientContext
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_site_url,
-    test_tenant,
-)
+from tests.settings import client_id, client_secret, site_url, tenant
 
 _SAMPLE_SIZE = 10
 
@@ -111,7 +106,7 @@ def apply_label_to_file(ctx: ClientContext, file_url: str, label_name: str) -> b
 def main():
     print("Auto-apply retention labels to unlabelled files...\n")
 
-    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    graph = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     # 1. Find the label
     label_name = "Default Retention — 7 years"
@@ -125,7 +120,7 @@ def main():
     print(f"Using label: {label_name} ({label_id[:12]}...)")
 
     # 2. Scan for unlabelled files older than 365 days
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
 
     files = find_files_without_label(ctx, age_days=365)
     print(f"Found {len(files)} older unlabelled files\n")

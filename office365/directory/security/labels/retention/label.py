@@ -100,6 +100,7 @@ class RetentionLabel(Entity):
         """Specifies the replacement label to apply when the original label is removed."""
         return self.properties.get("labelToBeApplied", None)
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Represents the user who last modified the retentionLabel."""
@@ -109,7 +110,7 @@ class RetentionLabel(Entity):
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Date and time the retention label was last modified."""
-        return self.properties.get("lastModifiedDateTime", None)
+        return self.properties.get("lastModifiedDateTime", datetime.min)
 
     @odata(name="retentionDuration")
     @property

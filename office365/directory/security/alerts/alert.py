@@ -156,7 +156,7 @@ class Alert(Entity):
     @property
     def status(self) -> AlertStatus:
         """Gets the status property"""
-        return self.properties.get("status", AlertStatus())
+        return self.properties.get("status", AlertStatus.unknown)
 
     @property
     def system_tags(self) -> StringCollection:

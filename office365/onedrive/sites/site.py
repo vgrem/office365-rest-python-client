@@ -220,9 +220,9 @@ class Site(BaseItem):
         )
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str:
         """Gets the displayName property"""
-        return self.properties.get("displayName", None)
+        return self.properties.get("displayName", "")
 
     @property
     def is_personal_site(self) -> Optional[bool]:

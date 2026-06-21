@@ -9,6 +9,7 @@ https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list
 
 from datetime import datetime, timezone
 
+from office365.directory.password_credential import PasswordCredential
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_client_secret, test_tenant
 
@@ -16,7 +17,7 @@ NOW = datetime.now(timezone.utc)
 _WARN_DAYS = 30
 
 
-def _status(cred):
+def _status(cred: PasswordCredential):
     if not cred.endDateTime or cred.endDateTime == datetime.min:
         return "  no_expiry"
     remaining = (cred.endDateTime - NOW).days

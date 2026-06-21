@@ -84,9 +84,9 @@ class BaseItem(Entity):
         self.set_property("description", value)
 
     @property
-    def web_url(self) -> Optional[str]:
+    def web_url(self) -> str:
         """URL that displays the resource in the browser"""
-        return self.properties.get("webUrl", None)
+        return self.properties.get("webUrl", "")
 
     @property
     def parent_reference(self) -> ItemReference:

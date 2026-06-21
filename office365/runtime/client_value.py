@@ -17,6 +17,12 @@ class ClientValue:
     containing entity or as a temporary value
     """
 
+    def __str__(self) -> str:
+        return type(self).__name__
+
+    def __format__(self, format_spec: str) -> str:
+        return format(str(self), format_spec)
+
     def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
         k = str(k)
         prop_val = getattr(self, k, None)

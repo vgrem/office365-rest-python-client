@@ -1342,6 +1342,7 @@ class User(DirectoryObject):
         """Gets the hireDate property"""
         return self.properties.get("hireDate", datetime.min)
 
+    @odata(name="pastProjects")
     @property
     def past_projects(self) -> StringCollection:
         """Gets the pastProjects property"""

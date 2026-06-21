@@ -13,7 +13,7 @@ from typing import Optional
 
 from office365.communications.presences.presence import Presence
 from office365.graph_client import GraphClient
-from tests import test_admin_principal_name, test_client_id, test_tenant
+from tests.settings import admin_username, client_id, tenant
 
 POLL_INTERVAL = 30
 BUSY_ACTIVITIES = {"InACall", "InAConferenceCall", "InAMeeting", "Presenting"}
@@ -87,8 +87,8 @@ def monitor_presence(client: GraphClient, agents: list[str], cycles: int = 3):
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id, test_admin_principal_name)
-    agents = ["alice@company.com", "bob@company.com", "carol@company.com"]
+    client = GraphClient(tenant=tenant).with_token_interactive(client_id, admin_username)
+    agents = [admin_username]
 
     presences = client.communications.get_presences_by_user_id(agents).execute_query()
     print("Team presence:")

@@ -20,7 +20,7 @@ https://learn.microsoft.com/en-us/graph/api/message-copy
 import sys
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 
 def get_latest_inbox_message(client: GraphClient):
@@ -30,7 +30,7 @@ def get_latest_inbox_message(client: GraphClient):
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     # -- Step 1: pick a message to work with --
     message = get_latest_inbox_message(client)

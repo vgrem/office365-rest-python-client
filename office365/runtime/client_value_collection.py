@@ -97,6 +97,20 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         """
         return len(self._data)
 
+    def __str__(self) -> str:
+        """Items as a concise list — uses str() of each child."""
+        items = []
+        for v in self._data:
+            if isinstance(v, str):
+                items.append(repr(v))
+            elif isinstance(v, ClientValue):
+                items.append(str(v))
+            elif isinstance(v, Enum):
+                items.append(v.name)
+            else:
+                items.append(str(v))
+        return f"[{', '.join(items)}]"
+
     def __repr__(self) -> str:
         if self._item_type is not None:
             return f"ClientValueCollection[{self._item_type.__name__}]({self._data!r})"

@@ -245,7 +245,7 @@ class ReportRoot(Entity):
         return qry.return_type  # type: ignore[return-type]
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
-    def get_onedrive_usage_storage(self, period) -> ClientResult[Report]:
+    def get_onedrive_usage_storage(self, period) -> ClientResult[bytes]:
         """Get the trend on the amount of storage you are using in OneDrive for Business.
 
         Args:

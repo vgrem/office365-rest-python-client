@@ -12,15 +12,10 @@ Requires delegated permission ``Application.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient
-from tests import (
-    create_unique_name,
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_username,
-)
+from tests import create_unique_name
+from tests.settings import client_id, password, tenant, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 app = client.applications.add(
     create_unique_name("DemoApp"),
@@ -28,6 +23,5 @@ app = client.applications.add(
 ).execute_query()
 print(f"App created: {app.display_name} (appId: {app.app_id})")
 
-# clean up
 app.delete_object(True).execute_query()
 print("App cleaned up.")

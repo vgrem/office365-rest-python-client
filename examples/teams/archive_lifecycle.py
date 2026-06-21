@@ -8,13 +8,13 @@ Team.ReadBasic.All, TeamMember.Read.All, Directory.Read.All.
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 INACTIVITY_DAYS = 180
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     cutoff = datetime.now(timezone.utc) - timedelta(days=INACTIVITY_DAYS)
 
     teams = client.teams.get_all().execute_query()

@@ -18,55 +18,7 @@ Microsoft Graph.
 | `User.Read.All` (delegated or app) | Read user properties for mailbox audit, shared mailboxes, forwarding detection | [User permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
 | `Contacts.ReadWrite` (delegated) | Create, read, update, delete personal contacts | [Contacts permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#contacts-permissions) |
 | `Place.Read.All` (delegated) | List rooms and room lists | [Places permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#places-permissions) |
-
----
-
-## How Outlook works
-
-```mermaid
-flowchart LR
-    M[Send message] --> R[Receive / search]
-    R --> A[Reply / forward]
-    A --> F[Move to folder]
-    C[Calendar] --> E[Create event]
-    E --> AC[Accept / decline]
-    E --> RE[Recurring series]
-```
-
----
-
-## Basic usage
-
-| Scenario | File | Permission | API reference |
-|---|---|---|---|
-| Send a message | [`messages/send.py`](./messages/send.py) | `Mail.Send` | [sendMail](https://learn.microsoft.com/en-us/graph/api/user-sendmail) |
-| Create a calendar event | [`events/create.py`](./events/create.py) | `Calendars.ReadWrite` | [create event](https://learn.microsoft.com/en-us/graph/api/user-post-events) |
-
----
-
-## Patterns
-
-| Scenario | File | Why it's useful |
-|---|---|---|
-| **Send with large attachment** — upload session for files >3 MB | [`messages/send_with_large_attachment.py`](./messages/send_with_large_attachment.py) | Upload session pattern required for large file attachments |
-| **Email search** — Microsoft Search query with pagination | [`messages/search.py`](./messages/search.py) | Targeted search across mailbox with filters |
-| **Export MIME** — download message as .eml | [`messages/export_mime.py`](./messages/export_mime.py) | Backup, eDiscovery, or migration use cases |
-| **Inbox rules + categories** — automate message handling and visual organization | [`messages/inbox_rules.py`](./messages/inbox_rules.py) | Combine rules (forward/flag) with category management |
-| **Mailbox settings** — enable scheduled automatic replies (OOF) | [`messages/mailbox_settings.py`](./messages/mailbox_settings.py) | Out-of-office configuration via API |
-| **Find meeting times & get schedule** — availability lookup and free/busy | [`calendars/availability.py`](./calendars/availability.py) | Scheduler assistant pattern — find slots and view user availability |
-| **Share calendar** — grant read access to another user | [`calendars/share.py`](./calendars/share.py) | Calendar visibility control — share free/busy level |
-| **Delegate calendar** — grant editor/delegate access to manage events on your behalf | [`calendars/delegate.py`](./calendars/delegate.py) | Delegate access for assistants or team members to manage your calendar |
-| **Recurring event** — weekly pattern with limited occurrences | [`events/recurring.py`](./events/recurring.py) | Recurrence pattern setup — meetings, standups, reminders |
-| **Meeting response** — accept, decline, or cancel an event | [`events/respond.py`](./events/respond.py) | Attendee and organizer response workflows |
-| **Email usage report** — activity counts, mailbox storage across D7/D30/D90 | [`reports/email_usage.py`](./reports/email_usage.py) | Adoption tracking, storage planning, and audit reporting |
-| **Mail tips** — check recipient status before sending (OOF, moderation, size limits) | [`messages/mail_tips.py`](./messages/mail_tips.py) | Pre-flight check for senders — prevents bounced or blocked messages |
-| **Mailbox audit** — auto-replies, mailbox settings report | [`mailboxes/report.py`](./mailboxes/report.py) | Bulk audit of user mailbox configurations |
-| **Shared mailboxes** — list and check configuration | [`shared_mailboxes/report.py`](./shared_mailboxes/report.py) | Discover and validate shared mailbox setup |
-| **Mail flow audit** — detect external forwarding | [`mail_flow/forwarding_report.py`](./mail_flow/forwarding_report.py) | Security audit — identify users forwarding mail externally |
-| **Message lifecycle** — reply, forward, move, copy in one flow | [`messages/lifecycle.py`](./messages/lifecycle.py) | Common post-receive operations: create reply draft → edit → send, forward to someone else, move and copy across folders |
-| **Folder management** — create, empty, mark-all-read, permanent delete | [`messages/folders.py`](./messages/folders.py) | Mailbox cleanup and compliance: create folder tree, empty content (including subfolders), bulk mark read, hard delete |
-| **Contacts** — create, update, delete with contact folders | [`contacts/manage.py`](./contacts/manage.py) | Full personal contact CRUD with contact folder organization, multiple email addresses, and lifecycle management |
-| **Meeting finder + rooms** — suggest time slots, list rooms, check availability | [`calendars/meeting_finder.py`](./calendars/meeting_finder.py) | Scheduling assistant pattern: find meeting times with attendees and rooms, list places/room lists, room capacity info |
+| `Calendars.Read` (app) | Read-only calendar access across tenants | [Calendar permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#calendars-permissions) |
 
 ---
 
@@ -87,8 +39,62 @@ client.me.send_mail(
 ).execute_query()
 ```
 
-All examples use `GraphClient` with `with_username_and_password` (MSAL ROPC) by default.
-You can replace with any supported auth flow — see [`examples/auth/`](/examples/auth) for all options.
+---
+
+## Mail — Messages & Folders
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Send a message** | [`messages/send.py`](./messages/send.py) | Simplest send — recipient, subject, body |
+| **Send with large attachment** | [`messages/send_with_large_attachment.py`](./messages/send_with_large_attachment.py) | Upload session pattern required for files >3 MB |
+| **Export messages to CSV** | [`messages/export_folder_csv.py`](./messages/export_folder_csv.py) | Audit or backup — dump folder contents with subject, sender, date, size |
+| **Find large messages** | [`messages/large_messages.py`](./messages/large_messages.py) | Storage management — find oversized messages by size threshold |
+| **Clean up old messages** | [`messages/cleanup_old.py`](./messages/cleanup_old.py) | Retention — dry-run then delete messages older than X days |
+| **Archive old messages** | [`messages/archive_old.py`](./messages/archive_old.py) | Retention — move messages older than X to Archive folder |
+| **Paginate through mail** | [`messages/pagination.py`](./messages/pagination.py) | Walk thousands of messages with $top/$skip |
+| **Message lifecycle** | [`messages/lifecycle.py`](./messages/lifecycle.py) | Reply, forward, move, copy in one flow |
+| **Folder management** | [`messages/folders.py`](./messages/folders.py) | Create, empty, mark-all-read, permanent delete |
+| **Inbox rules + categories** | [`messages/inbox_rules.py`](./messages/inbox_rules.py) | Automate message handling with rules and categories |
+| **Mailbox settings (OOF)** | [`messages/mailbox_settings.py`](./messages/mailbox_settings.py) | Enable scheduled automatic replies (Out of Office) |
+| **Mail tips** | [`messages/mail_tips.py`](./messages/mail_tips.py) | Pre-flight check — OOF, moderation, size limits |
+| **Export MIME** | [`messages/export_mime.py`](./messages/export_mime.py) | Download message as .eml for backup or eDiscovery |
+| **Email search** | [`messages/search.py`](./messages/search.py) | Microsoft Search query across mailbox |
+
+## Mail — Administration & Reporting
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Email usage report** | [`reports/email_usage.py`](./reports/email_usage.py) | Activity counts and mailbox storage across D7/D30/D90 |
+| **Mailbox audit** | [`mailboxes/report.py`](./mailboxes/report.py) | Auto-replies and mailbox settings across users |
+| **Shared mailboxes** | [`shared_mailboxes/report.py`](./shared_mailboxes/report.py) | Discover and validate shared mailbox setup |
+| **Mail flow audit** | [`mail_flow/forwarding_report.py`](./mail_flow/forwarding_report.py) | Security — detect users forwarding mail externally |
+
+## Calendar — Events
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Create an event** | [`events/create.py`](./events/create.py) | Schedule a meeting with attendees and details |
+| **Recurring event** | [`events/recurring.py`](./events/recurring.py) | Weekly, monthly patterns with limited occurrences |
+| **Meeting response** | [`events/respond.py`](./events/respond.py) | Accept, decline, or cancel as organizer/attendee |
+| **Find meeting times & schedule** | [`calendars/availability.py`](./calendars/availability.py) | Availability lookup and free/busy schedule |
+| **Share calendar** | [`calendars/share.py`](./calendars/share.py) | Grant read access to another user |
+| **Delegate calendar** | [`calendars/delegate.py`](./calendars/delegate.py) | Grant editor/delegate access to manage events |
+
+## Calendar — Administration & Reporting
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Export events to CSV** | [`calendars/events_export_csv.py`](./calendars/events_export_csv.py) | Audit or migration — export by date range |
+| **Clean up old events** | [`calendars/events_cleanup.py`](./calendars/events_cleanup.py) | Dry-run then delete events older than N days |
+| **External attendees** | [`calendars/external_attendees.py`](./calendars/external_attendees.py) | Governance — find meetings with guest attendees |
+| **Calendar permissions report** | [`calendars/permissions_report.py`](./calendars/permissions_report.py) | Audit who has access and what role |
+| **Copy events between calendars** | [`calendars/events_copy.py`](./calendars/events_copy.py) | Migration or reorganization |
+
+## Contacts
+
+| Scenario | File | Why it's useful |
+|---|---|---|
+| **Contact CRUD** | [`contacts/manage.py`](./contacts/manage.py) | Create, read, update, delete with contact folders |
 
 ---
 

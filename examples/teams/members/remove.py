@@ -9,14 +9,9 @@ https://learn.microsoft.com/en-us/graph/api/team-delete-members?view=graph-rest-
 import sys
 
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-    test_user_principal_name,
-)
+from tests.settings import client_id, client_secret, tenant, user_principal
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 teams = client.teams.get().top(10).execute_query()
 if len(teams) == 0:
@@ -24,7 +19,7 @@ if len(teams) == 0:
 
 team = teams[0]
 members = team.members.get().execute_query()
-member = next((m for m in members if m.properties.get("email") == test_user_principal_name), None)
+member = next((m for m in members if m.properties.get("email") == user_principal), None)
 if member is None:
     sys.exit("Member not found")
 

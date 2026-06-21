@@ -16,14 +16,9 @@ from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value_collection import ClientValueCollection
-from tests import (
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_username,
-)
+from tests.settings import client_id, password, tenant, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 # 1. Create a master category
 category = client.me.outlook.master_categories.add(display_name="Urgent", color="preset5").execute_query()

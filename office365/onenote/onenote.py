@@ -1,7 +1,3 @@
-from typing import Any
-
-from typing_extensions import Self
-
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onenote.notebooks.collection import NotebookCollection
@@ -11,6 +7,7 @@ from office365.onenote.resources.resource import OnenoteResource
 from office365.onenote.sectiongroups.section_group import SectionGroup
 from office365.onenote.sections.section import OnenoteSection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Onenote(Entity):
@@ -52,6 +49,7 @@ class Onenote(Entity):
             "sections", EntityCollection(self.context, OnenoteSection, ResourcePath("sections", self.resource_path))
         )
 
+    @odata(name="sectionGroups")
     @property
     def section_groups(self) -> EntityCollection[SectionGroup]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
@@ -59,12 +57,6 @@ class Onenote(Entity):
             "sectionGroups",
             EntityCollection(self.context, SectionGroup, ResourcePath("sectionGroups", self.resource_path)),
         )
-
-    def get_property(self, name: str, default_value: Any = None) -> Self:
-        if default_value is None:
-            property_mapping = {"sectionGroups": self.section_groups}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

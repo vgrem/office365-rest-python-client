@@ -8,11 +8,11 @@ from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
 from office365.outlook.mail.importance import Importance
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     task_list = client.me.todo.lists.get_or_add("SDK Demo Tasks").execute_query()
     print(f"Task list: {task_list.display_name}\n")
@@ -24,7 +24,7 @@ def main():
         importance=Importance.high,
         body="Final review before release.",
     ).execute_query()
-    print(f"\nTask: {task.title}  Due: {task.due_date_time}  Importance: {task.importance}")
+    print(f"Task: {task.title}  Due: {task.due_date_time}  Importance: {task.importance}")
 
     for item in [
         {"title": "Check all examples parse", "isChecked": False},

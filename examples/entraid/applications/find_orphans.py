@@ -7,7 +7,7 @@ ServicePrincipal.Read.All, User.Read.All.
 
 from office365.graph_client import GraphClient
 from office365.runtime.http.request_options import RequestOptions
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 
 def _set_consistency(request: RequestOptions) -> None:
@@ -15,7 +15,7 @@ def _set_consistency(request: RequestOptions) -> None:
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     client.pending_request().beforeExecute += _set_consistency
 
@@ -31,11 +31,11 @@ def main():
 
     total = len(apps) + len(sps)
     if apps:
-        for a in sorted(apps, key=lambda x: x.display_name or ""):
+        for a in apps:
             print(f"  {a.display_name}  ({a.created_date_time.date()})")
     if sps:
         print()
-        for s in sorted(sps, key=lambda x: x.display_name or ""):
+        for s in sps:
             print(f"  {s.display_name}")
     print(f"\nTotal orphaned: {total}")
 

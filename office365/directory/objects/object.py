@@ -93,6 +93,7 @@ class DirectoryObject(Entity):
         """Date and time when this object was deleted. Always null when the object hasn't been deleted."""
         return self.properties.get("deletedDateTime", datetime.min)
 
+    @odata(name="deletedDateTime")
     @property
     def deleted_date_time(self) -> datetime:
         """Gets the deletedDateTime property"""

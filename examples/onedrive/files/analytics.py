@@ -7,13 +7,13 @@ Requires delegated permissions Files.Read and Analytics.Read.
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-    drive = client.sites.get_by_path("/sites/project").drive
+    drive = client.sites.get_by_url(site_url).drive
     files = [i for i in drive.root.children.top(20).get().execute_query() if i.is_file]
     if not files:
         print("No files found.")

@@ -7,11 +7,11 @@ Requires delegated permission Application.Read.All.
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     cutoff = datetime.now(timezone.utc) + timedelta(days=30)
 
     for app in client.applications.get().execute_query():

@@ -11,16 +11,16 @@ https://learn.microsoft.com/en-us/graph/api/sites-list-followed
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_tenant_name, test_username
+from tests.settings import client_id, password, tenant, tenant_prefix, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 # 1. Get root site
 root = client.sites.root.get().execute_query()
 print(f"Root site: {root.display_name}  ({root.web_url})")
 
 # 2. Get site by URL
-site = client.sites.get_by_url(f"https://{test_tenant_name}.sharepoint.com/sites/project").get().execute_query()
+site = client.sites.get_by_url(f"https://{tenant_prefix}.sharepoint.com/sites/project").get().execute_query()
 print(f"Team site: {site.display_name}  (id: {site.id})")
 
 # 3. Followed sites

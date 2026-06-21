@@ -8,14 +8,9 @@ https://learn.microsoft.com/en-us/graph/api/user-followsite
 """
 
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-    test_user_principal_name,
-)
+from tests.settings import client_id, client_secret, tenant, user_principal
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. Search sites by keyword
 results = client.sites.search("team").execute_query()
@@ -24,8 +19,8 @@ for s in results:
     print(f"  {s.display_name:40s}  {s.web_url}")
 
 # 2. Follow a site
-user = client.users[test_user_principal_name]
-sites = results  # reuse search results
+user = client.users[user_principal]
+sites = results
 if len(sites) > 0:
     user.follow_site(sites[0]).execute_query()
     print(f"\nFollowed: {sites[0].display_name}")

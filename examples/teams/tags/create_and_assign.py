@@ -5,7 +5,7 @@ Requires delegated permission TeamworkTag.ReadWrite.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 TAG_NAME = "Designer"
 TAG_DESCRIPTION = "Design team members for @mentions"
@@ -13,7 +13,7 @@ MEMBER_EMAILS = ["meganb@contoso.onmicrosoft.com", "diegos@contoso.onmicrosoft.c
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     teams = client.teams.get_all().select(["id", "displayName"]).execute_query()
     team = next((t for t in teams if "Marketing" in (t.display_name or "")), None)
@@ -26,7 +26,6 @@ def main():
         users = client.users.filter(f"mail eq '{email}'").get().execute_query()
         if users:
             member_ids.append(users[0].id)
-            print(f"  {email} -> {users[0].id}")
 
     if member_ids:
         tag = team.tags.add(

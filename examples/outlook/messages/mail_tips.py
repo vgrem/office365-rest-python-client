@@ -11,17 +11,11 @@ https://learn.microsoft.com/en-us/graph/api/user-getmailtips
 """
 
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_user_principal_name,
-    test_username,
-)
+from tests.settings import client_id, password, tenant, user_principal, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-result = client.me.get_mail_tips([test_user_principal_name]).execute_query()
+result = client.me.get_mail_tips([user_principal]).execute_query()
 for tip in result.value:
     print(f"Recipient: {tip.emailAddress}")
     print(f"  Auto-replies: {tip.automaticReplies.message}")

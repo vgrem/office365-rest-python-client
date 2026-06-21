@@ -18,6 +18,5 @@ ct = ctx.web.content_types.add(
     ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")
 ).execute_query()
 target_list.content_types.add(ContentTypeCreationInformation(Name="Project Document", Id="0x0120")).execute_query()
-ct.set_property("Default", True)
-ct.update().execute_query()
+ct.set_default(True).update().execute_query()
 print(f"Default content type set: {ct.name}")
