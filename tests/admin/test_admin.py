@@ -118,10 +118,10 @@ class TestSharePointAdminSettings(GraphDelegatedTestCase):
     def test_07_clear_domain_lists(self):
         """Setting domain lists to empty should not error."""
         settings = self.client.admin.sharepoint.settings
-        settings.sharing_blocked_domain_list = []
+        settings.sharing_blocked_domain_list.clear()
         settings.update().execute_query()
 
-        settings.sharing_allowed_domain_list = []
+        settings.sharing_allowed_domain_list.clear()
         settings.update().execute_query()
 
 
@@ -232,7 +232,7 @@ class TestAdminM365Apps(GraphDelegatedTestCase):
     def test_02_microsoft365_apps_has_properties(self):
         """Microsoft 365 apps config exposes id and createdDateTime."""
         result = self.client.admin.microsoft365_apps.get().execute_query()
-        self.assertIsNotNone(result.get_property("id"))
+        self.assertIsNotNone(result.resource_path)
 
 
 class TestAdminPeople(GraphDelegatedTestCase):

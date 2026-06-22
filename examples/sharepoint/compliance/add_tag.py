@@ -15,14 +15,10 @@ ctx = ClientContext(site_url).with_client_certificate(
     tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 
-tags = ctx.site.get_available_tags().execute_query()
-tag_id = next(
-    (t.TagId for t in tags.value if TAG_NAME.lower() in (t.DisplayName or t.TagName or "").lower()),
-    None,
-)
-if not tag_id:
+tag_result = ctx.site.get_available_tag(TAG_NAME).execute_query()
+if not tag_result:
     raise SystemExit(f"Tag '{TAG_NAME}' not found among available tags.")
 
 target_list = ctx.web.lists.get_by_title("Documents")
-target_list.set_compliance_tag(tag_id=tag_id).execute_query()
+target_list.set_compliance_tag(tag_id=tag_result.value.TagId).execute_query()
 print(f"Compliance tag '{TAG_NAME}' applied to 'Documents' list.")

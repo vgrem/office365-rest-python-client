@@ -222,6 +222,19 @@ class Site(Entity):
         self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
 
+    def get_available_tag(self, tag_name: str) -> ClientResult[ComplianceTag]:
+        return_type = ClientResult(self.context, ComplianceTag())
+
+        def _loaded(tags: ClientResult[ClientValueCollection[ComplianceTag]]):
+            tag = next(
+                (t for t in tags.value if tag_name.lower() in (t.DisplayName or t.TagName).lower()),
+                None,
+            )
+            return_type.set_property("__value", tag)
+
+        self.get_available_tags().after_execute(_loaded)
+        return return_type
+
     def get_block_download_policy_for_files_data(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())

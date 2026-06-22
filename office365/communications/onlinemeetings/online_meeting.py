@@ -90,11 +90,19 @@ class OnlineMeeting(OnlineMeetingBase):
         """Gets the meeting start time in UTC."""
         return self.properties.get("startDateTime", datetime.min)
 
+    @start_datetime.setter
+    def start_datetime(self, value: datetime):
+        self.set_property("startDateTime", value)
+
     @odata(name="endDateTime")
     @property
     def end_datetime(self):
         """Gets the meeting end time in UTC."""
         return self.properties.get("endDateTime", datetime.min)
+
+    @end_datetime.setter
+    def end_datetime(self, value: datetime):
+        self.set_property("endDateTime", value)
 
     @property
     def join_information(self) -> ItemBody:

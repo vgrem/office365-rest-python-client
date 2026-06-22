@@ -101,6 +101,10 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         """Concatenate two collections into a plain list."""
         return list(self._data) + list(other._data)
 
+    def clear(self) -> None:
+        """Remove all items from the collection."""
+        self._data.clear()
+
     def __str__(self) -> str:
         """Items as a concise list — uses str() of each child."""
         items = []

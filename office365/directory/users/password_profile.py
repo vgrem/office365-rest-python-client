@@ -12,8 +12,8 @@ class PasswordProfile(ClientValue):
     passwordProfile object.
         Fields:
             password (str): The password for the user. This property is required when a user is created.
-            force_change_password_next_sign_in (bool): true if the user must change her password on the next login;
-            force_change_password_next_sign_in_with_mfa (bool): f true, at next sign-in, the user must perform a
+            forceChangePasswordNextSignIn (bool): true if the user must change her password on the next login;
+            forceChangePasswordNextSignInWithMfa (bool): f true, at next sign-in, the user must perform a
     """
 
     password: str | None = None

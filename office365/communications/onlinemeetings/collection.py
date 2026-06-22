@@ -28,7 +28,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         start_datetime: datetime | None = None,
         end_datetime: datetime | None = None,
         **kwargs,
-    ):
+    ) -> OnlineMeeting:
         """Create an online meeting on behalf of a user by using the object ID (OID) in the user token.
 
         Args:

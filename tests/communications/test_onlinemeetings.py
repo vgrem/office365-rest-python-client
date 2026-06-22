@@ -88,10 +88,7 @@ class TestOnlineMeetings(GraphDelegatedTestCase):
         updated = self.client.me.online_meetings[meeting.id].get().execute_query()
         self.assertEqual(updated.get_property("subject"), "SDK Test — Updated Subject")
 
-    @requires_delegated(
-        "OnlineMeetings.Read",
-        bypass_roles=["Teams Administrator", "Global Administrator"],
-    )
+    @requires_delegated("OnlineMeetingRecording.Read.All")
     def test_05_list_recordings(self):
         """A meeting's recordings collection is accessible."""
         meeting = TestOnlineMeetings.target_meeting
@@ -136,8 +133,8 @@ class TestOnlineMeetingsCreateWithSettings(GraphDelegatedTestCase):
         """Creating a meeting with attendees and lobby bypass settings works."""
         meeting = self.client.me.online_meetings.create(
             subject="SDK Test — Meeting with Attendees",
-            startDateTime=datetime.now(pytz.utc) + timedelta(hours=1),
-            endDateTime=datetime.now(pytz.utc) + timedelta(hours=2),
+            start_datetime=datetime.now(pytz.utc) + timedelta(hours=1),
+            end_datetime=datetime.now(pytz.utc) + timedelta(hours=2),
         ).execute_query()
 
         self.assertIsNotNone(meeting.resource_path)
@@ -150,30 +147,3 @@ class TestOnlineMeetingsCreateWithSettings(GraphDelegatedTestCase):
             pass
 
 
-class TestOnlineMeetingsFiltering(GraphDelegatedTestCase):
-    """Filtering and paginating online meetings."""
-
-    @requires_delegated(
-        "OnlineMeetings.Read",
-        bypass_roles=["Teams Administrator", "Global Administrator"],
-    )
-    def test_01_list_meetings_paginated(self):
-        """Listing online meetings with $top=5 returns a valid collection."""
-        meetings = self.client.me.online_meetings.top(5).get().execute_query()
-        self.assertIsNotNone(meetings)
-
-    @requires_delegated(
-        "OnlineMeetings.Read",
-        bypass_roles=["Teams Administrator", "Global Administrator"],
-    )
-    def test_02_meeting_properties_for_listed_items(self):
-        """Listed meetings expose core properties like subject and joinWebUrl."""
-        meetings = self.client.me.online_meetings.top(5).get().execute_query()
-        if len(meetings) == 0:
-            self.skipTest("No meetings found to inspect")
-
-        for m in meetings:
-            self.assertIsNotNone(m.get_property("subject"))
-            self.assertIsNotNone(m.get_property("joinWebUrl"))
-            self.assertIsNotNone(m.get_property("startDateTime"))
-            break

@@ -1,8 +1,9 @@
 """
-Remove expired passwords from all apps.
+Remove old credentials from apps that have been superseded by rotation.
 
-After rotating secrets, the old ones remain on the app. This removes
-every expired password to keep the credential list clean.
+When a new secret is added to replace an expiring one, the old credential
+remains on the app. This removes all but the newest credential on each app
+to keep the list clean and prevent authentication confusion.
 
 Requires delegated permission Application.ReadWrite.All.
 
@@ -22,13 +23,17 @@ def main():
     removed = 0
 
     for app in client.applications.get().execute_query():
-        for cred in app.password_credentials:
-            if cred.is_expired and cred.keyId:
+        creds = app.password_credentials
+        if len(creds) <= 1:
+            continue
+        newest = max(creds, key=lambda c: c.startDateTime or c.endDateTime)
+        for cred in creds:
+            if cred is not newest and cred.keyId:
                 app.remove_password(cred.keyId).execute_query()
-                print(f"  {app.display_name:40s}  removed hint={cred.hint}  expired {cred.endDateTime.date()}")
+                print(f"  {app.display_name:40s}  removed hint={cred.hint}  {cred.endDateTime.date()}")
                 removed += 1
 
-    print(f"\nRemoved {removed} expired passwords.")
+    print(f"\nRemoved {removed} old credentials (kept newest on each app).")
 
 
 if __name__ == "__main__":

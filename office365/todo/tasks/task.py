@@ -109,6 +109,10 @@ class TodoTask(Entity):
         """The status of the task. Possible values: notStarted, inProgress, completed, waitingOnOthers, deferred."""
         return self.properties.get("status", None)
 
+    @status.setter
+    def status(self, value: TaskStatus):
+        self.set_property("status", value)
+
     @property
     def title(self) -> Optional[str]:
         """A brief description of the task."""

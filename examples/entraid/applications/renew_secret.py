@@ -24,7 +24,7 @@ def main():
     )
 
     app = client.applications.get_by_app_id(client_id).get().execute_query()
-    passwords = app.password_credentials or []
+    passwords = app.password_credentials
 
     if not passwords:
         print("No passwords found. Creating initial secret...")

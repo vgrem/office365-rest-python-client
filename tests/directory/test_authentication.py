@@ -33,12 +33,6 @@ class TestAuthentication(GraphDelegatedTestCase):
     @requires_delegated(
         "Policy.Read.All",
         "Policy.ReadWrite.ConditionalAccess",
-        bypass_roles=[
-            "Authentication Administrator",
-            "Privileged Authentication Administrator",
-            "Global Administrator",
-            "Global Reader",
-        ],
     )
     def test_02_list_strength_policies(self):
         """Listing authentication strength policies returns a valid collection."""

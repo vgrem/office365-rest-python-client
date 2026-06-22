@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.directory.extensions.open_type import OpenTypeExtension
+from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -42,8 +43,14 @@ class TestGraphUser(GraphDelegatedTestCase):
     def test_01_create_user(self):
         """Creating a user returns a valid user with an ID."""
         login = create_unique_name("testuser")
-        password = create_unique_name("P@ssw0rd")
-        profile = UserProfile(f"{login}@{test_tenant}", password)
+        password_str = create_unique_name("P@ssw0rd")
+        profile = UserProfile(
+            userPrincipalName=f"{login}@{test_tenant}",
+            passwordProfile=PasswordProfile(password=password_str, forceChangePasswordNextSignIn=True),
+            mailNickname=login,
+            displayName=login,
+            accountEnabled=True,
+        )
         new_user = self.client.users.add(profile).execute_query()
         self.assertIsNotNone(new_user.id)
         self.assertEqual(new_user.get_property("userPrincipalName"), f"{login}@{test_tenant}")
