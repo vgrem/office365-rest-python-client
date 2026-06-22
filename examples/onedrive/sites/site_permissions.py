@@ -15,17 +15,14 @@ client = (
     .require_application_permission("Sites.Read.All")
 )
 
-site_url = input("Site URL: ").strip()
-site = client.sites.get_by_url(site_url).get().execute_query()
-
-perms = site.permissions.get().execute_query()
-print(f"\nPermissions for {site.display_name} ({len(perms)}):")
-for p in perms:
-    for identity in p.grantedToIdentities or []:
-        user = identity.user
-        role = p.roles or []
-        print(f"  {user.display_name:30s}  {user.email:35s}  roles={role}")
-    for identity in p.grantedToIdentitiesV2 or []:
-        user = identity.user or identity.group or identity.siteUser
-        if user:
-            print(f"  [GROUP] {user.display_name:30s}  roles={p.roles}")
+sites = client.sites.top(10).get().execute_query()
+for site in sites:
+    perms = site.permissions.get().execute_query()
+    print(f"\nPermissions for {site.display_name} ({len(perms)}):")
+    for p in perms:
+        for identity in p.granted_to_identities:
+            print(f"   {identity.user:35s}  roles={p.roles}")
+        for identity in p.granted_to_identities_v2:
+            user = identity.user or identity.group or identity.siteUser
+            if user:
+                print(f"  [GROUP] {user:30s}  roles={p.roles}")

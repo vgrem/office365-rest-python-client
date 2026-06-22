@@ -3,7 +3,11 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from office365.directory.permissions.guard import ResourcePermissions, get_permissions
+from office365.directory.permissions.guard import (
+    ResourcePermissions,
+    _cached_app_permissions,
+    _cached_delegated_permissions,
+)
 from office365.directory.permissions.require_permission import PermissionRequirement
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
@@ -86,7 +90,13 @@ def verify_permissions(
                 "with_client_secret / with_certificate on the GraphClient first."
             )
 
-    perms = get_permissions(client, client_id, ResourceName.Graph)
+    app_roles = _cached_app_permissions(client, client_id, ResourceName.Graph)
+    delegated_scopes = _cached_delegated_permissions(client, client_id, ResourceName.Graph)
+    perms = ResourcePermissions(
+        resource=ResourceName.Graph,
+        application=[r.value for r in app_roles if r.value is not None],
+        delegated=list(delegated_scopes),
+    )
     req = getattr(method, "__required_permissions__", None) or PermissionRequirement()
 
     granted_roles: list[str] = []

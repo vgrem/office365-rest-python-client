@@ -21,7 +21,7 @@ via the Microsoft Graph Communications API.
 |---|---|---|
 | Get presence for a user | [`get_presence.py`](./get_presence.py) | `Presence.Read` |
 | Set presence and status message | [`set_presence.py`](./set_presence.py) | `Presence.ReadWrite` |
-| Presence monitor with polling and routing | [`presence/teams_presence_monitor.py`](./presence/teams_presence_monitor.py) | `Presence.Read.All`, `Presence.ReadWrite` |
+| Presence monitor with polling and routing | [`presence/teams_presence_monitor.py`](teams_presence_monitor.py) | `Presence.Read.All`, `Presence.ReadWrite` |
 
 ---
 

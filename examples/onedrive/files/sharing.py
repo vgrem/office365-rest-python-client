@@ -13,15 +13,9 @@ https://learn.microsoft.com/en-us/graph/api/driveitem-invite
 import sys
 
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_user_principal_name,
-    test_username,
-)
+from tests.settings import client_id, password, tenant, user_principal, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
 items = client.me.drive.root.children.top(1).get().execute_query()
 if len(items) == 0:
@@ -35,11 +29,11 @@ print(f"Anonymous link: {link.link.webUrl}")
 
 # 2. Send a sharing invitation to a user
 invite = item.invite(
-    [test_user_principal_name],
+    [user_principal],
     send_invitation=True,
     message="Here's the file you requested.",
 ).execute_query()
-print(f"Invitation sent to: {test_user_principal_name}")
+print(f"Invitation sent to: {user_principal}")
 
 # 3. List current permissions
 permissions = item.permissions.get().execute_query()

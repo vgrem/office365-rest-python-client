@@ -54,12 +54,7 @@ class Application(DirectoryObject):
         return self.id or self.app_id or self.entity_type_name
 
     def __str__(self):
-        if self.display_name:
-            return f"Name: {self.display_name}"
-        elif self.app_id:
-            return f"App Id: {self.app_id}"
-        else:
-            return self.entity_type_name
+        return self.display_name or self.app_id or self.entity_type_name
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_certificate(
@@ -344,11 +339,13 @@ class Application(DirectoryObject):
             ),
         )
 
+    @odata(name="addIns")
     @property
     def add_ins(self) -> ClientValueCollection[AddIn]:
         """Gets the addIns property"""
         return self.properties.get("addIns", ClientValueCollection[AddIn](AddIn))
 
+    @odata(name="authenticationBehaviors")
     @property
     def authentication_behaviors(self) -> AuthenticationBehaviors:
         """Gets the authenticationBehaviors property"""
@@ -359,6 +356,7 @@ class Application(DirectoryObject):
         """Gets the createdByAppId property"""
         return self.properties.get("createdByAppId", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""

@@ -201,17 +201,18 @@ class GraphClient(ClientRuntimeContext):
         Args:
             scope: Application permission name (e.g. "DeviceManagementConfiguration.Read.All")
         """
-        from office365.directory.permissions.guard import has_app_permission
         from office365.runtime.client_request_exception import ClientRequestException
 
         client_id = self.pending_request().authentication_context.client_id
         try:
             assert client_id is not None
-            if not has_app_permission(self, scope, client_id):
+            result = self.get_application_permissions(client_id).execute_query()
+            has_perms = any(role.value == scope for role in result.value)
+            if not has_perms:
                 print(f"Missing required application permission: {scope}")
                 sys.exit(1)
         except ClientRequestException:
-            print(f"❌ Could not verify permission '{scope}' — ensure Application.Read.All is granted.")
+            print(f"Could not verify permission '{scope}' — ensure Application.Read.All is granted.")
             sys.exit(1)
         return self
 
@@ -230,15 +231,16 @@ class GraphClient(ClientRuntimeContext):
         Args:
             *role_names: Directory role display names (e.g. "Global Administrator")
         """
-        from office365.directory.permissions.guard import has_role
         from office365.runtime.client_request_exception import ClientRequestException
 
         try:
-            if not has_role(self, *role_names):
+            roles = self.me.get_directory_roles().execute_query()
+            granted = {r.display_name for r in roles}
+            if not any(role in granted for role in role_names):
                 print(f"Need one of: {', '.join(role_names)}")
                 sys.exit(1)
         except ClientRequestException:
-            print("Could not verify roles - ensure RoleManagement.Read.Directory is granted.")
+            print("Could not verify roles — ensure RoleManagement.Read.Directory is granted.")
             sys.exit(1)
         return self
 
@@ -655,16 +657,21 @@ class GraphClient(ClientRuntimeContext):
 
         return _check(self, scope, app_id)
 
-    def has_app_permission(self, scope: str, app_id: str) -> bool:
+    def has_application_permissions(self, scope: str, app_id: str) -> ClientResult[bool]:
         """Check if an app has an application permission on Microsoft Graph.
 
         Args:
             scope (str): Permission scope name (e.g. 'Mail.Read')
             app_id (str): Application (client) ID of the app to check
         """
-        from office365.directory.permissions.guard import has_app_permission as _check
+        return_type = ClientResult[bool](self)
 
-        return _check(self, scope, app_id)
+        def _verify(result: ClientResult[AppRoleCollection]) -> None:
+            has_perms = any(role.value == scope for role in result.value)
+            return_type.set_property("__value", has_perms)
+
+        self.get_application_permissions(app_id).after_execute(_verify)
+        return return_type
 
     def grant_delegated_permissions(self, app_id: str, scope: AppRole | str) -> Self:
         """Grants a delegated permission on Microsoft Graph (AllPrincipals).

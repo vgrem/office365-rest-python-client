@@ -69,31 +69,6 @@ def has_delegated_permission(
     return scope in _cached_delegated_permissions(client, client_id, resource)
 
 
-def has_app_permission(client: GraphClient, scope: str, client_id: str, resource: str = ResourceName.Graph) -> bool:
-    """True if the app has the application permission (app role) assigned on the resource."""
-    return any(role.value == scope for role in _cached_app_permissions(client, client_id, resource))
-
-
-def get_permissions(client: GraphClient, client_id: str, resource: str = ResourceName.Graph) -> ResourcePermissions:
-    """Get all granted permissions (app roles + delegated scopes) for a resource.
-
-    Args:
-        client: Authenticated GraphClient
-        client_id: Application (client) ID
-        resource: Service principal name from ResourceName enum
-
-    Returns:
-        ResourcePermissions with application and delegated permission lists
-    """
-    app_roles = _cached_app_permissions(client, client_id, resource)
-    delegated_scopes = _cached_delegated_permissions(client, client_id, resource)
-    return ResourcePermissions(
-        resource=resource,
-        application=[r.value for r in app_roles if r.value is not None],
-        delegated=list(delegated_scopes),
-    )
-
-
 def has_role(client: GraphClient, *role_names: str) -> bool:
     """True if the signed-in user has at least one of the specified directory roles."""
     granted = {r.display_name for r in _cached_directory_roles(client)}

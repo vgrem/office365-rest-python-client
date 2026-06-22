@@ -1,15 +1,13 @@
 """
-Find application certificates that are expiring soon.
+Consolidated credentials report — all apps with their passwords
+and certificate expiry dates in one view.
 
 Requires delegated permission Application.Read.All.
 """
 
-from datetime import datetime, timezone
-
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
-NOW = datetime.now(timezone.utc)
 WARN_DAYS = 30
 
 client = (
@@ -26,12 +24,12 @@ for app in client.applications.get_all().execute_query():
 
     print(f"\n{app.display_name}  (app_id={app.app_id})")
     for p in passwords:
-        remaining = (p.endDateTime - NOW).days if p.endDateTime and p.endDateTime != datetime.min else None
-        warn = " <<<" if remaining is not None and remaining < WARN_DAYS else ""
-        status = f"expires in {remaining}d{warn}" if remaining is not None else "  no_expiry"
+        days = p.days_until_expiry
+        warn = " <<<" if days is not None and days < WARN_DAYS else ""
+        status = f"expires in {days}d{warn}" if days is not None else "  no_expiry"
         print(f"  [P] {p.displayName or '(unnamed)':30s}  {status}")
     for k in certs:
-        remaining = (k.endDateTime - NOW).days if k.endDateTime and k.endDateTime != datetime.min else None
-        warn = " <<<" if remaining is not None and remaining < WARN_DAYS else ""
-        status = f"expires in {remaining}d{warn}" if remaining is not None else "  no_expiry"
+        days = k.days_until_expiry
+        warn = " <<<" if days is not None and days < WARN_DAYS else ""
+        status = f"expires in {days}d{warn}" if days is not None else "  no_expiry"
         print(f"  [C] {k.displayName or '(unnamed)':30s}  {status}")

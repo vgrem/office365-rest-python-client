@@ -10,27 +10,21 @@ Requires delegated permission Application.Read.All.
 https://learn.microsoft.com/en-us/graph/api/resources/application
 """
 
-from datetime import datetime, timezone
-
 from office365.graph_client import GraphClient
-from tests import test_admin_principal_name, test_client_id, test_tenant
+from tests.settings import admin_username, client_id, tenant
 
 
 def main():
     client = (
-        GraphClient(tenant=test_tenant)
-        .with_token_interactive(test_client_id, test_admin_principal_name)
+        GraphClient(tenant=tenant)
+        .with_token_interactive(client_id, admin_username)
         .require_role("Global Administrator", "Privileged Role Administrator")
     )
 
-    apps = client.applications.get().execute_query()
-
-    now = datetime.now(timezone.utc)
     expired = []
-
-    for app in apps:
-        for cred in app.password_credentials:
-            if cred.endDateTime and cred.endDateTime <= now:
+    for app in client.applications.get().execute_query():
+        for cred in app.password_credentials or []:
+            if cred.is_expired:
                 expired.append((app.display_name or "Unnamed", cred))
 
     print(f"Apps with expired secrets: {len(expired)}\n")

@@ -6,28 +6,27 @@ ServicePrincipal.Read.All, User.Read.All.
 """
 
 from office365.graph_client import GraphClient
-from office365.runtime.http.request_options import RequestOptions
 from tests.settings import client_id, client_secret, tenant
-
-
-def _set_consistency(request: RequestOptions) -> None:
-    request.ensure_header("ConsistencyLevel", "eventual")
 
 
 def main():
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-    client.pending_request().beforeExecute += _set_consistency
+    apps = (
+        client.applications.filter("owners/$count eq 0")
+        .select(["displayName", "createdDateTime"])
+        .consistency_level("eventual")
+        .get()
+        .execute_query()
+    )
 
-    apps_qry = client.applications.filter("owners/$count eq 0").select(["displayName", "createdDateTime"])
-    apps_qry.query_options.custom["count"] = "true"
-    apps = apps_qry.get().execute_query()
-
-    sps_qry = client.service_principals.filter("owners/$count eq 0").select(["displayName"])
-    sps_qry.query_options.custom["count"] = "true"
-    sps = sps_qry.get().execute_query()
-
-    client.pending_request().beforeExecute -= _set_consistency
+    sps = (
+        client.service_principals.filter("owners/$count eq 0")
+        .select(["displayName"])
+        .consistency_level("eventual")
+        .get()
+        .execute_query()
+    )
 
     total = len(apps) + len(sps)
     if apps:

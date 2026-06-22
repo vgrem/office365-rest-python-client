@@ -14,16 +14,11 @@ https://learn.microsoft.com/en-us/graph/api/termstore-set-post-children
 import uuid
 
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_root_site_url,
-    test_tenant,
-)
+from tests.settings import client_id, client_secret, root_site_url, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-store = client.sites.get_by_url(test_root_site_url).term_store
+store = client.sites.get_by_url(root_site_url).term_store
 
 # 1. List existing groups
 groups = store.groups.get().execute_query()

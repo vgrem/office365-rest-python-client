@@ -29,7 +29,7 @@ def main():
 
     for u in risky_users:
         print(
-            f"  {u.user_principal_name}  level={u.risk_level.name}  "
+            f"  {u.user_principal_name}  level={u.risk_level}  "
             f"state={u.risk_state.name}  last={u.risk_last_updated_date_time}"
         )
         print(f"    display={u.user_display_name}  deleted={u.is_deleted}  processing={u.is_processing}")

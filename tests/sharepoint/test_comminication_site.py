@@ -15,7 +15,6 @@ from tests import (
     test_password,
     test_root_site_url,
     test_tenant,
-    test_user_credentials,
     test_username,
 )
 from tests.sharepoint.sharepoint_case import SPTestCase
@@ -75,7 +74,9 @@ class TestCommunicationSite(SPTestCase):
         if not target:
             self.skipTest("No resource from previous test")
         self.assertIsNotNone(target.url)
-        tenant = Tenant.from_url(test_admin_site_url).with_credentials(test_user_credentials)
+        tenant = Tenant.from_url(test_admin_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         props = tenant.register_hub_site(target.url).execute_query()
         self.assertIsNotNone(props.site_id)
         site = target.get().execute_query()
@@ -87,7 +88,9 @@ class TestCommunicationSite(SPTestCase):
         if not target:
             self.skipTest("No resource from previous test")
         self.assertIsNotNone(target.url)
-        client_admin = ClientContext(test_admin_site_url).with_credentials(test_user_credentials)
+        client_admin = ClientContext(test_admin_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         tenant = Tenant(client_admin)
         tenant.unregister_hub_site(target.url).execute_query()
 

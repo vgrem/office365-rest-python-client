@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 from office365.runtime.client_value import ClientValue
 
@@ -37,6 +37,20 @@ class KeyCredential(ClientValue):
     startDateTime: datetime = field(default_factory=lambda: datetime.min)
     type: str | None = None
     usage: str | None = None
+
+    @property
+    def is_expired(self) -> bool:
+        """True if the credential's end date has passed."""
+        if self.endDateTime is None or self.endDateTime == datetime.min:
+            return False
+        return self.endDateTime < datetime.now(timezone.utc)
+
+    @property
+    def days_until_expiry(self) -> int | None:
+        """Number of days until expiry, or None if no end date is set."""
+        if self.endDateTime is None or self.endDateTime == datetime.min:
+            return None
+        return (self.endDateTime - datetime.now(timezone.utc)).days
 
     def __str__(self):
         return self.displayName or self.entity_type_name

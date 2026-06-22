@@ -13,7 +13,7 @@ from tests.settings import client_id, password, tenant, username
 
 client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-days = int(input("Show tasks due within (days): ") or "7")
+days = 7  # int(input("Show tasks due within (days): ") or "7")
 cutoff = datetime.now(timezone.utc) + timedelta(days=days)
 
 for lst in client.me.todo.lists.get().execute_query():

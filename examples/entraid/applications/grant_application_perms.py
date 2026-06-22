@@ -20,7 +20,9 @@ privileged_client = (
 
 scope = input("Application permission (app role): ")
 
-if privileged_client.has_app_permission(scope, test_client_id):
+result = privileged_client.has_application_permissions(scope, test_client_id).execute_query()
+
+if result.value:
     print(f"Permission '{scope}' is already granted.")
 else:
     print(f"Permission '{scope}' is not granted.")

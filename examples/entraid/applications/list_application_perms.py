@@ -7,14 +7,14 @@ Requires delegated permission ``AppRoleAssignment.ReadWrite.All``.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_admin_principal_name, test_client_id, test_tenant
+from tests.settings import admin_username, client_id, tenant
 
 privileged_client = (
-    GraphClient(tenant=test_tenant)
-    .with_token_interactive(test_client_id, test_admin_principal_name)
+    GraphClient(tenant=tenant)
+    .with_token_interactive(client_id, admin_username)
     .require_role("Global Administrator", "Privileged Role Administrator")
 )
 
-result = privileged_client.get_application_permissions(test_client_id).execute_query()
+result = privileged_client.get_application_permissions(client_id).execute_query()
 for app_role in result.value:
     print(app_role)

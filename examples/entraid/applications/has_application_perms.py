@@ -18,7 +18,7 @@ privileged_client = (
 scope = input("Application permission (app role): ")
 
 
-if privileged_client.has_app_permission(scope, test_client_id):
+if privileged_client.has_application_permissions(scope, test_client_id):
     print(f"✅ Permission '{scope}' is granted.")
 else:
     print(f"❌ Permission '{scope}' is not granted.")

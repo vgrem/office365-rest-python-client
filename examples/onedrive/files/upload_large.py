@@ -11,11 +11,11 @@ import os
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     local_path = Path("../../../tests/data/big_buck_bunny.mp4")
     file_size = os.path.getsize(local_path)

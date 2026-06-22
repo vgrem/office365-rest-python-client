@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from requests import Response
+from typing_extensions import Self
 
 from office365.delta_collection import DeltaCollection
 from office365.runtime.client_object import ClientObjectT
@@ -24,6 +27,37 @@ class CountCollection(DeltaCollection[ClientObjectT]):
         >>> result = client.groups.count().execute_query()
         >>> print(result.value)
     """
+
+    def __init__(self, context, item_type, resource_path=None, parent=None):
+        super().__init__(context, item_type, resource_path, parent)
+        self._consistency_level: str | None = None
+
+    def consistency_level(self, level: str = "eventual") -> Self:
+        """Set ConsistencyLevel header and ``$count=true`` for ``$count`` queries.
+
+        The header is automatically registered when ``get()`` executes
+        and cleared afterward. Only needed when ``$count`` appears in
+        a ``$filter`` expression.
+
+        Usage:
+            apps = client.applications.filter("owners/$count eq 0")\\
+                .consistency_level("eventual").get().execute_query()
+        """
+        self._consistency_level = level
+        self.query_options.custom["count"] = "true"
+        return self
+
+    def get(self) -> Self:
+        super().get()
+        if self._consistency_level:
+            level = self._consistency_level
+            self._consistency_level = None
+
+            def _set_header(request: RequestOptions) -> None:
+                request.ensure_header("ConsistencyLevel", level)
+
+            self.context.before_execute(_set_header)
+        return self
 
     def count(self) -> ClientResult[int]:
         """

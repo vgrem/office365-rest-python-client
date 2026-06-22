@@ -1,15 +1,6 @@
 """
 Terms of use — list agreements and track user acceptances.
 
-Microsoft Entra Terms of Use lets organizations present legal
-disclaimers or policy documents to users. This example shows how to:
-  - List all agreements configured in the tenant
-  - Check acceptance status per user
-  - Track who has (and hasn't) accepted each agreement
-
-Compliance and HR teams use this for onboarding audits and
-acceptance tracking.
-
 Requires delegated permission ``Agreement.Read.All`` and
 ``AgreementAcceptance.Read.All``.
 
@@ -17,95 +8,51 @@ https://learn.microsoft.com/en-us/graph/api/resources/agreement
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
-
-_DISPLAY_LIMIT = 5
+from tests.settings import client_id, client_secret, tenant
 
 
-def display_agreement(a):
-    """Print details and acceptances for a single agreement."""
-    display_name = a.display_name or "(unnamed)"
-    required = a.is_viewing_before_acceptance_required
-    per_device = a.is_per_device_acceptance_required
-    reaccept = a.user_reaccept_required_frequency
-
-    print(f"  {display_name:45s}  view_required={required}  per_device={per_device}  reaccept_freq={reaccept}")
-
-    try:
-        acceptances = a.acceptances.get().execute_query()
-        accepted_users = set()
-        for acc in acceptances:
-            if acc.properties.get("userPrincipalName"):
-                accepted_users.add(acc.properties["userPrincipalName"])
-
-        print(f"    Accepted by: {len(accepted_users)} user(s)")
-        if accepted_users:
-            for u in list(accepted_users)[:_DISPLAY_LIMIT]:
-                print(f"      {u}")
-            if len(accepted_users) > _DISPLAY_LIMIT:
-                print(f"      … and {len(accepted_users) - _DISPLAY_LIMIT} more")
-    except Exception:
-        print("    (acceptances not accessible)")
-
-    try:
-        files = a.files.get().execute_query()
-        for f in files:
-            file_name = f.properties.get("fileName", "?")
-            print(f"    File: {file_name}")
-    except Exception:
-        pass
-
-    print()
-
-
-def compliance_check(agreements, all_acceptances, client):
-    """Check which users have not accepted any agreement."""
-    if not agreements:
-        return
-    print("\n--- Compliance check: acceptance status ---")
-    users = client.users.get().select(["id", "userPrincipalName", "displayName"]).top(100).execute_query()
-    accepted_upns = set()
-    for acc in all_acceptances:
-        upn = acc.properties.get("userPrincipalName", "")
-        if upn:
-            accepted_upns.add(upn.upper())
-
-    users_without = [u for u in users if (u.user_principal_name or "").upper() not in accepted_upns]
-    if users_without:
-        print(f"Users without acceptance: {len(users_without)} out of {len(users)}")
-        for u in users_without[:_DISPLAY_LIMIT]:
-            print(f"  {u.user_principal_name:35s}  {u.display_name or ''}")
-        if len(users_without) > _DISPLAY_LIMIT:
-            print(f"  … and {len(users_without) - _DISPLAY_LIMIT} more")
+def _fmt(dt):
+    return dt.strftime("%Y-%m-%d") if hasattr(dt, "strftime") else str(dt or "?")
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     tos = client.identity_governance.terms_of_use
 
-    # -- Step 1: list all agreements --
     agreements = tos.agreements.get().execute_query()
     print(f"Terms of use agreements: {len(agreements)}\n")
-
     for a in agreements:
-        display_agreement(a)
+        print(f"  {a.display_name or '(unnamed)'}")
+        print(
+            f"    view_required={a.is_viewing_before_acceptance_required}  "
+            f"per_device={a.is_per_device_acceptance_required}  "
+            f"reaccept_freq={a.user_reaccept_required_frequency}"
+        )
 
-    # -- Step 2: list all agreement acceptances tenant-wide --
+        for f in a.files.get().execute_query() or []:
+            print(f"    File: {f.properties.get('fileName', '?')}")
+
+        acceptances = a.acceptances.get().execute_query()
+        users = {acc.properties.get("userPrincipalName") for acc in acceptances}
+        users.discard(None)
+        print(f"    Accepted by: {len(users)} user(s)")
+        if users:
+            for u in sorted(users)[:5]:
+                print(f"      {u}")
+
     all_acceptances = tos.agreement_acceptances.get().execute_query()
-    print(f"Total agreement acceptances across all agreements: {len(all_acceptances)}")
+    print(f"\nTotal acceptances: {len(all_acceptances)}")
 
-    for acc in all_acceptances[:10]:
-        agreement_id = acc.properties.get("agreementId", "?")[:20]
-        user_name = acc.properties.get("userPrincipalName", acc.properties.get("userDisplayName", "?"))
-        recorded = acc.properties.get("recordedDateTime", "?")
-        if hasattr(recorded, "strftime"):
-            recorded = recorded.strftime("%Y-%m-%d")
-        state = acc.properties.get("state", "?")
-        print(f"  {user_name:35s}  agreement={agreement_id}  state={state}  recorded={recorded}")
+    accepted_upns = {acc.properties.get("userPrincipalName", "").upper() for acc in all_acceptances}
+    accepted_upns.discard("")
 
-    # -- Step 3: users who have NOT accepted (compliance check) --
-    compliance_check(agreements, all_acceptances, client)
+    users = client.users.select(["userPrincipalName", "displayName"]).top(100).get().execute_query()
+    pending = [u for u in users if (u.user_principal_name or "").upper() not in accepted_upns]
+    if pending:
+        print(f"\nUsers without acceptance: {len(pending)} / {len(users)}")
+        for u in pending[:5]:
+            print(f"  {u.user_principal_name}  {u.display_name or ''}")
 
 
 if __name__ == "__main__":

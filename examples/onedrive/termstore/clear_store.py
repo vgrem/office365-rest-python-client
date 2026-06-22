@@ -11,12 +11,12 @@ Requires delegated permission Sites.ReadWrite.All.
 
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
-from tests import test_client_id, test_client_secret, test_root_site_url, test_tenant
+from tests.settings import client_id, client_secret, root_site_url, tenant
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-    store = client.sites.get_by_url(test_root_site_url).term_store
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    store = client.sites.get_by_url(root_site_url).term_store
 
     # Delete all groups (full reset)
     for g in store.groups.get().execute_query():

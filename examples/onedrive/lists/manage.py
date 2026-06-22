@@ -12,14 +12,10 @@ https://learn.microsoft.com/en-us/graph/api/columndefinition-create
 
 from office365.graph_client import GraphClient
 from office365.onedrive.lists.template_type import ListTemplateType
-from tests import (
-    create_unique_name,
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-)
+from tests import create_unique_name
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. Create a document library
 list_name = create_unique_name("ProjectAssets")

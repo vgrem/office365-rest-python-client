@@ -1,8 +1,7 @@
 """
-Create, publish, and list site pages in a SharePoint site.
+Site pages — create, get, update web parts, publish, and delete.
 
-Site pages are modern pages that can contain web parts
-and rich content.
+Covers the full page lifecycle in a SharePoint site.
 
 Requires delegated permission ``Sites.ReadWrite.All``.
 
@@ -11,26 +10,35 @@ https://learn.microsoft.com/en-us/graph/api/sitepage-publish
 """
 
 from office365.graph_client import GraphClient
-from tests import (
-    create_unique_name,
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-)
+from tests import create_unique_name
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-# 1. Create a site page
+site = client.sites.root
+
+# 1. Create a page
 page_name = create_unique_name("Status-Report")
-page = client.sites.root.pages.add(title=page_name).execute_query()
-print(f"Page created: {page.title}  (id: {page.id})")
+page = site.pages.add(title=page_name).execute_query()
+print(f"Page created: {page.title}")
 
-# 2. Publish the page
+# 2. Get page by title
+page = site.pages.get_by_title(page_name).get().execute_query()
+print(f"  Found by title: {page.title}")
+
+# 3. Update page properties (show comments)
+page.set_property("showComments", True)
+page.update().execute_query()
+print(f"  Updated: show_comments={page.show_comments}")
+
+# 4. Publish
 page.publish().execute_query()
-print("  Published successfully")
+print("  Published")
 
-# 3. List all pages in the site
-pages = client.sites.root.pages.get().execute_query()
-print(f"\nSite pages ({len(pages)}):")
-for p in pages:
+# 5. List all pages
+for p in site.pages.get().execute_query():
     print(f"  {p.title}")
+
+# 6. Delete the test page
+page.delete_object().execute_query()
+print("  Deleted")

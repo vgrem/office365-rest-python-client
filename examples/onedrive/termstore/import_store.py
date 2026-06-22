@@ -14,11 +14,11 @@ Requires delegated permission TermStore.ReadWrite.All.
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     json_path = Path("../../data/regions.json")
     if not json_path.exists():

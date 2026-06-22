@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, Type
+from typing import IO, Any, Callable, Dict, Generic, Iterator, List, Optional, Type
 
 from typing_extensions import Self
 
@@ -285,6 +285,25 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
         self.paged(page_size, page_loaded).get().after_execute(_page_loaded)
         return self
+
+    def to_csv(self, file: IO) -> Self:
+        """Export collection items to CSV using ``.select()`` and ``.expand()``.
+
+        Plain select fields (e.g. ``"displayName"``) produce one column.
+        Dotted select fields (e.g. ``"members/displayName"``) walk into an
+        expanded navigation property — one CSV row is emitted per child item.
+
+        Usage:
+            >>> client.teams.get_all() \\
+            ...     .select(["displayName", "members/displayName"]) \\
+            ...     .expand(["members"]) \\
+            ...     .to_csv(f) \\
+            ...     .execute_query()
+        """
+        from office365.runtime.csv_writer import CollectionCsvWriter
+
+        writer = CollectionCsvWriter(self, file)
+        return self.after_execute(lambda _: writer.write())
 
     def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""
