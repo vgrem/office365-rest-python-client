@@ -15,76 +15,41 @@ Requires delegated permission ``Sites.FullControl.All``.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/tenant/SpoOperation
 """
 
-import sys
-import time
-
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.tenant.administration.sharing_capabilities import SharingCapabilities
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import create_unique_name, test_admin_site_url, test_client_id, test_client_secret, test_tenant
-
-
-def poll_operation(ctx, op, label: str, max_wait_min: int = 10) -> bool:
-    """Poll a SpoOperation until it completes or times out.
-
-    Uses the server-recommended polling interval when available.
-
-    Args:
-        ctx: The ClientContext
-        op: The SpoOperation to poll
-        label: Human-readable label for progress output
-        max_wait_min: Maximum minutes to wait
-
-    Returns:
-        True if completed successfully, False if timed out or failed.
-    """
-    timeout = time.time() + max_wait_min * 60
-
-    while time.time() < timeout:
-        op = ctx.load(op).execute_query()
-
-        if op.is_complete is True:
-            print(f"  ✓ {label} — completed")
-            return True
-
-        if op.has_timedout:
-            print(f"  ⚠ {label} — timed out by server")
-            return False
-
-        interval = op.polling_interval_secs or 5
-        print(f"  {label} — polling (next check in {interval}s)...")
-        time.sleep(interval)
-
-    print(f"  ✗ {label} — timed out after {max_wait_min} min")
-    return False
+from tests import (
+    create_unique_name,
+    test_admin_site_url,
+    test_client_id,
+    test_username,
+    test_tenant,
+    test_password,
+    test_user_principal_name_alt,
+)
 
 
 def main():
-    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(test_admin_site_url).with_username_and_password(
+        test_tenant, test_client_id, test_username, test_password
+    )
     tenant = Tenant(ctx)
 
     # -- Step 1: create a site (async) --
     site_name = create_unique_name("AsyncDemoSite")
     site_url = f"https://{test_tenant.split('.')[0]}.sharepoint.com/sites/{site_name}"
-    owner = "admin@contoso.onmicrosoft.com"
 
     print(f"Creating site '{site_name}'...")
-    op = tenant.create_site(url=site_url, owner=owner, title=site_name).execute_query()
-    created = poll_operation(ctx, op, "Create site")
-    if not created:
-        sys.exit(1)
+    site = tenant.create_site_sync(url=site_url, owner=test_user_principal_name_alt, title=site_name).execute_query()
 
-    # -- Step 2: update site properties (async) --
-    properties = tenant.get_site_properties_by_url(site_url, include_detail=True).execute_query()
-    properties.set_property("SharingCapability", "ExternalUserSharingOnly")
-    op = properties.update_ex().execute_query()
-    poll_operation(ctx, op, "Update site properties")
+    # -- Step 2: update site properties
+    properties = tenant.get_site_properties_by_url(site.url, include_detail=True).execute_query()
+    properties.sharing_capability = SharingCapabilities.ExternalUserSharingOnly
+    properties.update_ex().execute_query()
 
     # -- Step 3: delete the site (async) --
     print("\nDeleting site...")
-    op = tenant.remove_site(site_url).execute_query()
-    deleted = poll_operation(ctx, op, "Delete site")
-
-    print(f"\n{'✅' if created and deleted else '❌'} Async operations complete.")
+    tenant.remove_site_sync(site_url).execute_query()
 
 
 if __name__ == "__main__":

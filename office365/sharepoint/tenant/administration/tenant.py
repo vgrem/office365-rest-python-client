@@ -708,9 +708,9 @@ class Tenant(Entity):
             owner (str): Sets the login name of the owner of the new site.
         """
         return_type = Site(self.context)
-        return_type.set_property("__siteUrl", url)
 
         def _ensure_status(op: SpoOperation) -> None:
+            return_type.set_property("__siteUrl", url)
             if not op.is_complete:
                 self._poll_site_status(url, op.polling_interval_secs or 0)
 
@@ -729,17 +729,12 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def remove_sites(
-        self, site_urls: List[str], success_callback: Optional[Callable[[SpoOperation, str], None]] = None
-    ) -> Self:
-        def _remove_next_site(op: Optional[SpoOperation] = None):
-            if site_urls:
-                site_url = site_urls.pop(0)
-                if op and success_callback:
-                    success_callback(op, site_url)
-                self.remove_site(site_url).after_execute(_remove_next_site)
+    def remove_site_sync(self, site_url: str) -> Self:
+        def _remove_site_sync(op: SpoOperation):
+            if not op.is_complete:
+                self._poll_site_status(site_url, op.polling_interval_secs or 0)
 
-        _remove_next_site()
+        self.remove_site(site_url).after_execute(_remove_site_sync)
         return self
 
     def remove_deleted_site(self, site_url: str) -> SpoOperation:

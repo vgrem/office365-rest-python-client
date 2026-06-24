@@ -12,3 +12,7 @@ class TeamworkActivityTopic(ClientValue):
     source: str | None = None
     value: str | None = None
     webUrl: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamworkActivityTopic"

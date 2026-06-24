@@ -28,6 +28,6 @@ messages = (
 
 print(f"\nMessages over {min_mb} MB in inbox ({len(messages)}):\n")
 for m in messages:
-    sender = m.from_.emailAddress.address if m.from_ else ""
+    sender = m.from_recipient.emailAddress.address if m.from_recipient else ""
     size_mb = (m.size or 0) / (1024 * 1024)
     print(f"  {size_mb:6.1f} MB  {m.subject:40s}  {sender:30s}  {m.receivedDateTime}")

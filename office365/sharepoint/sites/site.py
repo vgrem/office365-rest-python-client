@@ -227,7 +227,7 @@ class Site(Entity):
 
         def _loaded(tags: ClientResult[ClientValueCollection[ComplianceTag]]):
             tag = next(
-                (t for t in tags.value if tag_name.lower() in (t.DisplayName or t.TagName).lower()),
+                (t for t in tags.value if tag_name.lower() in (t.DisplayName or t.TagName or "").lower()),
                 None,
             )
             return_type.set_property("__value", tag)

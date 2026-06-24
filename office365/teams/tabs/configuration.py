@@ -22,3 +22,7 @@ class TeamsTabConfiguration(ClientValue):
     entityId: str | None = None
     removeUrl: str | None = None
     websiteUrl: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamsTabConfiguration"

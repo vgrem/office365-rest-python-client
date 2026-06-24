@@ -145,5 +145,3 @@ class TestOnlineMeetingsCreateWithSettings(GraphDelegatedTestCase):
             meeting.delete_object().execute_query()
         except Exception:
             pass
-
-

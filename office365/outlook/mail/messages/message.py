@@ -472,21 +472,25 @@ class Message(OutlookItem):
             ),
         )
 
+    @odata(name="from")
     @property
-    def from_(self) -> Recipient:
+    def from_recipient(self) -> Recipient:
         """Gets the from property"""
         return self.properties.get("from", Recipient())
 
+    @odata(name="receivedDateTime")
     @property
     def received_date_time(self) -> datetime:
         """Gets the receivedDateTime property"""
         return self.properties.get("receivedDateTime", datetime.min)
 
+    @odata(name="sentDateTime")
     @property
     def sent_date_time(self) -> datetime:
         """Gets the sentDateTime property"""
         return self.properties.get("sentDateTime", datetime.min)
 
+    @odata(name="uniqueBody")
     @property
     def unique_body(self) -> ItemBody:
         """Gets the uniqueBody property"""

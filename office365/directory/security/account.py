@@ -1,0 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from office365.runtime.client_value import ClientValue
+
+
+@dataclass
+class Account(ClientValue):
+    identifier: str | None = None
+    # identityProvider: IdentityProvider = field(default_factory=IdentityProvider)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.Account"

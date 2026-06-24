@@ -5,13 +5,10 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import client_id, site_url, tenant, cert_thumbprint, cert_path
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 nav = ctx.web.navigation.top_navigation_bar.get().execute_query()
 for item in nav:

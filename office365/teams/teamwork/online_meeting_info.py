@@ -19,3 +19,7 @@ class TeamworkOnlineMeetingInfo(ClientValue):
     calendarEventId: str | None = None
     joinWebUrl: str | None = None
     organizer: TeamworkUserIdentity = field(default_factory=TeamworkUserIdentity)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamworkOnlineMeetingInfo"

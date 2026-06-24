@@ -27,7 +27,7 @@ while True:
     if len(batch) == 0:
         break
     for m in batch:
-        print(f"  {m.receivedDateTime}  {m.subject}")
+        print(f"  {m.received_date_time}  {m.subject}")
     total += len(batch)
     skip += page_size
 

@@ -11,3 +11,7 @@ class ChannelIdentity(ClientValue):
 
     channelId: str | None = None
     teamId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ChannelIdentity"

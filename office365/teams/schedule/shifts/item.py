@@ -13,3 +13,8 @@ class ShiftItem(ScheduleEntity):
 
     displayName: str | None = None
     activities: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(ShiftActivity))
+    notes: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ShiftItem"

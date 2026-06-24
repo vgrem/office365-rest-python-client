@@ -15,3 +15,7 @@ class ShiftAvailability(ClientValue):
     recurrence: PatternedRecurrence = field(default_factory=PatternedRecurrence)
     timeSlots: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(TimeRange))
     timeZone: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ShiftAvailability"

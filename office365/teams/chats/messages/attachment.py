@@ -38,3 +38,7 @@ class ChatMessageAttachment(ClientValue):
     contentUrl: str | None = None
     teamsAppId: str | None = None
     thumbnailUrl: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ChatMessageAttachment"

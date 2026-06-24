@@ -4,28 +4,23 @@ Add a child navigation node (sub-menu) under an existing parent node.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 """
 
+import sys
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.navigation.nodes.creationinformation import NavigationNodeCreationInformation
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
+ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
 
-# Get the first Quick Launch node to use as parent
 nav = ctx.web.navigation.quick_launch.get().execute_query()
-if nav:
-    parent_id = nav[0].id
-    assert parent_id is not None
-    parent_node = ctx.web.navigation.quick_launch.get_by_id(parent_id).get().execute_query()
+if not nav:
+    sys.exit("No navigation nodes found.")
 
-    child_info = NavigationNodeCreationInformation(
-        Title="Child page",
-        Url=f"{ctx.base_url}/SitePages/Child.aspx",
-        AsLastNode=True,
-    )
-    child_node = parent_node.children.add(child_info).execute_query()
-    print(f"Child node added: {child_node.title} under {parent_node.title}")
+parent = nav[0]
+child_info = NavigationNodeCreationInformation(
+    Title="Child page",
+    Url=f"{ctx.base_url}/SitePages/Child.aspx",
+    AsLastNode=True,
+)
+child = parent.children.add(child_info).execute_query()
+print(f"Child node added: {child.title} under {parent.title}")

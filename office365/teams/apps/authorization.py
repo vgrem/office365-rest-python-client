@@ -17,3 +17,7 @@ class TeamsAppAuthorization(ClientValue):
 
     clientAppId: str | None = None
     requiredPermissionSet: TeamsAppPermissionSet = field(default_factory=TeamsAppPermissionSet)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamsAppAuthorization"

@@ -102,6 +102,7 @@ from office365.sharepoint.sitescripts.serialization_result import (
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
 from office365.sharepoint.translation.user_resource import UserResource
+from office365.sharepoint.types.property_values import PropertyValues
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,
@@ -2476,6 +2477,15 @@ class Web(SecurableObject):
         return self.properties.get(
             "TitleResource",
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
+        )
+
+    @odata(name="AllProperties")
+    @property
+    def all_properties(self) -> PropertyValues:
+        """A UserResource object that represents the title of this web."""
+        return self.properties.get(
+            "AllProperties",
+            PropertyValues(self.context, ResourcePath("AllProperties", self.resource_path)),
         )
 
     @property

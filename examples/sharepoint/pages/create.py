@@ -1,20 +1,14 @@
 """
 Create a modern page on a SharePoint site.
 
-https://support.microsoft.com/en-gb/office/create-and-use-modern-pages-on-a-sharepoint-site-b3d46deb-27a6-4b1e-87b8-df851e503dec
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import create_unique_name, test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests import create_unique_name
+from tests.settings import client_id, client_secret, team_site_url, tenant
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
+ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
 page_title = create_unique_name("Site Page ")
-print("Creating a site page: {0} ...".format(page_title))
 draft_page = ctx.site_pages.create_page(page_title).execute_query()
-print("A site page has been created at url: {0} ...".format(draft_page.absolute_url))
+print(f"Page created: {draft_page.absolute_url}")

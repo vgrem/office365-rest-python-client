@@ -25,7 +25,7 @@ with open("mail_export.csv", "w", newline="") as f:
     w = csv.writer(f)
     w.writerow(["Subject", "From", "Received", "Size (KB)", "Has Attachments"])
     for m in messages:
-        sender = m.from_.emailAddress.address if m.from_ else ""
+        sender = m.from_recipient.emailAddress.address if m.from_recipient else ""
         size_kb = (m.size or 0) // 1024
         w.writerow([m.subject, sender, m.receivedDateTime, size_kb, m.hasAttachments])
 

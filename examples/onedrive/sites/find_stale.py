@@ -13,7 +13,7 @@ from tests.settings import client_id, client_secret, tenant
 
 client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-for site in client.sites.get_all().execute_query():
+for site in client.sites.get().execute_query():
     try:
         analytics = site.analytics.get().execute_query()
         stat = analytics.all_time
