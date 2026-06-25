@@ -15,6 +15,7 @@ class FunctionQuery(ClientQuery[ReturnT]):
         method_name: str | None = None,
         method_params: list | dict | ClientValue | None = None,
         return_type: ReturnT | None = None,
+        return_raw_content: bool = False,
     ) -> None:
         """Initialize a function query.
 
@@ -23,9 +24,17 @@ class FunctionQuery(ClientQuery[ReturnT]):
             method_name: The name of the method to call
             method_params: Parameters for the method call
             return_type: The expected return type
+            return_raw_content: When True, the response body is treated as raw content
+                (e.g. file download) rather than parsed as OData JSON.
         """
         super().__init__(binding_type.context, binding_type, None, None, return_type)
         self._path = ServiceOperationPath(method_name or "", method_params, binding_type.resource_path)
+        self._return_raw_content = return_raw_content
+
+    @property
+    def return_raw_content(self) -> bool:
+        """Whether the response should be treated as raw content, not OData JSON."""
+        return self._return_raw_content
 
     def __repr__(self) -> str:
         return f"FunctionQuery(name={self.path.name})"
