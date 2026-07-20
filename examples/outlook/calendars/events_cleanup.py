@@ -9,7 +9,7 @@ Requires delegated permission ``Calendars.ReadWrite``.
 https://learn.microsoft.com/en-us/graph/api/event-delete
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, username
@@ -19,7 +19,7 @@ client = GraphClient(tenant=tenant).with_username_and_password(client_id, userna
 cutoff_days = int(input("Delete events older than (days): ") or "90")
 confirm = input(f"Delete events older than {cutoff_days} days? (dry-run / yes / no): ").strip().lower()
 
-cutoff = datetime.utcnow() - timedelta(days=cutoff_days)
+cutoff = datetime.now(timezone.utc) - timedelta(days=cutoff_days)
 
 events = client.me.calendar.events.filter(f"end/dateTime lt '{cutoff.isoformat()}Z'").get().execute_query()
 print(f"Found {len(events)} events older than {cutoff_days} days")
