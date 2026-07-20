@@ -9,7 +9,7 @@ Requires delegated permission ``Mail.ReadWrite``.
 https://learn.microsoft.com/en-us/graph/api/message-delete
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, username
@@ -23,7 +23,7 @@ cutoff_days = int(input("Delete messages older than (days): ") or "180")
 msg = f"Delete messages older than {cutoff_days}d from '{folder_path}'? (dry-run / yes / no): "
 confirm = input(msg).strip().lower()
 
-cutoff = datetime.utcnow() - timedelta(days=cutoff_days)
+cutoff = datetime.now(timezone.utc) - timedelta(days=cutoff_days)
 folder = client.me.mail_folders[folder_path]
 messages = folder.messages.filter(f"receivedDateTime lt '{cutoff.isoformat()}Z'").get().execute_query()
 
