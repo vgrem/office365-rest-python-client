@@ -9,14 +9,14 @@ Requires delegated permission ``Calendars.ReadWrite``.
 https://learn.microsoft.com/en-us/graph/api/user-post-events
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, user_principal, username
 
 client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-when = datetime.utcnow() + timedelta(days=1)
+when = datetime.now(timezone.utc) + timedelta(days=1)
 event = client.me.calendar.events.add(
     subject="Team Lunch",
     body="Let's grab lunch together.",
