@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/graph/api/planner-update-tasks?view=graph-rest
 """
 
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_password, test_tenant, test_username
@@ -25,7 +25,7 @@ if len(tasks) == 0:
 
 task = tasks[0]
 task.set_property("title", f"{task.title} (updated)")
-task.set_property("dueDateTime", (datetime.utcnow() + timedelta(days=7)).isoformat())
+task.set_property("dueDateTime", (datetime.now(timezone.utc) + timedelta(days=7)).isoformat())
 task.set_property("priority", 3)
 task.set_property("percentComplete", 25)
 task.update().execute_query()
