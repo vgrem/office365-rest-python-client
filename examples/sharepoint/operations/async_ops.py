@@ -22,10 +22,10 @@ from tests import (
     create_unique_name,
     test_admin_site_url,
     test_client_id,
-    test_username,
-    test_tenant,
     test_password,
+    test_tenant,
     test_user_principal_name_alt,
+    test_username,
 )
 
 

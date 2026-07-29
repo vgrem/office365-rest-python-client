@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 
+from typing_extensions import Self
+
 from office365.booking.appointment import BookingAppointment
 from office365.booking.custom_question import BookingCustomQuestion
 from office365.booking.customers.base import BookingCustomerBase
@@ -15,6 +17,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class BookingBusiness(Entity):
@@ -45,7 +48,7 @@ class BookingBusiness(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def publish(self):
+    def publish(self) -> Self:
         """
         Make the scheduling page of a business available to external customers.
 
@@ -67,6 +70,7 @@ class BookingBusiness(Entity):
         """
         return self.properties.get("address", PhysicalAddress())
 
+    @odata(name="businessHours")
     @property
     def business_hours(self) -> ClientValueCollection[BookingWorkHours]:
         """The hours of operation for the business."""
@@ -92,6 +96,7 @@ class BookingBusiness(Entity):
             ),
         )
 
+    @odata(name="calendarView")
     @property
     def calendar_view(self) -> EntityCollection[BookingAppointment]:
         """The set of appointments of this business in a specified date range. Read-only. Nullable."""
@@ -116,6 +121,7 @@ class BookingBusiness(Entity):
             ),
         )
 
+    @odata(name="customQuestions")
     @property
     def custom_questions(self) -> EntityCollection[BookingCustomQuestion]:
         """All the services offered by this business. Read-only. Nullable."""
@@ -140,6 +146,7 @@ class BookingBusiness(Entity):
             ),
         )
 
+    @odata(name="staffMembers")
     @property
     def staff_members(self) -> EntityCollection[BookingStaffMemberBase]:
         """The collection of open extensions defined for the message. Nullable."""
@@ -151,14 +158,3 @@ class BookingBusiness(Entity):
                 ResourcePath("staffMembers", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "businessHours": self.business_hours,
-                "calendarView": self.calendar_view,
-                "customQuestions": self.custom_questions,
-                "staffMembers": self.staff_members,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

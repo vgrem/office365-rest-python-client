@@ -37,9 +37,7 @@ def main():
     if popular and popular.value:
         print(f"Popular tenant queries (top {len(popular.value)}):")
         for i, q in enumerate(popular.value, 1):
-            query_text = q.properties.get("queryText", q.properties.get("QueryText", "?"))
-            count_val = q.properties.get("count", q.properties.get("Count", "?"))
-            print(f"  {i:2d}. {query_text:45s}  count={count_val}")
+            print(f"  {i:2d}. {q.QueryText:45s}  count={q.QueryCount}")
     else:
         print("(No popular tenant query data available)")
     print()

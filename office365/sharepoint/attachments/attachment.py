@@ -5,6 +5,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.internal.queries.upload_file import create_upload_file_query
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
@@ -45,7 +46,7 @@ class Attachment(Entity):
 
     def get_content(self) -> ClientResult[bytes]:
         """Gets the raw contents of attachment"""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bytes](self.context)
         qry = FunctionQuery(self, "$value", None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -87,6 +88,7 @@ class Attachment(Entity):
         """Specifies the file name of the list item attachment."""
         return self.properties.get("FileName", None)
 
+    @odata(name="FileNameAsPath")
     @property
     def file_name_as_path(self) -> SPResPath:
         """The file name of the attachment as a SP.ResourcePath."""
@@ -97,6 +99,7 @@ class Attachment(Entity):
         """The server-relative-url of the attachment"""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> SPResPath:
         """The server-relative-path of the attachment."""
@@ -113,12 +116,3 @@ class Attachment(Entity):
             if name == "ServerRelativeUrl" and value is not None:
                 self._resource_path = self.context.web.get_file_by_server_relative_url(value).resource_path
         return self
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "FileNameAsPath": self.file_name_as_path,
-                "ServerRelativePath": self.server_relative_path,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

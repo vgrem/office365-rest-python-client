@@ -4,8 +4,8 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
-from tests.settings import tenant, username, client_id, password
+from tests import test_team_site_url
+from tests.settings import client_id, password, tenant, username
 
 ctx = ClientContext(test_team_site_url).with_username_and_password(tenant, client_id, username, password)
 

@@ -4,9 +4,9 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import client_id, password, team_site_url, tenant, username
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(team_site_url).with_username_and_password(tenant, client_id, username, password)
 result = ctx.web.lists.get().select(["IsSystemList", "Title"]).filter("IsSystemList eq false").execute_query()
 for lst in result:
     print(lst.title)

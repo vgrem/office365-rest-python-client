@@ -5,7 +5,7 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, site_url, tenant, cert_thumbprint, cert_path
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 ctx = ClientContext(site_url).with_client_certificate(
     tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path

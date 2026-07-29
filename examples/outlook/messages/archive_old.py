@@ -9,7 +9,7 @@ Requires delegated permission ``Mail.ReadWrite``.
 https://learn.microsoft.com/en-us/graph/api/message-move
 """
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, username

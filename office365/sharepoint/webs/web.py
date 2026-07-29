@@ -223,11 +223,11 @@ class Web(SecurableObject):
             IncludeRegionalSettings=include_regional_settings,
         )
 
-        def _get_site_script():
-            assert self.url is not None
-            SiteScriptUtility.get_site_script_from_web(self.context, self.url, info, return_type=result)
+        def _get_site_script(web_url: str | None):
+            assert web_url is not None
+            SiteScriptUtility.get_site_script_from_web(self.context, web_url, info, return_type=result)
 
-        self.ensure_property("Url").after_execute(lambda _: _get_site_script())
+        self.ensure_property("Url").after_execute(lambda _: _get_site_script(self.url))
         return result
 
     def consent_to_power_platform(self) -> FlowSynchronizationResult:
@@ -342,7 +342,8 @@ class Web(SecurableObject):
         """
         return_type = PushNotificationSubscriberCollection(self.context)
 
-        def _create_and_add_query(login_name: str):
+        def _create_and_add_query(login_name: str | None):
+            assert login_name is not None
             qry = ServiceOperationQuery(
                 self,
                 "GetPushNotificationSubscribersByUser",
@@ -354,9 +355,7 @@ class Web(SecurableObject):
             self.context.add_query(qry)
 
         if isinstance(user, User):
-            user.ensure_property("LoginName").after_execute(
-                lambda _: _create_and_add_query(user.login_name) if user.login_name is not None else None
-            )
+            user.ensure_property("LoginName").after_execute(lambda _: _create_and_add_query(user.login_name))
         else:
             _create_and_add_query(user)
         return return_type
@@ -1093,7 +1092,7 @@ class Web(SecurableObject):
             ServiceOperationPath("getList", [str(safe_path)], self.resource_path),
         )
 
-    def get_changes(self, query: Optional[ChangeQuery] = None):
+    def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of all changes from the change log that have occurred within the scope of the web,
         based on the specified query.
 
@@ -1139,7 +1138,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def increment_site_client_tag(self):
+    def increment_site_client_tag(self) -> Self:
         """Increments the client cache control number for this site collection."""
         qry = ServiceOperationQuery(self, "IncrementSiteClientTag")
         self.context.add_query(qry)
@@ -1174,7 +1173,9 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_file_by_guest_url_extended(self, guest_url: str, ensure_access=None, password=None):
+    def get_file_by_guest_url_extended(
+        self, guest_url: str, ensure_access: bool | None = None, password: str | None = None
+    ) -> File:
         """Returns the file object from the tokenized sharing link URL.
 
         Args:
@@ -1300,7 +1301,7 @@ class Web(SecurableObject):
             display_format (int): Int value representing SP.DateTimeFieldFormatType
             calendar_type (int): Int value representing SP.CalendarType
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[str](self.context)
         payload = {
             "value": value,
             "displayFormat": display_format.value,
