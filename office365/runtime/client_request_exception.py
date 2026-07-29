@@ -25,6 +25,9 @@ class ClientRequestException(RequestException):
         except Exception:
             error = {}
 
+        if not isinstance(error, dict):
+            error = {}
+
         details = error.get("details", [])
         if (
             error.get("code") == "nameAlreadyExists"
