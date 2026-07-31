@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from office365.directory.security.alerts.evidenceremediationstatus import EvidenceRemediationStatus
+from office365.directory.security.alerts.evidencerole import EvidenceRole
+from office365.directory.security.alerts.evidenceverdict import EvidenceVerdict
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 
 
@@ -13,3 +17,12 @@ class AlertEvidence(ClientValue):
 
     createdDateTime: str | None = None
     detailedRoles: StringCollection = field(default_factory=StringCollection)
+    remediationStatus: EvidenceRemediationStatus = EvidenceRemediationStatus.none
+    remediationStatusDetails: str | None = None
+    roles: ClientValueCollection[EvidenceRole] = field(default_factory=lambda: ClientValueCollection(EvidenceRole))
+    tags: StringCollection = field(default_factory=StringCollection)
+    verdict: EvidenceVerdict = EvidenceVerdict.unknown
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.AlertEvidence"

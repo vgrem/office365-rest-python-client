@@ -37,6 +37,7 @@ class Device(DirectoryObject):
         """For internal use only."""
         return self.properties.get("alternativeSecurityIds", ClientValueCollection(AlternativeSecurityId))
 
+    @odata(name="approximateLastSignInDateTime")
     @property
     def approximate_last_signin_datetime(self) -> datetime:
         """The timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
@@ -44,6 +45,7 @@ class Device(DirectoryObject):
         Supports $filter (eq, ne, not, ge, le, and eq on null values) and $orderby."""
         return self.properties.get("approximateLastSignInDateTime", datetime.min)
 
+    @odata(name="complianceExpirationDateTime")
     @property
     def compliance_expiration_datetime(self) -> datetime:
         """The timestamp when the device is no longer deemed compliant. The timestamp type represents date and

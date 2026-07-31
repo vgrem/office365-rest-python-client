@@ -13,14 +13,14 @@ import sys
 
 from office365.directory.licenses.assigned_license import AssignedLicense
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-    test_user_principal_name,
+from tests.settings import (
+    client_id,
+    client_secret,
+    tenant,
+    user_principal,
 )
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # Find the first available license SKU
 skus = client.subscribed_skus.get().execute_query()
@@ -31,7 +31,7 @@ sku = skus[0]
 print(f"Using SKU: {sku.sku_part_number}  (id: {sku.sku_id})")
 
 # Assign license to a user
-user = client.users.get_by_principal_name(test_user_principal_name)
+user = client.users.get_by_principal_name(user_principal)
 
 try:
     result = user.assign_license(

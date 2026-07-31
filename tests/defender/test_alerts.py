@@ -67,11 +67,11 @@ class TestAlerts(GraphDelegatedTestCase):
             self.skipTest("No alerts exist to inspect")
         limit = 2
         for alert in result:
-            self.assertIsNotNone(alert.get_property("id"))
-            self.assertIsNotNone(alert.get_property("severity"))
-            self.assertIsNotNone(alert.get_property("status"))
-            self.assertIsNotNone(alert.get_property("category"))
-            self.assertIsNotNone(alert.get_property("detectionSource"))
+            self.assertIsNotNone(alert.id)
+            self.assertIsNotNone(alert.severity)
+            self.assertIsNotNone(alert.status)
+            self.assertIsNotNone(alert.category)
+            self.assertIsNotNone(alert.detection_source)
             limit -= 1
             if limit == 0:
                 break
@@ -121,15 +121,17 @@ class TestAlerts(GraphDelegatedTestCase):
         if len(result) == 0:
             self.skipTest("No alerts exist to update")
         target = result[0]
+        alert_id = target.id
+        assert alert_id is not None
         try:
             # Add a comment
             from office365.directory.security.alerts.comment import AlertComment
 
             comment = AlertComment(comment="SDK test — automated triage comment")
-            target.comments.append(comment)
+            target.comments.add(comment)
             target.update().execute_query()
             # Verify
-            updated = self.client.security.alerts_v2[target.id].get().execute_query()
+            updated = self.client.security.alerts_v2[alert_id].get().execute_query()
             updated_comments = updated.get_property("comments", [])
             if len(updated_comments) > 0:
                 last_comment = updated_comments[-1]

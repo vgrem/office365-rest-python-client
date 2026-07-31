@@ -4,14 +4,16 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
 def print_progress(items_count: int) -> None:
     print("List items count: {0}".format(target_list.item_count))
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 target_list = ctx.web.lists.get_by_title("Company Tasks")
-target_list.clear().get().execute_batch()
-print("List items count: {0}".format(target_list.item_count))
+target_list.clear().execute_batch()
+print(f"List items count: {target_list.item_count}")

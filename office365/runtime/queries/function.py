@@ -28,7 +28,7 @@ class FunctionQuery(ClientQuery[ReturnT]):
         self._path = ServiceOperationPath(method_name or "", method_params, binding_type.resource_path)
 
     def __repr__(self) -> str:
-        return f"FunctionQuery(name={self.path.name})"
+        return f"FunctionQuery(name={self.name})"
 
     @property
     def path(self) -> ServiceOperationPath:

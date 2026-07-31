@@ -7,6 +7,7 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Domain(Entity):
@@ -29,6 +30,7 @@ class Domain(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="supportedServices")
     @property
     def supported_services(self) -> StringCollection:
         """
@@ -39,6 +41,7 @@ class Domain(Entity):
         """
         return self.properties.get("supportedServices", StringCollection())
 
+    @odata(name="domainNameReferences")
     @property
     def domain_name_references(self) -> DirectoryObjectCollection:
         """
@@ -52,6 +55,7 @@ class Domain(Entity):
             DirectoryObjectCollection(self.context, ResourcePath("domainNameReferences", self.resource_path)),
         )
 
+    @odata(name="serviceConfigurationRecords")
     @property
     def service_configuration_records(self) -> EntityCollection[DomainDnsRecord]:
         """
@@ -67,6 +71,7 @@ class Domain(Entity):
             ),
         )
 
+    @odata(name="verificationDnsRecords")
     @property
     def verification_dns_records(self) -> EntityCollection[DomainDnsRecord]:
         """
@@ -86,13 +91,3 @@ class Domain(Entity):
     def state(self) -> DomainState:
         """Status of asynchronous operations scheduled for the domain."""
         return self.properties.get("state", DomainState())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "domainNameReferences": self.domain_name_references,
-                "serviceConfigurationRecords": self.service_configuration_records,
-                "verificationDnsRecords": self.verification_dns_records,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

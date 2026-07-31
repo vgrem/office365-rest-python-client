@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class TenantRelationship(Entity):
@@ -39,6 +40,7 @@ class TenantRelationship(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="multiTenantOrganization")
     @property
     def multi_tenant_organization(self) -> MultiTenantOrganization:
         """Represents a setting to control people-related admin settings in the tenant."""
@@ -49,11 +51,3 @@ class TenantRelationship(Entity):
                 ResourcePath("multiTenantOrganization", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "multiTenantOrganization": self.multi_tenant_organization,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

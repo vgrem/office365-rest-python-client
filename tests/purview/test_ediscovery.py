@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.directory.security.cases.ediscovery import EdiscoveryCase
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -22,7 +24,7 @@ _EDISCOVERY_WRITE = ("eDiscovery.ReadWrite.All",)
 class TestEdiscoveryCases(GraphDelegatedTestCase):
     """eDiscovery cases — the top-level container for a discovery workflow."""
 
-    created_case: ClassVar[Optional[object]] = None
+    created_case: ClassVar[Optional[EdiscoveryCase]] = None
 
     @requires_delegated(
         *_EDISCOVERY_READ,
@@ -58,12 +60,14 @@ class TestEdiscoveryCases(GraphDelegatedTestCase):
     )
     def test_03_get_ediscovery_case_by_id(self):
         """Retrieving a case by ID returns the correct case."""
-        created = TestEdiscoveryCases.created_case
-        if not created:
+        created_case = TestEdiscoveryCases.created_case
+        if not created_case:
             self.skipTest("No created case available from previous test")
-        result = self.client.security.cases.ediscovery_cases[created.id].get().execute_query()
+        case_id = created_case.id
+        assert case_id is not None
+        result = self.client.security.cases.ediscovery_cases[case_id].get().execute_query()
         self.assertIsNotNone(result.resource_path)
-        self.assertEqual(result.get_property("id"), created.id)
+        self.assertEqual(result.get_property("id"), case_id)
 
     @requires_delegated(
         *_EDISCOVERY_READ,

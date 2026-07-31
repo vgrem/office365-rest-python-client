@@ -8,10 +8,12 @@ from random import randint
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.templates.type import ListTemplateType
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 list_name = "Tasks" + str(randint(0, 10000))
 create_info = ListCreationInformation(list_name, None, ListTemplateType.Tasks)
-list_object = ctx.web.lists.add(create_info).execute_query()
-print("List has been created: {0}".format(list_object.title))
+lst = ctx.web.lists.add(create_info).execute_query()
+print(f"List has been created: {lst.title}")

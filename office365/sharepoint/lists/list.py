@@ -157,7 +157,7 @@ class List(SecurableObject):
         folder_path: Optional[str] = None,
         document_template_type: DocumentTemplateType = DocumentTemplateType.Word,
         template_url: Optional[str] = None,
-    ):
+    ) -> ClientResult[str]:
         """Creates a document at the path and of the type specified within the current list.
         Returns an edit link to the file.
 
@@ -178,7 +178,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def delete_rule(self, rule_id) -> Self:
+    def delete_rule(self, rule_id: str) -> Self:
         """Args:
         rule_id (str):
         """
@@ -213,15 +213,17 @@ class List(SecurableObject):
 
         return_type = ClientResult(self.context, ComplianceTag())
 
-        def _get_compliance_tag():
-            assert self.root_folder.server_relative_url is not None
+        def _get_compliance_tag(url: str | None):
+            assert url is not None
             SPPolicyStoreProxy.get_list_compliance_tag(
                 self.context,
-                self.root_folder.server_relative_url,
+                url,
                 return_type=return_type,
             )
 
-        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _get_compliance_tag())
+        self.root_folder.ensure_property("ServerRelativeUrl").after_execute(
+            lambda _: _get_compliance_tag(self.root_folder.server_relative_url)
+        )
         return return_type
 
     def set_compliance_tag(
@@ -872,12 +874,12 @@ class List(SecurableObject):
         """
         from office365.sharepoint.documentmanagement.document_id import DocumentId
 
-        def _reset_doc_ids():
-            assert self.root_folder.server_relative_url is not None
+        def _reset_doc_ids(url: str | None) -> None:
+            assert url is not None
             doc_mng = DocumentId(self.context)
-            doc_mng.reset_doc_ids_in_library(self.root_folder.server_relative_url)
+            doc_mng.reset_doc_ids_in_library(url)
 
-        self.ensure_property("RootFolder").after_execute(lambda _: _reset_doc_ids())
+        self.ensure_property("RootFolder").after_execute(lambda _: _reset_doc_ids(self.root_folder.server_relative_url))
         return self
 
     def set_exempt_from_block_download_of_non_viewable_files(self, value: bool) -> Self:

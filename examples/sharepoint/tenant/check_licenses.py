@@ -9,4 +9,4 @@ from tests import test_admin_credentials, test_admin_site_url
 
 admin_client = ClientContext(test_admin_site_url).with_username_and_password(test_admin_credentials)
 result = admin_client.tenant.check_tenant_intune_license().execute_query()
-print("Intune license: {0}".format("Yes" if result.value else "No"))
+print(f"Intune license: {'Yes' if result.value else 'No'}")

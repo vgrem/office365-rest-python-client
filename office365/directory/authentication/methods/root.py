@@ -10,6 +10,7 @@ from office365.reports.userregistration.method_summary import (
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class AuthenticationMethodsRoot(Entity):
@@ -32,6 +33,7 @@ class AuthenticationMethodsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="userRegistrationDetails")
     @property
     def user_registration_details(self) -> EntityCollection[UserRegistrationDetails]:
         """Represents the state of a user's authentication methods, including which methods are registered and which
@@ -45,9 +47,3 @@ class AuthenticationMethodsRoot(Entity):
                 ResourcePath("userRegistrationDetails", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"userRegistrationDetails": self.user_registration_details}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

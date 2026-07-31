@@ -12,12 +12,11 @@ Requires delegated permission ``AuditLog.Read.All``.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, password, tenant, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
-
+client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 signins = client.audit_logs.signins.top(20).execute_query()
 
 for s in signins:
-    line = f"{s.created_datetime:%Y-%m-%d %H:%M}  {s.user_principal_name:9}  {s.app_display_name}  {s.status.error_code}"
+    line = f"{s.created_datetime:%Y-%m-%d %H:%M}  {s.user_principal_name:9}  {s.app_display_name}  {s.status}"
     print(line)

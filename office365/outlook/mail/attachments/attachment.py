@@ -7,6 +7,7 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class Attachment(Entity):
@@ -54,15 +55,8 @@ class Attachment(Entity):
     def size(self) -> Optional[int]:
         return self.properties.get("size", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_datetime(self) -> Optional[datetime]:
         """The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "lastModifiedDateTime": self.last_modified_datetime,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

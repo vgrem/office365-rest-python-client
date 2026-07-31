@@ -6,9 +6,11 @@ from typing import Optional
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.directory.security.cases.status import CaseStatus
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class Case(Entity):
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
@@ -24,11 +26,13 @@ class Case(Entity):
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""

@@ -19,11 +19,11 @@ https://learn.microsoft.com/en-us/graph/api/resources/booking-api-overview
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     # -- Step 1: list booking businesses --
     businesses = client.solutions.booking_businesses.get().execute_query()
@@ -47,9 +47,8 @@ def main():
     biz = businesses[0]
     print(f"\nInspecting: {biz.display_name}")
     print("  Business hours:")
-    if biz.business_hours and biz.business_hours.value:
-        for wh in biz.business_hours.value:
-            print(f"    {wh.properties.get('day', '?'):10s}  {wh.properties.get('timeSlots', [])}")
+    for wh in biz.business_hours:
+        print(f"    {wh.day}  {wh.timeSlots}")
 
     # -- Step 2: list services --
     services = biz.services.get().execute_query()

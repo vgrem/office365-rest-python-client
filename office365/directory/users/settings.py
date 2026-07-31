@@ -4,6 +4,7 @@ from office365.directory.users.insights_settings import UserInsightsSettings
 from office365.directory.users.storage import UserStorage
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.shifts.preferences import ShiftPreferences
 
 
@@ -30,6 +31,7 @@ class UserSettings(Entity):
         """
         return self.properties.get("contributionToContentDiscoveryDisabled", None)
 
+    @odata(name="itemInsights")
     @property
     def item_insights(self) -> UserInsightsSettings:
         """The user's settings for the visibility of meeting hour insights, and insights derived between
@@ -40,6 +42,7 @@ class UserSettings(Entity):
             UserInsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path)),
         )
 
+    @odata(name="shiftPreferences")
     @property
     def shift_preferences(self) -> ShiftPreferences:
         return self.properties.get(
@@ -53,12 +56,3 @@ class UserSettings(Entity):
             "storage",
             UserStorage(self.context, ResourcePath("storage", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "itemInsights": self.item_insights,
-                "shiftPreferences": self.shift_preferences,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

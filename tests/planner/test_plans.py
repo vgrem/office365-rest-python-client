@@ -190,6 +190,7 @@ class TestPlanner(GraphDelegatedTestCase):
         task.title = "SDK Test — Updated Task Title"
         task.update().execute_query()
 
+        assert task.id is not None
         refetched = self.client.planner.tasks[task.id].get().execute_query()
         self.assertEqual(refetched.title, "SDK Test — Updated Task Title")
 

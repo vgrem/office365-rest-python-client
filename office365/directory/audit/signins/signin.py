@@ -9,6 +9,7 @@ from office365.directory.policies.applied_conditional_access import (
 from office365.entity import Entity
 from office365.intune.devices.detail import DeviceDetail
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 
 class SignIn(Entity):
@@ -26,6 +27,7 @@ class SignIn(Entity):
         """Unique GUID representing the app ID in the Azure Active Directory."""
         return self.properties.get("appId", None)
 
+    @odata(name="appliedConditionalAccessPolicies")
     @property
     def applied_conditional_access_policies(
         self,
@@ -51,11 +53,13 @@ class SignIn(Entity):
         """
         return self.properties.get("correlationId", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self):
         """Date and time (UTC) the sign-in was initiated."""
         return self.properties.get("createdDateTime", datetime.datetime.min)
 
+    @odata(name="deviceDetail")
     @property
     def device_detail(self):
         """Device information from where the sign-in occurred; includes device ID, operating system, and browser.
@@ -127,13 +131,3 @@ class SignIn(Entity):
         Supports $filter (eq operator only) on errorCode property.
         """
         return self.properties.get("status", SignInStatus())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "appliedConditionalAccessPolicies": self.applied_conditional_access_policies,
-                "createdDateTime": self.created_datetime,
-                "deviceDetail": self.device_detail,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

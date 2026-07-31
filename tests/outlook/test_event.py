@@ -148,11 +148,11 @@ class TestOutlookEvent(GraphDelegatedTestCase):
             "recurrence",
             PatternedRecurrence(
                 pattern=RecurrencePattern(
-                    type=RecurrencePatternType.weekly.value,
+                    type=RecurrencePatternType.weekly,
                     interval=1,
                 ),
                 range=RecurrenceRange(
-                    type=RecurrenceRangeType.numbered.value,
+                    type=RecurrenceRangeType.numbered,
                     numberOfOccurrences=4,
                     startDate=when.date(),
                 ),
@@ -160,6 +160,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
         ).update().execute_query()
 
         # Re-fetch to verify recurrence persisted
+        assert result.id is not None
         updated = self.client.me.calendar.events[result.id].get().execute_query()
         self.assertIsNotNone(updated.get_property("recurrence"))
         result.delete_object().execute_query()
