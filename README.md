@@ -3,6 +3,7 @@
 [![Downloads](https://pepy.tech/badge/office365-rest-python-client/month)](https://pepy.tech/project/office365-rest-python-client)
 [![PyPI](https://img.shields.io/pypi/v/office365-rest-python-client.svg)](https://pypi.python.org/pypi/office365-rest-python-client)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/office365-rest-python-client.svg)](https://pypi.python.org/pypi/office365-rest-python-client/)
+[![Sponsor](https://img.shields.io/badge/-Sponsor-%23EA4AAA?logo=github&logoColor=white)](https://github.com/sponsors/vgrem)
 
 **Python client library for Microsoft 365 and Microsoft Graph APIs.**
 
@@ -12,9 +13,20 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 
 ---
 
+## Support
+
+`office365-rest-python-client` is free and maintained in the open. Sponsorship funds security updates, new API coverage, documentation, and releases.
+
+- [**GitHub Sponsors**](https://github.com/sponsors/vgrem) — recurring monthly support
+- [**PayPal**](https://paypal.me/ossvgrem) — one-off donation
+- Using this in production? Sponsors get priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/issues) for paid support or custom feature work.
+
+---
+
 ## Table of Contents
 
 - [Installation](#installation)
+- [Support](#support)
 - [Which client do I need?](#which-client-do-i-need)
 - [Authentication](#authentication)
   - [ClientContext — SharePoint auth](#clientcontext--sharepoint-auth)
