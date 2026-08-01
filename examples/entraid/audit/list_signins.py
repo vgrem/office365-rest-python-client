@@ -18,5 +18,5 @@ client = GraphClient(tenant=tenant).with_username_and_password(client_id, userna
 signins = client.audit_logs.signins.top(20).execute_query()
 
 for s in signins:
-    line = f"{s.created_datetime:%Y-%m-%d %H:%M}  {s.user_principal_name:9}  {s.app_display_name}  {s.status}"
+    line = f"{s.created_datetime:%Y-%m-%d %H:%M}  {s.user_principal_name:10}  {s.app_display_name}  {s.status}"
     print(line)

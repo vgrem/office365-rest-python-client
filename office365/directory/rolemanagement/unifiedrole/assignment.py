@@ -6,6 +6,7 @@ from office365.directory.rolemanagement.unifiedrole.definition import (
 )
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class UnifiedRoleAssignment(Entity):
@@ -49,8 +50,9 @@ class UnifiedRoleAssignment(Entity):
         """
         return self.properties.get("directoryScopeId", None)
 
+    @odata(name="roleDefinition")
     @property
-    def role_definition(self):
+    def role_definition(self) -> UnifiedRoleDefinition:
         """
         The roleDefinition the assignment is for. Supports $expand. roleDefinition.Id will be auto expanded.
         """
@@ -59,8 +61,9 @@ class UnifiedRoleAssignment(Entity):
             UnifiedRoleDefinition(self.context, ResourcePath("roleDefinition", self.resource_path)),
         )
 
+    @odata(name="appScope")
     @property
-    def app_scope(self):
+    def app_scope(self) -> AppScope:
         """
         Read-only property with details of the app specific scope when the assignment scope is app specific.
         Containment entity. Supports $expand for the entitlement provider only.
@@ -69,12 +72,3 @@ class UnifiedRoleAssignment(Entity):
             "appScope",
             AppScope(self.context, ResourcePath("appScope", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "appScope": self.app_scope,
-                "roleDefinition": self.role_definition,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

@@ -14,6 +14,7 @@ class DlpAction(Enum):
     sPRuntimeAccessControl = "9"
     sPSharingNotifyUser = "10"
     sPSharingGenerateIncidentReport = "11"
+    restrictWebGrounding = "12"
 
     @property
     def entity_type_name(self):

@@ -22,6 +22,7 @@ from office365.intune.devices.management.managed.partnerreportedhealthstate impo
 from office365.intune.devices.registrationstate import DeviceRegistrationState
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.users.collection import UserCollection
@@ -162,16 +163,19 @@ class ManagedDevice(Entity):
         """Gets the ethernetMacAddress property"""
         return self.properties.get("ethernetMacAddress", None)
 
+    @odata(name="exchangeAccessState")
     @property
     def exchange_access_state(self) -> DeviceManagementExchangeAccessState:
         """Gets the exchangeAccessState property"""
         return self.properties.get("exchangeAccessState", DeviceManagementExchangeAccessState.none)
 
+    @odata(name="exchangeAccessStateReason")
     @property
     def exchange_access_state_reason(self) -> DeviceManagementExchangeAccessStateReason:
         """Gets the exchangeAccessStateReason property"""
         return self.properties.get("exchangeAccessStateReason", DeviceManagementExchangeAccessStateReason.none)
 
+    @odata(name="exchangeLastSuccessfulSyncDateTime")
     @property
     def exchange_last_successful_sync_date_time(self) -> datetime:
         """Gets the exchangeLastSuccessfulSyncDateTime property"""
@@ -207,6 +211,7 @@ class ManagedDevice(Entity):
         """Gets the jailBroken property"""
         return self.properties.get("jailBroken", None)
 
+    @odata(name="lastSyncDateTime")
     @property
     def last_sync_date_time(self) -> datetime:
         """Gets the lastSyncDateTime property"""
@@ -217,21 +222,25 @@ class ManagedDevice(Entity):
         """Gets the managedDeviceName property"""
         return self.properties.get("managedDeviceName", None)
 
+    @odata(name="managedDeviceOwnerType")
     @property
     def managed_device_owner_type(self) -> ManagedDeviceOwnerType:
         """Gets the managedDeviceOwnerType property"""
         return self.properties.get("managedDeviceOwnerType", ManagedDeviceOwnerType.unknown)
 
+    @odata(name="managementAgent")
     @property
     def management_agent(self) -> ManagementAgentType:
         """Gets the managementAgent property"""
         return self.properties.get("managementAgent", ManagementAgentType.eas)
 
+    @odata(name="managementCertificateExpirationDate")
     @property
     def management_certificate_expiration_date(self) -> datetime:
         """Gets the managementCertificateExpirationDate property"""
         return self.properties.get("managementCertificateExpirationDate", datetime.min)
 
+    @odata(name="managementState")
     @property
     def management_state(self) -> ManagementState:
         """Gets the managementState property"""
@@ -257,6 +266,7 @@ class ManagedDevice(Entity):
         """Gets the osVersion property"""
         return self.properties.get("osVersion", None)
 
+    @odata(name="partnerReportedThreatState")
     @property
     def partner_reported_threat_state(self) -> ManagedDevicePartnerReportedHealthState:
         """Gets the partnerReportedThreatState property"""
@@ -326,15 +336,6 @@ class ManagedDevice(Entity):
     def wi_fi_mac_address(self) -> Optional[str]:
         """Gets the wiFiMacAddress property"""
         return self.properties.get("wiFiMacAddress", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "deviceCategory": self.device_category,
-                "deviceCompliancePolicyStates": self.device_compliance_policy_states,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

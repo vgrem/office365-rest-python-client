@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from office365.directory.audit.signins.location import SignInLocation
@@ -55,13 +55,13 @@ class SignIn(Entity):
 
     @odata(name="createdDateTime")
     @property
-    def created_datetime(self):
+    def created_datetime(self) -> datetime:
         """Date and time (UTC) the sign-in was initiated."""
-        return self.properties.get("createdDateTime", datetime.datetime.min)
+        return self.properties.get("createdDateTime", datetime.min)
 
     @odata(name="deviceDetail")
     @property
-    def device_detail(self):
+    def device_detail(self) -> DeviceDetail:
         """Device information from where the sign-in occurred; includes device ID, operating system, and browser.
         Supports $filter (eq and startsWith operators only) on browser and operatingSytem properties.
         """

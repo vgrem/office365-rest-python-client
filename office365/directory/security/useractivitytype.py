@@ -7,6 +7,10 @@ class UserActivityType(Enum):
     downloadText = "3"
     downloadFile = "4"
     unknownFutureValue = "5"
+    copyToClipboard = "6"
+    pasteFromClipboard = "7"
+    print = "8"
+    accessDebugTools = "9"
 
     @property
     def entity_type_name(self):

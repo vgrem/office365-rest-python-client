@@ -20,6 +20,7 @@ from office365.directory.policies.unifiedrolemanagement.policy import (
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PolicyRoot(Entity):
@@ -149,6 +150,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="featureRolloutPolicies")
     @property
     def feature_rollout_policies(self) -> EntityCollection[FeatureRolloutPolicy]:
         """The feature rollout policy associated with a directory object."""
@@ -161,6 +163,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="permissionGrantPolicies")
     @property
     def permission_grant_policies(self) -> EntityCollection[PermissionGrantPolicy]:
         """
@@ -175,6 +178,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="roleManagementPolicies")
     @property
     def role_management_policies(self) -> EntityCollection[UnifiedRoleManagementPolicy]:
         """Specifies the various policies associated with scopes and roles."""
@@ -200,9 +204,6 @@ class PolicyRoot(Entity):
                 "crossTenantAccessPolicy": self.cross_tenant_access_policy,
                 "defaultAppManagementPolicy": self.default_app_management_policy,
                 "deviceRegistrationPolicy": self.device_registration_policy,
-                "featureRolloutPolicies": self.feature_rollout_policies,
-                "permissionGrantPolicies": self.permission_grant_policies,
-                "roleManagementPolicies": self.role_management_policies,
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)

@@ -10,6 +10,7 @@ class LifecycleWorkflowProcessingStatus(Enum):
     failed = "5"
     unknownFutureValue = "6"
     quarantined = "8"
+    canceling = "7"
 
     @property
     def entity_type_name(self):

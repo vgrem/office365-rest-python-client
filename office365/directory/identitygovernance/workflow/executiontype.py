@@ -6,6 +6,7 @@ class WorkflowExecutionType(Enum):
     onDemand = "1"
     unknownFutureValue = "2"
     activatedWithScope = "3"
+    preview = "4"
 
     @property
     def entity_type_name(self):
