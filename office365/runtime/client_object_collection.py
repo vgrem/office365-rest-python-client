@@ -382,7 +382,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         return self._data[self._current_pos :]
 
     @property
-    def entity_type_name(self) -> Optional[str]:  # type: ignore[override]
+    def entity_type_name(self) -> str | None:  # type: ignore[override]
         """Get the OData type name for this collection."""
         if self._entity_type_name is None:
             client_object = self.create_typed_object()

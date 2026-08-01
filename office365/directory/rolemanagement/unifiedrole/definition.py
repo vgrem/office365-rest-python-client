@@ -9,6 +9,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class UnifiedRoleDefinition(Entity):
@@ -30,6 +31,7 @@ class UnifiedRoleDefinition(Entity):
         """
         return self.properties.get("isBuiltIn", None)
 
+    @odata(name="rolePermissions")
     @property
     def role_permissions(self) -> ClientValueCollection[UnifiedRolePermission]:
         """
@@ -37,6 +39,7 @@ class UnifiedRoleDefinition(Entity):
         """
         return self.properties.get("rolePermissions", ClientValueCollection(UnifiedRolePermission))
 
+    @odata(name="inheritsPermissionsFrom")
     @property
     def inherits_permissions_from(self) -> EntityCollection[UnifiedRoleDefinition]:
         """
@@ -51,12 +54,3 @@ class UnifiedRoleDefinition(Entity):
                 ResourcePath("inheritsPermissionsFrom", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "inheritsPermissionsFrom": self.inherits_permissions_from,
-                "rolePermissions": self.role_permissions,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

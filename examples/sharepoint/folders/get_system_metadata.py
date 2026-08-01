@@ -5,10 +5,12 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/fo
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-list_title = "Docs"
+ctx = ClientContext(team_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
+list_title = "Documents"
 
 folder_items = (
     ctx.web.lists.get_by_title(list_title)

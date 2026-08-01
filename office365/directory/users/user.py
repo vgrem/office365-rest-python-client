@@ -1211,6 +1211,7 @@ class User(DirectoryObject):
         """Gets the jobTitle property"""
         return self.properties.get("jobTitle", None)
 
+    @odata(name="lastPasswordChangeDateTime")
     @property
     def last_password_change_date_time(self) -> datetime:
         """Gets the lastPasswordChangeDateTime property"""
@@ -1241,11 +1242,13 @@ class User(DirectoryObject):
         """Gets the onPremisesImmutableId property"""
         return self.properties.get("onPremisesImmutableId", None)
 
+    @odata(name="onPremisesLastSyncDateTime")
     @property
     def on_premises_last_sync_date_time(self) -> datetime:
         """Gets the onPremisesLastSyncDateTime property"""
         return self.properties.get("onPremisesLastSyncDateTime", datetime.min)
 
+    @odata(name="onPremisesProvisioningErrors")
     @property
     def on_premises_provisioning_errors(self) -> ClientValueCollection[OnPremisesProvisioningError]:
         """Gets the onPremisesProvisioningErrors property"""
@@ -1284,11 +1287,13 @@ class User(DirectoryObject):
         """Gets the preferredDataLocation property"""
         return self.properties.get("preferredDataLocation", None)
 
+    @odata(name="provisionedPlans")
     @property
     def provisioned_plans(self) -> ClientValueCollection[ProvisionedPlan]:
         """Gets the provisionedPlans property"""
         return self.properties.get("provisionedPlans", ClientValueCollection[ProvisionedPlan](ProvisionedPlan))
 
+    @odata(name="serviceProvisioningErrors")
     @property
     def service_provisioning_errors(self) -> ClientValueCollection[ServiceProvisioningError]:
         """Gets the serviceProvisioningErrors property"""
@@ -1337,6 +1342,7 @@ class User(DirectoryObject):
         """Gets the birthday property"""
         return self.properties.get("birthday", datetime.min)
 
+    @odata(name="hireDate")
     @property
     def hire_date(self) -> datetime:
         """Gets the hireDate property"""

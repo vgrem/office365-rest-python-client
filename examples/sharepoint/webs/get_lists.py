@@ -5,10 +5,11 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/si
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_site_url
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
-client = ClientContext(test_site_url).with_credentials(test_client_credentials)
-# lists = client.web.get_lists().execute_query()
-lists = client.web.lists.get_all().execute_query()
+ctx = ClientContext(admin_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
+lists = ctx.web.lists.get_all().execute_query()
 for lst in lists:
     print(lst.title)

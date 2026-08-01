@@ -1239,7 +1239,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_file_by_wopi_frame_url(self, wopi_frame_url):
+    def get_file_by_wopi_frame_url(self, wopi_frame_url: str) -> File:
         """Returns the file object from the WOPI frame URL.
 
         Args:
@@ -1250,7 +1250,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_folder_by_guest_url(self, guest_url):
+    def get_folder_by_guest_url(self, guest_url: str) -> Folder:
         """Returns the folder object from the tokenized sharing link URL.
 
         Args:
@@ -1313,12 +1313,12 @@ class Web(SecurableObject):
 
     def share(
         self,
-        user_principal_name,
-        share_option=ExternalSharingSiteOption.View,
-        send_email=True,
-        email_subject=None,
-        email_body=None,
-    ):
+        user_principal_name: str,
+        share_option: ExternalSharingSiteOption = ExternalSharingSiteOption.View,
+        send_email: bool = True,
+        email_subject: str | None = None,
+        email_body: str | None = None,
+    ) -> SharingResult:
         """Share a Web with user
 
         Args:
@@ -1340,6 +1340,7 @@ class Web(SecurableObject):
 
             picker_input = f"[{picker_result.value}]"
             role_value = f"group:{groups[share_option].id}"
+            assert self.url is not None
             Web.share_object(
                 self.context,
                 self.url,
@@ -1460,7 +1461,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
-    def delete_all_anonymous_links_for_object(context, url):
+    def delete_all_anonymous_links_for_object(context: ClientContext, url: str):
         """Removes all existing anonymous links for an object.
 
         Args:
@@ -1581,9 +1582,9 @@ class Web(SecurableObject):
 
     @staticmethod
     def share_object(
-        context,
-        url,
-        people_picker_input,
+        context: ClientContext,
+        url: str,
+        people_picker_input: str,
         role_value=None,
         group_id=0,
         propagate_acl=False,

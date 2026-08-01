@@ -17,8 +17,8 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 
 `office365-rest-python-client` is free and maintained in the open. Sponsorship funds security updates, new API coverage, documentation, and releases.
 
-- [**GitHub Sponsors**](https://github.com/sponsors/vgrem) — recurring monthly support
-- [**PayPal**](https://paypal.me/ossvgrem) — one-off donation
+- [**GitHub Sponsors**](https://github.com/sponsors/vgrem) - recurring monthly support
+- [**PayPal**](https://paypal.me/ossvgrem) - one-off donation
 - Using this in production? Sponsors get priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/issues) for paid support or custom feature work.
 
 ---
@@ -64,7 +64,7 @@ pip install git+https://github.com/vgrem/office365-rest-python-client.git
 |---|---|---|
 | **Target API** | SharePoint REST API v1 | Microsoft Graph API |
 | **Use for** | SharePoint lists, files, folders, search, site admin, permissions | Outlook, OneDrive, Teams, OneNote, Planner, Users, Groups |
-| **SharePoint via Graph?** | — | Partial — use `ClientContext` for full SharePoint fidelity |
+| **SharePoint via Graph?** | — | Partial - use `ClientContext` for full SharePoint fidelity |
 | **Docs** | [SharePoint REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/get-to-know-the-sharepoint-rest-service) | [Microsoft Graph](https://learn.microsoft.com/en-us/graph/overview) |
 
 ---
@@ -260,7 +260,7 @@ tenant.create_site({"Url": "https://tenant.sharepoint.com/sites/newsite", "Title
 
 ---
 
-## Microsoft Graph — GraphClient
+## Microsoft Graph - GraphClient
 
 ### Quick start
 
@@ -274,7 +274,7 @@ me = client.me.get().execute_query()
 print(f"Signed in as: {me.user_principal_name}")
 ```
 
-### Outlook — Mail & Calendar
+### Outlook - Mail & Calendar
 
 ```python
 # Send email

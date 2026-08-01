@@ -331,7 +331,8 @@ class ListItem(SecurableObject):
         }
 
         def _picker_value_resolved(picker_result: ClientResult) -> None:
-            abs_url = self.get_property("EncodedAbsUrl")
+            abs_url = self.encoded_abs_url
+            assert abs_url is not None
             picker_value = f"[{picker_result.value}]"
             from office365.sharepoint.webs.web import Web
 
@@ -362,7 +363,8 @@ class ListItem(SecurableObject):
         return_type = SharingResult(self.context)
 
         def _property_resolved():
-            abs_url = self.get_property("EncodedAbsUrl")
+            abs_url = self.encoded_abs_url
+            assert abs_url is not None
             from office365.sharepoint.webs.web import Web
 
             Web.unshare_object(self.context, abs_url, return_type=return_type)
@@ -703,6 +705,11 @@ class ListItem(SecurableObject):
     def doc_id(self) -> Optional[str]:
         """Document ID fora document"""
         return self.properties.get("OData__dlc_DocId", None)
+
+    @property
+    def encoded_abs_url(self) -> Optional[str]:
+        """Gets the EncodedAbsUrl property"""
+        return self.properties.get("EncodedAbsUrl", None)
 
     @property
     def doc_id_url(self) -> Optional[FieldUrlValue]:

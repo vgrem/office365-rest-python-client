@@ -17,7 +17,7 @@ expires = datetime.now(timezone.utc) + timedelta(hours=2)
 
 client.me.presence.set_user_preferred_presence(
     availability="DoNotDisturb",
-    activity="InAMeeting",
+    activity="DoNotDisturb",
     expiration_duration="PT2H",
 ).execute_query()
 print("Presence set to DoNotDisturb")

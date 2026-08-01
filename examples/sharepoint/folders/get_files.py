@@ -5,9 +5,12 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/fo
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_team_site_url
+from tests import test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, tenant
 
-ctx = ClientContext(test_team_site_url).with_client_credentials(test_client_id, test_client_secret)
+ctx = ClientContext(test_team_site_url).with_client_certificate(
+    tenant=tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 root_folder = ctx.web.default_document_library().root_folder
 ctx.load(root_folder, ["Files"])
 ctx.execute_query()

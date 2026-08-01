@@ -5,6 +5,7 @@ from office365.directory.identitygovernance.userconsent.request_collection impor
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class AppConsentRequest(Entity):
@@ -33,11 +34,13 @@ class AppConsentRequest(Entity):
         """The identifier of the application"""
         return self.properties.get("appId", None)
 
+    @odata(name="pendingScopes")
     @property
     def pending_scopes(self) -> ClientValueCollection[AppConsentRequestScope]:
         """A list of pending scopes waiting for approval. Required."""
         return self.properties.get("pendingScopes", ClientValueCollection(AppConsentRequestScope))
 
+    @odata(name="userConsentRequests")
     @property
     def user_consent_requests(self) -> UserConsentRequestCollection:
         """A list of pending user consent requests."""
@@ -45,12 +48,6 @@ class AppConsentRequest(Entity):
             "userConsentRequests",
             UserConsentRequestCollection(self.context, ResourcePath("userConsentRequests", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"pendingScopes": self.pending_scopes, "userConsentRequests": self.user_consent_requests}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

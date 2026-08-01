@@ -4,9 +4,14 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_team_site_url
+from tests.settings import client_id, password, site_url, tenant, username
 
-ctx = ClientContext(test_team_site_url).with_client_credentials(test_client_id, test_client_secret)
+ctx = ClientContext(site_url).with_username_and_password(
+    tenant=tenant,
+    client_id=client_id,
+    username=username,
+    password=password,
+)
 
 result = ctx.web.associated_member_group.expand_to_principals(100).execute_query()
 for principal_info in result.value:

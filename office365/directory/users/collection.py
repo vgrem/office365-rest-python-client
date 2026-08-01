@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.count_collection import CountCollection
 from office365.directory.permissions.require_permission import require_permission
 from office365.directory.users.profile import UserProfile
@@ -20,7 +22,7 @@ class UserCollection(CountCollection[User]):
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
-    def get_unlicensed(self):
+    def get_unlicensed(self) -> Self:
         """Get users with no assigned licenses (client-side filter)."""
 
         def _loaded(col: UserCollection):

@@ -28,16 +28,15 @@ def main():
     am = client.reports.authentication_methods
 
     # -- Step 1: tenant-wide summary by feature (MFA, SSPR, passwordless) --
-    feature_summary = am.users_registered_by_feature().execute_query()
-    if feature_summary and feature_summary.value:
-        fs = feature_summary.value
-        print("Users by authentication feature:")
-        print(f"  Total users         : {fs.total_user_count}")
-        print(f"  MFA registered      : {fs.mfa_registered_count or '?'}")
-        print(f"  SSPR capable        : {fs.sspr_capable_count or '?'}")
-        print(f"  SSPR enabled        : {fs.sspr_enabled_count or '?'}")
-        print(f"  Passwordless capable: {fs.passwordless_capable_count or '?'}")
-        print()
+    feature_summary_result = am.users_registered_by_feature().execute_query()
+    fs = feature_summary_result.value
+    print("Users by authentication feature:")
+    print(f"  Total users         : {fs.totalUserCount}")
+    print(f"  MFA capable      : {fs.mfaCapableCount or '?'}")
+    print(f"  SSPR registered        : {fs.ssprRegisteredCount or '?'}")
+    print(f"  SSPR enabled        : {fs.ssprEnabledCount or '?'}")
+    print(f"  Passwordless capable: {fs.passwordlessCapableCount or '?'}")
+    print()
 
     # -- Step 2: tenant-wide summary by method --
     method_summary = am.users_registered_by_method().execute_query()

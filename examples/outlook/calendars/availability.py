@@ -34,4 +34,4 @@ schedule = client.me.calendar.get_schedule(
 for item in schedule.value:
     print(f"\n  Schedule for: {item.scheduleId}")
     for slot in item.scheduleItems:
-        print(f"    {slot.status}: {slot.start} — {slot.end}")
+        print(f"    {slot.status}: {slot.start} - {slot.end}")

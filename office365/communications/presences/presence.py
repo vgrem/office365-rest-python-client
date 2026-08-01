@@ -10,6 +10,7 @@ from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.duration import Duration
 
 
 class Presence(Entity):
@@ -81,7 +82,9 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_user_preferred_presence(self, availability="Available", activity="Available", expiration_duration=None):
+    def set_user_preferred_presence(
+        self, availability="Available", activity="Available", expiration_duration: Duration | str | None = None
+    ) -> Self:
         """Set the preferred availability and activity status for a user. If the preferred presence of a user is set,
         the user's presence shows as the preferred status.
         Preferred presence takes effect only when at least one presence session exists for the user. Otherwise,

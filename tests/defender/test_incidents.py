@@ -53,7 +53,7 @@ class TestIncidents(GraphDelegatedTestCase):
         if len(result) == 0:
             self.skipTest("No incidents exist to inspect")
         for inc in result:
-            self.assertIsNotNone(inc.get_property("id"))
+            self.assertIsNotNone(inc.id)
             self.assertIsNotNone(inc.get_property("severity"))
             self.assertIsNotNone(inc.get_property("status"))
             self.assertIsNotNone(inc.get_property("createdDateTime"))
