@@ -15,11 +15,11 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 
 ## Support
 
-`office365-rest-python-client` is free and maintained in the open. Sponsorship funds security updates, new API coverage, documentation, and releases.
+`office365-rest-python-client` is free and maintained in the open. Sponsorship funds security updates, new API coverage, documentation, and releases. See the [roadmap](ROADMAP.md) for what's funded.
 
-- [**GitHub Sponsors**](https://github.com/sponsors/vgrem) - recurring monthly support
-- [**PayPal**](https://paypal.me/ossvgrem) - one-off donation
-- Using this in production? Sponsors get priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/issues) for paid support or custom feature work.
+- [**GitHub Sponsors**](https://github.com/sponsors/vgrem) — recurring monthly support
+- [**PayPal**](https://paypal.me/ossvgrem) — one-off donation
+- **Using this in production?** The [Organization tier](https://github.com/sponsors/vgrem) adds priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/issues) for paid support or custom feature work.
 
 ---
 
