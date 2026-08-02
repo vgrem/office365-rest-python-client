@@ -8,6 +8,7 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class BackupRestoreRoot(Entity):
@@ -25,11 +26,13 @@ class BackupRestoreRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="serviceStatus")
     @property
     def service_status(self) -> ServiceStatus:
         """Represents the tenant-level status of the Backup Storage service."""
         return self.properties.get("serviceStatus", ServiceStatus())
 
+    @odata(name="oneDriveForBusinessProtectionPolicies")
     @property
     def one_drive_for_business_protection_policies(
         self,
@@ -43,12 +46,3 @@ class BackupRestoreRoot(Entity):
                 ResourcePath("oneDriveForBusinessProtectionPolicies", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "serviceStatus": self.service_status,
-                "oneDriveForBusinessProtectionPolicies": self.one_drive_for_business_protection_policies,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
