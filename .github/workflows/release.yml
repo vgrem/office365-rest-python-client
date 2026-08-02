@@ -1,0 +1,28 @@
+name: Release to PyPI
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.22"
+      - name: Build
+        run: uv build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
