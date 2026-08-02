@@ -43,6 +43,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """Indicates whether attendees can turn on their microphone."""
         return self.properties.get("allowAttendeeToEnableMic", None)
 
+    @odata(name="allowedPresenters")
     @property
     def allowed_presenters(self):
         """Specifies who can be a presenter in a meeting. Possible values are listed in the following table."""
@@ -63,6 +64,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """The content stream of the attendee report of a Microsoft Teams live event."""
         return self.properties.get("attendeeReport", None)
 
+    @odata(name="broadcastSettings")
     @property
     def broadcast_settings(self) -> BroadcastMeetingSettings:
         """Settings related to a live event."""
@@ -104,6 +106,7 @@ class OnlineMeeting(OnlineMeetingBase):
     def end_datetime(self, value: datetime):
         self.set_property("endDateTime", value)
 
+    @odata(name="joinInformation")
     @property
     def join_information(self) -> ItemBody:
         """The join URL of the online meeting. Read-only."""
@@ -130,14 +133,3 @@ class OnlineMeeting(OnlineMeetingBase):
                 ResourcePath("recordings", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "broadcastSettings": self.broadcast_settings,
-                "endDateTime": self.end_datetime,
-                "joinInformation": self.join_information,
-                "startDateTime": self.start_datetime,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

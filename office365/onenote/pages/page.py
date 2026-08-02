@@ -9,6 +9,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class OnenotePage(OnenoteEntitySchemaObjectModel):
@@ -20,7 +21,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
     )
     def get_content(self) -> ClientResult[bytes]:
         """Download the page's HTML content."""
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bytes](self.context)
         qry = FunctionQuery(self, "content", None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -43,6 +44,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         """The title of the page."""
         return self.properties.get("title", None)
 
+    @odata(name="userTags")
     @property
     def user_tags(self) -> StringCollection:
         """Links for opening the page. The oneNoteClientURL link opens the page in the OneNote native client
@@ -51,6 +53,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         """
         return self.properties.get("userTags", StringCollection())
 
+    @odata(name="parentNotebook")
     @property
     def parent_notebook(self) -> Notebook:
         """The notebook that contains the page. Read-only."""
@@ -59,6 +62,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
             Notebook(self.context, ResourcePath("parentNotebook", self.resource_path)),
         )
 
+    @odata(name="parentSection")
     @property
     def parent_section(self) -> OnenoteSection:
         """The section that contains the page."""
@@ -66,13 +70,3 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
             "parentSection",
             OnenoteSection(self.context, ResourcePath("parentSection", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "userTags": self.user_tags,
-                "parentSection": self.parent_section,
-                "parentNotebook": self.parent_notebook,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class CloudCommunications(Entity):
@@ -29,6 +30,7 @@ class CloudCommunications(Entity):
         """ " """
         return self.properties.get("calls", CallCollection(self.context, ResourcePath("calls", self.resource_path)))
 
+    @odata(name="callRecords")
     @property
     def call_records(self) -> CallRecordCollection:
         """ " """
@@ -36,6 +38,7 @@ class CloudCommunications(Entity):
             "callRecords", CallRecordCollection(self.context, ResourcePath("callRecords", self.resource_path))
         )
 
+    @odata(name="onlineMeetings")
     @property
     def online_meetings(self) -> OnlineMeetingCollection:
         """ " """
@@ -49,12 +52,6 @@ class CloudCommunications(Entity):
         return self.properties.get(
             "presences", EntityCollection(self.context, Presence, ResourcePath("presences", self.resource_path))
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"callRecords": self.call_records, "onlineMeetings": self.online_meetings}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

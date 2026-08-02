@@ -18,6 +18,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class ContentType(BaseItem):
@@ -72,6 +73,7 @@ class ContentType(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @odata(name="associatedHubsUrls")
     @property
     def associated_hubs_urls(self) -> StringCollection:
         """
@@ -81,11 +83,13 @@ class ContentType(BaseItem):
         """
         return self.properties.get("associatedHubsUrls", StringCollection())
 
+    @odata(name="documentSet")
     @property
     def document_set(self) -> DocumentSet:
         """Document Set metadata."""
         return self.properties.get("documentSet", DocumentSet())
 
+    @odata(name="documentTemplate")
     @property
     def document_template(self) -> DocumentSetContent:
         """
@@ -129,6 +133,7 @@ class ContentType(BaseItem):
         """If true, the content type cannot be modified unless this value is first set to false."""
         return self.properties.get("readOnly", None)
 
+    @odata(name="inheritedFrom")
     @property
     def inherited_from(self) -> ItemReference:
         """
@@ -137,6 +142,7 @@ class ContentType(BaseItem):
         """
         return self.properties.get("inheritedFrom", ItemReference())
 
+    @odata(name="columnLinks")
     @property
     def column_links(self) -> EntityCollection[ColumnLink]:
         """The collection of columns that are required by this content type"""
@@ -157,6 +163,7 @@ class ContentType(BaseItem):
             ContentType(self.context, ResourcePath("base", self.resource_path)),
         )
 
+    @odata(name="baseTypes")
     @property
     def base_types(self) -> EntityCollection[ContentType]:
         """The collection of content types that are ancestors of this content type."""
@@ -177,6 +184,7 @@ class ContentType(BaseItem):
             ),
         )
 
+    @odata(name="columnPositions")
     @property
     def column_positions(self) -> EntityCollection[ColumnDefinition]:
         """Column order information in a content type."""
@@ -193,16 +201,3 @@ class ContentType(BaseItem):
     def order(self) -> ContentTypeOrder:
         """Specifies the order in which the content type appears in the selection UI."""
         return self.properties.get("order", ContentTypeOrder())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "columnLinks": self.column_links,
-                "documentSet": self.document_set,
-                "documentTemplate": self.document_template,
-                "columnPositions": self.column_positions,
-                "baseTypes": self.base_types,
-                "inheritedFrom": self.inherited_from,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

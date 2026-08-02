@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.change import Change
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.sharing.shared_with_user import SharedWithUser
@@ -14,6 +15,7 @@ class ChangeItem(Change):
         """Returns activity type defined in ChangeActivityType"""
         return self.properties.get("ActivityType", None)
 
+    @odata(name="ContentTypeId")
     @property
     def content_type_id(self):
         """Specifies an identifier for the content type"""
@@ -53,11 +55,13 @@ class ChangeItem(Change):
         """Specifies the server-relative URL of the item."""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="SharedByUser")
     @property
     def shared_by_user(self):
         """Return the sharedBy User Information in sharing action for change log."""
         return self.properties.get("SharedByUser", SharedWithUser())
 
+    @odata(name="SharedWithUsers")
     @property
     def shared_with_users(self):
         """Returns the array of users that have been shared in sharing action for the change log."""
@@ -67,13 +71,3 @@ class ChangeItem(Change):
     def unique_id(self) -> Optional[str]:
         """The Document identifier of the item."""
         return self.properties.get("UniqueId", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "ContentTypeId": self.content_type_id,
-                "SharedByUser": self.shared_by_user,
-                "SharedWithUsers": self.shared_with_users,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

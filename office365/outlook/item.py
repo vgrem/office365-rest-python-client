@@ -1,10 +1,9 @@
 from datetime import datetime
 from typing import Optional
 
-from typing_extensions import Self
-
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class OutlookItem(Entity):
@@ -37,24 +36,17 @@ class OutlookItem(Entity):
         """
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
-
-    def get_property(self, name, default_value=None) -> Self:
-        if default_value is None:
-            property_mapping = {
-                "createdDateTime": self.created_datetime,
-                "lastModifiedDateTime": self.last_modified_datetime,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

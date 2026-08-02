@@ -1,6 +1,7 @@
 from office365.entity import Entity
 from office365.planner.category_descriptions import PlannerCategoryDescriptions
 from office365.planner.user_ids import PlannerUserIds
+from office365.runtime.types.odata_property import odata
 
 
 class PlannerPlanDetails(Entity):
@@ -9,6 +10,7 @@ class PlannerPlanDetails(Entity):
     Each plan object has a details object.
     """
 
+    @odata(name="categoryDescriptions")
     @property
     def category_descriptions(self) -> PlannerCategoryDescriptions:
         """
@@ -16,6 +18,7 @@ class PlannerPlanDetails(Entity):
         """
         return self.properties.get("categoryDescriptions", PlannerCategoryDescriptions())
 
+    @odata(name="sharedWith")
     @property
     def shared_with(self) -> PlannerUserIds:
         """
@@ -24,12 +27,3 @@ class PlannerPlanDetails(Entity):
         this collection, although it isn't required for them to access the plan owned by the group.
         """
         return self.properties.get("sharedWith", PlannerUserIds())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "categoryDescriptions": self.category_descriptions,
-                "sharedWith": self.shared_with,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
