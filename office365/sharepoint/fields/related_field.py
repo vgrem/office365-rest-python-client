@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -27,6 +28,7 @@ class RelatedField(Entity):
         """Gets delete behavior of the corresponding Lookup Field."""
         return self.properties.get("RelationshipDeleteBehavior", None)
 
+    @odata(name="LookupList")
     @property
     def lookup_list(self):
         """Specifies the List that the corresponding Lookup Field looks up to."""
@@ -40,9 +42,3 @@ class RelatedField(Entity):
     @property
     def property_ref_name(self) -> str:
         return "FieldId"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"LookupList": self.lookup_list}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

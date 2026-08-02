@@ -18,7 +18,7 @@ from office365.sharepoint.client_context import ClientContext
 
 ctx = (
     ClientContext("https://contoso.sharepoint.com/sites/team")
-    .with_client_credentials("your_client_id", "your_client_secret")
+    .with_client_certificate("your_tenant", "your_client_id", "your_thumbprint")
     .with_transport(proxies={"http": "http://proxy:8080", "https": "http://proxy:8080"})
 )
 

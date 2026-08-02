@@ -15,6 +15,7 @@ from office365.onedrive.workbooks.worksheets.protection import (
 )
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookWorksheet(Entity):
@@ -98,6 +99,7 @@ class WorkbookWorksheet(Entity):
             WorkbookTableCollection(self.context, ResourcePath("tables", self.resource_path)),
         )
 
+    @odata(name="pivotTables")
     @property
     def pivot_tables(self) -> WorkbookPivotTableCollection:
         """Collection of PivotTables that are part of the worksheet."""
@@ -116,11 +118,3 @@ class WorkbookWorksheet(Entity):
             "protection",
             WorkbookWorksheetProtection(self.context, ResourcePath("protection", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "pivotTables": self.pivot_tables,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

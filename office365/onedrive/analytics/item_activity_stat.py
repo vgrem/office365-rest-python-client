@@ -7,6 +7,7 @@ from office365.onedrive.analytics.item_action_stat import ItemActionStat
 from office365.onedrive.analytics.item_activity import ItemActivity
 from office365.onedrive.incomplete_data import IncompleteData
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class ItemActivityStat(Entity):
@@ -48,6 +49,7 @@ class ItemActivityStat(Entity):
         """Statistics about the move actions in this interval."""
         return self.properties.get("move", ItemActionStat())
 
+    @odata(name="startDateTime")
     @property
     def start_datetime(self) -> datetime:
         """When the interval starts."""
@@ -60,26 +62,23 @@ class ItemActivityStat(Entity):
             "activities", EntityCollection(self.context, ItemActivity, ResourcePath("activities", self.resource_path))
         )
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> datetime:
         """Gets the endDateTime property"""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="incompleteData")
     @property
     def incomplete_data(self) -> IncompleteData:
         """Gets the incompleteData property"""
         return self.properties.get("incompleteData", IncompleteData())
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> datetime:
         """Gets the startDateTime property"""
         return self.properties.get("startDateTime", datetime.min)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"endDateTime": self.end_datetime, "startDateTime": self.start_datetime}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

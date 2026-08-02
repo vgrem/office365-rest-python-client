@@ -91,25 +91,23 @@ class TestSharePointClient(SPTestCase):
 
     def test_07_execute_update_batch_request(self):
         """Execute an UPDATE batch request."""
-        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
-        web = client.web
+        web = self.client.web
         new_web_title = create_unique_name("Site")
         web.set_property("Title", new_web_title).update()
-        client.execute_batch()
+        self.client.execute_batch()
 
-        updated_web = client.web.get().execute_query()
-        self.assertEqual(updated_web.properties["Title"], new_web_title)
+        updated_web = self.client.web.get().execute_query()
+        self.assertEqual(updated_web.title, new_web_title)
 
     def test_08_execute_get_and_update_batch_request(self):
         """Execute combined GET and UPDATE batch requests."""
-        page_url = "/SitePages/Home.aspx"
-        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
-        list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields
+        page_url = "SitePages/Home.aspx"
+        list_item = self.client.web.get_file_by_server_relative_url(page_url).listItemAllFields
         new_title = create_unique_name("Page")
         list_item.set_property("Title", new_title).update()
-        client.execute_batch()
+        self.client.execute_batch()
 
-        updated_list_item = client.web.get_file_by_server_relative_url(page_url).listItemAllFields.get().execute_query()
+        updated_list_item = list_item.get().execute_query()
         self.assertEqual(updated_list_item.properties["Title"], new_title)
 
     def test_09_create_and_delete_batch_request(self):

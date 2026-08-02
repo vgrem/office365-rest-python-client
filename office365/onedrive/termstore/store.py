@@ -15,6 +15,7 @@ from office365.onedrive.termstore.terms.collection import TermCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Store(Entity):
@@ -54,6 +55,7 @@ class Store(Entity):
         """Default language of the term store."""
         return self.properties.get("defaultLanguageTag", None)
 
+    @odata(name="languageTags")
     @property
     def language_tags(self) -> StringCollection:
         """List of languages for the term store."""
@@ -68,12 +70,6 @@ class Store(Entity):
     def sets(self) -> SetCollection:
         """Collection of all sets available in the term store."""
         return self.properties.get("sets", SetCollection(self.context, ResourcePath("sets", self.resource_path)))
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"languageTags": self.language_tags}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

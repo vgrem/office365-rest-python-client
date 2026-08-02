@@ -12,6 +12,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class ConversationThread(Entity):
@@ -30,6 +31,7 @@ class ConversationThread(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="ccRecipients")
     @property
     def cc_recipients(self) -> ClientValueCollection[Recipient]:
         """The Cc: recipients for the thread."""
@@ -40,6 +42,7 @@ class ConversationThread(Entity):
         """Indicates whether any of the posts within this thread has at least one attachment."""
         return self.properties.get("hasAttachments", None)
 
+    @odata(name="toRecipients")
     @property
     def to_recipients(self) -> ClientValueCollection[Recipient]:
         """The To: recipients for the thread."""
@@ -57,6 +60,7 @@ class ConversationThread(Entity):
         """Gets the isLocked property"""
         return self.properties.get("isLocked", None)
 
+    @odata(name="lastDeliveredDateTime")
     @property
     def last_delivered_date_time(self) -> datetime:
         """Gets the lastDeliveredDateTime property"""
@@ -72,16 +76,11 @@ class ConversationThread(Entity):
         """Gets the topic property"""
         return self.properties.get("topic", None)
 
+    @odata(name="uniqueSenders")
     @property
     def unique_senders(self) -> StringCollection:
         """Gets the uniqueSenders property"""
         return self.properties.get("uniqueSenders", StringCollection(None))
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"ccRecipients": self.cc_recipients, "toRecipients": self.to_recipients}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

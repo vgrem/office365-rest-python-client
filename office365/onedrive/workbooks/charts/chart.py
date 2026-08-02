@@ -15,6 +15,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookChart(Entity):
@@ -67,6 +68,7 @@ class WorkbookChart(Entity):
             WorkbookChartAxes(self.context, ResourcePath("axes", self.resource_path)),
         )
 
+    @odata(name="dataLabels")
     @property
     def data_labels(self) -> WorkbookChartDataLabels:
         """Represents the data labels on the chart."""
@@ -112,11 +114,3 @@ class WorkbookChart(Entity):
             "worksheet",
             WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "dataLabels": self.data_labels,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
