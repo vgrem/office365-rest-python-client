@@ -56,6 +56,7 @@ cert_thumbprint = _optional("OFFICE365_CERT_THUMBPRINT")
 user_principal = _optional("OFFICE365_TEST_USER1")
 user_principal_alt = _optional("OFFICE365_TEST_USER2")
 admin_username = _optional("OFFICE365_ADMIN_USERNAME")
+shared_mailbox_upn = _optional("OFFICE365_SHARED_MAILBOX_UPN")
 
 _cert_dir = Path(__file__).parent
 cert_path = str(_cert_dir / "selfsigncert.pem")

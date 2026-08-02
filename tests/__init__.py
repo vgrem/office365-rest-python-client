@@ -29,6 +29,9 @@ from tests.settings import (
     root_site_url as test_root_site_url,
 )
 from tests.settings import (
+    shared_mailbox_upn as test_shared_mailbox_upn,
+)
+from tests.settings import (
     site_url as test_site_url,
 )
 from tests.settings import (
@@ -61,6 +64,7 @@ __all__ = [
     "test_client_secret",
     "test_password",
     "test_root_site_url",
+    "test_shared_mailbox_upn",
     "test_site_url",
     "test_team_site_url",
     "test_tenant",
