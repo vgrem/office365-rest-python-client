@@ -19,7 +19,7 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 
 - [**GitHub Sponsors**](https://github.com/sponsors/vgrem) — recurring monthly support
 - [**PayPal**](https://paypal.me/ossvgrem) — one-off donation
-- **Using this in production?** The [Organization tier](https://github.com/sponsors/vgrem) adds priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/discussions) for paid support or custom feature work.
+- **Using this in production?** The [Organization tier](https://github.com/sponsors/vgrem) adds priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/discussions) for paid support, custom feature work, or help migrating from 2.6.2 → 3.0.0.
 
 ---
 
