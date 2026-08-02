@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.directory.security.labels.retention.duration import RetentionDuration
 
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.outlook.mail.attachments.attachment import Attachment

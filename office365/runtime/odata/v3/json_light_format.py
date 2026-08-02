@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
 

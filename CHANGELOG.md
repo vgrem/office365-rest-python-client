@@ -15,21 +15,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Python 2 dropped** — minimum Python version is now 3.8
 - **ACS/SAML retirement** — `with_user_credentials` now raises `RuntimeError` for SharePoint Online. Use `with_username_and_password` (MSAL ROPC) instead. ACS App-Only (`with_client_credentials`) marked as deprecated.
 - **USGovernment GCC endpoints corrected** — were using wrong URLs
+- Model surface updated across SharePoint, Graph, and security namespaces (see Removed below)
 
 ### Added
 - Full type hints across all modules (runtime, directory, onedrive, outlook, teams, sharepoint, intune, and more)
 - `with_username_and_password` (MSAL ROPC) for SharePoint Online auth
+- Substantially expanded Graph model coverage: Defender/security evidence types, subject rights requests, retention labels, threat intelligence, and more
+- Expanded Intune (Cloud PC) and Teams admin/communication model surface
+- New query/example modules for SharePoint, Graph, and Entra ID scenarios
+
+### Changed
+- Modernized SharePoint models and generator with Python 3 type hints (`Self`, `X | None`)
+- `datetime.utcnow()` replaced with timezone-aware alternatives (Python 3.12+ deprecation)
+- Generator tooling: `entity_type_name` support, EnumType generation, template-driven model props
+- Credential/guard improvements for Entra ID multi-resource (via `ResourceName`)
 
 ### Fixed
 - Cryptography CVEs updated to 48.0.0
 - Circular import in `client_runtime_context.py` / `read_entity.py`
 - `NameError: name 'List' is not defined` in `fields/collection.py`
 - `single()` and `first()` return types (never return `None`)
+- `AttributeError: 'str' object has no attribute 'get'` when SharePoint returns a string error payload
+- Pyright type-checking errors across the library and tests
 
 ### Removed
 - Python 2.7 support
 - `.travis.yml` (use GitHub Actions instead)
 - `requirements.txt` / `requirements-dev.txt` (use `uv`/`pyproject.toml`)
+- Deprecated/renamed model classes superseded by the regenerated schema
+
+### Internal
+- CI moved to GitHub Actions (ruff, pyright, offline pytest)
+- Dependency management via `uv` and `pyproject.toml`
 
 ---
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import time
 
 from office365.runtime.client_value import ClientValue
