@@ -7,6 +7,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -50,6 +51,7 @@ class FileVersion(Entity):
         """Specifies the creation date and time for the file version."""
         return self.properties.get("Created", datetime.min)
 
+    @odata(name="CreatedBy")
     @property
     def created_by(self):
         """Gets the user that created the file version."""
@@ -84,14 +86,6 @@ class FileVersion(Entity):
     def checkin_comment(self) -> Optional[str]:
         """Gets a value that specifies the check-in comment."""
         return self.properties.get("CheckInComment", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "CreatedBy": self.created_by,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, key, value, persist_changes=True):  # type: ignore[override]
         super().set_property(key, value, persist_changes)

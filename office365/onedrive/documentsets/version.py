@@ -5,6 +5,7 @@ from office365.directory.permissions.identity_set import IdentitySet
 from office365.onedrive.documentsets.version_item import DocumentSetVersionItem
 from office365.onedrive.versions.list_item import ListItemVersion
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 
 class DocumentSetVersion(ListItemVersion):
@@ -15,6 +16,7 @@ class DocumentSetVersion(ListItemVersion):
         """Comment about the captured version."""
         return self.properties.get("comment", None)
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> IdentitySet:
         """User who captured the version."""
@@ -38,16 +40,11 @@ class DocumentSetVersion(ListItemVersion):
         """
         return self.properties.get("shouldCaptureMinorVersion", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"createdBy": self.created_by, "createdDateTime": self.created_datetime}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

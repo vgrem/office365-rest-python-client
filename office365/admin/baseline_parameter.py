@@ -6,10 +6,10 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class InvokeActionResult(ClientValue):
-    accountId: str | None = None
-    correlationId: str | None = None
+class BaselineParameter(ClientValue):
+    description: str | None = None
+    displayName: str | None = None
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.security.InvokeActionResult"
+        return "microsoft.graph.BaselineParameter"

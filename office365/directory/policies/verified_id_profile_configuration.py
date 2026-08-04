@@ -6,10 +6,10 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class InvokeActionResult(ClientValue):
-    accountId: str | None = None
-    correlationId: str | None = None
+class VerifiedIdProfileConfiguration(ClientValue):
+    acceptedIssuer: str | None = None
+    type: str | None = None
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.security.InvokeActionResult"
+        return "microsoft.graph.VerifiedIdProfileConfiguration"

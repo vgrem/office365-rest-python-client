@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
 from office365.sharepoint.contentcenter.machinelearning.enabled import (
     SPMachineLearningEnabled,
@@ -64,14 +65,6 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "MachineLearningEnabled": self.machine_learning_enabled,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
-
     @property
     def is_default_content_center(self) -> Optional[bool]:
         """ """
@@ -82,6 +75,7 @@ class SPMachineLearningHub(Entity):
         """ """
         return self.properties.get("MachineLearningCaptureEnabled", None)
 
+    @odata(name="MachineLearningEnabled")
     @property
     def machine_learning_enabled(self) -> SPMachineLearningEnabled:
         """ """

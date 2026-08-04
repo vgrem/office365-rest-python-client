@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.navigation.home_site_navigation_settings import (
     HomeSiteNavigationSettings,
@@ -130,20 +131,13 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="HomeSiteSettings")
     @property
     def home_site_settings(self) -> HomeSiteNavigationSettings:
         return self.properties.get(
             "HomeSiteSettings",
             HomeSiteNavigationSettings(self.context, ResourcePath("HomeSiteSettings", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "HomeSiteSettings": self.home_site_settings,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:
