@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
@@ -245,7 +247,7 @@ class Office365Tenant(Entity):
             name (str):
             theme_json (str):
         """
-        return_type = ClientResult(self.context)
+        return_type = ClientResult[bool](self.context)
         payload = {"name": name, "themeJson": theme_json}
         qry = ServiceOperationQuery(self, "AddTenantTheme", None, payload, None, return_type)
         self.context.add_query(qry)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Union
 
 from typing_extensions import Self
@@ -25,7 +27,8 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
             field (str or office365.sharepoint.fields.field.Field): Specifies the internal name of the field or type
         """
 
-        def _add(field_internal_name: str) -> None:
+        def _add(field_internal_name: str | None) -> None:
+            assert field_internal_name is not None
             return_type.set_property("FieldInternalName", field_internal_name)
             qry = CreateEntityQuery(self, return_type, return_type)
             self.context.add_query(qry)
@@ -33,12 +36,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         return_type = FieldLink(self.context)
         self.add_child(return_type)
         if isinstance(field, Field):
-
-            def _field_loaded():
-                if field.internal_name is not None:
-                    _add(field.internal_name)
-
-            field.ensure_property("InternalName").after_execute(lambda _: _field_loaded())
+            field.ensure_property("InternalName").after_execute(lambda _: _add(field.internal_name))
         else:
             _add(field)
         return return_type

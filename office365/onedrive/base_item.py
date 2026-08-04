@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Optional, Self
+from typing import TYPE_CHECKING, Any, Optional
+
+from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.onedrive.listitems.item_reference import ItemReference
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.users.user import User
@@ -103,6 +106,7 @@ class BaseItem(Entity):
         """Gets the eTag property"""
         return self.properties.get("eTag", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""
@@ -120,7 +124,6 @@ class BaseItem(Entity):
                 "createdBy": self.created_by,
                 "createdByUser": self.created_by_user,
                 "createdDateTime": self.created_datetime,
-                "lastModifiedDateTime": self.last_modified_datetime,
                 "lastModifiedBy": self.last_modified_by,
                 "lastModifiedByUser": self.last_modified_by_user,
                 "parentReference": self.parent_reference,

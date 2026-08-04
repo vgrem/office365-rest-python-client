@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.onedrive.termstore.sets.collection import SetCollection

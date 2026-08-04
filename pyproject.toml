@@ -78,6 +78,7 @@ module-name = "office365"
 module-root = ""
 
 [tool.ruff]
+target-version = "py38"
 line-length = 121
 src = [ "examples", "generator", "office365", "tests" ]
 
@@ -111,4 +112,5 @@ lint.pylint.max-statements = 60
 
 [tool.pyright]
 include = ["office365"]
+pythonVersion = "3.8"
 extraPaths = [".venv/lib/python3.11/site-packages"]
