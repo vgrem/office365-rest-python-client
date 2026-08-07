@@ -1,5 +1,6 @@
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.multigeo.service.storage_quota import StorageQuota
@@ -37,6 +38,7 @@ class MultiGeoServices(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="StorageQuotas")
     @property
     def storage_quotas(self) -> EntityCollection[UnifiedGroup]:
         """ """
@@ -49,6 +51,7 @@ class MultiGeoServices(Entity):
             ),
         )
 
+    @odata(name="UnifiedGroups")
     @property
     def unified_groups(self) -> EntityCollection[UnifiedGroup]:
         """ """
@@ -64,9 +67,3 @@ class MultiGeoServices(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"UnifiedGroups": self.unified_groups}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

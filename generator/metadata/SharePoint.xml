@@ -1208,6 +1208,7 @@
          </ComplexType>
          <ComplexType Name="FileVersionBatchDeleteParameters">
             <Property Name="BatchDeleteMode" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="BypassSiteLock" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="DeleteOlderThanDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="FileTypeSelections" Type="SP.VersionPolicySelectionParameters"/>
             <Property Name="MajorVersionLimit" Type="Edm.Int32" Nullable="false"/>
@@ -6204,7 +6205,7 @@
                <Parameter Name="autofillPrompt" Type="Edm.String"/>
                <Parameter Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="autofillColumnType" Type="Edm.String"/>
-               <Parameter Name="preventOverwrite" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="overwriteMode" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="SetMachineLearningFlags" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
@@ -12267,15 +12268,16 @@
                <Parameter Name="mySiteUrl" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_SmartWikiLibrary_SmartWikiLibraryUtility" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility" IsComposable="true" EntitySet="Smartwikilibrarys"/>
-            <FunctionImport Name="BatchConvertClassicWikiPages" ReturnType="Edm.String" IsBindable="true">
+            <FunctionImport Name="BatchConvertClassicWikiPages" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.BatchConvertResult" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
                <Parameter Name="sourceListId" Type="Edm.String"/>
                <Parameter Name="sourceItemIds" Type="Collection(Edm.String)"/>
                <Parameter Name="targetWebUrl" Type="Edm.String"/>
                <Parameter Name="targetListId" Type="Edm.String"/>
                <Parameter Name="useFastUnorderedMode" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="parentUniqueId" Type="Edm.String"/>
             </FunctionImport>
-            <FunctionImport Name="ConvertClassicWikiPage" ReturnType="Edm.String" IsBindable="true">
+            <FunctionImport Name="ConvertClassicWikiPage" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.ConvertResult" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
                <Parameter Name="sourceUrl" Type="Edm.String"/>
                <Parameter Name="targetWebUrl" Type="Edm.String"/>
@@ -14643,6 +14645,14 @@
             </FunctionImport>
             <FunctionImport Name="ConsentToPowerPlatform" ReturnType="SP.FlowSynchronizationResult" IsBindable="true" EntitySet="FlowSynchronizationResults">
                <Parameter Name="this" Type="SP.Web"/>
+            </FunctionImport>
+            <FunctionImport Name="ContentByQueryReplay" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Web"/>
+               <Parameter Name="webs" Type="Edm.String"/>
+               <Parameter Name="lists" Type="Edm.String"/>
+               <Parameter Name="camlQuery" Type="Edm.String"/>
+               <Parameter Name="viewFields" Type="Edm.String"/>
+               <Parameter Name="rowLimit" Type="Edm.Int64" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="SP_Web_CreateAnonymousLink" ReturnType="Edm.String">
                <Parameter Name="url" Type="Edm.String"/>
@@ -20107,6 +20117,11 @@
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="containerId" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="UnarchiveOdbById" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="keepUnarchivedUntil" Type="Edm.DateTime"/>
+            </FunctionImport>
             <FunctionImport Name="UnarchiveSiteById" ReturnType="Microsoft.Online.SharePoint.TenantAdministration.SpoOperation" IsBindable="true" EntitySet="SpoOperations">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
@@ -20188,6 +20203,11 @@
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="viewId" Type="Edm.String"/>
                <Parameter Name="viewXml" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="UpdateUnlicensedOdbActiveStorageDateById" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="keepUnarchivedUntil" Type="Edm.DateTime" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="ValidateHomeSite" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -22504,6 +22524,7 @@
             <EntitySet Name="ProjectPolicyItemListItems" EntityType="SP.Data.ProjectPolicyItemListItem"/>
             <EntitySet Name="ProjectAssets1DYODWQPItems" EntityType="SP.Data.ProjectAssets1DYODWQPItem"/>
             <EntitySet Name="ProjectAssets1UA0ICU8ListItems" EntityType="SP.Data.ProjectAssets1UA0ICU8ListItem"/>
+            <EntitySet Name="ProjectAssets9SUCR69XListItems" EntityType="SP.Data.ProjectAssets9SUCR69XListItem"/>
             <EntitySet Name="ProjectAssetsN1JBOBQOListItems" EntityType="SP.Data.ProjectAssetsN1JBOBQOListItem"/>
             <EntitySet Name="ProjectAssetsQCBV323AListItems" EntityType="SP.Data.ProjectAssetsQCBV323AListItem"/>
             <EntitySet Name="ProjectAssetsUCD7W9BYListItems" EntityType="SP.Data.ProjectAssetsUCD7W9BYListItem"/>
@@ -23568,6 +23589,14 @@
             </AssociationSet>
             <AssociationSet Name="SP_Data_ProjectAssets1UA0ICU8ListItem_Editor_SP_Data_UserInfoItem_EditorPartnerSet" Association="SP.Data.SP_Data_ProjectAssets1UA0ICU8ListItem_Editor_SP_Data_UserInfoItem_EditorPartner">
                <End Role="EditorPartner" EntitySet="ProjectAssets1UA0ICU8ListItems"/>
+               <End Role="Editor" EntitySet="UserInfoItems"/>
+            </AssociationSet>
+            <AssociationSet Name="SP_Data_ProjectAssets9SUCR69XListItem_Author_SP_Data_UserInfoItem_AuthorPartnerSet" Association="SP.Data.SP_Data_ProjectAssets9SUCR69XListItem_Author_SP_Data_UserInfoItem_AuthorPartner">
+               <End Role="AuthorPartner" EntitySet="ProjectAssets9SUCR69XListItems"/>
+               <End Role="Author" EntitySet="UserInfoItems"/>
+            </AssociationSet>
+            <AssociationSet Name="SP_Data_ProjectAssets9SUCR69XListItem_Editor_SP_Data_UserInfoItem_EditorPartnerSet" Association="SP.Data.SP_Data_ProjectAssets9SUCR69XListItem_Editor_SP_Data_UserInfoItem_EditorPartner">
+               <End Role="EditorPartner" EntitySet="ProjectAssets9SUCR69XListItems"/>
                <End Role="Editor" EntitySet="UserInfoItems"/>
             </AssociationSet>
             <AssociationSet Name="SP_Data_ProjectAssetsN1JBOBQOListItem_Author_SP_Data_UserInfoItem_AuthorPartnerSet" Association="SP.Data.SP_Data_ProjectAssetsN1JBOBQOListItem_Author_SP_Data_UserInfoItem_AuthorPartner">
@@ -25285,6 +25314,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.Internal.ImageUrl">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.Internal.StickyRoutingOptions">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.Internal.TextContentPart">
@@ -29959,7 +29991,7 @@
          <Annotations Target="SP.ApiData/SetAutofillColumnSettings(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
-         <Annotations Target="SP.ApiData/SetColumnLLMInfo(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Guid, Edm.String, Edm.Boolean, Edm.String, Edm.Boolean)">
+         <Annotations Target="SP.ApiData/SetColumnLLMInfo(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Guid, Edm.String, Edm.Boolean, Edm.String, Edm.Int32)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SetMachineLearningFlags(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Int32)">
@@ -31753,6 +31785,21 @@
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_SPStart_SPStartUtilitiesProxy_GetSerializedSPStartContext(Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.BatchConvertResult">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.BatchConvertItemResult">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.ConversionLossReport">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.ConversionLossItem">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.ConvertResult">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_SectionDesignIdeas_SectionDesignIdeasApi()">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -32408,6 +32455,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/ConsentToPowerPlatform(SP.Web)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/ContentByQueryReplay(SP.Web, Edm.String, Edm.String, Edm.String, Edm.String, Edm.Int64)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/CreateGroupBasedEnvironment(SP.Web)">
@@ -41280,6 +41330,11 @@
             <Property Name="UserLogin" Type="Edm.String"/>
             <Property Name="UserPuid" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="StickyRoutingOptions">
+            <Property Name="InteractionId" Type="Edm.String"/>
+            <Property Name="SessionId" Type="Edm.String"/>
+            <Property Name="SessionTicket" Type="Edm.String"/>
+         </ComplexType>
          <ComplexType Name="TextContentPart" BaseType="Microsoft.SharePoint.Internal.ContentPart">
             <Property Name="Text" Type="Edm.String"/>
          </ComplexType>
@@ -46129,6 +46184,38 @@
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
       </Schema>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.SmartWikiLibrary">
+         <ComplexType Name="BatchConvertResult">
+            <Property Name="results" Type="Collection(Microsoft.SharePoint.SmartWikiLibrary.BatchConvertItemResult)"/>
+         </ComplexType>
+         <ComplexType Name="BatchConvertItemResult">
+            <Property Name="errorCode" Type="Edm.String"/>
+            <Property Name="errorMessage" Type="Edm.String"/>
+            <Property Name="lossy" Type="Microsoft.SharePoint.SmartWikiLibrary.ConversionLossReport"/>
+            <Property Name="sourceItemId" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="succeeded" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="viewerUrl" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="ConversionLossReport">
+            <Property Name="isClean" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="items" Type="Collection(Microsoft.SharePoint.SmartWikiLibrary.ConversionLossItem)"/>
+         </ComplexType>
+         <ComplexType Name="ConversionLossItem">
+            <Property Name="count" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="detail" Type="Edm.String"/>
+            <Property Name="kind" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="ConvertResult">
+            <Property Name="lossy" Type="Microsoft.SharePoint.SmartWikiLibrary.ConversionLossReport"/>
+            <Property Name="viewerUrl" Type="Edm.String"/>
+         </ComplexType>
+         <EntityType Name="SmartWikiLibraryUtility">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+      </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.AppServices">
          <EntityType Name="AppCollection">
             <Key>
@@ -46782,14 +46869,6 @@
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.SPStart">
          <EntityType Name="SPStartUtilitiesProxy" Abstract="true">
-            <Key>
-               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
-            </Key>
-            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
-         </EntityType>
-      </Schema>
-      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.SmartWikiLibrary">
-         <EntityType Name="SmartWikiLibraryUtility">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
             </Key>
@@ -55197,6 +55276,67 @@
             <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_ProjectAssets1UA0ICU8ListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
             <NavigationProperty Name="Editor" Relationship="SP.Data.SP_Data_ProjectAssets1UA0ICU8ListItem_Editor_SP_Data_UserInfoItem_EditorPartner" ToRole="Editor" FromRole="EditorPartner"/>
          </EntityType>
+         <EntityType Name="ProjectAssets9SUCR69XListItem" BaseType="SP.ListItem">
+            <Property Name="ContentTypeId" Type="Edm.String"/>
+            <Property Name="Title" Type="Edm.String"/>
+            <Property Name="OData__ModerationComments" Type="Edm.String"/>
+            <Property Name="File_x0020_Type" Type="Edm.String"/>
+            <Property Name="OData__ColorHex" Type="Edm.String"/>
+            <Property Name="OData__ColorTag" Type="Edm.String"/>
+            <Property Name="OData__Emoji" Type="Edm.String"/>
+            <Property Name="ComplianceAssetId" Type="Edm.String"/>
+            <Property Name="Category" Type="Edm.String"/>
+            <Property Name="ID" Type="Edm.Int32"/>
+            <Property Name="Modified" Type="Edm.DateTime"/>
+            <Property Name="Created" Type="Edm.DateTime"/>
+            <Property Name="AuthorId" Type="Edm.Int32"/>
+            <Property Name="EditorId" Type="Edm.Int32"/>
+            <Property Name="OData__HasCopyDestinations" Type="Edm.Boolean"/>
+            <Property Name="OData__CopySource" Type="Edm.String"/>
+            <Property Name="owshiddenversion" Type="Edm.Int32"/>
+            <Property Name="WorkflowVersion" Type="Edm.Int32"/>
+            <Property Name="OData__UIVersion" Type="Edm.Int32"/>
+            <Property Name="OData__UIVersionString" Type="Edm.String"/>
+            <Property Name="Attachments" Type="Edm.Boolean"/>
+            <Property Name="OData__ModerationStatus" Type="Edm.Int32"/>
+            <Property Name="Edit" Type="Edm.String"/>
+            <Property Name="LinkTitleNoMenu" Type="Edm.String"/>
+            <Property Name="LinkTitle" Type="Edm.String"/>
+            <Property Name="LinkTitle2" Type="Edm.String"/>
+            <Property Name="SelectTitle" Type="Edm.String"/>
+            <Property Name="InstanceID" Type="Edm.Int32"/>
+            <Property Name="Order" Type="Edm.Double"/>
+            <Property Name="GUID" Type="Edm.Guid"/>
+            <Property Name="WorkflowInstanceID" Type="Edm.Guid"/>
+            <Property Name="FileRef" Type="Edm.String"/>
+            <Property Name="FileDirRef" Type="Edm.String"/>
+            <Property Name="Last_x0020_Modified" Type="Edm.DateTime"/>
+            <Property Name="Created_x0020_Date" Type="Edm.DateTime"/>
+            <Property Name="FSObjType" Type="Edm.Int32"/>
+            <Property Name="PermMask" Type="Edm.String"/>
+            <Property Name="PrincipalCount" Type="Edm.String"/>
+            <Property Name="FileLeafRef" Type="Edm.String"/>
+            <Property Name="UniqueId" Type="Edm.Guid"/>
+            <Property Name="HTML_x0020_File_x0020_Type" Type="Edm.String"/>
+            <Property Name="OData__EditMenuTableStart" Type="Edm.String"/>
+            <Property Name="OData__EditMenuTableStart2" Type="Edm.String"/>
+            <Property Name="OData__EditMenuTableEnd" Type="Edm.String"/>
+            <Property Name="LinkFilenameNoMenu" Type="Edm.String"/>
+            <Property Name="LinkFilename" Type="Edm.String"/>
+            <Property Name="LinkFilename2" Type="Edm.String"/>
+            <Property Name="DocIcon" Type="Edm.String"/>
+            <Property Name="ServerUrl" Type="Edm.String"/>
+            <Property Name="EncodedAbsUrl" Type="Edm.String"/>
+            <Property Name="BaseName" Type="Edm.String"/>
+            <Property Name="OData__Level" Type="Edm.Int32"/>
+            <Property Name="OData__IsCurrentVersion" Type="Edm.Boolean"/>
+            <Property Name="OData__IsRecord" Type="Edm.String"/>
+            <Property Name="MainLinkSettings" Type="Edm.String"/>
+            <Property Name="AppAuthorId" Type="Edm.Int32"/>
+            <Property Name="AppEditorId" Type="Edm.Int32"/>
+            <NavigationProperty Name="Author" Relationship="SP.Data.SP_Data_ProjectAssets9SUCR69XListItem_Author_SP_Data_UserInfoItem_AuthorPartner" ToRole="Author" FromRole="AuthorPartner"/>
+            <NavigationProperty Name="Editor" Relationship="SP.Data.SP_Data_ProjectAssets9SUCR69XListItem_Editor_SP_Data_UserInfoItem_EditorPartner" ToRole="Editor" FromRole="EditorPartner"/>
+         </EntityType>
          <EntityType Name="ProjectAssetsN1JBOBQOListItem" BaseType="SP.ListItem">
             <Property Name="ContentTypeId" Type="Edm.String"/>
             <Property Name="Title" Type="Edm.String"/>
@@ -57280,6 +57420,14 @@
          <Association Name="SP_Data_ProjectAssets1UA0ICU8ListItem_Editor_SP_Data_UserInfoItem_EditorPartner">
             <End Type="SP.Data.UserInfoItem" Role="Editor" Multiplicity="0..1"/>
             <End Type="SP.Data.ProjectAssets1UA0ICU8ListItem" Role="EditorPartner" Multiplicity="0..1"/>
+         </Association>
+         <Association Name="SP_Data_ProjectAssets9SUCR69XListItem_Author_SP_Data_UserInfoItem_AuthorPartner">
+            <End Type="SP.Data.UserInfoItem" Role="Author" Multiplicity="0..1"/>
+            <End Type="SP.Data.ProjectAssets9SUCR69XListItem" Role="AuthorPartner" Multiplicity="0..1"/>
+         </Association>
+         <Association Name="SP_Data_ProjectAssets9SUCR69XListItem_Editor_SP_Data_UserInfoItem_EditorPartner">
+            <End Type="SP.Data.UserInfoItem" Role="Editor" Multiplicity="0..1"/>
+            <End Type="SP.Data.ProjectAssets9SUCR69XListItem" Role="EditorPartner" Multiplicity="0..1"/>
          </Association>
          <Association Name="SP_Data_ProjectAssetsN1JBOBQOListItem_Author_SP_Data_UserInfoItem_AuthorPartner">
             <End Type="SP.Data.UserInfoItem" Role="Author" Multiplicity="0..1"/>

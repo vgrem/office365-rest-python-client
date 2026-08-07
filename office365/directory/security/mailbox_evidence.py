@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from office365.directory.security.user_account import UserAccount
 from office365.runtime.client_value import ClientValue
 
 
@@ -10,6 +11,7 @@ class MailboxEvidence(ClientValue):
     displayName: str | None = None
     primaryAddress: str | None = None
     upn: str | None = None
+    userAccount: UserAccount = field(default_factory=UserAccount)
 
     @property
     def entity_type_name(self) -> str:

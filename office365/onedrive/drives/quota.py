@@ -15,3 +15,5 @@ class Quota(ClientValue):
     deleted: int | None = None
     remaining: int | None = None
     state: str | None = None
+    total: int | None = None
+    used: int | None = None

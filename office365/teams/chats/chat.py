@@ -6,8 +6,8 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.teams.apps.installation import TeamsAppInstallation
+from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.chats.messages.info import ChatMessageInfo
-from office365.teams.chats.messages.message import ChatMessage
 from office365.teams.chats.viewpoint import ChatViewpoint
 from office365.teams.members.conversation_collection import ConversationMemberCollection
 from office365.teams.operations.async_operation import TeamsAsyncOperation
@@ -101,11 +101,11 @@ class Chat(Entity):
         )
 
     @property
-    def messages(self) -> EntityCollection[ChatMessage]:
+    def messages(self) -> ChatMessageCollection:
         """A collection of all the messages in the chat. Nullable."""
         return self.properties.get(
             "messages",
-            EntityCollection(self.context, ChatMessage, ResourcePath("messages", self.resource_path)),
+            ChatMessageCollection(self.context, ResourcePath("messages", self.resource_path)),
         )
 
     @property

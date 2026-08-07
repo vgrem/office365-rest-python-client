@@ -5,7 +5,10 @@ from dataclasses import dataclass, field
 from office365.directory.security.alerts.iotdeviceimportancetype import IoTDeviceImportanceType
 from office365.directory.security.azure_resource_evidence import AzureResourceEvidence
 from office365.directory.security.ip_evidence import IpEvidence
+from office365.directory.security.nic_evidence import NicEvidence
+from office365.directory.security.url_evidence import UrlEvidence
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 
 
@@ -35,6 +38,8 @@ class IoTDeviceEvidence(ClientValue):
     site: str | None = None
     source: str | None = None
     zone: str | None = None
+    nics: ClientValueCollection[NicEvidence] = field(default_factory=lambda: ClientValueCollection(NicEvidence))
+    sourceRef: UrlEvidence = field(default_factory=UrlEvidence)
 
     @property
     def entity_type_name(self) -> str:

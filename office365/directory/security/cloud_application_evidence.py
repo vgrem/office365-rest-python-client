@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from office365.directory.security.stream import Stream
 from office365.runtime.client_value import ClientValue
 
 
@@ -12,6 +13,7 @@ class CloudApplicationEvidence(ClientValue):
     instanceId: int | None = None
     instanceName: str | None = None
     saasAppId: int | None = None
+    stream: Stream = field(default_factory=Stream)
 
     @property
     def entity_type_name(self) -> str:

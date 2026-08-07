@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional, cast
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.listitems.versions.change import SPListItemVersionChange
 
@@ -50,6 +51,7 @@ class ListItemVersion(Entity):
         """Gets the modified date and time for the item version."""
         return self.properties.get("Modified", datetime.min)
 
+    @odata(name="FileVersion")
     @property
     def created_by(self):
         """Gets the user that created the item version."""
@@ -70,6 +72,7 @@ class ListItemVersion(Entity):
             FieldCollection(self.context, ResourcePath("Fields", self.resource_path)),
         )
 
+    @odata(name="FileVersion")
     @property
     def file_version(self):
         """"""
@@ -91,18 +94,3 @@ class ListItemVersion(Entity):
         )
 
         return cast(ListItemVersionCollection, self._parent_collection)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "CreatedBy": self.created_by,
-                "FileVersion": self.file_version,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
-
-    def set_property(self, name, value, persist_changes=True):
-        if self._resource_path is None:
-            if name == "VersionId":
-                self._resource_path = self.parent_collection.get_by_id(value).resource_path
-        return super().set_property(name, value, persist_changes)

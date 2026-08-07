@@ -5,6 +5,7 @@ from typing_extensions import Self
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCollection
 from office365.sharepoint.entity import Entity
@@ -158,6 +159,7 @@ class ContentType(Entity):
         """Sets the description of the content type."""
         self.set_property("Description", value)
 
+    @odata(name="DescriptionResource")
     @property
     def description_resource(self):
         """Gets the SP.UserResource object (section 3.2.5.333) for the description of this content type"""
@@ -210,6 +212,7 @@ class ContentType(Entity):
         """Specifies whether changes to the content type properties are denied."""
         return self.properties.get("ReadOnly", None)
 
+    @odata(name="NameResource")
     @property
     def name_resource(self):
         """Specifies the SP.UserResource object for the name of this content type"""
@@ -239,6 +242,7 @@ class ContentType(Entity):
             ContentType(self.context, ResourcePath("Parent", self.resource_path)),
         )
 
+    @odata(name="FieldLinks")
     @property
     def field_links(self) -> FieldLinkCollection:
         """Specifies the collection of field links for the content type."""
@@ -250,13 +254,3 @@ class ContentType(Entity):
     @property
     def property_ref_name(self):
         return "StringId"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "DescriptionResource": self.description_resource,
-                "FieldLinks": self.field_links,
-                "NameResource": self.name_resource,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

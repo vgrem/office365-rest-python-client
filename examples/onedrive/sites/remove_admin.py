@@ -17,11 +17,16 @@ def main():
     user_email = input("User email to remove: ").strip()
 
     site = client.sites.get_by_url(site_url).get().execute_query()
-    perms = site.permissions.get().execute_query()
+    target = client.users.filter(f"mail eq '{user_email}'").get().execute_query()
+    if not target:
+        print(f"User '{user_email}' not found.")
+        return
+    target_id = target[0].id
 
+    perms = site.permissions.get().execute_query()
     for p in perms:
         for identity in p.granted_to_identities:
-            if identity.user and identity.user.email == user_email:
+            if identity.user and identity.user.id == target_id:
                 p.delete_object().execute_query()
                 print(f"Removed {user_email} from {site.display_name}")
                 return

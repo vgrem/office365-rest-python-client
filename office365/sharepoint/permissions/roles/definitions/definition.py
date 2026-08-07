@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
@@ -11,8 +12,9 @@ class RoleDefinition(Entity):
     def __repr__(self):
         return self.name or self.entity_type_name
 
+    @odata(name="BasePermissions")
     @property
-    def base_permissions(self):
+    def base_permissions(self) -> BasePermissions:
         """
         Specifies the base permissions for the role definition.
         When assigning values to the property, use bitwise AND, OR, and XOR operators with values from
@@ -52,14 +54,6 @@ class RoleDefinition(Entity):
     def description(self, value):
         """Gets or sets a value that specifies the description of the role definition."""
         self.set_property("Description", value)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "BasePermissions": self.base_permissions,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         if self.resource_path is None:

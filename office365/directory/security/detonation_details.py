@@ -3,7 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from office365.directory.security.compromise_indicator import CompromiseIndicator
+from office365.directory.security.detonation_behaviour_details import DetonationBehaviourDetails
+from office365.directory.security.detonation_chain import DetonationChain
+from office365.directory.security.detonation_observables import DetonationObservables
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
 
 
 @dataclass
@@ -17,6 +22,12 @@ class DetonationDetails(ClientValue):
     mitreTechniques: str | None = None
     staticAnalysis: str | None = None
     submissionSource: str | None = None
+    compromiseIndicators: ClientValueCollection[CompromiseIndicator] = field(
+        default_factory=lambda: ClientValueCollection(CompromiseIndicator)
+    )
+    detonationBehaviourDetails: DetonationBehaviourDetails = field(default_factory=DetonationBehaviourDetails)
+    detonationChain: DetonationChain = field(default_factory=DetonationChain)
+    detonationObservables: DetonationObservables = field(default_factory=DetonationObservables)
 
     @property
     def entity_type_name(self) -> str:

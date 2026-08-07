@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
-from office365.outlook.mail.item_body import ItemBody
 from office365.teams.chats.chat import Chat
 from office365.teams.chats.type import ChatType
 
@@ -42,7 +41,7 @@ class TestTeamChats(GraphDelegatedTestCase):
 
         chat = self.client.chats.add(ChatType.oneOnOne, owner_ids=[owner.id, other.id]).execute_query()
         self.assertIsNotNone(chat.resource_path)
-        self.assertIsNotNone(chat.get_property("id"))
+        self.assertIsNotNone(chat.id)
         TestTeamChats.target_chat = chat
 
     @requires_delegated(
@@ -93,7 +92,7 @@ class TestTeamChats(GraphDelegatedTestCase):
         if not chat:
             self.skipTest("No chat created from previous test")
 
-        msg = chat.messages.add(body=ItemBody("Hello from office365-rest-python-client!")).execute_query()
+        msg = chat.messages.add(content="Hello world!").execute_query()
         self.assertIsNotNone(msg.id)
 
     @requires_delegated(

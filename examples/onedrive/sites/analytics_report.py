@@ -21,9 +21,9 @@ print("-" * 75)
 for s in sites:
     try:
         analytics = s.analytics.get().execute_query()
-        views = analytics.all_time.views or 0
-        visits = analytics.all_time.visits or 0
-        edits = analytics.all_time.edits or 0
+        views = analytics.all_time.access.viewCount or 0
+        visits = analytics.all_time.access.actionCount or 0
+        edits = analytics.all_time.edit.viewCount or 0
         print(f"{s.display_name or '':45s}  {views:>8d}  {visits:>8d}  {edits:>8d}")
     except Exception:
         print(f"{s.display_name or '':45s}  {'N/A':>8s}")

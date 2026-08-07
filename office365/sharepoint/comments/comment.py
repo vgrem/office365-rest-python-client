@@ -1,9 +1,8 @@
-from typing import Any
-
 from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.likes.user_entity import UserEntity
@@ -26,6 +25,7 @@ class Comment(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="likedBy")
     @property
     def liked_by(self) -> EntityCollection[UserEntity]:
         """
@@ -40,11 +40,3 @@ class Comment(Entity):
     @property
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Comments.comment"
-
-    def get_property(self, name: str, default_value: Any = None):
-        if default_value is None:
-            property_mapping = {
-                "likedBy": self.liked_by,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

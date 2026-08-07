@@ -34,6 +34,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Event(OutlookItem):
@@ -255,6 +256,7 @@ class Event(OutlookItem):
         """
         self.set_property("end", DateTimeTimeZone.parse(value))
 
+    @odata(name="singleValueExtendedProperties")
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the event."""
@@ -267,6 +269,7 @@ class Event(OutlookItem):
             ),
         )
 
+    @odata(name="multiValueExtendedProperties")
     @property
     def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the event."""
@@ -304,6 +307,7 @@ class Event(OutlookItem):
         """Default is true, which represents the organizer would like an invitee to send a response to the event."""
         return self.properties.get("responseRequested", None)
 
+    @odata(name="responseStatus")
     @property
     def response_status(self) -> Optional[str]:
         """Indicates the type of response sent in response to an event message."""
@@ -396,6 +400,7 @@ class Event(OutlookItem):
             "instances", EventCollection(self.context, ResourcePath("instances", self.resource_path))
         )
 
+    @odata(name="cancelledOccurrences")
     @property
     def cancelled_occurrences(self) -> StringCollection:
         """Gets the cancelledOccurrences property"""
@@ -411,6 +416,7 @@ class Event(OutlookItem):
         """Gets the locations property"""
         return self.properties.get("locations", ClientValueCollection[Location](Location))
 
+    @odata(name="onlineMeetingProvider")
     @property
     def online_meeting_provider(self) -> OnlineMeetingProviderType:
         """Gets the onlineMeetingProvider property"""
@@ -431,6 +437,7 @@ class Event(OutlookItem):
         """Gets the originalEndTimeZone property"""
         return self.properties.get("originalEndTimeZone", None)
 
+    @odata(name="originalStart")
     @property
     def original_start(self) -> datetime:
         """Gets the originalStart property"""
@@ -451,6 +458,7 @@ class Event(OutlookItem):
         """Gets the sensitivity property"""
         return self.properties.get("sensitivity", Sensitivity.normal)
 
+    @odata(name="showAs")
     @property
     def show_as(self) -> FreeBusyStatus:
         """Gets the showAs property"""
@@ -460,15 +468,6 @@ class Event(OutlookItem):
     def type_(self) -> EventType:
         """Gets the type property"""
         return self.properties.get("type", EventType.singleInstance)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "multiValueExtendedProperties": self.multi_value_extended_properties,
-                "singleValueExtendedProperties": self.single_value_extended_properties,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

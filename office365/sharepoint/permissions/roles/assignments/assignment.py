@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions.roles.definitions.collection import (
     RoleDefinitionCollection,
@@ -24,6 +25,7 @@ class RoleAssignment(Entity):
             Principal(self.context, ResourcePath("Member", self.resource_path)),
         )
 
+    @odata(name="RoleDefinitionBindings")
     @property
     def role_definition_bindings(self) -> RoleDefinitionCollection:
         """Specifies a collection of role definitions for this role assignment."""
@@ -35,11 +37,3 @@ class RoleAssignment(Entity):
     @property
     def property_ref_name(self) -> str:
         return "PrincipalId"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "RoleDefinitionBindings": self.role_definition_bindings,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

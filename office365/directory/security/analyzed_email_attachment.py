@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from office365.directory.security.detonation_details import DetonationDetails
 from office365.runtime.client_value import ClientValue
 
 
@@ -14,6 +15,7 @@ class AnalyzedEmailAttachment(ClientValue):
     malwareFamily: str | None = None
     sha256: str | None = None
     tenantAllowBlockListDetailInfo: str | None = None
+    detonationDetails: DetonationDetails = field(default_factory=DetonationDetails)
 
     @property
     def entity_type_name(self) -> str:

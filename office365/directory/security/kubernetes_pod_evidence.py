@@ -3,6 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from office365.directory.security.container_evidence import ContainerEvidence
+from office365.directory.security.dictionary import Dictionary
+from office365.directory.security.ip_evidence import IpEvidence
+from office365.directory.security.kubernetes_controller_evidence import KubernetesControllerEvidence
+from office365.directory.security.kubernetes_namespace_evidence import KubernetesNamespaceEvidence
+from office365.directory.security.kubernetes_service_account_evidence import KubernetesServiceAccountEvidence
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 
@@ -19,6 +24,11 @@ class KubernetesPodEvidence(ClientValue):
         default_factory=lambda: ClientValueCollection(ContainerEvidence)
     )
     name: str | None = None
+    controller: KubernetesControllerEvidence = field(default_factory=KubernetesControllerEvidence)
+    labels: Dictionary = field(default_factory=Dictionary)
+    namespace: KubernetesNamespaceEvidence = field(default_factory=KubernetesNamespaceEvidence)
+    podIp: IpEvidence = field(default_factory=IpEvidence)
+    serviceAccount: KubernetesServiceAccountEvidence = field(default_factory=KubernetesServiceAccountEvidence)
 
     @property
     def entity_type_name(self) -> str:

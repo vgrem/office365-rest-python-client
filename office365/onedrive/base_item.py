@@ -24,6 +24,7 @@ class BaseItem(Entity):
         """ETag for the item."""
         return self.properties.get("eTag", None)
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> IdentitySet:
         """Identity of the user, device, or application which created the item."""
@@ -43,11 +44,13 @@ class BaseItem(Entity):
             "createdByUser", User(self.context, ResourcePath("createdByUser", self.resource_path))
         )
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Identity of the user, device, and application which last modified the item."""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
+    @odata(name="lastModifiedByUser")
     @property
     def last_modified_by_user(self) -> User:
         """Identity of the user who last modified the item."""
@@ -91,11 +94,13 @@ class BaseItem(Entity):
         """URL that displays the resource in the browser"""
         return self.properties.get("webUrl", "")
 
+    @odata(name="parentReference")
     @property
     def parent_reference(self) -> ItemReference:
         """Parent information, if the item has a parent."""
         return self.properties.setdefault("parentReference", ItemReference())
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
@@ -117,19 +122,6 @@ class BaseItem(Entity):
         if name == "parentReference":
             pass
         return self
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "createdBy": self.created_by,
-                "createdByUser": self.created_by_user,
-                "createdDateTime": self.created_datetime,
-                "lastModifiedBy": self.last_modified_by,
-                "lastModifiedByUser": self.last_modified_by_user,
-                "parentReference": self.parent_reference,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.likes.user_entity import UserEntity
@@ -19,6 +20,7 @@ class LikedByInformation(Entity):
         """MUST be TRUE if the current user has liked the list item."""
         return self.properties.get("isLikedByUser", None)
 
+    @odata(name="likedBy")
     @property
     def liked_by(self) -> EntityCollection[UserEntity]:
         """
@@ -28,12 +30,6 @@ class LikedByInformation(Entity):
         return self.properties.get(
             "likedBy", EntityCollection(self.context, UserEntity, ResourcePath("likedBy", self.resource_path))
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"likedBy": self.liked_by}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self):

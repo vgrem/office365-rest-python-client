@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from office365.directory.security.user_evidence import UserEvidence
 from office365.runtime.client_value import ClientValue
 
 
@@ -16,6 +17,7 @@ class CloudLogonSessionEvidence(ClientValue):
     sessionId: str | None = None
     startUtcDateTime: datetime | None = field(default_factory=lambda: datetime.min)
     userAgent: str | None = None
+    account: UserEvidence = field(default_factory=UserEvidence)
 
     @property
     def entity_type_name(self) -> str:

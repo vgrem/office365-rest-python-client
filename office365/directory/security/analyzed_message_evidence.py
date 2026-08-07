@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from office365.directory.security.email_sender import EmailSender
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 
@@ -25,6 +26,8 @@ class AnalyzedMessageEvidence(ClientValue):
     urlCount: int | None = None
     urls: StringCollection = field(default_factory=StringCollection)
     urn: str | None = None
+    p1Sender: EmailSender = field(default_factory=EmailSender)
+    p2Sender: EmailSender = field(default_factory=EmailSender)
 
     @property
     def entity_type_name(self) -> str:

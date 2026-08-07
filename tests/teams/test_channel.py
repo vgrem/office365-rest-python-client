@@ -131,6 +131,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
     @requires_delegated(
         "ChannelMember.Read.All",
         "ChannelMember.ReadWrite.All",
+        "ChannelSettings.ReadWrite.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_06_list_shared_with_teams(self):
@@ -182,7 +183,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
 
         try:
             result = channel.remove_email().execute_query()
-            self.assertIsNotNone(result.value)
+            self.assertIsNotNone(result.resource_path)
         except Exception:
             self.skipTest("Remove email not available without prior provision")
 

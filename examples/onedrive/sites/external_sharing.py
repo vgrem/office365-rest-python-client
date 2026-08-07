@@ -21,7 +21,7 @@ client = (
 
 tenant_domain = tenant.split("@")[-1] if "@" in tenant else tenant
 
-sites = client.sites.get_all().execute_query()
+sites = client.sites.top(10).get().execute_query()
 print(f"Checking {len(sites)} sites for external sharing...\n")
 found = False
 for s in sites:
@@ -29,8 +29,13 @@ for s in sites:
     for p in perms:
         for identity in p.granted_to_identities:
             user = identity.user
-            if user and user.email and tenant_domain not in user.email:
-                print(f"  {s.display_name:45s}  {user.display_name or '?':25s}  {user.email or '?'}")
+            if not user or not user.id:
+                continue
+            # Permission identities carry no email — resolve the user to inspect their domain
+            user_obj = client.users[user.id].get().execute_query()
+            mail = user_obj.mail or ""
+            if tenant_domain not in mail:
+                print(f"  {s.display_name:45s}  {user_obj.display_name or '?':25s}  {mail or '?'}")
                 found = True
                 break
 

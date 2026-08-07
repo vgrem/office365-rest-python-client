@@ -4,6 +4,7 @@ from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.users.user import User
 
@@ -22,6 +23,7 @@ class CheckedOutFile(Entity):
         """Returns the user ID of the account used to check out the file."""
         return self.properties.get("CheckedOutById", None)
 
+    @odata(name="CheckedOutBy")
     @property
     def checked_out_by(self) -> User:
         """Returns the username of the account used to check out the file."""
@@ -33,9 +35,3 @@ class CheckedOutFile(Entity):
     @property
     def property_ref_name(self) -> str:
         return "CheckedOutById"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"CheckedOutBy": self.checked_out_by}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
