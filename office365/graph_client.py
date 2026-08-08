@@ -186,9 +186,9 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().with_device_flow(client_id)
         return self
 
-    def require_application_permission(self, scope: str) -> Self:
+    def require_application_permission(self, *scopes: str) -> Self:
         """
-        Exit if the application lacks the required Graph application permission.
+        Exit if the application lacks at least one of the required Graph application permissions.
 
         Typical usage at the top of example scripts:
 
@@ -198,21 +198,31 @@ class GraphClient(ClientRuntimeContext):
                 .require_application_permission("DeviceManagementConfiguration.Read.All")
             )
 
+            client = (
+                GraphClient(tenant=tenant)
+                .with_client_secret(client_id, secret)
+                .require_application_permission("RoleManagement.Read.Directory", "Directory.Read.All")
+            )
+
         Args:
-            scope: Application permission name (e.g. "DeviceManagementConfiguration.Read.All")
+            *scopes: Application permission names (e.g. "DeviceManagementConfiguration.Read.All");
+                at least one must be granted to the app
         """
         from office365.runtime.client_request_exception import ClientRequestException
 
+        if not scopes:
+            return self
         client_id = self.pending_request().authentication_context.client_id
         try:
             assert client_id is not None
             result = self.get_application_permissions(client_id).execute_query()
-            has_perms = any(role.value == scope for role in result.value)
+            granted = {role.value for role in result.value}
+            has_perms = any(scope in granted for scope in scopes)
             if not has_perms:
-                print(f"Missing required application permission: {scope}")
+                print(f"Missing required application permission — need at least one of: {', '.join(scopes)}")
                 sys.exit(1)
         except ClientRequestException:
-            print(f"Could not verify permission '{scope}' — ensure Application.Read.All is granted.")
+            print(f"Could not verify permissions {scopes} — ensure Application.Read.All is granted.")
             sys.exit(1)
         return self
 

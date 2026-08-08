@@ -11,8 +11,8 @@ client = GraphClient(tenant=tenant).with_username_and_password(client_id, userna
 
 
 me = client.me.get().execute_query()
-print(f"Directory roles for {me.display_name or me.user_principal_name}:")
+print(f"Directory roles for {me}:")
 
 result = client.me.get_directory_roles().execute_query()
 for role in result:
-    print(f"User has role: {role.display_name}")
+    print(f"User has role: {role}")

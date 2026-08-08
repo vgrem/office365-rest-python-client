@@ -7,9 +7,19 @@ Requires delegated permission ``RoleManagement.ReadWrite.Directory``.
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = (
+    GraphClient(tenant=tenant)
+    .with_client_secret(client_id, client_secret)
+    .require_application_permission(
+        "RoleManagement.Read.Directory",
+        "RoleManagement.ReadWrite.Directory",
+        "Directory.Read.All",
+        "Directory.ReadWrite.All",
+    )
+)
+
 roles = client.directory_roles.get().execute_query()
 for role in roles:
     print(role)

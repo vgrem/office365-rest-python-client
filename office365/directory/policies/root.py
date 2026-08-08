@@ -13,6 +13,7 @@ from office365.directory.policies.crosstenant.access import CrossTenantAccessPol
 from office365.directory.policies.device_registration import DeviceRegistrationPolicy
 from office365.directory.policies.feature_rollout import FeatureRolloutPolicy
 from office365.directory.policies.permission_grant import PermissionGrantPolicy
+from office365.directory.policies.security_defaults import IdentitySecurityDefaultsEnforcementPolicy
 from office365.directory.policies.tenant_app_management import TenantAppManagementPolicy
 from office365.directory.policies.unifiedrolemanagement.policy import (
     UnifiedRoleManagementPolicy,
@@ -137,6 +138,19 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="identitySecurityDefaultsEnforcementPolicy")
+    @property
+    def identity_security_defaults_enforcement_policy(self) -> IdentitySecurityDefaultsEnforcementPolicy:
+        """The tenant-wide policy that controls Microsoft Entra security defaults."""
+        return self.properties.get(
+            "identitySecurityDefaultsEnforcementPolicy",
+            IdentitySecurityDefaultsEnforcementPolicy(
+                self.context,
+                ResourcePath("identitySecurityDefaultsEnforcementPolicy", self.resource_path),
+            ),
+        )
+
+    @odata(name="defaultAppManagementPolicy")
     @property
     def default_app_management_policy(self) -> TenantAppManagementPolicy:
         """
@@ -202,7 +216,6 @@ class PolicyRoot(Entity):
                 "authorizationPolicy": self.authorization_policy,
                 "conditional_access_policies": self.conditional_access_policies,
                 "crossTenantAccessPolicy": self.cross_tenant_access_policy,
-                "defaultAppManagementPolicy": self.default_app_management_policy,
                 "deviceRegistrationPolicy": self.device_registration_policy,
             }
             default_value = property_mapping.get(name, None)

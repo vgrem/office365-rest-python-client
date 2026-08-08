@@ -15,3 +15,7 @@ class SiteCollection(ClientValue):
     hostname: str | None = None
     dataLocationCode: str | None = None
     archivalDetails: SiteArchivalDetails | None = field(default_factory=SiteArchivalDetails)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SiteCollection"

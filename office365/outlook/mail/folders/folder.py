@@ -15,6 +15,7 @@ from office365.outlook.mail.messages.collection import MessageCollection
 from office365.outlook.mail.messages.rules.collection import MessageRuleCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class MailFolder(Entity):
@@ -110,6 +111,7 @@ class MailFolder(Entity):
         """The number of items in the mailFolder marked as unread."""
         return self.properties.get("unreadItemCount", None)
 
+    @odata(name="childFolders")
     @property
     def child_folders(self) -> EntityCollection[MailFolder]:
         """The collection of child folders in the mailFolder."""
@@ -117,6 +119,7 @@ class MailFolder(Entity):
             "childFolders", EntityCollection(self.context, MailFolder, ResourcePath("childFolders", self.resource_path))
         )
 
+    @odata(name="messageRules")
     @property
     def message_rules(self) -> MessageRuleCollection:
         """"""
@@ -131,6 +134,7 @@ class MailFolder(Entity):
             "messages", MessageCollection(self.context, ResourcePath("messages", self.resource_path))
         )
 
+    @odata(name="multiValueExtendedProperties")
     @property
     def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """The collection of multi-value extended properties defined for the MailFolder."""
@@ -143,6 +147,7 @@ class MailFolder(Entity):
             ),
         )
 
+    @odata(name="singleValueExtendedProperties")
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """The collection of single-value extended properties defined for the MailFolder."""
@@ -154,17 +159,6 @@ class MailFolder(Entity):
                 ResourcePath("singleValueExtendedProperties", self.resource_path),
             ),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "childFolders": self.child_folders,
-                "messageRules": self.message_rules,
-                "multiValueExtendedProperties": self.multi_value_extended_properties,
-                "singleValueExtendedProperties": self.single_value_extended_properties,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def entity_type_name(self) -> str:

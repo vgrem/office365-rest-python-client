@@ -35,8 +35,7 @@ PERIOD = "D90"
 
 client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-method = getattr(client.reports, f"get_{REPORT_NAME.lower()}")
-result = method(PERIOD).execute_query()
+result = client.reports.get_email_activity_counts(PERIOD).execute_query()
 
 path = os.path.join(tempfile.mkdtemp(), f"{REPORT_NAME}.csv")
 with open(path, "wb") as f:
