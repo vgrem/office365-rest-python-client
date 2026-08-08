@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.taxonomy.item import TaxonomyItem
 from office365.sharepoint.taxonomy.item_collection import TaxonomyItemCollection
 from office365.sharepoint.taxonomy.sets.collection import TermSetCollection
@@ -32,6 +33,7 @@ class TermGroup(TaxonomyItem):
         self.ensure_property("id").after_execute(lambda _: _group_resolved())
         return return_type
 
+    @odata(name="termSets")
     @property
     def term_sets(self) -> TaxonomyItemCollection[TermSet]:
         """
@@ -46,9 +48,3 @@ class TermGroup(TaxonomyItem):
     def display_name(self) -> str | None:
         """Gets the name of the Term Group"""
         return self.properties.get("displayName", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"termSets": self.term_sets}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

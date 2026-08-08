@@ -3,6 +3,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class Subscription(Entity):
@@ -71,6 +72,7 @@ class Subscription(Entity):
         """
         return self.properties.get("encryptionCertificateId", None)
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_datetime(self) -> Optional[datetime]:
         """
@@ -129,11 +131,3 @@ class Subscription(Entity):
         each supported resource.
         """
         return self.properties.get("resource", None)
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "expirationDateTime": self.expiration_datetime,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

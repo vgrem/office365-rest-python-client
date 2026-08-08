@@ -17,3 +17,10 @@ class FileStorageContainerBillingStatus(str, Enum):
     Warning = "warning"
     Expired = "expired"
     UnknownFutureValue = "unknownFutureValue"
+    invalid = "0"
+    valid = "1"
+    unknownFutureValue = "2"
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FileStorageContainerBillingStatus"

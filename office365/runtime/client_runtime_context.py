@@ -18,6 +18,8 @@ from office365.runtime.queries.read_entity import ReadEntityQuery
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
 
+TRANSIENT_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
+
 
 class ClientRuntimeContext(ABC):
     """Abstract base class for client runtime context.
@@ -49,31 +51,51 @@ class ClientRuntimeContext(ABC):
         max_retry: int = 5,
         timeout_secs: int = 5,
         success_callback: Optional[Callable[[ClientObject | None], None]] = None,
-        failure_callback: Optional[Callable[[int, Exception], None]] = None,
+        failure_callback: Optional[Callable[[int, Exception], Optional[int]]] = None,
         exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
     ):
         """Executes pending queries with retry logic.
+
+        Only transient failures (HTTP 408/429/500/502/503/504 or non-HTTP errors)
+        are retried. Permanent failures (e.g. HTTP 400/401/403/404) are re-raised
+        immediately, and the last exception is re-raised once retries are exhausted.
 
         Args:
             max_retry: Maximum number of retry attempts
             timeout_secs: Delay between retries in seconds
             success_callback: Called on successful execution
-            failure_callback: Called after each failed attempt
+            failure_callback: Called after each failed attempt; may return a
+                retry delay in seconds to override ``timeout_secs``
             exceptions: Exception types that trigger retries
         """
 
+        last_ex: Exception | None = None
         for retry in range(1, max_retry + 1):
             try:
                 self.execute_query()
                 if callable(success_callback) and self.current_query is not None:
                     success_callback(self.current_query.return_type)
-                break
+                return
             except exceptions as e:
+                if not self._is_retriable_error(e):
+                    raise
+                last_ex = e
                 if self.current_query is not None:
                     self.add_query(self.current_query)
+                retry_after: Optional[int] = None
                 if callable(failure_callback):
-                    failure_callback(retry, e)
-                sleep(timeout_secs)
+                    retry_after = failure_callback(retry, e)
+                sleep(retry_after if retry_after is not None else timeout_secs)
+        if last_ex is not None:
+            raise last_ex
+
+    @staticmethod
+    def _is_retriable_error(ex: Exception) -> bool:
+        """Whether an exception reflects a transient failure worth retrying."""
+        status_code = getattr(getattr(ex, "response", None), "status_code", None)
+        if status_code is None:
+            return True  # non-HTTP error (e.g. connection/timeout) — transient
+        return status_code in TRANSIENT_STATUS_CODES
 
     def __enter__(self) -> Self:
         return self

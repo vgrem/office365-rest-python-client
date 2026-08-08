@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.alerts.collection import AlertCollection
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.principal.users.id_info import UserIdInfo
@@ -64,6 +65,7 @@ class User(Principal):
         self.context.add_query(qry)
         return self
 
+    @odata(name="AadObjectId")
     @property
     def aad_object_id(self) -> UserIdInfo:
         """Gets the information of the user that contains the user's name identifier and the issuer of the
@@ -87,6 +89,7 @@ class User(Principal):
         """Gets a Boolean value that specifies whether the user is a site collection administrator."""
         return self.properties.get("IsSiteAdmin", None)
 
+    @odata(name="UserId")
     @property
     def user_id(self) -> UserIdInfo:
         """Gets the information of the user that contains the user's name identifier and the issuer of the
@@ -130,12 +133,6 @@ class User(Principal):
         """User principal name of the user that initiated the sign-in."""
         return self.properties.get("UserPrincipalName", None)
 
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"AadObjectId": self.aad_object_id, "UserId": self.user_id}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
-
     @property
     def about_me(self) -> Optional[str]:
         """Gets the aboutMe property"""
@@ -171,6 +168,7 @@ class User(Principal):
         """Gets the fax property"""
         return self.properties.get("fax", None)
 
+    @odata(name="hireDate")
     @property
     def hire_date(self) -> datetime:
         """Gets the hireDate property"""
@@ -211,6 +209,7 @@ class User(Principal):
         """Gets the officeGraphEnabled property"""
         return self.properties.get("officeGraphEnabled", None)
 
+    @odata(name="pastProjects")
     @property
     def past_projects(self) -> StringCollection:
         """Gets the pastProjects property"""

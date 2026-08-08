@@ -289,20 +289,20 @@ class ClientContext(ClientRuntimeContext):
 
     def execute_query_with_incremental_retry(self, max_retry=5):
         """Handles throttling requests."""
-        settings: dict[str, int] = {"timeout": 0}
 
-        def _try_process_if_failed(retry: int, ex: Exception) -> None:
+        def _try_process_if_failed(_retry: int, ex: Exception) -> Optional[int]:
             """
             check if request was throttled - http status code 429
             or check is request failed due to server unavailable - http status code 503
+            returns Retry-After header value in seconds, when available
             """
             if isinstance(ex, RequestException) and ex.response is not None and ex.response.status_code in {429, 503}:
                 retry_after = ex.response.headers.get("Retry-After", None)
                 if retry_after is not None:
-                    settings["timeout"] = int(retry_after)
+                    return int(retry_after)
+            return None
 
         self.execute_query_retry(
-            timeout_secs=settings["timeout"],
             max_retry=max_retry,
             failure_callback=_try_process_if_failed,
         )

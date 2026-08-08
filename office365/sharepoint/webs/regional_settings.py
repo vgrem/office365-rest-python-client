@@ -1,8 +1,10 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sites.language_collection import LanguageCollection
+from office365.sharepoint.webs.calendar_type import CalendarType
 from office365.sharepoint.webs.time_zone import TimeZone, TimeZoneCollection
 
 
@@ -24,10 +26,11 @@ class RegionalSettings(Entity):
         """Specifies the string that is used to represent time before midday on the site"""
         return self.properties.get("AM", None)
 
+    @odata(name="CalendarType")
     @property
-    def calendar_type(self) -> Optional[int]:
+    def calendar_type(self) -> Optional[CalendarType]:
         """Specifies the calendar type that SHOULD be used when processing date values on the site"""
-        return self.properties.get("CalendarType", None)
+        return self.properties.get("CalendarType", CalendarType.Unknown)
 
     @property
     def collation(self) -> Optional[int]:
@@ -149,35 +152,28 @@ class RegionalSettings(Entity):
         """Gets a number that represents the work days of Web site calendars."""
         return self.properties.get("WorkDays", None)
 
+    @odata(name="TimeZone")
     @property
-    def time_zone(self):
+    def time_zone(self) -> TimeZone:
         """Gets the time zone that is used on the server."""
         return self.properties.get(
             "TimeZone",
             TimeZone(self.context, ResourcePath("TimeZone", self.resource_path)),
         )
 
+    @odata(name="TimeZones")
     @property
-    def time_zones(self):
+    def time_zones(self) -> TimeZoneCollection:
         """Gets the collection of time zones used in a server farm."""
         return self.properties.get(
             "TimeZones",
             TimeZoneCollection(self.context, ResourcePath("TimeZones", self.resource_path)),
         )
 
+    @odata(name="InstalledLanguages")
     @property
-    def installed_languages(self):
+    def installed_languages(self) -> LanguageCollection:
         return self.properties.get(
             "InstalledLanguages",
             LanguageCollection(self.context, ResourcePath("InstalledLanguages", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "TimeZones": self.time_zones,
-                "TimeZone": self.time_zone,
-                "InstalledLanguages": self.installed_languages,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.type import PrincipalType
 
@@ -44,6 +45,7 @@ class Principal(Entity):
         """Gets the login name of the principal."""
         return self.properties.get("IsHiddenInUI", None)
 
+    @odata(name="PrincipalType")
     @property
     def principal_type(self) -> Optional[PrincipalType]:
         """Gets the type of the principal."""
@@ -56,14 +58,6 @@ class Principal(Entity):
     @property
     def property_ref_name(self):
         return "Id"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "PrincipalType": self.principal_type,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

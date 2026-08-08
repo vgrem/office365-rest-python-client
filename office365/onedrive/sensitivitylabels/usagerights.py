@@ -22,8 +22,8 @@ class UsageRights(Enum):
     encryptedProtectionTypeNotSupportedException = "131072"
     purviewClaimsChallengeNotSupportedException = "262144"
     exception = "524288"
-    # unknownFutureValue = "1048576"
     labelNotFoundException = "1048576"
+    unknownFutureValue = "2097152"
 
     @property
     def entity_type_name(self):

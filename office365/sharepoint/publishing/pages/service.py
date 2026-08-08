@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 from office365.sharepoint.clientsidecomponent.query_result import (
     SPClientSideComponentQueryResult,
@@ -40,6 +41,7 @@ class SitePageService(Entity):
             SitePageCollection(self.context, ResourcePath("pages", self.resource_path)),
         )
 
+    @odata(name="CommunicationSite")
     @property
     def communication_site(self) -> CommunicationSite:
         """Gets a CommunicationSite for the current web."""
@@ -134,7 +136,7 @@ class SitePageService(Entity):
         context (office365.sharepoint.client_context.ClientContext): Client context
         title (str): The title of the page.
         """
-        return_type = ClientResult(context)
+        return_type = ClientResult[str](context)
         binding_type = SitePageService(context)
         params = {"title": title}
         qry = ServiceOperationQuery(binding_type, "ComputeFileName", params, None, None, return_type, True)
@@ -161,7 +163,7 @@ class SitePageService(Entity):
     def is_file_picker_external_image_search_enabled(
         context: ClientContext,
     ) -> ClientResult[bool]:
-        return_type = ClientResult(context)
+        return_type = ClientResult[bool](context)
         binding_type = SitePageService(context)
         qry = ServiceOperationQuery(
             binding_type,
@@ -237,11 +239,3 @@ class SitePageService(Entity):
         qry.static = True
         self.context.add_query(qry)
         return return_type
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "CommunicationSite": self.communication_site,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

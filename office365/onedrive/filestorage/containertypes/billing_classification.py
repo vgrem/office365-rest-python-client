@@ -17,3 +17,11 @@ class FileStorageContainerBillingClassification(str, Enum):
     Standard = "standard"
     DirectToCustomer = "directToCustomer"
     UnknownFutureValue = "unknownFutureValue"
+    standard = "0"
+    trial = "1"
+    directToCustomer = "2"
+    unknownFutureValue = "3"
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FileStorageContainerBillingClassification"
