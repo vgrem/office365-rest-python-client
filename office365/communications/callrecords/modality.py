@@ -7,7 +7,6 @@ class Modality(Enum):
     videoBasedScreenSharing = "3"
     data = "4"
     unknownFutureValue = "5"
-    # screenSharing = "4"
 
     @property
     def entity_type_name(self):

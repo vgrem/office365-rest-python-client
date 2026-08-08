@@ -12,6 +12,7 @@ class AllowedTargetScope(Enum):
     allConfiguredConnectedOrganizationUsers = "7"
     allExternalUsers = "8"
     unknownFutureValue = "10"
+    allDirectoryAgentIdentities = "9"
 
     @property
     def entity_type_name(self):

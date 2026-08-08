@@ -11,6 +11,7 @@ class AdditionalDataOptions(Enum):
     messageConversationExpansion = "64"
     locationsWithoutHits = "256"
     allItemsInFolder = "512"
+    cloudNativeHtmlConversion = "1024"
 
     @property
     def entity_type_name(self):

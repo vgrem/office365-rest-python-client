@@ -10,7 +10,6 @@ class AlertStatus(Enum):
     resolved = "3"
     dismissed = "4"
     unknownFutureValue = "127"
-    # new = "2"
 
     @property
     def entity_type_name(self):

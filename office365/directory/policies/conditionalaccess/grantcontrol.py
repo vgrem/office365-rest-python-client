@@ -10,6 +10,7 @@ class ConditionalAccessGrantControl(Enum):
     compliantApplication = "5"
     passwordChange = "6"
     unknownFutureValue = "7"
+    riskRemediation = "8"
 
     @property
     def entity_type_name(self):

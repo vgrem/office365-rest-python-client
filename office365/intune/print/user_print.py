@@ -7,8 +7,6 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class UserPrint(ClientValue):
-    # recentPrinterShares: EntityCollection[PrinterShare] | None = None
-
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserPrint"

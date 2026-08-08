@@ -14,6 +14,7 @@ class AccessPackageRequestType(Enum):
     systemRemove = "9"
     onBehalfAdd = "10"
     unknownFutureValue = "11"
+    approverRemove = "12"
 
     @property
     def entity_type_name(self):
