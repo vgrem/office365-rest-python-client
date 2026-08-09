@@ -14,6 +14,8 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/graph/api/resources/group
 """
 
+from __future__ import annotations
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 

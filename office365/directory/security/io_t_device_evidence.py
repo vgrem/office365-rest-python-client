@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from office365.directory.security.alerts.azure_resource_evidence import AzureResourceEvidence
 from office365.directory.security.alerts.iotdeviceimportancetype import IoTDeviceImportanceType
-from office365.directory.security.azure_resource_evidence import AzureResourceEvidence
 from office365.directory.security.ip_evidence import IpEvidence
 from office365.directory.security.nic_evidence import NicEvidence
 from office365.directory.security.url_evidence import UrlEvidence

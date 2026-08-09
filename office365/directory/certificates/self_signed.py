@@ -33,3 +33,7 @@ class SelfSignedCertificate(ClientValue):
     thumbprint: str | None = None
     type: str | None = None
     usage: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SelfSignedCertificate"

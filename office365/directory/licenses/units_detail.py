@@ -17,3 +17,7 @@ class LicenseUnitsDetail(ClientValue):
     lockedOut: int | None = None
     suspended: int | None = None
     warning: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.LicenseUnitsDetail"

@@ -4,6 +4,7 @@ from typing_extensions import Self
 
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.thread import SocialThread
 
@@ -44,16 +45,11 @@ class SocialRestThread(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="SocialThread")
     @property
     def social_thread(self) -> SocialThread:
         """The SocialThread property provides the object that contains the thread"""
         return self.properties.get("SocialThread", SocialThread())
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"SocialThread": self.social_thread}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)
 
     @property
     def id_(self) -> Optional[str]:

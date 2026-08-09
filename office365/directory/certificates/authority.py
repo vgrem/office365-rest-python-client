@@ -14,3 +14,8 @@ class CertificateAuthority(ClientValue):
     isRootAuthority: str | None = None
     issuer: str | None = None
     issuerSki: str | None = None
+    deltaCertificateRevocationListUrl: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.CertificateAuthority"

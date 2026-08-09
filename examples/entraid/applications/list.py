@@ -12,11 +12,20 @@ Requires delegated permission ``Application.Read.All`` or ``Application.ReadWrit
 """
 
 from office365.graph_client import GraphClient
-from tests.settings import client_id, password, tenant, username
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
+client = (
+    GraphClient(tenant=tenant)
+    .with_client_secret(client_id, client_secret)
+    .require_application_permission(
+        "Application.Read.All",
+        "Application.ReadWrite.OwnedBy",
+        "Application.ReadWrite.All",
+        "Directory.Read.All",
+    )
+)
 
-apps = client.applications.top(100).execute_query()
+apps = client.applications.top(100).get().execute_query()
 
 for app in apps:
     print(f"{app.display_name:40s}  {app.app_id:40s}  {app.created_datetime}")

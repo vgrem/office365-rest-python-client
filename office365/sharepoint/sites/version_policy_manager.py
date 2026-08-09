@@ -1,7 +1,10 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.lists.version_policy_manager import VersionPolicyManager
 
@@ -22,6 +25,7 @@ class SiteVersionPolicyManager(Entity):
         """
         return self.properties.get("MajorVersionLimit", None)
 
+    @odata(name="VersionPolicies")
     @property
     def version_policies(self) -> VersionPolicyManager:
         """Gets the version policies manager for detailed version control settings.
@@ -34,7 +38,7 @@ class SiteVersionPolicyManager(Entity):
             VersionPolicyManager(self.context, ResourcePath("VersionPolicies", self.resource_path)),
         )
 
-    def inherit_tenant_settings(self):
+    def inherit_tenant_settings(self) -> Self:
         """Inherits version policy settings from the tenant-level configuration.
 
         Applies the tenant-wide version policy settings to this site collection,
@@ -47,7 +51,7 @@ class SiteVersionPolicyManager(Entity):
         self.context.add_query(qry)
         return self
 
-    def set_auto_expiration(self):
+    def set_auto_expiration(self) -> Self:
         """Enables automatic expiration of document versions based on policy rules.
 
         Configures the site to automatically delete old document versions according
@@ -59,11 +63,3 @@ class SiteVersionPolicyManager(Entity):
         qry = ServiceOperationQuery(self, "SetAutoExpiration")
         self.context.add_query(qry)
         return self
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "VersionPolicies": self.version_policies,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

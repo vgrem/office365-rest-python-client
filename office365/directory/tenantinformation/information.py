@@ -20,3 +20,7 @@ class TenantInformation(ClientValue):
     displayName: str | None = None
     federationBrandName: str | None = None
     tenantId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TenantInformation"

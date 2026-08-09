@@ -3,26 +3,18 @@
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
-from typing import List
-
 from faker import Faker
-from office365.runtime.client_object import ClientObject
-from office365.runtime.client_result import ClientResult
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from office365.sharepoint.lists.list import List
+from tests.settings import client_id, password, team_site_url, tenant, username
 
 
-def print_progress(return_types: List[ClientObject | ClientResult]) -> None:
-    items_count = len([t for t in return_types if isinstance(t, ListItem)])
-    print("{0} list items has been created".format(items_count))
-
-
-def load_data_source(amount=1000):
+def load_source(amount=1000):
     fake = Faker()
-    contacts = []
+    result = []
     for _ in range(amount):
-        contact = {
+        entry = {
             "Title": fake.name(),
             "FullName": fake.name(),
             "Email": fake.email(),
@@ -34,30 +26,31 @@ def load_data_source(amount=1000):
             "WorkCountry": fake.country(),
             # "WebPage": {"Url": fake.url()},
         }
-        contacts.append(contact)
+        result.append(entry)
 
-    return contacts
+    return result
 
 
-def run(context: ClientContext) -> None:
-    contacts_data = load_data_source()
-    contacts_list = context.web.lists.get_by_title("Contacts_Large")
-    for _, contact in enumerate(contacts_data):
-        # contact_item = contacts_list.add_item(contact).execute_query()
-        contacts_list.add_item(contact)
-        # print(
-        #    "({0} of {1}) Contact '{2}' has been created".format(
-        #        idx, len(contacts_data), contact_item.properties["Title"]
-        #    )
-        # )
-    ctx.execute_batch(items_per_batch=10, success_callback=print_progress)
+def run_import(source_data: list, target_list: List) -> None:
+    for contact in source_data:
+        target_list.add_item(contact)
+
+    items_result = {"added": 0}
+
+    def _print_progress(return_types) -> None:
+        items_result["added"] += len([t for t in return_types if isinstance(t, ListItem)])
+        print(f"{items_result['added']} items added")
+
+    ctx.execute_batch(20, success_callback=lambda r: _print_progress(r))
 
 
 if __name__ == "__main__":
-    ctx = ClientContext(test_team_site_url).with_username_and_password(
-        tenant=test_tenant,
-        client_id=test_client_id,
-        username=test_username,
-        password=test_password,
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant,
+        client_id=client_id,
+        username=username,
+        password=password,
     )
-    run(ctx)
+    contacts = load_source()
+    contacts_list = ctx.web.lists.get_by_title("Contacts_Large").execute_query()
+    run_import(contacts, contacts_list)

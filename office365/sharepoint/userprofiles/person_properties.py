@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.runtime.utilities import parse_key_value_collection
 from office365.sharepoint.entity import Entity
 
@@ -47,6 +48,7 @@ class PersonProperties(Entity):
         """The PersonalUrl property specifies the absolute URL of the person's personal page."""
         return self.properties.get("PersonalUrl", None)
 
+    @odata(name="ExtendedManagers")
     @property
     def extended_managers(self) -> StringCollection:
         """
@@ -55,6 +57,7 @@ class PersonProperties(Entity):
         """
         return self.properties.get("ExtendedManagers", StringCollection())
 
+    @odata(name="ExtendedReports")
     @property
     def extended_reports(self) -> StringCollection:
         """
@@ -87,12 +90,3 @@ class PersonProperties(Entity):
             v = parse_key_value_collection(v)
         super().set_property(k, v)
         return self
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "ExtendedManagers": self.extended_managers,
-                "ExtendedReports": self.extended_reports,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

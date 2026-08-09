@@ -5,9 +5,6 @@ Service principals (app registrations) can be granted built-in directory
 roles such as Global Administrator. This script enumerates service principals
 and reports the ones holding a high-privilege role assignment.
 
-Inspired by Report-ServicePrincipalsWithHighPermissions.PS1 and
-Find-UnusedServicePrincipals.PS1 from Office 365 for IT Pros.
-
 Requires delegated permissions ``Directory.Read.All`` and
 ``AppRoleAssignment.Read.All``.
 

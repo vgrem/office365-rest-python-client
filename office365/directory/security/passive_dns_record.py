@@ -8,7 +8,7 @@ from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
-    from office365.directory.security.host import Host
+    from office365.directory.security.threatintelligence.host import Host
 
 
 class PassiveDnsRecord(Entity):

@@ -3,6 +3,7 @@ from typing import Union
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.webparts.definitions.collection import (
     WebPartDefinitionCollection,
@@ -58,6 +59,7 @@ class LimitedWebPartManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="WebParts")
     @property
     def web_parts(self) -> WebPartDefinitionCollection:
         """A collection of the Web Parts on the Web Part Page available to the current user based
@@ -70,9 +72,3 @@ class LimitedWebPartManager(Entity):
     @property
     def entity_type_name(self):
         return "SP.WebParts.LimitedWebPartManager"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {"WebParts": self.web_parts}
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

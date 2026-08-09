@@ -17,3 +17,7 @@ class ServicePlanInfo(ClientValue):
 
     def __repr__(self):
         return str(self.servicePlanName or "")
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ServicePlanInfo"

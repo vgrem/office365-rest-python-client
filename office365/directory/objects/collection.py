@@ -35,7 +35,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         self.context.add_query(qry)
         return return_type
 
-    def add(self, directory_object: DirectoryObject) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
+    def add(self, directory_object: DirectoryObject) -> DirectoryObject:
         """Adds directory objects to the collection."""
 
         def _add():
@@ -44,7 +44,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             self.context.add_query(qry)
 
         directory_object.ensure_property("id").after_execute(lambda _: _add())
-        return self
+        return directory_object
 
     def get_available_extension_properties(self, is_synced_from_on_premises=None):
         """
@@ -80,11 +80,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             self.context.add_query(qry).before_execute(_construct_request)
 
         if isinstance(directory_object, DirectoryObject):
-
-            def _loaded():
-                _remove(directory_object.id)
-
-            directory_object.ensure_property("id").after_execute(lambda _: _loaded())
+            directory_object.ensure_property("id").after_execute(lambda _: _remove(directory_object.id))
         else:
             _remove(directory_object)
 

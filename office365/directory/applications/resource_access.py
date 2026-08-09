@@ -29,3 +29,7 @@ class ResourceAccess(ClientValue):
     @property
     def type_name(self):
         return "Delegated" if self.type == "Scope" else "Application"
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ResourceAccess"

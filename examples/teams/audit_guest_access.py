@@ -25,7 +25,7 @@ for team in teams:
     guests = [m for m in members if "#EXT#" in (m.properties.get("email", "") or "")]
     if guests:
         found += 1
-        print(f"  {team.display_name}")
+        print(f"  {team}")
         for g in guests:
             email = g.properties.get("email", "?")
             roles = g.properties.get("roles", [])

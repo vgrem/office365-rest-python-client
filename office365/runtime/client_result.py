@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union, cast
 
@@ -9,11 +10,14 @@ from typing_extensions import Self
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value import ClientValue
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.utilities import parse_datetime
 
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
 
-ClientValueT = TypeVar("ClientValueT", bound=Union[int, float, str, bytes, bool, dict, list, Enum, ClientValue])
+ClientValueT = TypeVar(
+    "ClientValueT", bound=Union[int, float, str, bytes, bool, dict, list, datetime, Enum, ClientValue]
+)
 
 
 class ClientResult(Generic[ClientValueT]):
@@ -50,6 +54,10 @@ class ClientResult(Generic[ClientValueT]):
             self._value.set_property(key, value, persist_changes)
         elif isinstance(self._value, dict):
             self._value[key] = value
+        elif isinstance(self._value, datetime):
+            parsed = parse_datetime(value)
+            if parsed is not None:
+                self._value = parsed
         elif isinstance(self._value, Enum):
             enum_type = type(self._value)
             try:

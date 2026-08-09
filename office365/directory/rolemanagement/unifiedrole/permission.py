@@ -17,3 +17,7 @@ class UnifiedRolePermission(ClientValue):
     allowedResourceActions: StringCollection = field(default_factory=StringCollection)
     condition: str | None = None
     excludedResourceActions: StringCollection = field(default_factory=StringCollection)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UnifiedRolePermission"

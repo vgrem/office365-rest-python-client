@@ -26,8 +26,8 @@ workbook = items[0].workbook
 
 # 1. Start a workbook session
 try:
-    session = workbook.create_session(persist_changes=False).execute_query()
-    print(f"Session created: {session.id}")
+    result = workbook.create_session(persist_changes=False).execute_query()
+    print(f"Session created: {result.value.id}")
 except Exception:
     pass  # Sessions may not be required for all operations
 
