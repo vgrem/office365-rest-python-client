@@ -154,7 +154,7 @@ class TestOutlookMessages(GraphDelegatedTestCase):
         )
         self.assertIsNotNone(draft.id)
 
-        attachments = self.client.me.messages[draft.id].attachments.get().execute_query()
+        attachments = draft.attachments.get().execute_query()
         self.assertEqual(len(attachments), 2)
         draft.delete_object().execute_query()
 
