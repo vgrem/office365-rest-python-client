@@ -14,3 +14,7 @@ class LocationConstraint(ClientValue):
     isRequired: bool | None = None
     locations: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(LocationConstraintItem))
     suggestLocation: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.LocationConstraint"

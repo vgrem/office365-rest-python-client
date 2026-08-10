@@ -12,3 +12,7 @@ class CustomTimeZone(TimeZoneBase):
     """
 
     bias: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.CustomTimeZone"

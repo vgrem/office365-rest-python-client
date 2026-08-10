@@ -18,3 +18,7 @@ class Shared(ClientValue):
     scope: str | None = None
     sharedBy: IdentitySet | None = field(default_factory=IdentitySet)
     sharedDateTime: datetime | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Shared"

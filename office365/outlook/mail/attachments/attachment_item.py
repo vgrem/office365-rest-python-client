@@ -14,6 +14,9 @@ class AttachmentItem(ClientValue):
     attachmentType: AttachmentType | None = None
     name: str | None = None
     size: int | None = None
+    contentId: str | None = None
+    contentType: str | None = None
+    isInline: bool | None = None
 
     @staticmethod
     def create_file(path: str) -> "AttachmentItem":
@@ -22,3 +25,7 @@ class AttachmentItem(ClientValue):
         from office365.outlook.mail.attachments.type import AttachmentType
 
         return AttachmentItem(attachmentType=AttachmentType.file, name=file_name, size=file_size)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AttachmentItem"

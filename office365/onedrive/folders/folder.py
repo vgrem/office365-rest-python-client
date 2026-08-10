@@ -15,3 +15,7 @@ class Folder(ClientValue):
 
     childCount: int | None = None
     view: FolderView | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Folder"

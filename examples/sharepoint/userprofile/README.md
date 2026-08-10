@@ -44,10 +44,10 @@ metadata separately from site permissions. It is accessed via
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **1** | Get profile properties | [`get_properties.py`](./get_properties.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **2** | Export profiles for all users | [`export.py`](./export.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| **1** | Get profile properties (readable summary) | [`get_properties.py`](./get_properties.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| **2** | Export curated profile properties to CSV | [`export.py`](./export.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
 | **3** | Get trending tags | [`get_trending_tags.py`](./get_trending_tags.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **4** | Get OneDrive URL | [`get_onedrive_url.py`](./get_onedrive_url.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| **4** | Get OneDrive URL for a user | [`get_onedrive_url.py`](./get_onedrive_url.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
 
 ### Social (following)
 

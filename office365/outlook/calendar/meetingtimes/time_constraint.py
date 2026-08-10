@@ -14,3 +14,7 @@ class TimeConstraint(ClientValue):
 
     activityDomain: str | None = None
     timeSlots: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(TimeSlot))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TimeConstraint"

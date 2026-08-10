@@ -16,3 +16,7 @@ class Image(ClientValue):
 
     height: int | None = None
     width: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Image"

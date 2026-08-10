@@ -15,3 +15,7 @@ class AutomaticRepliesMailTips(ClientValue):
     messageLanguage: LocaleInfo = field(default_factory=LocaleInfo)
     scheduledEndTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
     scheduledStartTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AutomaticRepliesMailTips"

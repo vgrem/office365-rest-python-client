@@ -20,3 +20,7 @@ class WorkbookWorksheetProtectionOptions(ClientValue):
     allowInsertRows: bool | None = None
     allowPivotTables: bool | None = None
     allowSort: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.WorkbookWorksheetProtectionOptions"

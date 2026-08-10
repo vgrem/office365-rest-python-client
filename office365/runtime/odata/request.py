@@ -7,6 +7,7 @@ from requests import Response
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_request import ClientRequest
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value import ClientValue
 from office365.runtime.http.http_method import HttpMethod
@@ -85,7 +86,10 @@ class ODataRequest(ClientRequest):
                 if isinstance(query, (ServiceOperationQuery, FunctionQuery)):
                     json_format.function = query.name
 
-            self.map_json(response.json(), return_type, json_format)
+            try:
+                self.map_json(response.json(), return_type, json_format)
+            except ValueError as e:
+                raise ClientRequestException(str(e), response=response) from e
 
     def map_json(
         self,

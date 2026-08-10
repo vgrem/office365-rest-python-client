@@ -17,3 +17,7 @@ class File(ClientValue):
     hashes: str | None = None
     mimeType: str | None = None
     processingMetadata: str | None = field(default=None, init=False)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.File"

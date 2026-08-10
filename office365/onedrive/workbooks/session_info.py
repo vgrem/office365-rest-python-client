@@ -11,3 +11,7 @@ class WorkbookSessionInfo(ClientValue):
 
     persistChanges: bool | None = None
     id: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.WorkbookSessionInfo"

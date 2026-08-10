@@ -14,3 +14,7 @@ class ListInfo(ClientValue):
     template: str | None = None
     contentTypesEnabled: bool = False
     hidden: bool = False
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ListInfo"

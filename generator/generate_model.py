@@ -79,8 +79,8 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
     prefix_ignored = []
 
     for ignored_type in ignored_types:
-        if ignored_type.endswith(".*"):
-            prefix_ignored.append(ignored_type[:-2])
+        if ignored_type.endswith("*"):
+            prefix_ignored.append(ignored_type[:-1])
         else:
             exact_ignored.append(ignored_type)
 

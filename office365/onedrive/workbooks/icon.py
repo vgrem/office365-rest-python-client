@@ -7,4 +7,10 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class WorkbookIcon(ClientValue):
-    """Represents a cell icon."""
+    index: int | None = None
+    set: str | None = None
+    "Represents a cell icon."
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.WorkbookIcon"

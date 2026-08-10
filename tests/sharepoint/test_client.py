@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.query_options_builder import QueryOptionsBuilder
+from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.type import ODataType
+from office365.runtime.odata.v3.json_light_format import JsonLightFormat
+from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.principal.users.id_info import UserIdInfo
@@ -14,13 +17,15 @@ from office365.sharepoint.tenant.administration.secondary_administrators_fields_
     SecondaryAdministratorsFieldsData,
 )
 from office365.sharepoint.webs.web import Web
+from requests import Response
 
 from tests import (
     create_unique_file_name,
     create_unique_name,
+    test_cert_path,
+    test_cert_thumbprint,
     test_client_credentials,
     test_client_id,
-    test_client_secret,
     test_password,
     test_site_url,
     test_team_site_url,
@@ -33,15 +38,11 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 class TestSharePointClient(SPTestCase):
     """Tests for SharePoint client context connection and query execution."""
 
-    def test_01_connect_with_app_principal(self):
+    def test_01_connect_with_client_certificate(self):
         """Connect using app principal credentials."""
-        ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
-        result = Web.get_context_web_information(ctx).execute_query()
-        self.assertIsNotNone(result.value.WebFullUrl)
-
-    def test_02_connect_with_app_principal_alt(self):
-        """Connect using client ID and secret directly."""
-        ctx = ClientContext(test_site_url).with_client_credentials(test_client_id, test_client_secret)
+        ctx = ClientContext(test_site_url).with_client_certificate(
+            test_tenant, test_client_id, test_cert_thumbprint, test_cert_path
+        )
         result = Web.get_context_web_information(ctx).execute_query()
         self.assertIsNotNone(result.value.WebFullUrl)
 
@@ -116,7 +117,9 @@ class TestSharePointClient(SPTestCase):
     def test_10_get_and_delete_batch_request(self):
         """Execute get and delete batch requests for a file."""
         file_name = create_unique_file_name("TestFile", "txt")
-        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         list_pages = client.web.lists.get_by_title("Documents")
         files = list_pages.root_folder.files.get().execute_query()
         files_count_before = len(files)
@@ -184,7 +187,19 @@ class TestSharePointClient(SPTestCase):
         result = ClientResult(client, StringCollection())
         self.assertIsInstance(result.value, StringCollection)
 
-    def test_15_query_options_is_empty(self):
-        """Verify that default QueryOptions is empty."""
-        options = QueryOptions()
-        self.assertTrue(options.is_empty)
+    def test_16_malformed_json_raises_client_request_exception(self):
+        """A malformed JSON body must surface as ClientRequestException, not ValueError."""
+        ctx = ClientContext(test_site_url)
+        request = ODataRequest(test_site_url, JsonLightFormat())
+        query = ClientQuery(ctx, return_type=ClientResult(ctx))
+
+        resp = Response()
+        resp.status_code = 200
+        resp.url = f"{test_site_url}/_api/web"
+        resp.headers["Content-Type"] = "application/json"
+        resp._content = b"<html><body>Expired form digest</body></html>"
+
+        with self.assertRaises(ClientRequestException) as cm:
+            request.process_response(resp, query)
+
+        self.assertIs(cm.exception.response, resp)

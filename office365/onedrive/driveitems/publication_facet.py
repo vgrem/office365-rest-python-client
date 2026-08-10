@@ -14,3 +14,7 @@ class PublicationFacet(ClientValue):
     checkedOutBy: IdentitySet | None = field(default_factory=IdentitySet)
     level: str | None = None
     versionId: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PublicationFacet"

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from office365.outlook.calendar.attendees.availability import AttendeeAvailability
+from office365.outlook.calendar.meetingtimes.freebusystatus import FreeBusyStatus
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 from office365.outlook.mail.location import Location
 from office365.runtime.client_value import ClientValue
@@ -22,6 +23,13 @@ class MeetingTimeSuggestion(ClientValue):
     confidence: float | None = None
     locations: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Location))
     meetingTimeSlot: TimeSlot = field(default_factory=TimeSlot)
+    order: int | None = None
+    organizerAvailability: FreeBusyStatus = FreeBusyStatus.unknown
+    suggestionReason: str | None = None
 
     def __repr__(self):
         return repr(self.meetingTimeSlot)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.MeetingTimeSuggestion"

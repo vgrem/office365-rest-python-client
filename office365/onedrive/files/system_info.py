@@ -13,3 +13,7 @@ class FileSystemInfo(ClientValue):
     createdDateTime: str | None = None
     lastAccessedDateTime: str | None = None
     lastModifiedDateTime: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FileSystemInfo"

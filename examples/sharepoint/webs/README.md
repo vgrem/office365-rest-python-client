@@ -41,20 +41,21 @@ The current context's `web` property represents the site you're connected to.
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
 | **1** | Get web properties | [`get_props.py`](./get_props.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **2** | Get all subsites | [`get_all.py`](./get_all.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **3** | Get lists in a web | [`get_lists.py`](./get_lists.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **4** | Get role definitions | [`get_roles.py`](./get_roles.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **5** | Get regional settings | [`get_regional_settings.py`](./get_regional_settings.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **6** | Get changes (change log) | [`get_changes.py`](./get_changes.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **7** | Get activities | [`get_activities.py`](./get_activities.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **8** | Get web from absolute URL | [`get_from_abs_url.py`](./get_from_abs_url.py) | Read access on target | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **2** | Subsite inventory (template, created, language) | [`get_all.py`](./get_all.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **3** | Lists inventory (items, template, created) | [`get_lists.py`](./get_lists.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **4** | Permissions matrix (roles + who has access) | [`get_roles.py`](./get_roles.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **5** | Regional settings + timezone conversion | [`get_regional_settings.py`](./get_regional_settings.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **6** | Recent changes report (grouped by type) | [`get_changes.py`](./get_changes.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **7** | Site metadata summary (version, URLs) | [`print_version.py`](./print_version.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **8** | Get activities | [`get_activities.py`](./get_activities.py) | Read access | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **9** | Get web from absolute URL | [`get_from_abs_url.py`](./get_from_abs_url.py) | Read access on target | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 
 ### Configure
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **9** | Enable Document ID | [`enable_doc_id.py`](./enable_doc_id.py) | Site Owner | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **10** | Clear a web (remove all content) | [`clear_web.py`](./clear_web.py) | Site Owner | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **10** | Enable Document ID | [`enable_doc_id.py`](./enable_doc_id.py) | Site Owner | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| **11** | Clear a web (remove all content, `--dry-run` supported) | [`clear_web.py`](./clear_web.py) | Site Owner | [Webs REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 
 ---
 

@@ -11,3 +11,7 @@ class PendingOperations(ClientValue):
     """Indicates that one or more operations that might affect the state of the driveItem are pending completion."""
 
     pendingContentUpdate: PendingContentUpdate | None = field(default_factory=PendingContentUpdate)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PendingOperations"

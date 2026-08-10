@@ -15,3 +15,8 @@ class WorkbookSortField(ClientValue):
     dataOption: str | None = None
     icon: WorkbookIcon | None = field(default_factory=WorkbookIcon)
     key: str | None = None
+    sortOn: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.WorkbookSortField"

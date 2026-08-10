@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
+from office365.directory.authentication.generic_error import GenericError
 from office365.runtime.client_value import ClientValue
 
 
@@ -16,3 +17,8 @@ class ConvertIdResult(ClientValue):
 
     sourceId: str | None = None
     targetId: str | None = None
+    errorDetails: GenericError = field(default_factory=GenericError)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ConvertIdResult"

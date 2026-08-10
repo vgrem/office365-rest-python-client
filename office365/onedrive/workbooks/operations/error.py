@@ -12,3 +12,7 @@ class WorkbookOperationError(ClientValue):
     code: str | None = None
     innerError: str | None = None
     message: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.WorkbookOperationError"

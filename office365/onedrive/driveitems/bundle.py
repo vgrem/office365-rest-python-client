@@ -13,3 +13,7 @@ class Bundle(ClientValue):
 
     album: str | None = None
     childCount: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Bundle"
