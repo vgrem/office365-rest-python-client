@@ -26,3 +26,7 @@ class WorkingHours(ClientValue):
     timeZone: TimeZoneBase = field(default_factory=TimeZoneBase)
     endTime: str | None = None
     startTime: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.WorkingHours"

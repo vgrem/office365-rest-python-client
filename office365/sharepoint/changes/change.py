@@ -10,6 +10,12 @@ from office365.sharepoint.entity import Entity
 class Change(Entity):
     """Base class for a change. installation."""
 
+    def __str__(self) -> str:
+        return f"{self.change_type_name} {self.time:%Y-%m-%d %H:%M}"
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(change_type={self.change_type_name!r}, time={self.time!r})"
+
     @property
     def change_type_name(self) -> str:
         return self.change_type.name

@@ -1043,6 +1043,7 @@
          </ComplexType>
          <ComplexType Name="ListItemComplianceInfo">
             <Property Name="ComplianceTag" Type="Edm.String"/>
+            <Property Name="DoNotEnforceTagPolicyHoldForVersions" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="TagPolicyEventBased" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="TagPolicyHold" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="TagPolicyRecord" Type="Edm.Boolean" Nullable="false"/>
@@ -3179,6 +3180,7 @@
             <Key>
                <PropertyRef Name="Id"/>
             </Key>
+            <Property Name="ArchivedFileSize" Type="Edm.Int64" Nullable="false"/>
             <Property Name="AuthorEmail" Type="Edm.String"/>
             <Property Name="AuthorName" Type="Edm.String"/>
             <Property Name="DeletedByEmail" Type="Edm.String"/>
@@ -3499,6 +3501,12 @@
             <Property Name="spoRegion" Type="Edm.String"/>
          </EntityType>
          <EntityType Name="Broker" Abstract="true">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+         <EntityType Name="EdgeworthSettingsApis" Abstract="true">
             <Key>
                <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
             </Key>
@@ -5273,6 +5281,7 @@
             <EntitySet Name="Sitelinkingmanagers" EntityType="Microsoft.SharePoint.Portal.SiteLinkingManager"/>
             <EntitySet Name="SiteManagers" EntityType="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
             <EntitySet Name="Smartwikilibrarys" EntityType="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
+            <EntitySet Name="SP.recents" EntityType="SP.EdgeworthSettingsApis"/>
             <EntitySet Name="SP.SPOAuthFileDetonationRequests" EntityType="SP.SPOAuthFileDetonationRequest"/>
             <EntitySet Name="Sphomeservices" EntityType="Microsoft.SharePoint.Portal.SharePointHomeServiceContextBuilder"/>
             <EntitySet Name="SPHSites" EntityType="SP.SPHSite"/>
@@ -5933,7 +5942,9 @@
             <FunctionImport Name="sitelinkingmanager" ReturnType="Microsoft.SharePoint.Portal.SiteLinkingManager" IsComposable="true" EntitySet="Sitelinkingmanagers"/>
             <FunctionImport Name="SiteManager" ReturnType="Microsoft.SharePoint.SiteManager.SiteManagerService" IsComposable="true" EntitySet="SiteManagers"/>
             <FunctionImport Name="smartwikilibrary" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility" IsComposable="true" EntitySet="Smartwikilibrarys"/>
+            <FunctionImport Name="SP.recents" ReturnType="SP.EdgeworthSettingsApis" IsComposable="true" EntitySet="SP.recents"/>
             <FunctionImport Name="SP.SPOAuthFileDetonationRequest" ReturnType="SP.SPOAuthFileDetonationRequest" IsComposable="true" EntitySet="SP.SPOAuthFileDetonationRequests"/>
+            <FunctionImport Name="SP.upsertSettings" ReturnType="SP.EdgeworthSettingsApis" IsComposable="true" EntitySet="SP.recents"/>
             <FunctionImport Name="sphomeservice" ReturnType="Microsoft.SharePoint.Portal.SharePointHomeServiceContextBuilder" IsComposable="true" EntitySet="Sphomeservices"/>
             <FunctionImport Name="SPHSite" ReturnType="SP.SPHSite" IsComposable="true" EntitySet="SPHSites"/>
             <FunctionImport Name="SPOInternalUseOnly.FileVirusStatusUpdate" ReturnType="SP.FileUrlVirusStatusUpdate" IsComposable="true" EntitySet="SPOInternalUseOnly.FileVirusStatusUpdates"/>
@@ -6206,6 +6217,7 @@
                <Parameter Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="autofillColumnType" Type="Edm.String"/>
                <Parameter Name="overwriteMode" Type="Edm.Int32" Nullable="false"/>
+               <Parameter Name="processingPass" Type="Edm.Int64" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="SetMachineLearningFlags" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
@@ -6361,13 +6373,21 @@
                <Parameter Name="modelID" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_Office_Server_ContentCenter_SPMachineLearningWorkItemEntityData" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItemEntityData" IsComposable="true" EntitySet="SPMachineLearningWorkItemEntityDatas"/>
-            <FunctionImport Name="AutofillListSynchronous" ReturnType="Edm.String" IsBindable="true">
+            <FunctionImport Name="AutofillDocLibSynchronous" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
+               <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData"/>
+            </FunctionImport>
+            <FunctionImport Name="AutofillListSynchronous" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
                <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData"/>
             </FunctionImport>
             <FunctionImport Name="AutofillTestPrompt" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewResult" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
                <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateDocLibAutofill" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
+               <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData"/>
             </FunctionImport>
             <FunctionImport Name="CreateListAutofill" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
@@ -11233,6 +11253,9 @@
                <Parameter Name="lockType" Type="Edm.Byte" Nullable="false"/>
                <Parameter Name="leaseDurationInMinutes" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
+            <FunctionImport Name="ApplyReplicaSiteMapForMove" ReturnType="Edm.Int32" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
+            </FunctionImport>
             <FunctionImport Name="CheckSPSiteContentDatabase" ReturnType="Edm.Boolean" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
@@ -11492,6 +11515,9 @@
                <Parameter Name="originalLockFlags" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="UpdateAbsBlobDates" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
+            </FunctionImport>
+            <FunctionImport Name="VerifyReplicaSiteMapForMove" ReturnType="Edm.Int32" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_Yammer_WacApi_AddUserToSiteCollection" ReturnType="SP.User" EntitySet="Users1">
@@ -15251,6 +15277,9 @@
             <FunctionImport Name="SP_eSignInternal_GetEsignSettings" ReturnType="Edm.String"/>
             <FunctionImport Name="SP_eSignInternal_InitializeAgreement" ReturnType="Edm.String">
                <Parameter Name="initializeAgreement" Type="Microsoft.SharePoint.ESign.Models.Requests.InitializeAgreementModel"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_eSignInternal_ListAgreements" ReturnType="Edm.String">
+               <Parameter Name="listAgreements" Type="Microsoft.SharePoint.ESign.Models.Requests.ListAgreementsModel"/>
             </FunctionImport>
             <FunctionImport Name="SP_eSignInternal_SignAgreement">
                <Parameter Name="signAgreement" Type="Microsoft.SharePoint.ESign.Models.Requests.SignAgreementModel"/>
@@ -20113,6 +20142,10 @@
                <Parameter Name="containerId" Type="Edm.String"/>
                <Parameter Name="newPrincipalOwnerUpn" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="TriggerOwnerOdbProvisioning" ReturnType="Edm.Int32" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="userObjectId" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
             <FunctionImport Name="UnArchiveContainer" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="containerId" Type="Edm.String"/>
@@ -23942,10 +23975,28 @@
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPExtractorPublishConfig/ExtractorId">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillChoiceSettings">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillChoiceSettings/Choices">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillChoiceSettings/FillInChoice">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData/ChoiceSettings">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData/ColumnDataType">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData/ColumnInternalName">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData/DisplayName">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData/ItemId">
@@ -23976,6 +24027,24 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData/TargetItemIds">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults/Failed">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults/NothingToDo">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults/NoUsableValue">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults/Queued">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults/Succeeded">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPModelDependencies">
@@ -26457,6 +26526,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.Sharing.MainLinkInfo/effectiveAudience">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.Sharing.MainLinkInfo/expirationDateTime">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.Sharing.MainLinkAbilities">
@@ -29991,7 +30063,7 @@
          <Annotations Target="SP.ApiData/SetAutofillColumnSettings(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
-         <Annotations Target="SP.ApiData/SetColumnLLMInfo(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Guid, Edm.String, Edm.Boolean, Edm.String, Edm.Int32)">
+         <Annotations Target="SP.ApiData/SetColumnLLMInfo(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Guid, Edm.String, Edm.Boolean, Edm.String, Edm.Int32, Edm.Int64)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SetMachineLearningFlags(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Int32)">
@@ -30117,10 +30189,16 @@
          <Annotations Target="SP.ApiData/Microsoft_Office_Server_ContentCenter_SPMachineLearningWorkItemEntityData()">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/AutofillDocLibSynchronous(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/AutofillListSynchronous(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/AutofillTestPrompt(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/CreateDocLibAutofill(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/CreateListAutofill(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData)">
@@ -32655,6 +32733,9 @@
          <Annotations Target="SP.ApiData/SP_eSignInternal_InitializeAgreement(Microsoft.SharePoint.ESign.Models.Requests.InitializeAgreementModel)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SP_eSignInternal_ListAgreements(Microsoft.SharePoint.ESign.Models.Requests.ListAgreementsModel)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SP_eSignInternal_SignAgreement(Microsoft.SharePoint.ESign.Models.Requests.SignAgreementModel)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -33978,8 +34059,15 @@
             <Property Name="ColumnType" Type="Edm.String"/>
             <Property Name="ExtractorId" Type="Edm.Guid" Nullable="false"/>
          </ComplexType>
+         <ComplexType Name="SPMachineLearningColumnAutofillChoiceSettings">
+            <Property Name="Choices" Type="Collection(Edm.String)"/>
+            <Property Name="FillInChoice" Type="Edm.Boolean"/>
+         </ComplexType>
          <ComplexType Name="SPMachineLearningColumnAutofillPreviewData">
+            <Property Name="ChoiceSettings" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillChoiceSettings"/>
+            <Property Name="ColumnDataType" Type="Edm.String"/>
             <Property Name="ColumnInternalName" Type="Edm.String"/>
+            <Property Name="DisplayName" Type="Edm.String"/>
             <Property Name="ItemId" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ListId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="Prompt" Type="Edm.String"/>
@@ -33992,6 +34080,13 @@
             <Property Name="FillMode" Type="Edm.String"/>
             <Property Name="ListId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="TargetItemIds" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="SPMachineLearningListAutofillItemResults">
+            <Property Name="Failed" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="NothingToDo" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="NoUsableValue" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="Queued" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="Succeeded" Type="Collection(Edm.Int32)" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="SPModelDependencies">
             <Property Name="DependentModels" Type="Collection(Microsoft.Office.Server.ContentCenter.SPDependentModel)"/>
@@ -34316,6 +34411,7 @@
             <Property Name="ComplianceFlags" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ContainsSiteLabel" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="DisplayName" Type="Edm.String"/>
+            <Property Name="DoNotEnforceTagPolicyHoldForVersions" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="EncryptionRMSTemplateId" Type="Edm.String"/>
             <Property Name="HasRetentionAction" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsEventTag" Type="Edm.Boolean" Nullable="false"/>
@@ -41441,6 +41537,15 @@
             <Property Name="title" Type="Edm.String"/>
             <Property Name="uri" Type="Edm.String"/>
          </ComplexType>
+         <ComplexType Name="ListAgreementsModel">
+            <Property Name="expandStages" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="filterByTitle" Type="Edm.String"/>
+            <Property Name="isDescending" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="maxNo" Type="Edm.Int32"/>
+            <Property Name="nextLink" Type="Edm.String"/>
+            <Property Name="userId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="userRole" Type="Edm.String"/>
+         </ComplexType>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.EmployeeEngagement">
          <ComplexType Name="ConnectionsConfigurationAndData">
@@ -43156,6 +43261,7 @@
             <Property Name="accessors" Type="Collection(SP.Sharing.Principal)"/>
             <Property Name="audience" Type="Edm.Int32" Nullable="false"/>
             <Property Name="effectiveAudience" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="expirationDateTime" Type="Edm.DateTime"/>
             <Property Name="role" Type="Edm.Int32" Nullable="false"/>
             <Property Name="shareId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="url" Type="Edm.String"/>
@@ -43651,6 +43757,7 @@
             <Property Name="columnName" Type="Edm.String"/>
             <Property Name="isEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="overwriteMode" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="processingPass" Type="Edm.Int64" Nullable="false"/>
             <Property Name="prompt" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="EmailProperties">
@@ -43670,6 +43777,7 @@
             <Property Name="AutofillColumnType" Type="Edm.String"/>
             <Property Name="IsEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="OverwriteMode" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="ProcessingPass" Type="Edm.Int64" Nullable="false"/>
             <Property Name="Prompt" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="NewsItemMetaData">
@@ -45005,6 +45113,7 @@
             <Property Name="AllowSelfServiceUpgrade" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="AnonymousLinkExpirationInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="AnyoneLinkRecommendedExpirationInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ApplyToExistingDocumentLibraries" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ApplyToNewDocumentLibraries" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ArchivedBy" Type="Edm.String"/>
@@ -45331,6 +45440,8 @@
             <Property Name="ContentSecurityPolicyConfigSynced" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ContentSecurityPolicyEnforcement" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ContentTypeSyncSiteTemplatesList" Type="Collection(Edm.String)"/>
+            <Property Name="CoreAnyoneSharingLinkMaxExpirationInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="CoreAnyoneSharingLinkRecommendedExpirationInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="CoreBlockGuestsAsSiteAdmin" Type="Edm.Int32" Nullable="false"/>
             <Property Name="CoreDefaultLinkToExistingAccess" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CoreDefaultShareLinkRole" Type="Edm.Int32" Nullable="false"/>
@@ -45513,6 +45624,8 @@
             <Property Name="ODBSharingCapability" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ODBTranslationEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="OfficeClientADALDisabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="OneDriveAnyoneSharingLinkMaxExpirationInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="OneDriveAnyoneSharingLinkRecommendedExpirationInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="OneDriveBlockGuestsAsSiteAdmin" Type="Edm.Int32" Nullable="false"/>
             <Property Name="OneDriveDefaultLinkToExistingAccess" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="OneDriveDefaultShareLinkRole" Type="Edm.Int32" Nullable="false"/>

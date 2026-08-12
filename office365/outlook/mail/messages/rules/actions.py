@@ -24,3 +24,7 @@ class MessageRuleActions(ClientValue):
     permanentDelete: bool | None = None
     redirectTo: ClientValueCollection = field(default_factory=lambda: ClientValueCollection(Recipient))
     stopProcessingRules: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.MessageRuleActions"

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict
 
 from typing_extensions import Self
 
@@ -243,14 +243,14 @@ class ListItem(SecurableObject):
             value (int): An integer value for the rating to be submitted.
                 The rating value SHOULD be between 1 and 5; otherwise, the server SHOULD return an exception.
         """
-        return_value = ClientResult(self.context)
+        return_value = ClientResult[float](self.context)
 
-        def _list_item_loaded():
+        def _set_rating():
             assert self.parent_list.id is not None
             assert self.id is not None
             Reputation.set_rating(self.context, self.parent_list.id, self.id, value, return_value)
 
-        self.parent_list.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _list_item_loaded())
+        self.parent_list.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _set_rating())
         return return_value
 
     def set_like(self, value: bool) -> ClientResult[int]:

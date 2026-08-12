@@ -19,3 +19,7 @@ class RecurrenceRange(ClientValue):
     recurrenceTimeZone: str | None = None
     startDate: datetime.date | None = None
     type: RecurrenceRangeType | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.RecurrenceRange"

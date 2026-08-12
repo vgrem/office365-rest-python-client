@@ -17,5 +17,5 @@ ctx = ClientContext(test_team_site_url).with_client_certificate(
     tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 large_list = ctx.web.lists.get_by_title("Contacts_Large")
-all_items = large_list.items.get_all(50, print_progress).execute_query()
+all_items = large_list.items.get_all(500, print_progress).execute_query()
 print(f"Total items count: {len(all_items)}")

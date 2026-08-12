@@ -18,3 +18,7 @@ class ScheduleInformation(ClientValue):
     availabilityView: str | None = None
     error: str | None = None
     workingHours: WorkingHours = field(default_factory=WorkingHours)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ScheduleInformation"

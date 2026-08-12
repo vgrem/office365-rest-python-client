@@ -20,3 +20,7 @@ class PatternedRecurrence(ClientValue):
 
     pattern: RecurrencePattern = field(default_factory=RecurrencePattern)
     range: RecurrenceRange = field(default_factory=RecurrenceRange)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.PatternedRecurrence"

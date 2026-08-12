@@ -34,3 +34,7 @@ class Reminder(ClientValue):
     eventSubject: str | None = None
     eventWebLink: str | None = None
     reminderFireTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Reminder"

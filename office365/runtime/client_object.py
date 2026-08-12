@@ -39,8 +39,8 @@ class ClientObject:
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
-        meta: dict[str, str] = {}
-        persist: list[str] = []
+        meta: dict[str, str] = dict(getattr(cls, "_odata_meta", {}))
+        persist: list[str] = list(getattr(cls, "_odata_persist", []))
         for attr_name, attr in cls.__dict__.items():
             target = attr.fget if isinstance(attr, property) else attr
             m = getattr(target, _ODATA_MARKER, None)
@@ -131,7 +131,7 @@ class ClientObject:
         success_callback=None,
         failure_callback=None,
         exceptions=(ClientRequestException,),
-    ):
+    ) -> Self:
         """Executes the current set of data retrieval queries and method invocations and retries it if needed.
 
         Args:

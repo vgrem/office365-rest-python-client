@@ -6,11 +6,10 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class MailTipsError(ClientValue):
-    code: str | None = None
+class FreeBusyError(ClientValue):
     message: str | None = None
-    ""
+    responseCode: str | None = None
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.MailTipsError"
+        return "microsoft.graph.FreeBusyError"

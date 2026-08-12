@@ -14,7 +14,7 @@ class ChangeCollection(EntityCollection[Change]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Change, resource_path)
 
-    def set_property(self, key: str, value: Dict, persist_changes: bool = False) -> Self:  # type: ignore[override]
+    def set_property(self, key: str, value: dict[str, Any], persist_changes: bool = False) -> Self:  # type: ignore[override]  # noqa: F821
         self._resolve_change_type(value)
         super().set_property(key, value)
         return self

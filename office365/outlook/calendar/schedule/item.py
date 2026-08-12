@@ -29,3 +29,7 @@ class ScheduleItem(ClientValue):
     start: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
     status: str | None = None
     subject: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ScheduleItem"

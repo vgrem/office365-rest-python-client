@@ -23,3 +23,7 @@ class FollowupFlag(ClientValue):
     dueDateTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
     flagStatus: str | None = None
     startDateTime: DateTimeTimeZone = field(default_factory=DateTimeTimeZone)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.FollowupFlag"
