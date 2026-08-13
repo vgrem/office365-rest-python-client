@@ -12,12 +12,22 @@ from office365.directory.security.alerts.status import AlertStatus
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class Alert(Entity):
     """This resource corresponds to the latest generation of alerts in the Microsoft Graph security API,
     representing potential security issues within a customer's tenant that Microsoft 365 Defender,
     or a security provider integrated with Microsoft 365 Defender, has identified."""
+
+    def __str__(self) -> str:
+        return f"[{self.severity.name}] [{self.status.name}] {self.title or self.entity_type_name}"
+
+    def __repr__(self) -> str:
+        return (
+            f"{type(self).__name__}(id={self.id!r}, "
+            f"title={self.title!r}, severity={self.severity.name}, status={self.status.name})"
+        )
 
     @property
     def activity_group_name(self) -> Optional[str]:
@@ -38,6 +48,7 @@ class Alert(Entity):
         """Collection of evidence related to the alert."""
         return self.properties.get("evidence", ClientValueCollection(AlertEvidence))
 
+    @odata(name="historyStates")
     @property
     def history_states(self):
         """Collection of changes for the alert."""
@@ -73,6 +84,7 @@ class Alert(Entity):
         """Gets the comments property"""
         return self.properties.get("comments", ClientValueCollection[AlertComment](AlertComment))
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
@@ -83,6 +95,7 @@ class Alert(Entity):
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="detectionSource")
     @property
     def detection_source(self) -> DetectionSource:
         """Gets the detectionSource property"""
@@ -98,6 +111,7 @@ class Alert(Entity):
         """Gets the determination property"""
         return self.properties.get("determination", AlertDetermination.unknown)
 
+    @odata(name="firstActivityDateTime")
     @property
     def first_activity_date_time(self) -> Optional[datetime]:
         """Gets the firstActivityDateTime property"""
@@ -113,6 +127,7 @@ class Alert(Entity):
         """Gets the incidentWebUrl property"""
         return self.properties.get("incidentWebUrl", None)
 
+    @odata(name="lastActivityDateTime")
     @property
     def last_activity_date_time(self) -> Optional[datetime]:
         """Gets the lastActivityDateTime property"""
@@ -123,6 +138,7 @@ class Alert(Entity):
         """Gets the lastUpdateDateTime property"""
         return self.properties.get("lastUpdateDateTime", datetime.min)
 
+    @odata(name="mitreTechniques")
     @property
     def mitre_techniques(self) -> StringCollection:
         """Gets the mitreTechniques property"""
@@ -143,6 +159,7 @@ class Alert(Entity):
         """Gets the recommendedActions property"""
         return self.properties.get("recommendedActions", None)
 
+    @odata(name="resolvedDateTime")
     @property
     def resolved_date_time(self) -> Optional[datetime]:
         """Gets the resolvedDateTime property"""

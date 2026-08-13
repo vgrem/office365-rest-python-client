@@ -61,11 +61,13 @@ class ClientContext(ClientRuntimeContext):
         environment: Optional[AzureEnvironment] = None,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
+        authority: Optional[str] = None,
     ) -> None:
         """Instantiates a SharePoint client context
 
         Args:
             base_url (str): Absolute Web or Site Url
+            authority (str or None): Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
         """
         super().__init__()
         self._base_url: str = base_url.rstrip("/")
@@ -74,6 +76,7 @@ class ClientContext(ClientRuntimeContext):
         self._site: Site | None = None
         self._allow_ntlm: bool = allow_ntlm
         self._browser_mode: bool = browser_mode
+        self._authority: Optional[str] = authority
 
     @staticmethod
     def from_url(full_url: str) -> ClientContext:
@@ -92,7 +95,11 @@ class ClientContext(ClientRuntimeContext):
         return ctx
 
     def with_client_secret(
-        self, tenant: str, client_id: str, client_secret: str, scopes: Optional[List[str]] = None
+        self,
+        tenant: str,
+        client_id: str,
+        client_secret: str,
+        scopes: Optional[List[str]] = None,
     ) -> Self:
         """Initializes a client to acquire a token via client secret (MSAL app-only).
 
@@ -284,6 +291,7 @@ class ClientContext(ClientRuntimeContext):
             self._pending_request = SharePointRequest(
                 base_url=self._base_url,
                 environment=self._environment,
+                authority=self._authority,
             )
         return self._pending_request  # type: ignore[return-value]
 

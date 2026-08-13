@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sharing.object_sharing_information import (
     ObjectSharingInformation,
@@ -75,6 +76,7 @@ class ObjectSharingSettings(Entity):
         """
         return self.properties.get("Roles", None)
 
+    @odata(name="ObjectSharingInformation")
     @property
     def object_sharing_information(self) -> ObjectSharingInformation:
         """
@@ -88,6 +90,7 @@ class ObjectSharingSettings(Entity):
             ),
         )
 
+    @odata(name="SharePointSettings")
     @property
     def sharepoint_settings(self) -> SharePointSharingSettings:
         """An object that contains the SharePoint UI specific sharing settings."""
@@ -96,6 +99,7 @@ class ObjectSharingSettings(Entity):
             SharePointSharingSettings(self.context, ResourcePath("SharePointSettings", self.resource_path)),
         )
 
+    @odata(name="SharingPermissions")
     @property
     def sharing_permissions(self) -> SharingPermissionInformation:
         """A list of SharingPermissionInformation objects that can be used to share."""
@@ -103,13 +107,3 @@ class ObjectSharingSettings(Entity):
             "SharingPermissions",
             SharingPermissionInformation(self.context, ResourcePath("SharingPermissions", self.resource_path)),
         )
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "ObjectSharingInformation": self.object_sharing_information,
-                "SharePointSettings": self.sharepoint_settings,
-                "SharingPermissions": self.sharing_permissions,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

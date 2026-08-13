@@ -22,11 +22,14 @@ class AuthenticationContext:
         scopes: List[str] | None = None,
         token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
+        authority: str | None = None,
     ):
         """Args:
         tenant (str): Tenant name, for example: contoso.onmicrosoft.com
         scopes (list[str] or None): Scopes requested to access an API
         token_cache (Any): Default cache is in memory only, Refer https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
+        authority (str or None): Override the MSAL authority URL, e.g. for Entra External ID (CIAM):
+            https://<tenant>.ciamlogin.com
         """
         self._tenant = tenant
         if scopes is None:
@@ -36,6 +39,7 @@ class AuthenticationContext:
         self._token_callback = None
         self._environment = environment
         self._client_id: str | None = None
+        self._authority = authority
 
     def acquire_token(self) -> TokenResponse:
         """Acquire access token"""
@@ -196,4 +200,17 @@ class AuthenticationContext:
 
     @property
     def authority_url(self) -> str:
+        if self._authority is not None:
+            return self._authority
         return f"{get_login_authority(self._environment)}/{self._tenant}"
+
+    def with_authority(self, authority: str) -> Self:
+        """Override the MSAL authority URL, e.g. for Entra External ID (CIAM) tenants:
+
+            https://<tenant>.ciamlogin.com
+
+        Args:
+            authority: Full authority URL used by all subsequent token acquisitions
+        """
+        self._authority = authority
+        return self

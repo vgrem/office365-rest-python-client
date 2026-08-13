@@ -31,6 +31,7 @@ class AuthenticationContext:
         environment: AzureEnvironment = AzureEnvironment.Global,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
+        authority: str | None = None,
     ):
         """
         Initialize authentication context
@@ -40,6 +41,8 @@ class AuthenticationContext:
             environment: Office 365 Cloud Environment endpoint (default: AzureEnvironment.Global)
             allow_ntlm: Whether NTLM authentication is enabled (default: False)
             browser_mode: Enable browser authentication (default: False)
+            authority: Override the MSAL authority URL, e.g. for Entra External ID (CIAM):
+                https://<tenant>.ciamlogin.com
         """
         self.url = url.rstrip("/")
         self._authenticate = None
@@ -48,6 +51,24 @@ class AuthenticationContext:
         self._allow_ntlm = allow_ntlm
         self._browser_mode = browser_mode
         self._token_expires = datetime.max.replace(tzinfo=timezone.utc)
+        self._authority = authority
+
+    def _get_authority_url(self, tenant: str) -> str:
+        """MSAL authority URL, overridable for Entra External ID (CIAM) tenants."""
+        if self._authority is not None:
+            return self._authority
+        return f"{get_login_authority(self._environment)}/{tenant}"
+
+    def with_authority(self, authority: str) -> Self:
+        """Override the MSAL authority URL, e.g. for Entra External ID (CIAM) tenants:
+
+            https://<tenant>.ciamlogin.com
+
+        Args:
+            authority: Full authority URL used by all subsequent token acquisitions
+        """
+        self._authority = authority
+        return self
 
     def with_client_secret(
         self,
@@ -72,7 +93,7 @@ class AuthenticationContext:
             scopes = [f"{resource}/.default"]
 
         def _acquire_token():
-            authority_url = f"{get_login_authority(self._environment)}/{tenant}"
+            authority_url = self._get_authority_url(tenant)
             import msal
 
             app = msal.ConfidentialClientApplication(
@@ -121,7 +142,7 @@ class AuthenticationContext:
                 private_key = f.read()
 
         def _acquire_token():
-            authority_url = f"{get_login_authority(self._environment)}/{tenant}"
+            authority_url = self._get_authority_url(tenant)
             credentials = {
                 "thumbprint": thumbprint,
                 "private_key": private_key,
@@ -161,7 +182,7 @@ class AuthenticationContext:
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority=f"{get_login_authority(self._environment)}/{tenant}",
+                authority=self._get_authority_url(tenant),
                 client_credential=None,
             )
             result = app.acquire_token_interactive(scopes=scopes)
@@ -191,7 +212,7 @@ class AuthenticationContext:
 
             app = msal.PublicClientApplication(
                 client_id,
-                authority=f"{get_login_authority(self._environment)}/{tenant}",
+                authority=self._get_authority_url(tenant),
                 client_credential=None,
             )
 
@@ -271,7 +292,7 @@ class AuthenticationContext:
         """
         import msal
 
-        authority_url = f"{get_login_authority(self._environment)}/{tenant}"
+        authority_url = self._get_authority_url(tenant)
 
         app = msal.PublicClientApplication(
             authority=authority_url,

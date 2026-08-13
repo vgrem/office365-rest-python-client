@@ -38,6 +38,7 @@ class SharePointRequest(ODataRequest):
         environment: AzureEnvironment = AzureEnvironment.Global,
         allow_ntlm: bool = False,
         browser_mode: bool = False,
+        authority: Optional[str] = None,
     ):
         """
         Initialize SharePoint request client
@@ -47,6 +48,7 @@ class SharePointRequest(ODataRequest):
             environment: Office 365 Cloud Environment endpoint (default: AzureEnvironment.Global)
             allow_ntlm: Whether NTLM authentication is enabled (default: False)
             browser_mode: Enable browser authentication (default: False)
+            authority: Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
         """
         super().__init__(base_url, JsonLightFormat())
         self._auth_context = AuthenticationContext(
@@ -54,6 +56,7 @@ class SharePointRequest(ODataRequest):
             environment=environment,
             allow_ntlm=allow_ntlm,
             browser_mode=browser_mode,
+            authority=authority,
         )
         self._ctx_web_info: ContextWebInformation | None = None
         self.beforeExecute += self._auth_context.authenticate_request
@@ -128,15 +131,14 @@ class SharePointRequest(ODataRequest):
         self._auth_context.with_credentials(credentials)
         return self
 
-    def with_cookies(self, cookie_source, ttl_seconds=None):
-        # type: (object, object) -> Self
+    def with_cookies(self, cookie_source, ttl_seconds: int | None = None):
         """Initializes authentication using browser-session cookies.
 
         Args:
             cookie_source (object): Callable returning Dict[str, str] or an AuthCookies instance.
             ttl_seconds (object): Optional max age for cached cookies before reloading from source.
         """
-        self._auth_context.with_cookies(cookie_source, ttl_seconds)  # type: ignore[arg-type]
+        self._auth_context.with_cookies(cookie_source, ttl_seconds)
         return self
 
     def with_client_secret(

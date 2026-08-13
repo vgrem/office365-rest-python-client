@@ -5,7 +5,7 @@ class AlertStatus(Enum):
     """"""
 
     unknown = "0"
-    newAlert = "1"
+    new = "1"
     inProgress = "2"
     resolved = "3"
     dismissed = "4"

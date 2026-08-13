@@ -100,6 +100,7 @@ class GraphClient(ClientRuntimeContext):
         scopes: Optional[List[str]] = None,
         token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
+        authority: Optional[str] = None,
     ):
         """
         Initialize Microsoft Graph client
@@ -111,6 +112,7 @@ class GraphClient(ClientRuntimeContext):
             token_cache: Token cache implementation. Refer
                 https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
             environment: Azure environment (default: AzureEnvironment.Global)
+            authority: Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
         """
 
         super().__init__()
@@ -120,6 +122,7 @@ class GraphClient(ClientRuntimeContext):
         self._environment = environment
         self._scopes = scopes
         self._directory: Optional[Directory] = None
+        self._authority = authority
 
     def with_certificate(self, client_id: str, thumbprint: str, private_key: str) -> Self:
         """
@@ -310,7 +313,9 @@ class GraphClient(ClientRuntimeContext):
     def pending_request(self) -> GraphRequest:
         """Get or create the pending request"""
         if self._pending_request is None:
-            self._pending_request = GraphRequest(tenant=self._tenant, environment=self._environment)
+            self._pending_request = GraphRequest(
+                tenant=self._tenant, environment=self._environment, authority=self._authority
+            )
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
         return self._pending_request  # type: ignore[return-value]

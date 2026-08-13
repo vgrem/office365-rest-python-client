@@ -22,6 +22,7 @@ class GraphRequest(ODataRequest):
         version: GraphVersion = GraphVersion.default(),
         tenant: Optional[str] = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
+        authority: Optional[str] = None,
     ):
         """
         Initialize a Microsoft Graph API request handler.
@@ -30,11 +31,12 @@ class GraphRequest(ODataRequest):
             version: API version (default: "v1.0")
             tenant: Tenant ID or domain name
             environment: Azure environment (default: AzureEnvironment.Global)
+            authority: Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
         """
         super().__init__("", V4JsonFormat())
         self._version = version
         self._environment = environment
-        self._auth_context = AuthenticationContext(environment=environment, tenant=tenant)
+        self._auth_context = AuthenticationContext(environment=environment, tenant=tenant, authority=authority)
         self.beforeExecute += self.authenticate_request
 
     def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> GraphRequest:
