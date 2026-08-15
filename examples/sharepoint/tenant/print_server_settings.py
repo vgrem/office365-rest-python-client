@@ -6,9 +6,9 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/server
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.server_settings import ServerSettings
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import client_id, password, site_url, tenant, username
 
-ctx = ClientContext(test_site_url).with_username_and_password(test_tenant, test_client_id, test_username, test_password)
+ctx = ClientContext(site_url).with_username_and_password(tenant, client_id, username, password)
 is_online = ServerSettings.is_sharepoint_online(ctx)
 blocked_file_extensions = ServerSettings.get_blocked_file_extensions(ctx)
 installed_languages = ServerSettings.get_global_installed_languages(ctx, 15)

@@ -7,19 +7,19 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant
 from pprint import pprint
 
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import (
-    test_admin_site_url,
-    test_cert_path,
-    test_cert_thumbprint,
-    test_client_id,
-    test_tenant,
+from tests.settings import (
+    admin_site_url,
+    cert_path,
+    cert_thumbprint,
+    client_id,
+    tenant,
 )
 
-tenant = Tenant.from_url(test_admin_site_url).with_client_certificate(
-    test_tenant,
-    client_id=test_client_id,
-    thumbprint=test_cert_thumbprint,
-    cert_path=test_cert_path,
+tenant = Tenant.from_url(admin_site_url).with_client_certificate(
+    tenant,
+    client_id=client_id,
+    thumbprint=cert_thumbprint,
+    cert_path=cert_path,
 )
 
 details = tenant.get().execute_query()

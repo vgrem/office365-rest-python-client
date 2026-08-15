@@ -7,13 +7,6 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class SecondaryAdministratorsInfo(ClientValue):
-    """Args:
-    email (str):
-    login_name (str):
-    name (str):
-    user_principal_name (str):
-    """
-
     email: str | None = None
     loginName: str | None = None
     name: str | None = None

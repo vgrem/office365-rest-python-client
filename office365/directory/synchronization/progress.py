@@ -15,3 +15,7 @@ class SynchronizationProgress(ClientValue):
     progressObservationDateTime: str | None = None
     totalUnits: str | None = None
     units: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SynchronizationProgress"

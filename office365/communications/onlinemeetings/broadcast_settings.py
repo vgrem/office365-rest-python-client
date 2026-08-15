@@ -23,3 +23,7 @@ class BroadcastMeetingSettings(ClientValue):
     isQuestionAndAnswerEnabled: bool | None = None
     isRecordingEnabled: bool | None = None
     isVideoOnDemandEnabled: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.BroadcastMeetingSettings"

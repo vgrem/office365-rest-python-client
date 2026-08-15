@@ -16,21 +16,25 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.tenant.administration.sites.properties import SiteProperties
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
+from tests import test_admin_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, tenant
 
 
-def get_site_owner(site) -> str:
+def get_site_owner(site: SiteProperties) -> str:
     """Attempt to resolve the owner of a site.
 
     For group-connected sites, derives ownership from the Microsoft 365
     Group. For classic sites, falls back to site collection admin.
     """
     try:
-        if hasattr(site, "group_id") and site.group_id and site.group_id.guid != "00000000-0000-0000-0000-000000000000":
+        if site.group_id and site.group_id.guid != "00000000-0000-0000-0000-000000000000":
             # Group-connected — owner info would need Graph GroupMember.Read.All
             return f"Group: {site.group_id.guid}"
         admins = site.site_collection_admins.get().execute_query()
@@ -51,7 +55,9 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
     Returns:
         List of dicts with site URL, title, last activity, storage, owner.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(test_admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     admin = Tenant(ctx)
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
 

@@ -15,3 +15,7 @@ class UploadSession(ClientValue):
     uploadUrl: str | None = None
     expirationDateTime: datetime | None = None
     nextExpectedRanges: StringCollection = field(default_factory=StringCollection)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UploadSession"

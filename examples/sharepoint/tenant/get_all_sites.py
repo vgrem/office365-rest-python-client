@@ -6,12 +6,12 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_client_id, test_password, test_tenant, test_username
+from tests import test_admin_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, tenant
 
-admin_client = ClientContext(test_admin_site_url).with_username_and_password(
-    test_tenant, test_client_id, test_username, test_password
+admin_client = ClientContext(test_admin_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
-
 tenant = Tenant(admin_client)
 result = tenant.get_site_properties_from_sharepoint_by_filters("").execute_query()
 i = 0

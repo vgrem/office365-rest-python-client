@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.identitygovernance.accessreview.access_review_instance_decision_item import (
+from office365.directory.identitygovernance.accessreview.instance_decision_item import (
     AccessReviewInstanceDecisionItem,
 )
-from office365.directory.identitygovernance.accessreview.access_review_reviewer import AccessReviewReviewer
+from office365.directory.identitygovernance.accessreview.reviewer import AccessReviewReviewer
 from office365.directory.identitygovernance.accessreview.scope import AccessReviewScope
 from office365.directory.identitygovernance.accessreview.stages import AccessReviewStageCollection
 from office365.entity import Entity

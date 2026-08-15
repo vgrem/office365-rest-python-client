@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.identitygovernance.accessreview.access_review_instance_decision_item import (
+from office365.directory.identitygovernance.accessreview.instance_decision_item import (
     AccessReviewInstanceDecisionItem,
 )
 from office365.entity import Entity

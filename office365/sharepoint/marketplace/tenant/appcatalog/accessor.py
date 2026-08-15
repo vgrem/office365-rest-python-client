@@ -7,6 +7,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.files.file import File
 from office365.sharepoint.marketplace.app_metadata import CorporateCatalogAppMetadata
@@ -121,6 +122,7 @@ class TenantCorporateCatalogAccessor(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="AvailableApps")
     @property
     def available_apps(self) -> CorporateCatalogAppMetadataCollection:
         """Returns the apps available in this corporate catalog."""
@@ -129,6 +131,7 @@ class TenantCorporateCatalogAccessor(Entity):
             CorporateCatalogAppMetadataCollection(self.context, ResourcePath("AvailableApps", self.resource_path)),
         )
 
+    @odata(name="CardDesigns")
     @property
     def card_designs(self) -> CardDesigns:
         """Returns the card designs available in this corporate catalog."""
@@ -137,6 +140,7 @@ class TenantCorporateCatalogAccessor(Entity):
             CardDesigns(self.context, ResourcePath("CardDesigns", self.resource_path)),
         )
 
+    @odata(name="SiteCollectionAppCatalogsSites")
     @property
     def site_collection_app_catalogs_sites(
         self,
@@ -154,13 +158,3 @@ class TenantCorporateCatalogAccessor(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.TenantCorporateCatalogAccessor"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "AvailableApps": self.available_apps,
-                "CardDesigns": self.card_designs,
-                "SiteCollectionAppCatalogsSites": self.site_collection_app_catalogs_sites,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

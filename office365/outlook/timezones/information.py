@@ -20,3 +20,7 @@ class TimeZoneInformation(ClientValue):
 
     def __repr__(self) -> str:
         return self.displayName or ""
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TimeZoneInformation"

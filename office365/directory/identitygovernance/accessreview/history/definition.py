@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.identitygovernance.accessreview.access_review_history_instance import (
-    AccessReviewHistoryInstance,
-)
 from office365.directory.identitygovernance.accessreview.history.decisionfilter import AccessReviewHistoryDecisionFilter
 from office365.directory.identitygovernance.accessreview.history.status import AccessReviewHistoryStatus
+from office365.directory.identitygovernance.accessreview.history_instance import (
+    AccessReviewHistoryInstance,
+)
 from office365.directory.identitygovernance.accessreview.scope import AccessReviewScope
 from office365.directory.users.identity import UserIdentity
 from office365.entity import Entity

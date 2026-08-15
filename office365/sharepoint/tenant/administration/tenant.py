@@ -858,6 +858,25 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    def get_site_properties_from_sharepoint(
+        self,
+        start_index: Optional[str] = None,
+        include_detail: bool = False,
+    ) -> SitePropertiesCollection:
+        """ """
+        return_type = SitePropertiesCollection(self.context, self.sites.resource_path)
+        payload = {"startIndex": start_index, "includeDetail": include_detail}
+        qry = ServiceOperationQuery(
+            self,
+            "getSitePropertiesFromSharePoint",
+            None,
+            payload,
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
     def get_site_properties_from_sharepoint_by_filters(
         self,
         filter_text: Optional[str] = None,
