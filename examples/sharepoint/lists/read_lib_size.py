@@ -4,8 +4,10 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 lib = ctx.web.lists.get_by_title("Documents").root_folder.expand(["StorageMetrics"]).get().execute_query()
-print("List size (in bytes): {0}".format(lib.storage_metrics.total_size))
+print(f"List size (in bytes): {lib.storage_metrics.total_size}")

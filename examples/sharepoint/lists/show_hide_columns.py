@@ -4,7 +4,7 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
 def hide_column(t_list, field_name):
@@ -46,7 +46,9 @@ def remove_column_from_view(view, field_name):
     view.view_fields.remove_view_field(field_name).execute_query()
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 target_list = ctx.web.lists.get_by_title("Tasks")
 add_column_to_view(target_list.default_view, "AssignedTo")
 # remove_column_from_view(target_list.default_view, "AssignedTo")

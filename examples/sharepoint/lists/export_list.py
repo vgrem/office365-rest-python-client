@@ -9,7 +9,7 @@ import tempfile
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.exporter import ExportListProgress
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
 def print_progress(progress: ExportListProgress) -> None:
@@ -20,7 +20,9 @@ def print_progress(progress: ExportListProgress) -> None:
     print(f"Progress: {progress.processed_items}/{progress.total_items} items")
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 
 list_title = "Orders"
 lib = ctx.web.lists.get_by_title(list_title)

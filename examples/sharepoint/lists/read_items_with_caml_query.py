@@ -7,7 +7,11 @@ import datetime
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
+
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 
 
 def build_custom_query(page_size: int = 100) -> CamlQuery:
@@ -32,7 +36,6 @@ def build_custom_query(page_size: int = 100) -> CamlQuery:
     return qry
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
 list_title = "Site Pages"
 site_pages = ctx.web.lists.get_by_title(list_title)
 items = site_pages.get_items(build_custom_query(5)).execute_query()

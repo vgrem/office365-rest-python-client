@@ -10,7 +10,7 @@ from office365.sharepoint.lists.list import List
 from tests.settings import client_id, password, team_site_url, tenant, username
 
 
-def load_source(amount=1000):
+def load_source(amount=100):
     fake = Faker()
     result = []
     for _ in range(amount):
@@ -32,6 +32,7 @@ def load_source(amount=1000):
 
 
 def run_import(source_data: list, target_list: List) -> None:
+    ctx = target_list.context
     for contact in source_data:
         target_list.add_item(contact)
 
@@ -41,16 +42,19 @@ def run_import(source_data: list, target_list: List) -> None:
         items_result["added"] += len([t for t in return_types if isinstance(t, ListItem)])
         print(f"{items_result['added']} items added")
 
-    ctx.execute_batch(100, concurrency=5, success_callback=lambda r: _print_progress(r))
+    ctx.execute_batch(100, success_callback=lambda r: _print_progress(r))
 
 
 if __name__ == "__main__":
-    ctx = ClientContext(team_site_url).with_username_and_password(
+    client = ClientContext(team_site_url).with_username_and_password(
         tenant=tenant,
         client_id=client_id,
         username=username,
         password=password,
     )
     contacts = load_source()
-    contacts_list = ctx.web.lists.get_by_title("Contacts_Large").execute_query()
+    contacts_list = client.web.lists.ensure_list("Contacts_Large").execute_query()
+    # Sync the source schema with the target list (create missing columns) before importing,
+    # as migration tools do
+    contacts_list.ensure_fields(list(contacts[0].keys())).execute_query()
     run_import(contacts, contacts_list)

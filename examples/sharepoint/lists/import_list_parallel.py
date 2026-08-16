@@ -17,8 +17,8 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 from tests.settings import client_id, password, team_site_url, tenant, username
 
-AMOUNT = 100
-ITEMS_PER_BATCH = 10
+AMOUNT = 1000
+ITEMS_PER_BATCH = 50
 CONCURRENCY = 5
 LIST_TITLE = "Contacts_Large"
 
@@ -74,4 +74,8 @@ if __name__ == "__main__":
         password=password,
     )
     contacts_list = client.web.lists.get_by_title(LIST_TITLE).get().execute_query()
-    run_import(load_source(), contacts_list)
+    source = load_source()
+    # Sync the source schema with the target list (create missing columns) before importing,
+    # as migration tools do
+    contacts_list.ensure_fields(list(source[0].keys())).execute_query()
+    run_import(source, contacts_list)

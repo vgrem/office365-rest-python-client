@@ -4,8 +4,10 @@ Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/re
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 target_list = ctx.web.lists.get_by_title("Site Pages").select(["SchemaXml"]).get().execute_query()
 print(target_list.schema_xml)

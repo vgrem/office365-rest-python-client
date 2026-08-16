@@ -32,6 +32,9 @@ ctx = ClientContext(team_site_url).with_client_certificate(
 )
 list_title = "Contacts_Large"
 target_list = ctx.web.lists.get_by_title(list_title)
+
+fields = target_list.fields.get().execute_query()
+
 items = target_list.get_items(build_custom_query()).execute_query()
 print(f"Total items count: {len(items)}")
 for index, item in enumerate(items):
