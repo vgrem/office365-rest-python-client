@@ -223,10 +223,10 @@ class GraphClient(ClientRuntimeContext):
             granted = {role.value for role in result.value}
             has_perms = any(scope in granted for scope in scopes)
             if not has_perms:
-                print(f"Missing required application permission — need at least one of: {', '.join(scopes)}")
+                print(f"Missing required application permission: need at least one of: {', '.join(scopes)}")
                 sys.exit(1)
         except ClientRequestException:
-            print(f"Could not verify permissions {scopes} — ensure Application.Read.All is granted.")
+            print(f"Could not verify permissions {scopes}: ensure Application.Read.All is granted.")
             sys.exit(1)
         return self
 

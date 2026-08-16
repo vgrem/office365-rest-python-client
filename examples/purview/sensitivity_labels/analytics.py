@@ -21,4 +21,4 @@ print(f"Sensitivity labels ({len(labels)}):\n")
 print(f"{'Label':35s} {'Priority':>10s} {'Description'}")
 print("-" * 85)
 for label in labels:
-    print(f"{label.display_name[:33]:35s} {label.priority:>10d} {label.description}")
+    print(f"{label.name:35s} {label.priority:>10d} {label.description}")
