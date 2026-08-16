@@ -4,32 +4,21 @@ Exports list view items to a CSV file.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharepoint-rest-api
 """
 
-import csv
 import os
 import tempfile
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
-
-def export_to_csv(path, list_items):
-    """
-    :param str path: export path
-    :param office365.sharepoint.listitems.collection.ListItemCollection list_items: List items
-    """
-    with open(path, "w", encoding="utf-8") as fh:
-        fields = list_items[0].properties.keys()
-        w = csv.DictWriter(fh, fields)
-        w.writeheader()
-        for item in list_items:
-            w.writerow(item.properties)
-
-
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
+ctx = ClientContext(team_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+)
 list_title = "Documents"
 view_title = "All Documents"
 list_view = ctx.web.lists.get_by_title(list_title).views.get_by_title(view_title)
-export_items = list_view.get_items().execute_query()
-export_path = os.path.join(tempfile.mkdtemp(), "DocumentsMetadata.csv")
-export_to_csv(export_path, export_items)
-print("List view has been exported into '{0}' file".format(export_path))
+export_path = os.path.join(tempfile.mkdtemp(), f"{view_title}.csv")
+
+with open(export_path, "w", newline="", encoding="utf-8") as f:
+    list_view.get_items().to_csv(f).execute_query()
+
+print(f"List view has been exported into '{export_path}' file")

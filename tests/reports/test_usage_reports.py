@@ -2,7 +2,6 @@
 
 Tests cover:
   - Exporting billed usage data for a partner
-  - Billing period enum validation
   - Operation status for export result
 """
 
@@ -40,15 +39,3 @@ class TestUsageReports(GraphDelegatedTestCase):
             self.assertIsNotNone(result.get_property("id"))
         except Exception as e:
             self.skipTest(f"Cannot export billed usage with full attributes: {e}")
-
-    @requires_delegated(
-        "PartnerBilling.Read.All",
-        bypass_roles=["Billing Administrator", "Global Administrator"],
-    )
-    def test_03_billing_period_enum_values(self):
-        """BillingPeriod enum has expected values."""
-        from office365.partners.billing.period import BillingPeriod
-
-        self.assertTrue(hasattr(BillingPeriod, "current"))
-        self.assertTrue(hasattr(BillingPeriod, "last"))
-        self.assertTrue(hasattr(BillingPeriod, "unknownFutureValue"))

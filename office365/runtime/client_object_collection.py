@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import IO, Any, Callable, Dict, Generic, Iterator, List, Optional, Type
+from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, TextIO, Type
 
 from typing_extensions import Self
 
@@ -286,7 +286,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.paged(page_size, page_loaded).get().after_execute(_page_loaded)
         return self
 
-    def to_csv(self, file: IO) -> Self:
+    def to_csv(self, file: TextIO) -> Self:
         """Export collection items to CSV using ``.select()`` and ``.expand()``.
 
         Plain select fields (e.g. ``"displayName"``) produce one column.
@@ -300,10 +300,9 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             ...     .to_csv(f) \\
             ...     .execute_query()
         """
-        from office365.runtime.csv_writer import CollectionCsvWriter
+        from office365.runtime.converters.csv_writer import write_csv
 
-        writer = CollectionCsvWriter(self, file)
-        return self.after_execute(lambda _: writer.write())
+        return self.after_execute(lambda _: write_csv(self, file))
 
     def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""

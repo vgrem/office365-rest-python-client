@@ -103,12 +103,6 @@ class TestTenant(SPTestCase):
     #    self.tenant.set_site_secondary_administrators(target_site.id, [target_user.user_principal_name])
     #    self.client.execute_query()
 
-    def test_08_create_site(self):
-        """Placeholder for site creation test."""
-        # current_user = self.client.web.currentUser
-        # self.client.load(current_user)
-        # self.client.execute_query()
-
     #    props = SiteCreationProperties(self.target_site_url, current_user.properties['UserPrincipalName'])
     #    site_props = self.tenant.ensure_site(props)
     #    self.client.execute_query()

@@ -1,3 +1,12 @@
+"""Pytest configuration.
+
+Test conventions:
+- Plain ``unittest.TestCase`` under ``tests/unit/`` = offline unit tests that
+  run with no credentials and are always executed.
+- ``SPTestCase`` / ``GraphDelegatedTestCase`` subclasses = live integration
+  tests that require tenant credentials and are skipped with ``--offline``.
+"""
+
 import pytest
 
 from tests.graph_case import GraphDelegatedTestCase

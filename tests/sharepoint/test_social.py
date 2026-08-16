@@ -33,16 +33,6 @@ class TestSocial(SPTestCase):
         result = SPSocialSwitch.is_following_feature_enabled(self.my_client).execute_query()
         self.assertIsNotNone(result.value)
 
-    def test_02_create_post(self):
-        """Placeholder for creating a social post."""
-        # post_data = SocialPostCreationData(content_text="Look at this!")
-        # manager = SocialFeedManager(self.my_client)
-        # result = manager.create_post(None, post_data).execute_query()
-        # self.assertIsNotNone(result.value)
-
-    def test_03_delete_post(self):
-        """Placeholder for deleting a social post."""
-
     def test_04_get_followers(self):
         """Get followers via SocialRestFollowingManager."""
         manager = SocialRestFollowingManager(self.my_client)

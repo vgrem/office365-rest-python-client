@@ -100,9 +100,6 @@ class TestGraphUser(GraphDelegatedTestCase):
         skus = self.client.subscribed_skus.get().execute_query()
         self.assertIsNotNone(skus.resource_path)
 
-    def test_06_user_remove_license(self):
-        """Remove user license (placeholder)."""
-
     @requires_delegated(
         "Directory.Read.All",
         bypass_roles=["Global Reader", "Global Administrator"],

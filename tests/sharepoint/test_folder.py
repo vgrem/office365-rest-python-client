@@ -138,3 +138,4 @@ class TestSharePointFolder(SPTestCase):
         self.assertIsNotNone(TestSharePointFolder.output_folder)
         TestSharePointFolder.input_folder.delete_object()
         TestSharePointFolder.output_folder.delete_object()
+        self.client.execute_query()
