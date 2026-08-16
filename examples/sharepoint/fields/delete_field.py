@@ -1,18 +1,28 @@
-"""Demonstrates how to delete a field from a list
+"""
+Delete a field from a list.
 
-Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-lib = ctx.web.default_document_library()
-field = lib.fields.get_by_internal_name_or_title("Notes")
-field.delete_object().execute_query()
-print("Field deleted")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Delete a field from a list")
+    parser.add_argument("--list-title", default="Documents", help="List containing the field")
+    parser.add_argument("field", help="Field internal name or title")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+    field = ctx.web.lists.get_by_title(args.list_title).fields.get_by_internal_name_or_title(args.field)
+    field.delete_object().execute_query()
+    print(f"Field '{args.field}' deleted")
+
+
+if __name__ == "__main__":
+    main()

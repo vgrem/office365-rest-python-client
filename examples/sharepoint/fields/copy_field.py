@@ -1,29 +1,48 @@
-"""Demonstrates how to copy a field from one site to another using its schema XML
+"""
+Copy a site column to another site (or list) by reusing its schema XML.
 
-Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/field
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_team_site_url, test_tenant, test_username
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, team_site_url, tenant
 
-field_name = "DocScope"
 
-source_ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-source_field = source_ctx.web.default_document_library().fields.get_by_internal_name_or_title(field_name)
-source_ctx.load(source_field, ["SchemaXml"]).execute_query()
-assert source_field.schema_xml is not None
+def make_ctx(url: str) -> ClientContext:
+    return ClientContext(url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
-target_ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-target_list = target_ctx.web.default_document_library()
-target_field = target_list.fields.create_field_as_xml(source_field.schema_xml).execute_query()
-target_field.delete_object().execute_query()
+
+def main():
+    parser = argparse.ArgumentParser(description="Copy a field via its schema XML")
+    parser.add_argument("--field", required=True, help="Field internal name or title")
+    parser.add_argument("--source", default=team_site_url, help="Source site URL")
+    parser.add_argument("--target", default=site_url, help="Target site URL")
+    parser.add_argument("--list-title", help="Target list (default: site columns)")
+    parser.add_argument("--keep", action="store_true", help="Keep the copied field (default: delete after demo)")
+    args = parser.parse_args()
+
+    source = make_ctx(args.source)
+    source_field = source.web.fields.get_by_internal_name_or_title(args.field)
+    source.load(source_field, ["SchemaXml"]).execute_query()
+    if source_field.schema_xml is None:
+        raise SystemExit(f"Field '{args.field}' not found in the source site.")
+
+    target = make_ctx(args.target)
+    scope = target.web.fields
+    if args.list_title:
+        scope = target.web.lists.get_by_title(args.list_title).fields
+    copied = scope.create_field_as_xml(source_field.schema_xml).execute_query()
+    scope_name = "site column" if not args.list_title else args.list_title
+    print(f"Copied '{args.field}' as '{copied.internal_name}' ({scope_name})")
+
+    if not args.keep:
+        copied.delete_object().execute_query()
+        print("  (copied field removed after demo)")
+
+
+if __name__ == "__main__":
+    main()

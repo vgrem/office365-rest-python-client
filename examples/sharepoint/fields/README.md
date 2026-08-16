@@ -1,6 +1,6 @@
 # Fields (Site Columns)
 
-Create, read, update, delete, and copy fields (columns) in SharePoint.
+Create, read, update, delete, copy, and export fields (columns) in SharePoint.
 Fields define the data types used across lists, libraries, and content types.
 
 ---
@@ -41,22 +41,18 @@ as a **field link** that defines the display order.
 
 ## Examples
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | List web: all site columns (web scope) | [`get_fields_from_web.py`](./get_fields_from_web.py) | Read access | [Fields API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **2** | Get field by name | [`get_field.py`](./get_field.py) | Read access | [Fields API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **3** | List list: all columns on a specific list | [`get_fields_from_list.py`](./get_fields_from_list.py) | Read access | [Fields API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **4** | Create text: single line of text | [`create_text_field.py`](./create_text_field.py) | Site Owner | [Add field](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **5** | Create number: numeric value | [`create_number_field.py`](./create_number_field.py) | Site Owner | [Add field](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **6** | Create date: date/time column | [`create_date.py`](./create_date.py) | Site Owner | [Add field](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **7** | Create choice: single or multi-value dropdown | [`create_choice.py`](./create_choice.py) | Site Owner | [Add field](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **8** | Create lookup: reference another list | [`create_lookup.py`](./create_lookup.py) | Site Owner | [Add lookup](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **9** | Create user: person/group picker | [`create_user_field.py`](./create_user_field.py) | Site Owner | [Add user field](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **10** | Create calculated: formula-based value | [`create_calculated.py`](./create_calculated.py) | Site Owner | [Add calculated](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **11** | Create taxonomy: managed metadata term set | [`create_taxonomy.py`](./create_taxonomy.py) | Site Owner | [Add taxonomy](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **12** | Update: change title, required, or other properties | [`update_field.py`](./update_field.py) | Site Owner | [Update](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **13** | Delete: remove a field from a list | [`delete_field.py`](./delete_field.py) | Site Owner | [Delete](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **14** | Copy: duplicate a field between sites via schema XML | [`copy_field.py`](./copy_field.py) | Site Owner | [Copy](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| Field inventory: site columns and list columns | [`inventory.py`](./inventory.py) | Read access | [Fields API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Get field details including schema XML | [`get_field.py`](./get_field.py) | Read access | [Fields API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Provision multiple typed fields from a schema spec | [`provision_fields.py`](./provision_fields.py) | Site Owner | [Add field](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Create a lookup field with a dependent lookup | [`lookup_field.py`](./lookup_field.py) | Site Owner | [Add lookup](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Create a taxonomy (managed metadata) field | [`taxonomy_field.py`](./taxonomy_field.py) | Site Owner | [Add taxonomy](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Update field settings, forms, and indexing | [`update_field.py`](./update_field.py) | Site Owner | [Update](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Add a site column to a content type | [`content_type_fields.py`](./content_type_fields.py) | Site Owner | [Content type fields](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Copy a field between sites via schema XML | [`copy_field.py`](./copy_field.py) | Site Owner | [Copy](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Export field definitions to CSV or JSON | [`export_field_schema.py`](./export_field_schema.py) | Read access | [Fields API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Delete a field from a list | [`delete_field.py`](./delete_field.py) | Site Owner | [Delete](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 
 ---
 
