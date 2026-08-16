@@ -41,7 +41,7 @@ def run_import(source_data: list, target_list: List) -> None:
         items_result["added"] += len([t for t in return_types if isinstance(t, ListItem)])
         print(f"{items_result['added']} items added")
 
-    ctx.execute_batch(100, success_callback=lambda r: _print_progress(r))
+    ctx.execute_batch(100, concurrency=5, success_callback=lambda r: _print_progress(r))
 
 
 if __name__ == "__main__":

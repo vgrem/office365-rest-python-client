@@ -160,10 +160,16 @@ for item in items:
 target_list = ctx.web.lists.get_by_title("Tasks")
 item = target_list.add_item({"Title": "New task", "Status": "Active"}).execute_query()
 
-# Bulk create — auto-batches in chunks of 100
+# Bulk create — auto-batches in chunks of 100 (sequential by default)
 for row in data:
     target_list.add_item({"Title": row["name"]})
 ctx.execute_batch()
+
+# Parallel bulk create — up to 5 batch requests in flight at once, cutting
+# wall time for large imports. Transient failures (e.g. HTTP 429) are retried,
+# honoring Retry-After. With concurrency > 1 the success_callback runs on the
+# caller thread in completion order (not submission order).
+ctx.execute_batch(concurrency=5)
 
 # Filter, select, expand
 items = ctx.web.lists.get_by_title("Projects")\

@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-- (placeholder for upcoming changes)
+### Added
+- `execute_batch(concurrency=N)` on `ClientContext` and `GraphClient` — run
+  batch requests concurrently (thread pool) with transient-failure retry that
+  honors `Retry-After`. `success_callback` fires on the caller thread in
+  completion order. Default remains `1` (sequential).
+- Thread-safe auth and form-digest caches (single-flight refresh) so a context
+  can drive parallel batches; `ClientContext.clone` now shares the auth context
+  and transport instead of deep-copying.
 
 ## [3.0.0]
 
