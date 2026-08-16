@@ -5,13 +5,10 @@ https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-
 """
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, password, site_url, tenant, username
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
-ctx = ClientContext(site_url).with_username_and_password(
-    tenant=tenant,
-    client_id=client_id,
-    username=username,
-    password=password,
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 page_size = 50
 start_row = 0

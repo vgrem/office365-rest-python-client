@@ -1,21 +1,44 @@
 """
-Exports SharePoint search reports for a tenant.
+Export SharePoint search reports for a tenant.
+
+Checks the search admin endpoint first, then exports the requested report.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-result = ctx.search_setting.ping_admin_endpoint().execute_query()
-if result.value:
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
+
+REPORT_TYPES = [
+    "ReportTopQueries",
+    "ReportNumberOfQueries",
+    "ReportAbandonedQueries",
+    "ReportNoResult",
+    "ReportQueryRules",
+]
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Export SharePoint search reports")
+    parser.add_argument("--tenant-id", required=True, help="Tenant id (GUID) to export reports for")
+    parser.add_argument("--report-type", choices=REPORT_TYPES, default="ReportTopQueries", help="Report type")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+    ping = ctx.search_setting.ping_admin_endpoint().execute_query()
+    if not ping.value:
+        raise SystemExit("Search admin endpoint is not reachable")
+
     result = ctx.search_setting.export_search_reports(
-        tenant_id="af6a80a4-8b4b-4879-88af-42ff8a545211", report_type="ReportTopQueries"
+        tenant_id=args.tenant_id, report_type=args.report_type
     ).execute_query()
-    print(result)
+    print(f"Exported '{args.report_type}' report")
+    print(result.value)
+
+
+if __name__ == "__main__":
+    main()

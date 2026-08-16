@@ -16,11 +16,13 @@ https://learn.microsoft.com/en-us/sharepoint/dev/general-development/search-in-s
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.search.administration.document_crawl_log import DocumentCrawlLog
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
 def main():
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     search_svc = ctx.search
 
@@ -45,10 +47,12 @@ def main():
     # -- Step 3: export manual query suggestions --
     suggestions = search_svc.export_manual_suggestions().execute_query()
     if suggestions and suggestions.value:
-        suggested_queries = suggestions.value.properties.get("suggestedQueries", [])
-        print(f"Manual query suggestions ({len(suggested_queries)}):")
-        for sq in suggested_queries[:5]:
-            print(f"  - {sq}")
+        always_suggest = suggestions.value.AlwaysSuggest
+        total = sum(len(s.Queries) for s in always_suggest)
+        print(f"Manual query suggestions ({total}):")
+        for s in always_suggest:
+            for q in s.Queries:
+                print(f"  - {q}")
     else:
         print("(No manual suggestions configured)")
     print()
@@ -59,25 +63,21 @@ def main():
         print("Document crawl log:")
         # Get crawled URLs (first page)
         urls = crawl_log.get_crawled_urls().execute_query()
-        if urls and urls.value:
-            data = urls.value
-            if hasattr(data, "rows") and data.rows:
-                print(f"  Crawl log entries: {len(data.rows)}")
-                for row in data.rows[:5]:
-                    print(f"    URL: {row[0] if len(row) > 0 else '?'}")
-            else:
-                print(f"  Crawl log entries: {len(urls.value)}")
+        if urls and urls.value and len(urls.value.Rows):
+            rows = list(urls.value.Rows)
+            print(f"  Crawl log entries: {len(rows)}")
+            for row in rows[:5]:
+                print(f"    URL: {row.Cells.get('url', '?')}")
         else:
             print("  (no crawl log data)")
 
         # Get unsuccessful crawls
         failed = crawl_log.get_unsuccesful_crawled_urls().execute_query()
-        if failed and failed.value:
-            data = failed.value
-            if hasattr(data, "rows") and data.rows:
-                print(f"  Unsuccessful URLs: {len(data.rows)}")
-                for row in data.rows[:5]:
-                    print(f"    URL: {row[0] if len(row) > 0 else '?'}  error: {row[1] if len(row) > 1 else '?'}")
+        if failed and failed.value and len(failed.value.Rows):
+            rows = list(failed.value.Rows)
+            print(f"  Unsuccessful URLs: {len(rows)}")
+            for row in rows[:5]:
+                print(f"    URL: {row.Cells.get('url', '?')}  error: {row.Cells.get('error', '?')}")
     except Exception as e:
         print(f"  (crawl diagnostics not available: {e})")
 

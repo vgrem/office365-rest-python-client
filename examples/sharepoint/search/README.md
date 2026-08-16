@@ -1,8 +1,8 @@
 # Searching SharePoint
 
-Use the SharePoint search REST API to find sites, documents, and list items
-across the tenant. Queries use **Keyword Query Language (KQL)** with
-property filters, refiners, and sort orders.
+Use the SharePoint search REST API to find sites, documents, people, and list items
+across the tenant. Queries use **Keyword Query Language (KQL)** with property
+filters, refiners, sort orders, suggestions, and pagination.
 
 ---
 
@@ -11,6 +11,7 @@ property filters, refiners, and sort orders.
 | Requirement | Description | Reference |
 |---|---|---|
 | **Read access** to the content being searched | Search results respect item-level permissions. Users only see what they can access. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+| **Sites.ReadWrite.All** | Required for the admin examples | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
 
 ---
 
@@ -38,6 +39,7 @@ Results respect the requesting user's permissions.
 |---|---|---|
 | `IsDocument:1` | `project report IsDocument:1` | Files only |
 | `contentclass:STS_Site` | `contentclass:STS_Site` | Sites only |
+| `contentclass:SP.People` | `contentclass:SP.People Smith` | People only |
 | `Path:` | `Path:https://...` | Restrict scope |
 | `ContentType:` | `ContentType:invoice` | Filter by content type |
 | `Author:` | `Author:"Vadim G"` | Filter by author |
@@ -47,18 +49,30 @@ Results respect the requesting user's permissions.
 
 ## Examples
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Keyword search | [`query_keyword.py`](./query_keyword.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **2** | Search documents (IsDocument) | [`query_documents.py`](./query_documents.py) | Read access to libraries | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **3** | Search sites (contentclass) | [`query_sites.py`](./query_sites.py) | Read access to sites | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **4** | Search by site (Path:) | [`query_by_site.py`](./query_by_site.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **5** | Search by content type | [`query_by_content_type.py`](./query_by_content_type.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **6** | Filter by author / date range | [`query_with_filter.py`](./query_with_filter.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **7** | Sort by managed property | [`query_with_sort.py`](./query_with_sort.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **8** | Refinement / faceted drill-down | [`query_with_refinement.py`](./query_with_refinement.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **9** | Paginate through results | [`query_paged.py`](./query_paged.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
-| **10** | Export search reports | [`export_reports.py`](./export_reports.py) | Search admin | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+### Query
+
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| Keyword search | [`query_keyword.py`](./query_keyword.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Search documents (IsDocument) | [`query_documents.py`](./query_documents.py) | Read access to libraries | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Search sites (contentclass) | [`query_sites.py`](./query_sites.py) | Read access to sites | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Search people (contentclass) | [`query_people.py`](./query_people.py) | Read access to people | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Search by site (Path:) | [`query_by_site.py`](./query_by_site.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Search by content type | [`query_by_content_type.py`](./query_by_content_type.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Filter by author / date range | [`query_with_filter.py`](./query_with_filter.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Sort by managed property | [`query_with_sort.py`](./query_with_sort.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Refinement / faceted drill-down | [`query_with_refinement.py`](./query_with_refinement.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Suggestions and auto-completion | [`query_suggestions.py`](./query_suggestions.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Paginate through results | [`query_paged.py`](./query_paged.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+| Export results to CSV | [`export_results.py`](./export_results.py) | Read access to content | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
+
+### Administration
+
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| Crawl diagnostics, popular queries, suggestions | [`admin/diagnostics.py`](./admin/diagnostics.py) | Sites.ReadWrite.All | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/search-in-sharepoint) |
+| Query configuration and promoted results | [`admin/query_configuration.py`](./admin/query_configuration.py) | Sites.ReadWrite.All | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/search-in-sharepoint) |
+| Export search reports | [`export_reports.py`](./export_reports.py) | Search admin | [Search REST API](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview) |
 
 ---
 
