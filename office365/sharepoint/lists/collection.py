@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath
@@ -70,6 +71,37 @@ class ListCollection(EntityCollection[List]):
             ServiceOperationPath("GetById", [list_id], self.resource_path),
             self,
         )
+
+    def ensure_list(self, title: str) -> List:
+        """Gets the list with the given title, or creates it if it does not exist.
+
+        Attempts to create the list via ``add_list``; if the server reports that
+        a list with the title already exists (``DuplicatedObjectException``), the
+        existing list is loaded instead and its properties are copied into the
+        returned object. All other errors propagate.
+
+        The result is deferred: resolve it with ``execute_query()`` before use,
+        e.g.::
+
+            >>> lst = ctx.web.lists.ensure_list("My List").execute_query()
+
+        Args:
+            title: Title of the list to get or create
+
+        Returns:
+            List: The existing or newly created list
+        """
+        return_type = self.add_list(title=title)
+
+        def _on_name_exists(error: ClientRequestException):
+            if not isinstance(error, DuplicatedObjectException):
+                raise error
+            self.get_by_title(title).get().after_execute(
+                lambda existing: return_type.copy_from(existing), execute_first=True
+            )
+
+        return_type.on_error(_on_name_exists)
+        return return_type
 
     def ensure_client_rendered_site_pages_library(self) -> List:
         """

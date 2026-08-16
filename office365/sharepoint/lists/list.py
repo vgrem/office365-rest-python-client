@@ -27,6 +27,7 @@ from office365.sharepoint.eventreceivers.definition_collection import (
 from office365.sharepoint.fields.collection import FieldCollection
 from office365.sharepoint.fields.field import Field
 from office365.sharepoint.fields.related_field_collection import RelatedFieldCollection
+from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.files.checked_out_file_collection import (
     CheckedOutFileCollection,
 )
@@ -133,13 +134,21 @@ class List(SecurableObject):
         self.ensure_property("Title").after_execute(lambda _: _can_customize_forms())
         return return_type
 
-    def clear(self):
-        """Clears the list."""
+    def clear(self) -> Self:
+        """Clears the list (deletes all items).
 
-        def _clear(items):
-            [item.delete_object() for item in items]
+        Loads only the item IDs (paged) and queues a delete per item, so large
+        lists are cleared in full. The deletions run on ``execute_batch``:
 
-        self.items.get().after_execute(_clear, execute_first=True)
+            >>> target_list.clear().execute_batch()
+        """
+
+        def _delete_all(items) -> None:
+            # snapshot: delete_object removes items from the collection while iterating
+            [item.delete_object() for item in list(items)]
+
+        items = self.items.select(["Id"]).get_all().execute_query()
+        _delete_all(items)
         return self
 
     def create_document_set(self, name: str) -> DocumentSet:
@@ -654,6 +663,32 @@ class List(SecurableObject):
         qry = ServiceOperationQuery(self, "GetItems", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    def ensure_fields(self, columns: "Dict[str, FieldType] | list[str]") -> Self:
+        """Ensure the specified columns exist on the list, creating missing ones.
+
+        Reconciles the source schema with the target list before data import,
+        like migration tools do: existing fields are kept, missing ones are
+        created with the given type (Text by default).
+
+        The check is deferred — the fields are read and missing ones created
+        when the caller executes the query (e.g.
+        ``list.ensure_fields(...).execute_query()``).
+
+        Args:
+            columns: Either a list of field names (created as Text) or a mapping
+                of field name -> FieldType
+        """
+
+        def _sync_fields(_) -> None:
+            existing = {(f.internal_name or "").lower() for f in self.fields}
+            spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
+            for name, field_type in spec:
+                if name.lower() not in existing:
+                    self.fields.add(field_type, Title=name)
+
+        self.fields.get().after_execute(_sync_fields)
+        return self
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:
         """The recommended way to add a list item is to send a POST request to the ListItemCollection resource endpoint,
@@ -1185,7 +1220,7 @@ class List(SecurableObject):
     @property
     def fields(self) -> FieldCollection:
         """Gets a value that specifies the collection of all fields in the list."""
-        return self.properties.get(
+        return self.properties.setdefault(
             "Fields",
             FieldCollection(self.context, ResourcePath("Fields", self.resource_path), self),
         )

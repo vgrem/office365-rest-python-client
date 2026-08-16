@@ -29,11 +29,15 @@ class ClientRequestException(RequestException):
             error = {}
 
         details = error.get("details", [])
+        code = error.get("code") or ""
+        msg = error.get("message")
+        msg_text = str(msg.get("value", "")) if isinstance(msg, dict) else str(msg or "")
         if (
-            error.get("code") == "nameAlreadyExists"
-            or error.get("code") == "ErrorFolderExists"
+            code in {"nameAlreadyExists", "ErrorFolderExists"}
             or any(d.get("code") == "ConflictingObjects" for d in details)
-            or "183" in (error.get("code") or "")
+            or "183" in code
+            or "-2130575342" in code  # SharePoint: list/survey/document library already exists
+            or "already exists" in msg_text.lower()
         ):
             exc: ClientRequestException = DuplicatedObjectException(response=response)
         else:
