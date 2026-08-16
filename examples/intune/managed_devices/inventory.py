@@ -22,8 +22,10 @@ by_compliance = {}
 for d in devices:
     status = d.compliance_state or "unknown"
     by_compliance[status] = by_compliance.get(status, 0) + 1
+    os_info = f"{d.operating_system or '?'} {d.os_version or ''}".strip()
+    hardware = f"{d.manufacturer or ''} {d.model or ''}".strip()
     print(
-        f"  {d.device_name or '(unnamed)':30s}  {d.operating_system or '?':12s}  [{status}]"
+        f"  {d.device_name or '(unnamed)':30s}  {os_info:20s}  {hardware:20s}  [{status}]"
         f"  last sync: {d.last_sync_date_time or 'never'}"
     )
 

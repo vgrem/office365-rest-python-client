@@ -19,11 +19,13 @@ client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 events = client.device_management.audit_events.top(10).get().execute_query()
 print(f"Recent audit events ({len(events)}):")
 for e in events:
-    print(f"  [{e.activity_operation_type or '?'}] {e.display_name or '(unnamed)'}")
-    print(f"       User: {e.user_id or '?'}  Target: {e.target_id or '?'}")
+    props = e.properties
+    actor = props.get("actor") or {}
+    actor_id = actor.get("userId", "?") if isinstance(actor, dict) else "?"
+    print(f"  [{props.get('activityOperationType', '?'):14s}] {props.get('displayName', '(unnamed)')}  user: {actor_id}")
 
 # 2. List device categories
 categories = client.device_management.device_categories.get().execute_query()
 print(f"\nDevice categories ({len(categories)}):")
 for c in categories:
-    print(f"  {c.display_name} (id: {c.id})")
+    print(f"  {c.properties.get('displayName', '(unnamed)')} (id: {c.id})")

@@ -37,6 +37,85 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    def wipe(self) -> Self:
+        """Wipe a device (factory reset — removes all data).
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-wipe
+        """
+        qry = ServiceOperationQuery(self, "wipe")
+        self.context.add_query(qry)
+        return self
+
+    def retire(self) -> Self:
+        """Retire a device (removes company data only).
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-retire
+        """
+        qry = ServiceOperationQuery(self, "retire")
+        self.context.add_query(qry)
+        return self
+
+    def sync_device(self) -> Self:
+        """Sync a device (force it to check in with Intune).
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-syncdevice
+        """
+        qry = ServiceOperationQuery(self, "syncDevice")
+        self.context.add_query(qry)
+        return self
+
+    def reboot_now(self) -> Self:
+        """Reboot a device.
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-rebootnow
+        """
+        qry = ServiceOperationQuery(self, "rebootNow")
+        self.context.add_query(qry)
+        return self
+
+    def remote_lock(self) -> Self:
+        """Lock a device remotely.
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-remotelock
+        """
+        qry = ServiceOperationQuery(self, "remoteLock")
+        self.context.add_query(qry)
+        return self
+
+    def shut_down(self) -> Self:
+        """Shut down a device.
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-shutdown
+        """
+        qry = ServiceOperationQuery(self, "shutDown")
+        self.context.add_query(qry)
+        return self
+
+    def set_primary_user(self, user_id: str) -> Self:
+        """Set the primary user of a device.
+
+        Args:
+            user_id: ID of the user to assign as primary user
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-users
+        """
+        payload = {"@odata.id": f"https://graph.microsoft.com/v1.0/users/{user_id}"}
+        qry = ServiceOperationQuery(self.users, "$ref", None, payload)
+        self.context.add_query(qry)
+        return self
+
+    def remove_primary_user(self, user_id: str) -> Self:
+        """Remove a user from a device.
+
+        Args:
+            user_id: ID of the user to remove
+
+        https://learn.microsoft.com/en-us/graph/api/intune-devices-manageddevice-users
+        """
+        qry = ServiceOperationQuery(self.users, f"{user_id}/$ref")
+        self.context.add_query(qry)
+        return self
+
     @property
     def activation_lock_bypass_code(self) -> Optional[str]:
         """
