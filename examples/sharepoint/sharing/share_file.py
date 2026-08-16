@@ -10,7 +10,7 @@ import json
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.links.kind import SharingLinkKind
 from office365.sharepoint.webs.web import Web
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 sharing_messages = {
     0: "A value has not been initialized",
@@ -22,11 +22,8 @@ sharing_messages = {
     6: "A tokenized sharing link where properties can change without affecting link URL",
 }
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
+ctx = ClientContext(team_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 
 local_path = "../../data/SharePoint User Guide.docx"
@@ -39,6 +36,8 @@ print("Creating a sharing link for a file...")
 result = remote_file.share_link(SharingLinkKind.AnonymousView).execute_query()
 print(json.dumps(result.value.to_json(), indent=4))
 link_url = result.value.sharingLinkInfo.Url
+if link_url is None:
+    raise SystemExit("Failed to create a sharing link")
 
 print("Verifying sharing link ...")
 result = Web.get_sharing_link_kind(ctx, link_url).execute_query()

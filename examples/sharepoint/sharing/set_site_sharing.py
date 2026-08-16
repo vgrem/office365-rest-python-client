@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.sharing_capabilities import SharingCapabilities
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, site_url, tenant
 
 SHARING_LABELS = {
     SharingCapabilities.Disabled: "Disabled",
@@ -24,15 +24,12 @@ def sharing_label(cap):
     return SHARING_LABELS.get(cap, str(cap))
 
 
-ctx = ClientContext(test_admin_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
+ctx = ClientContext(admin_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 tenant = Tenant(ctx)
 
-props = tenant.get_site_properties_by_url(test_site_url).execute_query()
+props = tenant.get_site_properties_by_url(site_url).execute_query()
 print(f"Current: {sharing_label(props.sharing_capability)}")
 
 props.sharing_capability = SharingCapabilities.ExternalUserSharingOnly

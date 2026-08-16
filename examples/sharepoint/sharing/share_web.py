@@ -1,31 +1,43 @@
 """
-Shares a web with a user.
+Shares a web (site) with a user by adding them to the corresponding group.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/sharing-rest-api
 """
 
+import argparse
 import sys
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.external_site_option import ExternalSharingSiteOption
-from tests import (
-    test_client_id,
-    test_password,
-    test_team_site_url,
-    test_tenant,
-    test_user_principal_name_alt,
-    test_username,
-)
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant, username
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
 
-result = ctx.web.share(test_user_principal_name_alt, ExternalSharingSiteOption.View).execute_query()
-if result.error_message is not None:
-    sys.exit("Web sharing failed: {0}".format(result.error_message))
+def main():
+    parser = argparse.ArgumentParser(description="Share a site with a user")
+    parser.add_argument("--user", default=username, help="User principal name to share the site with")
+    parser.add_argument(
+        "--access",
+        choices=["view", "edit", "owner"],
+        default="view",
+        help="Access level to grant (default: view)",
+    )
+    args = parser.parse_args()
 
-print(f"Web '{result.url}' has been shared with user '{test_user_principal_name_alt}'")
+    options = {
+        "view": ExternalSharingSiteOption.View,
+        "edit": ExternalSharingSiteOption.Edit,
+        "owner": ExternalSharingSiteOption.Owner,
+    }
+
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+    result = ctx.web.share(args.user, options[args.access]).execute_query()
+    if result.error_message is not None:
+        sys.exit(f"Web sharing failed: {result.error_message}")
+
+    print(f"Web '{result.url}' has been shared with user '{args.user}' ({args.access})")
+
+
+if __name__ == "__main__":
+    main()
