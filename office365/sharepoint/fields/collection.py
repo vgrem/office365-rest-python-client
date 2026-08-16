@@ -276,7 +276,9 @@ class FieldCollection(EntityCollection[Field]):
         """
         return_type = TaxonomyField(self.context)
 
-        def _create_taxonomy_field(term_store_id: str, term_set_id: str):
+        def _create_taxonomy_field(term_store_id: str | None, term_set_id: str | None):
+            assert term_set_id is not None
+            assert term_store_id is not None
             TaxonomyField.create(
                 self,
                 name,
@@ -289,18 +291,11 @@ class FieldCollection(EntityCollection[Field]):
         def _term_store_loaded(term_store: TermStore) -> None:
             if isinstance(term_set, TermSet):
                 term_set_obj = term_set
-
-                def _term_set_loaded():
-                    ts_id = term_store.id
-                    ts_id2 = term_set_obj.id
-                    if ts_id is not None and ts_id2 is not None:
-                        _create_taxonomy_field(ts_id, ts_id2)
-
-                term_set.ensure_property("id").after_execute(lambda _: _term_set_loaded())
+                term_set.ensure_property("id").after_execute(
+                    lambda _: _create_taxonomy_field(term_store.id, term_set_obj.id)
+                )
             else:
-                ts_id = term_store.id
-                if ts_id is not None:
-                    _create_taxonomy_field(ts_id, term_set)
+                _create_taxonomy_field(term_store.id, term_set)
 
         self.context.load(self.context.taxonomy.term_store).after_execute(_term_store_loaded)
 

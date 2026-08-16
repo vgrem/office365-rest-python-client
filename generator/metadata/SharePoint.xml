@@ -687,6 +687,7 @@
          <ComplexType Name="MainLinkDetails">
             <Property Name="Audience" Type="Edm.Int32" Nullable="false"/>
             <Property Name="effectiveAudience" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="effectiveRole" Type="Edm.Int32" Nullable="false"/>
             <Property Name="Role" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="ManageChannelCapabilitiesRequest">
@@ -11263,9 +11264,6 @@
             <FunctionImport Name="ClearSiteRelocationMarker" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
-            <FunctionImport Name="CommitSessionToken" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-            </FunctionImport>
             <FunctionImport Name="ExtendSystemSiteLockExpiration" ReturnType="SP.SystemSiteLockExpirationResult" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="leaseDurationInMinute" Type="Edm.Int32" Nullable="false"/>
@@ -11500,9 +11498,6 @@
             <FunctionImport Name="SourceCleanupAfterMove" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="isDeleted" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="StartLockableSession" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
             <FunctionImport Name="StartSnapshotIsolation" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
@@ -12303,18 +12298,8 @@
                <Parameter Name="useFastUnorderedMode" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="parentUniqueId" Type="Edm.String"/>
             </FunctionImport>
-            <FunctionImport Name="ConvertClassicWikiPage" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.ConvertResult" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
-               <Parameter Name="sourceUrl" Type="Edm.String"/>
-               <Parameter Name="targetWebUrl" Type="Edm.String"/>
-               <Parameter Name="targetListId" Type="Edm.String"/>
-            </FunctionImport>
             <FunctionImport Name="EnsureSmartWikiLibraryFeature" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
-            </FunctionImport>
-            <FunctionImport Name="PreviewClassicWikiPageConversion" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
-               <Parameter Name="sourceUrl" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_SiteManager_SiteManagerService" ReturnType="Microsoft.SharePoint.SiteManager.SiteManagerService" IsComposable="true" EntitySet="SiteManagers"/>
             <FunctionImport Name="AddSuggestionItems" IsBindable="true">
@@ -18325,6 +18310,9 @@
             <FunctionImport Name="Get" ReturnType="Collection(Microsoft.SharePoint.Administration.TenantAdmin.CatalogManagement.Property)" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.CatalogManagementCollection"/>
             </FunctionImport>
+            <FunctionImport Name="GetDisplayNames" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.CatalogManagementCollection"/>
+            </FunctionImport>
             <FunctionImport Name="GetProperty" ReturnType="Microsoft.SharePoint.Administration.TenantAdmin.CatalogManagement.Property" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.CatalogManagementCollection"/>
                <Parameter Name="propertyType" Type="Edm.Int32" Nullable="false"/>
@@ -18336,6 +18324,13 @@
             <FunctionImport Name="AddSitePropertyBagMappings" ReturnType="Microsoft.SharePoint.Administration.TenantAdmin.CatalogManagement.CatalogManagementCustomPropertyMap" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.CatalogManagementCustomPropertiesCollection"/>
                <Parameter Name="propertyBagKeys" Type="Collection(Edm.String)"/>
+            </FunctionImport>
+            <FunctionImport Name="ExportCategoryGroupToCSV" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.CatalogManagementCustomPropertiesCollection"/>
+               <Parameter Name="source" Type="Edm.Int32" Nullable="false"/>
+               <Parameter Name="key" Type="Edm.String"/>
+               <Parameter Name="valueId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="groupName" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="ExportCategoryToCSV" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.CatalogManagementCustomPropertiesCollection"/>
@@ -20048,6 +20043,11 @@
                <Parameter Name="owningApplicationId" Type="Edm.Guid" Nullable="false"/>
                <Parameter Name="sharingCapability" Type="Edm.Int32" Nullable="false"/>
                <Parameter Name="overrideTenantSharingCapability" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SetStorageMaximumLevelContainer" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="containerId" Type="Edm.String"/>
+               <Parameter Name="storageMaximumLevel" Type="Edm.Int64" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="SetSyntexPaygFeatureActivation" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -25820,6 +25820,9 @@
          <Annotations Target="SP.MainLinkDetails/effectiveAudience">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.MainLinkDetails/effectiveRole">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.MainLinkDetails/Role">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -26528,6 +26531,9 @@
          <Annotations Target="SP.Sharing.MainLinkInfo/effectiveAudience">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.Sharing.MainLinkInfo/effectiveRole">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.Sharing.MainLinkInfo/expirationDateTime">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -26541,6 +26547,12 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.Sharing.MainLinkAbilities/canResetLink">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.Sharing.SharingLinkExpirationAbilityStatus">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.Sharing.MainLinkAbilities/linkExpiration">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.Sharing.MainLinkAudienceAbilities">
@@ -26628,9 +26640,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.Sharing.SharingLinkAbilities">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.Sharing.SharingLinkExpirationAbilityStatus">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.Sharing.SharingLinkPasswordAbilityStatus">
@@ -31873,9 +31882,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.ConversionLossItem">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.ConvertResult">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_SectionDesignIdeas_SectionDesignIdeasApi()">
@@ -41538,9 +41544,10 @@
             <Property Name="uri" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="ListAgreementsModel">
-            <Property Name="expandStages" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="expandHistory" Type="Edm.Boolean"/>
+            <Property Name="expandStages" Type="Edm.Boolean"/>
             <Property Name="filterByTitle" Type="Edm.String"/>
-            <Property Name="isDescending" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="isDescending" Type="Edm.Boolean"/>
             <Property Name="maxNo" Type="Edm.Int32"/>
             <Property Name="nextLink" Type="Edm.String"/>
             <Property Name="userId" Type="Edm.Guid" Nullable="false"/>
@@ -41978,6 +41985,7 @@
             <Property Name="ReadOnlyReason" Type="Edm.Int32" Nullable="false"/>
             <Property Name="SensitivityLabel" Type="Edm.String"/>
             <Property Name="Status" Type="Edm.String"/>
+            <Property Name="StorageMaximumLevel" Type="Edm.Int64"/>
             <Property Name="StorageUsed" Type="Edm.Int64"/>
             <Property Name="Writers" Type="Collection(Microsoft.SharePoint.Containers.SPActiveContainerMemberProperties)"/>
          </ComplexType>
@@ -42748,6 +42756,7 @@
             <Property Name="catalogManagement" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo)"/>
             <Property Name="featureId" Type="Edm.String"/>
             <Property Name="sitePermissions" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo)"/>
+            <Property Name="siteStorageDetails" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo)"/>
             <Property Name="TenantAdminSiteLifeCycle" Type="Collection(Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo)"/>
          </ComplexType>
          <ComplexType Name="DatasetPolicyMetadataInfo" BaseType="Microsoft.SharePoint.Administration.TenantAdmin.SPOAdminReportInsights.Models.DatasetMetadataInfo">
@@ -43261,6 +43270,7 @@
             <Property Name="accessors" Type="Collection(SP.Sharing.Principal)"/>
             <Property Name="audience" Type="Edm.Int32" Nullable="false"/>
             <Property Name="effectiveAudience" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="effectiveRole" Type="Edm.Int32" Nullable="false"/>
             <Property Name="expirationDateTime" Type="Edm.DateTime"/>
             <Property Name="role" Type="Edm.Int32" Nullable="false"/>
             <Property Name="shareId" Type="Edm.Guid" Nullable="false"/>
@@ -43270,8 +43280,13 @@
             <Property Name="canGetLink" Type="SP.Sharing.SharingAbilityStatus"/>
             <Property Name="canManageLink" Type="SP.Sharing.SharingAbilityStatus"/>
             <Property Name="canResetLink" Type="SP.Sharing.SharingAbilityStatus"/>
+            <Property Name="linkExpiration" Type="SP.Sharing.SharingLinkExpirationAbilityStatus"/>
             <Property Name="mainLinkAudienceAbilities" Type="SP.Sharing.MainLinkAudienceAbilities"/>
             <Property Name="mainLinkRoleAbilities" Type="SP.Sharing.MainLinkRoleAbilities"/>
+         </ComplexType>
+         <ComplexType Name="SharingLinkExpirationAbilityStatus" BaseType="SP.Sharing.SharingAbilityStatus">
+            <Property Name="defaultExpirationInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="maxExpirationInDays" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="MainLinkAudienceAbilities">
             <Property Name="anyoneLinkAvailable" Type="SP.Sharing.SharingAbilityStatus"/>
@@ -43389,10 +43404,6 @@
             <Property Name="supportsRestrictedView" Type="SP.Sharing.SharingAbilityStatus"/>
             <Property Name="supportsRestrictToExistingRelationships" Type="SP.Sharing.SharingAbilityStatus"/>
             <Property Name="trackLinkUsers" Type="SP.Sharing.SharingAbilityStatus"/>
-         </ComplexType>
-         <ComplexType Name="SharingLinkExpirationAbilityStatus" BaseType="SP.Sharing.SharingAbilityStatus">
-            <Property Name="defaultExpirationInDays" Type="Edm.Int32" Nullable="false"/>
-            <Property Name="maxExpirationInDays" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="SharingLinkPasswordAbilityStatus" BaseType="SP.Sharing.SharingAbilityStatus"/>
          <ComplexType Name="SharingSettingsAbilities">
@@ -44563,6 +44574,7 @@
             <Property Name="SharingBlockedDomainList" Type="Edm.String"/>
             <Property Name="SharingDomainRestrictionMode" Type="Edm.Int32" Nullable="false"/>
             <Property Name="Status" Type="Edm.String"/>
+            <Property Name="StorageMaximumLevel" Type="Edm.Int64" Nullable="false"/>
             <Property Name="StorageUsed" Type="Edm.Int64" Nullable="false"/>
             <Property Name="TransferFromPrincipalOwnerIdentifier" Type="Edm.String"/>
             <Property Name="Writers" Type="Collection(Edm.String)"/>
@@ -46317,10 +46329,6 @@
             <Property Name="count" Type="Edm.Int32" Nullable="false"/>
             <Property Name="detail" Type="Edm.String"/>
             <Property Name="kind" Type="Edm.String"/>
-         </ComplexType>
-         <ComplexType Name="ConvertResult">
-            <Property Name="lossy" Type="Microsoft.SharePoint.SmartWikiLibrary.ConversionLossReport"/>
-            <Property Name="viewerUrl" Type="Edm.String"/>
          </ComplexType>
          <EntityType Name="SmartWikiLibraryUtility">
             <Key>

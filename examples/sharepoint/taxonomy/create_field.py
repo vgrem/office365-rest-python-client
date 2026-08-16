@@ -8,7 +8,7 @@ from office365.sharepoint.client_context import ClientContext
 from tests import test_client_credentials, test_team_site_url
 
 ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-custom_list = ctx.web.lists.get_by_title("Requests").get().execute_query()
+custom_list = ctx.web.lists.ensure_list("Requests").get().execute_query()
 
 term_set_id = "3b712032-95c4-4bb5-952d-f85ae9288f99"
 tax_field_name = "Country"  # create_unique_name("Country")
