@@ -4,7 +4,6 @@ import copy
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import requests
-from requests import RequestException
 from typing_extensions import Self
 
 from office365.azure_env import AzureEnvironment
@@ -43,6 +42,7 @@ from office365.sharepoint.webs.context_web_information import ContextWebInformat
 from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
+    from office365.runtime.queries.batch import BatchQuery
     from office365.sharepoint.brandcenter.brand_center import BrandCenter
     from office365.sharepoint.portal.theme_manager import ThemeManager
     from office365.sharepoint.search.service import SearchService
@@ -271,22 +271,48 @@ class ClientContext(ClientRuntimeContext):
         self,
         items_per_batch: int = 100,
         success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
+        concurrency: int = 1,
     ) -> Self:
         """Construct and submit to a server a batch request
+
+        With ``concurrency`` > 1 the batches run on a thread pool; each batch
+        is an independent HTTP request with transient-failure retry (honoring
+        ``Retry-After``). ``success_callback`` runs on the caller thread in
+        completion order (not submission order). Note that retrying a write
+        batch that failed part-way may re-apply already-processed sub-requests.
 
         Args:
             items_per_batch (int): Maximum to be selected for bulk operation
             success_callback ((List[ClientObject|ClientResult])-> None): A success callback
+            concurrency (int): Maximum number of concurrent batch requests (default 1)
         """
+        if concurrency <= 1:
+            batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
+            batch_request.beforeExecute += self.authentication_context.authenticate_request
+            batch_request.beforeExecute += self.pending_request().ensure_form_digest
+            while self.has_pending_request:
+                qry = self._get_next_query(items_per_batch)
+                batch_request.execute_query(qry)
+                if callable(success_callback) and qry.return_type is not None:
+                    success_callback(qry.return_type)
+            return self
+
+        self.pending_request()
+        self._execute_batches_in_parallel(self._split_batches(items_per_batch), concurrency, success_callback)
+        return self
+
+    def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
+        """Execute a single batch unit on a worker thread (with transient retry)."""
+        from office365.runtime.retry import retry, retry_after_delay
+
         batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
         batch_request.beforeExecute += self.authentication_context.authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
-        while self.has_pending_request:
-            qry = self._get_next_query(items_per_batch)
-            batch_request.execute_query(qry)
-            if callable(success_callback) and qry.return_type is not None:
-                success_callback(qry.return_type)
-        return self
+        retry(
+            lambda: batch_request.execute_query(batch_qry),
+            on_failure=lambda _attempt, ex: retry_after_delay(ex),
+        )
+        return batch_qry.return_type
 
     def pending_request(self) -> SharePointRequest:
         """Provides access to underlying request instance"""
@@ -300,22 +326,11 @@ class ClientContext(ClientRuntimeContext):
 
     def execute_query_with_incremental_retry(self, max_retry=5):
         """Handles throttling requests."""
-
-        def _try_process_if_failed(_retry: int, ex: Exception) -> Optional[int]:
-            """
-            check if request was throttled - http status code 429
-            or check is request failed due to server unavailable - http status code 503
-            returns Retry-After header value in seconds, when available
-            """
-            if isinstance(ex, RequestException) and ex.response is not None and ex.response.status_code in {429, 503}:
-                retry_after = ex.response.headers.get("Retry-After", None)
-                if retry_after is not None:
-                    return int(retry_after)
-            return None
+        from office365.runtime.retry import retry_after_delay
 
         self.execute_query_retry(
             max_retry=max_retry,
-            failure_callback=_try_process_if_failed,
+            failure_callback=lambda _retry, ex: retry_after_delay(ex),
         )
 
     def clone(self, url: str, clear_queries: bool = True) -> ClientContext:

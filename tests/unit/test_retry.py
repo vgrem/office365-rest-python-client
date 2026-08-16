@@ -5,7 +5,7 @@ from unittest import mock
 
 import requests
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.retry import retry
+from office365.runtime.retry import retry, retry_after_delay
 from office365.sharepoint.client_context import ClientContext
 from requests import Response
 
@@ -153,3 +153,17 @@ class TestRetryFunction(unittest.TestCase):
         )
 
         self.assertEqual(func.call_count, 2)
+
+
+class TestRetryAfterDelay(unittest.TestCase):
+    def test_returns_retry_after_value(self):
+        ex = _make_exception(429, {"Retry-After": "10"})
+        self.assertEqual(retry_after_delay(ex), 10)
+
+    def test_returns_none_for_non_throttling_status(self):
+        ex = _make_exception(400)
+        self.assertIsNone(retry_after_delay(ex))
+
+    def test_returns_none_for_malformed_header(self):
+        ex = _make_exception(429, {"Retry-After": "abc"})
+        self.assertIsNone(retry_after_delay(ex))

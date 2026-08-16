@@ -279,3 +279,39 @@ class ClientRuntimeContext(ABC):
                 count = count + 1
             batches.append(qry)
         return batches
+
+    def _execute_batches_in_parallel(
+        self,
+        batches: list["BatchQuery"],
+        concurrency: int,
+        success_callback: Optional[Callable[[List[Any]], None]] = None,
+    ) -> None:
+        """Execute batch units concurrently on a thread pool.
+
+        Each batch runs ``self._execute_batch`` on a worker thread;
+        ``success_callback`` is invoked on the caller thread in completion
+        order. On the first failure, pending batches are cancelled and the
+        exception is re-raised.
+
+        Args:
+            batches: Batch units to execute
+            concurrency: Maximum number of concurrent batch requests
+            success_callback: Called with each completed batch's return types
+        """
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            futures = [executor.submit(self._execute_batch, batch_qry) for batch_qry in batches]
+            for future in as_completed(futures):
+                try:
+                    return_types = future.result()
+                except Exception:
+                    for f in futures:
+                        f.cancel()
+                    raise
+                if callable(success_callback):
+                    success_callback(return_types)
+
+    def _execute_batch(self, batch_qry: "BatchQuery") -> List[Any]:
+        """Execute a single batch unit (implemented by concrete contexts)."""
+        raise NotImplementedError

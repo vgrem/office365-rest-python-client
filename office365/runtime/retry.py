@@ -21,6 +21,27 @@ def is_transient_error(ex: Exception) -> bool:
     return status_code in TRANSIENT_STATUS_CODES
 
 
+def retry_after_delay(ex: Exception) -> Optional[int]:
+    """Return the server-requested retry delay for throttling errors.
+
+    Reads the ``Retry-After`` header of a 429/503 response; returns ``None``
+    when it is unavailable or malformed so callers fall back to the default.
+
+    Args:
+        ex: The exception that was raised
+    """
+    response = getattr(ex, "response", None)
+    if response is None or getattr(response, "status_code", None) not in {429, 503}:
+        return None
+    retry_after = response.headers.get("Retry-After", None)
+    if retry_after is None:
+        return None
+    try:
+        return int(retry_after)
+    except (TypeError, ValueError):
+        return None
+
+
 def retry(
     func: Callable[[], Any],
     max_retry: int = 5,

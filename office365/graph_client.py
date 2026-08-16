@@ -87,6 +87,7 @@ if TYPE_CHECKING:
     from office365.directory.groups.setting import GroupSetting
     from office365.directory.rolemanagement.templates.collection import DirectoryRoleTemplateCollection
     from office365.runtime.client_result import ClientResult
+    from office365.runtime.queries.batch import BatchQuery
     from office365.runtime.types.collections import StringCollection
 
 
@@ -293,22 +294,47 @@ class GraphClient(ClientRuntimeContext):
         self,
         items_per_batch: int = 20,
         success_callback: Optional[Callable[[List[Any]], None]] = None,
-    ):
+        concurrency: int = 1,
+    ) -> Self:
         """
         Execute batched requests
+
+        With ``concurrency`` > 1 the batches run on a thread pool; each batch
+        is an independent HTTP request with transient-failure retry (honoring
+        ``Retry-After``). ``success_callback`` runs on the caller thread in
+        completion order (not submission order). Note that retrying a write
+        batch that failed part-way may re-apply already-processed sub-requests.
 
         Args:
             items_per_batch: Maximum items per batch (default: 20)
             success_callback: Optional callback for successful requests
+            concurrency: Maximum number of concurrent batch requests (default 1)
         """
+        if concurrency <= 1:
+            batch_request = ODataV4BatchRequest("", V4JsonFormat())
+            batch_request.beforeExecute += self.pending_request().authenticate_request
+            while self.has_pending_request:
+                qry = self._get_next_query(items_per_batch)
+                batch_request.execute_query(qry)
+                if callable(success_callback) and qry.return_type is not None:
+                    success_callback(qry.return_type)
+            return self
+
+        self.pending_request()
+        self._execute_batches_in_parallel(self._split_batches(items_per_batch), concurrency, success_callback)
+        return self
+
+    def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
+        """Execute a single batch unit on a worker thread (with transient retry)."""
+        from office365.runtime.retry import retry, retry_after_delay
+
         batch_request = ODataV4BatchRequest("", V4JsonFormat())
         batch_request.beforeExecute += self.pending_request().authenticate_request
-        while self.has_pending_request:
-            qry = self._get_next_query(items_per_batch)
-            batch_request.execute_query(qry)
-            if callable(success_callback) and qry.return_type is not None:
-                success_callback(qry.return_type)
-        return self
+        retry(
+            lambda: batch_request.execute_query(batch_qry),
+            on_failure=lambda _attempt, ex: retry_after_delay(ex),
+        )
+        return batch_qry.return_type
 
     def pending_request(self) -> GraphRequest:
         """Get or create the pending request"""
