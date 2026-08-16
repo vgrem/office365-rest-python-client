@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from typing import Callable, List, Optional, Union
 
 from requests import Response
@@ -59,12 +60,26 @@ class SharePointRequest(ODataRequest):
             authority=authority,
         )
         self._ctx_web_info: ContextWebInformation | None = None
+        self._digest_lock = threading.Lock()
         self.beforeExecute += self._auth_context.authenticate_request
         self.beforeExecute += self.ensure_form_digest
 
     def set_base_url(self, url: str) -> Self:
         self._base_url = url
         self._auth_context.url = url
+        return self
+
+    def reuse(self, other: SharePointRequest) -> Self:
+        """Reuse the authentication context and transport of another request.
+
+        The same objects are shared by reference (not copied), so the token
+        cache and HTTP session stay single-flight and thread-safe.
+
+        Args:
+            other: The request whose auth context and transport to reuse
+        """
+        self._auth_context = other._auth_context
+        self._transport = other._transport
         return self
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
@@ -94,7 +109,9 @@ class SharePointRequest(ODataRequest):
 
     def ensure_form_digest(self, request: RequestOptions) -> None:
         if not self.context_info.is_valid:
-            self._ctx_web_info = self._get_context_web_information()
+            with self._digest_lock:
+                if not self.context_info.is_valid:
+                    self._ctx_web_info = self._get_context_web_information()
         assert self._ctx_web_info is not None
         request.set_header("X-RequestDigest", self._ctx_web_info.FormDigestValue)
 

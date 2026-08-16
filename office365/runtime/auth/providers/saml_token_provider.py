@@ -1,4 +1,5 @@
 import os
+import threading
 import uuid
 from datetime import datetime, timezone
 from typing import Dict, Optional
@@ -60,6 +61,7 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
         self.error = ""
         self._credential = credential
         self._cached_auth_cookies: Optional[AuthCookies] = None
+        self._lock = threading.Lock()
         self.__ns_prefixes = {
             "S": "{http://www.w3.org/2003/05/soap-envelope}",
             "s": "{http://www.w3.org/2003/05/soap-envelope}",
@@ -84,8 +86,10 @@ class SamlTokenProvider(AuthenticationProvider, office365.logger.LoggerContext):
 
         request_time = datetime.now(timezone.utc)
         if self._cached_auth_cookies is None or request_time >= self._sts_profile.expires:
-            self._sts_profile.reset()
-            self._cached_auth_cookies = self.get_authentication_cookie()
+            with self._lock:
+                if self._cached_auth_cookies is None or request_time >= self._sts_profile.expires:
+                    self._sts_profile.reset()
+                    self._cached_auth_cookies = self.get_authentication_cookie()
         logger.debug_secrets(self._cached_auth_cookies)  # type: ignore[reportAttributeAccessIssue]
         request.set_header("Cookie", self._cached_auth_cookies.cookie_header)
 

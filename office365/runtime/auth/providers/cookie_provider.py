@@ -1,3 +1,4 @@
+import threading
 from datetime import datetime, timedelta, timezone
 from typing import Callable, Dict, Optional, Union
 
@@ -23,6 +24,7 @@ class CookieAuthProvider(AuthenticationProvider):
         self._ttl_seconds = ttl_seconds
         self._cached_auth_cookies: Optional[AuthCookies] = None
         self._acquired_at: Optional[datetime] = None
+        self._lock = threading.Lock()
 
     def refresh(self) -> None:
         """Clears the cached cookies so that the next request reacquires them."""
@@ -60,9 +62,11 @@ class CookieAuthProvider(AuthenticationProvider):
     def _ensure_cookies_cached(self) -> None:
         now_utc = datetime.now(timezone.utc)
         if self._is_expired(now_utc):
-            cookies = self._acquire_from_source()
-            self._cached_auth_cookies = cookies
-            self._acquired_at = now_utc
+            with self._lock:
+                if self._is_expired(now_utc):
+                    cookies = self._acquire_from_source()
+                    self._cached_auth_cookies = cookies
+                    self._acquired_at = now_utc
 
     def authenticate_request(self, request) -> None:
         """Sets the Cookie header using cached or freshly acquired cookies."""

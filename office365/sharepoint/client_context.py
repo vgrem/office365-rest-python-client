@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import requests
 from requests import RequestException
@@ -163,11 +163,14 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_device_flow(tenant, client_id, scopes)
         return self
 
-    def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
+    def with_access_token(self, token_func: Callable[[], TokenResponse | Dict[str, Any] | None]) -> Self:
         """Initializes a client to acquire a token from a callback
 
+        The callback is invoked lazily and its result cached; acquisition is
+        thread-safe (single-flight), so it is safe to use under concurrent batches.
+
         Args:
-            token_func (() -> TokenResponse): A token callback
+            token_func: A token callback returning a token response
         """
         self.authentication_context.with_access_token(token_func)
         return self
@@ -316,16 +319,26 @@ class ClientContext(ClientRuntimeContext):
         )
 
     def clone(self, url: str, clear_queries: bool = True) -> ClientContext:
-        """Creates a clone of ClientContext
+        """Creates a clone of ClientContext for a new site URL.
+
+        The clone reuses the source's authentication context and HTTP transport
+        (shared by reference, thread-safe under concurrent batches), while
+        starting with a fresh pending-query queue and per-site form digest.
 
         Args:
-            clear_queries (bool):
             url (str): Site Url
+            clear_queries (bool): Whether to drop pending queries (default True)
         """
-        ctx = copy.deepcopy(self)
-        ctx.pending_request().set_base_url(url)
-        if clear_queries:
-            ctx.clear()
+        ctx = ClientContext(
+            url,
+            environment=self._environment,
+            allow_ntlm=self._allow_ntlm,
+            browser_mode=self._browser_mode,
+            authority=self._authority,
+        )
+        ctx.pending_request().reuse(self.pending_request())
+        if not clear_queries:
+            ctx._queries = copy.copy(self._queries)
         return ctx
 
     def create_modern_site(self, title: str, alias: str, owner: Optional[Union[str, User]] = None) -> Site:

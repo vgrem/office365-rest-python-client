@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+import threading
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Dict, List, Union
 
@@ -48,6 +49,7 @@ class AuthenticationContext:
         self._authenticate = None
         self._cached_token = None
         self._environment = environment
+        self._lock = threading.RLock()
         self._allow_ntlm = allow_ntlm
         self._browser_mode = browser_mode
         self._token_expires = datetime.max.replace(tzinfo=timezone.utc)
@@ -244,15 +246,17 @@ class AuthenticationContext:
             request_time = datetime.now(timezone.utc)
 
             if self._cached_token is None or request_time > self._token_expires:
-                token_res = token_func()
-                if isinstance(token_res, TokenResponse):
-                    self._cached_token = token_res
-                else:
-                    self._cached_token = TokenResponse.from_json(token_res)
+                with self._lock:
+                    if self._cached_token is None or request_time > self._token_expires:
+                        token_res = token_func()
+                        if isinstance(token_res, TokenResponse):
+                            self._cached_token = token_res
+                        else:
+                            self._cached_token = TokenResponse.from_json(token_res)
 
-                if hasattr(self._cached_token, "expiresIn"):  # type: ignore[reportAttributeAccessIssue]
-                    expires_in = self._cached_token.expiresIn  # type: ignore[reportAttributeAccessIssue]
-                    self._token_expires = request_time + timedelta(seconds=int(expires_in))
+                        if hasattr(self._cached_token, "expiresIn"):  # type: ignore[reportAttributeAccessIssue]
+                            expires_in = self._cached_token.expiresIn  # type: ignore[reportAttributeAccessIssue]
+                            self._token_expires = request_time + timedelta(seconds=int(expires_in))
             request.set_header("Authorization", _get_authorization_header(self._cached_token))
 
         self._authenticate = _authenticate

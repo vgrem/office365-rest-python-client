@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections import deque
 from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Type
 
 from requests import Response
@@ -16,6 +17,7 @@ from office365.runtime.queries.read_entity import ReadEntityQuery
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+    from office365.runtime.queries.batch import BatchQuery
 
 
 class ClientRuntimeContext(ABC):
@@ -25,7 +27,7 @@ class ClientRuntimeContext(ABC):
     """
 
     def __init__(self) -> None:
-        self._queries = []
+        self._queries: deque[ClientQuery] = deque()
         self._current_query = None
         self._pending_request: ClientRequest | None = None
 
@@ -154,7 +156,7 @@ class ClientRuntimeContext(ABC):
         )
 
         if execute_first and len(self._queries) > 1:
-            self._queries.insert(0, self._queries.pop())
+            self._queries.appendleft(self._queries.pop())
 
         return self
 
@@ -210,7 +212,7 @@ class ClientRuntimeContext(ABC):
         A new request is created lazily on the next call to ``pending_request()``.
         """
         self._current_query = None
-        self._queries = []
+        self._queries = deque()
         self._pending_request = None
         return self
 
@@ -243,13 +245,37 @@ class ClientRuntimeContext(ABC):
             The next query to execute
         """
         if count == 1:
-            qry = self._queries.pop(0)
+            qry = self._queries.popleft()
         else:
             from office365.runtime.queries.batch import BatchQuery
 
             qry = BatchQuery(self)
             while self.has_pending_request and count > 0:
-                qry.add(self._queries.pop(0))
+                qry.add(self._queries.popleft())
                 count = count - 1
         self._current_query = qry
         return qry
+
+    def _split_batches(self, items_per_batch: int) -> list["BatchQuery"]:
+        """Drain the pending queue into independent batch units.
+
+        Unlike ``_get_next_query``, this does not mutate ``_current_query``,
+        making it safe to pre-split the queue before concurrent execution.
+
+        Args:
+            items_per_batch: Maximum queries per batch
+
+        Returns:
+            List of BatchQuery objects preserving submission order
+        """
+        from office365.runtime.queries.batch import BatchQuery
+
+        batches = []
+        while self.has_pending_request:
+            qry = BatchQuery(self)
+            count = 0
+            while self.has_pending_request and count < items_per_batch:
+                qry.add(self._queries.popleft())
+                count = count + 1
+            batches.append(qry)
+        return batches

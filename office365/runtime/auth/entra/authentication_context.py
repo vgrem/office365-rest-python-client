@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import threading
 from typing import Any, Callable, Dict, List, Optional
 
 from typing_extensions import Self
@@ -40,12 +41,14 @@ class AuthenticationContext:
         self._environment = environment
         self._client_id: str | None = None
         self._authority = authority
+        self._lock = threading.Lock()
 
     def acquire_token(self) -> TokenResponse:
-        """Acquire access token"""
+        """Acquire access token (single-flight under concurrent batches)."""
         if not self._token_callback:
             raise ValueError("Token callback is not set.")
-        token_resp = self._token_callback()
+        with self._lock:
+            token_resp = self._token_callback()
         token = TokenResponse.from_json(token_resp)
         return token
 
