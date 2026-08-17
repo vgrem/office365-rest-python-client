@@ -1,19 +1,27 @@
-"""Demonstrates how to delete a content type from a SharePoint site.
+"""
+Delete a content type from the site.
 
-Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
 """
 
-from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.contenttypes.creation_information import ContentTypeCreationInformation
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-info = ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")
-ct = ctx.web.content_types.add(info).execute_query()
-ct.delete_object().execute_query()
-print("Content type deleted")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Delete a content type")
+    parser.add_argument("--name", required=True, help="Content type name")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+    ct = ctx.web.content_types.get_by_name(args.name).execute_query()
+    ct.delete_object().execute_query()
+    print(f"Content type deleted: {args.name}")
+
+
+if __name__ == "__main__":
+    main()

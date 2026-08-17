@@ -1,29 +1,42 @@
-"""Demonstrates how to remove a field from a content type.
+"""
+Remove a field link from a content type.
 
-Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.contenttypes.creation_information import ContentTypeCreationInformation
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-info = ContentTypeCreationInformation(Name="Project Document", Description="For Contoso projects")
-ct = ctx.web.content_types.add(info).execute_query()
-field = ctx.web.fields.get_by_internal_name_or_title("Title")
-ct.field_links.add(field).execute_query()
 
-# Retrieve the field link and remove it
-field_link = ct.field_links.get_by_id(field.id).execute_query()
-field_link.delete_object().execute_query()
-print(f"Field removed from content type: {field.internal_name}")
+def main():
+    parser = argparse.ArgumentParser(description="Remove a field from a content type")
+    parser.add_argument("--name", required=True, help="Content type name")
+    parser.add_argument("--field", required=True, help="Field internal name or title")
+    args = parser.parse_args()
 
-# Verify remaining fields
-ct_updated = ctx.web.content_types.get_by_id(ct.string_id).execute_query()
-remaining = [fl for fl in ct_updated.field_links if fl.field_internal_name != field.internal_name]
-print(f"Field links remaining: {len(remaining)}")
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+    ct = ctx.web.content_types.get_or_add(name=args.name).execute_query()
+    field = ctx.web.fields.get_by_internal_name_or_title(args.field)
+    ctx.load(field, ["Id", "InternalName"]).execute_query()
+
+    # Add the field so there is something to remove
+    ct.field_links.add(field).execute_query()
+
+    # Find the field link by its field internal name and delete it
+    links = ct.field_links.get().execute_query()
+    target = next((link for link in links if link.field_internal_name == field.internal_name), None)
+    if target is None:
+        raise SystemExit(f"Field '{args.field}' not found on content type")
+    target.delete_object().execute_query()
+    print(f"Field removed from content type: {field.internal_name}")
+
+    remaining = ct.field_links.get().execute_query()
+    print(f"Field links remaining: {len(remaining)}")
+
+
+if __name__ == "__main__":
+    main()

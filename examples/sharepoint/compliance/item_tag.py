@@ -1,7 +1,9 @@
 """
-Apply a compliance tag (retention label) to a list or document library.
+Apply a compliance tag (retention label) to a specific list item.
 
-Requires ``Sites.ReadWrite.All`` to read and apply compliance tags.
+Applies the tag with hold — the item is placed under a retention hold.
+
+Requires ``Sites.ReadWrite.All``.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/compliance/compliance-tag-rest-api
 """
@@ -13,9 +15,10 @@ from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url,
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Apply a compliance tag to a list")
+    parser = argparse.ArgumentParser(description="Apply a compliance tag to a list item")
     parser.add_argument("--tag", required=True, help="Compliance tag name")
-    parser.add_argument("--list-title", default="Documents", help="Target list or library")
+    parser.add_argument("--list-title", default="Documents", help="List containing the item")
+    parser.add_argument("--item-id", type=int, required=True, help="Item id")
     args = parser.parse_args()
 
     ctx = ClientContext(team_site_url).with_client_certificate(
@@ -26,9 +29,9 @@ def main():
     if not tag or not tag.TagName:
         raise SystemExit(f"Tag '{args.tag}' not found among available tags.")
 
-    target_list = ctx.web.lists.get_by_title(args.list_title)
-    target_list.set_compliance_tag(tag.TagName).execute_query()
-    print(f"Compliance tag '{args.tag}' applied to '{args.list_title}' list.")
+    item = ctx.web.lists.get_by_title(args.list_title).items.get_by_id(args.item_id)
+    item.set_compliance_tag_with_hold(tag.TagName).execute_query()
+    print(f"Compliance tag '{args.tag}' applied to item {args.item_id} (with hold).")
 
 
 if __name__ == "__main__":
