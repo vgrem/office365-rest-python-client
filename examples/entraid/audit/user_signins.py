@@ -20,17 +20,16 @@ def main():
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     signins = (
-        client.audit_logs.signins.filter(f"userPrincipalName eq '{args.user}'")
-        .top(args.limit)
-        .get()
-        .execute_query()
+        client.audit_logs.signins.filter(f"userPrincipalName eq '{args.user}'").top(args.limit).get().execute_query()
     )
 
     print(f"Sign-ins for {args.user} ({len(signins)}):\n")
     for s in signins:
         code = s.status.errorCode if s.status else None
-        print(f"  {s.created_datetime or '?':30s} {s.client_app_used or '?':20s} {s.app_display_name or '?'}"
-              f"  (code {code})")
+        print(
+            f"  {s.created_datetime or '?':30s} {s.client_app_used or '?':20s} {s.app_display_name or '?'}"
+            f"  (code {code})"
+        )
 
 
 if __name__ == "__main__":

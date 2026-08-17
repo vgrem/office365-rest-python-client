@@ -7,9 +7,9 @@ https://learn.microsoft.com/en-us/graph/api/user-list
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. Find the target SKU
 sku_part = input("SKU part number (e.g. SPE_E5): ").strip()

@@ -65,8 +65,8 @@ tenant-level policies, and audit logs.
 | Assign a manager to a user | [`users/assign_manager.py`](./users/assign_manager.py) | `User.ReadWrite.All` | [update manager](https://learn.microsoft.com/en-us/graph/api/user-post-manager) |
 | Get a user's manager | [`users/get_manager.py`](./users/get_manager.py) | `User.Read.All` | [get manager](https://learn.microsoft.com/en-us/graph/api/user-list-manager) |
 | Disable MFA for a user | [`users/disable_mfa.py`](./users/disable_mfa.py) | `User.ReadWrite.All` | [update authentication](https://learn.microsoft.com/en-us/graph/api/authentication-update) |
-| Get assigned licenses | [`users/get_licenses.py`](./users/get_licenses.py) | `User.Read.All` | [get license](https://learn.microsoft.com/en-us/graph/api/user-list-licensess) |
-| Assign a license to a user | [`users/assign_license.py`](./users/assign_license.py) | `User.ReadWrite.All` | [assign license](https://learn.microsoft.com/en-us/graph/api/user-assignlicense) |
+| Get assigned licenses | [`licenses/get_licenses.py`](./licenses/get_licenses.py) | `User.Read.All` | [get license](https://learn.microsoft.com/en-us/graph/api/user-list-licensess) |
+| Assign a license to a user | [`licenses/assign.py`](./licenses/assign.py) | `User.ReadWrite.All` | [assign license](https://learn.microsoft.com/en-us/graph/api/user-assignlicense) |
 | Export users to file | [`users/export.py`](./users/export.py) | `User.Read.All` | [list users](https://learn.microsoft.com/en-us/graph/api/user-list) |
 | Export personal data (GDPR) | [`users/export_personal_data.py`](./users/export_personal_data.py) | `User.Read.All` | [export data](https://learn.microsoft.com/en-us/graph/api/user-exportpersonaldata) |
 | List app role assignments | [`users/list_app_role_assignments.py`](./users/list_app_role_assignments.py) | `User.Read.All` | [app role assignments](https://learn.microsoft.com/en-us/graph/api/user-list-approleassignments) |
@@ -79,7 +79,7 @@ tenant-level policies, and audit logs.
 | Last sign-in report — users without recent sign-in | [`users/last_signin_report.py`](./users/last_signin_report.py) | `User.Read.All`, `AuditLog.Read.All` | [signInActivity](https://learn.microsoft.com/en-us/graph/api/resources/signinactivity) |
 | Find inactive guest accounts | [`users/find_inactive_guests.py`](./users/find_inactive_guests.py) | `User.Read.All`, `AuditLog.Read.All` | [user list](https://learn.microsoft.com/en-us/graph/api/user-list) |
 | Break-glass account audit — CA exclusions, permanent Global Admins | [`users/break_glass_report.py`](./users/break_glass_report.py) | `Policy.Read.All`, `RoleManagement.Read.All` | [CA policies](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesspolicy) |
-| Bulk assign licenses from CSV | [`users/bulk_assign_license.py`](./users/bulk_assign_license.py) | `User.ReadWrite.All` | [assign license](https://learn.microsoft.com/en-us/graph/api/user-assignlicense) |
+| Bulk assign licenses from CSV | [`licenses/bulk_assign_license.py`](./licenses/bulk_assign_license.py) | `User.ReadWrite.All` | [assign license](https://learn.microsoft.com/en-us/graph/api/user-assignlicense) |
 
 ## Examples — Groups
 

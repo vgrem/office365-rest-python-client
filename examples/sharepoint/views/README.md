@@ -10,19 +10,41 @@ can have many **custom views**.
 
 | Requirement | Description | Reference |
 |---|---|---|
-| **Read access** to the list | Required to read views. **Member** role on list to create views. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+| **Read access** to the list | Required to read views. **Member** role on list to create/update/delete views. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+
+---
+
+## How views work
+
+A view consists of:
+- **View fields** — the columns displayed (in order)
+- **View query** — filter/sort/group CAML
+- **Default flag** — the view shown when the list is opened
+
+```mermaid
+graph TD
+    List["List / Library"]
+    List --> DV["Default View"]
+    List --> CV["Custom Views"]
+    DV --> F1["Columns (view fields)"]
+    DV --> Q1["Filter / sort (view query)"]
+    CV --> F2["Columns"]
+    CV --> Q2["Filter / sort"]
+```
 
 ---
 
 ## Examples
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Create a custom view | [`create_view.py`](./create_view.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **2** | Read default view | [`read_default.py`](./read_default.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **3** | Read custom views | [`read_custom.py`](./read_custom.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **4** | Export view definition (XML) | [`export_view.py`](./export_view.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **5** | Export view items | [`export_items.py`](./export_items.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| Create a custom view | [`create_view.py`](./create_view.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Read items from the default or a custom view | [`read_items.py`](./read_items.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Update a view (rename, default, hidden) + render as HTML | [`update_view.py`](./update_view.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Add / remove / reorder view columns | [`view_columns.py`](./view_columns.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Export the view definition (column mapping) as JSON | [`export_view.py`](./export_view.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Export view items to CSV | [`export_items.py`](./export_items.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Delete a view | [`delete_view.py`](./delete_view.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 
 ---
 

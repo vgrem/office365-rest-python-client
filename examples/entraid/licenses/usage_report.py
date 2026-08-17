@@ -11,9 +11,9 @@ https://learn.microsoft.com/en-us/graph/api/user-list
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. SKU inventory
 skus = client.subscribed_skus.get().execute_query()
@@ -43,8 +43,9 @@ print("=" * 80)
 print("USER LICENSE ASSIGNMENTS")
 print("=" * 80)
 for u in all_users:
-    if u.assigned_licenses:
-        names = [sku_map.get(lic.skuId, lic.skuId[:8]) for lic in u.assigned_licenses]
+    assigned = u.assigned_licenses or []
+    if assigned:
+        names = [str(sku_map.get(lic.skuId, lic.skuId) or "")[:8] for lic in assigned]
         print(f"  {u.user_principal_name:45s}  {', '.join(names)}")
 
 # 3. Unlicensed users

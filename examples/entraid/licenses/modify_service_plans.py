@@ -11,9 +11,10 @@ https://learn.microsoft.com/en-us/graph/api/user-assignlicense
 
 from office365.directory.licenses.assigned_license import AssignedLicense
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant, test_user_principal_name
+from office365.runtime.types.collections import StringCollection
+from tests.settings import client_id, client_secret, tenant, user_principal
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. Find target SKU by part number (e.g. "SPE_E3", "SPE_E5", "ENTERPRISEPACK")
 sku_part = input("SKU part number (e.g. SPE_E5): ").strip()
@@ -33,10 +34,11 @@ if not disabled:
     raise SystemExit(f"Service plan '{plan_name}' not found in SKU.")
 
 # 3. Reassign the license with the plan disabled
-user = client.users.get_by_principal_name(test_user_principal_name)
+user = client.users.get_by_principal_name(user_principal)
+disabled_ids = [plan.servicePlanId for plan in disabled if plan.servicePlanId]
 user.assign_license(
-    add_licenses=[AssignedLicense(skuId=sku.sku_id, disabledPlans=[plan.servicePlanId for plan in disabled])],
+    add_licenses=[AssignedLicense(skuId=sku.sku_id, disabledPlans=StringCollection(disabled_ids))],
     remove_licenses=[],
 ).execute_query()
-print(f"\nLicense '{sku.sku_part_number}' updated for {test_user_principal_name}")
+print(f"\nLicense '{sku.sku_part_number}' updated for {user_principal}")
 print(f"Disabled plan: {plan_name}")

@@ -21,10 +21,12 @@ SKU inventory, license assignment, service plan management, and usage reports.
 |---|---|
 | License inventory and unlicensed user report | [`report.py`](./report.py) |
 | License assignment and SKU switch | [`assign.py`](./assign.py) |
+| **Bulk assign licenses from CSV** | [`bulk_assign_license.py`](./bulk_assign_license.py) |
 | **Disable a service plan within a license** | [`modify_service_plans.py`](./modify_service_plans.py) |
 | **Remove a license from a user** | [`remove.py`](./remove.py) |
 | **Find all users with a specific SKU** | [`find_licensed.py`](./find_licensed.py) |
 | **Full license usage report** | [`usage_report.py`](./usage_report.py) |
+| **Get the current user's license details** | [`get_licenses.py`](./get_licenses.py) |
 
 ---
 

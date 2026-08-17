@@ -6,7 +6,7 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api
 import argparse
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 SUMMARY_KEYS = ["PreferredName", "Department", "JobTitle", "Office", "Manager", "AboutMe", "PictureURL"]
 ABOUT_ME_LEN = 120
@@ -17,8 +17,8 @@ def main():
     parser.add_argument("--user", default=None, help="account name to read (default: current user)")
     args = parser.parse_args()
 
-    ctx = ClientContext(test_site_url).with_username_and_password(
-        tenant=test_tenant, client_id=test_client_id, username=test_username, password=test_password
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
 
     if args.user:

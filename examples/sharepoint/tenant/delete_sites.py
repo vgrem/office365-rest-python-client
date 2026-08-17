@@ -18,10 +18,10 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
-from tests import test_admin_site_url, test_client_id, test_password, test_tenant, test_username
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
-admin_client = ClientContext(test_admin_site_url).with_username_and_password(
-    test_tenant, test_client_id, test_username, test_password
+admin_client = ClientContext(admin_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 
 
@@ -47,6 +47,8 @@ sitesPropsCol = admin_client.tenant.get_site_properties_from_sharepoint_by_filte
 # Example 4: Sequential deletion with Microsoft 365 group clearing
 # This approach is necessary when sites are associated with Microsoft 365 groups
 for sitesProps in sitesPropsCol:
+    if sitesProps.url is None:
+        continue
     if sitesProps.get_property("GroupId") != "00000000-0000-0000-0000-000000000000":
         # Clear the Microsoft 365 group association before deleting
         sitesProps.set_property("ClearGroupId", True).update().execute_query()

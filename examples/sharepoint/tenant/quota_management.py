@@ -16,7 +16,7 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/tenant/SetSitePro
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
 _WARNING_PCT = 80
 _MAX_PCT = 100
@@ -31,12 +31,14 @@ def format_mb(mb_value: int) -> str:
 
 
 def main():
-    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-    tenant = Tenant(ctx)
+    ctx = ClientContext(admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+    tenant_obj = Tenant(ctx)
 
     # -- Step 1: report storage usage across all sites --
     print("Fetching site storage info... (this may take a moment)\n")
-    sites = tenant.get_site_properties_from_sharepoint().execute_query()
+    sites = tenant_obj.get_site_properties_from_sharepoint().execute_query()
 
     report = []
     for site in sites:
@@ -91,18 +93,18 @@ def main():
         print("  ✓ Quota updated.")
 
         # Verify
-        updated_site = tenant.get_site_properties_from_sharepoint().execute_query()
+        updated_site = tenant_obj.get_site_properties_from_sharepoint().execute_query()
         for s in updated_site:
             if s.url == target["url"]:
                 print(f"  Verified: quota = {format_mb(getattr(s, 'storage_quota', 0))}")
 
     # -- Step 3: read current OneDrive default storage quota --
-    one_drive_quota = tenant.one_drive_storage_quota
+    one_drive_quota = tenant_obj.one_drive_storage_quota
     print(f"\nDefault OneDrive storage quota: {format_mb(one_drive_quota) if one_drive_quota else '(not set)'}")
 
     # -- Step 4: update OneDrive quota (commented) --
-    # tenant.set_property("OneDriveStorageQuota", 1024 * 100)  # 100 GB
-    # tenant.update().execute_query()
+    # tenant_obj.set_property("OneDriveStorageQuota", 1024 * 100)  # 100 GB
+    # tenant_obj.update().execute_query()
     # print("✓ OneDrive default quota updated to 100 GB.")
 
     # -- Step 5: set OneDrive quota for a specific user (commented) --

@@ -34,7 +34,8 @@ graph TD
 
 The **User Profile Service** is a tenant-level service that stores user
 metadata separately from site permissions. It is accessed via
-`ctx.people_manager` for profile properties and social operations.
+`ctx.people_manager` for profile properties, social operations, and
+profile picture / property updates.
 
 ---
 
@@ -42,22 +43,22 @@ metadata separately from site permissions. It is accessed via
 
 ### Profile properties
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Get profile properties (readable summary) | [`get_properties.py`](./get_properties.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **2** | Export curated profile properties to CSV | [`export.py`](./export.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **3** | Get trending tags | [`get_trending_tags.py`](./get_trending_tags.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **4** | Get OneDrive URL for a user | [`get_onedrive_url.py`](./get_onedrive_url.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| Get profile properties (readable summary) | [`get_properties.py`](./get_properties.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Export curated profile properties to CSV | [`export.py`](./export.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Set a profile property (single / multi-valued) | [`set_profile_property.py`](./set_profile_property.py) | Manage profiles | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Set the current user's profile picture | [`set_profile_picture.py`](./set_profile_picture.py) | Manage profiles | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Get trending tags | [`get_trending_tags.py`](./get_trending_tags.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Get the OneDrive URL for a user | [`get_onedrive_url.py`](./get_onedrive_url.py) | Read access | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
 
 ### Social (following)
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **5** | Follow or unfollow a user | [`follow_user.py`](./follow_user.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **6** | Check if following a user | [`am_i_following.py`](./am_i_following.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **7** | Get my followers | [`get_my_followers.py`](./get_my_followers.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **8** | Get people I follow | [`get_people_followed_by.py`](./get_people_followed_by.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
-| **9** | Get followers of a specific user | [`get_followers.py`](./get_followers.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| List followers / people followed | [`followers.py`](./followers.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Follow or unfollow a user | [`follow_user.py`](./follow_user.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
+| Check if following a user | [`am_i_following.py`](./am_i_following.py) | User context | [People REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/people-rest-api) |
 
 ---
 
@@ -71,14 +72,14 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_sec
 )
 
 # Get current user's profile properties
-props = ctx.people_manager.get_properties_for(ctx.web.current_user.login_name).execute_query()
+props = ctx.people_manager.get_properties_for(ctx.web.current_user).execute_query()
 print(f"Display name: {props.display_name}")
 print(f"Department: {props.department}")
 print(f"Skills: {props.skills}")
 
-# Get trending tags
-tags = ctx.people_manager.get_trending_tags().execute_query()
-for tag in tags.value:
+# Get trending tags (note: the API takes the context)
+tags = ctx.people_manager.get_trending_tags(ctx).execute_query()
+for tag in tags.items:
     print(f"  #{tag.name}  ({tag.count})")
 ```
 

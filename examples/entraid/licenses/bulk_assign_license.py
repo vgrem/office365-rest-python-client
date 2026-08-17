@@ -14,11 +14,15 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/graph/api/user-assignlicense
 """
 
+from __future__ import annotations
+
 import csv
 from io import StringIO
 
+from office365.directory.licenses.assigned_license import AssignedLicense
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from office365.runtime.types.collections import StringCollection
+from tests.settings import client_id, client_secret, tenant
 
 CSV_DATA = """user_principal_name,sku_id,disabled_plans
 user1@contoso.com,contoso:SPE_E3,
@@ -58,7 +62,7 @@ def bulk_assign_licenses(csv_content: str) -> list[dict]:
     Returns:
         List of result dicts with status per user.
     """
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     reader = csv.DictReader(StringIO(csv_content))
     results = []
@@ -93,10 +97,10 @@ def bulk_assign_licenses(csv_content: str) -> list[dict]:
                         break
 
             user = client.users[user_id]
-            if disabled_ids:
-                user.assign_license(sku_id, disabled_plans=disabled_ids).execute_query()
-            else:
-                user.assign_license(sku_id).execute_query()
+            user.assign_license(
+                add_licenses=[AssignedLicense(skuId=sku_id, disabledPlans=StringCollection(disabled_ids))],
+                remove_licenses=[],
+            ).execute_query()
 
             results.append({"user": upn, "status": "success", "sku": sku_input})
         except Exception as e:

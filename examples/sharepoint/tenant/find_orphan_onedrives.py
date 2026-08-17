@@ -16,14 +16,18 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
+from __future__ import annotations
+
 from office365.graph_client import GraphClient
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import (
-    test_admin_site_url,
-    test_client_id,
-    test_client_secret,
-    test_tenant,
+from tests.settings import (
+    admin_site_url,
+    cert_path,
+    cert_thumbprint,
+    client_id,
+    client_secret,
+    tenant,
 )
 
 _KB = 1024
@@ -37,17 +41,19 @@ def get_inactive_users(graph_client: GraphClient) -> set:
     inactive = set()
     try:
         # Deleted users
-        deleted = graph_client.directory.deleted_items.users.get().execute_query()
+        deleted = graph_client.directory.deleted_items("microsoft.graph.user").get().execute_query()
         for user in deleted:
-            if hasattr(user, "user_principal_name") and user.user_principal_name:
-                inactive.add(user.user_principal_name)
+            upn = getattr(user, "user_principal_name", None)
+            if upn:
+                inactive.add(upn)
 
         # Active but blocked users
         users = graph_client.users.get().execute_query()
         for user in users:
-            if hasattr(user, "account_enabled") and user.account_enabled is False:
-                if hasattr(user, "user_principal_name") and user.user_principal_name:
-                    inactive.add(user.user_principal_name)
+            if getattr(user, "account_enabled", True) is False:
+                upn = getattr(user, "user_principal_name", None)
+                if upn:
+                    inactive.add(upn)
     except Exception as e:
         print(f"  Warning: could not fetch user data: {e}")
 
@@ -60,11 +66,13 @@ def find_orphan_onedrives() -> list[dict]:
     Returns:
         List of orphan OneDrive site details.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     admin = Tenant(ctx)
 
     # Also connect Graph to check user status
-    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    graph = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     print("Fetching inactive users...")
     inactive_users = get_inactive_users(graph)

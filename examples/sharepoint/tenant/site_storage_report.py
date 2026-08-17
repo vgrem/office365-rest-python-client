@@ -15,9 +15,11 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
+from __future__ import annotations
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url, test_client_id, test_client_secret, test_tenant
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
 _KB = 1024
 _WARNING_PCT = 80
@@ -41,7 +43,9 @@ def get_site_storage_report(threshold_pct: float = 80.0) -> list[dict]:
     Returns:
         List of dicts with site storage details, sorted by usage % descending.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     admin = Tenant(ctx)
 
     sites = admin.get_site_properties_from_sharepoint().execute_query()

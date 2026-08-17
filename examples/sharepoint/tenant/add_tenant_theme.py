@@ -8,9 +8,10 @@ import json
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.portal.theme_manager import ThemeManager
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
-ctx = ClientContext("https://contoso-admin.sharepoint.com").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext(admin_site_url).with_client_certificate(
+    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 
 manager = ThemeManager(ctx)
