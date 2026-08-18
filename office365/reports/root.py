@@ -4,8 +4,14 @@ from typing import Optional, Union
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
+from office365.entity_collection import EntityCollection
 from office365.partners.partners import Partners
-from office365.reports.internal.queries.create_report_query import create_report_query
+from office365.reports.internal.queries.create_report_query import (
+    create_report_query,
+    create_report_stream_query,
+)
+from office365.reports.print_usage_by_printer import PrintUsageByPrinter
+from office365.reports.print_usage_by_user import PrintUsageByUser
 from office365.reports.report import Report
 from office365.reports.security.root import SecurityReportsRoot
 from office365.runtime.client_result import ClientResult
@@ -84,9 +90,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getEmailActivityUserCounts", period)
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getEmailActivityUserCounts", period)
 
     def get_email_activity_user_detail(self, period: str) -> ClientResult[bytes]:
         """Get details about email activity users have performed.
@@ -96,10 +100,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getEmailActivityUserDetail", period, return_stream=True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getEmailActivityUserDetail", period)
 
     def get_email_app_usage_apps_user_counts(self, period: str) -> ClientResult[Report]:
         """Get the count of unique users per email app.
@@ -109,10 +110,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getEmailAppUsageAppsUserCounts", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getEmailAppUsageAppsUserCounts", period)
 
     def get_email_app_usage_user_counts(self, period) -> ClientResult[bytes]:
         """Get the count of unique users that connected to Exchange Online using any email app.
@@ -122,12 +120,8 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getEmailAppUsageUserCounts", period, True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getEmailAppUsageUserCounts", period)
 
-    ###
     def get_email_app_usage_user_detail(self, period: str) -> ClientResult[bytes]:
         """Get details about which activities users performed on the various email apps.
 
@@ -136,10 +130,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getEmailAppUsageUserDetail", period, True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getEmailAppUsageUserDetail", period)
 
     def get_mailbox_usage_storage(self, period: str) -> ClientResult[bytes]:
         """Get the amount of storage used in your organization.
@@ -149,10 +140,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getMailboxUsageStorage", period, True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getMailboxUsageStorage", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_m365_app_user_counts(self, period: Optional[str] = None) -> ClientResult[bytes]:
@@ -177,16 +165,11 @@ class ReportRoot(Entity):
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_activation_counts(self):
         """Get the count of Microsoft 365 activations on desktops and devices."""
-        qry = create_report_query(self, "getOffice365ActivationCounts")
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getOffice365ActivationCounts")
 
     def get_office365_activations_user_counts(self) -> ClientResult[Report]:
         """Get the count of Microsoft 365 activations on desktops and devices."""
-        qry = create_report_query(self, "getOffice365ActivationsUserCounts")
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getOffice365ActivationsUserCounts")
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_activity_file_counts(self, period: str) -> ClientResult[Report]:
@@ -197,10 +180,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getOneDriveActivityFileCounts", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getOneDriveActivityFileCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_activity_user_counts(self, period: str) -> ClientResult[Report]:
@@ -211,10 +191,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getOneDriveActivityUserCounts", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getOneDriveActivityUserCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_activity_user_detail(self, period: str):
@@ -225,9 +202,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getOneDriveActivityUserDetail", period)
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getOneDriveActivityUserDetail", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_usage_file_counts(self, period: str) -> ClientResult[Report]:
@@ -239,10 +214,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getOneDriveUsageFileCounts", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getOneDriveUsageFileCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_usage_storage(self, period) -> ClientResult[bytes]:
@@ -253,9 +225,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getOneDriveUsageStorage", period)
-        self.context.add_query(qry)
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getOneDriveUsageStorage", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_mailbox_usage_detail(self, period) -> ClientResult[Report]:
@@ -266,9 +236,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getMailboxUsageDetail", period)
-        self.context.add_query(qry)
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getMailboxUsageDetail", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_mailbox_usage_mailbox_counts(self, period: str) -> ClientResult[bytes]:
@@ -280,10 +248,7 @@ class ReportRoot(Entity):
               for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
               the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getMailboxUsageMailboxCounts", period, True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getMailboxUsageMailboxCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_mailbox_usage_quota_status_mailbox_counts(self, period: str):
@@ -292,9 +257,7 @@ class ReportRoot(Entity):
           for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
           the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getMailboxUsageQuotaStatusMailboxCounts", period)
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getMailboxUsageQuotaStatusMailboxCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_pages(self, period: str):
@@ -305,9 +268,7 @@ class ReportRoot(Entity):
             for {period_value} are: D7, D30, D90, and D180. These values follow the format Dn where n represents
             the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getSharePointActivityPages", period)
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getSharePointActivityPages", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_user_activity_user_counts(self, period: str) -> ClientResult[Report]:
@@ -317,10 +278,7 @@ class ReportRoot(Entity):
         Args:
             period (str): Specifies the length of time over which the report is aggregated.
         """
-        qry = create_report_query(self, "getTeamsUserActivityUserCounts", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getTeamsUserActivityUserCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_user_counts(self, period: str):
@@ -332,9 +290,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the
             format Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getSharePointActivityUserCounts", period)
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getSharePointActivityUserCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_user_detail(self, period: str):
@@ -345,9 +301,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the
             format Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getSharePointActivityUserDetail", period)
-        self.context.add_query(qry)
-        return qry.return_type
+        return create_report_query(self, "getSharePointActivityUserDetail", period)
 
     def get_sharepoint_site_usage_detail(self, period: str) -> ClientResult[Report]:
         """Get details about SharePoint site usage.
@@ -357,10 +311,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getSharePointSiteUsageDetail", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getSharePointSiteUsageDetail", period)
 
     def get_sharepoint_site_usage_site_counts(self, period: str) -> ClientResult[Report]:
         """Get the trend of total and active site count during the reporting period.
@@ -370,10 +321,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the format
             Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getSharePointSiteUsageSiteCounts", period)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_query(self, "getSharePointSiteUsageSiteCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_team_counts(self, period: str) -> ClientResult[bytes]:
@@ -384,10 +332,7 @@ class ReportRoot(Entity):
             The supported values for {period_value} are: D7, D30, D90, and D180. These values follow the
             format Dn where n represents the number of days over which the report is aggregated. Required.
         """
-        qry = create_report_query(self, "getTeamsTeamCounts", period, return_stream=True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getTeamsTeamCounts", period)
 
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_user_activity_counts(self, period: str) -> ClientResult[bytes]:
@@ -395,10 +340,7 @@ class ReportRoot(Entity):
         Get the number of Microsoft Teams activities by activity type.
         The activities are performed by Microsoft Teams licensed users.
         """
-        qry = create_report_query(self, "getTeamsUserActivityCounts", period, return_stream=True)
-        self.context.add_query(qry)
-        assert qry.return_type is not None
-        return qry.return_type  # type: ignore[return-type]
+        return create_report_stream_query(self, "getTeamsUserActivityCounts", period)
 
     @odata(name="authenticationMethods")
     @property
@@ -412,15 +354,55 @@ class ReportRoot(Entity):
     @property
     def partners(self) -> Partners:
         """Represents billing details for a Microsoft direct partner."""
-        return self.properties.get(
-            "partners",
-            Partners(self.context, ResourcePath("partners", self.resource_path)),
-        )
+        return self.properties.get("partners", Partners(self.context, ResourcePath("partners", self.resource_path)))
 
     @property
     def security(self) -> SecurityReportsRoot:
         """Container for navigation properties for Azure AD authentication methods resources."""
         return self.properties.get(
-            "security",
-            SecurityReportsRoot(self.context, ResourcePath("security", self.resource_path)),
+            "security", SecurityReportsRoot(self.context, ResourcePath("security", self.resource_path))
         )
+
+    @property
+    def daily_print_usage_by_printer(self) -> EntityCollection[PrintUsageByPrinter]:
+        """Gets the dailyPrintUsageByPrinter property"""
+        return self.properties.get(
+            "dailyPrintUsageByPrinter",
+            EntityCollection[PrintUsageByPrinter](
+                self.context, PrintUsageByPrinter, ResourcePath("dailyPrintUsageByPrinter", self.resource_path)
+            ),
+        )
+
+    @property
+    def daily_print_usage_by_user(self) -> EntityCollection[PrintUsageByUser]:
+        """Gets the dailyPrintUsageByUser property"""
+        return self.properties.get(
+            "dailyPrintUsageByUser",
+            EntityCollection[PrintUsageByUser](
+                self.context, PrintUsageByUser, ResourcePath("dailyPrintUsageByUser", self.resource_path)
+            ),
+        )
+
+    @property
+    def monthly_print_usage_by_printer(self) -> EntityCollection[PrintUsageByPrinter]:
+        """Gets the monthlyPrintUsageByPrinter property"""
+        return self.properties.get(
+            "monthlyPrintUsageByPrinter",
+            EntityCollection[PrintUsageByPrinter](
+                self.context, PrintUsageByPrinter, ResourcePath("monthlyPrintUsageByPrinter", self.resource_path)
+            ),
+        )
+
+    @property
+    def monthly_print_usage_by_user(self) -> EntityCollection[PrintUsageByUser]:
+        """Gets the monthlyPrintUsageByUser property"""
+        return self.properties.get(
+            "monthlyPrintUsageByUser",
+            EntityCollection[PrintUsageByUser](
+                self.context, PrintUsageByUser, ResourcePath("monthlyPrintUsageByUser", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ReportRoot"
