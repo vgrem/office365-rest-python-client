@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from office365.directory.policies.cross_tenant_access_policy_target import CrossTenantAccessPolicyTarget
 from office365.directory.policies.crosstenant.accesspolicytargetconfigurationaccesstype import (
     CrossTenantAccessPolicyTargetConfigurationAccessType,
 )
+from office365.directory.policies.crosstenant.target import CrossTenantAccessPolicyTarget
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 

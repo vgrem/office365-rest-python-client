@@ -21,3 +21,7 @@ class AuthenticationStrengthUsage(ClientValue):
     none: ClientValueCollection[ConditionalAccessPolicy] = field(
         default_factory=lambda: ClientValueCollection(ConditionalAccessPolicy)
     )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AuthenticationStrengthUsage"
