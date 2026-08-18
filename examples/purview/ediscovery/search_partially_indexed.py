@@ -19,6 +19,8 @@ client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 case = client.security.cases.ediscovery_cases.add(
     displayName="Compliance scan — partially indexed items"
 ).execute_query()
+if case.id is None:
+    raise SystemExit("Failed to create eDiscovery case")
 
 search = (
     client.security.cases.ediscovery_cases[case.id]
@@ -30,10 +32,5 @@ search = (
     .execute_query()
 )
 
-estimate = search.estimate_statistics().execute_query()
-print("Search:              Partially indexed items scan")
-print(f"Status:              {estimate.status}")
-print(f"Estimated hits:      {estimate.estimated_hits_count or 0}")
-print(f"Partially indexed:   {estimate.estimated_partially_indexed_item_count or 0}")
-print(f"Mailbox sources:     {estimate.estimated_mailbox_count or 0}")
-print(f"Site sources:        {estimate.estimated_site_count or 0}")
+print(f"Search created: {search.id}")
+print("Partially indexed items scan submitted (unsupported files, encryption, indexing failures).")

@@ -39,4 +39,4 @@ print(f"  In use: {label.is_in_use}")
 
 duration = label.retention_duration
 if duration:
-    print(f"  Duration days: {duration.days if hasattr(duration, 'days') else duration}")
+    print(f"  Duration days: {getattr(duration, 'days', duration)}")

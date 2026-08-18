@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.directory.security.labels.retention.duration import RetentionDuration
 
 
+@dataclass
 class RetentionDurationInDays(RetentionDuration):
     """"""
 

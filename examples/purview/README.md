@@ -34,15 +34,16 @@ threat assessment.
 
 | Scenario | File | Permission |
 |---|---|---|
-| List sensitivity labels | [`sensitivity_labels/apply.py`](./sensitivity_labels/apply.py) | `InformationProtectionPolicy.Read.All` |
-| Analyze label usage | [`sensitivity_labels/analytics.py`](./sensitivity_labels/analytics.py) | `InformationProtectionPolicy.Read.All` |
+| List sensitivity labels (with priority/description) | [`sensitivity_labels/list.py`](./sensitivity_labels/list.py) | `InformationProtectionPolicy.Read.All` |
+| Apply a sensitivity label to a SharePoint file | [`../sharepoint/sites/assign_sensitivity_label.py`](../sharepoint/sites/assign_sensitivity_label.py) | `InformationProtectionPolicy.Read.All` |
 
-### eDiscovery & Compliance
+### eDiscovery
 
 | Scenario | File | Permission |
 |---|---|---|
-| eDiscovery full case workflow | [`ediscovery/create_and_search.py`](./ediscovery/create_and_search.py) | `eDiscovery.ReadWrite.All` |
-| Search partially indexed items | [`compliance/search_partially_indexed.py`](./compliance/search_partially_indexed.py) | `eDiscovery.ReadWrite.All` |
+| eDiscovery full case workflow (case, custodian, search, close) | [`ediscovery/create_and_search.py`](./ediscovery/create_and_search.py) | `eDiscovery.ReadWrite.All` |
+| List review sets for a case | [`ediscovery/review_sets.py`](./ediscovery/review_sets.py) | `eDiscovery.ReadWrite.All` |
+| Search partially indexed items | [`ediscovery/search_partially_indexed.py`](./ediscovery/search_partially_indexed.py) | `eDiscovery.ReadWrite.All` |
 
 ### Subject Rights
 
@@ -56,6 +57,29 @@ threat assessment.
 | Scenario | File | Permission |
 |---|---|---|
 | Submit URL/file threat assessment | [`threat_assessment/scan_url.py`](./threat_assessment/scan_url.py) | `ThreatAssessment.ReadWrite.All` |
+| Submit file / email-file threat assessments (protection area) | [`../entraid/protection/threat_assessment.py`](../entraid/protection/threat_assessment.py) | `ThreatAssessment.ReadWrite.All` |
+
+### Security (attack simulation)
+
+| Scenario | File | Permission |
+|---|---|---|
+| Report phishing-simulation campaigns and training | [`../entraid/security/attack_simulations.py`](../entraid/security/attack_simulations.py) | `AttackSimulation.Read.All` |
+
+---
+
+## Auth note
+
+- **Records management** and **sensitivity labels** require **delegated
+  (interactive)** auth with a Global/Compliance Administrator role — those APIs
+  do not support app-only access. The examples use `with_token_interactive`.
+- **eDiscovery, subject rights, and threat assessment** work with
+  `with_client_secret` (app-only) auth.
+
+## Not yet covered (need library additions)
+
+- eDiscovery **legal holds** (`case.holds`)
+- **Retention policies** and **retention events**
+- **DLP policies**
 
 ---
 

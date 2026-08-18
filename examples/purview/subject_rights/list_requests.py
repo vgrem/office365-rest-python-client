@@ -14,4 +14,6 @@ client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 requests = client.security.subject_rights_requests.get().execute_query()
 print(f"Subject rights requests ({len(requests)}):")
 for r in requests:
-    print(f"  {r.display_name:40s}  type={r.type:10s}  status={r.status}")
+    props = r.properties
+    name = props.get("displayName", "(unnamed)")
+    print(f"  {name:40s}  type={props.get('type', '?'):10s}  status={props.get('status', '?')}")

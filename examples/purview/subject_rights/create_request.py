@@ -22,6 +22,6 @@ request = client.security.subject_rights_requests.add(
     ),
 ).execute_query()
 
-print(f"Request created: {request.display_name}")
-print(f"  Type: {request.type}")
-print(f"  Status: {request.status}")
+print(f"Request created: {request.properties.get('displayName')}")
+print(f"  Type: {request.properties.get('type')}")
+print(f"  Status: {request.properties.get('status')}")

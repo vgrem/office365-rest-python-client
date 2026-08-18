@@ -16,6 +16,8 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/graph/api/resources/security-retentionlabel
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
@@ -31,7 +33,7 @@ def get_retention_label_id(client: GraphClient, label_name: str) -> str | None:
     Returns the label ID or None if not found.
     """
     try:
-        labels = client.security.retention_labels.get().execute_query()
+        labels = client.security.labels.retention_labels.get().execute_query()
         for label in labels:
             if getattr(label, "display_name", "") == label_name:
                 return label.id

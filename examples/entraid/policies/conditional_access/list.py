@@ -1,24 +1,40 @@
 """
-List Conditional Access policies.
-
-Lists all Conditional Access policies in the tenant, showing their
-display name, state (enabled/disabled/report-only), and when they
-were created.
-
-https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list
-
-https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesspolicy
+List Conditional Access policies, with an optional state summary.
 
 Requires delegated permission ``Policy.Read.All``.
+
+https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list
 """
 
+import argparse
+from collections import Counter
+
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_password, test_tenant, test_username
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
-policies = client.policies.conditional_access_policies.get().execute_query()
+def main():
+    parser = argparse.ArgumentParser(description="List Conditional Access policies")
+    parser.add_argument("--summary", action="store_true", help="Show a state summary (enabled / disabled / report-only)")
+    args = parser.parse_args()
 
-for p in policies:
-    state = p.properties.get("state", "")
-    print(f"{p.display_name:50s}  {state:15s}  {p.created_datetime}")
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    policies = client.policies.conditional_access_policies.get().execute_query()
+
+    print(f"Conditional Access policies ({len(policies)}):")
+    for p in policies:
+        props = p.properties
+        print(
+            f"  {props.get('displayName', '(unnamed)'):50s}  [{props.get('state', 'disabled')}]"
+            f"  created: {p.created_datetime or '?'}"
+        )
+
+    if args.summary:
+        counts = Counter(p.properties.get("state", "unknown") for p in policies)
+        print("\nSummary:")
+        for state, count in sorted(counts.items()):
+            print(f"  {state:15s} {count}")
+
+
+if __name__ == "__main__":
+    main()

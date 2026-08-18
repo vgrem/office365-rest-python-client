@@ -16,11 +16,11 @@ https://learn.microsoft.com/en-us/graph/api/resources/alert
 from datetime import datetime
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 
 def main():
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     alerts = client.security.alerts_v2
 
@@ -38,7 +38,7 @@ def main():
     if not active:
         print("No active alerts. Showing recent alerts:\n")
 
-    for a in active or all_alerts[:10]:
+    for a in active or list(all_alerts)[:10]:
         alert_id = a.id or "?"
         title = a.properties.get("title", "(untitled)")
         severity = a.properties.get("severity", "?")
