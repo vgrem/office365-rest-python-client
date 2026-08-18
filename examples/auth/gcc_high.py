@@ -9,14 +9,11 @@ https://learn.microsoft.com/en-us/graph/deployments
 
 from office365.azure_env import AzureEnvironment
 from office365.graph_client import GraphClient
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_tenant,
-    test_user_principal_name,
-)
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant, environment=AzureEnvironment.USGovernmentHigh).with_client_secret(
-    test_client_id, test_client_secret
+client = GraphClient(tenant=tenant, environment=AzureEnvironment.USGovernmentHigh).with_client_secret(
+    client_id, client_secret
 )
-messages = client.users[test_user_principal_name].messages.get().execute_query()
+org = client.organization.get().execute_query()
+for o in org:
+    print(f"Organization: {o.properties.get('displayName')}")

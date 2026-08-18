@@ -1,17 +1,20 @@
 """
-Retrieve a list of licenseDetails objects for enterprise users.
+Retrieve a list of licenseDetails objects for the signed-in user.
 
-https://learn.microsoft.com/en-us/graph/api/user-list-licensedetails?view=graph-rest-1.0
+Requires delegated permission ``User.Read`` (or ``User.Read.All``);
+``/me`` is a delegated API.
 
-https://learn.microsoft.com/en-us/graph/api/resources/user
-
-Requires delegated permission ``User.ReadWrite.All``.
+https://learn.microsoft.com/en-us/graph/api/user-list-licensedetails
 """
 
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, password, tenant, username
 
-client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+client = (
+    GraphClient(tenant=tenant)
+    .with_username_and_password(client_id, username, password)
+    .require_delegated_permission("User.Read", "User.Read.All", "User.ReadWrite.All")
+)
 result = client.me.license_details.get().execute_query()
 for details in result:
     print(details)

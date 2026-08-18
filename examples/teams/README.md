@@ -39,7 +39,10 @@ admin, security, and management workflows.
 
 | Scenario | File | Why it's useful |
 |---|---|---|
-| **App inventory** | [`apps/report.py`](./apps/report.py) | Installed apps across all teams |
+| **App catalog inventory** | [`apps/catalog.py`](./apps/catalog.py) | Store / org / sideloaded apps with versions and publishing state |
+| **App adoption** | [`apps/installed_apps.py`](./apps/installed_apps.py) | Which apps are installed in which teams; unused catalog apps |
+| **App lifecycle** | [`apps/manage.py`](./apps/manage.py) | Search catalog, install, uninstall, inspect team apps |
+| **Pinned apps** | [`apps/tabs.py`](./apps/tabs.py) | Tabs across teams — how apps are surfaced in the UI |
 | **Tag inventory** | [`tags/report.py`](./tags/report.py) | All tags with member count, untagged teams |
 
 ## Collaboration

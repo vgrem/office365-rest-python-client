@@ -48,7 +48,39 @@ flowchart TD
 | **Interactive** | `with_token_interactive(client_id)` | Desktop apps, CLI tools — user signed-in | ✅ | [`interactive.py`](./interactive.py) |
 | **Device code** | `with_device_flow(client_id)` | Headless CLI, SSH, remote servers — user visits a URL | ✅ | [`with_device_flow.py`](./with_device_flow.py) |
 | **ROPC (password)** | `with_username_and_password(client_id, user, pass)` | Automated scripts — user context, no interactivity | ✗ | [`with_user_creds.py`](./with_user_creds.py) |
+| **Custom token callback** | `GraphClient(token_callback=...)` | Your own token acquisition (vault, custom IdP) | varies | [`with_token_callback.py`](./with_token_callback.py) |
+| **CIAM / External ID** | `GraphClient(authority="https://<tenant>.ciamlogin.com")` | Customer identity / External ID tenants | varies | [`ciam.py`](./ciam.py) |
 | **National cloud** | `AzureEnvironment.USGovernmentHigh` | GCC High, DoD, China — applies to any flow above | varies | [`gcc_high.py`](./gcc_high.py) |
+
+---
+
+## National clouds
+
+| Environment | `AzureEnvironment` |
+|---|---|
+| Global | `Global` |
+| US Government GCC | `USGovernment` |
+| US Government GCC High | `USGovernmentHigh` |
+| US Government DoD | `USGovernmentDoD` |
+| China | `China` |
+| Germany (legacy) | `Germany` |
+
+---
+
+## Best practice: verify permissions upfront
+
+Before a script makes a call, guard against missing permissions/licenses
+instead of throwing:
+
+```python
+client = (
+    GraphClient(tenant=tenant)
+    .with_client_secret(client_id, client_secret)
+    .require_application_permission("DeviceManagementConfiguration.Read.All")  # app permission
+    .require_delegated_permission("User.Read", "User.ReadWrite.All")          # delegated
+    .require_license("DEVELOPERPACK_E5")                                       # licensed SKU
+)
+```
 
 ---
 

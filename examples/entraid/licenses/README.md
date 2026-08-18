@@ -27,6 +27,7 @@ SKU inventory, license assignment, service plan management, and usage reports.
 | **Find all users with a specific SKU** | [`find_licensed.py`](./find_licensed.py) |
 | **Full license usage report** | [`usage_report.py`](./usage_report.py) |
 | **Get the current user's license details** | [`get_licenses.py`](./get_licenses.py) |
+| **Check a required SKU is present (require_license)** | [`check_license.py`](./check_license.py) |
 
 ---
 

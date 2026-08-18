@@ -7,6 +7,8 @@ polling for state changes, and business-rules routing logic.
 Required permissions: Presence.Read, Presence.Read.All, Presence.ReadWrite.
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 from time import sleep
 from typing import Optional

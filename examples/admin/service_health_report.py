@@ -18,7 +18,7 @@ import argparse
 import csv
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
 # Service issue statuses that no longer require attention.
 RESOLVED_ISSUE_STATUSES = {
@@ -36,7 +36,7 @@ def main():
     parser.add_argument("--export", default=None, help="optional path to write a CSV report")
     args = parser.parse_args()
 
-    client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     announcement = client.admin.service_announcement
 
     health = announcement.health_overviews.get().execute_query()

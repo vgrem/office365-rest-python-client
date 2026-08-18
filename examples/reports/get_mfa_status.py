@@ -19,5 +19,5 @@ result = client.reports.authentication_methods.user_registration_details.get().e
 print(f"{'User':40s}  {'MFA':6s}  {'Methods'}")
 print("-" * 70)
 for details in result:
-    methods = ", ".join(details.methods or []) if details.methods else ""
+    methods = ", ".join(details.properties.get("methods", []) or [])
     print(f"{details.user_principal_name:40s}  {str(details.is_mfa_registered):6s}  {methods}")

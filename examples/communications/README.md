@@ -1,17 +1,36 @@
 # Microsoft Teams — Communications
 
-Examples for working with presence, calls, and online meetings
+Examples for working with presence, online meetings, and call records
 via the Microsoft Graph Communications API.
 
 ---
 
 ## Prerequisites
 
-| Permission | Description | Reference |
-|---|---|---|
-| `Presence.Read` (delegated) | Read a user's presence | [Presence permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#presence-permissions) |
-| `Presence.Read.All` (application) | Read presence for all users | |
-| `Presence.ReadWrite` (delegated) | Set your own presence and status message | |
+| Permission | Description |
+|---|---|
+| `Presence.Read` (delegated) | Read a user's presence |
+| `Presence.Read.All` (application) | Read presence for all users |
+| `Presence.ReadWrite` (delegated) | Set your own presence and status message |
+| `OnlineMeetings.ReadWrite` (delegated) | Create and list online meetings |
+| `CallRecords.Read.All` (application) | Read Teams call records |
+
+---
+
+## How communications works
+
+```mermaid
+graph TD
+    A[Graph Communications API] --> B[Presence]
+    A --> C[Online meetings]
+    A --> D[Call records]
+    B --> B1[availability / activity]
+    C --> C1[join URL / recordings]
+    D --> D1[call quality / sessions]
+```
+
+Presence is delegated (a user's own or with consent); online meetings are
+delegated; call records require **application** permission.
 
 ---
 
@@ -21,7 +40,9 @@ via the Microsoft Graph Communications API.
 |---|---|---|
 | Get presence for a user | [`get_presence.py`](./get_presence.py) | `Presence.Read` |
 | Set presence and status message | [`set_presence.py`](./set_presence.py) | `Presence.ReadWrite` |
-| Presence monitor with polling and routing | [`presence/teams_presence_monitor.py`](teams_presence_monitor.py) | `Presence.Read.All`, `Presence.ReadWrite` |
+| Presence monitor with polling and routing | [`teams_presence_monitor.py`](./teams_presence_monitor.py) | `Presence.Read.All`, `Presence.ReadWrite` |
+| Create a Teams meeting and list your meetings | [`online_meetings.py`](./online_meetings.py) | `OnlineMeetings.ReadWrite` |
+| List Teams call records (call quality) | [`call_records.py`](./call_records.py) | `CallRecords.Read.All` |
 
 ---
 
@@ -44,3 +65,4 @@ print(f"{presence.availability}  {presence.activity}")
 
 - [Presence API overview](https://learn.microsoft.com/en-us/graph/api/resources/presence)
 - [Cloud communications API](https://learn.microsoft.com/en-us/graph/api/resources/communications-api-overview)
+- [Call records API](https://learn.microsoft.com/en-us/graph/api/resources/callrecords-api-overview)

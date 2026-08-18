@@ -2,6 +2,10 @@
 
 Examples for working with Microsoft To-Do tasks via the Graph API.
 
+The To Do API operates on the signed-in user's mailbox, so the examples use
+delegated auth (`with_username_and_password`) with the credentials in
+`tests/settings.py`.
+
 ---
 
 ## Prerequisites
@@ -24,18 +28,26 @@ Examples for working with Microsoft To-Do tasks via the Graph API.
 
 ---
 
-## Quick start
+## `manage.py` — CLI
 
-```python
-from office365.graph_client import GraphClient
+Run from the repo root:
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_username_and_password(
-    "client_id", "user@contoso.com", "password"
-)
+```bash
+python examples/todo/manage.py lists                                    # list task lists with counts
+python examples/todo/manage.py tasks --list "Demo"                      # show tasks in a list
+python examples/todo/manage.py add-list --name "Demo"                   # create a task list
+python examples/todo/manage.py add-task --list "Demo" --title "Write docs" [--due-in 3] [--importance high] [--body "..."]
+python examples/todo/manage.py checklist --list "Demo" --task <task_id> [--add "Subtasks"]
+python examples/todo/manage.py complete --list "Demo" --task <task_id>
+python examples/todo/manage.py delete-list --name "Demo"
+```
 
-lists = client.me.todo.lists.get().execute_query()
-for lst in lists:
-    print(lst.display_name)
+## Other scripts
+
+```bash
+python examples/todo/list_task_lists.py [--name "Demo"]                 # task lists with counts
+python examples/todo/tasks_due_soon.py [--days 7]                       # tasks due within N days
+python examples/todo/cleanup_completed.py [--days 30] [--dry-run]       # delete old completed tasks
 ```
 
 ---
