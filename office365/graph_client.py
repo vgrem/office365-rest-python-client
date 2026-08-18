@@ -230,6 +230,69 @@ class GraphClient(ClientRuntimeContext):
             sys.exit(1)
         return self
 
+    def require_delegated_permission(self, *scopes: str) -> Self:
+        """
+        Exit if the application lacks at least one of the required Graph delegated permissions.
+
+        Typical usage at the top of example scripts that call delegated APIs (e.g. ``/me``):
+
+            client = (
+                GraphClient(tenant=tenant)
+                .with_username_and_password(client_id, username, password)
+                .require_delegated_permission("User.Read")
+            )
+
+        Args:
+            *scopes: Delegated permission names (e.g. "User.Read");
+                at least one must be granted to the app
+        """
+        from office365.runtime.client_request_exception import ClientRequestException
+
+        if not scopes:
+            return self
+        client_id = self.pending_request().authentication_context.client_id
+        try:
+            assert client_id is not None
+            result = self.get_delegated_permissions(client_id).execute_query()
+            granted = set(result.value)
+            has_perms = any(scope in granted for scope in scopes)
+            if not has_perms:
+                print(f"Missing required delegated permission: need at least one of: {', '.join(scopes)}")
+                sys.exit(1)
+        except ClientRequestException:
+            print(f"Could not verify permissions {scopes}: ensure Application.Read.All is granted.")
+            sys.exit(1)
+        return self
+
+    def require_license(self, *keywords: str) -> Self:
+        """Exit if the tenant has no subscribed SKU matching any of the given keywords.
+
+        Typical usage at the top of example scripts that require a paid
+        add-on license:
+
+            client = (
+                GraphClient(tenant=tenant)
+                .with_client_secret(client_id, client_secret)
+                .require_license("BACKUP")
+            )
+
+        Args:
+            *keywords: Substrings to match against SKU part numbers
+                (case-insensitive); at least one must match
+        """
+        if not keywords:
+            return self
+        skus = self.subscribed_skus.get().execute_query()
+        matched = [
+            s.sku_part_number
+            for s in skus
+            if s.sku_part_number and any(keyword.lower() in s.sku_part_number.lower() for keyword in keywords)
+        ]
+        if not matched:
+            print(f"Missing required license: no subscribed SKU matches: {', '.join(keywords)}")
+            sys.exit(1)
+        return self
+
     def require_role(self, *role_names: str) -> Self:
         """
         Exit if the signed-in user lacks at least one of the required directory roles.

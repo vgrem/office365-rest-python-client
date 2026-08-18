@@ -1,15 +1,19 @@
 from __future__ import annotations
 
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
-from office365.directory.authentication.strength.usage import (
-    AuthenticationStrengthUsage,
-)
-from office365.directory.policies.update_allowed_combinations_result import (
-    UpdateAllowedCombinationsResult,
-)
+from office365.directory.authentication.methods.modes import AuthenticationMethodModes
+from office365.directory.authentication.strength.policytype import AuthenticationStrengthPolicyType
+from office365.directory.authentication.strength.requirements import AuthenticationStrengthRequirements
+from office365.directory.authentication.strength.usage import AuthenticationStrengthUsage
+from office365.directory.policies.authentication_combination_configuration import AuthenticationCombinationConfiguration
+from office365.directory.policies.update_allowed_combinations_result import UpdateAllowedCombinationsResult
 from office365.entity import Entity
+from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
@@ -51,3 +55,56 @@ class AuthenticationStrengthPolicy(Entity):
         qry = ServiceOperationQuery(self, "updateAllowedCombinations", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @property
+    def allowed_combinations(self) -> ClientValueCollection[AuthenticationMethodModes]:
+        """Gets the allowedCombinations property"""
+        return self.properties.get(
+            "allowedCombinations", ClientValueCollection[AuthenticationMethodModes](AuthenticationMethodModes)
+        )
+
+    @property
+    def created_date_time(self) -> Optional[datetime]:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def description(self) -> Optional[str]:
+        """Gets the description property"""
+        return self.properties.get("description", None)
+
+    @property
+    def display_name(self) -> Optional[str]:
+        """Gets the displayName property"""
+        return self.properties.get("displayName", None)
+
+    @property
+    def modified_date_time(self) -> Optional[datetime]:
+        """Gets the modifiedDateTime property"""
+        return self.properties.get("modifiedDateTime", datetime.min)
+
+    @property
+    def policy_type(self) -> AuthenticationStrengthPolicyType:
+        """Gets the policyType property"""
+        return self.properties.get("policyType", AuthenticationStrengthPolicyType.builtIn)
+
+    @property
+    def requirements_satisfied(self) -> AuthenticationStrengthRequirements:
+        """Gets the requirementsSatisfied property"""
+        return self.properties.get("requirementsSatisfied", AuthenticationStrengthRequirements.none)
+
+    @property
+    def combination_configurations(self) -> EntityCollection[AuthenticationCombinationConfiguration]:
+        """Gets the combinationConfigurations property"""
+        return self.properties.get(
+            "combinationConfigurations",
+            EntityCollection[AuthenticationCombinationConfiguration](
+                self.context,
+                AuthenticationCombinationConfiguration,
+                ResourcePath("combinationConfigurations", self.resource_path),
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AuthenticationStrengthPolicy"

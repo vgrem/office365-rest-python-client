@@ -1,10 +1,15 @@
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.audit.provisioning.service_principal import (
-    ProvisioningServicePrincipal,
-)
+from office365.directory.audit.initiator import Initiator
+from office365.directory.audit.provisioning.action import ProvisioningAction
+from office365.directory.audit.provisioning.provisionedidentity import ProvisionedIdentity
+from office365.directory.audit.provisioning.service_principal import ProvisioningServicePrincipal
+from office365.directory.audit.provisioning.statusinfo import ProvisioningStatusInfo
+from office365.directory.audit.provisioning.step import ProvisioningStep
+from office365.directory.audit.provisioning.system import ProvisioningSystem
 from office365.entity import Entity
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
@@ -37,3 +42,62 @@ class ProvisioningObjectSummary(Entity):
     def service_principal(self):
         """Represents the service principal used for provisioning."""
         return self.properties.get("servicePrincipal", ProvisioningServicePrincipal())
+
+    @property
+    def activity_date_time(self) -> Optional[datetime]:
+        """Gets the activityDateTime property"""
+        return self.properties.get("activityDateTime", datetime.min)
+
+    @property
+    def initiated_by(self) -> Initiator:
+        """Gets the initiatedBy property"""
+        return self.properties.get("initiatedBy", Initiator())
+
+    @property
+    def job_id(self) -> Optional[str]:
+        """Gets the jobId property"""
+        return self.properties.get("jobId", None)
+
+    @property
+    def provisioning_action(self) -> ProvisioningAction:
+        """Gets the provisioningAction property"""
+        return self.properties.get("provisioningAction", ProvisioningAction.other)
+
+    @property
+    def provisioning_status_info(self) -> ProvisioningStatusInfo:
+        """Gets the provisioningStatusInfo property"""
+        return self.properties.get("provisioningStatusInfo", ProvisioningStatusInfo())
+
+    @property
+    def provisioning_steps(self) -> ClientValueCollection[ProvisioningStep]:
+        """Gets the provisioningSteps property"""
+        return self.properties.get("provisioningSteps", ClientValueCollection[ProvisioningStep](ProvisioningStep))
+
+    @property
+    def source_identity(self) -> ProvisionedIdentity:
+        """Gets the sourceIdentity property"""
+        return self.properties.get("sourceIdentity", ProvisionedIdentity())
+
+    @property
+    def source_system(self) -> ProvisioningSystem:
+        """Gets the sourceSystem property"""
+        return self.properties.get("sourceSystem", ProvisioningSystem())
+
+    @property
+    def target_identity(self) -> ProvisionedIdentity:
+        """Gets the targetIdentity property"""
+        return self.properties.get("targetIdentity", ProvisionedIdentity())
+
+    @property
+    def target_system(self) -> ProvisioningSystem:
+        """Gets the targetSystem property"""
+        return self.properties.get("targetSystem", ProvisioningSystem())
+
+    @property
+    def tenant_id(self) -> Optional[str]:
+        """Gets the tenantId property"""
+        return self.properties.get("tenantId", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ProvisioningObjectSummary"

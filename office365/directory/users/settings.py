@@ -1,7 +1,6 @@
 from typing import Optional
 
 from office365.directory.users.insights_settings import UserInsightsSettings
-from office365.directory.users.storage import UserStorage
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -12,9 +11,7 @@ class UserSettings(Entity):
     """The current user settings for content discovery."""
 
     @property
-    def contribution_to_content_discovery_as_organization_disabled(
-        self,
-    ) -> Optional[bool]:
+    def contribution_to_content_discovery_as_organization_disabled(self) -> Optional[bool]:
         """Reflects the organization level setting controlling delegate access to the trending API.
         When set to true, the organization doesn't have access to Office Delve. The relevancy of the content
         displayed in Microsoft 365, for example in Suggested sites in SharePoint Home and the Discover view in
@@ -38,21 +35,16 @@ class UserSettings(Entity):
         a user and other items in Microsoft 365, such as documents or sites.
         Get userInsightsSettings through this navigation property."""
         return self.properties.get(
-            "itemInsights",
-            UserInsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path)),
+            "itemInsights", UserInsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path))
         )
 
     @odata(name="shiftPreferences")
     @property
     def shift_preferences(self) -> ShiftPreferences:
         return self.properties.get(
-            "shiftPreferences",
-            ShiftPreferences(self.context, ResourcePath("shiftPreferences", self.resource_path)),
+            "shiftPreferences", ShiftPreferences(self.context, ResourcePath("shiftPreferences", self.resource_path))
         )
 
     @property
-    def storage(self) -> UserStorage:
-        return self.properties.get(
-            "storage",
-            UserStorage(self.context, ResourcePath("storage", self.resource_path)),
-        )
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserSettings"

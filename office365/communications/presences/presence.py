@@ -99,11 +99,7 @@ class Presence(Entity):
               8601 format for durations. If not provided, a default expiration of 5 minutes will be applied.
               The valid duration range is 5-240 minutes (PT5M to PT4H)
         """
-        payload = {
-            "availability": availability,
-            "activity": activity,
-            "expirationDuration": expiration_duration,
-        }
+        payload = {"availability": availability, "activity": activity, "expirationDuration": expiration_duration}
         qry = ServiceOperationQuery(self, "setUserPreferredPresence", None, payload)
         self.context.add_query(qry)
         return self
@@ -125,3 +121,17 @@ class Presence(Entity):
            PresenceUnknown
         """
         return self.properties.get("availability", None)
+
+    @property
+    def sequence_number(self) -> Optional[str]:
+        """Gets the sequenceNumber property"""
+        return self.properties.get("sequenceNumber", None)
+
+    @property
+    def status_message(self) -> PresenceStatusMessage:
+        """Gets the statusMessage property"""
+        return self.properties.get("statusMessage", PresenceStatusMessage())
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Presence"

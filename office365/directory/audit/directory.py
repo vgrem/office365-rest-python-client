@@ -99,3 +99,12 @@ class DirectoryAudit(Entity):
         and $filter (startswith) for displayName.
         """
         return self.properties.get("targetResources", ClientValueCollection(TargetResource))
+
+    @property
+    def activity_date_time(self) -> Optional[datetime]:
+        """Gets the activityDateTime property"""
+        return self.properties.get("activityDateTime", datetime.min)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DirectoryAudit"

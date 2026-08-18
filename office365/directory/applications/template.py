@@ -1,8 +1,9 @@
+from datetime import date, datetime
 from typing import Optional
 
-from office365.directory.applications.service_principal import (
-    ApplicationServicePrincipal,
-)
+from office365.directory.applications.application_risk_factors import ApplicationRiskFactors
+from office365.directory.applications.application_risk_score import ApplicationRiskScore
+from office365.directory.applications.service_principal import ApplicationServicePrincipal
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -52,3 +53,62 @@ class ApplicationTemplate(Entity):
         The supported values are oidc, password, saml, and notSupported.
         """
         return self.properties.get("supportedSingleSignOnModes", StringCollection())
+
+    @property
+    def deprecation_date(self) -> Optional[date]:
+        """Gets the deprecationDate property"""
+        return self.properties.get("deprecationDate", None)
+
+    @property
+    def description(self) -> Optional[str]:
+        """Gets the description property"""
+        return self.properties.get("description", None)
+
+    @property
+    def endpoints(self) -> StringCollection:
+        """Gets the endpoints property"""
+        return self.properties.get("endpoints", StringCollection(None))
+
+    @property
+    def home_page_url(self) -> Optional[str]:
+        """Gets the homePageUrl property"""
+        return self.properties.get("homePageUrl", None)
+
+    @property
+    def is_entra_integrated(self) -> Optional[bool]:
+        """Gets the isEntraIntegrated property"""
+        return self.properties.get("isEntraIntegrated", None)
+
+    @property
+    def last_modified_date_time(self) -> Optional[datetime]:
+        """Gets the lastModifiedDateTime property"""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
+    @property
+    def logo_url(self) -> Optional[str]:
+        """Gets the logoUrl property"""
+        return self.properties.get("logoUrl", None)
+
+    @property
+    def publisher(self) -> Optional[str]:
+        """Gets the publisher property"""
+        return self.properties.get("publisher", None)
+
+    @property
+    def risk_factors(self) -> ApplicationRiskFactors:
+        """Gets the riskFactors property"""
+        return self.properties.get("riskFactors", ApplicationRiskFactors())
+
+    @property
+    def risk_score(self) -> ApplicationRiskScore:
+        """Gets the riskScore property"""
+        return self.properties.get("riskScore", ApplicationRiskScore())
+
+    @property
+    def supported_single_sign_on_modes(self) -> StringCollection:
+        """Gets the supportedSingleSignOnModes property"""
+        return self.properties.get("supportedSingleSignOnModes", StringCollection(None))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ApplicationTemplate"

@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+from office365.directory.permissions.grants.resource_specific import ResourceSpecificPermissionGrant
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -75,11 +76,7 @@ class Chat(Entity):
         """A collection of all the apps in the chat. Nullable."""
         return self.properties.get(
             "installedApps",
-            EntityCollection(
-                self.context,
-                TeamsAppInstallation,
-                ResourcePath("installedApps", self.resource_path),
-            ),
+            EntityCollection(self.context, TeamsAppInstallation, ResourcePath("installedApps", self.resource_path)),
         )
 
     @odata(name="lastMessagePreview")
@@ -87,8 +84,7 @@ class Chat(Entity):
     def last_message_preview(self) -> ChatMessageInfo:
         """Preview of the last message sent in the chat. Null if no messages have been sent in the chat."""
         return self.properties.get(
-            "lastMessagePreview",
-            ChatMessageInfo(self.context, ResourcePath("lastMessagePreview", self.resource_path)),
+            "lastMessagePreview", ChatMessageInfo(self.context, ResourcePath("lastMessagePreview", self.resource_path))
         )
 
     @odata(name="members", persist=True)
@@ -96,16 +92,14 @@ class Chat(Entity):
     def members(self) -> ConversationMemberCollection:
         """A collection of membership records associated with the chat."""
         return self.properties.setdefault(
-            "members",
-            ConversationMemberCollection(self.context, ResourcePath("members", self.resource_path)),
+            "members", ConversationMemberCollection(self.context, ResourcePath("members", self.resource_path))
         )
 
     @property
     def messages(self) -> ChatMessageCollection:
         """A collection of all the messages in the chat. Nullable."""
         return self.properties.get(
-            "messages",
-            ChatMessageCollection(self.context, ResourcePath("messages", self.resource_path)),
+            "messages", ChatMessageCollection(self.context, ResourcePath("messages", self.resource_path))
         )
 
     @property
@@ -115,17 +109,41 @@ class Chat(Entity):
         """
         return self.properties.get(
             "operations",
-            EntityCollection(
-                self.context,
-                TeamsAsyncOperation,
-                ResourcePath("operations", self.resource_path),
-            ),
+            EntityCollection(self.context, TeamsAsyncOperation, ResourcePath("operations", self.resource_path)),
         )
 
     @property
     def tabs(self) -> EntityCollection[TeamsTab]:
         """A collection of all the tabs in the chat."""
         return self.properties.get(
-            "tabs",
-            EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path)),
+            "tabs", EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path))
         )
+
+    @property
+    def created_date_time(self) -> Optional[datetime]:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def last_updated_date_time(self) -> Optional[datetime]:
+        """Gets the lastUpdatedDateTime property"""
+        return self.properties.get("lastUpdatedDateTime", datetime.min)
+
+    @property
+    def original_created_date_time(self) -> Optional[datetime]:
+        """Gets the originalCreatedDateTime property"""
+        return self.properties.get("originalCreatedDateTime", datetime.min)
+
+    @property
+    def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
+        """Gets the permissionGrants property"""
+        return self.properties.get(
+            "permissionGrants",
+            EntityCollection[ResourceSpecificPermissionGrant](
+                self.context, ResourceSpecificPermissionGrant, ResourcePath("permissionGrants", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Chat"

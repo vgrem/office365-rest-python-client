@@ -43,11 +43,7 @@ class UserTeamwork(Entity):
         """
         return self.properties.get(
             "associatedTeams",
-            EntityCollection(
-                self.context,
-                AssociatedTeamInfo,
-                ResourcePath("associatedTeams", self.resource_path),
-            ),
+            EntityCollection(self.context, AssociatedTeamInfo, ResourcePath("associatedTeams", self.resource_path)),
         )
 
     @odata(name="installedApps")
@@ -59,9 +55,7 @@ class UserTeamwork(Entity):
         return self.properties.get(
             "installedApps",
             EntityCollection(
-                self.context,
-                UserScopeTeamsAppInstallation,
-                ResourcePath("installedApps", self.resource_path),
+                self.context, UserScopeTeamsAppInstallation, ResourcePath("installedApps", self.resource_path)
             ),
         )
 
@@ -89,3 +83,7 @@ class UserTeamwork(Entity):
         qry = ServiceOperationQuery(self, "sendActivityNotification", None, payload)
         self.context.add_query(qry)
         return self
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserTeamwork"

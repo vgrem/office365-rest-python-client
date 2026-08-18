@@ -11,7 +11,8 @@ class Partners(Entity):
         """
         Represents billing details for billed and unbilled data.
         """
-        return self.properties.get(
-            "billing",
-            Billing(self.context, ResourcePath("billing", self.resource_path)),
-        )
+        return self.properties.get("billing", Billing(self.context, ResourcePath("billing", self.resource_path)))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Partners"

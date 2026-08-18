@@ -1,7 +1,5 @@
 from office365.directory.audit.directory import DirectoryAudit
-from office365.directory.audit.provisioning.object_summary import (
-    ProvisioningObjectSummary,
-)
+from office365.directory.audit.provisioning.object_summary import ProvisioningObjectSummary
 from office365.directory.audit.signins.signin import SignIn
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -25,11 +23,7 @@ class AuditLogRoot(Entity):
         """
         return self.properties.get(
             "directoryAudits",
-            EntityCollection(
-                self.context,
-                DirectoryAudit,
-                ResourcePath("directoryAudits", self.resource_path),
-            ),
+            EntityCollection(self.context, DirectoryAudit, ResourcePath("directoryAudits", self.resource_path)),
         )
 
     @property
@@ -41,8 +35,7 @@ class AuditLogRoot(Entity):
         the most recent sign-ins are returned first.
         """
         return self.properties.get(
-            "signIns",
-            EntityCollection(self.context, SignIn, ResourcePath("signIns", self.resource_path)),
+            "signIns", EntityCollection(self.context, SignIn, ResourcePath("signIns", self.resource_path))
         )
 
     @property
@@ -53,9 +46,16 @@ class AuditLogRoot(Entity):
         """
         return self.properties.get(
             "provisioning",
-            EntityCollection(
-                self.context,
-                ProvisioningObjectSummary,
-                ResourcePath("provisioning", self.resource_path),
-            ),
+            EntityCollection(self.context, ProvisioningObjectSummary, ResourcePath("provisioning", self.resource_path)),
         )
+
+    @property
+    def sign_ins(self) -> EntityCollection[SignIn]:
+        """Gets the signIns property"""
+        return self.properties.get(
+            "signIns", EntityCollection[SignIn](self.context, SignIn, ResourcePath("signIns", self.resource_path))
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AuditLogRoot"

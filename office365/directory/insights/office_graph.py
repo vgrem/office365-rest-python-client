@@ -20,8 +20,7 @@ class OfficeGraphInsights(Entity):
         This also includes URLs and reference attachments to Teams conversations. Ordered by recency of share.
         """
         return self.properties.get(
-            "shared",
-            EntityCollection(self.context, SharedInsight, ResourcePath("shared", self.resource_path)),
+            "shared", EntityCollection(self.context, SharedInsight, ResourcePath("shared", self.resource_path))
         )
 
     @property
@@ -33,8 +32,7 @@ class OfficeGraphInsights(Entity):
         potentially useful content that the user has access to, but has never viewed before.
         """
         return self.properties.get(
-            "trending",
-            EntityCollection(self.context, Trending, ResourcePath("trending", self.resource_path)),
+            "trending", EntityCollection(self.context, Trending, ResourcePath("trending", self.resource_path))
         )
 
     @property
@@ -44,6 +42,9 @@ class OfficeGraphInsights(Entity):
         including OneDrive for Business and SharePoint documents, ranked by recency of use.
         """
         return self.properties.get(
-            "used",
-            EntityCollection(self.context, UsedInsight, ResourcePath("used", self.resource_path)),
+            "used", EntityCollection(self.context, UsedInsight, ResourcePath("used", self.resource_path))
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OfficeGraphInsights"

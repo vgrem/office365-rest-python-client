@@ -1,6 +1,8 @@
+from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.collections import StringCollection
 
 
 class UserRegistrationDetails(Entity):
@@ -78,5 +80,39 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("userType", None)
 
+    @property
+    def is_mfa_capable(self) -> Optional[bool]:
+        """Gets the isMfaCapable property"""
+        return self.properties.get("isMfaCapable", None)
+
+    @property
+    def is_sspr_registered(self) -> Optional[bool]:
+        """Gets the isSsprRegistered property"""
+        return self.properties.get("isSsprRegistered", None)
+
+    @property
+    def is_system_preferred_authentication_method_enabled(self) -> Optional[bool]:
+        """Gets the isSystemPreferredAuthenticationMethodEnabled property"""
+        return self.properties.get("isSystemPreferredAuthenticationMethodEnabled", None)
+
+    @property
+    def last_updated_date_time(self) -> Optional[datetime]:
+        """Gets the lastUpdatedDateTime property"""
+        return self.properties.get("lastUpdatedDateTime", datetime.min)
+
+    @property
+    def methods_registered(self) -> StringCollection:
+        """Gets the methodsRegistered property"""
+        return self.properties.get("methodsRegistered", StringCollection(None))
+
+    @property
+    def system_preferred_authentication_methods(self) -> StringCollection:
+        """Gets the systemPreferredAuthenticationMethods property"""
+        return self.properties.get("systemPreferredAuthenticationMethods", StringCollection(None))
+
     def __repr__(self):
         return self.user_principal_name or self.id or self.entity_type_name
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserRegistrationDetails"

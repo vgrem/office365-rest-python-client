@@ -10,6 +10,9 @@ class Todo(Entity):
     def lists(self) -> TodoTaskListCollection:
         """The task lists in the users mailbox."""
         return self.properties.get(
-            "lists",
-            TodoTaskListCollection(self.context, ResourcePath("lists", self.resource_path)),
+            "lists", TodoTaskListCollection(self.context, ResourcePath("lists", self.resource_path))
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Todo"

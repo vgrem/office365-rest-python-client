@@ -1,4 +1,7 @@
 from office365.directory.authentication.strength.root import AuthenticationStrengthRoot
+from office365.directory.identities.named_location import NamedLocation
+from office365.directory.policies.authentication_context_class_reference import AuthenticationContextClassReference
+from office365.directory.policies.ca_policies_deletable_root import CaPoliciesDeletableRoot
 from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -22,9 +25,38 @@ class ConditionalAccessRoot(Entity):
         """Returns a collection of the specified Conditional Access (CA) policies."""
         return self.properties.get(
             "policies",
-            EntityCollection(
+            EntityCollection(self.context, ConditionalAccessPolicy, ResourcePath("policies", self.resource_path)),
+        )
+
+    @property
+    def authentication_context_class_references(self) -> EntityCollection[AuthenticationContextClassReference]:
+        """Gets the authenticationContextClassReferences property"""
+        return self.properties.get(
+            "authenticationContextClassReferences",
+            EntityCollection[AuthenticationContextClassReference](
                 self.context,
-                ConditionalAccessPolicy,
-                ResourcePath("policies", self.resource_path),
+                AuthenticationContextClassReference,
+                ResourcePath("authenticationContextClassReferences", self.resource_path),
             ),
         )
+
+    @property
+    def deleted_items(self) -> CaPoliciesDeletableRoot:
+        """Gets the deletedItems property"""
+        return self.properties.get(
+            "deletedItems", CaPoliciesDeletableRoot(self.context, ResourcePath("deletedItems", self.resource_path))
+        )
+
+    @property
+    def named_locations(self) -> EntityCollection[NamedLocation]:
+        """Gets the namedLocations property"""
+        return self.properties.get(
+            "namedLocations",
+            EntityCollection[NamedLocation](
+                self.context, NamedLocation, ResourcePath("namedLocations", self.resource_path)
+            ),
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ConditionalAccessRoot"

@@ -13,8 +13,10 @@ class EmployeeExperienceUser(Entity):
         return self.properties.get(
             "learningCourseActivities",
             EntityCollection(
-                self.context,
-                LearningCourseActivity,
-                ResourcePath("learningCourseActivities", self.resource_path),
+                self.context, LearningCourseActivity, ResourcePath("learningCourseActivities", self.resource_path)
             ),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.EmployeeExperienceUser"

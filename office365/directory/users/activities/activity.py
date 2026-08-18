@@ -4,6 +4,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
 
 
@@ -65,15 +66,48 @@ class UserActivity(Entity):
     @property
     def history_items(self):
         """NavigationProperty/Containment; navigation property to the associated activity."""
-        from office365.directory.users.activities.history_item import (
-            ActivityHistoryItem,
-        )
+        from office365.directory.users.activities.history_item import ActivityHistoryItem
 
         return self.properties.get(
             "historyItems",
-            EntityCollection(
-                self.context,
-                ActivityHistoryItem,
-                ResourcePath("historyItems", self.resource_path),
-            ),
+            EntityCollection(self.context, ActivityHistoryItem, ResourcePath("historyItems", self.resource_path)),
         )
+
+    @property
+    def content_info(self) -> Json:
+        """Gets the contentInfo property"""
+        return self.properties.get("contentInfo", Json())
+
+    @property
+    def content_url(self) -> Optional[str]:
+        """Gets the contentUrl property"""
+        return self.properties.get("contentUrl", None)
+
+    @property
+    def created_date_time(self) -> Optional[datetime]:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def expiration_date_time(self) -> Optional[datetime]:
+        """Gets the expirationDateTime property"""
+        return self.properties.get("expirationDateTime", datetime.min)
+
+    @property
+    def fallback_url(self) -> Optional[str]:
+        """Gets the fallbackUrl property"""
+        return self.properties.get("fallbackUrl", None)
+
+    @property
+    def last_modified_date_time(self) -> Optional[datetime]:
+        """Gets the lastModifiedDateTime property"""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
+    @property
+    def user_timezone(self) -> Optional[str]:
+        """Gets the userTimezone property"""
+        return self.properties.get("userTimezone", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserActivity"

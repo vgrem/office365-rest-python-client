@@ -1,14 +1,18 @@
 from datetime import datetime
 from typing import Optional
 
+from office365.directory.audit.signins.authentication_app_device_details import AuthenticationAppDeviceDetails
 from office365.directory.audit.signins.location import SignInLocation
 from office365.directory.audit.signins.status import SignInStatus
-from office365.directory.policies.applied_conditional_access import (
-    AppliedConditionalAccessPolicy,
-)
+from office365.directory.authentication.conditionalaccessstatus import ConditionalAccessStatus
+from office365.directory.policies.applied_conditional_access import AppliedConditionalAccessPolicy
+from office365.directory.protection.riskyusers.riskeventtype import RiskEventType
+from office365.directory.protection.riskyusers.risklevel import RiskLevel
+from office365.directory.protection.riskyusers.riskstate import RiskState
 from office365.entity import Entity
 from office365.intune.devices.detail import DeviceDetail
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
@@ -29,13 +33,10 @@ class SignIn(Entity):
 
     @odata(name="appliedConditionalAccessPolicies")
     @property
-    def applied_conditional_access_policies(
-        self,
-    ) -> Optional[ClientValueCollection[AppliedConditionalAccessPolicy]]:
+    def applied_conditional_access_policies(self) -> Optional[ClientValueCollection[AppliedConditionalAccessPolicy]]:
         """Provides a list of conditional access policies that the corresponding sign-in activity triggers."""
         return self.properties.get(
-            "appliedConditionalAccessPolicies",
-            ClientValueCollection(AppliedConditionalAccessPolicy),
+            "appliedConditionalAccessPolicies", ClientValueCollection(AppliedConditionalAccessPolicy)
         )
 
     @property
@@ -131,3 +132,72 @@ class SignIn(Entity):
         Supports $filter (eq operator only) on errorCode property.
         """
         return self.properties.get("status", SignInStatus())
+
+    @property
+    def authentication_app_device_details(self) -> AuthenticationAppDeviceDetails:
+        """Gets the authenticationAppDeviceDetails property"""
+        return self.properties.get("authenticationAppDeviceDetails", AuthenticationAppDeviceDetails())
+
+    @property
+    def conditional_access_status(self) -> ConditionalAccessStatus:
+        """Gets the conditionalAccessStatus property"""
+        return self.properties.get("conditionalAccessStatus", ConditionalAccessStatus.success)
+
+    @property
+    def created_date_time(self) -> Optional[datetime]:
+        """Gets the createdDateTime property"""
+        return self.properties.get("createdDateTime", datetime.min)
+
+    @property
+    def home_tenant_id(self) -> Optional[str]:
+        """Gets the homeTenantId property"""
+        return self.properties.get("homeTenantId", None)
+
+    @property
+    def resource_tenant_id(self) -> Optional[str]:
+        """Gets the resourceTenantId property"""
+        return self.properties.get("resourceTenantId", None)
+
+    @property
+    def risk_event_types(self) -> ClientValueCollection[RiskEventType]:
+        """Gets the riskEventTypes property"""
+        return self.properties.get("riskEventTypes", ClientValueCollection[RiskEventType](RiskEventType))
+
+    @property
+    def risk_event_types_v2(self) -> StringCollection:
+        """Gets the riskEventTypes_v2 property"""
+        return self.properties.get("riskEventTypes_v2", StringCollection(None))
+
+    @property
+    def risk_level_aggregated(self) -> RiskLevel:
+        """Gets the riskLevelAggregated property"""
+        return self.properties.get("riskLevelAggregated", RiskLevel.low)
+
+    @property
+    def risk_level_during_sign_in(self) -> RiskLevel:
+        """Gets the riskLevelDuringSignIn property"""
+        return self.properties.get("riskLevelDuringSignIn", RiskLevel.low)
+
+    @property
+    def risk_state(self) -> RiskState:
+        """Gets the riskState property"""
+        return self.properties.get("riskState", RiskState.none)
+
+    @property
+    def service_principal_id(self) -> Optional[str]:
+        """Gets the servicePrincipalId property"""
+        return self.properties.get("servicePrincipalId", None)
+
+    @property
+    def service_principal_name(self) -> Optional[str]:
+        """Gets the servicePrincipalName property"""
+        return self.properties.get("servicePrincipalName", None)
+
+    @property
+    def user_agent(self) -> Optional[str]:
+        """Gets the userAgent property"""
+        return self.properties.get("userAgent", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SignIn"
