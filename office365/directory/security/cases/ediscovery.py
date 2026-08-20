@@ -11,6 +11,7 @@ from office365.directory.security.ediscovery.search import EdiscoverySearch
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class EdiscoveryCase(Entity):
@@ -59,6 +60,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
+    @odata(name="noncustodialDataSources")
     @property
     def noncustodial_data_sources(self) -> EntityCollection[EdiscoveryNoncustodialDataSource]:
         """Gets the noncustodialDataSources property"""
@@ -71,6 +73,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
+    @odata(name="reviewSets")
     @property
     def review_sets(self) -> EntityCollection[EdiscoveryReviewSet]:
         """Gets the reviewSets property"""

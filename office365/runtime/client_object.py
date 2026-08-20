@@ -196,7 +196,7 @@ class ClientObject:
     def copy_from(self, other: ClientObject) -> Self:
         """Copies all properties from the other object into this one."""
         for k, v in other._properties.items():
-            self.set_property(k, v)
+            self.set_property(k, v, False)
         return self
 
     def get(self) -> Self:

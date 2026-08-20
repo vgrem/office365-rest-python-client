@@ -35,7 +35,7 @@ class SPHelper(Entity):
         result (ClientResult or None): Client result
         """
         if result is None:
-            result = ClientResult(context)
+            result = ClientResult[bool](context)
         payload = {"principalName": principal_name, "groupId": group_id}
         qry = ServiceOperationQuery(SPHelper(context), "IsMemberOf", None, payload, None, result, True)
         context.add_query(qry)
@@ -44,7 +44,7 @@ class SPHelper(Entity):
     @staticmethod
     def check_site_availability(context: ClientContext, site_url: str) -> ClientResult[bool]:
         """ """
-        return_type = ClientResult(context)
+        return_type = ClientResult[bool](context)
         qry = ServiceOperationQuery(
             SPHelper(context),
             "CheckSiteAvailability",
@@ -70,7 +70,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
-    def get_members_info(context, group_id, row_limit, return_type=None):
+    def get_members_info(context, group_id, row_limit, return_type: MembersInfo | None = None):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): SharePoint context
         group_id (str): User's login
@@ -88,7 +88,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
-    def get_my_groups(context, logon_name, offset, length, return_type=None):
+    def get_my_groups(context, logon_name, offset, length, return_type: MyGroupsResult | None = None):
         """Retrieves information about groups that a user belongs to.
 
         Args:
@@ -106,7 +106,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
-    def get_members(context, group_id, return_type=None):
+    def get_members(context, group_id: str, return_type=None):
         """Args:
         group_id (str): Group identifier
         context (office365.sharepoint.client_context.ClientContext): SharePoint context
