@@ -10,4 +10,4 @@ ctx = ClientContext(site_url).with_client_certificate(
     tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
 target_list = ctx.web.lists.get_by_title("Site Pages").get().execute_query()
-print("List title: {0}".format(target_list.title))
+print(f"List title: {target_list.title}")

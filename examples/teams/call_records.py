@@ -8,6 +8,17 @@ from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
 
+def _endpoint_user(endpoint) -> str:
+    """Best-effort UPN for a call endpoint (user endpoints only)."""
+    if endpoint is None:
+        return "?"
+    try:
+        user = endpoint.get_property("user")
+    except AttributeError:
+        return "?"
+    return getattr(user, "user_principal_name", None) or str(user) or "?"
+
+
 def main():
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
@@ -15,7 +26,7 @@ def main():
     print(f"Call records: {len(records)}\n")
 
     for r in records:
-        print(f"  {r.start_date_time}  {r.type_.name}  organizer={r.organizer.user}")
+        print(f"  {r.start_date_time}  {r.type_.name}  organizer={_endpoint_user(r.organizer)}")
 
     if records:
         print()
@@ -23,8 +34,8 @@ def main():
         sessions = recent.sessions.get().execute_query()
         print(f"Sessions: {len(sessions)}")
         for s in sessions:
-            caller = s.caller.user.user_principal_name if s.caller and s.caller.user else "?"
-            callee = s.callee.user.user_principal_name if s.callee and s.callee.user else "?"
+            caller = _endpoint_user(s.caller)
+            callee = _endpoint_user(s.callee)
             modalities = [m.name for m in s.modalities]
             print(f"  {caller} -> {callee}  modalities={modalities}")
 

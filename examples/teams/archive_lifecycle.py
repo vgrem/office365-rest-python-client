@@ -29,7 +29,7 @@ def main():
             try:
                 msgs = channel.messages.top(1).order_by("createdDateTime desc").get().execute_query()
                 if msgs:
-                    msg_date = msgs[0].created_date_time
+                    msg_date = msgs[0].created_datetime
                     if msg_date and (last_msg is None or msg_date > last_msg):
                         last_msg = msg_date
             except Exception:

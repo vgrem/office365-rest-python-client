@@ -21,7 +21,7 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    ct = ctx.web.content_types.get_or_add(name=args.name).execute_query()
+    ct = ctx.web.ensure_content_type(name=args.name).execute_query()
     ct.set_property("Description", args.description)
     if args.group:
         ct.set_property("Group", args.group)

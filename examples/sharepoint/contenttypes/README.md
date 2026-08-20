@@ -56,6 +56,7 @@ It can then be associated with one or more lists.
 |---|---|---|---|
 | List content types (site or list scope) | [`list_all.py`](./list_all.py) | Read access | [Content type collection](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | Get a content type by name or id | [`get.py`](./get.py) | Read access | [Get content type](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
+| Inspect a content type / export schema | [`inspect_ct.py`](./inspect_ct.py) | Read access | [Get content type](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | Create a content type | [`create.py`](./create.py) | Site Owner | [Create](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | Create a content type from a parent | [`create_from_parent.py`](./create_from_parent.py) | Site Owner | [Create with parent](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | Update a content type (description, group) | [`update.py`](./update.py) | Site Owner | [Update](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
@@ -71,6 +72,13 @@ It can then be associated with one or more lists.
 | Create a content type and add it to a list | [`add_to_list.py`](./add_to_list.py) | Site Owner on target list | [Add to list](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | Add an existing site content type to a list | [`add_available_to_list.py`](./add_available_to_list.py) | Site Owner on target list | [Add available CT](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 | Set the default content type for a list | [`set_default.py`](./set_default.py) | Site Owner on target list | [Set default](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
+| Find which lists use a content type | [`find_usage.py`](./find_usage.py) | Read access | [Usage check](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
+
+### Migration
+
+| Operation | File | Required role | API reference |
+|---|---|---|---|
+| Clone a content type (with fields) to another site | [`copy_to_site.py`](./copy_to_site.py) | Site Owner on both sites | [Provisioning](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/contenttype) |
 
 ---
 

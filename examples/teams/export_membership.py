@@ -9,14 +9,25 @@ Requires application permission TeamMember.Read.All.
 https://learn.microsoft.com/en-us/graph/api/team-list-members
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-with open("teams_membership.csv", "w", newline="") as f:
-    client.teams.get_all().select(["displayName", "members/displayName", "members/email", "members/roles"]).expand(
-        ["members"]
-    ).to_csv(f).execute_query()
+def main():
+    parser = argparse.ArgumentParser(description="Export all team memberships to CSV")
+    parser.add_argument("--output", default="teams_membership.csv", help="output CSV file")
+    args = parser.parse_args()
 
-print("Exported to teams_membership.csv")
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    with open(args.output, "w", newline="") as f:
+        client.teams.get_all().select(["displayName", "members/displayName", "members/email", "members/roles"]).expand(
+            ["members"]
+        ).to_csv(f).execute_query()
+
+    print(f"Exported to {args.output}")
+
+
+if __name__ == "__main__":
+    main()

@@ -19,7 +19,7 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    ct = ctx.web.content_types.get_or_add(name=args.name).execute_query()
+    ct = ctx.web.ensure_content_type(name=args.name).execute_query()
     field = ctx.web.fields.get_by_internal_name_or_title(args.field)
     ctx.load(field, ["Id", "InternalName"]).execute_query()
 

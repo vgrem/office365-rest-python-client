@@ -20,7 +20,7 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    ct = ctx.web.content_types.get_or_add(name=args.name).execute_query()
+    ct = ctx.web.ensure_content_type(name=args.name).execute_query()
 
     # Add the fields (if not already present) so they can be reordered
     for field_name in args.order:
