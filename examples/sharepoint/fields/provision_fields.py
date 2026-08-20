@@ -33,21 +33,14 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    target_fields = ctx.web.lists.get_by_title(args.list_title).fields
+    lst = ctx.web.lists.ensure_list(args.list_title)
 
-    created = []
     for name, field_type in FIELDS.items():
         info = FieldCreationInformation(Title=name, FieldTypeKind=field_type)
         if field_type == FieldType.Choice:
             info.Choices = ["Not Started", "In Progress", "Completed", "Deferred"]
-        field = target_fields.add_field(info).execute_query()
-        created.append(field)
+        field = lst.fields.ensure(info).execute_query()
         print(f"  created {name:16s} ({field_type.name}) -> {field.internal_name}")
-
-    if not args.keep:
-        for field in created:
-            field.delete_object().execute_query()
-        print("  (fields removed after demo)")
 
 
 if __name__ == "__main__":
