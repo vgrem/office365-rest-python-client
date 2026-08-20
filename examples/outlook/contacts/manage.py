@@ -11,7 +11,7 @@ from tests.settings import client_id, password, tenant, username
 def main():
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-    folder = client.me.contact_folders.get_or_add("SDK Demo Contacts").execute_query()
+    folder = client.me.contact_folders.ensure("SDK Demo Contacts").execute_query()
     contact = folder.contacts.add(
         given_name="Maria",
         surname="Andersen",

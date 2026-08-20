@@ -35,6 +35,7 @@ from office365.sharepoint.clientsidecomponent.query_result import (
 )
 from office365.sharepoint.clientsidecomponent.storage_entity import StorageEntity
 from office365.sharepoint.contenttypes.collection import ContentTypeCollection
+from office365.sharepoint.contenttypes.content_type import ContentType
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition_collection import (
     EventReceiverDefinitionCollection,
@@ -982,6 +983,18 @@ class Web(SecurableObject):
             path (str): relative server URL (path) to a folder
         """
         return self.root_folder.folders.ensure_path(path)
+
+    def ensure_content_type(
+        self, name: str, description: Optional[str] = None, group: Optional[str] = None
+    ) -> ContentType:
+        """Ensure a content type with the given name exists (idempotent).
+
+        Args:
+            name (str): Content type name
+            description (str): Content type description
+            group (str): Content type group
+        """
+        return self.content_types.ensure(name, description, group)
 
     def ensure_edu_class_setup(self, bypass_for_automation):
         """Args:

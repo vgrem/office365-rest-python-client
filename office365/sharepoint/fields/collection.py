@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
+from office365.runtime.client_request_exception import (
+    ClientRequestException,
+    ObjectNotFoundException,
+)
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -36,6 +40,21 @@ class FieldCollection(EntityCollection[Field]):
 
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Field, resource_path, parent)
+
+    def ensure(self, parameters: FieldCreationInformation) -> Field:
+        return_type = Field(self.context)
+
+        def _on_success(existing):
+            return_type.copy_from(existing)
+
+        def _on_error(error: ClientRequestException):
+            if not isinstance(error, ObjectNotFoundException):
+                raise error
+
+            self.add_field(parameters, return_type=return_type)
+
+        self.get_by_title(parameters.Title).get().after_execute(_on_success).on_error(_on_error)
+        return return_type
 
     def add_calculated(self, title: str, formula: str, description: Optional[str] = None) -> FieldCalculated:
         """Creates a Calculated field

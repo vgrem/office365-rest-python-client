@@ -72,7 +72,9 @@ class ListCollection(EntityCollection[List]):
             self,
         )
 
-    def ensure_list(self, title: str) -> List:
+    def ensure_list(
+        self, title: str, description: str | None = None, template_type: ListTemplateType = ListTemplateType.GenericList
+    ) -> List:
         """Gets the list with the given title, or creates it if it does not exist.
 
         Attempts to create the list via ``add_list``; if the server reports that
@@ -87,11 +89,13 @@ class ListCollection(EntityCollection[List]):
 
         Args:
             title: Title of the list to get or create
+            description: Description of the list to get or create
+            template_type: Type of list to get or create
 
         Returns:
             List: The existing or newly created list
         """
-        return_type = self.add_list(title=title)
+        return_type = self.add_list(title=title, description=description, template_type=template_type)
 
         def _on_name_exists(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):

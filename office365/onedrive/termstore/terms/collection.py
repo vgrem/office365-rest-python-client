@@ -49,14 +49,14 @@ class TermCollection(EntityCollection[Term]):
 
         return return_type
 
-    def get_or_add(self, label: str) -> Term:
-        term = self.add(label)
+    def ensure(self, label: str) -> Term:
+        return_type = self.add(label)
 
-        def _on_name_exists(error: ClientRequestException):
+        def _on_error(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
 
-            self.get_by_label(label).after_execute(lambda existing: term.copy_from(existing), execute_first=True)
+            self.get_by_label(label).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
 
-        term.on_error(_on_name_exists)
-        return term
+        return_type.on_error(_on_error)
+        return return_type

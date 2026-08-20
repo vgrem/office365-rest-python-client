@@ -8,6 +8,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.onedrive.termstore.groups.collection import GroupCollection
+from office365.onedrive.termstore.groups.group import Group
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.onedrive.termstore.store_exporter import StoreExporter
 from office365.onedrive.termstore.store_importer import StoreImporter
@@ -20,6 +21,10 @@ from office365.runtime.types.odata_property import odata
 
 class Store(Entity):
     """Represents a taxonomy term store."""
+
+    def ensure_group(self, name: str) -> Group:
+        """Gets existing group by name or creates a new one (idempotent)."""
+        return self.groups.ensure(name)
 
     def search_term(self, search_label: str) -> TermCollection:
         return_type = TermCollection(self.context)

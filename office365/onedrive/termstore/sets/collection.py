@@ -74,14 +74,14 @@ class SetCollection(EntityCollection[Set]):
 
         return return_type
 
-    def get_or_add(self, name: str) -> Set:
+    def ensure_set(self, name: str) -> Set:
         """Gets existing set by name or creates a new one (idempotent)."""
-        term_set = self.add(name)
+        return_type = self.add(name)
 
-        def _on_name_exists(error: ClientRequestException):
+        def _on_error(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
-            self.get_by_name(name).after_execute(lambda existing: term_set.copy_from(existing), execute_first=True)
+            self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
 
-        term_set.on_error(_on_name_exists)
-        return term_set
+        return_type.on_error(_on_error)
+        return return_type

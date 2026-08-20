@@ -25,6 +25,7 @@ from office365.sharepoint.eventreceivers.definition_collection import (
     EventReceiverDefinitionCollection,
 )
 from office365.sharepoint.fields.collection import FieldCollection
+from office365.sharepoint.fields.creation_information import FieldCreationInformation
 from office365.sharepoint.fields.field import Field
 from office365.sharepoint.fields.related_field_collection import RelatedFieldCollection
 from office365.sharepoint.fields.type import FieldType
@@ -664,6 +665,20 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    def ensure_field(self, name: str, field_type: FieldType = FieldType.Text, description: str | None = None) -> Self:
+        """Ensure a single column exists on the list, creating it if missing.
+
+        The check is deferred — the column is looked up and created when the
+        caller executes the query (e.g. ``list.ensure_field("Status").execute_query()``).
+
+        Args:
+            name: The column title
+            field_type: The field type to create it with if missing (Text by default)
+            description: The description of the column
+        """
+        self.fields.ensure(FieldCreationInformation(Title=name, FieldTypeKind=field_type, Description=description))
+        return self
+
     def ensure_fields(self, columns: "Dict[str, FieldType] | list[str]") -> Self:
         """Ensure the specified columns exist on the list, creating missing ones.
 
@@ -679,15 +694,9 @@ class List(SecurableObject):
             columns: Either a list of field names (created as Text) or a mapping
                 of field name -> FieldType
         """
-
-        def _sync_fields(_) -> None:
-            existing = {(f.internal_name or "").lower() for f in self.fields}
-            spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
-            for name, field_type in spec:
-                if name.lower() not in existing:
-                    self.fields.add(field_type, Title=name)
-
-        self.fields.get().after_execute(_sync_fields)
+        spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
+        for name, field_type in spec:
+            self.ensure_field(name, field_type)
         return self
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:
@@ -790,7 +799,7 @@ class List(SecurableObject):
         self.items.add_child(return_type)
 
         def _after_loaded(item):
-            [return_type.set_property(k, v, False) for k, v in item.properties.items()]
+            return_type.copy_from(item)
 
         def _get_item_by_url():
             assert self.root_folder.server_relative_url is not None

@@ -41,16 +41,17 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             self,
         )
 
-    def get_or_add(self, name: str, description: str | None = None, group: str | None = None) -> ContentType:
+    def ensure(self, name: str, description: str | None = None, group: str | None = None) -> ContentType:
+        """Ensure a content type with the given name exists (idempotent)."""
         info = ContentTypeCreationInformation(name, description, group)
         return_type = self.add(info)
 
-        def _on_name_exists(error: ClientRequestException):
+        def _on_error(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
             self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
 
-        return return_type.on_error(_on_name_exists)
+        return return_type.on_error(_on_error)
 
     def add(self, content_type_info: ContentTypeCreationInformation) -> ContentType:
         """Adds a new content type to the collection and returns a reference to the added SP.ContentType.
@@ -96,11 +97,9 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         return_type = ContentType(self.context)
         self.add_child(return_type)
         if isinstance(parent_content_type, ContentType):
-
-            def _ct_loaded():
-                _create(parent_content_type.string_id)
-
-            parent_content_type.ensure_property("StringId").after_execute(lambda _: _ct_loaded())
+            parent_content_type.ensure_property("StringId").after_execute(
+                lambda _: _create(parent_content_type.string_id)
+            )
         else:
             _create(parent_content_type)
         return return_type

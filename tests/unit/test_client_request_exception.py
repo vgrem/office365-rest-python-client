@@ -8,6 +8,7 @@ import unittest
 from office365.runtime.client_request_exception import (
     ClientRequestException,
     DuplicatedObjectException,
+    ObjectNotFoundException,
 )
 from requests import Response
 
@@ -55,6 +56,16 @@ class TestFromResponse(unittest.TestCase):
         exc = ClientRequestException.from_response(_make_error_response(body))
         self.assertNotIsInstance(exc, DuplicatedObjectException)
         self.assertIsInstance(exc, ClientRequestException)
+
+    def test_field_not_found_maps_to_object_not_found(self):
+        body = {
+            "error": {
+                "code": "-2147024809, System.ArgumentException",
+                "message": {"lang": "en-US", "value": 'Field with name "Status" was not found.'},
+            }
+        }
+        exc = ClientRequestException.from_response(_make_error_response(body))
+        self.assertIsInstance(exc, ObjectNotFoundException)
 
     def test_other_errors_not_duplicated(self):
         body = {

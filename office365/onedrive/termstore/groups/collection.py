@@ -31,14 +31,14 @@ class GroupCollection(EntityCollection[Group]):
         """Returns the group with the specified name."""
         return self.single(f"displayName eq '{name}'")
 
-    def get_or_add(self, name: str) -> Group:
+    def ensure(self, name: str) -> Group:
         """Gets existing group by name or creates a new one (idempotent)."""
-        group = self.add(name)
+        return_type = self.add(name)
 
-        def _on_name_exists(error: ClientRequestException):
+        def _on_error(error: ClientRequestException):
             if not isinstance(error, DuplicatedObjectException):
                 raise error
-            self.get_by_name(name).after_execute(lambda existing: group.copy_from(existing), execute_first=True)
+            self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
 
-        group.on_error(_on_name_exists)
-        return group
+        return_type.on_error(_on_error)
+        return return_type

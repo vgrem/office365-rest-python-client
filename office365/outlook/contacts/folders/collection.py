@@ -17,7 +17,7 @@ class ContactFolderCollection(DeltaCollection[ContactFolder]):
         kwargs["displayName"] = display_name
         return super().add(**kwargs)
 
-    def get_or_add(self, display_name: str) -> ContactFolder:
+    def ensure(self, display_name: str) -> ContactFolder:
         """Gets existing group by name or creates a new one (idempotent)."""
         return_type = self.add(display_name)
 

@@ -4,11 +4,16 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.onedrive.termstore.sets.collection import SetCollection
+from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.paths.resource_path import ResourcePath
 
 
 class Group(Entity):
     """Term Group"""
+
+    def ensure_set(self, name: str) -> Set:
+        """Gets existing set by name or creates a new one (idempotent)."""
+        return self.sets.ensure_set(name)
 
     def delete_object(self) -> Self:
         def _delete_group():

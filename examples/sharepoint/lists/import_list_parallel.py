@@ -75,7 +75,5 @@ if __name__ == "__main__":
     )
     contacts_list = client.web.lists.get_by_title(LIST_TITLE).get().execute_query()
     source = load_source()
-    # Sync the source schema with the target list (create missing columns) before importing,
-    # as migration tools do
     contacts_list.ensure_fields(list(source[0].keys())).execute_query()
     run_import(source, contacts_list)

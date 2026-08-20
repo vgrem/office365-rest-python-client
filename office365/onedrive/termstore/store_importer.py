@@ -22,13 +22,13 @@ class StoreImporter:
             self.store for chaining — call .context.execute_query() to process.
         """
         for group_data in data:
-            group = self.store.groups.get_or_add(group_data["name"])
+            group = self.store.ensure_group(group_data["name"])
             for set_data in group_data.get("sets", []):
-                term_set = group.sets.get_or_add(set_data["name"])
+                term_set = group.ensure_set(set_data["name"])
                 self._import_terms(term_set.children, set_data.get("children", []))
         return self.store
 
     def _import_terms(self, collection: TermCollection, terms: list[dict]):
         for t in terms:
-            node = collection.get_or_add(t["name"])
+            node = collection.ensure(t["name"])
             self._import_terms(node.children, t.get("children", []))

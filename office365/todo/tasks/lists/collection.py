@@ -18,17 +18,17 @@ class TodoTaskListCollection(DeltaCollection[TodoTaskList]):
         """
         return super().add(displayName=display_name)
 
-    def get_or_add(self, display_name: str) -> TodoTaskList:
-        """Gets existing Task List by name or creates a new one (idempotent)."""
+    def ensure(self, display_name: str) -> TodoTaskList:
+        """Ensure a Task List with the given name exists (idempotent)."""
         return_type = TodoTaskList(self.context, EntityPath(None, self.resource_path))
         self.add_child(return_type)
 
-        def _get_or_add(col: TodoTaskListCollection):
+        def _ensure(col: TodoTaskListCollection):
             if len(col) == 0:
                 qry = CreateEntityQuery(self, return_type, return_type)
                 self.context.add_query(qry)
             else:
                 return_type.copy_from(col[0])
 
-        self.get().filter(f"displayName eq '{display_name}'").after_execute(_get_or_add)
+        self.get().filter(f"displayName eq '{display_name}'").after_execute(_ensure)
         return return_type
