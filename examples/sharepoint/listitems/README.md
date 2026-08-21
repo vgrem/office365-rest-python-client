@@ -42,30 +42,20 @@ print(f"Created: {item.id}")
 | What | File | Notes |
 |------|------|-------|
 | **Create item** | [`create.py`](./create.py) | Single item with field values |
-| **Create in bulk** | [`create_bulk.py`](./create_bulk.py) | Many items in a single request |
+| **Create in bulk** | [`create_bulk.py`](./create_bulk.py) | Many items via a single `$batch` request |
 | **Update item** | [`update.py`](./update.py) | Change one or more fields |
-| **Update in bulk** | [`update_bulk.py`](./update_bulk.py) | Many updates in a single request |
-| **System update** | [`system_update.py`](./system_update.py) | Skip version creation on update |
-| **System update (alt)** | [`system_update_alt.py`](./system_update_alt.py) | Alternative approach |
+| **Update in bulk** | [`update_bulk.py`](./update_bulk.py) | Many updates in a single `$batch` request |
 | **Delete item** | [`delete.py`](./delete.py) | Remove an item |
-| **Delete in bulk** | [`delete_bulk.py`](./delete_bulk.py) | Remove many items |
-| **Copy items** | [`copy_items.py`](./copy_items.py) | Copy between lists |
+| **Delete in bulk** | [`delete_bulk.py`](./delete_bulk.py) | Remove many items in a single `$batch` request |
 
 ## Read & Query
 
 | What | File | Notes |
 |------|------|-------|
 | **Read items** | [`read.py`](./read.py) | Get all items from a list |
-| **Read with properties** | [`read_include_props.py`](./read_include_props.py) | Include specific fields |
-| **Read with properties (alt)** | [`read_with_props_alt.py`](./read_with_props_alt.py) | Alternative using load method |
-| **Read with user info** | [`read_include_user.py`](./read_include_user.py) | Expand user/author fields |
-| **Query via CAML** | [`read_list_via_query_alt.py`](./read_list_via_query_alt.py) | Read using CAML query |
+| **Read with properties** | [`read_include_props.py`](./read_include_props.py) | Include specific fields via `$select` |
 | **Filter items** | [`filter.py`](./filter.py) | OData `$filter` queries |
 | **Filter by filename** | [`filter_by_filename.py`](./filter_by_filename.py) | Filter documents by name |
-| **Filter by folder** | [`filter_by_folder.py`](./filter_by_folder.py) | Filter items in a folder |
-| **Get grouped items** | [`get_grouped.py`](./get_grouped.py) | Group by a field value |
-| **Get deleted items** | [`get_deleted.py`](./get_deleted.py) | Retrieve items from recycle bin |
-| **Query throttling** | [`query_throttle.py`](./query_throttle.py) | Handle 5000+ row threshold |
 | **Export to CSV** | [`export_to_csv.py`](./export_to_csv.py) | Export list items to file |
 
 ## Lookup & Field Values
@@ -74,7 +64,6 @@ print(f"Created: {item.id}")
 |------|------|-------|
 | **Set date/time field** | [`set_datetime_field_value.py`](./set_datetime_field_value.py) | DateTime field types |
 | **Set lookup field** | [`set_lookup_field_value.py`](./set_lookup_field_value.py) | Reference another list |
-| **Set image field** | [`set_image_field_value.py`](./set_image_field_value.py) | Image/Hyperlink fields |
 | **Get lookup field value** | [`get_lookup_field_value.py`](./get_lookup_field_value.py) | Read a lookup field |
 
 ## Attachments

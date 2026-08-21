@@ -4,22 +4,25 @@ Install an app from the tenant app catalog onto a target site.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/alm-api-for-spfx-add-ins
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import (
-    test_admin_site_url,
-    test_client_id,
-    test_password,
-    test_team_site_url,
-    test_tenant,
-    test_username,
-)
+import argparse
 
-admin = ClientContext(test_admin_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-app = admin.web.tenant_app_catalog.available_apps.get_by_title("Starter Kit - Banner").execute_query()
-app.install().execute_query()
-print(f"Installed: {app.title} on {test_team_site_url}")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import admin_site_url, client_id, password, team_site_url, tenant, username
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Install an app from the tenant app catalog onto a site")
+    parser.add_argument("--app-title", default="Starter Kit - Banner", help="app title in the catalog")
+    parser.add_argument("--site-url", default=team_site_url, help="target site URL")
+    args = parser.parse_args()
+
+    admin = ClientContext(admin_site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+    app = admin.web.tenant_app_catalog.available_apps.get_by_title(args.app_title).execute_query()
+    app.install().execute_query()
+    print(f"Installed: {app.title} on {args.site_url}")
+
+
+if __name__ == "__main__":
+    main()

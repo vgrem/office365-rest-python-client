@@ -20,7 +20,7 @@ Notes:
 
 import os
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright  # type: ignore[import-not-found]
 
 
 def main() -> None:

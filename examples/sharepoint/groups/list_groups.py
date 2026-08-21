@@ -1,18 +1,28 @@
-"""Demonstrates how to list all site groups.
+"""
+List all SharePoint site groups.
 
-Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/group
+Requires read access to the site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/group
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-groups = ctx.web.site_groups.get().execute_query()
-for g in groups:
-    print(f"  {g.title}  (ID: {g.id})")
-print(f"Total: {len(groups)} groups")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, password, site_url, tenant, username
+
+
+def main():
+    argparse.ArgumentParser(description="List all site groups").parse_args()
+
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+    groups = ctx.web.site_groups.get().execute_query()
+    for g in groups:
+        print(f"  {g.title}  (ID: {g.id})")
+    print(f"Total: {len(groups)} groups")
+
+
+if __name__ == "__main__":
+    main()

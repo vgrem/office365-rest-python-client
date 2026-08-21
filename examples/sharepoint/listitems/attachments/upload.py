@@ -2,24 +2,34 @@
 Creates a list item and uploads an attachment
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests.settings import client_id, password, team_site_url, tenant, username
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-list_title = "Company Tasks"
-tasks_list = ctx.web.lists.get_by_title(list_title)
 
-# 1. create a new list item
-task_item = tasks_list.add_item({"Title": "New Task"}).execute_query()
+def main():
+    parser = argparse.ArgumentParser(description="Create a list item and upload an attachment")
+    parser.add_argument("--list-title", default="Company Tasks", help="list title")
+    parser.add_argument("--file", default="../../../data/Financial Sample.xlsx", help="file to upload as an attachment")
+    args = parser.parse_args()
 
-# 2. read & upload attachment for a list item
-paths = ["../../../data/Financial Sample.xlsx", "../../../data/countries.json"]
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant,
+        client_id=client_id,
+        username=username,
+        password=password,
+    )
+    tasks_list = ctx.web.lists.get_by_title(args.list_title)
 
-with open(paths[0], "rb") as f:
-    attachment = task_item.attachment_files.upload(f).execute_query()
-print(attachment)
+    # 1. create a new list item
+    task_item = tasks_list.add_item({"Title": "New Task"}).execute_query()
+
+    # 2. read & upload attachment for a list item
+    with open(args.file, "rb") as f:
+        attachment = task_item.attachment_files.upload(f).execute_query()
+    print(attachment)
+
+
+if __name__ == "__main__":
+    main()

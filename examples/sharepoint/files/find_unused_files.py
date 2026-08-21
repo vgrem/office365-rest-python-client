@@ -2,29 +2,22 @@
 Identify files in a SharePoint site that haven't been accessed
 within a specified period.
 
-Uses audit log records (FileAccessed, FileDownloaded, FileModified)
-to determine the last meaningful user activity on each file. Helps
-clean up stale content and reduce storage costs.
+Uses the file's last modified date as a proxy for activity (a real
+audit-log query would be more accurate but requires the beta
+``/security/auditLog/queries`` API). Helps clean up stale content and
+reduce storage costs.
 
-Inspired by Find-LastAccessedDateDocuments.PS1 from Office 365 for IT Pros.
+Requires read access to the site.
 
-Required delegated permissions:
-    AuditLog.Read.All           Read audit log records
-    Sites.Read.All              Read file metadata in the site
-    User.ReadBasic.All          Resolve user display names
-
-https://learn.microsoft.com/en-us/graph/api/security/auditlogquery-query
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-item-operations
 """
 
+import argparse
 from datetime import datetime, timedelta, timezone
+from typing import List
 
 from office365.sharepoint.client_context import ClientContext
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_site_url,
-    test_tenant,
-)
+from tests.settings import client_id, password, site_url, tenant, username
 
 _DISPLAY_LIMIT = 20
 
@@ -35,7 +28,6 @@ def get_all_files_in_site(ctx: ClientContext) -> dict:
     Returns dict mapping file URL -> {name, url, created, modified}.
     """
     files_map = {}
-
     try:
         lib = ctx.web.default_document_library()
         items = (
@@ -44,7 +36,6 @@ def get_all_files_in_site(ctx: ClientContext) -> dict:
             .get_all()
             .execute_query()
         )
-
         for item in items:
             file_url = item.properties.get("FileRef", "")
             files_map[file_url] = {
@@ -55,57 +46,24 @@ def get_all_files_in_site(ctx: ClientContext) -> dict:
             }
     except Exception as e:
         print(f"  Error fetching files: {e}")
-
     return files_map
 
 
-def get_file_access_events(days_back: int) -> dict:
-    """Query audit logs for file access events.
-
-    Returns dict mapping file URL -> most recent access timestamp.
-    """
-    # This is a placeholder for the actual audit log query.
-    # In production, use client.security.audit_log.queries.add()
-    # with operations: FileAccessed, FileDownloaded, FileModified
-    # and then poll for results.
-    print(f"  Audit log query would search {days_back} days for file access events")
-    return {}
-
-
-def find_unused_files(days_threshold: int = 180) -> list[dict]:
-    """Find files without user access within *days_threshold*.
-
-    Args:
-        days_threshold: Days of inactivity to flag a file.
-
-    Returns:
-        List of file dicts with last access info.
-    """
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-
+def find_unused_files(ctx: ClientContext, days_threshold: int) -> List[dict]:
+    """Find files whose last modified date is older than *days_threshold*."""
     print("Fetching files from document library...")
     files = get_all_files_in_site(ctx)
     print(f"  Found {len(files)} files")
 
-    print("Querying audit logs for file access events...")
-    access_events = get_file_access_events(days_threshold)
-
     cutoff = datetime.now(timezone.utc) - timedelta(days=days_threshold)
     unused = []
 
-    for file_url, info in files.items():
-        # Last access = most recent audit event or fall back to Modified
-        last_access = access_events.get(file_url)
-        if not last_access:
-            # Fallback: use the file's last modified date
-            try:
-                modified = info["last_modified"]
-                if modified:
-                    last_access = datetime.fromisoformat(modified.replace("Z", "+00:00"))
-                else:
-                    last_access = datetime.now(timezone.utc) - timedelta(days=1000)
-            except (ValueError, TypeError):
-                last_access = datetime.now(timezone.utc) - timedelta(days=1000)
+    for _, info in files.items():
+        modified = info["last_modified"]
+        try:
+            last_access = datetime.fromisoformat(str(modified).replace("Z", "+00:00"))
+        except (ValueError, TypeError):
+            last_access = datetime.now(timezone.utc) - timedelta(days=1000)
 
         if last_access < cutoff:
             unused.append(
@@ -122,8 +80,14 @@ def find_unused_files(days_threshold: int = 180) -> list[dict]:
 
 
 def main():
-    print("Finding unused files (no access in 180+ days)...\n")
-    unused = find_unused_files(days_threshold=180)
+    parser = argparse.ArgumentParser(description="Find unused files in the default document library")
+    parser.add_argument("--days", type=int, default=180, help="days of inactivity to flag a file")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+    unused = find_unused_files(ctx, args.days)
 
     if not unused:
         print("No unused files found.")

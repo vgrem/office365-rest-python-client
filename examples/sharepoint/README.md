@@ -27,7 +27,6 @@ prints clear output.
 | [`lists/`](./lists/) | List CRUD, import/export, paging |
 | [`migration/`](./migration/) | Migration assessment scanner |
 | [`navigation/`](./navigation/) | Top nav, Quick Launch |
-| [`operations/`](./operations/) | Long-running async operations (create/update/delete sites), SpoOperation polling |
 | [`pages/`](./pages/) | Modern site pages CRUD, news |
 | [`propertybag/`](./propertybag/) | Custom key-value pairs on webs |
 | [`permissions/`](./permissions/) | Grant, revoke, break inheritance |
@@ -36,7 +35,7 @@ prints clear output.
 | [`search/`](./search/) | KQL queries, filters, refinement, crawl diagnostics, admin |
 | [`sharing/`](./sharing/) | Sharing links, anonymous access |
 | [`sitedesigns/`](./sitedesigns/) | Site designs and site scripts |
-| [`sites/`](./sites/) | Create (modern/classic/communication), manage admins |
+| [`sites/`](./sites/) | Create (modern/classic/communication), manage admins, lifecycle |
 | [`sitescripts/`](./sitescripts/) | Site script JSON actions |
 | [`taxonomy/`](./taxonomy/) | Term store, term sets, managed metadata |
 | [`teams/`](./teams/) | Teams via SharePoint API (limited) |

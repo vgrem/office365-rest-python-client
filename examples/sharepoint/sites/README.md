@@ -25,46 +25,40 @@ SharePoint has two site models:
 Modern sites are the default for new provisioning. Classic sites are still
 supported but Microsoft recommends modern for new work.
 
-```
-Modern Team Site         Modern Comm Site          Classic Site
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ M365 Group      │    │ No group        │    │ No group        │
-│ Planner, Teams, │    │ Publishing      │    │ Legacy features │
-│ Outlook, etc.   │    │ layout          │    │ STS template    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
 ---
 
 ## Examples
 
 ### Create
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Create a modern Team site | [`create_team.py`](./create_team.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
-| **2** | Create a modern Communication site | [`create_comm.py`](./create_comm.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
-| **3** | Create a classic site | [`create_classic.py`](./create_classic.py) | SharePoint Admin | [Site creation API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest) |
+| Operation | File | Required role |
+|---|---|---|
+| Create a modern Team site | [`create_team_site.py`](./create_team_site.py) | SharePoint Admin |
+| Create a modern Communication site | [`create_comm_site.py`](./create_comm_site.py) | SharePoint Admin |
+| Create a classic site | [`create_classic_site.py`](./create_classic_site.py) | SharePoint Admin |
 
-### Read & Manage
+### Read, update, manage
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **4** | Get site properties | [`get_basic_props.py`](./get_basic_props.py) | Read access | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
-| **5** | Get site admins | [`get_admins.py`](./get_admins.py) | Read access | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
-| **6** | Get personal site (OneDrive) | [`get_my_site.py`](./get_my_site.py) | User context | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
-| **7** | Set site properties | [`set_site_props.py`](./set_site_props.py) | Site Owner | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
-| **8** | Add site admin | [`add_admin.py`](./add_admin.py) | Site Owner | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
-| **9** | Remove site admin | [`remove_admin.py`](./remove_admin.py) | Site Owner | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
-| **10** | Delete site | [`delete_site.py`](./delete_site.py) | SharePoint Admin | [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations) |
+| Operation | File | Required role |
+|---|---|---|
+| Get site properties | [`get_site_props.py`](./get_site_props.py) | Read access |
+| Set site properties | [`update_site.py`](./update_site.py) | Site Owner |
+| List site admins | [`get_site_admins.py`](./get_site_admins.py) | SharePoint Admin |
+| Get personal site (OneDrive) | [`get_my_site.py`](./get_my_site.py) | User context |
+| Delete a site | [`delete_site.py`](./delete_site.py) | SharePoint Admin |
+| Full lifecycle (create → update → delete) | [`site_lifecycle.py`](./site_lifecycle.py) | SharePoint Admin + `Sites.FullControl.All` |
+
+> Note: the SDK supports listing site collection administrators but not the
+> add/remove write operations — grant owner access via the Members group or
+> the SharePoint admin center.
 
 ### Site lifecycle & compliance
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **11** | Find inactive/obsolete sites | [`find_inactive_sites.py`](./find_inactive_sites.py) | SharePoint Admin + `Sites.Read.All` | [Tenant REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **12** | Assign sensitivity label to site | [`assign_sensitivity_label.py`](./assign_sensitivity_label.py) | SharePoint Admin + Purview read | [Graph sensitivity labels](https://learn.microsoft.com/en-us/graph/api/resources/sensitivitylabel) |
-| **13** | Check site retention policy coverage | [`check_retention_policy.py`](./check_retention_policy.py) | SharePoint Admin + `RecordsManagement.Read.All` | [Purview retention](https://learn.microsoft.com/en-us/purview/retention-policies-sharepoint) |
+| Operation | File | Required role |
+|---|---|---|
+| Find inactive/obsolete sites | [`find_inactive_sites.py`](./find_inactive_sites.py) | SharePoint Admin + `Sites.Read.All` |
+| Assign a sensitivity label to a site | [`assign_sensitivity_label.py`](./assign_sensitivity_label.py) | SharePoint Admin + Purview read |
+| Check retention policy coverage | [`check_retention_policy.py`](./check_retention_policy.py) | SharePoint Admin + `RecordsManagement.Read.All` |
 
 ---
 
@@ -78,13 +72,13 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_sec
 )
 
 # Get site properties
-site = ctx.web.get().execute_query()
-print(f"Title: {site.title}, URL: {site.url}, Template: {site.get_web_template()}")
+web = ctx.web.get().execute_query()
+print(f"{web.title}  {web.url}  ({web.web_template})")
 ```
 
 ---
 
 ## API reference
 
-- [SharePoint site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations)
-- [Modern site creation REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest)
+- [Site creation REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest)
+- [Site REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations)

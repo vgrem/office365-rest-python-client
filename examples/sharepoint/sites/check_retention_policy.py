@@ -17,23 +17,29 @@ https://learn.microsoft.com/en-us/purview/retention-policies-sharepoint
 https://learn.microsoft.com/en-us/graph/api/resources/security-retentionlabel
 """
 
+from typing import List
+
 from office365.graph_client import GraphClient
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import (
-    test_admin_site_url,
-    test_client_id,
-    test_client_secret,
-    test_tenant,
+from tests.settings import (
+    admin_site_url,
+    cert_path,
+    cert_thumbprint,
+    client_id,
+    client_secret,
+    tenant,
 )
 
 
-def get_all_sites() -> list[dict]:
+def get_all_sites() -> List[dict]:
     """Fetch all SharePoint sites in the tenant.
 
     Returns list of site dicts with URL, title, and template.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     admin = Tenant(ctx)
     sites = admin.get_site_properties_from_sharepoint().execute_query()
 
@@ -48,7 +54,7 @@ def get_all_sites() -> list[dict]:
     ]
 
 
-def get_retention_policies(client: GraphClient) -> list[dict]:
+def get_retention_policies(client: GraphClient) -> List[dict]:
     """Fetch retention policies/labels from Microsoft Purview.
 
     Returns list of policy dicts with id, display_name, and scope info.
@@ -56,9 +62,8 @@ def get_retention_policies(client: GraphClient) -> list[dict]:
     """
     policies = []
     try:
-        # This queries the security/retention policies endpoint.
-        # Exact API path depends on your Graph version and permissions.
-        result = client.security.retention_labels.get().execute_query()
+        # Lists retention labels via the Microsoft Graph security API.
+        result = client.security.labels.retention_labels.get().execute_query()
         for label in result:
             policies.append(
                 {
@@ -71,7 +76,7 @@ def get_retention_policies(client: GraphClient) -> list[dict]:
     return policies
 
 
-def check_site_retention_coverage(sites: list[dict]) -> None:
+def check_site_retention_coverage(sites: List[dict]) -> None:
     """Check which sites appear to have retention applied.
 
     In a full implementation, this would cross-reference site
@@ -100,7 +105,7 @@ def check_site_retention_coverage(sites: list[dict]) -> None:
 def main():
     print("Checking SharePoint site retention policy coverage...\n")
 
-    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    graph = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     # 1. Fetch all sites
     print("Fetching all SharePoint sites...")

@@ -3,6 +3,7 @@
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
 
+import argparse
 from random import randrange
 from typing import Optional
 
@@ -10,7 +11,7 @@ from faker import Faker
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests.settings import client_id, password, team_site_url, tenant, username
 
 
 def import_files(target_folder: Folder, files_amount: Optional[int] = None) -> None:
@@ -37,13 +38,22 @@ def import_folders(
             import_files(target_folder, randrange(0, files_amount))
 
 
-if __name__ == "__main__":
-    ctx = ClientContext(test_team_site_url).with_username_and_password(
-        tenant=test_tenant,
-        client_id=test_client_id,
-        username=test_username,
-        password=test_password,
+def main():
+    parser = argparse.ArgumentParser(description="Upload files into a SharePoint document library")
+    parser.add_argument("--list-title", default="Documents_Archive", help="target document library title")
+    parser.add_argument("--files-amount", type=int, default=500, help="number of files to upload")
+    args = parser.parse_args()
+
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant,
+        client_id=client_id,
+        username=username,
+        password=password,
     )
-    lib = ctx.web.lists.get_by_title("Documents_Archive")
-    # run_folders_import(lib, 1, True, 1000)
-    import_files(lib.root_folder, 500)
+    lib = ctx.web.lists.get_by_title(args.list_title)
+    # import_folders(lib, 1, True, 1000)
+    import_files(lib.root_folder, args.files_amount)
+
+
+if __name__ == "__main__":
+    main()

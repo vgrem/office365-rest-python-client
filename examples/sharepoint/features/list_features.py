@@ -3,12 +3,24 @@
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/features
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_site_url
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
 
-features = ctx.site.features.get().execute_query()
-for f in features:
-    print(f"  {f.display_name or 'N/A'}  (ID: {f.definition_id})")
-print(f"Total: {len(features)} activated features")
+def main():
+    parser = argparse.ArgumentParser(description="List activated features on a site")
+    parser.add_argument("--site-url", default=site_url, help="target site URL")
+    args = parser.parse_args()
+
+    ctx = ClientContext(args.site_url).with_client_secret(tenant, client_id, client_secret)
+
+    features = ctx.site.features.get().execute_query()
+    for f in features:
+        print(f"  {f.display_name or 'N/A'}  (ID: {f.definition_id})")
+    print(f"Total: {len(features)} activated features")
+
+
+if __name__ == "__main__":
+    main()

@@ -17,13 +17,15 @@ https://learn.microsoft.com/en-us/graph/api/resources/sensitivitylabel
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api
 """
 
+from __future__ import annotations
+
 from office365.graph_client import GraphClient
 from office365.sharepoint.client_context import ClientContext
-from tests import (
-    test_client_id,
-    test_client_secret,
-    test_site_url,
-    test_tenant,
+from tests.settings import (
+    client_id,
+    client_secret,
+    site_url,
+    tenant,
 )
 
 
@@ -34,7 +36,7 @@ def list_available_labels(client: GraphClient) -> list[dict]:
     """
     labels = []
     try:
-        result = client.security.sensitivity_labels.get().execute_query()
+        result = client.security.data_security_and_governance.sensitivity_labels.get().execute_query()
         for label in result:
             labels.append(
                 {
@@ -68,7 +70,7 @@ def assign_sensitivity_label(site_url: str, label_id: str) -> bool:
     Returns:
         True if successful, False otherwise.
     """
-    ctx = ClientContext(site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
 
     try:
         # Set the sensitivity label on the site
@@ -85,7 +87,7 @@ def assign_sensitivity_label(site_url: str, label_id: str) -> bool:
 def main():
     print("SharePoint site sensitivity label management\n")
 
-    graph = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+    graph = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     # 1. List available labels
     print("Fetching available sensitivity labels...")
@@ -100,13 +102,13 @@ def main():
         print(f"  [{lbl['id'][:8]}...] {lbl['display_name']} (priority {lbl['priority']})")
 
     # 2. Check current label on the site
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
     current = get_current_site_label(ctx)
-    print(f"\nCurrent label on {test_site_url}: {current or 'None'}")
+    print(f"\nCurrent label on {site_url}: {current or 'None'}")
 
     # 3. Apply a label (uncomment with your label ID)
     # label_to_apply = labels[0]["id"]
-    # assign_sensitivity_label(test_site_url, label_to_apply)
+    # assign_sensitivity_label(site_url, label_to_apply)
 
     print("\nTo apply a label, uncomment the call with your label ID.")
     print("Example:")

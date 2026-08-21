@@ -2,20 +2,27 @@
 Demonstrates how to upload a file
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+from tests.settings import client_id, password, site_url, tenant, username
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
 
-list_title = "Documents"
-folder = ctx.web.lists.get_by_title(list_title).root_folder
-# local_path = "../../data/Financial Sample.xlsx"
-local_path = "../../../tests/data/big_buck_bunny.mp4"
-with open(local_path, "rb") as f:
-    file = folder.files.upload_with_checksum(f).execute_query()
-print(f"File has been uploaded into: {file.server_relative_url}")
+def main():
+    parser = argparse.ArgumentParser(description="Upload a file with a checksum")
+    parser.add_argument("--list-title", default="Documents", help="document library title")
+    parser.add_argument("--path", default="../../../tests/data/big_buck_bunny.mp4", help="path to the local file")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+
+    folder = ctx.web.lists.get_by_title(args.list_title).root_folder
+    with open(args.path, "rb") as f:
+        file = folder.files.upload_with_checksum(f).execute_query()
+    print(f"File has been uploaded into: {file.server_relative_url}")
+
+
+if __name__ == "__main__":
+    main()

@@ -4,20 +4,31 @@ Check out a file, edit it, and check it back in.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.checkin_type import CheckinType
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-file_url = "Shared Documents/draft.docx"
-file = ctx.web.get_file_by_server_relative_path(file_url)
 
-file.checkout().execute_query()
-print("File checked out")
+def main():
+    parser = argparse.ArgumentParser(description="Check out a file, edit it, and check it back in")
+    parser.add_argument("--file-url", default="Shared Documents/draft.docx", help="server-relative file URL")
+    args = parser.parse_args()
 
-# Edit the file content
-content = b"Updated content"
-file.save_binary_stream(content).execute_query()
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    file = ctx.web.get_file_by_server_relative_path(args.file_url)
 
-file.checkin("Updated via API", CheckinType.MajorCheckIn).execute_query()
-print("File checked in")
+    file.checkout().execute_query()
+    print("File checked out")
+
+    # Edit the file content
+    content = b"Updated content"
+    file.save_binary_stream(content).execute_query()
+
+    file.checkin("Updated via API", CheckinType.MajorCheckIn).execute_query()
+    print("File checked in")
+
+
+if __name__ == "__main__":
+    main()

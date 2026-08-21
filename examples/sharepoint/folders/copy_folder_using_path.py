@@ -4,29 +4,40 @@ Demonstrates how to copy a folder using a path.
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
+import argparse
+import uuid
+
 from office365.sharepoint.client_context import ClientContext
-from tests import create_unique_name, test_client_id, test_password, test_team_site_url, test_tenant, test_username
-
-ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-
-# creates a temporary folder first in a Documents library
-folder_from = ctx.web.default_document_library().root_folder.add(create_unique_name("from"))
+from tests.settings import client_id, password, team_site_url, tenant, username
 
 
-# folder_to = ctx.web.default_document_library().root_folder.add(create_unique_name("to"))
-folder_to_url = "Shared Documents/Archive/2001/01"
+def main():
+    parser = argparse.ArgumentParser(description="Copies a folder to a path")
+    parser.add_argument("--target-url", default="Shared Documents/Archive/2001/01", help="target folder url")
+    args = parser.parse_args()
 
-# copies the folder with a new name
-folder = folder_from.copy_to_using_path(folder_to_url).execute_query()
-print(
-    "Folder has been copied from '{0}' into '{1}'".format(folder_from.server_relative_path, folder.server_relative_path)
-)
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
 
-# clean up
-folder_from.delete_object().execute_query()
-folder.delete_object().execute_query()
+    # creates a temporary folder first in a Documents library
+    folder_from = ctx.web.default_document_library().root_folder.add(f"Name{uuid.uuid4().hex[:8]}")
+
+    # folder_to = ctx.web.default_document_library().root_folder.add(f"Name{uuid.uuid4().hex[:8]}")
+    folder_to_url = args.target_url
+
+    # copies the folder with a new name
+    folder = folder_from.copy_to_using_path(folder_to_url).execute_query()
+    print(
+        "Folder has been copied from '{0}' into '{1}'".format(
+            folder_from.server_relative_path, folder.server_relative_path
+        )
+    )
+
+    # clean up
+    folder_from.delete_object().execute_query()
+    folder.delete_object().execute_query()
+
+
+if __name__ == "__main__":
+    main()

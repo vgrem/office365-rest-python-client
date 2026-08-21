@@ -2,19 +2,30 @@
 Retrieves file system metadata
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-file_url = "SitePages/Home.aspx"
-file = (
-    ctx.web.get_file_by_server_relative_url(file_url)
-    .expand(["ModifiedBy", "Author", "TimeCreated", "TimeLastModified"])
-    .get()
-    .execute_query()
-)
 
-print(file.author)
-print(file.modified_by)
-print(file.time_created)
-print(file.time_last_modified)
+def main():
+    parser = argparse.ArgumentParser(description="Retrieve file system metadata")
+    parser.add_argument("--file-url", default="SitePages/Home.aspx", help="server-relative file URL")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    file = (
+        ctx.web.get_file_by_server_relative_url(args.file_url)
+        .expand(["ModifiedBy", "Author", "TimeCreated", "TimeLastModified"])
+        .get()
+        .execute_query()
+    )
+
+    print(file.author)
+    print(file.modified_by)
+    print(file.time_created)
+    print(file.time_last_modified)
+
+
+if __name__ == "__main__":
+    main()

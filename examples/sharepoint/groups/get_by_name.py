@@ -1,19 +1,32 @@
-"""Demonstrates how to retrieve a site group by name.
+"""
+Retrieve a SharePoint site group by name.
 
-Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/group
+Requires read access to the site.
+
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/group
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-g = ctx.web.site_groups.get_by_name("Team Site Members").execute_query()
-print(f"Name: {g.title}")
-print(f"ID: {g.id}")
-print(f"Owner: {g.owner_title}")
-print(f"Members: {g.users.get().execute_query().count}")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, password, site_url, tenant, username
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Get a site group by name")
+    parser.add_argument("--group", default="Team Site Members", help="group name")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+    g = ctx.web.site_groups.get_by_name(args.group).execute_query()
+    members = g.users.get().execute_query()
+    print(f"Name:    {g.title}")
+    print(f"ID:      {g.id}")
+    print(f"Owner:   {g.owner_title}")
+    print(f"Members: {len(members)}")
+
+
+if __name__ == "__main__":
+    main()

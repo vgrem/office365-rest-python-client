@@ -18,28 +18,30 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-o
 
 from __future__ import annotations
 
+import argparse
 from datetime import datetime, timedelta, timezone
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.sites.properties import SiteProperties
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from tests import test_admin_site_url
-from tests.settings import cert_path, cert_thumbprint, client_id, tenant
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
 
-def get_site_owner(site: SiteProperties) -> str:
+def get_site_owner(site: SiteProperties, admin: Tenant) -> str:
     """Attempt to resolve the owner of a site.
 
     For group-connected sites, derives ownership from the Microsoft 365
-    Group. For classic sites, falls back to site collection admin.
+    Group. For classic sites, falls back to site collection admins.
     """
     try:
-        if site.group_id and site.group_id.guid != "00000000-0000-0000-0000-000000000000":
-            # Group-connected — owner info would need Graph GroupMember.Read.All
-            return f"Group: {site.group_id.guid}"
-        admins = site.site_collection_admins.get().execute_query()
-        if admins:
-            return ", ".join(a.email for a in admins if a.email)
+        if site.group_owner_login_name:
+            return f"Group owner: {site.group_owner_login_name}"
+        if site.url is None:
+            return "Unknown"
+        result = admin.get_site_administrators_by_site_url(site.url).execute_query()
+        emails = [a.email for a in result.value if a.email]
+        if emails:
+            return ", ".join(emails)
     except Exception:
         pass
     return "Unknown"
@@ -55,7 +57,7 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
     Returns:
         List of dicts with site URL, title, last activity, storage, owner.
     """
-    ctx = ClientContext(test_admin_site_url).with_client_certificate(
+    ctx = ClientContext(admin_site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
     admin = Tenant(ctx)
@@ -79,8 +81,10 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
             continue
 
         try:
+            if site.url is None:
+                continue
             # Get site properties with last activity
-            site_props = admin.get_site_properties_from_sharepoint_by_url(site.url).execute_query()
+            site_props = admin.get_site_properties_by_url(site.url).execute_query()
 
             last_activity = getattr(site_props, "last_content_modified_date", None)
 
@@ -93,7 +97,7 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
                         "template": template,
                         "storage_used_mb": getattr(site, "storage_usage_current", 0),
                         "storage_quota_mb": getattr(site, "storage_quota", 0),
-                        "owner": get_site_owner(site),
+                        "owner": get_site_owner(site, admin),
                     }
                 )
         except Exception as e:
@@ -103,8 +107,13 @@ def find_inactive_sites(days_threshold: int = 90, include_channel_sites: bool = 
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Find SharePoint Online sites with no recent content modifications")
+    parser.add_argument("--days-threshold", type=int, default=90, help="days of inactivity to flag a site (default: 90)")
+    parser.add_argument("--include-channel-sites", action="store_true", help="include Teams channel sites")
+    args = parser.parse_args()
+
     print("Fetching SharePoint Online sites...")
-    inactive = find_inactive_sites(days_threshold=90)
+    inactive = find_inactive_sites(days_threshold=args.days_threshold, include_channel_sites=args.include_channel_sites)
 
     if not inactive:
         print("No inactive sites found.")

@@ -16,13 +16,11 @@ before attempting to delete the site.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/tenant-operations
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
-from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
-
-admin_client = ClientContext(admin_site_url).with_client_certificate(
-    tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
-)
+from tests.settings import admin_site_url, client_id, password, tenant, username
 
 
 def site_deleted(op: SpoOperation, site_url: str):
@@ -30,36 +28,47 @@ def site_deleted(op: SpoOperation, site_url: str):
     print(f"Site '{site_url}' deleted successfully ...")
 
 
-# Example 1: Batch delete already-deleted sites from recycle bin
-# sitesPropsCol = admin_client.tenant.get_deleted_site_properties(0).execute_query()
-# admin_client.tenant.remove_deleted_sites([r.url for r in sitesPropsCol], success_callback=site_deleted).execute_query()
+def main():
+    argparse.ArgumentParser(description="Delete SharePoint sites from a tenant").parse_args()
 
-# Example 2: Batch delete active sites
-sitesPropsCol = admin_client.tenant.get_site_properties_from_sharepoint_by_filters("").execute_query()
-# admin_client.tenant.remove_sites([r.url for r in sitesPropsCol], success_callback=site_deleted).execute_query()
+    admin_client = ClientContext(admin_site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
 
-# Example 3: Batch delete sites that are already in recycle bin
-# admin_client.tenant.remove_deleted_sites(
-#    [r.url for r in sitesPropsCol], success_callback=site_deleted
-# ).execute_query()
+    # Example 1: Batch delete already-deleted sites from recycle bin
+    # sitesPropsCol = admin_client.tenant.get_deleted_site_properties(0).execute_query()
+    # admin_client.tenant.remove_deleted_sites(
+    #     [r.url for r in sitesPropsCol], success_callback=site_deleted
+    # ).execute_query()
+
+    # Example 2: Batch delete active sites
+    sitesPropsCol = admin_client.tenant.get_site_properties_from_sharepoint_by_filters("").execute_query()
+    # admin_client.tenant.remove_sites([r.url for r in sitesPropsCol], success_callback=site_deleted).execute_query()
+
+    # Example 3: Batch delete sites that are already in recycle bin
+    # admin_client.tenant.remove_deleted_sites(
+    #    [r.url for r in sitesPropsCol], success_callback=site_deleted
+    # ).execute_query()
+
+    # Example 4: Sequential deletion with Microsoft 365 group clearing
+    # This approach is necessary when sites are associated with Microsoft 365 groups
+    for sitesProps in sitesPropsCol:
+        if sitesProps.url is None:
+            continue
+        if sitesProps.get_property("GroupId") != "00000000-0000-0000-0000-000000000000":
+            # Clear the Microsoft 365 group association before deleting
+            sitesProps.set_property("ClearGroupId", True).update().execute_query()
+
+        if sitesProps.get_property("HubSiteId") != "00000000-0000-0000-0000-000000000000":
+            # Unregister it first before deleting
+            admin_client.tenant.unregister_hub_site(sitesProps.url).execute_query()
+
+        # Delete the site
+        admin_client.tenant.remove_site(sitesProps.url).execute_query()
+        print(f"Site '{sitesProps.url}' deleted successfully ...")
+
+    print(f"\nComplete: Processed {len(sitesPropsCol)} sites")
 
 
-# Example 4: Sequential deletion with Microsoft 365 group clearing
-# This approach is necessary when sites are associated with Microsoft 365 groups
-for sitesProps in sitesPropsCol:
-    if sitesProps.url is None:
-        continue
-    if sitesProps.get_property("GroupId") != "00000000-0000-0000-0000-000000000000":
-        # Clear the Microsoft 365 group association before deleting
-        sitesProps.set_property("ClearGroupId", True).update().execute_query()
-
-    if sitesProps.get_property("HubSiteId") != "00000000-0000-0000-0000-000000000000":
-        # Unregister it first before deleting
-        admin_client.tenant.unregister_hub_site(sitesProps.url).execute_query()
-
-    # Delete the site
-    admin_client.tenant.remove_site(sitesProps.url).execute_query()
-    print(f"Site '{sitesProps.url}' deleted successfully ...")
-
-
-print(f"\nComplete: Processed {len(sitesPropsCol)} sites")
+if __name__ == "__main__":
+    main()

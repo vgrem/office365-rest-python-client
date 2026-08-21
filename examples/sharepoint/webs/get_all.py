@@ -6,14 +6,19 @@ web's template, created date and language, plus a summary grouped by template.
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
+import argparse
 from collections import Counter
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_site_url
+from tests.settings import client_id, client_secret, site_url, tenant
 
 
 def main():
-    client = ClientContext(test_site_url).with_credentials(test_client_credentials)
+    parser = argparse.ArgumentParser(description="Subsite inventory report")
+    parser.add_argument("--site-url", default=site_url, help="target site collection URL")
+    args = parser.parse_args()
+
+    client = ClientContext(args.site_url).with_client_secret(tenant, client_id, client_secret)
 
     webs = client.web.get_all_webs().get().execute_query()
     print(f"Webs ({len(webs)}):")

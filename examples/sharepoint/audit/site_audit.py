@@ -4,14 +4,24 @@ Get audit settings for a SharePoint site.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/csom/audit
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-audit = ctx.site.audit.get().execute_query()
-print(f"Allow designer: {audit.allow_designer}")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, password, site_url, tenant, username
+
+
+def main():
+    argparse.ArgumentParser(description="Get audit settings for a SharePoint site").parse_args()
+
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant,
+        client_id=client_id,
+        username=username,
+        password=password,
+    )
+    audit = ctx.site.audit.get().execute_query()
+    print(f"Allow designer: {audit.allow_designer}")
+
+
+if __name__ == "__main__":
+    main()

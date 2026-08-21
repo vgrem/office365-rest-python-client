@@ -2,13 +2,26 @@
 Retrieves versions of the file
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-file_url = "SitePages/Home.aspx"
-file_with_versions = ctx.web.get_file_by_server_relative_path(file_url).expand(["Versions"]).get().execute_query()
 
-for version in file_with_versions.versions:
-    # print(version.properties.get("Created"))
-    print(version.version_label)
+def main():
+    parser = argparse.ArgumentParser(description="Retrieve versions of a file")
+    parser.add_argument("--file-url", default="SitePages/Home.aspx", help="server-relative file URL")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    file_with_versions = (
+        ctx.web.get_file_by_server_relative_path(args.file_url).expand(["Versions"]).get().execute_query()
+    )
+
+    for version in file_with_versions.versions:
+        # print(version.properties.get("Created"))
+        print(version.version_label)
+
+
+if __name__ == "__main__":
+    main()

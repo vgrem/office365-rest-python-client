@@ -15,14 +15,17 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
+import argparse
+from typing import List
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.principal.type import PrincipalType
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 _MAX_MEMBERS = 5
 
 
-def scan_folder_permissions(ctx: ClientContext, folder_url: str, indent: int = 0) -> list[dict]:
+def scan_folder_permissions(ctx: ClientContext, folder_url: str, indent: int = 0) -> List[dict]:
     """Recursively scan folders for unique permissions.
 
     Args:
@@ -74,12 +77,23 @@ def scan_folder_permissions(ctx: ClientContext, folder_url: str, indent: int = 0
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Report folders with unique permissions")
+    parser.add_argument(
+        "--list", dest="list_title", default=None, help="library to scan (default: default document library)"
+    )
+    args = parser.parse_args()
+
     print("Scanning folders with unique permissions...\n")
 
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
-    # Start from the default document library
-    lib = ctx.web.default_document_library().get().execute_query()
+    # Start from the document library
+    if args.list_title:
+        lib = ctx.web.lists.get_by_title(args.list_title).get().execute_query()
+    else:
+        lib = ctx.web.default_document_library().get().execute_query()
     library_path = getattr(lib, "server_relative_url", None)
     if not library_path:
         print("Could not resolve library path")

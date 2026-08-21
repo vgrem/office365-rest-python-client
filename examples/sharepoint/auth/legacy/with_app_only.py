@@ -10,9 +10,19 @@ This method is still relevant for SharePoint on-premises.
 See https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azureacs
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url
+import argparse
 
-ctx = ClientContext(test_site_url).with_client_credentials(test_client_id, test_client_secret)
-target_web = ctx.web.get().execute_query()
-print(target_web.url)
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, client_secret, site_url, tenant
+
+
+def main():
+    argparse.ArgumentParser(description="Connect to SharePoint with client credentials").parse_args()
+
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    target_web = ctx.web.get().execute_query()
+    print(target_web.url)
+
+
+if __name__ == "__main__":
+    main()

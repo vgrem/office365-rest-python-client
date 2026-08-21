@@ -6,10 +6,22 @@ https://support.microsoft.com/en-us/office/introduction-to-document-sets-3dbcd93
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
+import argparse
 
-client = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-lib = client.web.default_document_library()
-doc_set = lib.create_document_set("10").execute_query()
-print(f"DocSet created: {doc_set.name}")
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, client_secret, team_site_url, tenant
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Creates a new Document Set")
+    parser.add_argument("--name", default="10", help="document set name")
+    args = parser.parse_args()
+
+    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    lib = ctx.web.default_document_library()
+    doc_set = lib.create_document_set(args.name).execute_query()
+    print(f"DocSet created: {doc_set.name}")
+
+
+if __name__ == "__main__":
+    main()

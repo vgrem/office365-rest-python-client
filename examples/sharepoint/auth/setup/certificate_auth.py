@@ -11,7 +11,7 @@ import subprocess
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from tests import test_admin_principal_name, test_client_id, test_tenant
+from tests.settings import admin_username, client_id, tenant
 
 TEST_DIR = Path(__file__).resolve().parents[4] / "tests"
 CERT_PUBLIC = TEST_DIR / "selfsigncert.crt"
@@ -41,13 +41,13 @@ def generate_certificate(common_name: str) -> None:
 
 
 def upload_certificate(client: GraphClient, display_name: str) -> None:
-    app = client.applications.get_by_app_id(test_client_id)
+    app = client.applications.get_by_app_id(client_id)
     with open(CERT_PUBLIC, "rb") as f:
         app.add_certificate(f.read(), display_name).execute_query()
 
 
 def grant_site_access(client: GraphClient, site_url: str) -> None:
-    sp = client.service_principals.get_by_app_id(test_client_id).get().execute_query()
+    sp = client.service_principals.get_by_app_id(client_id).get().execute_query()
     site = client.sites.get_by_url(site_url).get().execute_query()
     site.permissions.add(roles=["write"], identity=sp).execute_query()
 
@@ -69,8 +69,8 @@ def main() -> None:
     args = parser.parse_args()
 
     client = (
-        GraphClient(tenant=test_tenant)
-        .with_token_interactive(test_client_id, test_admin_principal_name)
+        GraphClient(tenant=tenant)
+        .with_token_interactive(client_id, admin_username)
         .require_role("Global Administrator", "Privileged Role Administrator")
     )
 
@@ -81,8 +81,8 @@ def main() -> None:
     thumbprint = get_thumbprint()
     print(f"Certificate:  {CERT_PUBLIC}")
     print(f"Private key:  {CERT_PRIVATE}")
-    print(f"Tenant:       {test_tenant}")
-    print(f"Client ID:    {test_client_id}")
+    print(f"Tenant:       {tenant}")
+    print(f"Client ID:    {client_id}")
     print(f"Thumbprint:   {thumbprint}")
 
 

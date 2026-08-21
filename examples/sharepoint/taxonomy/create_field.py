@@ -4,26 +4,31 @@ Demonstrates how to create a taxonomy field on a list.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_team_site_url
-
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-custom_list = ctx.web.lists.ensure_list("Requests").get().execute_query()
-
-term_set_id = "3b712032-95c4-4bb5-952d-f85ae9288f99"
-tax_field_name = "Country"  # create_unique_name("Country")
-
-print("1. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
-tax_field = custom_list.fields.create_taxonomy_field(tax_field_name, term_set_id).execute_query()
+from tests.settings import client_id, client_secret, team_site_url, tenant
 
 
-print("2. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
-mult_tax_field_name = "Countries"  # create_unique_name("Countries")
-multi_tax_field = custom_list.fields.create_taxonomy_field(
-    mult_tax_field_name, term_set_id, allow_multiple_values=True
-).execute_query()
+def main():
+    parser = argparse.ArgumentParser(description="Create taxonomy fields on a list")
+    parser.add_argument("--list-title", default="Requests", help="list title")
+    parser.add_argument("--term-set-id", default="3b712032-95c4-4bb5-952d-f85ae9288f99", help="term set id")
+    parser.add_argument("--field-name", default="Country", help="single-value taxonomy field name")
+    parser.add_argument("--multi-field-name", default="Countries", help="multi-value taxonomy field name")
+    args = parser.parse_args()
+
+    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    custom_list = ctx.web.lists.ensure_list(args.list_title).get().execute_query()
+
+    print("1. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
+    custom_list.fields.create_taxonomy_field(args.field_name, args.term_set_id).execute_query()
+
+    print("2. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
+    custom_list.fields.create_taxonomy_field(
+        args.multi_field_name, args.term_set_id, allow_multiple_values=True
+    ).execute_query()
 
 
-# print("3. Deleting tax fields ...")
-# tax_field.delete_object().execute_query()
-# multi_tax_field.delete_object().execute_query()
+if __name__ == "__main__":
+    main()

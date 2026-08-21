@@ -14,36 +14,50 @@ Prerequisites:
 https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_site_url, test_tenant
+from tests.settings import client_id, site_url, tenant
 
-# Variant 1: PEM file with passphrase
-ctx = ClientContext(test_site_url).with_client_certificate(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    thumbprint="thumbprint",
-    cert_path="./cert.pem",
-    passphrase="password",
-)
-web = ctx.web.get().execute_query()
-print(web.title)
 
-# Variant 2: Private key as string (no passphrase)
-# ctx = ClientContext(test_site_url).with_client_certificate(
-#     tenant=test_tenant,
-#     client_id=test_client_id,
-#     thumbprint="thumbprint",
-#     private_key="""-----BEGIN PRIVATE KEY-----
-# MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+gq...
-# -----END PRIVATE KEY-----""",
-# )
+def main():
+    parser = argparse.ArgumentParser(description="Connect to SharePoint using app-only with a certificate")
+    parser.add_argument("--thumbprint", default="thumbprint", help="certificate thumbprint")
+    parser.add_argument("--cert-path", default="./cert.pem", help="path to the PEM certificate")
+    parser.add_argument("--passphrase", default="password", help="private key passphrase")
+    args = parser.parse_args()
 
-# Variant 3: Custom permission scopes
-# from office365.azure_env import AzureEnvironment
-# ctx = ClientContext(test_site_url, environment=AzureEnvironment.Global).with_client_certificate(
-#     tenant=test_tenant,
-#     client_id=test_client_id,
-#     thumbprint="thumbprint",
-#     cert_path="./cert.pem",
-#     scopes=["https://contoso.sharepoint.com/Sites.Read.All"],
-# )
+    # Variant 1: PEM file with passphrase
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant=tenant,
+        client_id=client_id,
+        thumbprint=args.thumbprint,
+        cert_path=args.cert_path,
+        passphrase=args.passphrase,
+    )
+    web = ctx.web.get().execute_query()
+    print(web.title)
+
+    # Variant 2: Private key as string (no passphrase)
+    # ctx = ClientContext(site_url).with_client_certificate(
+    #     tenant=tenant,
+    #     client_id=client_id,
+    #     thumbprint="thumbprint",
+    #     private_key="""-----BEGIN PRIVATE KEY-----
+    # MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+gq...
+    # -----END PRIVATE KEY-----""",
+    # )
+
+    # Variant 3: Custom permission scopes
+    # from office365.azure_env import AzureEnvironment
+    # ctx = ClientContext(site_url, environment=AzureEnvironment.Global).with_client_certificate(
+    #     tenant=tenant,
+    #     client_id=client_id,
+    #     thumbprint="thumbprint",
+    #     cert_path="./cert.pem",
+    #     scopes=["https://contoso.sharepoint.com/Sites.Read.All"],
+    # )
+
+
+if __name__ == "__main__":
+    main()

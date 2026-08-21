@@ -4,11 +4,23 @@ Retrieves a specific version of a file by version label.
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
-file_url = "SitePages/Home.aspx"
-version = ctx.web.get_file_by_server_relative_path(file_url).versions.get_by_label("1.0").execute_query()
 
-print(version)
+def main():
+    parser = argparse.ArgumentParser(description="Retrieve a file version by label")
+    parser.add_argument("--file-url", default="SitePages/Home.aspx", help="server-relative file URL")
+    parser.add_argument("--label", default="1.0", help="version label")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    version = ctx.web.get_file_by_server_relative_path(args.file_url).versions.get_by_label(args.label).execute_query()
+
+    print(version)
+
+
+if __name__ == "__main__":
+    main()

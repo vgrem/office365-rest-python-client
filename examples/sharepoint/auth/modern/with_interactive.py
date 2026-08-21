@@ -12,11 +12,21 @@ See https://learn.microsoft.com/en-us/azure/active-directory/develop/
 msal-authentication-flows#interactive-and-non-interactive-authentication
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_site_url, test_tenant
+import argparse
 
-ctx = ClientContext(test_site_url).with_interactive(test_tenant, test_client_id)
-me = ctx.web.current_user.get().execute_query()
-print(me)
-web = ctx.web.get().execute_query()
-print(web)
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, site_url, tenant
+
+
+def main():
+    argparse.ArgumentParser(description="Connect to SharePoint using interactive browser-based login").parse_args()
+
+    ctx = ClientContext(site_url).with_interactive(tenant, client_id)
+    me = ctx.web.current_user.get().execute_query()
+    print(me)
+    web = ctx.web.get().execute_query()
+    print(web)
+
+
+if __name__ == "__main__":
+    main()

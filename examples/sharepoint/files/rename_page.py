@@ -2,16 +2,24 @@
 Demonstrates how to rename a page
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-file_url = "Site Pages/Home.aspx"
-new_name = "NewHome.aspx"
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-file = ctx.web.get_file_by_server_relative_path(file_url)
-file.rename(new_name).execute_query()
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, password, site_url, tenant, username
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Rename a page")
+    parser.add_argument("--file-url", default="Site Pages/Home.aspx", help="server-relative file URL")
+    parser.add_argument("--new-name", default="NewHome.aspx", help="new file name")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+    file = ctx.web.get_file_by_server_relative_path(args.file_url)
+    file.rename(args.new_name).execute_query()
+
+
+if __name__ == "__main__":
+    main()

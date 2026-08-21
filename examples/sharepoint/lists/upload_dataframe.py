@@ -12,7 +12,7 @@ import re
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.lists.templates.type import ListTemplateType
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+from tests.settings import client_id, password, team_site_url, tenant, username
 
 DEFAULT_URL = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
 
@@ -42,8 +42,8 @@ def main():
     if args.limit > 0:
         df = df.head(args.limit)
 
-    ctx = ClientContext(test_team_site_url).with_username_and_password(
-        tenant=test_tenant, client_id=test_client_id, username=test_username, password=test_password
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
     )
 
     lst = ctx.web.lists.get_by_title(args.list_title)

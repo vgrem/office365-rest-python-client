@@ -1,7 +1,7 @@
 # Users
 
 Manage users in SharePoint: who has access to a site, current user info,
-tenant-wide search, and OneDrive details.
+tenant-wide search, site groups, and OneDrive details.
 
 ---
 
@@ -17,25 +17,25 @@ tenant-wide search, and OneDrive details.
 
 ### Current user
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Get current user | [`whoami.py`](./whoami.py) | Any authenticated user | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **2** | Get my personal site | [`get_my_site.py`](./get_my_site.py) | Any authenticated user | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Operation | File | Required role |
+|---|---|---|
+| Get current user | [`whoami.py`](./whoami.py) | Any authenticated user |
+| Get my personal site | [`get_my_site.py`](./get_my_site.py) | Any authenticated user |
 
 ### List and search
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **3** | List site users | [`list_site_users.py`](./list_site_users.py) | Read access | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **4** | Search tenant users | [`search_tenant_users.py`](./search_tenant_users.py) | Read access | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **5** | Get users for a site | [`get_for_site.py`](./get_for_site.py) | Read access | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Operation | File | Required role |
+|---|---|---|
+| List site users | [`list_site_users.py`](./list_site_users.py) | Read access |
+| List site groups and members | [`list_site_groups.py`](./list_site_groups.py) | Read access |
+| Search tenant users | [`search_tenant_users.py`](./search_tenant_users.py) | Read access (admin context) |
 
 ### Manage and OneDrive
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **6** | Add user to web | [`add_to_web.py`](./add_to_web.py) | Site Owner | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
-| **7** | Get OneDrive quota | [`get_onedrive_quota_max.py`](./get_onedrive_quota_max.py) | Read access | [Users REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Operation | File | Required role |
+|---|---|---|
+| Add / ensure a site user | [`add_user.py`](./add_user.py) | Site Owner |
+| Get OneDrive quota max | [`get_onedrive_quota.py`](./get_onedrive_quota.py) | Read access |
 
 ---
 

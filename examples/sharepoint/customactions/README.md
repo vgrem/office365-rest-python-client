@@ -48,6 +48,13 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_sec
 actions = ctx.web.user_custom_actions.get().execute_query()
 for a in actions:
     print(f"  {a.properties.get('Title', '')}  (ID: {a.properties.get('Id', '')})")
+
+# Add a ScriptLink action that injects JavaScript site-wide
+ctx.web.user_custom_actions.add(
+    title="Custom script",
+    location="ScriptLink",
+    script_block="console.log('Loaded from custom action');",
+).execute_query()
 ```
 
 ---

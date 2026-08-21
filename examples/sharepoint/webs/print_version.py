@@ -7,17 +7,29 @@ created date).
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.webs.web import Web
-from tests import test_client_credentials, test_site_url
+from tests.settings import client_id, client_secret, site_url, tenant
 
-ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
 
-info = Web.get_context_web_information(ctx).execute_query()
-web = ctx.web.get().execute_query()
+def main():
+    parser = argparse.ArgumentParser(description="Print site metadata summary")
+    parser.add_argument("--site-url", default=site_url, help="target site URL")
+    args = parser.parse_args()
 
-print(f"Library version: {info.value.LibraryVersion}")
-print(f"Site URL: {info.value.SiteFullUrl}")
-print(f"Web URL: {info.value.WebFullUrl}")
-print(f"Title: {web.title}")
-print(f"Template: {web.web_template}   language: {web.language}   created: {web.created:%Y-%m-%d}")
+    ctx = ClientContext(args.site_url).with_client_secret(tenant, client_id, client_secret)
+
+    info = Web.get_context_web_information(ctx).execute_query()
+    web = ctx.web.get().execute_query()
+
+    print(f"Library version: {info.value.LibraryVersion}")
+    print(f"Site URL: {info.value.SiteFullUrl}")
+    print(f"Web URL: {info.value.WebFullUrl}")
+    print(f"Title: {web.title}")
+    print(f"Template: {web.web_template}   language: {web.language}   created: {web.created:%Y-%m-%d}")
+
+
+if __name__ == "__main__":
+    main()

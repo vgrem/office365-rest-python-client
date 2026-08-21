@@ -83,24 +83,36 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-
 # Step 5 -- Connect and verify
 # ===========================================================================
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_site_url, test_tenant
+from tests.settings import client_id, site_url, tenant
 
-site_url = test_site_url
-tenant = test_tenant
-client_id = test_client_id
-thumbprint = "AABBCCDDEEFF00112233445566778899AABBCCDD"
 
-ctx = ClientContext(site_url).with_client_certificate(
-    tenant=tenant,
-    client_id=client_id,
-    thumbprint=thumbprint,
-    cert_path="./private_key.pem",
-)
+def main():
+    parser = argparse.ArgumentParser(description="Migrate from legacy SAML auth to Azure AD certificate auth")
+    parser.add_argument(
+        "--thumbprint",
+        default="AABBCCDDEEFF00112233445566778899AABBCCDD",
+        help="certificate thumbprint",
+    )
+    parser.add_argument("--cert-path", default="./private_key.pem", help="path to the private key PEM file")
+    args = parser.parse_args()
 
-web = ctx.web.get().execute_query()
-print("Connected to: {0}".format(web.url))
-print("Site title: {0}".format(web.title))
+    ctx = ClientContext(site_url).with_client_certificate(
+        tenant=tenant,
+        client_id=client_id,
+        thumbprint=args.thumbprint,
+        cert_path=args.cert_path,
+    )
+
+    web = ctx.web.get().execute_query()
+    print("Connected to: {0}".format(web.url))
+    print("Site title: {0}".format(web.title))
+
+
+if __name__ == "__main__":
+    main()
 
 # ===========================================================================
 # What changed from the old SAML approach
@@ -127,12 +139,12 @@ print("Site title: {0}".format(web.title))
 #   If your code needs user-specific (delegated) access rather than app-only:
 #
 #     from office365.sharepoint.client_context import ClientContext
-#     from tests import test_client_id, test_site_url, test_tenant, test_username
+#     from tests.settings import client_id, site_url, tenant, username
 #
 #     ctx = ClientContext(site_url).with_username_and_password(
-#         tenant=test_tenant,
-#         client_id=test_client_id,
-#         username=test_username,
+#         tenant=tenant,
+#         client_id=client_id,
+#         username=username,
 #         password="***",
 #     )
 #

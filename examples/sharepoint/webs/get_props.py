@@ -8,9 +8,21 @@ This technique reduces unnecessary data transfer between the client and the serv
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/site-operations
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_site_url
+import argparse
 
-client = ClientContext(test_site_url).with_credentials(test_client_credentials)
-web = client.web.get().expand(["Author"]).execute_query()
-print(web.author)
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, client_secret, site_url, tenant
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Retrieve selected properties (Author) of a web")
+    parser.add_argument("--site-url", default=site_url, help="target site URL")
+    args = parser.parse_args()
+
+    client = ClientContext(args.site_url).with_client_secret(tenant, client_id, client_secret)
+    web = client.web.get().expand(["Author"]).execute_query()
+    print(web.author)
+
+
+if __name__ == "__main__":
+    main()

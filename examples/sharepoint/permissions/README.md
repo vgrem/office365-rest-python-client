@@ -55,29 +55,37 @@ at any level and assign **unique permissions**.
 
 ## Examples
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **1** | Get effective permissions on site | [`get_for_site.py`](./get_for_site.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **2** | Get effective permissions on list | [`get_for_list.py`](./get_for_list.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **3** | Get effective permissions on folder | [`get_for_folder.py`](./get_for_folder.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **4** | Get effective permissions on file | [`get_for_file.py`](./get_for_file.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **5** | List role definitions | [`get_role_definitions.py`](./get_role_definitions.py) | Read access | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Create role definition | [`create_role_definition.py`](./create_role_definition.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Grant to site | [`grant_to_web.py`](./grant_to_web.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Revoke from site | [`revoke_from_web.py`](./revoke_from_web.py) | Site Owner | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Grant to list | [`grant_to_list.py`](./grant_to_list.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Revoke from list | [`revoke_from_list.py`](./revoke_from_list.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Grant to folder | [`grant_to_folder.py`](./grant_to_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Revoke from folder | [`revoke_from_folder.py`](./revoke_from_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Break inheritance on list | [`break_inheritance.py`](./break_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Break inheritance on folder | [`break_inheritance_folder.py`](./break_inheritance_folder.py) | Site Owner on target folder | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
-| **15** | Reset inheritance on list | [`reset_inheritance.py`](./reset_inheritance.py) | Site Owner on target list | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+### Lifecycle
+
+Each script operates on a `--scope site|list|folder|file` (folder/file go
+through their list-item facet; `break`/`reset` support site/list/folder):
+
+```bash
+python examples/sharepoint/permissions/grant_permission.py --scope site --principal user@contoso.com --role read
+python examples/sharepoint/permissions/grant_permission.py --scope list --list "Documents" --principal user@contoso.com --role contribute
+python examples/sharepoint/permissions/grant_permission.py --scope folder --url "/sites/team/Shared Documents/Reports" --principal user@contoso.com --role read
+python examples/sharepoint/permissions/revoke_permission.py --scope list --list "Documents" --principal user@contoso.com --role contribute
+python examples/sharepoint/permissions/break_inheritance.py --scope list --list "Documents" [--copy] [--clear-subscopes]
+python examples/sharepoint/permissions/reset_inheritance.py --scope folder --url "/sites/team/Shared Documents/Reports"
+python examples/sharepoint/permissions/effective_permissions.py --scope site [--principal user@contoso.com]
+```
+
+| Operation | File | Required role |
+|---|---|---|
+| Grant a role (site / list / folder / file) | [`grant_permission.py`](./grant_permission.py) | Site Owner |
+| Revoke a role (site / list / folder / file) | [`revoke_permission.py`](./revoke_permission.py) | Site Owner |
+| Break inheritance (site / list / folder) | [`break_inheritance.py`](./break_inheritance.py) | Site Owner |
+| Reset inheritance (site / list / folder) | [`reset_inheritance.py`](./reset_inheritance.py) | Site Owner |
+| Check effective permissions | [`effective_permissions.py`](./effective_permissions.py) | Read access |
+| List role definitions | [`get_role_definitions.py`](./get_role_definitions.py) | Read access |
+| Create a custom role definition | [`create_role_definition.py`](./create_role_definition.py) | Site Owner |
 
 ### Reporting
 
-| Step | Operation | File | Required role | API reference |
-|---|---|---|---|---|
-| **16** | Folder permissions report (scan unique permissions) | [`folder_permissions_report.py`](./folder_permissions_report.py) | Site Owner + `Sites.FullControl.All` | [Permissions API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference) |
+| Operation | File | Required role |
+|---|---|---|
+| Role-assignment inventory (site + lists) | [`permissions_report.py`](./permissions_report.py) | Read access / `Sites.FullControl.All` |
+| Folder permissions report (unique permissions) | [`folder_permissions_report.py`](./folder_permissions_report.py) | Site Owner + `Sites.FullControl.All` |
 
 ---
 

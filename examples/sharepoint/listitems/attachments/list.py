@@ -1,15 +1,28 @@
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_team_site_url, test_tenant, test_username
+"""Demonstrates how to list attachments of a list item"""
 
-ctx = ClientContext(test_team_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-list_title = "Company Tasks"
-source_list = ctx.web.lists.get_by_title(list_title)
-items = source_list.items.select(["Id"]).expand(["AttachmentFiles"]).get().execute_query()
-for item in items:
-    for attachment_file in item.attachment_files:
-        print(attachment_file)
+import argparse
+
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, password, team_site_url, tenant, username
+
+
+def main():
+    parser = argparse.ArgumentParser(description="List list item attachments")
+    parser.add_argument("--list-title", default="Company Tasks", help="list title")
+    args = parser.parse_args()
+
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant,
+        client_id=client_id,
+        username=username,
+        password=password,
+    )
+    source_list = ctx.web.lists.get_by_title(args.list_title)
+    items = source_list.items.select(["Id"]).expand(["AttachmentFiles"]).get().execute_query()
+    for item in items:
+        for attachment_file in item.attachment_files:
+            print(attachment_file)
+
+
+if __name__ == "__main__":
+    main()

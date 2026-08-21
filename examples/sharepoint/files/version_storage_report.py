@@ -13,8 +13,11 @@ Required delegated permissions:
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api
 """
 
+import argparse
+from typing import List
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import client_id, password, site_url, tenant, username
 
 _KB = 1024
 _VERSION_THRESHOLD = 20
@@ -31,7 +34,7 @@ def format_bytes(size: int) -> str:
     return f"{size} B"
 
 
-def analyze_version_storage(ctx: ClientContext, library_name: str = "Shared Documents") -> list[dict]:
+def analyze_version_storage(ctx: ClientContext, library_name: str = "Shared Documents") -> List[dict]:
     """Analyze file version storage in a document library.
 
     Args:
@@ -81,11 +84,19 @@ def analyze_version_storage(ctx: ClientContext, library_name: str = "Shared Docu
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Analyze file version storage in a library")
+    parser.add_argument("--library", default="Shared Documents", help="document library to scan")
+    parser.add_argument("--threshold", type=int, default=_VERSION_THRESHOLD,
+                        help="version count that flags a cleanup candidate")
+    args = parser.parse_args()
+
     print("Analyzing file version storage...\n")
 
-    ctx = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
 
-    report = analyze_version_storage(ctx, "Shared Documents")
+    report = analyze_version_storage(ctx, args.library)
 
     if not report:
         print("No files found or library inaccessible.")
@@ -112,10 +123,10 @@ def main():
             f"{r['storage_ratio']:.1f}x"
         )
 
-    # Files with excessive versions (20+)
-    excessive = [r for r in report if r["version_count"] >= _VERSION_THRESHOLD]
+    # Files with excessive versions
+    excessive = [r for r in report if r["version_count"] >= args.threshold]
     if excessive:
-        print(f"\n=== Files with {_VERSION_THRESHOLD}+ versions (cleanup candidates) ===\n")
+        print(f"\n=== Files with {args.threshold}+ versions (cleanup candidates) ===\n")
         for r in excessive:
             print(f"  {r['name']} — {r['version_count']} versions, {format_bytes(r['total_version_size'])}")
 

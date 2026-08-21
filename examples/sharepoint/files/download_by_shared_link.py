@@ -4,17 +4,30 @@ Demonstrates how to download a file using a sharing link (guest URL).
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
+import argparse
 import os
 import tempfile
 
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_client_secret, test_site_url, test_tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
-client = ClientContext(test_site_url).with_client_secret(test_tenant, test_client_id, test_client_secret)
 
-sharing_link_url = "https://mediadev8.sharepoint.com/:x:/s/team/EcEbi_M2xQJLng_bvQjPtgoB1rB6BFvMVFixnf4wOxfE5w?e=bzNjb6"
+def main():
+    parser = argparse.ArgumentParser(description="Download a file using a sharing link (guest URL)")
+    parser.add_argument(
+        "--sharing-link",
+        default="https://mediadev8.sharepoint.com/:x:/s/team/EcEbi_M2xQJLng_bvQjPtgoB1rB6BFvMVFixnf4wOxfE5w?e=bzNjb6",
+        help="file sharing link",
+    )
+    args = parser.parse_args()
 
-download_path = os.path.join(tempfile.mkdtemp(), "Report.csv")
-with open(download_path, "wb") as local_file:
-    file = client.web.get_file_by_guest_url(sharing_link_url).download(local_file).execute_query()
-print(f"[Ok] file has been downloaded into: {download_path}")
+    client = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+
+    download_path = os.path.join(tempfile.mkdtemp(), "Report.csv")
+    with open(download_path, "wb") as local_file:
+        client.web.get_file_by_guest_url(args.sharing_link).download(local_file).execute_query()
+    print(f"[Ok] file has been downloaded into: {download_path}")
+
+
+if __name__ == "__main__":
+    main()

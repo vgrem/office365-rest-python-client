@@ -4,12 +4,22 @@ Searches for taxonomy terms by name.
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/taxonomy
 """
 
+import argparse
+
 from office365.sharepoint.client_context import ClientContext
-from tests import test_client_credentials, test_site_url
+from tests.settings import client_id, client_secret, site_url, tenant
 
-term_name = "Sweden"
 
-ctx = ClientContext(test_site_url).with_credentials(test_client_credentials)
-terms = ctx.taxonomy.term_store.search_term(term_name).execute_query()
-for term in terms:
-    print(term.labels[0])
+def main():
+    parser = argparse.ArgumentParser(description="Search for taxonomy terms by name")
+    parser.add_argument("--term-name", default="Sweden", help="term name to search for")
+    args = parser.parse_args()
+
+    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    terms = ctx.taxonomy.term_store.search_term(args.term_name).execute_query()
+    for term in terms:
+        print(term.labels[0])
+
+
+if __name__ == "__main__":
+    main()

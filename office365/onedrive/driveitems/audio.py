@@ -28,6 +28,8 @@ class Audio(ClientValue):
     track: int | None = None
     trackCount: int | None = None
     year: int | None = None
+    disc: int | None = None
+    discCount: int | None = None
 
     @property
     def entity_type_name(self) -> str:

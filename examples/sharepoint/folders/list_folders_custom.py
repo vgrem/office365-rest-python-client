@@ -4,11 +4,12 @@ Demonstrates how to enumerate folders recursively using a custom callback.
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
+import argparse
 from typing import Callable
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.folder import Folder
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import client_id, client_secret, team_site_url, tenant
 
 
 def enum_folder(parent_folder: Folder, action: Callable[[Folder], None]) -> None:
@@ -23,6 +24,13 @@ def print_folder_stat(folder: Folder) -> None:
     print(folder.time_created)
 
 
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-root_folder = ctx.web.default_document_library().root_folder
-enum_folder(root_folder, print_folder_stat)
+def main():
+    argparse.ArgumentParser(description="Enumerates folders recursively").parse_args()
+
+    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    root_folder = ctx.web.default_document_library().root_folder
+    enum_folder(root_folder, print_folder_stat)
+
+
+if __name__ == "__main__":
+    main()

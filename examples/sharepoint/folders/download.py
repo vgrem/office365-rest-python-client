@@ -1,36 +1,39 @@
 """
 Demonstrates how to enumerate folder files and download their content.
 
-See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
+https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/folder-operations
 """
 
+import argparse
 import os
 import tempfile
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.files.file import File
-from office365.sharepoint.folders.folder import Folder
-from tests import test_client_credentials, test_team_site_url
+from tests.settings import client_id, password, team_site_url, tenant, username
 
 
-def print_progress(file: File) -> None:
-    print(f"File {file.server_relative_url} has been  downloaded")
-
-
-def download_files(source_folder: Folder, download_path: str) -> None:
-    # 1. retrieve files collection (metadata) from library root folder
+def download_files(source_folder, download_path: str) -> None:
     files = source_folder.files.get().execute_query()
-
-    # 2. start download process (per file)
     for file in files:
-        print(f"Downloading file: {file.properties['ServerRelativeUrl']} ...")
-        download_file_name = os.path.join(download_path, file.name)
-        with open(download_file_name, "wb") as local_file:
+        print(f"Downloading file: {file.properties.get('ServerRelativeUrl', '?')} ...")
+        file_name = file.name or file.properties.get("LeafName") or "download.bin"
+        local_file_path = os.path.join(download_path, str(file_name))
+        with open(local_file_path, "wb") as local_file:
             file.download(local_file).execute_query()
-        print(f"[Ok] file has been downloaded: {download_file_name}")
+        print(f"[Ok] file has been downloaded: {local_file_path}")
 
 
-to_path = tempfile.mkdtemp()
-ctx = ClientContext(test_team_site_url).with_credentials(test_client_credentials)
-from_folder = ctx.web.lists.get_by_title("Documents").root_folder
-download_files(from_folder, to_path)
+def main():
+    parser = argparse.ArgumentParser(description="Download all files from a library folder")
+    parser.add_argument("--list-title", default="Documents", help="document library title")
+    args = parser.parse_args()
+
+    ctx = ClientContext(team_site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
+    from_folder = ctx.web.lists.get_by_title(args.list_title).root_folder
+    download_files(from_folder, tempfile.mkdtemp())
+
+
+if __name__ == "__main__":
+    main()

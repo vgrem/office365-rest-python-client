@@ -7,15 +7,27 @@ their configuration for reuse.
 https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview
 """
 
-from office365.sharepoint.client_context import ClientContext
-from tests import test_client_id, test_password, test_site_url, test_tenant, test_username
+import argparse
 
-ctx = ClientContext(test_site_url).with_username_and_password(
-    tenant=test_tenant,
-    client_id=test_client_id,
-    username=test_username,
-    password=test_password,
-)
-target_list = ctx.web.default_document_library()
-result = target_list.get_site_script().execute_query()
-print(result.value)
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import client_id, password, site_url, tenant, username
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate a site script from an existing list")
+    parser.add_argument("--site-url", default=site_url, help="target site URL")
+    args = parser.parse_args()
+
+    ctx = ClientContext(args.site_url).with_username_and_password(
+        tenant=tenant,
+        client_id=client_id,
+        username=username,
+        password=password,
+    )
+    target_list = ctx.web.default_document_library()
+    result = target_list.get_site_script().execute_query()
+    print(result.value)
+
+
+if __name__ == "__main__":
+    main()
