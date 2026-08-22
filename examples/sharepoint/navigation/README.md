@@ -46,15 +46,8 @@ for node in ql:
 
 | What | File | Notes |
 |------|------|-------|
-| **Add node** | [`add_node.py`](./add_node.py) | Add a top-level node to Quick Launch or top nav |
+| **Add node** | [`add_child_node.py`](./add_child_node.py) | Add a top-level node to Quick Launch or top nav |
 | **Add child node** | [`add_child_node.py`](./add_child_node.py) | Add a sub-menu under an existing node |
-
-## Update & Delete
-
-| What | File | Notes |
-|------|------|-------|
-| **Update node** | [`update_node.py`](./update_node.py) | Rename or change URL |
-| **Delete node** | [`delete_node.py`](./delete_node.py) | Remove a node by ID |
 
 ---
 

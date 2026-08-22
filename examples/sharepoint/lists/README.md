@@ -68,12 +68,6 @@ graph TD
 | Filter list collection | [`filter.py`](./filter.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Parallel import (concurrent batches) | [`import_list_parallel.py`](./import_list_parallel.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 
-### Advanced
-
-| Operation | File | Required role | API reference |
-|---|---|---|---|
-| Diagnose broken taxonomy field | [`assessment/broken_tax_field_value.py`](./assessment/broken_tax_field_value.py) | Site Owner | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
-
 ---
 
 ## Quick start

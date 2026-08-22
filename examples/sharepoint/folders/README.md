@@ -70,7 +70,6 @@ for f in files:
 |------|------|-------|
 | **Get folder by path** | [`get_by_path.py`](./get_by_path.py) | By server-relative path |
 | **Check if exists** | [`folder_exists.py`](./folder_exists.py) | Returns True / False |
-| **Check if exists (v2)** | [`folder_exists_v2.py`](./folder_exists_v2.py) | Alternative approach |
 | **Get by sharing link** | [`get_by_shared_link.py`](./get_by_shared_link.py) | Resolve a sharing link |
 | **Get metadata** | [`get_props.py`](./get_props.py) | Name, path, size, item count |
 | **Get system metadata** | [`get_system_metadata.py`](./get_system_metadata.py) | Internal SharePoint fields |

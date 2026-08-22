@@ -57,7 +57,7 @@ tenant-level policies, and audit logs.
 | Import users from CSV | [`users/import.py`](./users/import.py) | `User.ReadWrite.All` | [create user](https://learn.microsoft.com/en-us/graph/api/user-post-users) |
 | Get total user count | [`users/get_count.py`](./users/get_count.py) | `User.Read.All` | [get user](https://learn.microsoft.com/en-us/graph/api/user-get) |
 | Get disabled user accounts | [`users/get_disabled.py`](./users/get_disabled.py) | `User.Read.All` | [list users](https://learn.microsoft.com/en-us/graph/api/user-list) |
-| Get users with expired passwords | [`users/get_with_expired_password.py`](./users/get_with_expired_password.py) | `User.Read.All` | [list users](https://learn.microsoft.com/en-us/graph/api/user-list) |
+| Get users with expired passwords | [`users/password_expiry_report.py`](./users/password_expiry_report.py) | `User.Read.All` | [list users](https://learn.microsoft.com/en-us/graph/api/user-list) |
 | Get user's recent activities | [`users/get_my_activities.py`](./users/get_my_activities.py) | `User.Read.All` | [activities](https://learn.microsoft.com/en-us/graph/api/activity-list) |
 | Update a user's profile | [`users/update.py`](./users/update.py) | `User.ReadWrite.All` | [update user](https://learn.microsoft.com/en-us/graph/api/user-update) |
 | Update users in batch | [`users/update_batch.py`](./users/update_batch.py) | `User.ReadWrite.All` | [update user](https://learn.microsoft.com/en-us/graph/api/user-update) |
@@ -105,7 +105,7 @@ tenant-level policies, and audit logs.
 | List all applications | [`applications/list.py`](./applications/list.py) | `Application.Read.All` | [list apps](https://learn.microsoft.com/en-us/graph/api/application-list) |
 | Get an application by client ID | [`applications/get_by_app_id.py`](./applications/get_by_app_id.py) | `Application.ReadWrite.All` | [get application](https://learn.microsoft.com/en-us/graph/api/application-get) |
 | Add a certificate to an app | [`applications/add_cert.py`](applications/rotate_cert.py) | `Application.ReadWrite.All` | [add certificate](https://learn.microsoft.com/en-us/graph/api/application-post-certificates) |
-| Add a client secret (password) | [`applications/app_password.py`](applications/rotate_password.py) | `Application.ReadWrite.All` | [add password](https://learn.microsoft.com/en-us/graph/api/application-add-password) |
+| Add a client secret (password) | [`applications/rotate_secret.py`](./applications/rotate_secret.py) | `Application.ReadWrite.All` | [add password](https://learn.microsoft.com/en-us/graph/api/application-add-password) |
 | Check application permissions | [`applications/has_application_perms.py`](./applications/has_application_perms.py) | `AppRoleAssignment.ReadWrite.All` | [app permissions](https://learn.microsoft.com/en-us/graph/api/application-list-approleassignments) |
 | Check delegated permissions | [`applications/has_delegated_perms.py`](./applications/has_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [delegated perms](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list-delegatedpermissions) |
 | List application permissions | [`applications/list_application_perms.py`](./applications/list_application_perms.py) | `AppRoleAssignment.ReadWrite.All` | [list app perms](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list-approleassignments) |
@@ -115,7 +115,7 @@ tenant-level policies, and audit logs.
 | Revoke application permissions | [`applications/revoke_application_perms.py`](./applications/revoke_application_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-approleassignments) |
 | Revoke delegated permissions | [`applications/revoke_delegated_perms.py`](./applications/revoke_delegated_perms.py) | `AppRoleAssignment.ReadWrite.All` | [revoke](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-delete-delegatedpermissions) |
 | Service principal report — apps, perms, expiring secrets | [`applications/sp_report.py`](./applications/sp_report.py) | `Application.Read.All` | [SP list](https://learn.microsoft.com/en-us/graph/api/serviceprincipal-list) |
-| App secret expiry report — certs/passwords expiring soon | [`applications/secret_expiry.py`](./applications/secret_expiry.py) | `Application.Read.All` | [app credentials](https://learn.microsoft.com/en-us/graph/api/resources/application) |
+| App secret expiry report — certs/passwords expiring soon | [`applications/credentials_report.py`](./applications/credentials_report.py) | `Application.Read.All` | [app credentials](https://learn.microsoft.com/en-us/graph/api/resources/application) |
 | OAuth consent grants — review delegated permissions per app | [`applications/consent_grants.py`](./applications/consent_grants.py) | `DelegatedPermissionGrant.Read.All` | [consent grants](https://learn.microsoft.com/en-us/graph/api/resources/oauth2permissiongrant) |
 | Find orphaned apps — registrations/SPs without owners | [`applications/find_orphans.py`](./applications/find_orphans.py) | `Application.Read.All` | [app list](https://learn.microsoft.com/en-us/graph/api/application-list) |
 
@@ -139,7 +139,7 @@ tenant-level policies, and audit logs.
 | Get admin consent request policy | [`policies/admin_consent_request.py`](./policies/admin_consent_request.py) | `Policy.Read.All` | [admin consent](https://learn.microsoft.com/en-us/graph/api/adminconsentrequestpolicy-get) |
 | Get device registration policy | [`policies/device_registration.py`](./policies/device_registration.py) | `Policy.Read.All` | [device reg](https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get) |
 | Get cross-tenant access policy | [`policies/cross_tenant_access.py`](./policies/cross_tenant_access.py) | `Policy.Read.All` | [cross-tenant](https://learn.microsoft.com/en-us/graph/api/crosstenantaccesspolicy-get) |
-| CA policy report — break-glass accounts, enforcement state | [`policies/ca_report.py`](./policies/ca_report.py) | `Policy.Read.All` | [CA policy list](https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list) |
+| CA policy report — break-glass accounts, enforcement state | [`policies/conditional_access/list.py`](./policies/conditional_access/list.py) | `Policy.Read.All` | [CA policy list](https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list) |
 | Stale device report — devices without recent sign-in | [`devices/stale_report.py`](./devices/stale_report.py) | `Device.Read.All` | [device list](https://learn.microsoft.com/en-us/graph/api/device-list) |
 
 ## Examples — Audit Logs

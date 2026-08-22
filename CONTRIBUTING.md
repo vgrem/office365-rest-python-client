@@ -162,6 +162,21 @@ Include in your report:
 
 The library supports multiple Microsoft 365 APIs, including SharePoint REST, Microsoft Graph, OneDrive, Outlook, Teams, OneNote, and Planner. See `examples/` for usage.
 
+### Building the docs
+
+The site (MkDocs + Material) is generated from the package docstrings and every
+script under `examples/`. Validate with `--strict` before pushing:
+
+```bash
+uv sync --group docs
+uv run mkdocs serve        # local preview at http://127.0.0.1:8000
+uv run mkdocs build --strict
+```
+
+`mkdocs build --strict` fails on any example that is not valid Python or on a
+`README.md` link pointing to a missing file. The site deploys to GitHub Pages on
+every push to `master` via `.github/workflows/pages.yml`.
+
 ## Community Guidelines
 
 This project is maintained by the community. Be respectful and constructive in all interactions.

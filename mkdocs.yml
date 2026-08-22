@@ -1,0 +1,69 @@
+site_name: Office 365 REST Python Client
+site_description: A Python client for the Microsoft 365 / SharePoint REST APIs.
+site_url: https://vgrem.github.io/office365-rest-python-client/
+repo_url: https://github.com/vgrem/office365-rest-python-client
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; vgrem
+
+theme:
+  name: material
+  icon:
+    logo: material/library-outline
+  features:
+    - content.code.copy
+    - content.action.edit
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/home.css
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/vgrem/office365-rest-python-client
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - docs/scripts/gen_examples.py
+  - awesome-pages
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [office365]
+          options:
+            show_source: false
+            heading_level: 3
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg

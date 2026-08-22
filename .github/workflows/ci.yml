@@ -68,3 +68,23 @@ jobs:
         run: uv sync --frozen --all-extras
       - name: Run offline tests
         run: uv run pytest --offline -q
+
+  docs:
+    runs-on: ubuntu-latest
+    needs:
+      - ruff
+      - pyright
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Install Requirements
+        run: uv sync --group docs --frozen
+      - name: Build documentation (strict)
+        run: uv run mkdocs build --strict

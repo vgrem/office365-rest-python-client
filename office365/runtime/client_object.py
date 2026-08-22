@@ -137,11 +137,9 @@ class ClientObject:
         Args:
             max_retry (int): Number of times to retry the request
             timeout_secs (int): Seconds to wait before retrying the request.
-            success_callback ((office365.runtime.client_object.ClientObject)-> None): A callback to call if
-              the request executes successfully.
-            failure_callback ((int, requests.exceptions.RequestException)-> None): A callback to call if the request
-              fails to execute
-            exceptions: tuple of exceptions that we retry
+            success_callback (callable): A callback to call if the request executes successfully.
+            failure_callback (callable): A callback to call if the request fails to execute.
+            exceptions (tuple): Tuple of exceptions that we retry.
         """
         self.context.execute_query_retry(
             max_retry=max_retry,

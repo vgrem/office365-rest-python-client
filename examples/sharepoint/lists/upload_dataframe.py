@@ -28,7 +28,7 @@ def _value(v):
 
 
 def main():
-    import pandas as pd
+    import pandas as pd  # type: ignore[import-not-found]
 
     p = argparse.ArgumentParser(description="Upload a DataFrame to a SharePoint list")
     p.add_argument("--url", default=DEFAULT_URL)

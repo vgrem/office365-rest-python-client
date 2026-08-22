@@ -53,7 +53,7 @@ flowchart LR
 | **Files** | Search files by keyword | [`files/search.py`](./files/search.py) | `Files.Read` |
 | **Folders** | Create folders, navigate hierarchy, upload to folder | [`folders/manage.py`](./folders/manage.py) | `Files.ReadWrite` |
 | **Drives** | Recent files, shared with me, followed sites | [`drives/explore.py`](./drives/explore.py) | `Files.Read`, `Sites.Read.All` |
-| **Drives** | Search drive by keyword | [`drives/search.py`](./drives/search.py) | `Files.Read` |
+| **Drives** | Search drive by keyword | [`drives/search_all.py`](./drives/search_all.py) | `Files.Read` |
 | **Sites** | Get site by URL, root site | [`sites/get_site.py`](./sites/get_site.py) | `Sites.Read.All` |
 | **Sites** | Search sites, follow/unfollow | [`sites/search_and_follow.py`](./sites/search_and_follow.py) | `Sites.ReadWrite.All` |
 | **Lists** | Create document library with columns and items | [`lists/manage.py`](./lists/manage.py) | `Sites.ReadWrite.All` |

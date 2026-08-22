@@ -33,15 +33,12 @@ Modern pages use a canvas layout with web parts and can be promoted to news post
 
 | Step | Operation | File | Required role | API reference |
 |---|---|---|---|---|
-| **1** | List: enumerate all site pages | [`list.py`](./list.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **2** | Paged: page through all pages by offset | [`paged.py`](./paged.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **3** | Get: retrieve a page by filename | [`get_by_name.py`](./get_by_name.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **4** | Get content: read canvas and layout | [`get_content.py`](./get_content.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **5** | Create: add a new modern page | [`create.py`](./create.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **6** | Create and publish: add + publish in one flow | [`create_and_publish.py`](./create_and_publish.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **7** | Promote to news: promote or demote as news post | [`promote_to_news.py`](./promote_to_news.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **8** | Update: change title or properties | [`update.py`](./update.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
-| **9** | Delete: remove a page | [`delete.py`](./delete.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **1** | Paged: page through all pages by offset | [`paged.py`](./paged.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **2** | Get content: read canvas and layout | [`get_content.py`](./get_content.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **3** | Create: add a new modern page | [`create.py`](./create.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **4** | Create and publish: add + publish in one flow | [`create_and_publish.py`](./create_and_publish.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **5** | Promote to news: promote or demote as news post | [`promote_to_news.py`](./promote_to_news.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **6** | Report: pages across the site | [`report.py`](./report.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
 
 ---
 

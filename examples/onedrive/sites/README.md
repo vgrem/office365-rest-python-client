@@ -49,8 +49,8 @@ Examples for working with SharePoint sites via Microsoft Graph API.
 
 > **Note:** Microsoft Graph v1.0 does not support creating, deleting, or renaming SharePoint
 > sites (site lifecycle is managed via the SharePoint REST/tenant admin APIs). Use the
-> [`examples/sharepoint/sites`](../sharepoint/sites) examples (`create_team.py`, `create_comm.py`,
-> `delete_site.py`, `set_site_props.py`) for those operations.
+> [`examples/sharepoint/sites`](../../sharepoint/sites) examples (`create_team_site.py`, `create_comm_site.py`,
+> `delete_site.py`, `site_lifecycle.py`) for those operations.
 
 ---
 

@@ -159,7 +159,7 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 |------|------|-------|
 | **List versions** | [`versions/list.py`](./versions/list.py) | All versions of a file |
 | **Get by label** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Get a specific version |
-| **Restore version** | [`versions/restore_version.py`](./versions/restore_version.py) | Restore a previous version |
+| **Restore version** | [`restore_version.py`](./restore_version.py) | Restore a previous version |
 
 ## Audit & Compliance
 

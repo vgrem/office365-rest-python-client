@@ -1,0 +1,24 @@
+# Navigation order — Home, then each product area, then the library guide.
+# Product areas mirror the top-level directories under examples/.
+nav:
+  - index.md
+  - admin
+  - auth
+  - backuprestore
+  - booking
+  - communications
+  - defender
+  - entraid
+  - insights
+  - intune
+  - onedrive
+  - onenote
+  - outlook
+  - planner
+  - purview
+  - reports
+  - security
+  - sharepoint
+  - teams
+  - todo
+  - api.md
