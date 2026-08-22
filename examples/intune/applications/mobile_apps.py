@@ -12,7 +12,11 @@ https://learn.microsoft.com/en-us/graph/api/intune-apps-mobileappcategory-list
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+client = (
+    GraphClient(tenant=tenant)
+    .with_client_secret(client_id, client_secret)
+    .require_application_permission("DeviceManagementApps.Read.All", "DeviceManagementApps.ReadWrite.All")
+)
 
 # 1. List all mobile apps
 apps = client.device_app_management.mobile_apps.get().execute_query()
