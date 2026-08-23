@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 from configparser import ConfigParser
@@ -158,10 +159,20 @@ def generate_graph_model(cp: ConfigParser) -> None:
 
 
 if __name__ == "__main__":
-    graph_cfg = ConfigParser()
-    graph_cfg.read(Path(__file__).parent / "settings.graph.cfg")
-    generate_graph_model(graph_cfg)
+    parser = argparse.ArgumentParser(description="Generate entity model files from OData metadata")
+    parser.add_argument(
+        "service",
+        nargs="?",
+        default="sharepoint",
+        choices=["graph", "sharepoint"],
+        help="which model to generate (default: graph)",
+    )
+    args = parser.parse_args()
 
-    # sharepoint_cfg = ConfigParser()
-    # sharepoint_cfg.read(Path(__file__).parent / "settings.sharepoint.cfg")
-    # generate_sharepoint_model(sharepoint_cfg)
+    cfg = ConfigParser()
+    cfg.read(Path(__file__).parent / f"settings.{args.service}.cfg")
+
+    if args.service == "graph":
+        generate_graph_model(cfg)
+    else:
+        generate_sharepoint_model(cfg)

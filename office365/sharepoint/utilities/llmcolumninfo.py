@@ -16,6 +16,8 @@ class LLMColumnInfo(ClientValue):
     IsEnabled: Optional[bool] = None
     Prompt: Optional[str] = None
     PreventOverwrite: bool | None = None
+    OverwriteMode: int | None = None
+    ProcessingPass: int | None = None
 
     @property
     def entity_type_name(self):

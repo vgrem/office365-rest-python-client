@@ -6,15 +6,22 @@ Requires delegated permission Sites.ReadWrite.All.
 https://learn.microsoft.com/en-us/graph/api/site-post-permissions
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, username
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Add a user as an owner (admin) of a SharePoint site")
+    parser.add_argument("--site-url", required=True, help="Site URL")
+    parser.add_argument("--user-email", required=True, help="User email to add as owner")
+    args = parser.parse_args()
+
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-    site_url = input("Site URL: ").strip()
-    user_email = input("User email to add as owner: ").strip()
+    site_url = args.site_url.strip()
+    user_email = args.user_email.strip()
 
     site = client.sites.get_by_url(site_url).get().execute_query()
     users = client.users.filter(f"mail eq '{user_email}'").get().execute_query()

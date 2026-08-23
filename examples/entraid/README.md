@@ -131,7 +131,10 @@ tenant-level policies, and audit logs.
 | List directory roles | [`roles/list.py`](./roles/list.py) | `RoleManagement.ReadWrite.Directory` | [list roles](https://learn.microsoft.com/en-us/graph/api/directoryrole-list) |
 | Get roles assigned to a user | [`roles/for_user.py`](./roles/for_user.py) | `RoleManagement.ReadWrite.Directory` | [user roles](https://learn.microsoft.com/en-us/graph/api/user-list-memberof) |
 | Assign a role to a user | [`roles/assign_role.py`](./roles/assign_role.py) | `RoleManagement.ReadWrite.Directory` | [assign role](https://learn.microsoft.com/en-us/graph/api/directoryrole-post-members) |
-| List identity providers | [`identity/list_provider.py`](./identity/list_provider.py) | `IdentityProvider.Read.All` | [list providers](https://learn.microsoft.com/en-us/graph/api/identityprovider-list) |
+| List identity providers | [`identity/list_provider.py`](./identity/list_provider.py) | `IdentityProvider.Read.All` | [list providers](https://learn.microsoft.com/en-us/graph/api/identitycontainer-list-identityproviders) |
+| List named locations | [`identity/list_named_locations.py`](./identity/list_named_locations.py) | `Policy.Read.All` | [namedLocation list](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations) |
+| List conditional access policies | [`identity/list_conditional_access_policies.py`](./identity/list_conditional_access_policies.py) | `Policy.Read.All` | [conditionalAccessPolicy list](https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies) |
+| List self-service sign-up user flows | [`identity/list_user_flows.py`](./identity/list_user_flows.py) | `IdentityUserFlow.Read.All` | [b2xUserFlows list](https://learn.microsoft.com/en-us/graph/api/identitycontainer-list-b2xuserflows) |
 | PIM report — privileged role assignments | [`roles/pim_report.py`](./roles/pim_report.py) | `RoleManagement.Read.All` | [role assignments](https://learn.microsoft.com/en-us/graph/api/privilegedroleassignment-list) |
 
 ## Examples — Policies

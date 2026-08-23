@@ -15,6 +15,12 @@ class DatasetMetadataResponse(ClientValue):
     TenantAdminSiteLifeCycle: ClientValueCollection[DatasetMetadataInfo] = field(
         default_factory=lambda: ClientValueCollection(DatasetMetadataInfo)
     )
+    catalogManagement: ClientValueCollection[DatasetMetadataInfo] = field(
+        default_factory=lambda: ClientValueCollection(DatasetMetadataInfo)
+    )
+    siteStorageDetails: ClientValueCollection[DatasetMetadataInfo] = field(
+        default_factory=lambda: ClientValueCollection(DatasetMetadataInfo)
+    )
 
     @property
     def entity_type_name(self) -> str:

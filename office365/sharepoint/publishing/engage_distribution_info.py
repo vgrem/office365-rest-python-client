@@ -13,6 +13,8 @@ class EngageDistributionInfo(ClientValue):
     ThreadId: str | None = None
     ThreadStarterId: str | None = None
     DestinationType: int | None = None
+    AssetsFolderName: str | None = None
+    OwnerId: str | None = None
 
     @property
     def entity_type_name(self) -> str:

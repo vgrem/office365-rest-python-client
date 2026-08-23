@@ -33,3 +33,4 @@ class AgreementsSolutionFileContext(ClientValue):
     WebId: str | None = None
     WebServerRelativeUrl: str | None = None
     WebUrl: str | None = None
+    CategoryId: str | None = None

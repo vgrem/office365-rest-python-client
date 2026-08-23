@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
@@ -15,6 +16,9 @@ class MainLinkInfo(ClientValue):
     role: int | None = None
     shareId: UUID | None = None
     url: str | None = None
+    effectiveAudience: int | None = None
+    effectiveRole: int | None = None
+    expirationDateTime: datetime | None = field(default_factory=lambda: datetime.min)
 
     @property
     def entity_type_name(self):

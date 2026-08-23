@@ -46,7 +46,7 @@ class AssessmentReport(ClientValue):
 
     def to_dataframe(self):
         try:
-            import pandas as pd
+            import pandas as pd  # type: ignore[import-not-found]
         except ImportError:
             raise ImportError("pip install office365-rest-python-client[pandas]") from None
         return pd.DataFrame(

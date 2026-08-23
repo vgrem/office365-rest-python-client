@@ -226,6 +226,14 @@ class SitePage(SitePageMetadata):
             "Translations", TranslationStatusCollection(self.context, ResourcePath("Translations", self.resource_path))
         )
 
+    AbsoluteUrl: str | None = None
+    BannerImageUrl: str | None = None
+    BannerThumbnailUrl: str | None = None
+    Description: str | None = None
+    ID: str | None = None
+    Title: str | None = None
+    UniqueId: str | None = None
+
     @property
     def entity_type_name(self) -> str:
         return "SP.Publishing.SitePage"

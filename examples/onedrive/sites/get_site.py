@@ -10,21 +10,37 @@ https://learn.microsoft.com/en-us/graph/api/site-get
 https://learn.microsoft.com/en-us/graph/api/sites-list-followed
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, tenant_prefix, username
 
-client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-# 1. Get root site
-root = client.sites.root.get().execute_query()
-print(f"Root site: {root.display_name}  ({root.web_url})")
+def main():
+    parser = argparse.ArgumentParser(description="Get SharePoint/OneDrive sites by URL and view followed sites")
+    parser.add_argument(
+        "--site-url",
+        default=f"https://{tenant_prefix}.sharepoint.com/sites/project",
+        help="team site URL to fetch",
+    )
+    args = parser.parse_args()
 
-# 2. Get site by URL
-site = client.sites.get_by_url(f"https://{tenant_prefix}.sharepoint.com/sites/project").get().execute_query()
-print(f"Team site: {site.display_name}  (id: {site.id})")
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-# 3. Followed sites
-sites = client.me.followed_sites.get().execute_query()
-print(f"\nFollowed sites ({len(sites)}):")
-for s in sites:
-    print(f"  {s.display_name}")
+    # 1. Get root site
+    root = client.sites.root.get().execute_query()
+    print(f"Root site: {root.display_name}  ({root.web_url})")
+
+    # 2. Get site by URL
+    site = client.sites.get_by_url(args.site_url).get().execute_query()
+    print(f"Team site: {site.display_name}  (id: {site.id})")
+
+    # 3. Followed sites
+    sites = client.me.followed_sites.get().execute_query()
+    print(f"\nFollowed sites ({len(sites)}):")
+    for s in sites:
+        print(f"  {s.display_name}")
+
+
+if __name__ == "__main__":
+    main()

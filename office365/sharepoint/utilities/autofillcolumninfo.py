@@ -13,6 +13,8 @@ class AutofillColumnInfo(ClientValue):
     isEnabled: Optional[bool] = None
     prompt: Optional[str] = None
     preventOverwrite: bool | None = None
+    overwriteMode: int | None = None
+    processingPass: int | None = None
 
     @property
     def entity_type_name(self):

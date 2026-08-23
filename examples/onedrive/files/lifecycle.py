@@ -13,11 +13,17 @@ https://learn.microsoft.com/en-us/graph/api/driveitem-checkout
 https://learn.microsoft.com/en-us/graph/api/driveitem-checkin
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Document lifecycle: checkout, edit, check in")
+    parser.add_argument("--cleanup", action="store_true", help="delete the test file at the end")
+    args = parser.parse_args()
+
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
     # -- Step 1: find a SharePoint document library or use OneDrive --
@@ -28,7 +34,8 @@ def main():
 
     drive = client.me.drive
     root = drive.root.get().execute_query()
-    print(f"Drive: {drive.owner.display_name or '?'}\n")
+    owner = drive.owner.user.displayName or "?"
+    print(f"Drive owner: {owner}\n")
 
     # -- Step 2: create or find a test document --
     target = root.get_by_path("checkout_test.txt")
@@ -62,11 +69,15 @@ def main():
     versions = item.versions.get().execute_query()
     print(f"\nVersion history ({len(versions)} versions):")
     for v in versions:
-        dt = v.last_modified_date_time.strftime("%Y-%m-%d %H:%M") if v.last_modified_date_time else "?"
-        label = v.label or "(no label)"
-        print(f"  v{label or '?'}  {dt}")
+        dt = v.get_property("lastModifiedDateTime")
+        dt = dt.strftime("%Y-%m-%d %H:%M") if dt else "?"
+        label = v.get_property("label") or "(no label)"
+        print(f"  v{label}  {dt}")
 
-    # -- Cleanup: discard checkout test if interrupted --
+    # -- Cleanup --
+    if args.cleanup:
+        item.delete_object().execute_query()
+        print("Test file removed.")
     # If something went wrong and the file is still checked out:
     #   item.discard_checkout().execute_query()
 

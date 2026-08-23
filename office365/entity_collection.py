@@ -38,6 +38,11 @@ class EntityCollection(ClientObjectCollection[ClientObjectT]):
         self.query_options.custom["token"] = value
         return self
 
+    @property
+    def delta_token(self) -> Optional[str]:
+        """The delta link (resume token) returned by the last delta query, if any."""
+        return self._delta_request_url
+
     def __getitem__(self, key: Union[int, str]) -> ClientObjectT:
         """Args:
         key (int or str): key is used to address an entity by either an index or by identifier

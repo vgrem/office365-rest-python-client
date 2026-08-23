@@ -17,6 +17,9 @@ class SPTeamsAppComponent(ClientValue):
     groupId: str | None = None
     iconUrl: str | None = None
     officeUIFabricIconName: str | None = None
+    description: str | None = None
+    name: str | None = None
+    version: str | None = None
 
     @property
     def entity_type_name(self):

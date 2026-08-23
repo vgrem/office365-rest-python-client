@@ -1,7 +1,7 @@
 """
-Site pages — create, get, update web parts, publish, and delete.
+Site pages — create, get, update, publish, and delete.
 
-Covers the full page lifecycle in a SharePoint site.
+The full page lifecycle in a SharePoint site, from creation through publishing.
 
 Requires delegated permission ``Sites.ReadWrite.All``.
 
@@ -9,36 +9,51 @@ https://learn.microsoft.com/en-us/graph/api/sitepage-create
 https://learn.microsoft.com/en-us/graph/api/sitepage-publish
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests import create_unique_name
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, client_secret, site_url, tenant
 
-client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-site = client.sites.root
+def main():
+    parser = argparse.ArgumentParser(description="Create, update, publish and delete a site page")
+    parser.add_argument("--site-url", default=site_url, help="site URL to create the page in (default: root site)")
+    parser.add_argument("--keep", action="store_true", help="keep the page after the demo")
+    args = parser.parse_args()
 
-# 1. Create a page
-page_name = create_unique_name("Status-Report")
-page = site.pages.add(title=page_name).execute_query()
-print(f"Page created: {page.title}")
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    site = client.sites.get_by_url(args.site_url)
 
-# 2. Get page by title
-page = site.pages.get_by_title(page_name).get().execute_query()
-print(f"  Found by title: {page.title}")
+    # -- Step 1: create a page --
+    page_name = create_unique_name("Status-Report")
+    page = site.pages.add(title=page_name).execute_query()
+    print(f"Page created: '{page.title}'")
 
-# 3. Update page properties (show comments)
-page.set_property("showComments", True)
-page.update().execute_query()
-print(f"  Updated: show_comments={page.show_comments}")
+    # -- Step 2: find it back by title --
+    found = site.pages.get_by_title(page_name).get().execute_query()
+    print(f"  Found by title: '{found.title}'")
 
-# 4. Publish
-page.publish().execute_query()
-print("  Published")
+    # -- Step 3: update page properties --
+    found.set_property("showComments", True)
+    found.set_property("showRecommendedPages", True)
+    found.update().execute_query()
+    print(f"  Updated: show_comments={found.show_comments}, show_recommended={found.show_recommended_pages}")
 
-# 5. List all pages
-for p in site.pages.get().execute_query():
-    print(f"  {p.title}")
+    # -- Step 4: publish --
+    found.publish().execute_query()
+    print("  ✓ Published")
 
-# 6. Delete the test page
-page.delete_object().execute_query()
-print("  Deleted")
+    # -- Step 5: list all pages --
+    pages = site.pages.get().execute_query()
+    print(f"\nSite pages ({len(pages)}):")
+    for p in pages:
+        print(f"  {p.title}")
+
+    if not args.keep:
+        found.delete_object().execute_query()
+        print("\nPage deleted.")
+
+
+if __name__ == "__main__":
+    main()

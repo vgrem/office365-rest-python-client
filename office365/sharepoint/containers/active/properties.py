@@ -42,6 +42,9 @@ class SPActiveContainerProperties(ClientValue):
         default_factory=lambda: ClientValueCollection(SPActiveContainerMemberProperties)
     )
     ContainerRedirectUrl: str | None = None
+    ArchiveReadOnlyReason: int | None = None
+    ReadOnlyReason: int | None = None
+    StorageMaximumLevel: int | None = None
 
     @property
     def entity_type_name(self):

@@ -1,43 +1,49 @@
 """
-File analytics — view activity stats and access patterns.
+File analytics — view activity stats and access patterns for a file.
 
-Requires delegated permissions Files.Read and Analytics.Read.
+Shows the aggregated all-time and last-7-days counters plus a day-by-day
+activity timeline over the last 30 days.
+
+Requires delegated permissions ``Files.Read`` and ``Analytics.Read``.
+
+https://learn.microsoft.com/en-us/graph/api/driveitem-get-analytics
+https://learn.microsoft.com/en-us/graph/api/driveitem-list-activity
 """
 
+import argparse
 from datetime import datetime, timedelta, timezone
 
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, site_url, tenant
+from tests.settings import client_id, client_secret, tenant
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Show analytics and activity for a file")
+    parser.add_argument("--name", required=True, help="name of the file to analyze (in your OneDrive root)")
+    args = parser.parse_args()
+
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    item = client.me.drive.root.get_by_path(args.name).get().execute_query()
+    print(f"File: {item.name}")
 
-    drive = client.sites.get_by_url(site_url).drive
-    files = [i for i in drive.root.children.top(20).get().execute_query() if i.is_file]
-    if not files:
-        print("No files found.")
-        return
-
-    target = files[0]
-    print(f"File: {target.name}")
-
-    analytics = target.analytics.select(["allTime"]).get().execute_query()
+    # -- Step 1: aggregated analytics --
+    analytics = item.analytics.select(["allTime", "lastSevenDays"]).get().execute_query()
     if analytics.all_time:
         a = analytics.all_time
-        print(f"  All time: {a.accessCount or 0} accesses, {a.viewCount or 0} views, {a.shareCount or 0} shares")
+        print(f"  All time:  {a.access.actionCount or 0} accesses by {a.access.actorCount or 0} actors")
     if analytics.last_seven_days:
         l7 = analytics.last_seven_days
-        print(f"  Last 7d:  {l7.accessCount or 0} accesses, {l7.viewCount or 0} views")
+        print(f"  Last 7d:   {l7.access.actionCount or 0} accesses by {l7.access.actorCount or 0} actors")
 
-    activities = target.get_activities_by_interval(
+    # -- Step 2: day-by-day activity timeline --
+    activities = item.get_activities_by_interval(
         start_dt=datetime.now(timezone.utc) - timedelta(days=30),
         end_dt=datetime.now(timezone.utc),
         interval="day",
     ).execute_query()
-    print(f"\nActivity ({len(activities)} days with activity):")
+    print(f"\nActivity over the last 30 days ({len(activities)} days with activity):")
     for act in activities:
-        print(f"  {act.start_date_time.date()}  accesses={act.accessCount or 0}  views={act.viewCount or 0}")
+        print(f"  {act.start_date_time.date()}  accesses={act.access.actionCount or 0}")
 
 
 if __name__ == "__main__":

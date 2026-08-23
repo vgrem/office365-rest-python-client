@@ -78,7 +78,10 @@ class ODataRequest(ClientRequest):
         if isinstance(return_type, ClientObject):
             return_type.clear_state()
 
-        if response.headers.get("Content-Type", "").lower().split(";")[0] != "application/json":
+        content_type = response.headers.get("Content-Type", "").lower().split(";")[0]
+        is_raw_content = isinstance(query, FunctionQuery) and query.return_raw_content
+
+        if content_type != "application/json" or is_raw_content:
             if isinstance(return_type, ClientResult):
                 return_type.set_property("__value", response.content)
         else:

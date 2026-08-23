@@ -6,15 +6,22 @@ Requires delegated permission Sites.ReadWrite.All.
 https://learn.microsoft.com/en-us/graph/api/permission-delete
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, password, tenant, username
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Remove a user's access (permission) from a SharePoint site")
+    parser.add_argument("--site-url", required=True, help="Site URL")
+    parser.add_argument("--user-email", required=True, help="User email to remove")
+    args = parser.parse_args()
+
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-    site_url = input("Site URL: ").strip()
-    user_email = input("User email to remove: ").strip()
+    site_url = args.site_url.strip()
+    user_email = args.user_email.strip()
 
     site = client.sites.get_by_url(site_url).get().execute_query()
     target = client.users.filter(f"mail eq '{user_email}'").get().execute_query()

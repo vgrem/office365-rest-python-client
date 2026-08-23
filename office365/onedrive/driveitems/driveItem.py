@@ -427,7 +427,7 @@ class DriveItem(BaseItem):
         action_name = "content"
         if format_name is not None:
             action_name = action_name + rf"?format={format_name}"
-        qry = FunctionQuery(self, action_name, None, return_type)
+        qry = FunctionQuery(self, action_name, None, return_type, return_raw_content=True)
         self.context.add_query(qry)
         return return_type
 

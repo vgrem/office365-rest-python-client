@@ -12,6 +12,7 @@ from office365.onedrive.driveitems.system_facet import SystemFacet
 from office365.onedrive.drives.quota import Quota
 from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.lists.list import List
+from office365.onedrive.recyclebin.recyclebin import RecycleBin
 from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -197,6 +198,14 @@ class Drive(BaseItem):
     def list_(self) -> List:
         """Gets the list property"""
         return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
+
+    @property
+    def recycle_bin(self) -> RecycleBin:
+        """Represents a container for a collection of recycleBinItem resources in a SharePoint site or a
+        SharePoint Embedded fileStorageContainer."""
+        return self.properties.get(
+            "recycleBin", RecycleBin(self.context, ResourcePath("recycleBin", self.resource_path))
+        )
 
     @property
     def entity_type_name(self) -> str:

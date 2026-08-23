@@ -8,3 +8,5 @@ class ThreadEngagementData(ClientValue):
     reactionCount: int | None = None
     threadId: str | None = None
     viewerReaction: str | None = None
+    likeCount: int | None = None
+    status: str | None = None

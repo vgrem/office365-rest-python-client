@@ -1,15 +1,39 @@
 """
-Get a collection of identity provider resources that are configured for a tenant
+List the identity providers configured for a tenant.
 
-https://learn.microsoft.com/en-us/graph/api/identitycontainer-list-identityproviders?view=graph-rest-1.0&tabs=http
+Also lists the identity provider types that Microsoft Entra ID supports.
+
+https://learn.microsoft.com/en-us/graph/api/identitycontainer-list-identityproviders
+https://learn.microsoft.com/en-us/graph/api/identityproviderbase-availableprovidertypes
 
 Requires delegated permission ``IdentityProvider.Read.All``.
 """
 
-from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+import argparse
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-providers = client.identity.identity_providers.get().execute_query()
-for idp in providers:
-    print(idp.display_name)
+from office365.graph_client import GraphClient
+from tests.settings import client_id, client_secret, tenant
+
+
+def main():
+    parser = argparse.ArgumentParser(description="List configured identity providers")
+    parser.parse_args()
+
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+
+    providers = client.identity.identity_providers.get().execute_query()
+    print(f"Configured identity providers ({len(providers)}):")
+    for idp in providers:
+        name = idp.display_name or "?"
+        provider_type = (
+            idp.get_property("identityProviderType") or idp.get_property("providerType") or type(idp).__name__
+        )
+        print(f"  {name:40s}  {provider_type}")
+
+    available = client.identity.identity_providers.available_provider_types().execute_query().value
+    print(f"\nSupported provider types ({len(available)}):")
+    print(f"  {', '.join(str(t) for t in available)}")
+
+
+if __name__ == "__main__":
+    main()

@@ -20,3 +20,4 @@ class FileVersionBatchDeleteParameters(ClientValue):
     MajorVersionLimit: int | None = None
     MajorWithMinorVersionsLimit: int | None = None
     SyncListPolicy: bool | None = None
+    BypassSiteLock: bool | None = None

@@ -18,3 +18,4 @@ class ListItemComplianceInfo(ClientValue):
     TagPolicyEventBased: bool | None = None
     TagPolicyHold: bool | None = None
     TagPolicyRecord: bool | None = None
+    DoNotEnforceTagPolicyHoldForVersions: bool | None = None

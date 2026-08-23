@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -32,6 +34,7 @@ class ComplianceTag(ClientValue):
     TagName: Optional[str] = None
     TagRetentionBasedOn: Optional[str] = None
     UnlockedAsDefault: Optional[bool] = None
+    DoNotEnforceTagPolicyHoldForVersions: bool | None = None
 
     @property
     def entity_type_name(self):

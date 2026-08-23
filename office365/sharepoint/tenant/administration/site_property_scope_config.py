@@ -10,6 +10,7 @@ class SitePropertyScopeConfig(ClientValue):
     siteCount: int | None = None
     sitesOption: int | None = None
     siteUrls: StringCollection = field(default_factory=StringCollection)
+    uploadedFileName: str | None = None
 
     @property
     def entity_type_name(self) -> str:
