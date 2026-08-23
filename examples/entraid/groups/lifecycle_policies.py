@@ -68,18 +68,18 @@ def main():
 
     # -- Step 4: add a group to the policy --
     if policies and uncovered:
-        policy = policies[0]
-        group_id = uncovered[0].id
-        policy.add_group(group_id=group_id).execute_query()
-        print(f"\n✓ Added {uncovered[0].display_name} to lifecycle policy.")
+        group = uncovered[0]
+        if group.id:
+            policy = policies[0]
+            policy.add_group(group_id=group.id).execute_query()
+            print(f"\n✓ Added {group.display_name} to lifecycle policy.")
 
     # -- Step 5: renew a group (keep alive another period) --
-    if policies:
-        # Pick any group ID that was already managed
-        sample = next((p.properties.get("groupId", "") for p in policies if p.properties.get("groupId")), None)
-        if sample:
-            policies[0].renew_group(group_id=sample).execute_query()
-            print(f"✓ Renewed group {sample[:20]}.")
+    sample = next((p.properties.get("groupId", "") for p in policies if p.properties.get("groupId")), None)
+    if sample:
+        group = client.groups[sample].get().execute_query()
+        group.renew().execute_query()
+        print(f"✓ Renewed group {sample[:20]}.")
 
     # -- Cleanup: remove a group from policy --
     # policy.remove_group(group_id=group_id).execute_query()

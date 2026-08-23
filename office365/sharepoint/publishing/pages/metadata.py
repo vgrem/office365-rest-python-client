@@ -4,6 +4,7 @@ import datetime
 from typing import TYPE_CHECKING, Optional, cast
 
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.publishing.pages.version_info import SitePageVersionInfo
 from office365.sharepoint.publishing.user_info import UserInfo
@@ -25,15 +26,18 @@ class SitePageMetadata(Entity):
         """Gets the absolute Url of the Site Page."""
         return self.properties.get("AbsoluteUrl", None)
 
+    @odata(name="AuthorByline")
     @property
     def author_byline(self) -> StringCollection:
         return self.properties.get("AuthorByline", StringCollection())
 
+    @odata(name="CreatedBy")
     @property
     def created_by(self) -> UserInfo:
         """Specifies the user who created the page."""
         return self.properties.get("CreatedBy", UserInfo())
 
+    @odata(name="LastModifiedBy")
     @property
     def last_modified_by(self) -> UserInfo:
         """Gets the user who last modified the current Site Page."""
@@ -79,6 +83,7 @@ class SitePageMetadata(Entity):
         """Gets the file name of the current Site Page."""
         return self.properties.get("FileName", None)
 
+    @odata(name="FirstPublished")
     @property
     def first_published(self) -> Optional[datetime.datetime]:
         """Datetime of when the site page was initially published.
@@ -91,6 +96,7 @@ class SitePageMetadata(Entity):
         """Indicates if the Site Page is checked out to the current user."""
         return self.properties.get("IsPageCheckedOutToCurrentUser", None)
 
+    @odata(name="VersionInfo")
     @property
     def version_info(self) -> SitePageVersionInfo:
         """Gets the version information for the most recently checked in version of the Site Page."""
@@ -111,14 +117,3 @@ class SitePageMetadata(Entity):
     @property
     def entity_type_name(self) -> str:
         return "SP.Publishing.SitePageMetadata"
-
-    def get_property(self, name, default_value=None):
-        if default_value is None:
-            property_mapping = {
-                "AuthorByline": self.author_byline,
-                "CreatedBy": self.created_by,
-                "LastModifiedBy": self.last_modified_by,
-                "VersionInfo": self.version_info,
-            }
-            default_value = property_mapping.get(name, None)
-        return super().get_property(name, default_value)

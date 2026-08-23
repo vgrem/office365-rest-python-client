@@ -11,7 +11,6 @@ from tests import (
     create_unique_name,
     test_cert_path,
     test_cert_thumbprint,
-    test_client_credentials,
     test_client_id,
     test_password,
     test_site_url,
@@ -118,7 +117,9 @@ class TestSharePointClient(SPTestCase):
 
     def test_13_ensure_property(self):
         """Ensure a property is loaded before accessing it."""
-        client = ClientContext(test_site_url).with_credentials(test_client_credentials)
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
         me = client.web.current_user.get()
         site = client.site
 
