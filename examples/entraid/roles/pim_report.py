@@ -10,12 +10,17 @@ https://learn.microsoft.com/en-us/graph/api/rolemanagement-list-roleassignments
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
 
-# Directory roles (Global Admin, User Admin, etc.)
-roles = client.role_management.directory.role_assignments.get().expand(["roleDefinition"]).execute_query()
-print(f"PIM directory role assignments ({len(roles)}):")
-for r in roles:
-    print(f"  Principal: {r.principal_id}  Role: {r.role_definition}")
+def main():
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+
+    assignments = client.role_management.directory.role_assignments.get().expand(["roleDefinition"]).execute_query()
+    print(f"PIM directory role assignments ({len(assignments)}):")
+    for r in assignments:
+        print(f"  Principal: {r.principal_id}  Role: {r.role_definition}")
+
+
+if __name__ == "__main__":
+    main()

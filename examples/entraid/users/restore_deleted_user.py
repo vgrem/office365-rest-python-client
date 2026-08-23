@@ -22,17 +22,17 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    deleted = client.directory.deleted_items("microsoft.graph.user").get().execute_query()
+    deleted = client.directory.deleted_users.select(["id", "userPrincipalName"]).get().execute_query()
     print(f"Deleted users ({len(deleted)}):")
     for user in deleted:
-        print(f"  {user.id}  {getattr(user, 'user_principal_name', '?')}")
+        print(f"  {user.id}  {user.get_property('userPrincipalName') or '?'}")
 
     if args.restore:
         target = next((u for u in deleted if u.id == args.restore), None)
         if target is None:
             raise SystemExit(f"Deleted user '{args.restore}' not found")
         target.restore().execute_query()
-        print(f"Restored: {getattr(target, 'user_principal_name', args.restore)}")
+        print(f"Restored: {target.get_property('userPrincipalName') or args.restore}")
 
 
 if __name__ == "__main__":

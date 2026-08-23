@@ -9,36 +9,38 @@ Privileged Role Administrator role.
 https://learn.microsoft.com/en-us/graph/api/directoryrole-post-members
 """
 
+import argparse
 import sys
 
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import DuplicatedObjectException
 from office365.runtime.types.exceptions import NotFoundException
-from tests import test_admin_principal_name, test_client_id, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-privileged_client = (
-    GraphClient(tenant=test_tenant)
-    .with_token_interactive(test_client_id, test_admin_principal_name)
-    .require_role("Global Administrator", "Privileged Role Administrator")
-)
 
-# 1. Pick a role by display name
-role_name = input("Role to assign (e.g. 'Security Administrator'): ")
+def main():
+    parser = argparse.ArgumentParser(description="Assign a directory role to a user")
+    parser.add_argument("--role", required=True, help="role display name, e.g. 'Security Administrator'")
+    parser.add_argument("--user", required=True, help="user UPN, e.g. user@contoso.com")
+    args = parser.parse_args()
 
-# 2. Activate the role (idempotent — DuplicatedObjectException means already active)
-try:
-    privileged_client.directory_roles.assign(role_name).execute_query()
-except DuplicatedObjectException:
-    pass
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
-# 3. Get the activated role
-try:
-    role = privileged_client.directory_roles.get_by_name(role_name).execute_query()
-except NotFoundException:
-    print(f"❌ Role '{role_name}' not found after activation.")
-    sys.exit(1)
+    # Activate the role (idempotent — DuplicatedObjectException means already active)
+    try:
+        client.directory_roles.assign(args.role).execute_query()
+    except DuplicatedObjectException:
+        pass
 
-# 4. Assign to user
-user_upn = input("Target user UPN (e.g. 'user@contoso.com'): ")
-role.add_member(user_upn).execute_query()
-print(f"✅ Role '{role.display_name}' assigned to {user_upn}")
+    try:
+        role = client.directory_roles.get_by_name(args.role).get().execute_query()
+    except NotFoundException:
+        print(f"❌ Role '{args.role}' not found after activation.")
+        sys.exit(1)
+
+    role.add_member(args.user).execute_query()
+    print(f"✅ Role '{role.display_name}' assigned to {args.user}")
+
+
+if __name__ == "__main__":
+    main()

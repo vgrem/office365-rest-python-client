@@ -15,7 +15,7 @@ from office365.sharepoint.listitems.collection import ListItemCollection
 from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 FIELD_NAME = "WorkCountry"
-FIELD_VALUE = "France"
+FIELD_VALUE = "Norway"
 
 
 def build_custom_query(page_size: int = 1000) -> CamlQuery:
@@ -44,7 +44,7 @@ def print_progress(items: ListItemCollection) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Read a large list with a CAML query filter")
     parser.add_argument("--list-title", default="Contacts_Large", help="Target list title")
-    parser.add_argument("--page-size", type=int, default=2000, help="Items per page (RowLimit)")
+    parser.add_argument("--page-size", type=int, default=10000, help="Items per page (RowLimit)")
     args = parser.parse_args()
 
     ctx = ClientContext(team_site_url).with_client_certificate(
@@ -52,18 +52,12 @@ def main():
     )
     target_list = ctx.web.lists.get_by_title(args.list_title)
 
-    items = target_list.get_items(build_custom_query(args.page_size))
-    items.paged(args.page_size, page_loaded=print_progress)
-    items.execute_query()
+    items = target_list.get_items(build_custom_query(args.page_size)).execute_query()
 
-    count = 0
     for item in items:
-        count += 1
         title = item.properties.get("Title", "?")
         country = item.properties.get(FIELD_NAME, "?")
         print(f"  {item.id}: {title} ({country})")
-
-    print(f"Total items with {FIELD_NAME} == '{FIELD_VALUE}': {count}")
 
 
 if __name__ == "__main__":
