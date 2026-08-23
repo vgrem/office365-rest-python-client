@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self
 
-from office365.runtime.converters.scalars import parse_datetime, parse_enum
-from office365.runtime.converters.value import _add_type_metadata, serialize_value
+from office365.runtime.converters.value import _add_type_metadata, declared_type, deserialize_value, serialize_value
 from office365.runtime.odata.json_format import ODataJsonFormat
 
 
@@ -17,6 +15,8 @@ class ClientValue:
     containing entity or as a temporary value
     """
 
+    _is_client_value: bool = True
+
     def __str__(self) -> str:
         return type(self).__name__
 
@@ -25,24 +25,10 @@ class ClientValue:
 
     def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
         k = str(k)
-        prop_val = getattr(self, k, None)
-        if isinstance(prop_val, ClientValue) and v is not None:
-            if isinstance(v, list):
-                for i, p_v in enumerate(v):
-                    prop_val.set_property(i, p_v, persist_changes)
-            else:
-                for key, p_v in v.items():
-                    prop_val.set_property(key, p_v, persist_changes)
-            setattr(self, k, prop_val)
-        elif isinstance(prop_val, Enum):
-            if v is None:
-                setattr(self, k, prop_val)
-            else:
-                setattr(self, k, parse_enum(type(prop_val), v))
-        elif isinstance(prop_val, datetime):
-            setattr(self, k, parse_datetime(v))
-        else:
-            setattr(self, k, v)
+        if v is None:
+            setattr(self, k, None)
+            return self
+        setattr(self, k, deserialize_value(declared_type(type(self), k), v, getattr(self, k, None), persist_changes))
         return self
 
     def get_property(self, name: str) -> Any:

@@ -3,13 +3,13 @@ from __future__ import annotations
 import copy
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union
 
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value import ClientValue
-from office365.runtime.converters.scalars import parse_datetime
+from office365.runtime.converters.value import deserialize_value
 from office365.runtime.http.request_options import RequestOptions
 
 if TYPE_CHECKING:
@@ -23,6 +23,8 @@ ClientValueT = TypeVar(
 class ClientResult(Generic[ClientValueT]):
     """Client result"""
 
+    _value: Optional[ClientValueT]
+
     def __init__(
         self,
         context: ClientRuntimeContext,
@@ -30,7 +32,7 @@ class ClientResult(Generic[ClientValueT]):
     ) -> None:
         """Client result"""
         self._context = context
-        self._value = cast(ClientValueT, copy.deepcopy(default_value))
+        self._value = copy.deepcopy(default_value)
 
     def before_execute(self, action: Callable[[RequestOptions], None]) -> Self:
         """Attach an event handler which is triggered before query is submitted to server"""
@@ -48,30 +50,24 @@ class ClientResult(Generic[ClientValueT]):
         return self
 
     def set_property(self, key: str, value: Any, persist_changes: bool = False) -> Self:
-        from office365.runtime.client_value import ClientValue  # noqa
-
-        if isinstance(self._value, ClientValue):
-            self._value.set_property(key, value, persist_changes)
-        elif isinstance(self._value, dict):
-            self._value[key] = value
-        elif isinstance(self._value, datetime):
-            parsed = parse_datetime(value)
-            if parsed is not None:
-                self._value = parsed
-        elif isinstance(self._value, Enum):
-            enum_type = type(self._value)
-            try:
-                self._value = enum_type(value)
-            except ValueError:
-                pass
+        current = self._value
+        if isinstance(current, ClientValue):
+            current.set_property(key, value, persist_changes)
+        elif isinstance(current, dict):
+            current[key] = value
+        elif isinstance(current, (datetime, Enum)):
+            coerced = deserialize_value(None, value, current, persist_changes)
+            if coerced is not None:
+                self._value = coerced
         else:
             self._value = value
         return self
 
     @property
     def value(self) -> ClientValueT:
-        """Returns the value"""
-        return self._value  # type: ignore[return-value]
+        """Returns the value (populated after execution)."""
+        assert self._value is not None
+        return self._value
 
     def execute_query(self) -> ClientResult[ClientValueT]:
         """Submit request(s) to the server"""

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
-from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -16,9 +14,7 @@ from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.client_value import ClientValue
-from office365.runtime.converters.scalars import parse_datetime, parse_enum
-from office365.runtime.converters.value import _add_type_metadata, serialize_value
+from office365.runtime.converters.value import _add_type_metadata, declared_type, deserialize_value, serialize_value
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
@@ -268,8 +264,10 @@ class ClientObject:
         return self._properties.get(name, default_value)
 
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
-        """
-        Sets the value of a property.
+        """Set a property, coercing the value to its declared type.
+
+        Uses the shared conversion core (``deserialize_value``/``declared_type``) so
+        deserialization and the CSV/JSON pipeline use the same conversions.
 
         Args:
             name: The property name
@@ -281,26 +279,9 @@ class ClientObject:
         """
         if persist_changes:
             self._changes.add(name)
-
-        typed_value = self.get_property(name)
-        if isinstance(typed_value, (ClientObject, ClientValue)):
-            if isinstance(value, list):
-                [typed_value.set_property(str(i), v, persist_changes) for i, v in enumerate(value)]
-                self._properties[name] = typed_value
-            elif isinstance(value, dict):
-                [typed_value.set_property(k, v, persist_changes) for k, v in value.items()]
-                self._properties[name] = typed_value
-            else:
-                self._properties[name] = value
-        elif isinstance(typed_value, datetime):
-            self._properties[name] = parse_datetime(value)
-        elif isinstance(typed_value, Enum):
-            if value is None:
-                self._properties[name] = typed_value
-            else:
-                self._properties[name] = parse_enum(type(typed_value), value)
-        else:
-            self._properties[name] = value
+        self._properties[name] = deserialize_value(
+            declared_type(type(self), name), value, self.get_property(name), persist_changes
+        )
         return self
 
     def ensure_property(self, name: str) -> Self:
