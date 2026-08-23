@@ -304,6 +304,44 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
         return self.after_execute(lambda _: write_csv(self, file))
 
+    def from_csv(self, file: IO[str], delimiter: str = ",") -> Self:
+        """Import CSV rows by queueing a create per row (deferred).
+
+        The symmetric counterpart of ``to_csv``: parsing happens immediately and
+        each record becomes an entity of this collection's item type (via
+        ``create_typed_object`` + the shared ``set_property`` coercion), queued
+        for creation. The creates run on ``execute_query()``.
+
+        Usage:
+            >>> client.users.from_csv(f).execute_query()
+        """
+        from office365.runtime.converters.csv_reader import read_csv_records
+
+        return self._import_records(read_csv_records(self._item_type, file, delimiter))
+
+    def from_json(self, records: List[dict]) -> Self:
+        """Import JSON records (``to_json`` output) by queueing a create per record.
+
+        Like ``from_csv`` but takes a list of dicts instead of a file. Deferred
+        until ``execute_query()``.
+
+        Usage:
+            >>> client.users.from_json(client.users.to_json()).execute_query()
+        """
+        from office365.runtime.converters.csv_reader import clean_records
+
+        return self._import_records(clean_records(records))
+
+    def _import_records(self, records: List[dict]) -> Self:
+        """Queue a create per record, appending the pending entities to this collection."""
+        from office365.runtime.queries.create_entity import CreateEntityQuery
+
+        for record in records:
+            entity = self.create_typed_object(record)
+            self.add_child(entity)
+            self.context.add_query(CreateEntityQuery(self, entity, entity))
+        return self
+
     def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""
 

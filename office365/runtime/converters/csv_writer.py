@@ -1,4 +1,4 @@
-"""CSV exporter for ClientObjectCollection — reuses .select() + .expand()."""
+"""CSV exporter — reuses .select() + .expand() and the shared serialize_value."""
 
 from __future__ import annotations
 
@@ -6,9 +6,22 @@ import csv
 from typing import IO, TYPE_CHECKING, Any, List, Optional
 
 from office365.runtime.client_object_collection import ClientObjectCollection
+from office365.runtime.converters.value import serialize_value
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+
+
+def _cell(value: Any) -> str:
+    """Serialize a stored value and render it as a CSV cell."""
+    value = serialize_value(value)
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "True" if value else "False"
+    if isinstance(value, (list, tuple)):
+        return "; ".join(str(item) for item in value)
+    return str(value)
 
 
 def write_csv(collection: ClientObjectCollection, file: IO[str]) -> None:
@@ -49,7 +62,7 @@ def write_csv(collection: ClientObjectCollection, file: IO[str]) -> None:
 
     for item in items:
         children = _resolve_property(item, nav, expand)
-        base = [str(item.properties.get(k, "")) for k in plain]
+        base = [_cell(item.properties.get(k)) for k in plain]
         for child in children:
             row = list(base)
             for _nav_prop, field_name in dotted:
@@ -72,8 +85,8 @@ def _resolve_property(item: "ClientObject", nav: str | None, expand: set[str]) -
 def _property_value(prop: "dict | ClientObject", field_name: str) -> str:
     """Read a property value from an item that may be a ClientObject or dict."""
     if isinstance(prop, dict):
-        return str(prop.get(field_name, ""))
-    return str(prop.properties.get(field_name, ""))
+        return _cell(prop.get(field_name))
+    return _cell(prop.properties.get(field_name))
 
 
 def write_records(records: list[dict], file: IO[str], columns: Optional[List[str]] = None) -> None:
@@ -92,4 +105,4 @@ def write_records(records: list[dict], file: IO[str], columns: Optional[List[str
     writer = csv.writer(file)
     writer.writerow(columns)
     for record in records:
-        writer.writerow(["" if record.get(key) is None else str(record.get(key)) for key in columns])
+        writer.writerow([_cell(record.get(key)) for key in columns])
