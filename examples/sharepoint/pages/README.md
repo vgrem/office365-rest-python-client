@@ -39,6 +39,7 @@ Modern pages use a canvas layout with web parts and can be promoted to news post
 | **4** | Create and publish: add + publish in one flow | [`create_and_publish.py`](./create_and_publish.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
 | **5** | Promote to news: promote or demote as news post | [`promote_to_news.py`](./promote_to_news.py) | Member on site | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
 | **6** | Report: pages across the site | [`report.py`](./report.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
+| **7** | Export HTML: save every page as a .html file | [`export_html.py`](./export_html.py) | Read access | [Site pages API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference) |
 
 ---
 

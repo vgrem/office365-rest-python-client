@@ -41,6 +41,7 @@ for node in ql:
 |------|------|-------|
 | **Top navigation bar** | [`list_top_nav.py`](./list_top_nav.py) | All nodes in the top nav |
 | **Quick Launch** | [`list_quick_launch.py`](./list_quick_launch.py) | All nodes in the Quick Launch |
+| **Export to JSON** | [`export_to_json.py`](./export_to_json.py) | Recursive top-nav tree (with sub-menus) as JSON |
 
 ## Create
 
@@ -48,6 +49,18 @@ for node in ql:
 |------|------|-------|
 | **Add node** | [`add_child_node.py`](./add_child_node.py) | Add a top-level node to Quick Launch or top nav |
 | **Add child node** | [`add_child_node.py`](./add_child_node.py) | Add a sub-menu under an existing node |
+
+## Copy
+
+| What | File | Notes |
+|------|------|-------|
+| **Copy top navigation** | [`copy_navigation.py`](./copy_navigation.py) | Rebuild a site's top nav from a source site (recursive, idempotent) |
+
+## Export
+
+| What | File | Notes |
+|------|------|-------|
+| **Export to CSV** | [`export_to_csv.py`](./export_to_csv.py) | Flat Quick Launch + top nav with hierarchy depth |
 
 ---
 

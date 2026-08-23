@@ -49,13 +49,17 @@ def _text_web_part_canvas(body_html: str) -> str:
 
 def _modernize_post(target_ctx: ClientContext, title: str, body_html: str, as_news: bool) -> None:
     # Deferred: create, set content, publish, and optionally promote to news —
-    # all queued and executed with a single execute_query().
-    target_ctx.site_pages.create_page(
-        title,
-        canvas_content=_text_web_part_canvas(body_html),
-        publish=True,
-        as_news=as_news,
-    )
+    # all queued (via after_execute) and executed with a single execute_query().
+    canvas = _text_web_part_canvas(body_html)
+    page = target_ctx.site_pages.pages.add()
+
+    def _apply_content(_) -> None:
+        page.save_draft(title=title, canvas_content=canvas)
+        page.publish()
+        if as_news:
+            page.promote_to_news()
+
+    page.after_execute(_apply_content)
 
 
 def main():

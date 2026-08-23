@@ -1,8 +1,8 @@
 """
-Connect to SharePoint using Azure AD app-only with a certificate (PEM file).
+Connect to SharePoint using Azure AD app-only with a certificate and custom scopes.
 
-Loads the certificate private key from a PEM file, optionally
-passphrase-protected.
+By default the client requests the site's default permission scope; pass explicit
+``scopes`` to control which resource scopes are requested.
 
 Prerequisites:
     - An app registered in Azure AD with a certificate credential
@@ -19,10 +19,10 @@ from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tena
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Connect to SharePoint app-only with a certificate (PEM file)")
+    parser = argparse.ArgumentParser(description="Connect to SharePoint app-only with a certificate and custom scopes")
     parser.add_argument("--thumbprint", default=cert_thumbprint, help="certificate thumbprint")
     parser.add_argument("--cert-path", default=cert_path, help="path to the PEM private key file")
-    parser.add_argument("--passphrase", default=None, help="private key passphrase (if the key is encrypted)")
+    parser.add_argument("--scopes", default=[f"{site_url}.Read.All"], nargs="+", help="permission scopes to request")
     args = parser.parse_args()
 
     ctx = ClientContext(site_url).with_client_certificate(
@@ -30,7 +30,7 @@ def main():
         client_id=client_id,
         thumbprint=args.thumbprint,
         cert_path=args.cert_path,
-        passphrase=args.passphrase,
+        scopes=args.scopes,
     )
     web = ctx.web.get().execute_query()
     print(web.title)
