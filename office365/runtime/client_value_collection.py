@@ -148,6 +148,8 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
                 json[i] = v.to_json()  # type: ignore[assignment]
             elif isinstance(v, uuid.UUID):
                 json[i] = str(v)  # type: ignore[assignment]
+            elif isinstance(v, Enum):
+                json[i] = v.value  # type: ignore[assignment]
         if isinstance(json_format, JsonLightFormat) and json_format.include_control_information:
             json = {
                 json_format.collection: json,

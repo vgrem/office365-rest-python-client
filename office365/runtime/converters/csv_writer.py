@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import csv
-from typing import TYPE_CHECKING, Any, TextIO
+from typing import IO, TYPE_CHECKING, Any, List, Optional
 
 from office365.runtime.client_object_collection import ClientObjectCollection
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
 
 
-def write_csv(collection: ClientObjectCollection, file: TextIO) -> None:
+def write_csv(collection: ClientObjectCollection, file: IO[str]) -> None:
     """Write collection items to CSV using query_options.select + .expand.
 
     When no ``.select()`` is set, all item properties are exported.
@@ -74,3 +74,22 @@ def _property_value(prop: "dict | ClientObject", field_name: str) -> str:
     if isinstance(prop, dict):
         return str(prop.get(field_name, ""))
     return str(prop.properties.get(field_name, ""))
+
+
+def write_records(records: list[dict], file: IO[str], columns: Optional[List[str]] = None) -> None:
+    """Write a list of dict records to CSV.
+
+    Args:
+        records: Rows as dicts (one dict per line).
+        file: Writable text stream.
+        columns: Explicit column order; defaults to the union of record keys
+            in first-appearance order.
+    """
+    if not records:
+        return
+    if columns is None:
+        columns = list(dict.fromkeys(key for record in records for key in record))
+    writer = csv.writer(file)
+    writer.writerow(columns)
+    for record in records:
+        writer.writerow(["" if record.get(key) is None else str(record.get(key)) for key in columns])

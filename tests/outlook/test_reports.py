@@ -79,8 +79,8 @@ class TestOutlookReports(GraphDelegatedTestCase):
         bypass_roles=["Exchange Administrator", "Global Administrator"],
     )
     def test_07_get_m365_app_user_counts(self):
-        """Getting M365 app user counts returns data."""
-        result = self.client.reports.get_m365_app_user_counts().execute_query()
+        """Getting M365 app user counts for D30 returns data."""
+        result = self.client.reports.get_m365_app_user_counts("D30").execute_query()
         self.assertIsNotNone(result.value)
 
     @requires_delegated(

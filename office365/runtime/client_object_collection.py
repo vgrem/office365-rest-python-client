@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Generic, Iterator, List, Optional, TextIO, Type
+from typing import IO, Any, Callable, Dict, Generic, Iterator, List, Optional, Type
 
 from typing_extensions import Self
 
@@ -286,7 +286,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.paged(page_size, page_loaded).get().after_execute(_page_loaded)
         return self
 
-    def to_csv(self, file: TextIO) -> Self:
+    def to_csv(self, file: IO[str]) -> Self:
         """Export collection items to CSV using ``.select()`` and ``.expand()``.
 
         Plain select fields (e.g. ``"displayName"``) produce one column.

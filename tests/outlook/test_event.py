@@ -14,12 +14,14 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
+from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.outlook.mail.recurrence_pattern import RecurrencePattern
 from office365.outlook.mail.recurrence_range import RecurrenceRange
 from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
+from office365.runtime.client_value_collection import ClientValueCollection
 
 from tests import test_user_principal_name
 from tests.decorators import requires_delegated
@@ -116,12 +118,19 @@ class TestOutlookEvent(GraphDelegatedTestCase):
     )
     def test_06_delete_event(self):
         """Deleting an event should remove it from the user's events."""
-        event = TestOutlookEvent.target_event
-        if not event:
-            self.skipTest("No event created from previous test")
+        # test_05 cancelled target_event (moving it out of me/events), so create a
+        # fresh event here to keep the delete flow independent.
+        when = datetime.now() + timedelta(days=3)
+        created = self.client.me.calendar.events.add(
+            subject="Let's go for lunch (to delete)",
+            body="Delete me.",
+            start=when,
+            end=when + timedelta(hours=1),
+        ).execute_query()
+        self.assertIsNotNone(created.id)
 
-        event_id = event.id
-        event.delete_object().execute_query()
+        event_id = created.id
+        created.delete_object().execute_query()
 
         remaining = self.client.me.events.get().execute_query()
         matches = [e for e in remaining if e.id == event_id]
@@ -150,6 +159,7 @@ class TestOutlookEvent(GraphDelegatedTestCase):
                 pattern=RecurrencePattern(
                     type=RecurrencePatternType.weekly,
                     interval=1,
+                    daysOfWeek=ClientValueCollection(DayOfWeek, [DayOfWeek.monday]),
                 ),
                 range=RecurrenceRange(
                     type=RecurrenceRangeType.numbered,

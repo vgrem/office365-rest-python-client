@@ -7,7 +7,14 @@ _ODATA_MARKER = "__odata__"
 
 @dataclass
 class ODataPropertyMeta:
+    """Metadata for an ``@odata``-declared property.
+
+    ``name`` is the JSON/OData key; ``attr`` is the Python attribute name,
+    filled in by ``ClientObject.__init_subclass__`` at class creation.
+    """
+
     name: str
+    attr: str = ""
     persist: bool = False
     filterable: bool = False
     nullable: bool = True

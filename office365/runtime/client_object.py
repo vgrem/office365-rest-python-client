@@ -22,7 +22,7 @@ from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import _ODATA_MARKER
+from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta
 from office365.runtime.utilities import parse_datetime, parse_enum
 
 if TYPE_CHECKING:
@@ -35,21 +35,18 @@ ClientObjectT = TypeVar("ClientObjectT", bound="ClientObject")
 class ClientObject:
     """Base client object which defines named properties and relationships of an entity."""
 
-    _odata_meta: dict[str, str] = {}
+    _odata_meta: dict[str, ODataPropertyMeta] = {}
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
-        meta: dict[str, str] = dict(getattr(cls, "_odata_meta", {}))
-        persist: list[str] = list(getattr(cls, "_odata_persist", []))
+        meta: dict[str, ODataPropertyMeta] = dict(getattr(cls, "_odata_meta", {}))
         for attr_name, attr in cls.__dict__.items():
             target = attr.fget if isinstance(attr, property) else attr
-            m = getattr(target, _ODATA_MARKER, None)
+            m: ODataPropertyMeta | None = getattr(target, _ODATA_MARKER, None)
             if m is not None:
-                meta[m.name] = attr_name
-                if m.persist:
-                    persist.append(m.name)
+                m.attr = attr_name
+                meta[m.name] = m
         cls._odata_meta = meta
-        cls._odata_persist = persist
 
     def __init__(
         self,
@@ -66,7 +63,7 @@ class ClientObject:
             parent_collection: The collection that contains this object
         """
         self._properties: dict[str, Any] = {}
-        self._changes: set[str] = set(getattr(type(self), "_odata_persist", []))
+        self._changes: set[str] = {name for name, m in type(self)._odata_meta.items() if m.persist}
         self._query_options = QueryOptions()
         self._parent_collection = parent_collection
         self._context = context
@@ -263,9 +260,9 @@ class ClientObject:
             The property value or default value
         """
         if default_value is None:
-            odata_meta = type(self)._odata_meta
-            if name in odata_meta:
-                return getattr(self, odata_meta[name])
+            meta = type(self)._odata_meta.get(name)
+            if meta is not None:
+                return getattr(self, meta.attr)
             normalized_name = name[0].lower() + name[1:]
             default_value = getattr(self, normalized_name, None)
         return self._properties.get(name, default_value)
