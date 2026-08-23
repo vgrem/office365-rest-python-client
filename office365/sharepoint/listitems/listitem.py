@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
 from typing_extensions import Self
 
@@ -716,7 +716,7 @@ class ListItem(SecurableObject):
         """Document ID fora document"""
         return self.properties.get("OData__dlc_DocIdUrl", FieldUrlValue())
 
-    def get_property(self, name, default_value=None):
+    def get_property(self, name, default_value=None) -> Any:
         if default_value is None:
             property_mapping = {
                 "AttachmentFiles": self.attachment_files,

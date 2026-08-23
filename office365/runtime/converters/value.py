@@ -14,7 +14,7 @@ import types
 import uuid
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Union, get_args, get_origin, get_type_hints
+from typing import Any, Dict, Optional, Tuple, Union, get_args, get_origin, get_type_hints
 
 from office365.runtime.converters.scalars import parse_bool, parse_datetime, parse_enum, try_float, try_int
 from office365.runtime.odata.json_format import ODataJsonFormat
@@ -30,15 +30,16 @@ _SCALAR_CONVERTERS = {
     datetime: parse_datetime,
 }
 
-_declared_cache: Dict[tuple, Any] = {}
+_declared_cache: Dict[Tuple[type, str], Any] = {}
 
 
 def serialize_value(value: Any, json_format: Optional[ODataJsonFormat] = None) -> Any:
     """Convert a stored value to its JSON representation.
 
-    Enums become their value, datetimes/dates ISO 8601, bytes decoded to UTF-8,
-    UUIDs strings, and nested objects serialized via their ``to_json``. Any other
-    value (scalar, ``None``, ``dict``, ``list``) passes through unchanged.
+    Handles ``ClientObject``/``ClientValue``/``ClientValueCollection`` (via their
+    ``to_json``), ``Enum`` -> value, ``datetime``/``date`` -> ISO 8601, ``bytes``
+    -> UTF-8, ``UUID`` -> str. Any other value (scalar, ``None``, ``dict``,
+    ``list``, ``ClientResult``) passes through unchanged.
     """
     if isinstance(value, Enum):
         return value.value
@@ -60,7 +61,7 @@ def _add_type_metadata(
     if json_format is not None and json_format.include_control_information and entity_type_name is not None:
         if isinstance(json_format, JsonLightFormat):
             result[json_format.metadata_type] = {"type": entity_type_name}
-        elif isinstance(json_format, ODataJsonFormat):
+        else:
             result[json_format.metadata_type] = "#" + entity_type_name
 
 
@@ -143,10 +144,9 @@ def deserialize_declared(value: Any, declared_type: Any) -> Any:
 
 
 def deserialize_nested(base: Any, value: Any, persist_changes: bool) -> Any:
-    """Apply a list/dict onto a nested object, returning the stored value.
-
-    ``base`` is a ``ClientValue``/``ClientObject`` whose ``set_property`` maps
-    list items by index and dict items by key. Scalar values are returned as-is.
+    """Apply a raw list/dict onto a nested ``ClientValue``/``ClientObject``
+    (whose ``set_property`` maps list items by index and dict items by key),
+    returning the stored value. Scalar values are returned as-is.
     """
     if isinstance(value, list):
         for i, p_v in enumerate(value):
@@ -160,11 +160,13 @@ def deserialize_nested(base: Any, value: Any, persist_changes: bool) -> Any:
 
 
 def deserialize_value(target_type: Any, value: Any, current: Any, persist_changes: bool) -> Any:
-    """Coerce a value for storage by declared type, falling back to the current instance.
+    """Coerce a raw value for storage by its declared type, falling back to the current instance.
 
-    Shared by ``ClientObject``/``ClientValue``/``ClientResult`` ``set_property`` so
-    deserialization (``map_json``) and the CSV/JSON pipeline use the same
-    conversions. Returns the value to store.
+    Declared scalars/enums go through ``deserialize_declared``; declared
+    ``ClientValue``/``ClientValueCollection`` (including generic aliases) are
+    populated via ``deserialize_nested``. Otherwise the value is coerced against
+    the current instance (a nested ``ClientObject``/``ClientValue``, ``datetime``,
+    ``Enum``) or passed through raw.
     """
     if target_type is not None and value is not None:
         coerced = deserialize_declared(value, target_type)
