@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self
 
 from office365.runtime.converters.scalars import parse_datetime, parse_enum
+from office365.runtime.converters.value import _add_type_metadata, serialize_value
 from office365.runtime.odata.json_format import ODataJsonFormat
-from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
 
 class ClientValue:
@@ -87,21 +87,8 @@ class ClientValue:
                     return False
             return True
 
-        result = {k: v for k, v in self if _is_valid_value(v)}
-        for n, v in result.items():
-            if isinstance(v, ClientValue):
-                result[n] = v.to_json(json_format)
-            elif isinstance(v, Enum):
-                result[n] = v.value
-            elif isinstance(v, bytes):
-                result[n] = v.decode("utf-8")
-            elif isinstance(v, (datetime, date)):
-                result[n] = v.isoformat()
-        if json_format is not None and json_format.include_control_information and self.entity_type_name is not None:
-            if isinstance(json_format, JsonLightFormat):
-                result[json_format.metadata_type] = {"type": self.entity_type_name}
-            elif isinstance(json_format, ODataJsonFormat):
-                result[json_format.metadata_type] = "#" + self.entity_type_name
+        result = {k: serialize_value(v, json_format) for k, v in self if _is_valid_value(v)}
+        _add_type_metadata(result, json_format, self.entity_type_name)
         return result
 
     @property

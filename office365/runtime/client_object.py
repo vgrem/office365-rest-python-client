@@ -18,10 +18,10 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import parse_datetime, parse_enum
+from office365.runtime.converters.value import _add_type_metadata, serialize_value
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
-from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta
 
@@ -423,17 +423,8 @@ class ClientObject:
         else:
             include_control_info = self.entity_type_name is not None and json_format.include_control_information
             json = {k: self.get_property(k) for k in self._changes if k in self._properties}
-        for k, v in json.items():
-            if isinstance(v, (ClientObject, ClientValue)):
-                json[k] = v.to_json(json_format)
-            elif isinstance(v, Enum):
-                json[k] = v.value
-            elif isinstance(v, datetime):
-                json[k] = v.isoformat()
+        json = {k: serialize_value(v, json_format) for k, v in json.items()}
 
         if json and include_control_info:
-            if isinstance(json_format, JsonLightFormat):
-                json[json_format.metadata_type] = {"type": self.entity_type_name}
-            elif isinstance(json_format, ODataJsonFormat):
-                json[json_format.metadata_type] = "#" + self.entity_type_name
+            _add_type_metadata(json, json_format, self.entity_type_name)
         return json

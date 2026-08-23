@@ -9,6 +9,7 @@ from typing_extensions import Self
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import parse_enum
+from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
@@ -142,14 +143,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
                 "__metadata": {"type": "Collection(Edm.String)"}
             }
         """
-        json = [v for v in self]  # type: ignore[assignment]
-        for i, v in enumerate(json):
-            if isinstance(v, ClientValue):
-                json[i] = v.to_json()  # type: ignore[assignment]
-            elif isinstance(v, uuid.UUID):
-                json[i] = str(v)  # type: ignore[assignment]
-            elif isinstance(v, Enum):
-                json[i] = v.value  # type: ignore[assignment]
+        json = [serialize_value(v) for v in self]  # type: ignore[assignment]
         if isinstance(json_format, JsonLightFormat) and json_format.include_control_information:
             json = {
                 json_format.collection: json,
