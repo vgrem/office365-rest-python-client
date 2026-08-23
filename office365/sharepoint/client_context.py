@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from urllib.parse import urlparse
 
 import requests
 from typing_extensions import Self
@@ -14,11 +15,11 @@ from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_runtime_context import ClientRuntimeContext
+from office365.runtime.http.url import get_absolute_url
 from office365.runtime.odata.v3.batch_request import ODataBatchV3Request
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.utilities import get_absolute_url, urlparse
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse

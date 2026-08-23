@@ -1,1 +1,1 @@
-"""Format converters between the object model and tabular formats (CSV, DataFrame)."""
+"""Value conversion layer — scalar/object conversion plus format adapters (CSV, JSON, DataFrame)."""

@@ -17,13 +17,13 @@ from typing_extensions import Self
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value import ClientValue
+from office365.runtime.converters.scalars import parse_datetime, parse_enum
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta
-from office365.runtime.utilities import parse_datetime, parse_enum
 
 if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection

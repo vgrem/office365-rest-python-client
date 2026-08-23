@@ -8,9 +8,9 @@ from typing import Any, Generic, Iterator, TypeVar, cast
 from typing_extensions import Self
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
-from office365.runtime.utilities import parse_enum
 
 ValueT = TypeVar("ValueT")
 

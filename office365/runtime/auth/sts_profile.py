@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
+from urllib.parse import urlparse
 
 from office365.azure_env import AzureEnvironment, get_login_authority
-from office365.runtime.utilities import urlparse
 
 
 class STSProfile:

@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional
 
+from office365.runtime.converters.keyvalue import parse_key_value_collection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-from office365.runtime.utilities import parse_key_value_collection
 from office365.sharepoint.entity import Entity
 
 

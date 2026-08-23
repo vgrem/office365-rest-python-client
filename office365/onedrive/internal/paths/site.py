@@ -1,6 +1,7 @@
+from urllib.parse import urlparse
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
-from office365.runtime.utilities import urlparse
 
 
 class SitePath(EntityPath):

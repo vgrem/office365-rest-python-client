@@ -6,9 +6,9 @@ from typing import Any, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self
 
+from office365.runtime.converters.scalars import parse_datetime, parse_enum
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
-from office365.runtime.utilities import parse_datetime, parse_enum
 
 
 class ClientValue:

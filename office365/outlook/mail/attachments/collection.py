@@ -11,11 +11,11 @@ from office365.outlook.mail.attachments.attachment import Attachment
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.http.url import parse_query_param
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.upload_session import UploadSessionQuery
-from office365.runtime.utilities import parse_query_param
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient

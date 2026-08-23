@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 from typing import Optional
+from urllib.parse import urlparse
 
 import requests
 
@@ -10,7 +11,6 @@ from office365.runtime.auth.authentication_provider import AuthenticationProvide
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.utilities import urlparse
 
 
 class ACSTokenProvider(AuthenticationProvider):
