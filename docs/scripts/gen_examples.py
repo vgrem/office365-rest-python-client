@@ -114,4 +114,3 @@ def _emit_product(product: pathlib.Path) -> None:
 
 for product in sorted(p for p in EXAMPLES_ROOT.iterdir() if p.is_dir() and not p.name.startswith("__")):
     _emit_product(product)
-

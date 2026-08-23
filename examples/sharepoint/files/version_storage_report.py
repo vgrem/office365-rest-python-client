@@ -86,8 +86,9 @@ def analyze_version_storage(ctx: ClientContext, library_name: str = "Shared Docu
 def main():
     parser = argparse.ArgumentParser(description="Analyze file version storage in a library")
     parser.add_argument("--library", default="Shared Documents", help="document library to scan")
-    parser.add_argument("--threshold", type=int, default=_VERSION_THRESHOLD,
-                        help="version count that flags a cleanup candidate")
+    parser.add_argument(
+        "--threshold", type=int, default=_VERSION_THRESHOLD, help="version count that flags a cleanup candidate"
+    )
     args = parser.parse_args()
 
     print("Analyzing file version storage...\n")

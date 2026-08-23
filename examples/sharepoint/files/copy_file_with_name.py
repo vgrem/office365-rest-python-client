@@ -10,9 +10,7 @@ from tests.settings import client_id, password, site_url, tenant, username
 
 def main():
     parser = argparse.ArgumentParser(description="Copy a file within a site with a new name")
-    parser.add_argument(
-        "--file-url", default="Shared Documents/Financial Sample.xlsx", help="server-relative file URL"
-    )
+    parser.add_argument("--file-url", default="Shared Documents/Financial Sample.xlsx", help="server-relative file URL")
     parser.add_argument(
         "--folder-url", default="Shared Documents/archive", help="server-relative destination folder URL"
     )

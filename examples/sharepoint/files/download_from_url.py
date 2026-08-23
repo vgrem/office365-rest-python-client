@@ -14,8 +14,11 @@ from tests.settings import client_id, password, tenant, username
 
 def main():
     parser = argparse.ArgumentParser(description="Download a file by absolute URL")
-    parser.add_argument("--url", default="https://contoso.sharepoint.com/sites/team/Shared%20Documents/archive/report.docx",
-                        help="absolute file URL")
+    parser.add_argument(
+        "--url",
+        default="https://contoso.sharepoint.com/sites/team/Shared%20Documents/archive/report.docx",
+        help="absolute file URL",
+    )
     args = parser.parse_args()
 
     ctx = ClientContext.from_url(args.url).with_username_and_password(

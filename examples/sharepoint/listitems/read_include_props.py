@@ -13,8 +13,7 @@ from tests.settings import client_id, password, site_url, tenant, username
 def main():
     parser = argparse.ArgumentParser(description="Read list items with selected fields")
     parser.add_argument("--list-title", default="Documents", help="list title")
-    parser.add_argument("--fields", nargs="+", default=["Title", "Created", "Modified"],
-                        help="fields to select")
+    parser.add_argument("--fields", nargs="+", default=["Title", "Created", "Modified"], help="fields to select")
     args = parser.parse_args()
 
     ctx = ClientContext(site_url).with_username_and_password(

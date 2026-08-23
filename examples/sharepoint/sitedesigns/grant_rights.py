@@ -27,7 +27,10 @@ def main():
         sys.exit(f"Site design not found: {args.design_id}")
 
     SiteScriptUtility.grant_site_design_rights(
-        ctx, str(target.Id), [args.principal], 1  # 1 = View
+        ctx,
+        str(target.Id),
+        [args.principal],
+        1,  # 1 = View
     ).execute_query()
     print(f"Rights granted on '{target.Title}' to {args.principal}")
 

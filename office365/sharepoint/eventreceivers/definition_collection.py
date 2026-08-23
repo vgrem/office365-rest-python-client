@@ -20,8 +20,8 @@ class EventReceiverDefinitionCollection(EntityCollection[EventReceiverDefinition
         self,
         receiver_name: str,
         receiver_url: str,
-        event_type: int = 2,          # EventReceiverType: 2 = ItemAdded
-        synchronization: int = 1,     # EventReceiverSynchronization: 1 = Asynchronous
+        event_type: int = 2,  # EventReceiverType: 2 = ItemAdded
+        synchronization: int = 1,  # EventReceiverSynchronization: 1 = Asynchronous
         sequence_number: int = 1000,
         **kwargs,
     ) -> EventReceiverDefinition:
