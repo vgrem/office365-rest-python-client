@@ -1,32 +1,41 @@
 """
-Import a taxonomy hierarchy into a Microsoft Graph term store from JSON or CSV.
+Import a taxonomy hierarchy into a Microsoft Graph term store from JSON.
 
 JSON format mirrors the term store model:
   [group { name, sets: [ set { name, children: [ term { name, children: [] } ] } ] }]
 
-CSV format:
-  group,set,term,parent_term
-  Rows are processed in order — parents must appear before children.
+Requires application permission ``TermStore.ReadWrite.All``.
 
-Requires delegated permission TermStore.ReadWrite.All.
+https://learn.microsoft.com/en-us/graph/api/termstore-set-post
 """
 
+import argparse
+import json
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from tests.settings import client_id, password, tenant, username
+from tests.settings import client_id, client_secret, root_site_url, tenant
+
+DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "regions.json"
 
 
 def main():
-    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
+    parser = argparse.ArgumentParser(description="Import a taxonomy hierarchy from JSON")
+    parser.add_argument("--input", default=str(DATA_FILE), help="JSON file to import")
+    args = parser.parse_args()
 
-    json_path = Path("../../data/regions.json")
-    if not json_path.exists():
-        raise FileNotFoundError(json_path)
+    with open(args.input, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-    store = client.sites.root.term_store
-    store.import_from_json(json_path).execute_query()
-    print(f"Imported from {json_path}")
+    client = (
+        GraphClient(tenant=tenant)
+        .with_client_secret(client_id, client_secret)
+        .require_application_permission("TermStore.ReadWrite.All")
+    )
+    store = client.sites.get_by_url(root_site_url).term_store
+
+    store.from_json(data).execute_query()
+    print(f"✓ Imported from {args.input}")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import json
-from os import PathLike
 from typing import Optional
 
 from typing_extensions import Self
@@ -10,10 +8,8 @@ from office365.entity import Entity
 from office365.onedrive.termstore.groups.collection import GroupCollection
 from office365.onedrive.termstore.groups.group import Group
 from office365.onedrive.termstore.sets.collection import SetCollection
-from office365.onedrive.termstore.store_exporter import StoreExporter
-from office365.onedrive.termstore.store_importer import StoreImporter
+from office365.onedrive.termstore.store_manager import StoreManager
 from office365.onedrive.termstore.terms.collection import TermCollection
-from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -27,32 +23,16 @@ class Store(Entity):
         return self.groups.ensure(name)
 
     def search_term(self, search_label: str) -> TermCollection:
-        return_type = TermCollection(self.context)
+        """Search for a term by label across all sets in the term store."""
+        return StoreManager(self).search_term(search_label)
 
-        def _on_terms_loaded(terms: TermCollection):
-            for t in terms:
-                if t.display_name == search_label:
-                    return_type.add_child(t)
+    def get_all_terms(self) -> TermCollection:
+        """Flatten the whole term store into a single ``TermCollection`` (deferred)."""
+        return StoreManager(self).get_all_terms()
 
-        def _on_sets_loaded(sets: SetCollection):
-            for s in sets:
-                s.terms.get().after_execute(lambda terms: _on_terms_loaded(terms))
-
-        def _on_groups_loaded(groups: GroupCollection):
-            for g in groups:
-                g.sets.get().after_execute(lambda sets: _on_sets_loaded(sets))
-
-        self.groups.get().after_execute(lambda groups: _on_groups_loaded(groups))
-        return return_type
-
-    def export_to_json(self) -> ClientResult[list]:
-        return StoreExporter(self).export()
-
-    def import_from_json(self, path: str | PathLike) -> Self:
-        """Import term store hierarchy from a JSON file."""
-        with open(path) as f:
-            data = json.load(f)
-        StoreImporter(self).import_from_data(data)
+    def from_json(self, data: list[dict]) -> Self:
+        """Import a term hierarchy from a list of group dicts (deferred)."""
+        StoreManager(self).from_json(data)
         return self
 
     @property
