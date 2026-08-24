@@ -23,7 +23,9 @@ class SPOM365AgentInsightsM365AgentsOnSitesDetails(ClientValue):
     SiteURL: str | None = None
     TotalAgents: int | None = None
     TotalRequestVolume: int | None = None
+    Department: str | None = None
+    IncludeE7Fields: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsM365AgentsOnSitesDetails"

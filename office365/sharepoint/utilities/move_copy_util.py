@@ -144,6 +144,7 @@ class MoveCopyUtil(Entity):
         download_file: IO,
         after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
+        include_versions: bool = False,
     ) -> Folder:
         """Downloads a folder into a zip file
 
@@ -152,6 +153,8 @@ class MoveCopyUtil(Entity):
             download_file (typing.IO): A download zip file object
             after_file_downloaded ((office365.sharepoint.files.file.File)->None): A download callback
             recursive (bool): Determines whether to traverse folders recursively
+            include_versions (bool): If True, also downloads each file's version history
+              into the zip under ``versions/{path}/v{label}``
         """
         import zipfile
 
@@ -166,6 +169,21 @@ class MoveCopyUtil(Entity):
                 file.name,
             )
 
+        def _download_versions(file: File, filename: str) -> None:
+            def _versions_loaded(versions) -> None:
+                for version in versions:
+                    if version.is_current_version:
+                        continue  # current content is saved at the zip root
+                    label = (version.version_label or str(version.id)).replace(".", "_")
+
+                    def _save(vresult: ClientResult[AnyStr], fn: str = filename, lbl: str = label) -> None:
+                        with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
+                            zf.writestr(f"versions/{fn}/v{lbl}", vresult.value)
+
+                    version.open_binary_stream().after_execute(_save)
+
+            file.versions.get().after_execute(_versions_loaded)
+
         def _download_file(file: File) -> None:
             def _after_downloaded(result: ClientResult[AnyStr]) -> None:
                 filename = _get_relative_file_path(file)
@@ -173,6 +191,8 @@ class MoveCopyUtil(Entity):
                     after_file_downloaded(file)
                 with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                     zf.writestr(filename, result.value)
+                if include_versions:
+                    _download_versions(file, filename)
 
             file.get_content().after_execute(_after_downloaded)
 

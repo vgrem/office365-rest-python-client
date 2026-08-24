@@ -58,7 +58,11 @@ class Folder(Entity):
         return ctx.web.get_folder_by_server_relative_url(relative_url)
 
     def download_folder(
-        self, download_file: IO, after_file_downloaded: Optional[Callable[[File], None]] = None, recursive: bool = True
+        self,
+        download_file: IO,
+        after_file_downloaded: Optional[Callable[[File], None]] = None,
+        recursive: bool = True,
+        include_versions: bool = False,
     ):
         """Downloads a folder into a zip file
 
@@ -66,8 +70,10 @@ class Folder(Entity):
             download_file (typing.IO): A download zip file object
             after_file_downloaded ((office365.sharepoint.files.file.File)->None): A download callback
             recursive (bool): Determines whether to traverse folders recursively
+            include_versions (bool): If True, also downloads each file's version history
+              into the zip under ``versions/{path}/v{label}``
         """
-        return MoveCopyUtil.download_folder(self, download_file, after_file_downloaded, recursive)
+        return MoveCopyUtil.download_folder(self, download_file, after_file_downloaded, recursive, include_versions)
 
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """Returns the user permissions for a folder"""

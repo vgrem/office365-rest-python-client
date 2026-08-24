@@ -17,6 +17,15 @@ from generator.documentation.baseservice import BaseDocumentationService
 from generator.documentation.graphdocsservice import GraphOpenService
 from generator.documentation.sharepointdocsservice import SharePointService
 
+_GENERATOR_DIR = Path(__file__).parent
+
+
+def _resolve_path(value: str) -> str:
+    """Resolve a config path relative to the generator directory (not the CWD)."""
+    if os.path.isabs(value):
+        return value
+    return str((_GENERATOR_DIR / value).resolve())
+
 
 def _should_skip(
     name: str, type_schema, processed_types: set, exact_ignored: list, prefix_ignored: list, options: dict
@@ -64,8 +73,9 @@ def _process_type(
 
 def generate_files(model: ODataModel, options: dict, docs_service: Optional[BaseDocumentationService] = None) -> None:
     metadata_path = options["metadata_path"]
-    checkpoint_file = f".checkpoints/{os.path.basename(metadata_path)}.json"
-    os.makedirs(".checkpoints", exist_ok=True)
+    checkpoint_dir = _GENERATOR_DIR / ".checkpoints"
+    checkpoint_file = checkpoint_dir / f"{os.path.basename(metadata_path)}.json"
+    checkpoint_dir.mkdir(exist_ok=True)
 
     if os.path.exists(checkpoint_file):
         with open(checkpoint_file, "r", encoding="utf-8") as f:
@@ -122,7 +132,7 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
 
         processed_count += 1
         print(f"[{processed_count}/{total_types}] Processing: {name}")
-        _process_type(name, type_schema, checkpoint_file, options, docs_service, processed_types)
+        _process_type(name, type_schema, str(checkpoint_file), options, docs_service, processed_types)
 
     if checkpoint_file and os.path.exists(checkpoint_file):
         os.remove(checkpoint_file)
@@ -138,11 +148,14 @@ def _load_options(cp: ConfigParser, section: str) -> dict:
     if cp.has_section("modules"):
         modules_list = [v for k, v in cp.items("modules")]
         options["modules"] = ",".join(modules_list)
+    for key in ("metadata_path", "output_path", "template_path"):
+        if options.get(key):
+            options[key] = _resolve_path(options[key])
     return options
 
 
 def generate_sharepoint_model(cp: ConfigParser) -> None:
-    reader = ODataV3Reader(cp.get("sharepoint", "metadata_path"))
+    reader = ODataV3Reader(_resolve_path(cp.get("sharepoint", "metadata_path")))
     # reader.format_file()
     model = reader.generate_model()
     docs_service = SharePointService()
@@ -151,7 +164,7 @@ def generate_sharepoint_model(cp: ConfigParser) -> None:
 
 
 def generate_graph_model(cp: ConfigParser) -> None:
-    reader = ODataV4Reader(cp.get("graph", "metadata_path"))
+    reader = ODataV4Reader(_resolve_path(cp.get("graph", "metadata_path")))
     model = reader.generate_model()
     docs_service = GraphOpenService()
     options = _load_options(cp, "graph")

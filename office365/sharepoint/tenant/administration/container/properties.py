@@ -53,6 +53,12 @@ class SPContainerProperties(ClientValue):
     RestrictedAccessControlGroups: GuidCollection = field(default_factory=GuidCollection)
     RestrictedAccessControlGroupsToAdd: GuidCollection = field(default_factory=GuidCollection)
     RestrictedAccessControlGroupsToRemove: GuidCollection = field(default_factory=GuidCollection)
+    IBMode: str | None = None
+    IBModeToSet: str | None = None
+    IBSegments: GuidCollection = field(default_factory=GuidCollection)
+    IBSegmentsToAdd: GuidCollection = field(default_factory=GuidCollection)
+    IBSegmentsToRemove: GuidCollection = field(default_factory=GuidCollection)
+    StorageMaximumLevel: int | None = None
 
     @property
     def entity_type_name(self):

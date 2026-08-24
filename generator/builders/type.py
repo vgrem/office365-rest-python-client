@@ -297,6 +297,7 @@ class TypeBuilder(ast.NodeTransformer):
         ast.fix_missing_locations(self._source_tree)
         code = ast.unparse(self._source_tree)
 
+        os.makedirs(os.path.dirname(self.file) or ".", exist_ok=True)
         with open(self.file, "w", encoding="utf-8") as f:
             f.write(code)
 
