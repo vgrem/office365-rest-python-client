@@ -9,25 +9,37 @@ Requires delegated permission ``Organization.Read.All``.
 https://learn.microsoft.com/en-us/graph/api/subscribedsku-list
 """
 
+import argparse
+
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
-COPILOT_KEYWORDS = ("COPILOT", "M365COPILOT", "CHAT")
-
 
 def main():
+    parser = argparse.ArgumentParser(description="Report Copilot license adoption")
+    parser.add_argument(
+        "--keyword",
+        default="COPILOT",
+        help="SKU part-number substring to match (default: COPILOT)",
+    )
+    args = parser.parse_args()
+
+    keyword = args.keyword.upper()
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     skus = client.subscribed_skus.get().execute_query()
-    print("Copilot-related SKUs:\n")
+
+    print(f"SKUs matching '{keyword}':\n")
     found = False
     for sku in skus:
-        name = (sku.sku_part_number or "").upper()
-        if any(keyword in name for keyword in COPILOT_KEYWORDS):
-            found = True
-            enabled = sku.prepaid_units.enabled if sku.prepaid_units else 0
-            print(f"  {sku.sku_part_number:35s} consumed: {sku.consumed_units or 0} / enabled: {enabled}")
+        part_number = sku.sku_part_number or ""
+        if keyword not in part_number.upper():
+            continue
+        found = True
+        enabled = sku.prepaid_units.enabled if sku.prepaid_units else 0
+        print(f"  {part_number:40s} consumed: {sku.consumed_units or 0} / enabled: {enabled}")
+
     if not found:
-        print("  (no Copilot SKUs found)")
+        print("  (no matching SKUs found)")
 
 
 if __name__ == "__main__":

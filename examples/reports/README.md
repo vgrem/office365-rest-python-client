@@ -1,36 +1,67 @@
 # Microsoft Graph Reports
 
-Examples for working with Microsoft Graph usage reports —
-MFA status, email activity, mailbox storage, Teams/SharePoint/OneDrive
-usage, M365 apps (incl. Copilot), and more.
+Usage and adoption reports across the main Microsoft 365 workloads — email
+(Exchange), mailbox storage, OneDrive, SharePoint, Teams, Microsoft 365 apps
+(including Copilot), Office activations, and MFA registration coverage.
 
 ---
 
 ## Prerequisites
 
-| Permission | Description |
-|---|---|
-| `Reports.Read.All` | Download CSV usage reports |
-| `AuditLog.Read.All` | Read MFA registration details |
+| Permission | Description | Reference |
+|---|---|---|
+| `Reports.Read.All` | Download CSV usage reports | [Reports permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#reports-permissions) |
+| `AuditLog.Read.All` | MFA registration details | [Audit permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#auditlog-permissions) |
+| `Organization.Read.All` | Subscribed SKUs (license reports) | [Organization permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#organization-permissions) |
+
+All examples authenticate with client secret (`client_id`, `client_secret`,
+`tenant` from `tests.settings`).
 
 ---
 
-## Examples
+## Examples by workload
 
-| Scenario | File | Permission |
+### Security — MFA coverage
+
+| Operation | File | Permission | API |
+|---|---|---|---|
+| MFA registration status per user | [`get_mfa_status.py`](./get_mfa_status.py) | `AuditLog.Read.All` | [user registration details](https://learn.microsoft.com/en-us/graph/api/authenticationmethods-list-userregistrationdetails) |
+
+### Exchange Online — email & mailbox
+
+| Operation | File | API |
 |---|---|---|
-| MFA registration status for all users | [`get_mfa_status.py`](./get_mfa_status.py) | `AuditLog.Read.All` |
-| Generic CSV usage report download (argparse) | [`usage_reports.py`](./usage_reports.py) | `Reports.Read.All` |
-| Teams user activity report | [`teams_usage.py`](./teams_usage.py) | `Reports.Read.All` |
-| Microsoft 365 apps usage (incl. Copilot) | [`m365_apps_usage.py`](./m365_apps_usage.py) | `Reports.Read.All` |
+| Email activity counts (sent/read/received) | [`email_activity.py`](./email_activity.py) | [getEmailActivityCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getemailactivitycounts) |
+| Mailbox storage usage trend | [`mailbox_storage.py`](./mailbox_storage.py) | [getMailboxUsageStorage](https://learn.microsoft.com/en-us/graph/api/reportroot-getmailboxusagestorage) |
+
+### Files — OneDrive & SharePoint
+
+| Operation | File | API |
+|---|---|---|
+| OneDrive activity (users, files, sharing) | [`onedrive_usage.py`](./onedrive_usage.py) | [getOneDriveActivityUserCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getonedriveactivityusercounts) |
+| SharePoint site usage / storage | [`sharepoint_usage.py`](./sharepoint_usage.py) | [getSharePointSiteUsageSiteCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getsharepointsiteusagesitecounts) |
+
+### Collaboration — Teams & apps
+
+| Operation | File | API |
+|---|---|---|
+| Teams user activity | [`teams_usage.py`](./teams_usage.py) | [getTeamsUserActivityUserCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getteamsuseractivityusercounts) |
+| Microsoft 365 apps usage (incl. Copilot) | [`m365_apps_usage.py`](./m365_apps_usage.py) | [getM365AppUserCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getm365appusercounts) |
+| Office 365 activations per product | [`activations.py`](./activations.py) | [getOffice365ActivationCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getoffice365activationcounts) |
 
 ### Copilot
 
-| Scenario | File | Permission |
+| Operation | File | API |
 |---|---|---|
-| Copilot license adoption | [`copilot/license_report.py`](./copilot/license_report.py) | `Organization.Read.All` |
-| Copilot usage (M365 apps report) | [`copilot/usage_report.py`](./copilot/usage_report.py) | `Reports.Read.All` |
-| Underused Copilot licenses | [`copilot/underused_licenses.py`](./copilot/underused_licenses.py) | `Organization.Read.All`, `User.Read.All` |
+| Copilot license adoption | [`copilot/license_report.py`](./copilot/license_report.py) | [subscribedSku list](https://learn.microsoft.com/en-us/graph/api/subscribedsku-list) |
+| Copilot usage (M365 apps report) | [`copilot/usage_report.py`](./copilot/usage_report.py) | [getM365AppUserCounts](https://learn.microsoft.com/en-us/graph/api/reportroot-getm365appusercounts) |
+| Underused Copilot licenses | [`copilot/underused_licenses.py`](./copilot/underused_licenses.py) | [user list](https://learn.microsoft.com/en-us/graph/api/user-list) |
+
+### Generic downloader
+
+| Operation | File | API |
+|---|---|---|
+| Download any CSV report via `--report` | [`usage_reports.py`](./usage_reports.py) | [reportRoot](https://learn.microsoft.com/en-us/graph/api/resources/reportroot) |
 
 ---
 

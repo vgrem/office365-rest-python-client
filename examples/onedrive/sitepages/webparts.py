@@ -43,9 +43,7 @@ def main():
         print("\nPositions:")
         for wp in web_parts:
             position = wp.get_position_of_web_part().execute_query().value
-            print(
-                f"  section={position.horizontalSectionId}  column={position.columnId}  index={position.webPartIndex}"
-            )
+            print(f"  section={position.horizontalSectionId}  column={position.columnId}  index={position.webPartIndex}")
 
     if not args.keep:
         page.delete_object().execute_query()

@@ -19,7 +19,7 @@ library across Microsoft 365 and Entra ID services.
 | [`outlook/`](./outlook/) | **Outlook / Exchange Online** | Mail (send, draft, folders, rules, search), events, calendars |
 | [`planner/`](./planner/) | **Microsoft Planner** | Plans, buckets, tasks, assignments, details |
 | [`purview/`](./purview/) | **Microsoft Purview** | eDiscovery cases, retention labels, subject rights requests |
-| [`reports/`](./reports/) | M365 usage reports | Email, mailbox, OneDrive, SharePoint, Teams, M365 app, Office activations |
+| [`reports/`](./reports/) | M365 usage reports | Email, mailbox, OneDrive, SharePoint, Teams, M365 app, Office activations, MFA coverage, Copilot |
 | [`sharepoint/`](./sharepoint/) | **Microsoft SharePoint** | All areas — files, lists, permissions, search, taxonomy, sites, webhooks |
 | [`teams/`](./teams/) | **Microsoft Teams** | Lifecycle, channels, messages, members, apps, tabs, settings |
 
