@@ -82,7 +82,9 @@ def _rewrite_links(text: str, base: pathlib.Path) -> str:
 
 def _emit_product(product: pathlib.Path) -> None:
     """Emit all pages for one top-level product area under docs/<product>/."""
-    prefix = product.name
+    if not any(product.rglob("*.py")):
+        return  # sample data / non-code directories
+    prefix = "auth" if product.name == "auth" else f"products/{product.name}"
 
     for path in sorted(product.rglob("*.py")):
         if "__pycache__" in path.parts:
@@ -110,6 +112,8 @@ def _emit_product(product: pathlib.Path) -> None:
             elif child.suffix == ".py":
                 lines.append(f"- [{child.stem.replace('_', ' ').title()}]({child.stem}.md)")
         _emit(f"{prefix}/{rel}/index.md", "\n".join(lines) + "\n")
+        # hide the per-example pages from the nav — the directory index links to them
+        _emit(f"{prefix}/{rel}/.pages", "nav:\n  - index.md\n")
 
 
 for product in sorted(p for p in EXAMPLES_ROOT.iterdir() if p.is_dir() and not p.name.startswith("__")):

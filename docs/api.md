@@ -1,4 +1,4 @@
-# Library guide
+# API Reference
 
 A practical tour of what the library gives you: the two clients, authentication,
 the query patterns that make it ergonomic, and the power-user features
@@ -132,7 +132,7 @@ with open("users.csv", "w", newline="") as f:
 
 ## Learn more
 
--   **[Examples](sharepoint/index.md)** — start with the SharePoint area, then
+-   **[Products](products/index.md)** — start with the SharePoint area, then
     browse the rest from the left navigation.
 -   **[Auth examples](auth/index.md)** — all authentication flows.
 -   **[README](https://github.com/vgrem/office365-rest-python-client#readme)** —

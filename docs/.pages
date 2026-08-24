@@ -1,24 +1,8 @@
-# Navigation order — Home, then each product area, then the library guide.
-# Product areas mirror the top-level directories under examples/.
+# Navigation — a reading path first, then the product galleries, then the reference.
 nav:
   - index.md
-  - admin
+  - installation.md
+  - getting-started.md
   - auth
-  - backuprestore
-  - booking
-  - communications
-  - defender
-  - entraid
-  - insights
-  - intune
-  - onedrive
-  - onenote
-  - outlook
-  - planner
-  - purview
-  - reports
-  - security
-  - sharepoint
-  - teams
-  - todo
+  - products
   - api.md
