@@ -11,6 +11,7 @@ from office365.sharepoint.taxonomy.sets.set import TermSet
 from office365.sharepoint.taxonomy.stores.store import TermStore
 from office365.sharepoint.taxonomy.terms.term import Term
 
+from tests import create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -28,10 +29,12 @@ class TestSPTaxonomy(SPTestCase):
         self.assertIsNotNone(term_store.name)
 
     def test_02_get_term_groups(self):
-        """Get a term group by name."""
-        term_group = self.client.taxonomy.term_store.term_groups.get_by_name("Geography").get().execute_query()
-        self.assertIsNotNone(term_group.resource_path)
+        """Get a term group."""
+        term_groups = self.client.taxonomy.term_store.term_groups.get().execute_query()
+        self.assertGreater(len(term_groups), 0)
+        term_group = term_groups[0]
         self.assertIsInstance(term_group, TermGroup)
+        self.assertIsNotNone(term_group.resource_path)
         TestSPTaxonomy.target_term_group = term_group
 
     def test_03_get_term_sets(self):
@@ -60,10 +63,12 @@ class TestSPTaxonomy(SPTestCase):
 
     def test_06_create_list_tax_field(self):
         """Create a taxonomy field on the default document library."""
-        term_set_id = "b49f64b3-4722-4336-9a5c-56c326b344d4"
+        target_term_set = TestSPTaxonomy.target_term_set
+        if not target_term_set:
+            self.skipTest("No target term set from previous test")
         tax_field = (
             self.client.web.default_document_library()
-            .fields.create_taxonomy_field(name="Category123", term_set=term_set_id)
+            .fields.create_taxonomy_field(name=create_unique_name("Category"), term_set=target_term_set)
             .execute_query()
         )
         self.assertIsNotNone(tax_field.resource_path)

@@ -55,6 +55,7 @@ class TaxonomyField(FieldLookup):
             Name=name,
             TermSetId=term_set_id,
             SspId=term_store_id,
+            FieldId=str(uuid.uuid4()),
             AllowMultipleValues=allow_multiple_values,
         )
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_object import ClientObject
+from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.v4.entity import EntityPath
 
 
 class TaxonomyItem(ClientObject):
@@ -30,10 +32,14 @@ class TaxonomyItem(ClientObject):
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        # if name == self.property_ref_name:
-        #    assert self.parent_collection is not None
-        #    if self._resource_path is None:
-        #        self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
-        #    else:
-        #        self._resource_path.set_segment(value)
+        if name == self.property_ref_name:
+            if self._resource_path is None:
+                if self.parent_collection is None:
+                    self._resource_path = ResourcePath(value)
+                elif isinstance(self.parent_collection.resource_path, EntityPath):
+                    self._resource_path = EntityPath(value, self.parent_collection.resource_path.collection)
+                else:
+                    self._resource_path = ResourcePath(value, self.parent_collection.resource_path)
+            else:
+                self._resource_path.set_segment(value)
         return self

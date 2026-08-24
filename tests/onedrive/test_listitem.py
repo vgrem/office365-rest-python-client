@@ -3,7 +3,7 @@ from typing import Optional
 from office365.onedrive.listitems.list_item import ListItem
 from office365.onedrive.lists.list import List
 from office365.onedrive.lists.template_type import ListTemplateType
-from tests import create_unique_name, test_team_site_url
+from tests import create_unique_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -17,7 +17,7 @@ class TestListItem(GraphDelegatedTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        site = cls.client.sites.get_by_url(test_team_site_url)
+        site = cls.client.sites.root
         cls.target_list = site.lists.add(create_unique_name("Orders"), ListTemplateType.genericList).execute_query()
 
     @classmethod

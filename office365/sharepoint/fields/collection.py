@@ -26,7 +26,6 @@ from office365.sharepoint.fields.xmlSchemaFieldCreationInformation import (
 )
 from office365.sharepoint.taxonomy.field import TaxonomyField
 from office365.sharepoint.taxonomy.sets.set import TermSet
-from office365.sharepoint.taxonomy.stores.store import TermStore
 
 T = TypeVar("T", bound=Field)
 
@@ -293,31 +292,29 @@ class FieldCollection(EntityCollection[Field]):
             term_set (str or TermSet): TermSet identifier or object
             allow_multiple_values (bool): Specifies whether the column will allow more than one value
         """
+        tax = self.context.taxonomy
+
+        # resolve the identifiers on the taxonomy service (``_api/v2.1``, OData V4)
+        term_store = tax.term_store.get().execute_query()
+        if isinstance(term_set, TermSet):
+            term_set.ensure_property("id").execute_query()
+            term_set_id = term_set.id
+        else:
+            term_set_id = term_set
+        term_store_id = term_store.id
+        if not term_store_id or not term_set_id:
+            raise ValueError("Unable to resolve the term store or term set identifier")
+
+        # the field creation itself runs on this (OData V3) context
         return_type = TaxonomyField(self.context)
-
-        def _create_taxonomy_field(term_store_id: str | None, term_set_id: str | None):
-            assert term_set_id is not None
-            assert term_store_id is not None
-            TaxonomyField.create(
-                self,
-                name,
-                term_set_id,
-                term_store_id,
-                allow_multiple_values,
-                return_type=return_type,
-            )
-
-        def _term_store_loaded(term_store: TermStore) -> None:
-            if isinstance(term_set, TermSet):
-                term_set_obj = term_set
-                term_set.ensure_property("id").after_execute(
-                    lambda _: _create_taxonomy_field(term_store.id, term_set_obj.id)
-                )
-            else:
-                _create_taxonomy_field(term_store.id, term_set)
-
-        self.context.load(self.context.taxonomy.term_store).after_execute(_term_store_loaded)
-
+        TaxonomyField.create(
+            self,
+            name,
+            term_set_id,
+            term_store_id,
+            allow_multiple_values,
+            return_type=return_type,
+        )
         return return_type
 
     def create_field_as_xml(self, schema_xml: str, return_type: Optional[T] = None) -> T:
