@@ -44,7 +44,7 @@ class CountCollection(DeltaCollection[ClientObjectT]):
                 .consistency_level("eventual").get().execute_query()
         """
         self._consistency_level = level
-        self.query_options.custom["count"] = "true"
+        self.query_options.custom["$count"] = "true"
         return self
 
     def get(self) -> Self:

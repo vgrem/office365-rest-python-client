@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
+from office365.delta_collection import DeltaCollection
 from office365.directory.permissions.require_permission import require_permission
-from office365.entity_collection import EntityCollection
 from office365.onedrive.listitems.list_item import ListItem
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
 
-class ListItemCollection(EntityCollection[ListItem]):
+class ListItemCollection(DeltaCollection[ListItem]):
     """Represents a collection of SharePoint/OneDrive list items with enhanced query capabilities.
 
     Provides methods to:

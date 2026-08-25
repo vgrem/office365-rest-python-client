@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union, cast
 
-from typing_extensions import Self
-
 from office365.entity import Entity
 from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_object_collection import ClientObjectCollection
@@ -26,22 +24,6 @@ class EntityCollection(ClientObjectCollection[ClientObjectT]):
         parent: Optional[Entity] = None,
     ) -> None:
         super().__init__(context, item_type, resource_path, parent)
-        self._delta_request_url = None
-
-    def token(self, value: str) -> Self:
-        """Apply delta query
-
-        Args:
-            value (str): If unspecified, enumerates the hierarchy's current state. If latest, returns empty response
-              with latest delta token. If a previous delta token, returns new state since that token.
-        """
-        self.query_options.custom["token"] = value
-        return self
-
-    @property
-    def delta_token(self) -> Optional[str]:
-        """The delta link (resume token) returned by the last delta query, if any."""
-        return self._delta_request_url
 
     def __getitem__(self, key: Union[int, str]) -> ClientObjectT:
         """Args:
@@ -70,13 +52,6 @@ class EntityCollection(ClientObjectCollection[ClientObjectT]):
         if resource_path is None:
             resource_path = EntityPath(None, self.resource_path)
         return super().create_typed_object(initial_properties, resource_path)
-
-    def set_property(self, name: str, value: Any, persist_changes: bool = False) -> Self:
-        if name == self.context.pending_request().json_format.collection_delta:
-            self._delta_request_url = value
-        else:
-            super().set_property(name, value, persist_changes)
-        return self
 
     @property
     def context(self) -> GraphClient:

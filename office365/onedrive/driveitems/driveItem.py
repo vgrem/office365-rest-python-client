@@ -12,6 +12,7 @@ import requests
 from requests import Response
 from typing_extensions import Self
 
+from office365.delta_collection import DeltaCollection
 from office365.delta_path import DeltaPath
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
@@ -1033,11 +1034,11 @@ class DriveItem(BaseItem):
         application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
         notes="Track changes to a drive item and its children over time",
     )
-    def delta(self) -> EntityCollection["DriveItem"]:
+    def delta(self) -> DeltaCollection["DriveItem"]:
         """Tracks changes to a drive item and its children over time."""
         return self.properties.get(
             "delta",
-            EntityCollection(self.context, DriveItem, DeltaPath(self.resource_path)),
+            DeltaCollection(self.context, DriveItem, DeltaPath(self.resource_path)),
         )
 
     @property

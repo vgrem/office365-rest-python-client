@@ -48,13 +48,23 @@ class QueryOptions:
         """Checks if any query options are set."""
         return not any(self.__dict__.values())
 
+    _ODATA_OPTIONS = ("select", "expand", "filter", "order_by", "top", "skip")
+
     def to_url(self) -> str:
         """Generates URL query string from current options.
+
+        Standard OData system query options are prefixed with ``$``; custom
+        query parameters are emitted verbatim (the caller controls the key,
+        e.g. ``token`` for OneDrive/SharePoint delta queries).
 
         Returns:
             URL-encoded query string (without leading ?)
         """
-        return "&".join([f"${key}={value}" for (key, value) in self])
+        parts = []
+        for key, value in self:
+            prefix = "$" if key in self._ODATA_OPTIONS else ""
+            parts.append(f"{prefix}{key}={value}")
+        return "&".join(parts)
 
     def __iter__(self) -> Iterator[Tuple[str, str]]:
         """Yields non-empty query options as key-value pairs."""

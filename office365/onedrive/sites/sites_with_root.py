@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.entity_collection import EntityCollection
+from office365.delta_collection import DeltaCollection
 from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.internal.paths.site import SitePath
 from office365.onedrive.sites.site import Site
@@ -10,7 +10,7 @@ from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
-class SitesWithRoot(EntityCollection[Site]):
+class SitesWithRoot(DeltaCollection[Site]):
     """Sites container"""
 
     def __init__(self, context, resource_path=None):
@@ -59,7 +59,7 @@ class SitesWithRoot(EntityCollection[Site]):
         multiple properties when retrieving the search results.
         """
         return_type = SitesWithRoot(self.context, ResourcePath("sites"))
-        return_type.query_options.custom["search"] = query_text
+        return_type.query_options.custom["$search"] = query_text
         self.context.load(return_type)
         return return_type
 

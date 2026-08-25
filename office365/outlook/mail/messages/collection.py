@@ -66,6 +66,6 @@ class MessageCollection(DeltaCollection["Message"]):
 
         assert self.resource_path is not None
         return_type = MessageCollection(self.context, self.resource_path)
-        return_type.query_options.custom["search"] = query_text
+        return_type.query_options.custom["$search"] = query_text
         return_type.get()
         return return_type

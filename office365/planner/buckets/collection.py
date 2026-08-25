@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from office365.entity_collection import EntityCollection
+from office365.delta_collection import DeltaCollection
 from office365.planner.buckets.bucket import PlannerBucket
 from office365.planner.plans.plan import PlannerPlan
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 
-class PlannerBucketCollection(EntityCollection[PlannerBucket]):
+class PlannerBucketCollection(DeltaCollection[PlannerBucket]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, PlannerBucket, resource_path)
 
