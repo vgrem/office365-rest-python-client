@@ -14,6 +14,7 @@ from office365.onedrive.workbooks.worksheets.protection import (
     WorkbookWorksheetProtection,
 )
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
@@ -47,9 +48,10 @@ class WorkbookWorksheet(Entity):
     @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
     def range(self, address=None):
         """Gets the range object specified by the address or name."""
-        return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
-        params = {"address": address}
-        qry = FunctionQuery(self, "range", method_params=params, return_type=return_type)
+        return_type = WorkbookRange(
+            self.context, ServiceOperationPath("range", {"address": address}, self.resource_path)
+        )
+        qry = FunctionQuery(self, "range", method_params={"address": address}, return_type=return_type)
         self.context.add_query(qry)
         return return_type
 

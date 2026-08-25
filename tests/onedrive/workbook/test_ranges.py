@@ -63,6 +63,14 @@ class TestExcelRanges(GraphDelegatedTestCase):
     #    self.assertIsNotNone(result.address)
 
     @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    def test5_range_get(self):
+        """Get a worksheet range by address"""
+        assert TestExcelRanges.excel_file is not None
+        worksheet = TestExcelRanges.excel_file.workbook.worksheets["Sheet1"]
+        result = worksheet.range("A1:B2").execute_query()
+        self.assertEqual(result.address, "Sheet1!A1:B2")
+
+    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test6_used_range(self):
         """Get the used range of a range"""
         assert TestExcelRanges.range is not None

@@ -40,7 +40,7 @@ def main():
     print("  ✓ Wrote 3x3 values to F20:H22")
 
     # -- Step 2: read the values back --
-    rng = sheet.range("F20:H22").select(["values"]).get().execute_query()
+    rng = sheet.range("F20:H22").execute_query()
     print("  Read back:")
     if rng.values:
         for row in rng.values:
