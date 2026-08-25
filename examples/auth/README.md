@@ -1,7 +1,7 @@
 # Microsoft Graph Authentication
 
-Picking the right authentication flow depends on **who your app runs as** and
-**where it runs**. Use the chart below to decide, then jump to the example.
+Authentication flows for the Graph client — pick the one that matches who your app
+runs as and where it runs.
 
 ---
 
@@ -13,16 +13,22 @@ flowchart TD
     A --> C[A user]
 
     B --> D{Where will it run?}
-    D -->|Production| E[Client certificate\nmore secure]
-    D -->|Development / simple| F[Client secret\nsimplest setup]
+    D -->|Production| E[Client certificate
+more secure]
+    D -->|Development / simple| F[Client secret
+simplest setup]
 
     C --> G{User present to interact?}
-    G -->|Yes| H[Interactive auth\nsupports MFA, SSO]
+    G -->|Yes| H[Interactive auth
+supports MFA, SSO]
     G -->|No| I{Has a browser?}
-    I -->|Yes, visit URL| N[Device code flow\nheadless CLI, SSH,\nremote server]
-    I -->|No browser at all| O["ROPC (password grant)\nno MFA, legacy"]
+    I -->|Yes, visit URL| N[Device code flow
+headless CLI, SSH,
+remote server]
+    I -->|No browser at all| O["ROPC (password grant)
+no MFA, legacy"]
 
-    E --> J[with_certificate.py]
+    E --> J[with_client_cert.py]
     F --> K[with_client_secret.py]
     H --> L[interactive.py]
     N --> P[with_device_flow.py]
@@ -39,22 +45,132 @@ flowchart TD
 
 ---
 
-## Flow reference
+## App-only (application permissions)
 
-| Flow | Method | Best for | MFA? | File |
-|------|--------|----------|:----:|------|
-| **Client secret** | `with_client_secret(client_id, secret)` | Daemons, cron jobs, CI/CD — app-only access | — | [`with_client_secret.py`](./with_client_secret.py) |
-| **Client certificate** | `with_certificate(client_id, thumbprint, key)` | Production daemons — app-only, no shared secret | — | [`with_client_cert.py`](./with_client_cert.py) |
-| **Interactive** | `with_token_interactive(client_id)` | Desktop apps, CLI tools — user signed-in | ✅ | [`interactive.py`](./interactive.py) |
-| **Device code** | `with_device_flow(client_id)` | Headless CLI, SSH, remote servers — user visits a URL | ✅ | [`with_device_flow.py`](./with_device_flow.py) |
-| **ROPC (password)** | `with_username_and_password(client_id, user, pass)` | Automated scripts — user context, no interactivity | ✗ | [`with_user_creds.py`](./with_user_creds.py) |
-| **Custom token callback** | `GraphClient(token_callback=...)` | Your own token acquisition (vault, custom IdP) | varies | [`with_token_callback.py`](./with_token_callback.py) |
-| **CIAM / External ID** | `GraphClient(authority="https://<tenant>.ciamlogin.com")` | Customer identity / External ID tenants | varies | [`ciam.py`](./ciam.py) |
-| **National cloud** | `AzureEnvironment.USGovernmentHigh` | GCC High, DoD, China — applies to any flow above | varies | [`gcc_high.py`](./gcc_high.py) |
+### [Client secret](with_client_secret.py)
+
+App-only access for daemons, cron jobs, and CI/CD — simplest setup, no user involved.
+
+```python
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
+    client_id="<client_id>", client_secret="<client_secret>"
+)
+site = client.sites.root.get().execute_query()
+print(site.web_url)
+```
+
+
+### [Client certificate](with_client_cert.py)
+
+App-only access for production daemons — X.509 certificate instead of a shared secret.
+
+```python
+app = msal.ConfidentialClientApplication(
+    client_id,
+    authority="https://login.microsoftonline.com/contoso.onmicrosoft.com",
+    client_credential={"thumbprint": cert_thumbprint, "private_key": open("cert.pem").read()},
+)
+token = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
+
+client = GraphClient(token)
+for drive in client.drives.get().top(10).execute_query():
+    print(drive.web_url)
+```
+
 
 ---
 
-## National clouds
+## User sign-in (delegated permissions)
+
+### [Interactive](interactive.py)
+
+User sign-in with a browser prompt — supports MFA, SSO, and consent.
+
+```python
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_token_interactive(client_id="<client_id>")
+me = client.me.get().execute_query()
+print(f"Welcome, {me.given_name}!")
+```
+
+
+### [Device code flow](with_device_flow.py)
+
+Headless CLI, SSH, and remote servers — the user visits a URL on another device.
+
+```python
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_device_flow(client_id="<client_id>")
+me = client.me.get().execute_query()
+print(f"Authenticated as: {me.user_principal_name}")
+```
+
+
+### [Username & password (ROPC)](with_user_creds.py)
+
+User context without interactivity — no MFA, legacy flow (Resource Owner Password Credentials).
+
+```python
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_username_and_password(
+    client_id="<client_id>", username="<user>", password="<password>"
+)
+me = client.me.get().execute_query()
+print(me)
+```
+
+
+### [Custom token callback](with_token_callback.py)
+
+Bring your own token acquisition — secrets vault, managed identity, or a custom identity provider.
+
+```python
+def acquire_token() -> dict:
+    app = msal.ConfidentialClientApplication(
+        client_id, client_credential=client_secret,
+        authority="https://login.microsoftonline.com/contoso.onmicrosoft.com",
+    )
+    result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
+    if not result or "access_token" not in result:
+        raise RuntimeError(f"Token acquisition failed: {result}")
+    return result
+
+client = GraphClient(tenant="contoso.onmicrosoft.com", token_callback=acquire_token)
+org = client.organization.get().execute_query()
+```
+
+
+---
+
+## Special environments
+
+### [Microsoft Entra External ID (CIAM)](ciam.py)
+
+Customer identity / External ID tenants — connect via the ciamlogin.com authority.
+
+```python
+authority = "https://contoso.ciamlogin.com"
+client = GraphClient(tenant="contoso.onmicrosoft.com", authority=authority).with_client_secret(
+    client_id="<client_id>", client_secret="<client_secret>"
+)
+org = client.organization.get().execute_query()
+```
+
+
+### [National clouds](gcc_high.py)
+
+Sovereign clouds (GCC High, DoD, China) via AzureEnvironment — applies to any flow above.
+
+```python
+from office365.azure_env import AzureEnvironment
+
+client = GraphClient(
+    tenant="contoso.onmicrosoft.com", environment=AzureEnvironment.USGovernmentHigh
+).with_client_secret(client_id="<client_id>", client_secret="<client_secret>")
+org = client.organization.get().execute_query()
+```
+
+
+---
+
+## National cloud environments
 
 | Environment | `AzureEnvironment` |
 |---|---|
@@ -69,40 +185,17 @@ flowchart TD
 
 ## Best practice: verify permissions upfront
 
-Before a script makes a call, guard against missing permissions/licenses
-instead of throwing:
+Guard against missing permissions or licenses before making a call:
 
 ```python
 client = (
-    GraphClient(tenant=tenant)
-    .with_client_secret(client_id, client_secret)
-    .require_application_permission("DeviceManagementConfiguration.Read.All")  # app permission
-    .require_delegated_permission("User.Read", "User.ReadWrite.All")          # delegated
-    .require_license("DEVELOPERPACK_E5")                                       # licensed SKU
+    GraphClient(tenant="contoso.onmicrosoft.com")
+    .with_client_secret(client_id="<client_id>", client_secret="<client_secret>")
+    .require_application_permission("DeviceManagementConfiguration.Read.All")
+    .require_delegated_permission("User.Read", "User.ReadWrite.All")
+    .require_license("DEVELOPERPACK_E5")
 )
 ```
-
----
-
-## Quick start
-
-```python
-from office365.graph_client import GraphClient
-
-# App-only (daemon / background job) — simplest
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    client_id="your_client_id", client_secret=***
-)
-
-# User-authenticated (desktop app) — MFA compatible
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_token_interactive(
-    client_id="your_client_id"
-)
-```
-
-> **Note:** All examples use `tests/` module constants. Replace them with
-> your own values from the [Azure Portal](https://portal.azure.com).
-> App-only flows need admin consent granted in the portal.
 
 ---
 

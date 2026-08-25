@@ -1,58 +1,74 @@
 # Microsoft To-Do
 
-Examples for working with Microsoft To-Do tasks via the Graph API.
-
-The To Do API operates on the signed-in user's mailbox, so the examples use
-delegated auth (`with_username_and_password`) with the credentials in
-`tests/settings.py`.
+Manage Microsoft To-Do tasks and task lists via the Graph API —
+CRUD, due-date lookahead, and cleanup of completed tasks.
 
 ---
 
-## Prerequisites
+## Tasks & Task Lists
 
-| Permission | Description | Reference |
-|---|---|---|
-| `Tasks.Read` (delegated) | Read tasks and task lists | [Tasks permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#tasks-permissions) |
-| `Tasks.ReadWrite` (delegated) | Create, update, delete tasks | |
+### [Manage tasks](manage.py)
 
----
+Microsoft To-Do — manage task lists, tasks, and checklist items.
 
-## Examples
+```python
+# Task lists
+lists = client.me.todo.lists.get().execute_query()
 
-| Scenario | File | Permission |
-|---|---|---|
-| CRUD — task lists, tasks, checklist items | [`manage.py`](./manage.py) | `Tasks.ReadWrite` |
-| List all task lists with counts | [`list_task_lists.py`](./list_task_lists.py) | `Tasks.Read` |
-| Find tasks due soon | [`tasks_due_soon.py`](./tasks_due_soon.py) | `Tasks.Read` |
-| Clean up completed tasks | [`cleanup_completed.py`](./cleanup_completed.py) | `Tasks.ReadWrite` |
+# Create a task list
+task_list = client.me.todo.lists.add("Demo").execute_query()
 
----
+# Add a task with a due date and importance
+task = task_list.tasks.add(
+    title="Write docs",
+    due_date_time=datetime.now(timezone.utc) + timedelta(days=3),
+    importance=Importance.high,
+).execute_query()
 
-## `manage.py` — CLI
-
-Run from the repo root:
-
-```bash
-python examples/todo/manage.py lists                                    # list task lists with counts
-python examples/todo/manage.py tasks --list "Demo"                      # show tasks in a list
-python examples/todo/manage.py add-list --name "Demo"                   # create a task list
-python examples/todo/manage.py add-task --list "Demo" --title "Write docs" [--due-in 3] [--importance high] [--body "..."]
-python examples/todo/manage.py checklist --list "Demo" --task <task_id> [--add "Subtasks"]
-python examples/todo/manage.py complete --list "Demo" --task <task_id>
-python examples/todo/manage.py delete-list --name "Demo"
+# Mark it completed
+task.status = TaskStatus.completed
+task.update().execute_query()
 ```
 
-## Other scripts
 
-```bash
-python examples/todo/list_task_lists.py [--name "Demo"]                 # task lists with counts
-python examples/todo/tasks_due_soon.py [--days 7]                       # tasks due within N days
-python examples/todo/cleanup_completed.py [--days 30] [--dry-run]       # delete old completed tasks
+### [List task lists](list_task_lists.py)
+
+List all task lists with their task counts.
+
+```python
+lists = client.me.todo.lists.get().execute_query()
+for lst in lists:
+    tasks = lst.tasks.get().execute_query()
+    print(f"{lst.display_name}  ({len(tasks)} tasks)")
 ```
 
+
+### [Tasks due soon](tasks_due_soon.py)
+
+Find tasks due within a specified number of days.
+
+```python
+cutoff = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+for lst in client.me.todo.lists.get().execute_query():
+    for task in lst.tasks.filter(f"dueDateTime/dateTime le '{cutoff}'").get().execute_query():
+        print(f"[{lst.display_name}]  {task.title}  due={task.due_date_time}")
+```
+
+
+### [Clean up completed tasks](cleanup_completed.py)
+
+Delete completed tasks older than a specified number of days.
+
+```python
+cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+
+for lst in client.me.todo.lists.get().execute_query():
+    for task in lst.tasks.get().execute_query():
+        if task.status == TaskStatus.completed and task.last_modified_date_time < cutoff:
+            print(f"[{lst.display_name}]  {task.title}")
+            task.delete_object().execute_query()
+```
+
+
 ---
-
-## Official docs
-
-- [To-Do task API overview](https://learn.microsoft.com/en-us/graph/api/resources/todotask)
-- [Task list API](https://learn.microsoft.com/en-us/graph/api/resources/todotasklist)
