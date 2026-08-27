@@ -11,6 +11,7 @@ from faker import Faker
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
+from office365.sharepoint.lists.templates.type import ListTemplateType
 from tests.settings import client_id, password, team_site_url, tenant, username
 
 
@@ -50,9 +51,11 @@ def main():
         username=username,
         password=password,
     )
-    lib = ctx.web.lists.get_by_title(args.list_title)
-    # import_folders(lib, 1, True, 1000)
-    import_files(lib.root_folder, args.files_amount)
+    lib = ctx.web.lists.ensure_list(
+        title=args.list_title, template_type=ListTemplateType.DocumentLibrary
+    ).execute_query()
+    import_folders(lib, 1, True, 1000)
+    # import_files(lib.root_folder, args.files_amount)
 
 
 if __name__ == "__main__":
