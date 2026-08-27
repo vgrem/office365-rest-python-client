@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar
 
 from typing_extensions import Self
 
@@ -15,9 +15,7 @@ from office365.runtime.http.request_options import RequestOptions
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
 
-ClientValueT = TypeVar(
-    "ClientValueT", bound=Union[int, float, str, bytes, bool, dict, list, datetime, Enum, ClientValue]
-)
+ClientValueT = TypeVar("ClientValueT", bound=object)
 
 
 class ClientResult(Generic[ClientValueT]):

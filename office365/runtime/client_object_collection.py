@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import IO, Any, Callable, Dict, Generic, Iterator, List, Optional, Type
+from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Generic, Iterator, List, Optional, Type
 
 from typing_extensions import Self
 
@@ -11,6 +11,9 @@ from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.types.exceptions import NotFoundException
+
+if TYPE_CHECKING:
+    from office365.runtime.converters.dataframe import DataFrameResult
 
 
 class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
@@ -331,6 +334,44 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         from office365.runtime.converters.csv_reader import clean_records
 
         return self._import_records(clean_records(records))
+
+    def to_dataframe(self) -> "DataFrameResult":
+        """Build a pandas DataFrame from the loaded items.
+
+        Returns a ``DataFrameResult`` whose ``.value`` holds the DataFrame after
+        ``execute_query()`` — fully deferred, so chain it like ``to_csv``:
+
+            >>> df = client.users.get_all() \\
+            ...     .select(["displayName", "mail"]) \\
+            ...     .to_dataframe() \\
+            ...     .execute_query() \\
+            ...     .value
+
+        Requires the optional dependency (``pip install
+        office365-rest-python-client[pandas]``). The projection is the same as
+        ``to_csv``: ``.select()``/``.expand()`` columns, one row per expanded
+        child item.
+        """
+        from office365.runtime.converters.dataframe import DataFrameResult, require_pandas, write_dataframe
+
+        require_pandas()  # fail fast on a missing optional dependency
+        result = DataFrameResult(self.context)
+        self.after_execute(lambda _: write_dataframe(self, result))
+        return result
+
+    def from_dataframe(self, df) -> Self:
+        """Import a pandas DataFrame by queueing a create per row (deferred).
+
+        The symmetric counterpart of ``to_dataframe``: each row is parsed
+        immediately into an entity and queued for creation, which runs on
+        ``execute_query()``.
+
+        Usage:
+            >>> client.users.from_dataframe(df).execute_query()
+        """
+        from office365.runtime.converters.dataframe import read_dataframe
+
+        return self._import_records(read_dataframe(df))
 
     def _import_records(self, records: List[dict]) -> Self:
         """Queue a create per record, appending the pending entities to this collection."""

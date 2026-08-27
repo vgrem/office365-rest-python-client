@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from datetime import datetime
 from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional, Union
 
@@ -77,6 +78,31 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
     from office365.sharepoint.webs.web import Web
+
+
+def _sanitize_field_name(name: str) -> str:
+    """SharePoint field internal names cannot contain spaces or punctuation."""
+    return re.sub(r"\W", "_", name)
+
+
+_FIELD_TYPE_BY_KIND = {
+    "boolean": FieldType.Boolean,
+    "datetime": FieldType.DateTime,
+    "number": FieldType.Number,
+    "text": FieldType.Text,
+}
+
+
+def _field_kind(pd, series) -> FieldType:
+    """Map a pandas column dtype to a SharePoint field type.
+
+    The dtype detection lives in the pandas boundary
+    (``converters.dataframe.series_kind``); this maps the generic kind onto a
+    SharePoint ``FieldType``.
+    """
+    from office365.runtime.converters.dataframe import series_kind
+
+    return _FIELD_TYPE_BY_KIND[series_kind(pd, series)]
 
 
 class List(SecurableObject):
@@ -697,6 +723,35 @@ class List(SecurableObject):
         spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
         for name, field_type in spec:
             self.ensure_field(name, field_type)
+        return self
+
+    def from_dataframe(self, df) -> Self:
+        """Import a pandas DataFrame into this list.
+
+        Provisions a column per DataFrame column (inferred from the dtype and
+        created idempotently via ``ensure_field``), then queues an item create
+        per row. Fully deferred — run the whole import with ``execute_query()``:
+
+            >>> lst = ctx.web.lists.ensure_list("My List").execute_query()
+            >>> lst.from_dataframe(df).execute_query()
+
+        Column names are sanitized into SharePoint field internal names
+        (spaces/punctuation -> ``_``); NaN cells are skipped.
+
+        Args:
+            df: A pandas DataFrame (requires ``pip install
+                office365-rest-python-client[pandas]``).
+
+        Returns:
+            Self: The list, for method chaining.
+        """
+        from office365.runtime.converters.dataframe import records_from_dataframe, require_pandas
+
+        pd = require_pandas()
+        for column in df.columns:
+            self.ensure_field(_sanitize_field_name(column), _field_kind(pd, df[column]))
+        records = records_from_dataframe(df, key_fn=_sanitize_field_name)
+        self.items._import_records(records)
         return self
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:

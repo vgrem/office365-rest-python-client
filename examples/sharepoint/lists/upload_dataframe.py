@@ -1,41 +1,29 @@
-"""Import a pandas DataFrame into a SharePoint list in batches.
+"""Move data between a pandas DataFrame and a SharePoint list, both directions.
 
 Loads a CSV (default: California housing, ~20k rows), creates the list with
-typed columns if missing, uploads rows via execute_batch.
+typed columns if missing (fields inferred from the DataFrame dtypes), imports
+all rows via the deferred ``List.from_dataframe``, then reads the list back
+into a DataFrame with ``to_dataframe``.
 
-Requires: pip install office365-rest-python-client[notebooks]
+Requires: pip install office365-rest-python-client[pandas]
 """
 
 import argparse
-import re
 
-from office365.runtime.client_request_exception import ClientRequestException
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.lists.templates.type import ListTemplateType
 from tests.settings import client_id, password, team_site_url, tenant, username
 
 DEFAULT_URL = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
 
 
-def _name(col: str) -> str:
-    """SharePoint field internal names cannot contain spaces or punctuation."""
-    return re.sub(r"\W", "_", col)
-
-
-def _value(v):
-    """Convert a numpy scalar cell to a JSON-safe native value."""
-    return v.item() if hasattr(v, "item") else v
-
-
 def main():
     import pandas as pd  # type: ignore[import-not-found]
 
-    p = argparse.ArgumentParser(description="Upload a DataFrame to a SharePoint list")
+    p = argparse.ArgumentParser(description="Import a DataFrame into a SharePoint list")
     p.add_argument("--url", default=DEFAULT_URL)
     p.add_argument("--file")
     p.add_argument("--list-title", default="California_Housing")
     p.add_argument("--limit", type=int, default=1000, help="0 = all rows")
-    p.add_argument("--batch-size", type=int, default=100)
     args = p.parse_args()
 
     df = pd.read_csv(args.file or args.url)
@@ -46,21 +34,16 @@ def main():
         tenant=tenant, client_id=client_id, username=username, password=password
     )
 
-    lst = ctx.web.lists.get_by_title(args.list_title)
-    try:
-        lst.get().execute_query()
-    except ClientRequestException:
-        lst = ctx.web.lists.add_list(args.list_title, "", ListTemplateType.GenericList)
-        for col in df.columns:
-            if pd.api.types.is_numeric_dtype(df[col]):
-                lst.fields.add_number(_name(col))
-            else:
-                lst.fields.add_text_field(_name(col))
-        ctx.execute_query()
+    # Creates the list (if missing), provisions columns from the DataFrame
+    # dtypes, and imports every row — all in one deferred chain.
+    lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
+    lst.from_dataframe(df).execute_query()
+    print(f"Imported {len(df)} rows into '{lst.title}'")
 
-    for _, row in df.iterrows():
-        lst.add_item({_name(c): _value(row[c]) for c in df.columns if not pd.isna(row[c])})
-    ctx.execute_batch(items_per_batch=args.batch_size)
+    # -- Export the list back into a DataFrame: .to_dataframe().execute_query().value --
+    result = lst.items.get_all().select(["Id", "Title"]).to_dataframe().execute_query()
+    print(f"Read back {len(result.value)} items:")
+    print(result.value.head())
 
 
 if __name__ == "__main__":
