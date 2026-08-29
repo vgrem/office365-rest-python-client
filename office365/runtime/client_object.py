@@ -388,7 +388,7 @@ class ClientObject:
         """
         return self._parent_collection
 
-    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any]:
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any] | List[Any]:
         """
         Serializes the client object to a JSON-compatible dictionary.
 
@@ -396,7 +396,7 @@ class ClientObject:
             json_format: The OData JSON format settings
 
         Returns:
-            Dictionary representing the serialized object
+            Dictionary (or list, for collections) representing the serialized object
         """
         if json_format is None:
             include_control_info = False

@@ -125,7 +125,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
             return f"ClientValueCollection[{self._item_type.__name__}]({self._data!r})"
         return f"ClientValueCollection[?]({self._data!r})"
 
-    def to_json(self, json_format: ODataJsonFormat | None = None) -> list[Any] | dict[str, Any]:  # type: ignore[reportIncompatibleMethodOverride]
+    def to_json(self, json_format: ODataJsonFormat | None = None) -> list[Any] | dict[str, Any]:
         """Serializes the collection to OData JSON format.
 
         Args:
@@ -143,7 +143,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
                 "__metadata": {"type": "Collection(Edm.String)"}
             }
         """
-        json = [serialize_value(v) for v in self]  # type: ignore[assignment]
+        json: list[Any] | dict[str, Any] = [serialize_value(v) for v in self]
         if isinstance(json_format, JsonLightFormat) and json_format.include_control_information:
             json = {
                 json_format.collection: json,

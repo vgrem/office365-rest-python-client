@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Iterator, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from typing_extensions import Self
 
@@ -49,14 +49,15 @@ class ClientValue:
         for n, v in vars(self).items():
             yield n, v
 
-    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any]:
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> Dict[str, Any] | List[Any]:
         """Serializes the ClientValue to JSON format.
 
         Args:
             json_format: Optional OData JSON formatting options
 
         Returns:
-            Dictionary representing the JSON-serialized object
+            Dictionary (or list, for collection values) representing the
+            JSON-serialized object
         """
 
         def _is_valid_value(val):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional, cast
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
@@ -20,7 +20,7 @@ class SubscriptionInformation(ClientValue):
     scenarios: StringCollection = field(default_factory=StringCollection)
 
     def to_json(self, json_format=None):
-        json = super().to_json(json_format)
+        json = cast(Dict, super().to_json(json_format))
         json["expirationDateTime"] = self.expirationDateTime.isoformat()
         return json
 

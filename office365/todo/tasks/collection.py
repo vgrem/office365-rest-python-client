@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Dict, cast
 
 from office365.delta_collection import DeltaCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
@@ -45,6 +46,6 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
             elif isinstance(body, ItemBody):
                 return_type.set_property("body", body)
 
-        qry = CreateEntityQuery(self, return_type.to_json(), return_type)
+        qry = CreateEntityQuery(self, cast(Dict, return_type.to_json()), return_type)
         self.context.add_query(qry)
         return return_type

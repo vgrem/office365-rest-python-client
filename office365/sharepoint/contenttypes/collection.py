@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Dict, Optional, cast
 
 from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -62,7 +62,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         """
         return_type = ContentType(self.context)
         self.add_child(return_type)
-        params = content_type_info.to_json()
+        params = cast(Dict, content_type_info.to_json())
         for k, v in params.items():
             if k == "Id":
                 return_type.set_property(k, {"StringValue": v}, True)

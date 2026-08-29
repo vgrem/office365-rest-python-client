@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Dict, cast
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
@@ -32,7 +33,7 @@ class ListItemFormUpdateValue(ClientValue):
             return f"{self.FieldName} update succeeded"
 
     def to_json(self, json_format=None):
-        json = super().to_json(json_format)
+        json = cast(Dict, super().to_json(json_format))
         if isinstance(self.FieldValue, FieldLookupValue):
             json["FieldValue"] = "[{" + f"'Key':'{self.FieldValue.LookupValue}'" + "}]"
         elif isinstance(self.FieldValue, datetime):
