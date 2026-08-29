@@ -25,6 +25,22 @@ def _page_loaded(col) -> None:
     print(f"  loaded {len(col)} items so far")
 
 
+def progress_bar(description: str):
+    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
+    from tqdm import tqdm
+
+    bar = tqdm(desc=description)
+
+    def hook(p):
+        if p.total is not None and bar.total is None:
+            bar.total = p.total
+        bar.update(p.done - bar.n)
+        if p.total is not None and p.done >= p.total:
+            bar.close()
+
+    return hook
+
+
 def main():
     p = argparse.ArgumentParser(description="Export a SharePoint list into a pandas DataFrame")
     p.add_argument("--list-title", default="California_Housing")
@@ -34,6 +50,11 @@ def main():
         help="comma-separated fields to export",
     )
     p.add_argument("--no-progress", action="store_true", help="do not print per-page progress")
+    p.add_argument(
+        "--progress",
+        action="store_true",
+        help="show a tqdm read-progress bar (can be combined with --no-progress)",
+    )
     args = p.parse_args()
 
     ctx = ClientContext(team_site_url).with_username_and_password(
@@ -42,7 +63,10 @@ def main():
 
     df = (
         ctx.web.lists.get_by_title(args.list_title)
-        .items.get_all(page_loaded=None if args.no_progress else _page_loaded)
+        .items.get_all(
+            page_loaded=None if args.no_progress else _page_loaded,
+            progress=None if not args.progress else progress_bar("Reading list"),
+        )
         .select(args.select.split(","))
         .to_dataframe()
         .execute_query()

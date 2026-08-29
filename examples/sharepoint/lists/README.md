@@ -50,6 +50,7 @@ graph TD
 | Read list schema | [`read_schema.py`](./read_schema.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Read all lists on site | [`read_all.py`](./read_all.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Read with paging | [`read_paged.py`](./read_paged.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
+| Read with progress bar | [`read_with_progress.py`](./read_with_progress.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Get list storage size | [`read_lib_size.py`](./read_lib_size.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Get changes (change log) | [`get_changes.py`](./get_changes.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Get data as stream | [`get_data_as_stream.py`](./get_data_as_stream.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
@@ -61,7 +62,10 @@ graph TD
 
 | Operation | File | Required role | API reference |
 |---|---|---|---|
-| Import from CSV | [`import_list.py`](./import_list.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
+| Import from CSV | [`import_csv.py`](./import_csv.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
+| Import from JSON file (round trip) | [`import_export_json_file.py`](./import_export_json_file.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
+| ETL pipeline (extract/transform/load) | [`data_pipeline.py`](./data_pipeline.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
+| Bulk create (sequential batches) | [`import_list.py`](./import_list.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Import into library | [`import_lib.py`](./import_lib.py) | Member on library | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Filter with OData | [`read_items_with_filter.py`](./read_items_with_filter.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Filter with CAML | [`read_items_with_caml_query.py`](./read_items_with_caml_query.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |

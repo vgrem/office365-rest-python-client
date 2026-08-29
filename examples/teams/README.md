@@ -68,6 +68,21 @@ print(f"Archived: {len(archived)}, recently deleted (restorable): {len(deleted)}
 ```
 
 
+### [Restore deleted groups](restore_deleted_group.py)
+
+List recently deleted Microsoft 365 groups (with days remaining in the 30-day restore window), restore one, or permanently delete one.
+
+```python
+deleted = client.directory.deleted_groups.select(["id", "displayName", "deletedDateTime"]).get().execute_query()
+print(f"Deleted Microsoft 365 groups ({len(deleted)}):")
+for group in deleted:
+    print(f"  {group.id}  {group.get_property('displayName') or '?'}")
+
+# target.restore().execute_query()          # restore within 30 days
+# target.delete_object().execute_query()    # permanently delete
+```
+
+
 ### [Orphaned teams](audit_orphan_owners.py)
 
 Find teams without owners — orphaned teams that no one administers.
