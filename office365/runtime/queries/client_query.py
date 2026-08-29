@@ -10,6 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+    from office365.runtime.client_request import ClientRequest
     from office365.runtime.client_result import ClientResult
     from office365.runtime.client_runtime_context import ClientRuntimeContext
     from office365.runtime.client_value import ClientValue
@@ -51,17 +52,14 @@ class ClientQuery(Generic[ReturnT]):
         self.context.pending_request().beforeExecute(request)
         return request
 
-    def execute_query(self) -> ReturnT | None:
-        """Executes the query and returns the result.
+    def execute_query(self, request: "ClientRequest") -> None:
+        """Run this query via the given request.
 
-        Returns:
-            The query result of type T
-
-        Raises:
-            ClientRequestException: If query execution fails
+        The base implementation delegates to the transport (sends the HTTP
+        request); subclasses may override how they execute — e.g.
+        ``DeferredOperationQuery`` resolves without sending a request.
         """
-        self.context.execute_query()
-        return self.return_type
+        request.execute_query(self)
 
     def before_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
         """

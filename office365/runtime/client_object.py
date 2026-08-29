@@ -299,9 +299,11 @@ class ClientObject:
 
             qry = ReadEntityQuery[ClientObject](self, names_to_include)
         else:
-            from office365.runtime.queries.noop import NoOpQuery
+            # all properties are already loaded — queue a no-op placeholder so
+            # chained after_execute handlers still fire, without a redundant GET
+            from office365.runtime.queries.deferred import DeferredOperationQuery
 
-            qry = NoOpQuery(self.context, self)
+            qry = DeferredOperationQuery(self.context, return_type=self)
         self.context.add_query(qry)
         return self
 

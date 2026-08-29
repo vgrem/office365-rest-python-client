@@ -106,6 +106,51 @@ def test_deferred_operation_query():
     assert list(client2._queries) == []
 
 
+class _FakeRequest:
+    def __init__(self):
+        self.executed = []
+        self.after_execute_calls = 0
+
+    def execute_query(self, qry):
+        self.executed.append(qry)
+
+    def afterExecute(self, _response):
+        self.after_execute_calls += 1
+
+
+def test_deferred_execute_query_noop():
+    from office365.runtime.queries.deferred import DeferredOperationQuery
+
+    client = GraphClient()
+    barrier = DeferredOperationQuery(client)
+    request = _FakeRequest()
+    barrier.execute_query(request)  # no-op resolve: fires after_execute, sends no request
+    assert request.after_execute_calls == 1
+    assert request.executed == []
+
+
+def test_deferred_execute_query_runs_operation():
+    from office365.runtime.queries.deferred import DeferredOperationQuery
+
+    client = GraphClient()
+    barrier = DeferredOperationQuery(client)
+    op = ClientQuery(client)
+    barrier.defer(op)
+    request = _FakeRequest()
+    barrier.execute_query(request)  # deferred: runs the operation via the request
+    assert request.executed == [op]
+
+
+def test_ensure_property_cached_queues_deferred_noop():
+    user = GraphClient().users["123"]
+    user.set_property("id", "123")
+    user.set_property("displayName", "John Doe")
+    user.ensure_property("displayName")  # already loaded — no redundant GET
+    from office365.runtime.queries.deferred import DeferredOperationQuery
+
+    assert isinstance(user.context._queries[-1], DeferredOperationQuery)
+
+
 def test_from_records_accepts_progress():
     client = GraphClient()
     col = ClientObjectCollection(client, User, None)

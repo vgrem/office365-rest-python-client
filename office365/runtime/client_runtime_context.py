@@ -191,7 +191,7 @@ class ClientRuntimeContext(ABC):
         """
         while self.has_pending_request:
             qry = self._get_next_query()
-            self.pending_request().execute_query(qry)
+            qry.execute_query(self.pending_request())
         return self
 
     def add_query(self, query: ClientQuery) -> Self:
