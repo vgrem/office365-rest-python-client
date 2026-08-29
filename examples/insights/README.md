@@ -6,3 +6,4 @@ https://learn.microsoft.com/en-us/graph/api/resources/insights
 
 - `list_shared.py` — List documents shared with a user
 - `list_used.py` — List documents a user has viewed or modified
+- `insights_report.py` — Trending, used, and shared documents in one report

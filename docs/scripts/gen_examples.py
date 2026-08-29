@@ -11,7 +11,11 @@ generated pages; the top-level ``examples/README.md`` becomes the gallery
 landing page.
 
 The navigation is derived from the generated pages by ``mkdocs-awesome-pages``,
-so no nav file is needed here.
+so no nav file is needed here. To keep the sidebar compact, every subdirectory
+gets a ``.pages`` that hides its per-example pages (only the directory index is
+shown); the product root gets a ``.pages`` with a pretty title and its
+root-level scripts hidden behind the product index — all examples stay reachable
+via the index pages.
 
 Every example is parsed with ``ast`` and every README link is validated, so
 ``mkdocs build --strict`` fails on invalid Python or a README referencing a
@@ -34,6 +38,28 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 EXAMPLES_ROOT = pathlib.Path(os.environ.get("MKDOCS_EXAMPLES_ROOT", REPO_ROOT / "examples"))
 
 _REL_LINK = re.compile(r"\]\(((?:\.\./|\./)?[^)#]+?)\)")
+
+# Pretty sidebar titles for the product galleries (folder names are the fallback).
+_PRODUCT_TITLES = {
+    "admin": "Microsoft 365 Admin",
+    "backuprestore": "Backup & Restore",
+    "booking": "Microsoft Bookings",
+    "communications": "Cloud Communications",
+    "defender": "Microsoft Defender",
+    "entraid": "Microsoft Entra ID",
+    "insights": "Insights",
+    "intune": "Microsoft Intune",
+    "onedrive": "OneDrive",
+    "onenote": "OneNote",
+    "outlook": "Outlook",
+    "planner": "Planner",
+    "purview": "Microsoft Purview",
+    "reports": "Usage Reports",
+    "security": "Security",
+    "sharepoint": "SharePoint",
+    "teams": "Microsoft Teams",
+    "todo": "Microsoft To Do",
+}
 
 
 def _emit(path: str, content: str) -> None:
@@ -101,19 +127,39 @@ def _emit_product(product: pathlib.Path) -> None:
         key = f"{prefix}/{rel}/index.md" if rel.parts else f"{prefix}/index.md"
         _emit(key, _rewrite_links(readme.read_text(encoding="utf-8"), readme.parent))
 
+    # hide the per-example pages under every subdirectory — the directory index links to them
     for directory in sorted({p.parent for p in product.rglob("*.py")}):
-        if directory == product or directory.name.startswith("__") or (directory / "README.md").exists():
+        if directory == product or directory.name.startswith("__"):
             continue
         rel = directory.relative_to(product)
-        lines = [f"# {directory.name.replace('_', ' ').title()}", "", "Examples:"]
-        for child in sorted(directory.iterdir()):
-            if child.is_dir() and not child.name.startswith("__"):
-                lines.append(f"- [{child.name.replace('_', ' ').title()}]({child.name}/index.md)")
-            elif child.suffix == ".py":
-                lines.append(f"- [{child.stem.replace('_', ' ').title()}]({child.stem}.md)")
-        _emit(f"{prefix}/{rel}/index.md", "\n".join(lines) + "\n")
-        # hide the per-example pages from the nav — the directory index links to them
-        _emit(f"{prefix}/{rel}/.pages", "nav:\n  - index.md\n")
+        if not (directory / "README.md").exists():
+            lines = [f"# {_section_title(directory)}", "", "Examples:"]
+            for child in sorted(directory.iterdir()):
+                if child.is_dir() and not child.name.startswith("__"):
+                    lines.append(f"- [{child.name.replace('_', ' ').title()}]({child.name}/index.md)")
+                elif child.suffix == ".py":
+                    lines.append(f"- [{child.stem.replace('_', ' ').title()}]({child.stem}.md)")
+            _emit(f"{prefix}/{rel}/index.md", "\n".join(lines) + "\n")
+        _emit(f"{prefix}/{rel}/.pages", f"title: {_section_title(directory)}\nnav:\n  - index.md\n")
+
+    # prettify the product section and hide root-level scripts behind the product index
+    if product.name != "auth":
+        title = _PRODUCT_TITLES.get(product.name, product.name.replace("_", " ").title())
+        subdirs = sorted(
+            d.name for d in product.iterdir() if d.is_dir() and not d.name.startswith("__") and any(d.rglob("*.py"))
+        )
+        nav = ["nav:", "  - index.md"] + [f"  - {name}" for name in subdirs]
+        _emit(f"{prefix}/.pages", f"title: {title}\n" + "\n".join(nav) + "\n")
+
+
+def _section_title(directory: pathlib.Path) -> str:
+    """Sidebar title for a directory: its README heading, else the folder name."""
+    readme = directory / "README.md"
+    if readme.exists():
+        match = re.search(r"^#\s+(.+)$", readme.read_text(encoding="utf-8"), re.M)
+        if match:
+            return re.sub(r"^Working with\s+", "", match.group(1).strip(), flags=re.I)
+    return directory.name.replace("_", " ").title()
 
 
 for product in sorted(p for p in EXAMPLES_ROOT.iterdir() if p.is_dir() and not p.name.startswith("__")):

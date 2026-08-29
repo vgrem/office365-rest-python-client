@@ -55,6 +55,7 @@ A **plan** is owned by a Microsoft 365 group. Plans contain **buckets**
 | Assign a task to a user by email | [`assign_task.py`](./assign_task.py) | User resolution + ``plannerAssignment`` object pattern |
 | Get task details (description, checklist, references) | [`get_task_details.py`](./get_task_details.py) | Reading the full task details blob — essential for integrations |
 | Update plan details (category color labels) | [`update_plan_details.py`](./update_plan_details.py) | Custom label categories (Urgent, Client, Internal) for consistent task tagging |
+| Overdue tasks report | [`overdue_tasks_report.py`](./overdue_tasks_report.py) | Cross-plan report of past-due, uncompleted tasks grouped by assignee |
 
 ---
 

@@ -1,1 +1,11 @@
 title: Authentication
+nav:
+  - index.md
+  - CIAM (External ID): ciam.md
+  - GCC High: gcc_high.md
+  - Interactive: interactive.md
+  - Client certificate: with_client_cert.md
+  - Client secret: with_client_secret.md
+  - Device code flow: with_device_flow.md
+  - Custom token callback: with_token_callback.md
+  - Username/password (ROPC): with_user_creds.md
