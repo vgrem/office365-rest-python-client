@@ -76,6 +76,8 @@ class ClientResult(Generic[ClientValueT]):
         self,
         max_retry: int = 5,
         timeout_secs: int = 5,
+        max_delay: Optional[int] = None,
+        jitter: bool = True,
         success_callback: Optional[Callable[[Any], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
         exceptions: tuple[type[Exception], ...] = (ClientRequestException,),
@@ -86,7 +88,9 @@ class ClientResult(Generic[ClientValueT]):
 
          Args:
             max_retry: Maximum retry attempts
-            timeout_secs: Delay between retries in seconds
+            timeout_secs: Base delay for exponential backoff (seconds)
+            max_delay: Optional cap on the exponential delay (seconds)
+            jitter: Whether to randomize the delay
             success_callback: Called on successful execution
             failure_callback: Called after failed retries
             exceptions: Exception types that trigger retries
@@ -98,6 +102,8 @@ class ClientResult(Generic[ClientValueT]):
         self._context.execute_query_retry(
             max_retry=max_retry,
             timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
             success_callback=success_callback,
             failure_callback=failure_callback,
             exceptions=exceptions,

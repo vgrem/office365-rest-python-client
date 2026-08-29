@@ -49,6 +49,8 @@ class ClientRuntimeContext(ABC):
         self,
         max_retry: int = 5,
         timeout_secs: int = 5,
+        max_delay: Optional[int] = None,
+        jitter: bool = True,
         success_callback: Optional[Callable[[ClientObject | None], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], Optional[int]]] = None,
         exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
@@ -59,12 +61,18 @@ class ClientRuntimeContext(ABC):
         are retried. Permanent failures (e.g. HTTP 400/401/403/404) are re-raised
         immediately, and the last exception is re-raised once retries are exhausted.
 
+        Delays between attempts use exponential backoff with jitter; a delay
+        returned by ``failure_callback`` (e.g. the server's ``Retry-After`` via
+        ``retry_after_delay``) overrides the backoff.
+
         Args:
             max_retry: Maximum number of retry attempts
-            timeout_secs: Delay between retries in seconds
+            timeout_secs: Base delay for exponential backoff (seconds)
+            max_delay: Optional cap on the exponential delay (seconds)
+            jitter: Whether to randomize the delay (default True)
             success_callback: Called on successful execution
             failure_callback: Called after each failed attempt; may return a
-                retry delay in seconds to override ``timeout_secs``
+                retry delay in seconds to override the backoff
             exceptions: Exception types that trigger retries
         """
         from office365.runtime.retry import retry
@@ -82,6 +90,8 @@ class ClientRuntimeContext(ABC):
             self.execute_query,
             max_retry=max_retry,
             timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
             exceptions=exceptions,
             on_failure=_on_failure,
             on_success=_on_success,

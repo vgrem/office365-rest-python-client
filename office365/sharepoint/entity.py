@@ -20,17 +20,19 @@ if TYPE_CHECKING:
 class Entity(ClientObject):
     """SharePoint specific entity"""
 
-    def execute_query_with_incremental_retry(self, max_retry: int = 5) -> Self:
+    def execute_query_with_incremental_retry(self, max_retry: int = 5, max_delay=None, jitter: bool = True) -> Self:
         """
         Execute query with incremental retry handling for throttling requests
 
         Args:
             max_retry: Maximum number of retry attempts (default: 5)
+            max_delay: Optional cap on the exponential delay (seconds)
+            jitter: Whether to randomize the delay (default True)
 
         Returns:
             self: Supports method chaining
         """
-        self.context.execute_query_with_incremental_retry(max_retry)
+        self.context.execute_query_with_incremental_retry(max_retry, max_delay=max_delay, jitter=jitter)
         return self
 
     def execute_batch(

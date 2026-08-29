@@ -121,6 +121,8 @@ class ClientObject:
         self,
         max_retry: int = 5,
         timeout_secs: int = 5,
+        max_delay=None,
+        jitter: bool = True,
         success_callback=None,
         failure_callback=None,
         exceptions=(ClientRequestException,),
@@ -129,7 +131,9 @@ class ClientObject:
 
         Args:
             max_retry (int): Number of times to retry the request
-            timeout_secs (int): Seconds to wait before retrying the request.
+            timeout_secs (int): Base delay for exponential backoff (seconds)
+            max_delay (int): Optional cap on the exponential delay (seconds)
+            jitter (bool): Whether to randomize the delay
             success_callback (callable): A callback to call if the request executes successfully.
             failure_callback (callable): A callback to call if the request fails to execute.
             exceptions (tuple): Tuple of exceptions that we retry.
@@ -137,6 +141,8 @@ class ClientObject:
         self.context.execute_query_retry(
             max_retry=max_retry,
             timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
             success_callback=success_callback,
             failure_callback=failure_callback,
             exceptions=exceptions,
@@ -299,8 +305,6 @@ class ClientObject:
 
             qry = ReadEntityQuery[ClientObject](self, names_to_include)
         else:
-            # all properties are already loaded — queue a no-op placeholder so
-            # chained after_execute handlers still fire, without a redundant GET
             from office365.runtime.queries.deferred import DeferredOperationQuery
 
             qry = DeferredOperationQuery(self.context, return_type=self)

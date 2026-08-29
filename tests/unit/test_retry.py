@@ -5,7 +5,7 @@ from unittest import mock
 
 import requests
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.retry import retry, retry_after_delay
+from office365.runtime.retry import backoff_delay, retry, retry_after_delay
 from office365.sharepoint.client_context import ClientContext
 from requests import Response
 
@@ -50,7 +50,7 @@ class TestExecuteQueryRetry(unittest.TestCase):
         ctx, execute_query = _make_context([_make_exception(429), None])
 
         with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
-            ctx.execute_query_retry(max_retry=5, timeout_secs=5)
+            ctx.execute_query_retry(max_retry=5, timeout_secs=5, jitter=False)
 
         self.assertEqual(execute_query.call_count, 2)
         sleep_mock.assert_called_once_with(5)
@@ -93,11 +93,11 @@ class TestExecuteQueryRetry(unittest.TestCase):
         self.assertEqual(execute_query.call_count, 2)
         sleep_mock.assert_called_once_with(10)
 
-    def test_incremental_retry_falls_back_to_default_timeout(self):
+    def test_incremental_retry_falls_back_to_exponential_backoff(self):
         ctx, execute_query = _make_context([_make_exception(503), None])
 
         with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
-            ctx.execute_query_with_incremental_retry(max_retry=5)
+            ctx.execute_query_with_incremental_retry(max_retry=5, jitter=False)
 
         self.assertEqual(execute_query.call_count, 2)
         sleep_mock.assert_called_once_with(5)
@@ -108,11 +108,19 @@ class TestRetryFunction(unittest.TestCase):
         func = mock.Mock(side_effect=[_make_exception(503), _make_exception(429), "ok"])
 
         with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
-            result = retry(func, max_retry=5, timeout_secs=2)
+            result = retry(func, max_retry=5, timeout_secs=2, jitter=False)
 
         self.assertEqual(result, "ok")
         self.assertEqual(func.call_count, 3)
-        sleep_mock.assert_has_calls([mock.call(2), mock.call(2)])
+        sleep_mock.assert_has_calls([mock.call(2), mock.call(4)])
+
+    def test_exponential_backoff_capped_by_max_delay(self):
+        func = mock.Mock(side_effect=[_make_exception(503), _make_exception(503), "ok"])
+
+        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
+            retry(func, max_retry=5, timeout_secs=2, max_delay=3, jitter=False)
+
+        sleep_mock.assert_has_calls([mock.call(2), mock.call(3)])
 
     def test_non_transient_error_raises_immediately(self):
         func = mock.Mock(side_effect=_make_exception(400))
@@ -167,3 +175,27 @@ class TestRetryAfterDelay(unittest.TestCase):
     def test_returns_none_for_malformed_header(self):
         ex = _make_exception(429, {"Retry-After": "abc"})
         self.assertIsNone(retry_after_delay(ex))
+
+
+class TestBackoffDelay(unittest.TestCase):
+    def test_exponential_growth(self):
+        self.assertEqual(backoff_delay(1, base=5, jitter=False), 5)
+        self.assertEqual(backoff_delay(2, base=5, jitter=False), 10)  # noqa: PLR2004
+        self.assertEqual(backoff_delay(3, base=5, jitter=False), 20)  # noqa: PLR2004
+
+    def test_capped_by_max_delay(self):
+        self.assertEqual(backoff_delay(3, base=5, max_delay=12, jitter=False), 12)  # noqa: PLR2004
+
+    def test_jitter_within_bounds(self):
+        for attempt in (1, 2, 3):  # noqa: PLR2004
+            nominal = backoff_delay(attempt, base=5, jitter=False)
+            for _ in range(50):  # noqa: PLR2004
+                delay = backoff_delay(attempt, base=5)
+                self.assertGreaterEqual(delay, 0)
+                self.assertLessEqual(delay, nominal)
+
+    def test_jitter_is_randomized(self):
+        with mock.patch(
+            "office365.runtime.retry.random.uniform", side_effect=lambda low, high: (low + high) / 2
+        ):
+            self.assertEqual(backoff_delay(1, base=10), 5.0)  # noqa: PLR2004
