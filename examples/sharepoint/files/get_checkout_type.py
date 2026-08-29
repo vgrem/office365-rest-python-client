@@ -7,7 +7,7 @@ https://support.microsoft.com/en-us/office/check-out-or-check-in-files-in-a-docu
 import argparse
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, site_url, tenant
+from tests.settings import client_id, password, site_url, tenant, username
 
 
 def main():
@@ -15,7 +15,9 @@ def main():
     parser.add_argument("--file-url", default="SitePages/Home.aspx", help="server-relative file URL")
     args = parser.parse_args()
 
-    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
     file = ctx.web.get_file_by_server_relative_url(args.file_url).get().execute_query()
 
     if file.check_out_type == 0:

@@ -1,9 +1,12 @@
-"""Move data between a pandas DataFrame and a SharePoint list, both directions.
+"""Import a pandas DataFrame into a SharePoint list.
 
 Loads a CSV (default: California housing, ~20k rows), creates the list with
-typed columns if missing (fields inferred from the DataFrame dtypes), imports
-all rows via the deferred ``List.from_dataframe``, then reads the list back
-into a DataFrame with ``to_dataframe``.
+typed columns if missing (fields inferred from the DataFrame dtypes), and
+imports all rows via the deferred ``List.from_dataframe`` — the progress hook
+fires per row as each queued create completes during ``execute_query()``.
+
+The symmetric counterpart (reading a list back into a DataFrame) is
+``export_dataframe.py``.
 
 Requires: pip install office365-rest-python-client[pandas]
 """
@@ -14,6 +17,22 @@ from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
 DEFAULT_URL = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
+
+
+def progress_bar(description: str):
+    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
+    from tqdm import tqdm
+
+    bar = tqdm(desc=description)
+
+    def hook(p):
+        if p.total is not None and bar.total is None:
+            bar.total = p.total
+        bar.update(p.done - bar.n)
+        if p.total is not None and p.done >= p.total:
+            bar.close()
+
+    return hook
 
 
 def main():
@@ -37,13 +56,8 @@ def main():
     # Creates the list (if missing), provisions columns from the DataFrame
     # dtypes, and imports every row — all in one deferred chain.
     lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
-    lst.from_dataframe(df).execute_query()
-    print(f"Imported {len(df)} rows into '{lst.title}'")
-
-    # -- Export the list back into a DataFrame: .to_dataframe().execute_query().value --
-    result = lst.items.get_all().select(["Id", "Title"]).to_dataframe().execute_query()
-    print(f"Read back {len(result.value)} items:")
-    print(result.value.head())
+    lst.from_dataframe(df, progress=progress_bar(f"Importing {len(df)} rows")).execute_query()
+    print(f"\nImported {len(df)} rows into '{lst.title}'")
 
 
 if __name__ == "__main__":

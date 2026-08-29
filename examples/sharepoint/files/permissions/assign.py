@@ -8,7 +8,7 @@ import argparse
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.sharing.role_type import RoleType
-from tests.settings import client_id, client_secret, site_url, tenant, user_principal
+from tests.settings import client_id, password, site_url, tenant, user_principal, username
 
 
 def main():
@@ -16,7 +16,9 @@ def main():
     parser.add_argument("--file-url", default="Shared Documents/Financial Sample.xlsx", help="server-relative file URL")
     args = parser.parse_args()
 
-    client = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    client = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
 
     role_def = client.web.role_definitions.get_by_type(RoleType.Contributor)
     user = client.web.site_users.get_by_principal_name(user_principal)

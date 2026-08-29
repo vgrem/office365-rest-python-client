@@ -1,19 +1,11 @@
 # Working with Files
 
 Upload, download, copy, move, delete, share, and manage files in SharePoint
-document libraries.
+document libraries — the everyday operations for building on top of documents.
 
----
-
-## Prerequisites
-
-| Requirement | Description | Reference |
-|---|---|---|
-| **Site Owner** or **Member** role on the library | Required to upload, update, and delete files. Read access for download. | [SharePoint permissions](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
-
----
-
-## How files are stored
+Files live inside **document libraries**, organized in **folders**. Separately,
+**list items** can have **attachments** — see
+[`listitems/attachments/`](../listitems/attachments/) for those.
 
 ```mermaid
 graph TD
@@ -27,36 +19,40 @@ graph TD
         Folder --> File
     end
 
-    subgraph "List Item"
-        Item["List Item"]
-        Attach["Attachment"]
-        Item --> Attach
-    end
-
     Library --> Folder
     Library --> File
 ```
 
-Files live inside **document libraries**. They can be organized in **folders**.
-Separately, **list items** can have **attachments** — see
-[`listitems/attachments/`](../listitems/attachments/) for attachment
-operations.
-
 ---
 
-## Getting started
+## Authentication
+
+SharePoint's `/_api` app-only flow does **not** accept a client secret — use a
+delegated sign-in (username & password, no MFA) or a client certificate for
+app-only automation. The examples here use username & password:
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_username_and_password(
+    tenant="contoso.onmicrosoft.com", client_id="client_id", username="user@contoso.com", password="password"
 )
+```
 
-# Upload a small file
+> **`with_client_secret(...)` is a common mistake for SharePoint.** It works
+> for **Microsoft Graph**, but not for `ClientContext` — use
+> `with_username_and_password` (below) or `with_client_certificate(...)`
+> (app-only). See [`auth/`](../auth/) for the full matrix.
+
+## Quick start
+
+Upload a small file, then download it back:
+
+```python
+# Upload a file (< 4 MB)
 with open("./report.docx", "rb") as f:
     uploaded = ctx.web.default_document_library().root_folder.upload_file("report.docx", f.read()).execute_query()
-print(f"Uploaded: {uploaded.serverRelativeUrl}")
+print(f"Uploaded: {uploaded.server_relative_url}")
 
 # Download it back
 downloaded = uploaded.get_content().execute_query()
@@ -69,117 +65,137 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 
 | What | File | Notes |
 |------|------|-------|
-| **Upload small file** | [`upload.py`](./upload.py) | Upload file < 4 MB |
-| **Upload large file** | [`upload_large.py`](./upload_large.py) | Chunked upload session for large files |
-| **Upload with checksum** | [`upload_with_checksum.py`](./upload_with_checksum.py) | Upload with MD5 verification |
-| **Upload CSV** | [`upload_csv.py`](./upload_csv.py) | Upload a CSV data file |
-| **Upload JSON** | [`upload_json.py`](./upload_json.py) | Upload a JSON data file |
-| **Replace content** | [`replace.py`](./replace.py) | Replace file content via binary stream |
+| Upload a small file | [`upload.py`](./upload.py) | File < 4 MB |
+| Upload a large file | [`upload_large.py`](./upload_large.py) | Chunked upload session |
+| Upload with checksum | [`upload_with_checksum.py`](./upload_with_checksum.py) | MD5 verification |
+| Upload CSV data | [`upload_csv.py`](./upload_csv.py) | Data files |
+| Upload JSON data | [`upload_json.py`](./upload_json.py) | Data files |
+| Replace content | [`replace.py`](./replace.py) | Overwrite via binary stream |
 
 ## Download
 
 | What | File | Notes |
 |------|------|-------|
-| **Download file** | [`download.py`](./download.py) | Simple file download |
-| **Download large file** | [`download_large.py`](./download_large.py) | Streaming download with progress |
-| **Download from URL** | [`download_from_url.py`](./download_from_url.py) | Download using absolute URL |
-| **Download all from library** | [`download_from_lib.py`](./download_from_lib.py) | Batch download all files in a library |
-| **Download by sharing link** | [`download_by_shared_link.py`](./download_by_shared_link.py) | Download via guest/anonymous link |
-| **Download recent** | [`download_recent.py`](./download_recent.py) | Download most recently uploaded file |
-| **Download versions** | [`download_versions.py`](./download_versions.py) | Download specific file versions |
-| **Get content** | [`get_content.py`](./get_content.py) | Download as bytes in memory |
+| Download a file | [`download.py`](./download.py) | To disk |
+| Download a large file | [`download_large.py`](./download_large.py) | Streaming with progress |
+| Download by URL | [`download_from_url.py`](./download_from_url.py) | Absolute URL |
+| Download a whole library | [`download_from_lib.py`](./download_from_lib.py) | Every file, preserving folders |
+| Download most recent | [`download_recent.py`](./download_recent.py) | Latest uploaded file |
+| Download a version | [`download_versions.py`](./download_versions.py) | A specific file version |
+| Read bytes in memory | [`get_content.py`](./get_content.py) | Without touching disk |
+
+```python
+# Download to a local file
+with open("report.docx", "wb") as f:
+    ctx.web.get_file_by_server_relative_path("Shared Documents/report.docx").download(f).execute_query()
+```
+
+## Bulk operations
+
+The highest-leverage scripts for migrations and backups:
+
+| What | File | Notes |
+|------|------|-------|
+| Upload many files in one batch | [`upload_batch.py`](./upload_batch.py) | `execute_batch`, one request per batch |
+| Zip a folder incl. version history | [`download_folder_with_versions.py`](./download_folder_with_versions.py) | Current content + every previous version |
+
+```python
+# Bulk upload: queue, then flush in one batch request
+for name in os.listdir("./data"):
+    with open(f"./data/{name}", "rb") as f:
+        target_folder.upload_file(name, f.read())   # queue
+ctx.execute_batch()                                  # one request per batch
+
+# Backup a folder with its full version history
+with open("archive.zip", "wb") as f:
+    folder.download_folder(f, include_versions=True).execute_query()
+```
 
 ## Copy & Move
 
 | What | File | Notes |
 |------|------|-------|
-| **Copy file** | [`copy_file.py`](./copy_file.py) | Copy to another folder |
-| **Copy with new name** | [`copy_file_with_name.py`](./copy_file_with_name.py) | Copy and rename |
-| **Copy by path** | [`copy_using_path.py`](./copy_using_path.py) | Copy using server-relative paths |
-| **Move file** | [`move_file.py`](./move_file.py) | Move to another folder |
+| Copy to another folder | [`copy_file.py`](./copy_file.py) | |
+| Copy and rename | [`copy_file_with_name.py`](./copy_file_with_name.py) | |
+| Copy by path | [`copy_using_path.py`](./copy_using_path.py) | Server-relative paths |
+| Move | [`move_file.py`](./move_file.py) | Between folders |
 
 ## Delete
 
 | What | File | Notes |
 |------|------|-------|
-| **Delete / recycle** | [`delete.py`](./delete.py) | Permanent delete or recycle |
+| Delete / recycle | [`delete.py`](./delete.py) | Permanent or recycle bin |
 
 ## Metadata & Browse
 
 | What | File | Notes |
 |------|------|-------|
-| **Get properties** | [`get_props.py`](./get_props.py) | Name, size, URL, timestamps |
-| **Get extended properties** | [`get_extended_props.py`](./get_extended_props.py) | List item all fields |
-| **Get system metadata** | [`get_system_metadata.py`](./get_system_metadata.py) | Author, modified by, created |
-| **Check existence** | [`exists.py`](./exists.py) | Check if a file exists |
-| **List all items** | [`get_all_items.py`](./get_all_items.py) | Enumerate files and folders in a library |
-| **Get recent files** | [`get_recent_files.py`](./get_recent_files.py) | Recently modified files |
-| **Get download link** | [`get_download_link.py`](./get_download_link.py) | Pre-authorized download URL |
+| Basic properties | [`get_props.py`](./get_props.py) | Name, size, URL, timestamps |
+| Extended properties | [`get_extended_props.py`](./get_extended_props.py) | Every list-item field |
+| System metadata | [`get_system_metadata.py`](./get_system_metadata.py) | Author, modified-by, created |
+| Check existence | [`exists.py`](./exists.py) | |
+| Enumerate a library | [`get_all_items.py`](./get_all_items.py) | Files and folders |
+| Recently modified | [`get_recent_files.py`](./get_recent_files.py) | |
+| Pre-authorized download URL | [`get_download_link.py`](./get_download_link.py) | Time-limited link |
 
 ## Check Out & Approvals
 
+For libraries with required check-out or content approval:
+
 | What | File | Notes |
 |------|------|-------|
-| **Check out / check in** | [`checkout_checkin.py`](./checkout_checkin.py) | Lock, edit, and release a file |
-| **Get checked-out files** | [`get_checked_out.py`](./get_checked_out.py) | List all checked-out files in a library |
-| **Get checkout type** | [`get_checkout_type.py`](./get_checkout_type.py) | Check if a file is checked out and by whom |
-| **Publish / unpublish** | [`publish_unpublish.py`](./publish_unpublish.py) | Submit for content approval |
-| **Approve / deny** | [`approve_deny.py`](./approve_deny.py) | Approve or reject a submitted file |
+| Check out / in | [`checkout_checkin.py`](./checkout_checkin.py) | Lock, edit, release |
+| Checked-out files | [`get_checked_out.py`](./get_checked_out.py) | Who has files locked |
+| Checkout type | [`get_checkout_type.py`](./get_checkout_type.py) | Status of one file |
+| Publish / unpublish | [`publish_unpublish.py`](./publish_unpublish.py) | Submit for approval |
+| Approve / deny | [`approve_deny.py`](./approve_deny.py) | Review submitted files |
 
 ## Sharing
 
-> Sharing operations for files are in the [`sharing/`](../sharing/) directory.
-
 | What | File | Notes |
 |------|------|-------|
-| **Get by sharing link** | [`get_by_sharing_link.py`](./get_by_sharing_link.py) | Resolve file from a sharing link |
-| **Download by sharing link** | [`download_by_shared_link.py`](./download_by_shared_link.py) | Download via guest/anonymous link |
+| Resolve a sharing link | [`get_by_sharing_link.py`](./get_by_sharing_link.py) | Link → file |
+| Download via shared link | [`download_by_shared_link.py`](./download_by_shared_link.py) | Guest / anonymous link |
 
 ## Create Documents
 
 | What | File | Notes |
 |------|------|-------|
-| **Create Excel** | [`create_excel.py`](./create_excel.py) | Create an Excel workbook |
-| **Create Word** | [`create_word.py`](./create_word.py) | Create a Word document |
-| **Create wiki page** | [`create_wiki.py`](./create_wiki.py) | Create a wiki page |
-| **Rename** | [`rename_page.py`](./rename_page.py) | Rename a file |
+| Excel workbook | [`create_excel.py`](./create_excel.py) | |
+| Word document | [`create_word.py`](./create_word.py) | |
+| Wiki page | [`create_wiki.py`](./create_wiki.py) | |
+| Rename a file | [`rename_page.py`](./rename_page.py) | |
 
 ## Permissions
 
 | What | File | Notes |
 |------|------|-------|
-| **Get permissions** | [`permissions/get.py`](./permissions/get.py) | Effective permissions for a file |
-| **List permissions** | [`permissions/list.py`](./permissions/list.py) | User effective permissions |
-| **Check permission** | [`permissions/check.py`](./permissions/check.py) | Does user have specific access? |
-| **Assign permission** | [`permissions/assign.py`](./permissions/assign.py) | Grant permissions via role assignment |
+| Effective permissions | [`permissions/get.py`](./permissions/get.py) | For a file |
+| Per-user permissions | [`permissions/list.py`](./permissions/list.py) | |
+| Check a specific access | [`permissions/check.py`](./permissions/check.py) | Does a user have access? |
+| Grant permissions | [`permissions/assign.py`](./permissions/assign.py) | Role assignment |
 
 ## Versions
 
 | What | File | Notes |
 |------|------|-------|
-| **List versions** | [`versions/list.py`](./versions/list.py) | All versions of a file |
-| **Get by label** | [`versions/get_by_label.py`](./versions/get_by_label.py) | Get a specific version |
-| **Restore version** | [`restore_version.py`](./restore_version.py) | Restore a previous version |
+| List versions | [`versions/list.py`](./versions/list.py) | |
+| Get by label | [`versions/get_by_label.py`](./versions/get_by_label.py) | A specific version |
+| Restore a version | [`restore_version.py`](./restore_version.py) | Roll back |
 
 ## Audit & Compliance
 
 | What | File | Notes |
 |------|------|-------|
-| **List sensitivity labels** | [`find_label_downgrades.py`](./find_label_downgrades.py) | List Purview sensitivity labels for label baselines |
-| **Find unused files** | [`find_unused_files.py`](./find_unused_files.py) | Files with no user access in N days |
-| **Version storage report** | [`version_storage_report.py`](./version_storage_report.py) | Analyze version count and storage cost per file |
+| Sensitivity-label baseline | [`find_label_downgrades.py`](./find_label_downgrades.py) | Purview labels (via Graph) |
+| Unused files | [`find_unused_files.py`](./find_unused_files.py) | No user access in N days |
+| Version storage report | [`version_storage_report.py`](./version_storage_report.py) | Version count & storage cost |
 
 ## Attachments
 
-| What | File | Notes |
-|------|------|-------|
-| **Upload attachment** | [`../listitems/attachments/upload.py`](../listitems/attachments/upload.py) | Attach a file to a list item |
-| **Download attachment** | [`../listitems/attachments/download.py`](../listitems/attachments/download.py) | Download from a list item |
-| **List attachments** | [`../listitems/attachments/list.py`](../listitems/attachments/list.py) | Enumerate attachments on an item |
-| **Delete attachment** | [`../listitems/attachments/delete.py`](../listitems/attachments/delete.py) | Remove an attachment |
-
-> **Note:** Attachments are files attached to **list items**, not documents in a library.
-> See [`listitems/attachments/`](../listitems/attachments/) for all attachment operations.
+Attachments are files attached to **list items**, not documents in a library —
+see [`listitems/attachments/`](../listitems/attachments/) for upload, download,
+list, and delete operations.
 
 ---
 

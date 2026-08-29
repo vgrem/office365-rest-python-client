@@ -18,12 +18,14 @@ import os
 import tempfile
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, site_url, tenant
+from tests.settings import client_id, password, site_url, tenant, username
 
 
 def download_one(path: str, output_dir: str) -> str:
     """Download a single file using its own thread-safe context."""
-    ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
     local_path = os.path.join(output_dir, os.path.basename(path))
     with open(local_path, "wb") as local_file:
         ctx.web.get_file_by_server_relative_path(path).download(local_file).execute_query()

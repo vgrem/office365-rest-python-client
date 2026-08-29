@@ -9,7 +9,7 @@ import os
 import tempfile
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, site_url, tenant
+from tests.settings import client_id, password, site_url, tenant, username
 
 
 def main():
@@ -21,7 +21,9 @@ def main():
     )
     args = parser.parse_args()
 
-    client = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+    client = ClientContext(site_url).with_username_and_password(
+        tenant=tenant, client_id=client_id, username=username, password=password
+    )
 
     download_path = os.path.join(tempfile.mkdtemp(), "Report.csv")
     with open(download_path, "wb") as local_file:
