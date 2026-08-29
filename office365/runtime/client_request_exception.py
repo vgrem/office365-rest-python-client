@@ -4,9 +4,17 @@ from typing import Optional
 
 from requests import RequestException, Response
 
+_HEADER_REQUEST_IDS = ("request-id", "client-request-id", "SPRequestGuid")
+
 
 class ClientRequestException(RequestException):
-    """Custom exception for client requests with enhanced error handling."""
+    """Custom exception for client requests with enhanced error handling.
+
+    In addition to ``code`` / ``message`` it surfaces correlation and server
+    diagnostics when the error response provides them (Graph ``innerError``,
+    ``request-id``; SharePoint ``SPRequestGuid`` / ``SPRequestDuration`` /
+    ``X-SharePointHealthScore``).
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,6 +76,51 @@ class ClientRequestException(RequestException):
     def message_lang(self) -> Optional[str]:
         msg = self._error.get("message")
         return msg.get("lang") if isinstance(msg, dict) else None
+
+    @property
+    def inner_error(self) -> Optional[dict]:
+        """The Graph ``innerError`` payload (``request-id``, ``date``, ...), if any."""
+        inner = self._error.get("innerError")
+        return inner if isinstance(inner, dict) else None
+
+    @property
+    def request_id(self) -> Optional[str]:
+        """Correlation ID for the failed request, if reported.
+
+        Prefers Graph/SharePoint response headers (``request-id``,
+        ``client-request-id``, ``SPRequestGuid``), then the Graph
+        ``innerError.request-id``.
+        """
+        headers = getattr(self.response, "headers", None) or {}
+        for name in _HEADER_REQUEST_IDS:
+            value = headers.get(name)
+            if value:
+                return value
+        inner = self.inner_error or {}
+        return inner.get("request-id")
+
+    @property
+    def server_guid(self) -> Optional[str]:
+        """SharePoint server request GUID (``SPRequestGuid`` header)."""
+        return (getattr(self.response, "headers", None) or {}).get("SPRequestGuid")
+
+    @property
+    def duration_ms(self) -> Optional[int]:
+        """SharePoint server-side processing time (``SPRequestDuration``), ms."""
+        return _to_int((getattr(self.response, "headers", None) or {}).get("SPRequestDuration"))
+
+    @property
+    def health_score(self) -> Optional[int]:
+        """SharePoint server health score (``X-SharePointHealthScore``)."""
+        return _to_int((getattr(self.response, "headers", None) or {}).get("X-SharePointHealthScore"))
+
+
+def _to_int(value: object) -> Optional[int]:
+    """Parse a header value into an int, returning None when absent/invalid."""
+    try:
+        return int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
 
 
 class DuplicatedObjectException(ClientRequestException):
