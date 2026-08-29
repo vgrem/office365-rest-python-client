@@ -1,9 +1,9 @@
 """CSV/records parsing for the collection import pipeline.
 
-CSV files and JSON records are normalized into plain ``dict`` records which the
-collection ``from_csv``/``from_json`` methods turn into entities via the shared
-conversion core (``create_typed_object`` -> ``set_property`` ->
-``deserialize_value``/``declared_type``).
+CSV files and JSON/Excel/pandas records are normalized into plain ``dict``
+records (via :func:`coerce_records`) which the collection ``from_*`` methods
+turn into entities via the shared conversion core (``create_typed_object`` ->
+``set_property`` -> ``deserialize_value``/``declared_type``).
 """
 
 from __future__ import annotations
@@ -18,42 +18,52 @@ from office365.runtime.converters.value import declared_type
 _LIST_SEPARATOR = "; "
 
 
-def read_csv_records(item_type: type, file: IO[str], delimiter: str = ",") -> list[dict]:
-    """Parse CSV rows into records, using the entity's declared property types.
+def read_csv_records(file: IO[str], delimiter: str = ",") -> list[dict]:
+    """Parse CSV rows into plain dict records (empty cells dropped).
 
-    Dotted headers (``passwordProfile/password``) are re-nested into dicts.
-    ``"; "``-joined cells are split for collection-typed fields. Columns that map
-    to no known property are skipped with a warning.
+    Type-aware normalization (dotted keys, ``"; "`` collection splitting,
+    unknown-column skipping) is applied later by :func:`coerce_records` when the
+    records are imported.
     """
     reader = csv.DictReader(file, delimiter=delimiter)
     if reader.fieldnames is None:
         return []
-    records = []
-    for row in reader:
-        record: dict[str, Any] = {}
-        for key in reader.fieldnames:
+    return [{k: v for k, v in row.items() if v not in ("", None)} for row in reader]
+
+
+def coerce_records(item_type: type, records: list[dict]) -> list[dict]:
+    """Normalize plain dict records to the entity's declared property types.
+
+    Dotted keys (``a/b/c``) are re-nested into dicts; ``"; "``-joined strings are
+    split for collection-typed fields; non-importable keys (``@*``, ``id``) and
+    ``None`` cells are dropped; columns mapping to no known property are skipped
+    with a warning. Shared by every import format.
+    """
+    coerced: list[dict[str, Any]] = []
+    for record in records:
+        item: dict[str, Any] = {}
+        for key, raw in record.items():
             if not _is_importable(key):
                 continue
-            raw = row.get(key, "")
-            if raw == "" or raw is None:
+            if raw is None:
                 continue
             if "/" in key:
                 nav = key.split("/", 1)[0]
                 if declared_type(item_type, nav) is None:
-                    warnings.warn(f"Skipping unknown CSV column '{key}'", stacklevel=2)
+                    warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
                     continue
-                _set_nested(record, key, raw)
+                _set_nested(item, key, raw)
                 continue
             declared = declared_type(item_type, key)
             if declared is None:
-                warnings.warn(f"Skipping unknown CSV column '{key}'", stacklevel=2)
+                warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
                 continue
             if isinstance(raw, str) and _is_collection(declared):
-                record[key] = raw.split(_LIST_SEPARATOR)
+                item[key] = raw.split(_LIST_SEPARATOR)
             else:
-                record[key] = raw
-        records.append(record)
-    return records
+                item[key] = raw
+        coerced.append(item)
+    return coerced
 
 
 def clean_records(records: list[dict]) -> list[dict]:

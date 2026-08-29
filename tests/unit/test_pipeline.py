@@ -70,6 +70,33 @@ def test_ndjson_round_trip():
     assert read_ndjson(io.StringIO(buf.getvalue())) == records
 
 
+def test_json_file_round_trip():
+    import json as jsonlib
+
+    from office365.runtime.converters.json_file import read_json, write_json
+
+    records = [{"a": 1, "b": "x"}, {"a": 2, "b": "y"}]
+    buf = io.StringIO()
+    write_json(records, buf)
+    assert jsonlib.loads(buf.getvalue()) == records
+    assert read_json(io.StringIO(buf.getvalue())) == records
+
+
+def test_from_json_file_queues_creates(tmp_path):
+    import json as jsonlib
+
+    path = tmp_path / "data.json"
+    path.write_text(jsonlib.dumps([{"userPrincipalName": "jdoe@x.com", "id": "42", "noSuchColumn": "x"}]))
+    client = GraphClient()
+    col = ClientObjectCollection(client, User, None)
+    col.from_json_file(open(path))  # noqa: SIM115
+    assert len(col) == 1
+    item = col[0]
+    assert item.get_property("userPrincipalName") == "jdoe@x.com"
+    assert "id" not in item.properties
+    assert "noSuchColumn" not in item.properties
+
+
 def test_excel_round_trip(tmp_path):
     records = [{"Name": "John", "Age": 30}, {"Name": "Alice", "Age": 25}]
     path = str(tmp_path / "out.xlsx")
@@ -149,6 +176,14 @@ def test_ensure_property_cached_queues_deferred_noop():
     from office365.runtime.queries.deferred import DeferredOperationQuery
 
     assert isinstance(user.context._queries[-1], DeferredOperationQuery)
+
+
+def test_get_all_accepts_progress():
+    client = GraphClient()
+    col = ClientObjectCollection(client, User, None)
+    events = []
+    col.get_all(progress=lambda p: events.append(p))
+    assert len(client._queries) >= 1  # the first page query is queued
 
 
 def test_from_records_accepts_progress():

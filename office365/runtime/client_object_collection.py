@@ -9,6 +9,7 @@ from office365.runtime.client_object import ClientObject, ClientObjectT
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
+from office365.runtime.operations import Progress
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.types.exceptions import NotFoundException
@@ -276,19 +277,30 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.context.load(self).after_execute(_loaded)
         return self
 
-    def get_all(self, page_size: int | None = None, page_loaded: Callable[[Self], None] | None = None) -> Self:
+    def get_all(
+        self,
+        page_size: int | None = None,
+        page_loaded: Callable[[Self], None] | None = None,
+        progress: "ProgressCallback | None" = None,
+    ) -> Self:
         """
         Load all items in the collection, automatically handling paging.
 
         Args:
             page_size: Items per page (uses server default if None)
-            page_loaded: Callback when each page loads
+            page_loaded: Legacy callback invoked with the loaded collection after
+              each page.
+            progress: Optional hook invoked per page with a ``Progress`` snapshot
+              (``done`` = items loaded so far; ``total`` unknown for server-driven
+              paging, so the bar is indeterminate).
 
         Returns:
             self: Supports fluent method chaining
         """
 
         def _page_loaded(col: ClientObjectCollection) -> None:
+            if callable(progress):
+                progress(Progress(done=len(self._data), stage="loading"))
             if self.has_next:
                 self._get_next().after_execute(_page_loaded)
 
@@ -338,7 +350,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """
         from office365.runtime.converters.csv_reader import read_csv_records
 
-        return self.from_records(read_csv_records(self._item_type, file, delimiter), progress=progress)
+        return self.from_records(read_csv_records(file, delimiter), progress=progress)
 
     def from_json(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
         """Import JSON records (``to_json`` output) by queueing a create per record.
@@ -383,9 +395,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
         The neutral import counterpart of :meth:`to_records`. Every import
         adapter (``from_csv``, ``from_ndjson``, ``from_excel``, ``from_json``,
-        ``from_dataframe``) routes through here: non-importable keys (``@*``,
-        ``id``) are stripped and each record becomes an entity queued for
-        creation, which runs on ``execute_query()``.
+        ``from_dataframe``) routes through here: records are normalized to the
+        item type (dotted keys re-nested, ``"; "`` collections split, unknown
+        columns skipped) and each becomes an entity queued for creation, which
+        runs on ``execute_query()``.
 
         Args:
             records: Plain dict records to import.
@@ -396,9 +409,9 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             >>> client.users.from_records(records).execute_query()
             >>> client.users.from_records(records, progress=my_callback).execute_query()
         """
-        from office365.runtime.converters.csv_reader import clean_records
+        from office365.runtime.converters.csv_reader import coerce_records
 
-        return self._import_records(clean_records(records), progress=progress)
+        return self._import_records(coerce_records(self._item_type, records), progress=progress)
 
     def to_dataframe(self) -> "DataFrameResult":
         """Build a pandas DataFrame from the loaded items.
@@ -466,6 +479,31 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         from office365.runtime.converters.ndjson import read_ndjson
 
         return self.from_records(read_ndjson(file), progress=progress)
+
+    def to_json_file(self, file: IO[str]) -> Self:
+        """Export loaded items as a JSON array file.
+
+        Deferred like ``to_csv`` — the records are written on ``execute_query()``.
+        Note this is the file format; :meth:`to_json` is OData *payload*
+        serialization for request bodies:
+
+            >>> client.users.get_all().select(["displayName", "mail"]).to_json_file(f).execute_query()
+        """
+        from office365.runtime.converters.json_file import write_json
+        from office365.runtime.converters.records import iter_records
+
+        return self.after_execute(lambda _: write_json(iter_records(self), file))
+
+    def from_json_file(self, file: IO[str], progress: "ProgressCallback | None" = None) -> Self:
+        """Import a JSON array file by queueing a create per record (deferred).
+
+        The symmetric counterpart of ``to_json_file``:
+
+            >>> client.users.from_json_file(f).execute_query()
+        """
+        from office365.runtime.converters.json_file import read_json
+
+        return self.from_records(read_json(file), progress=progress)
 
     def to_excel(self, path: Union[str, PathLike]) -> Self:
         """Export loaded items to an Excel (.xlsx) worksheet.

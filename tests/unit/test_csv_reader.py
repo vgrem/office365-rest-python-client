@@ -12,7 +12,7 @@ from office365.directory.users.user import User
 from office365.graph_client import GraphClient
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.converters.csv_reader import clean_records, read_csv_records
+from office365.runtime.converters.csv_reader import clean_records, coerce_records, read_csv_records
 from office365.runtime.converters.csv_writer import write_csv
 from tests.settings import cert_path, cert_thumbprint, client_id, tenant
 
@@ -31,25 +31,42 @@ def _graph_client() -> GraphClient:
 
 class TestCsvRecords(unittest.TestCase):
     def test_read_csv_records(self):
-        records = read_csv_records(User, io.StringIO(CSV_TEXT))
+        records = read_csv_records(io.StringIO(CSV_TEXT))
+        self.assertEqual(len(records), 1)
+        record = records[0]
+        self.assertEqual(record["userPrincipalName"], "jdoe@contoso.com")
+        self.assertEqual(record["passwordProfile/password"], "S3cret!")
+
+    def test_coerce_records(self):
+        records = coerce_records(
+            User,
+            read_csv_records(io.StringIO(CSV_TEXT)),
+        )
         self.assertEqual(len(records), 1)
         record = records[0]
         self.assertEqual(record["userPrincipalName"], "jdoe@contoso.com")
         self.assertEqual(record["passwordProfile"], {"password": "S3cret!", "forceChangePasswordNextSignIn": "True"})
         self.assertEqual(record["businessPhones"], ["+1-555-0101", "+1-555-0102"])
 
-    def test_read_csv_records_strips_non_importable(self):
+    def test_coerce_records_strips_non_importable_and_unknown(self):
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            records = read_csv_records(
+            records = coerce_records(
                 User,
-                io.StringIO("userPrincipalName,id,@odata.type,noSuchColumn\njdoe@contoso.com,42,user,x\n"),
+                [
+                    {
+                        "userPrincipalName": "jdoe@contoso.com",
+                        "id": "42",
+                        "@odata.type": "user",
+                        "noSuchColumn": "x",
+                    }
+                ],
             )
-        self.assertEqual(records[0], {"userPrincipalName": "jdoe@contoso.com"})
+        self.assertEqual(records, [{"userPrincipalName": "jdoe@contoso.com"}])
         self.assertTrue(any("noSuchColumn" in str(w.message) for w in caught))
 
     def test_read_csv_records_empty(self):
-        self.assertEqual(read_csv_records(User, io.StringIO("")), [])
+        self.assertEqual(read_csv_records(io.StringIO("")), [])
 
     def test_clean_records(self):
         records = clean_records(

@@ -1,4 +1,6 @@
-from typing import Callable, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 import requests
 from typing_extensions import Self
@@ -11,6 +13,9 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.teams.operations.async_operation import TeamsAsyncOperation
 from office365.teams.team import Team
 
+if TYPE_CHECKING:
+    from office365.runtime.operations import ProgressCallback
+
 
 class TeamCollection(EntityCollection[Team]):
     """Team's collection"""
@@ -18,7 +23,12 @@ class TeamCollection(EntityCollection[Team]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Team, resource_path)
 
-    def get_all(self, page_size: Optional[int] = None, page_loaded: Optional[Callable[[Self], None]] = None) -> Self:
+    def get_all(
+        self,
+        page_size: Optional[int] = None,
+        page_loaded: Optional[Callable[[Any], None]] = None,
+        progress: "ProgressCallback | None" = None,
+    ) -> Self:
         """List all teams in Microsoft Teams for an organization"""
 
         def _init_teams(groups: GroupCollection) -> None:
@@ -26,9 +36,11 @@ class TeamCollection(EntityCollection[Team]):
                 team = Team(self.context, ResourcePath(grp.id, self.resource_path))
                 team.copy_from(grp)
                 self.add_child(team)
+            if callable(page_loaded):
+                page_loaded(self)
 
         self.context.groups.filter("resourceProvisioningOptions/Any(x:x eq 'Team')").get_all(
-            page_size, page_loaded=_init_teams
+            page_size, page_loaded=_init_teams, progress=progress
         )
         return self
 
@@ -60,7 +72,7 @@ class TeamCollection(EntityCollection[Team]):
         payload = {
             "displayName": display_name,
             "description": description,
-            "template@odata.bind": "https://graph.microsoft.com/v1.0/teamsTemplates('standard')",
+            "template@odata.bind": f"{self.context.teams_templates.resource_url}('standard')",
         }
         qry = CreateEntityQuery(self, payload, return_type)
         self.context.add_query(qry).after_execute(_process_response, include_response=True)
