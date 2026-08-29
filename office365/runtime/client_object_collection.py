@@ -53,6 +53,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self._paged_mode: bool = False
         self._current_pos: int | None = None
         self._next_request_url: str | None = None
+        self._page_headers: dict[str, str] | None = None
         self._parent = parent
 
     def clear_state(self) -> Self:
@@ -68,6 +69,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         if not self._paged_mode:
             self._data = []
         self._next_request_url = None
+        self._page_headers = None
         self._current_pos = len(self._data)
         return self
 
@@ -274,7 +276,14 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         def _loaded(col: Any) -> None:
             self._page_loaded(self)
 
-        self.context.load(self).after_execute(_loaded)
+        def _capture_headers(resp: Any) -> None:
+            # remember the headers of the first page so subsequent page
+            # requests can re-apply them (e.g. ConsistencyLevel on Graph)
+            request = getattr(resp, "request", None)
+            if self._paged_mode and self._page_headers is None and request is not None:
+                self._page_headers = dict(request.headers)
+
+        self.context.load(self).after_execute(_capture_headers, include_response=True).after_execute(_loaded)
         return self
 
     def get_all(
@@ -548,8 +557,14 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
     def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""
 
+        _PAGE_EXCLUDED_HEADERS = ("authorization", "content-length")
+
         def _construct_request(request: RequestOptions) -> None:
             request.url = self._next_request_url  # type: ignore[assignment]
+            if self._page_headers:
+                request.headers.update(
+                    {k: v for k, v in self._page_headers.items() if k.lower() not in _PAGE_EXCLUDED_HEADERS}
+                )
 
         if self._next_request_url is None:
             raise ValueError("Next page not available")
