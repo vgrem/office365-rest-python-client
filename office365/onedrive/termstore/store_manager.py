@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.onedrive.termstore.groups.collection import GroupCollection
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.onedrive.termstore.terms.collection import TermCollection
+from office365.runtime.client_result import ClientResult
 
 if TYPE_CHECKING:
     from office365.onedrive.termstore.store import Store
@@ -81,6 +82,45 @@ class StoreManager:
                 term_set = group.ensure_set(set_data["name"])
                 self._create_terms(term_set.children, set_data.get("children", []))
         return self.store
+
+    def to_json(self) -> ClientResult[list]:
+        """Export the term hierarchy as nested JSON.
+
+        Builds ``[{name, sets: [{name, children: [{name, children: []}]}]}]`` —
+        the symmetric counterpart of :meth:`from_json`. Deferred, like every
+        other operation here: ``execute_query()`` then read ``result.value``.
+
+            >>> result = store_manager.to_json().execute_query()
+            >>> tree = result.value
+        """
+        return_type = ClientResult(self.store.context, [])
+        tree: list = []
+
+        def _on_terms_loaded(terms: TermCollection, container: list) -> None:
+            for term in terms:
+                node = {"name": term.display_name, "children": []}
+                container.append(node)
+                term.children.get().after_execute(
+                    lambda children, parent=node: _on_terms_loaded(children, parent["children"])
+                )
+
+        def _on_sets_loaded(sets: SetCollection, set_container: list) -> None:
+            for term_set in sets:
+                set_node = {"name": term_set.display_name, "children": []}
+                set_container.append(set_node)
+                term_set.children.get().after_execute(
+                    lambda terms, parent=set_node: _on_terms_loaded(terms, parent["children"])
+                )
+
+        def _on_groups_loaded(groups: GroupCollection) -> None:
+            for group in groups:
+                group_node = {"name": group.display_name, "sets": []}
+                tree.append(group_node)
+                group.sets.get().after_execute(lambda sets, parent=group_node: _on_sets_loaded(sets, parent["sets"]))
+
+        self.store.groups.get().after_execute(_on_groups_loaded)
+        return_type.set_property("__value", tree)
+        return return_type
 
     def _create_terms(self, collection: TermCollection, terms: list[dict]) -> None:
         for term_data in terms:

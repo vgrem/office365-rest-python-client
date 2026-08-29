@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.operations import ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
@@ -63,6 +64,7 @@ class Folder(Entity):
         after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
         include_versions: bool = False,
+        progress: Optional[ProgressCallback] = None,
     ):
         """Downloads a folder into a zip file
 
@@ -72,8 +74,12 @@ class Folder(Entity):
             recursive (bool): Determines whether to traverse folders recursively
             include_versions (bool): If True, also downloads each file's version history
               into the zip under ``versions/{path}/v{label}``
+            progress: Optional hook invoked per downloaded file with a
+              ``Progress`` snapshot.
         """
-        return MoveCopyUtil.download_folder(self, download_file, after_file_downloaded, recursive, include_versions)
+        return MoveCopyUtil.download_folder(
+            self, download_file, after_file_downloaded, recursive, include_versions, progress
+        )
 
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """Returns the user permissions for a folder"""

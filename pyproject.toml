@@ -49,6 +49,9 @@ dependencies = [
 optional-dependencies.examples = [
   "faker",
 ]
+optional-dependencies.excel = [
+  "openpyxl>=3.1",
+]
 optional-dependencies.ntlm = [
   "requests-ntlm",
 ]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Generic, Iterator, List, Optional, Type
+from os import PathLike
+from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Generic, Iterator, List, Optional, Type, Union, cast
 
 from typing_extensions import Self
 
@@ -14,6 +15,7 @@ from office365.runtime.types.exceptions import NotFoundException
 
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
+    from office365.runtime.operations import ProgressCallback
 
 
 class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
@@ -171,9 +173,13 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """Get an item by its index position."""
         return self._data[index]
 
-    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> list[dict[str, Any]]:  # type: ignore[override]
+    def to_json(self, json_format: Optional[ODataJsonFormat] = None) -> list[dict[str, Any]]:
         """
-        Serialize the collection to JSON format.
+        Serialize the collection to OData JSON format.
+
+        This is **payload serialization** (for request bodies, includes type
+        metadata when requested) — for data export use :meth:`to_records` /
+        :meth:`to_csv` instead.
 
         Args:
             json_format: Serialization options
@@ -181,7 +187,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Returns:
             JSON-serializable list of item dictionaries
         """
-        return [item.to_json(json_format) for item in self._data]
+        return [cast(Dict[str, Any], item.to_json(json_format)) for item in self._data]
 
     def filter(self, expression: str) -> Self:
         """
@@ -307,7 +313,12 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
         return self.after_execute(lambda _: write_csv(self, file))
 
-    def from_csv(self, file: IO[str], delimiter: str = ",") -> Self:
+    def from_csv(
+        self,
+        file: IO[str],
+        delimiter: str = ",",
+        progress: "ProgressCallback | None" = None,
+    ) -> Self:
         """Import CSV rows by queueing a create per row (deferred).
 
         The symmetric counterpart of ``to_csv``: parsing happens immediately and
@@ -315,25 +326,79 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         ``create_typed_object`` + the shared ``set_property`` coercion), queued
         for creation. The creates run on ``execute_query()``.
 
+        Args:
+            file: A readable CSV stream.
+            delimiter: CSV field delimiter.
+            progress: Optional hook invoked per imported row as its create
+              completes during ``execute_query()``.
+
         Usage:
             >>> client.users.from_csv(f).execute_query()
+            >>> client.users.from_csv(f, progress=my_callback).execute_query()
         """
         from office365.runtime.converters.csv_reader import read_csv_records
 
-        return self._import_records(read_csv_records(self._item_type, file, delimiter))
+        return self.from_records(read_csv_records(self._item_type, file, delimiter), progress=progress)
 
-    def from_json(self, records: List[dict]) -> Self:
+    def from_json(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
         """Import JSON records (``to_json`` output) by queueing a create per record.
 
         Like ``from_csv`` but takes a list of dicts instead of a file. Deferred
         until ``execute_query()``.
 
+        Args:
+            records: Plain dict records to import.
+            progress: Optional hook invoked per record as its create completes
+              during ``execute_query()``.
+
         Usage:
             >>> client.users.from_json(client.users.to_json()).execute_query()
         """
+        return self.from_records(records, progress=progress)
+
+    def to_records(self) -> List[Dict[str, Any]]:
+        """Project loaded items into plain dict records — the neutral export form.
+
+        Same projection as ``to_csv``/``to_dataframe``: ``.select()``/``.expand()``
+        columns, one record per expanded child item, native JSON-safe values.
+        Every format adapter (``to_csv``, ``to_ndjson``, ``to_excel``,
+        ``to_dataframe``) builds on this projection.
+
+        Unlike ``to_csv`` this returns a value directly, so load first:
+
+            >>> records = client.users.get_all() \\
+            ...     .select(["displayName", "mail"]) \\
+            ...     .execute_query() \\
+            ...     .to_records()
+
+        Note: this is **data export** — for OData *payload* serialization (request
+        bodies with type metadata) use :meth:`to_json`.
+        """
+        from office365.runtime.converters.records import iter_records
+
+        return iter_records(self)
+
+    def from_records(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
+        """Import plain dict records by queueing a create per record (deferred).
+
+        The neutral import counterpart of :meth:`to_records`. Every import
+        adapter (``from_csv``, ``from_ndjson``, ``from_excel``, ``from_json``,
+        ``from_dataframe``) routes through here: non-importable keys (``@*``,
+        ``id``) are stripped and each record becomes an entity queued for
+        creation, which runs on ``execute_query()``.
+
+        Args:
+            records: Plain dict records to import.
+            progress: Optional hook invoked per queued create as it completes
+              during ``execute_query()`` (a ``Progress`` snapshot per record).
+
+        Usage:
+            >>> client.users.from_records(records).execute_query()
+            >>> client.users.from_records(records, progress=my_callback).execute_query()
+        """
         from office365.runtime.converters.csv_reader import clean_records
 
-        return self._import_records(clean_records(records))
+        return self._import_records(clean_records(records), progress=progress)
 
     def to_dataframe(self) -> "DataFrameResult":
         """Build a pandas DataFrame from the loaded items.
@@ -359,28 +424,87 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.after_execute(lambda _: write_dataframe(self, result))
         return result
 
-    def from_dataframe(self, df) -> Self:
+    def from_dataframe(self, df, progress: "ProgressCallback | None" = None) -> Self:
         """Import a pandas DataFrame by queueing a create per row (deferred).
 
         The symmetric counterpart of ``to_dataframe``: each row is parsed
         immediately into an entity and queued for creation, which runs on
         ``execute_query()``.
 
+        Args:
+            df: A pandas DataFrame.
+            progress: Optional hook invoked per row as its create completes
+              during ``execute_query()``.
+
         Usage:
             >>> client.users.from_dataframe(df).execute_query()
+            >>> client.users.from_dataframe(df, progress=my_callback).execute_query()
         """
         from office365.runtime.converters.dataframe import read_dataframe
 
-        return self._import_records(read_dataframe(df))
+        return self.from_records(read_dataframe(df), progress=progress)
 
-    def _import_records(self, records: List[dict]) -> Self:
+    def to_ndjson(self, file: IO[str]) -> Self:
+        """Export loaded items as NDJSON (JSON Lines) — one record per line.
+
+        Deferred like ``to_csv`` — the records are written on ``execute_query()``:
+
+            >>> client.users.get_all().select(["displayName", "mail"]).to_ndjson(f).execute_query()
+        """
+        from office365.runtime.converters.ndjson import write_ndjson
+        from office365.runtime.converters.records import iter_records
+
+        return self.after_execute(lambda _: write_ndjson(iter_records(self), file))
+
+    def from_ndjson(self, file: IO[str], progress: "ProgressCallback | None" = None) -> Self:
+        """Import NDJSON (JSON Lines) by queueing a create per line (deferred).
+
+        The symmetric counterpart of ``to_ndjson``:
+
+            >>> client.users.from_ndjson(f).execute_query()
+        """
+        from office365.runtime.converters.ndjson import read_ndjson
+
+        return self.from_records(read_ndjson(file), progress=progress)
+
+    def to_excel(self, path: Union[str, PathLike]) -> Self:
+        """Export loaded items to an Excel (.xlsx) worksheet.
+
+        Deferred like ``to_csv`` — the workbook is written on ``execute_query()``.
+        Requires the optional dependency (``pip install
+        office365-rest-python-client[excel]``):
+
+            >>> client.users.get_all().select(["displayName", "mail"]).to_excel("users.xlsx").execute_query()
+        """
+        from office365.runtime.converters.excel import write_excel
+        from office365.runtime.converters.records import iter_records
+
+        return self.after_execute(lambda _: write_excel(iter_records(self), path))
+
+    def from_excel(self, path: Union[str, PathLike], progress: "ProgressCallback | None" = None) -> Self:
+        """Import an Excel (.xlsx) worksheet by queueing a create per row (deferred).
+
+        The symmetric counterpart of ``to_excel`` (reads the first worksheet):
+
+            >>> client.users.from_excel("users.xlsx").execute_query()
+        """
+        from office365.runtime.converters.excel import read_excel
+
+        return self.from_records(read_excel(path), progress=progress)
+
+    def _import_records(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
         """Queue a create per record, appending the pending entities to this collection."""
+        from office365.runtime.operations import query_progress_hook
         from office365.runtime.queries.create_entity import CreateEntityQuery
 
+        hook = query_progress_hook(len(records), progress) if callable(progress) else None
         for record in records:
             entity = self.create_typed_object(record)
             self.add_child(entity)
-            self.context.add_query(CreateEntityQuery(self, entity, entity))
+            qry = CreateEntityQuery(self, entity, entity)
+            self.context.add_query(qry)
+            if hook is not None:
+                self.context.after_execute(hook)
         return self
 
     def _get_next(self) -> Self:

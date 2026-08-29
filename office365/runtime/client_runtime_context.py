@@ -195,7 +195,7 @@ class ClientRuntimeContext(ABC):
         return self
 
     def add_query(self, query: ClientQuery) -> Self:
-        """Adds query to the pending queue.
+        """Adds a query to the pending queue.
 
         Args:
             query: The query to add

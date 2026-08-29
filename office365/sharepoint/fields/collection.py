@@ -41,18 +41,23 @@ class FieldCollection(EntityCollection[Field]):
         super().__init__(context, Field, resource_path, parent)
 
     def ensure(self, parameters: FieldCreationInformation) -> Field:
+        from office365.runtime.queries.deferred import DeferredOperationQuery
+
         return_type = Field(self.context)
+        barrier = DeferredOperationQuery(self.context, return_type=return_type)
 
         def _on_success(existing):
             return_type.copy_from(existing)
+            barrier.resolve()
 
         def _on_error(error: ClientRequestException):
             if not isinstance(error, ObjectNotFoundException):
                 raise error
 
-            self.add_field(parameters, return_type=return_type)
+            barrier.defer(self._build_add_field_query(parameters, return_type))
 
         self.get_by_title(parameters.Title).get().after_execute(_on_success).on_error(_on_error)
+        self.context.add_query(barrier)
         return return_type
 
     def add_calculated(self, title: str, formula: str, description: Optional[str] = None) -> FieldCalculated:
@@ -264,6 +269,16 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(qry)
         return return_type
 
+    def _build_add_field_query(
+        self,
+        parameters: FieldCreationInformation,
+        return_type: Field,
+    ) -> ServiceOperationQuery:
+        """Build (but do not queue) an AddField query for the given parameters."""
+        self.add_child(return_type)
+        payload = {"parameters": parameters}
+        return ServiceOperationQuery(self, "AddField", None, payload, None, return_type)
+
     def add_field(self, parameters: FieldCreationInformation, return_type: Optional[T] = None) -> T:
         """Adds a fields to the fields collection.
 
@@ -273,10 +288,7 @@ class FieldCollection(EntityCollection[Field]):
         """
         if return_type is None:
             return_type = cast(T, Field(self.context))
-        self.add_child(return_type)
-        payload = {"parameters": parameters}
-        qry = ServiceOperationQuery(self, "AddField", None, payload, None, return_type)
-        self.context.add_query(qry)
+        self.context.add_query(self._build_add_field_query(parameters, return_type))
         return return_type
 
     def create_taxonomy_field(

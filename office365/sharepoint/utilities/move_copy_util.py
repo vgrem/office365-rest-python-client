@@ -4,6 +4,7 @@ import os
 from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional
 
 from office365.runtime.client_result import ClientResult
+from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
@@ -145,6 +146,7 @@ class MoveCopyUtil(Entity):
         after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
         include_versions: bool = False,
+        progress: Optional[ProgressCallback] = None,
     ) -> Folder:
         """Downloads a folder into a zip file
 
@@ -155,8 +157,13 @@ class MoveCopyUtil(Entity):
             recursive (bool): Determines whether to traverse folders recursively
             include_versions (bool): If True, also downloads each file's version history
               into the zip under ``versions/{path}/v{label}``
+            progress: Optional hook invoked per downloaded file with a
+              ``Progress`` snapshot (total is unknown until the folder tree is
+              walked).
         """
         import zipfile
+
+        files_downloaded = 0
 
         def _get_relative_file_path(file: File) -> str:
             parent_folder = file.parent_folder
@@ -186,11 +193,15 @@ class MoveCopyUtil(Entity):
 
         def _download_file(file: File) -> None:
             def _after_downloaded(result: ClientResult[AnyStr]) -> None:
+                nonlocal files_downloaded
                 filename = _get_relative_file_path(file)
                 if callable(after_file_downloaded):
                     after_file_downloaded(file)
                 with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
                     zf.writestr(filename, result.value)
+                files_downloaded += 1
+                if callable(progress):
+                    progress(Progress(done=files_downloaded, stage="downloading"))
                 if include_versions:
                     _download_versions(file, filename)
 

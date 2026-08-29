@@ -75,6 +75,7 @@ from office365.sharepoint.views.view import View
 from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
 if TYPE_CHECKING:
+    from office365.runtime.operations import ProgressCallback
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
     from office365.sharepoint.webs.web import Web
@@ -725,15 +726,18 @@ class List(SecurableObject):
             self.ensure_field(name, field_type)
         return self
 
-    def from_dataframe(self, df) -> Self:
+    def from_dataframe(self, df, progress: "ProgressCallback | None" = None) -> Self:
         """Import a pandas DataFrame into this list.
 
         Provisions a column per DataFrame column (inferred from the dtype and
         created idempotently via ``ensure_field``), then queues an item create
-        per row. Fully deferred — run the whole import with ``execute_query()``:
+        per row. Each missing column is created in its queue slot (a deferred
+        placeholder), so all columns exist before any item create — fully
+        deferred, run the whole import with ``execute_query()``:
 
             >>> lst = ctx.web.lists.ensure_list("My List").execute_query()
             >>> lst.from_dataframe(df).execute_query()
+            >>> lst.from_dataframe(df, progress=my_callback).execute_query()
 
         Column names are sanitized into SharePoint field internal names
         (spaces/punctuation -> ``_``); NaN cells are skipped.
@@ -741,6 +745,8 @@ class List(SecurableObject):
         Args:
             df: A pandas DataFrame (requires ``pip install
                 office365-rest-python-client[pandas]``).
+            progress: Optional hook invoked per row as its item create completes
+              during ``execute_query()``.
 
         Returns:
             Self: The list, for method chaining.
@@ -748,10 +754,9 @@ class List(SecurableObject):
         from office365.runtime.converters.dataframe import records_from_dataframe, require_pandas
 
         pd = require_pandas()
-        for column in df.columns:
-            self.ensure_field(_sanitize_field_name(column), _field_kind(pd, df[column]))
         records = records_from_dataframe(df, key_fn=_sanitize_field_name)
-        self.items._import_records(records)
+        self.ensure_fields({_sanitize_field_name(c): _field_kind(pd, df[c]) for c in df.columns})
+        self.items.from_records(records, progress=progress)
         return self
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:

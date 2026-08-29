@@ -6,6 +6,7 @@ import uuid
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
 from office365.runtime.client_result import ClientResult
+from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -78,6 +79,7 @@ class FileCollection(EntityCollection[File]):
         file_or_path: IO | str,
         chunk_size: int,
         chunk_uploaded: Optional[Callable[[int, Any], None]] = None,
+        progress: Optional[ProgressCallback] = None,
         file_name: Optional[str] = None,
         **kwargs: Any,
     ) -> File:
@@ -88,6 +90,8 @@ class FileCollection(EntityCollection[File]):
             file_or_path: File object or path to upload
             chunk_size: Size of upload chunks in bytes
             chunk_uploaded: Callback that accepts offset and optional additional args
+            progress: Optional hook invoked per uploaded chunk with a
+              ``Progress`` snapshot (``done`` = bytes uploaded, ``total`` = file size).
             file_name: Optional name for the uploaded file
             **kwargs: Additional arguments passed to the upload implementation
         """
@@ -110,6 +114,8 @@ class FileCollection(EntityCollection[File]):
             uploaded_bytes = f.tell()
             if callable(chunk_uploaded):
                 chunk_uploaded(uploaded_bytes, **kwargs)  # type: ignore[call-arg]
+            if callable(progress):
+                progress(Progress(done=uploaded_bytes, total=file_size, stage="uploading"))
 
             content = f.read(chunk_size)
             if uploaded_bytes == file_size:
