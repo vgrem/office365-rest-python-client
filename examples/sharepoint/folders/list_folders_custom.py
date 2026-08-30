@@ -9,7 +9,7 @@ from typing import Callable
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.folder import Folder
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def enum_folder(parent_folder: Folder, action: Callable[[Folder], None]) -> None:
@@ -27,7 +27,9 @@ def print_folder_stat(folder: Folder) -> None:
 def main():
     argparse.ArgumentParser(description="Enumerates folders recursively").parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     root_folder = ctx.web.default_document_library().root_folder
     enum_folder(root_folder, print_folder_stat)
 

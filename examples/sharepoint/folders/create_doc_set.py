@@ -9,7 +9,7 @@ See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/fo
 import argparse
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def main():
@@ -17,7 +17,9 @@ def main():
     parser.add_argument("--name", default="10", help="document set name")
     args = parser.parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     lib = ctx.web.default_document_library()
     doc_set = lib.create_document_set(args.name).execute_query()
     print(f"DocSet created: {doc_set.name}")

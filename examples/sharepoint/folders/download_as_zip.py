@@ -10,7 +10,7 @@ import tempfile
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.file import File
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def print_progress(file: File) -> None:
@@ -22,7 +22,9 @@ def main():
     parser.add_argument("--list-title", default="Documents", help="list title")
     args = parser.parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
     from_folder = ctx.web.lists.get_by_title(args.list_title).root_folder
     zip_path = os.path.join(tempfile.mkdtemp(), "download.zip")
     with open(zip_path, "wb") as to_file:

@@ -8,7 +8,7 @@ import argparse
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.folders.colors import FolderColors
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def main():
@@ -16,7 +16,9 @@ def main():
     parser.add_argument("--name", default="Report1234", help="folder name")
     args = parser.parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     root_folder = ctx.web.default_document_library().root_folder
     folder = root_folder.folders.add(args.name, color_hex=FolderColors.DarkGreen).execute_query()

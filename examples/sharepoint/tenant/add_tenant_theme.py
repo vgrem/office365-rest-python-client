@@ -9,7 +9,7 @@ import json
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.portal.theme_manager import ThemeManager
-from tests.settings import admin_site_url, client_id, client_secret, tenant
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, tenant
 
 
 def main():
@@ -17,7 +17,9 @@ def main():
     parser.add_argument("--name", default="Contoso Theme", help="Theme name")
     args = parser.parse_args()
 
-    ctx = ClientContext(admin_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     manager = ThemeManager(ctx)
     theme = {

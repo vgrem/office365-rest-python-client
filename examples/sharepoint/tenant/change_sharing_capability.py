@@ -10,7 +10,7 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.sharing_capabilities import (
     SharingCapabilities,
 )
-from tests.settings import admin_site_url, client_id, client_secret, team_site_url, tenant
+from tests.settings import admin_site_url, cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def main():
@@ -18,7 +18,9 @@ def main():
     parser.add_argument("--site-url", default=team_site_url, help="Site URL to configure")
     args = parser.parse_args()
 
-    admin_client = ClientContext(admin_site_url).with_client_secret(tenant, client_id, client_secret)
+    admin_client = ClientContext(admin_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     site_props = admin_client.tenant.get_site_properties_by_url(args.site_url).execute_query()
 

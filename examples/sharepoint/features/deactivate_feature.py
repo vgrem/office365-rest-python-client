@@ -8,7 +8,7 @@ import argparse
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.features.definitions.scope import FeatureDefinitionScope
 from office365.sharepoint.features.known_list import KnownFeaturesList
-from tests.settings import client_id, client_secret, site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
 def main():
@@ -16,7 +16,9 @@ def main():
     parser.add_argument("--site-url", default=site_url, help="target site URL")
     args = parser.parse_args()
 
-    ctx = ClientContext(args.site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(args.site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     # Activate a feature first, then deactivate it
     f = ctx.site.features.add(KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm).execute_query()

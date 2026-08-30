@@ -8,13 +8,15 @@ import argparse
 import uuid
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def main():
     argparse.ArgumentParser(description="Moves a folder within a site").parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     print("Creating a temporary folders in a Documents library ...")
     folder_from = ctx.web.default_document_library().root_folder.add(f"Name{uuid.uuid4().hex[:8]}")

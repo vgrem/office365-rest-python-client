@@ -8,13 +8,15 @@ import argparse
 import json
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def main():
     argparse.ArgumentParser(description="Export term store groups and term sets to JSON").parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     term_groups = ctx.taxonomy.term_store.term_groups.get().execute_query()
     for term_group in term_groups:

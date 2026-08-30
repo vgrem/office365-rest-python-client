@@ -8,7 +8,7 @@ import argparse
 import uuid
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, client_secret, team_site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
 def main():
@@ -16,7 +16,9 @@ def main():
     parser.add_argument("--new-name", default="OUT - (Drafts 123)", help="new folder name")
     args = parser.parse_args()
 
-    ctx = ClientContext(team_site_url).with_client_secret(tenant, client_id, client_secret)
+    ctx = ClientContext(team_site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
 
     folder = ctx.web.default_document_library().root_folder.add(f"Name{uuid.uuid4().hex[:8]}")  # create temp folder
 
