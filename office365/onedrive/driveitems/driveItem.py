@@ -6,7 +6,7 @@ from functools import partial
 from io import IOBase
 from os import PathLike
 from os.path import isfile, join
-from typing import IO, AnyStr, Callable
+from typing import IO, AnyStr, Callable, Optional
 
 import requests
 from requests import Response
@@ -59,6 +59,7 @@ from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
+from office365.runtime.operations import Progress
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
@@ -121,12 +122,19 @@ class DriveItem(BaseItem):
         self.retention_label.update()
         return self
 
-    def get_files(self, recursive: bool = False, page_size: int | None = None) -> EntityCollection[DriveItem]:
+    def get_files(
+        self,
+        recursive: bool = False,
+        page_size: int | None = None,
+        progress: Optional[Callable[[Progress[DriveItem]], None]] = None,
+    ) -> EntityCollection[DriveItem]:
         """Retrieves files
 
         Args:
             recursive (bool): Determines whether to enumerate folders recursively
             page_size (int): Page size
+            progress: Optional hook invoked per page with a ``Progress[DriveItem]``
+              snapshot (``done`` = files discovered so far; ``items`` = the page's items).
         """
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
@@ -141,18 +149,27 @@ class DriveItem(BaseItem):
                             _get_files(drive_item)
                     else:
                         return_type.add_child(drive_item)
+                if callable(progress):
+                    progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
 
             parent_drive_item.children.get_all(page_size=page_size, page_loaded=_after_loaded)
 
         _get_files(self)
         return return_type
 
-    def get_folders(self, recursive: bool = False, page_size: int | None = None) -> EntityCollection[DriveItem]:
+    def get_folders(
+        self,
+        recursive: bool = False,
+        page_size: int | None = None,
+        progress: Optional[Callable[[Progress[DriveItem]], None]] = None,
+    ) -> EntityCollection[DriveItem]:
         """Retrieves folders
 
         Args:
             recursive (bool): Determines whether to enumerate folders recursively
             page_size (int): Page size
+            progress: Optional hook invoked per page with a ``Progress[DriveItem]``
+              snapshot (``done`` = folders discovered so far; ``items`` = the page's items).
         """
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
@@ -165,6 +182,8 @@ class DriveItem(BaseItem):
                     if recursive and drive_item.folder.childCount is not None and drive_item.folder.childCount > 0:
                         _get_folders(drive_item)
                     return_type.add_child(drive_item)
+                if callable(progress):
+                    progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
 
             parent.children.filter("folder ne null").get_all(page_size=page_size, page_loaded=_after_loaded)
 

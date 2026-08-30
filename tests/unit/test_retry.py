@@ -195,7 +195,5 @@ class TestBackoffDelay(unittest.TestCase):
                 self.assertLessEqual(delay, nominal)
 
     def test_jitter_is_randomized(self):
-        with mock.patch(
-            "office365.runtime.retry.random.uniform", side_effect=lambda low, high: (low + high) / 2
-        ):
+        with mock.patch("office365.runtime.retry.random.uniform", side_effect=lambda low, high: (low + high) / 2):
             self.assertEqual(backoff_delay(1, base=10), 5.0)  # noqa: PLR2004

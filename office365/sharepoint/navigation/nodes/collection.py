@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Optional
 
 from typing_extensions import Self
 
+from office365.runtime.operations import Progress
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -22,6 +23,40 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
 
     def __init__(self, context: ClientContext, resource_path=None):
         super().__init__(context, NavigationNode, resource_path)
+
+    def get_all_nodes(
+        self,
+        recursive: bool = True,
+        progress: Optional[Callable[[Progress[NavigationNode]], None]] = None,
+    ) -> NavigationNodeCollection:
+        """Walk every navigation node (top-level and descendants) into a flat collection.
+
+        Each visited node's ``Children`` are loaded and stored on the node, so the
+        loaded collection can be exported as a nested tree via ``to_json()``.
+
+        Args:
+            recursive (bool): Whether to walk child nodes recursively (default True).
+            progress: Optional hook invoked per node with a ``Progress[NavigationNode]``
+              snapshot (``done`` = nodes discovered so far).
+        """
+        return_type = NavigationNodeCollection(self.context, self.resource_path)
+
+        def _walk(collection: NavigationNodeCollection) -> None:
+            for node in collection:
+                return_type.add_child(node)
+                if callable(progress):
+                    progress(Progress(done=len(return_type), stage="scanning"))
+            if recursive:
+                for node in collection:
+                    children = node.children  # capture once so the loaded collection is shared
+                    children.get().after_execute(lambda _, col=children, n=node: _children_loaded(n, col))
+
+        def _children_loaded(node: NavigationNode, children: NavigationNodeCollection) -> None:
+            node.set_property("Children", children)
+            _walk(children)
+
+        self.get().after_execute(lambda _: _walk(self))
+        return return_type
 
     def add(self, create_node_info: NavigationNodeCreationInformation) -> NavigationNode:
         """

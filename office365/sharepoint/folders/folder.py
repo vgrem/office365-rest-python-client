@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.operations import ProgressCallback
+from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
@@ -85,18 +85,28 @@ class Folder(Entity):
         """Returns the user permissions for a folder"""
         return self.list_item_all_fields.get_user_effective_permissions(user)
 
-    def get_folders(self, recursive: bool = False) -> FolderCollection:
+    def get_folders(
+        self,
+        recursive: bool = False,
+        progress: Optional[Callable[[Progress[Folder]], None]] = None,
+    ) -> FolderCollection:
         """Retrieves folders
 
         Args:
             recursive (bool): Determines whether to enumerate folders recursively
+            progress: Optional hook invoked per scanned folder with a
+              ``Progress[Folder]`` snapshot (``done`` = folders discovered so
+              far; ``items`` = the folders found in the folder just scanned).
         """
         from office365.sharepoint.folders.collection import FolderCollection
 
         return_type = FolderCollection(self.context, self.folders.resource_path, self)
 
         def _get_folders(parent: Folder) -> None:
-            [return_type.add_child(f) for f in parent.folders]
+            for folder in parent.folders:
+                return_type.add_child(folder)
+            if callable(progress):
+                progress(Progress(done=len(return_type), stage="scanning", items=list(parent.folders)))
             if recursive:
                 for folder in parent.folders:
                     folder.ensure_properties(["Folders"]).after_execute(lambda _, f=folder: _get_folders(parent=f))
@@ -104,11 +114,18 @@ class Folder(Entity):
         self.ensure_properties(["Folders"]).after_execute(lambda _: _get_folders(parent=self))
         return return_type
 
-    def get_files(self, recursive: bool = False) -> FileCollection:
+    def get_files(
+        self,
+        recursive: bool = False,
+        progress: Optional[Callable[[Progress[File]], None]] = None,
+    ) -> FileCollection:
         """Retrieves files
 
         Args:
             recursive (bool): Determines whether to enumerate folders recursively
+            progress: Optional hook invoked per scanned folder with a
+              ``Progress[File]`` snapshot (``done`` = files discovered so far;
+              ``items`` = the files found in the folder just scanned).
         """
         from office365.sharepoint.files.collection import FileCollection
 
@@ -117,7 +134,10 @@ class Folder(Entity):
         return_type = FileCollection(self.context, resource_path, self)
 
         def _get_files(parent: Folder) -> None:
-            [return_type.add_child(f) for f in parent.files]
+            for file in parent.files:
+                return_type.add_child(file)
+            if callable(progress):
+                progress(Progress(done=len(return_type), stage="scanning", items=list(parent.files)))
             if recursive:
                 for folder in parent.folders:
                     folder.ensure_properties(["Files", "Folders"]).after_execute(

@@ -10,22 +10,32 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import count
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Generic, Optional, Sequence, TypeVar
+
+T_co = TypeVar("T_co", covariant=True)
 
 
 @dataclass
-class Progress:
+class Progress(Generic[T_co]):
     """A snapshot of a long-running operation's progress.
+
+    ``T_co`` is the item type carried by ``items`` (e.g. ``Progress[File]``);
+    numeric-only operations use ``Progress[Any]``.
 
     Attributes:
         done: Work completed so far (bytes, items, pages...).
         total: Total work when known; ``None`` for indeterminate operations.
         stage: Human-readable stage, e.g. ``"uploading"``.
+        items: The batch of items completed by this step, when the operation
+          completes several per step (e.g. a folder scan's files). Treated as
+          read-only; ``None`` for single-item or numeric steps — ``done``
+          already carries the count. Never the full result set.
     """
 
     done: int = 0
     total: Optional[int] = None
     stage: str = ""
+    items: Optional[Sequence[T_co]] = None
 
     @property
     def percent(self) -> Optional[float]:
@@ -35,7 +45,7 @@ class Progress:
         return min(100.0, self.done / self.total * 100)
 
 
-ProgressCallback = Callable[[Progress], None]
+ProgressCallback = Callable[[Progress[Any]], None]
 
 
 def query_progress_hook(total: int, progress: ProgressCallback, stage: str = "") -> Callable[[Any], None]:

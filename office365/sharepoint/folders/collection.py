@@ -32,8 +32,11 @@ class FolderCollection(EntityCollection[Folder]):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_path(self, path: str) -> Folder:
-        """Ensures a folder exist
+    def ensure_by_path(self, path: str) -> Folder:
+        """Ensure a folder tree exists at the given path.
+
+        Creates any missing intermediate folders along a server- or site-relative
+        path (e.g. ``"Shared Documents/Projects/2026"``).
 
         Args:
             path (str): server or site relative url to a folder
