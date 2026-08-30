@@ -41,7 +41,7 @@ for node in ql:
 |------|------|-------|
 | **Top navigation bar** | [`list_top_nav.py`](./list_top_nav.py) | All nodes in the top nav |
 | **Quick Launch** | [`list_quick_launch.py`](./list_quick_launch.py) | All nodes in the Quick Launch |
-| **Export to JSON** | [`export_to_json.py`](./export_to_json.py) | Recursive top-nav tree (with sub-menus) as JSON |
+| **Export to JSON** | [`export_to_json.py`](./export_to_json.py) | Recursive top-nav tree (with sub-menus) as JSON, via `get_all_nodes` + `to_json` |
 
 ## Create
 
@@ -60,7 +60,7 @@ for node in ql:
 
 | What | File | Notes |
 |------|------|-------|
-| **Export to CSV** | [`export_to_csv.py`](./export_to_csv.py) | Flat Quick Launch + top nav with hierarchy depth |
+| **Export to CSV** | [`export_to_csv.py`](./export_to_csv.py) | Flat Quick Launch + top nav via `get_all_nodes` + `to_records` |
 
 ---
 

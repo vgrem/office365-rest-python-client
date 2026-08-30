@@ -1,38 +1,66 @@
 """
 Export SharePoint navigation structure to CSV — both Quick Launch
-and top nav bars with hierarchy depth.
+and top nav bars, as a flat inventory.
 
-Useful for site audits, documenting navigation, and planning
-restructuring.
+Walks every node (recursively via ``get_all_nodes``) with a progress bar and
+projects the loaded collections to records via ``to_records()`` — the pipeline's
+synchronous projection, which is reliable on walked collections (deferred
+exporters like ``to_csv`` fire before the recursive walk completes).
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 """
 
+import argparse
 import csv
 
+from office365.runtime.operations import Progress
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
 from office365.sharepoint.navigation.nodes.node import NavigationNode
-from tests.settings import client_id, client_secret, site_url, tenant
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
-def write_nodes(w, parent: NavigationNode, depth: int = 0) -> None:
-    """Recursively write a node and its children to CSV."""
-    w.writerow([depth * "  " + (parent.title or ""), parent.url or "", depth])
-    children = parent.children.get().execute_query()
-    for child in children:
-        write_nodes(w, child, depth + 1)
+def progress_bar(description: str):
+    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
+    from tqdm import tqdm
+
+    bar = tqdm(desc=description)
+
+    def hook(p: Progress[NavigationNode]) -> None:
+        bar.update(p.done - bar.n)
+
+    return hook
 
 
-ctx = ClientContext(site_url).with_client_secret(tenant, client_id, client_secret)
+def export_bar(collection: NavigationNodeCollection, writer, no_progress: bool) -> None:
+    """Walk a navigation bar and write its nodes as flat rows."""
+    hook = None if no_progress else progress_bar("Scanning navigation")
+    nodes = collection.get_all_nodes(recursive=True, progress=hook).execute_query()
+    for record in nodes.select(["Id", "Title", "Url"]).to_records():
+        writer.writerow([record["Title"], record["Url"]])
 
-with open("nav_export.csv", "w", newline="") as f:
-    w = csv.writer(f)
-    w.writerow(["Title", "URL", "Depth"])
-    print("Quick Launch:")
-    for node in ctx.web.navigation.quick_launch.get().execute_query():
-        write_nodes(w, node)
-    print("Top nav bar:")
-    for node in ctx.web.navigation.top_navigation_bar.get().execute_query():
-        write_nodes(w, node)
 
-print("Exported to nav_export.csv")
+def main():
+    parser = argparse.ArgumentParser(description="Export SharePoint navigation to CSV")
+    parser.add_argument("--site-url", default=site_url, help="site URL")
+    parser.add_argument("--output", default="nav_export.csv", help="output CSV file")
+    parser.add_argument("--no-progress", action="store_true", help="do not show tqdm progress bars")
+    args = parser.parse_args()
+
+    ctx = ClientContext(args.site_url).with_client_certificate(
+        tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
+    )
+
+    with open(args.output, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Title", "URL"])
+        print("Quick Launch:")
+        export_bar(ctx.web.navigation.quick_launch, writer, args.no_progress)
+        print("Top nav bar:")
+        export_bar(ctx.web.navigation.top_navigation_bar, writer, args.no_progress)
+
+    print(f"Exported to {args.output}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,7 +1,10 @@
 """
 Export the top navigation bar structure to a JSON file.
 
-Recursively captures every top-level node and its sub-menus as a nested tree.
+Walks every navigation node (top-level and sub-menus, recursively via
+``get_all_nodes``) with a progress bar, then exports the loaded tree through the
+collection's ``to_json()`` — the pipeline serialization recurses into each
+node's loaded ``Children``.
 
 A Python port of PnP's ``spo-export-topnavbar-including-translations`` script
 sample (without the multilingual title resources).
@@ -11,40 +14,45 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 
 import argparse
 import json
-import sys
 
+from office365.runtime.operations import Progress
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.navigation.nodes.node import NavigationNode
 from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
 
-def _node_to_dict(node):
-    """Serialize a navigation node and its children as a nested dict."""
-    return {
-        "id": node.id,
-        "title": node.title,
-        "url": node.url,
-        "children": [_node_to_dict(child) for child in node.children.get().execute_query()],
-    }
+def progress_bar(description: str):
+    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
+    from tqdm import tqdm
+
+    bar = tqdm(desc=description)
+
+    def hook(p: Progress[NavigationNode]) -> None:
+        bar.update(p.done - bar.n)
+
+    return hook
 
 
 def main():
     parser = argparse.ArgumentParser(description="Export the top navigation bar to JSON")
     parser.add_argument("--site-url", default=site_url, help="site URL")
     parser.add_argument("--output", default="top_navigation.json", help="output JSON file")
+    parser.add_argument("--no-progress", action="store_true", help="do not show a tqdm progress bar")
     args = parser.parse_args()
 
     ctx = ClientContext(args.site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
 
-    nav = ctx.web.navigation.top_navigation_bar.get().execute_query()
-    if not nav:
-        sys.exit("No top navigation nodes found.")
+    hook = None if args.no_progress else progress_bar("Scanning navigation")
+    nodes = ctx.web.navigation.top_navigation_bar.get_all_nodes(recursive=True, progress=hook).execute_query()
+    if not nodes:
+        raise SystemExit("No top navigation nodes found.")
 
-    tree = [_node_to_dict(node) for node in nav]
+    tree = nodes.to_json()  # recurses through each node's loaded Children
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(tree, f, indent=2)
-    print(f"✓ Exported {len(nav)} top-level node(s) to {args.output}")
+    print(f"Exported {len(nodes)} navigation node(s) to {args.output}")
 
 
 if __name__ == "__main__":

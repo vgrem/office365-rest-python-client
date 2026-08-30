@@ -13,14 +13,15 @@ from tests.settings import client_id, password, team_site_url, tenant, username
 
 
 def download_files(source_folder, download_path: str) -> None:
+    from tqdm import tqdm
+
     files = source_folder.files.get().execute_query()
-    for file in files:
-        print(f"Downloading file: {file.properties.get('ServerRelativeUrl', '?')} ...")
+    for file in tqdm(files, desc="Downloading"):
         file_name = file.name or file.properties.get("LeafName") or "download.bin"
         local_file_path = os.path.join(download_path, str(file_name))
         with open(local_file_path, "wb") as local_file:
             file.download(local_file).execute_query()
-        print(f"[Ok] file has been downloaded: {local_file_path}")
+    print(f"\nDownloaded {len(files)} files to {download_path}")
 
 
 def main():

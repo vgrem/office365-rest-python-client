@@ -73,8 +73,8 @@ for f in files:
 | **Get by sharing link** | [`get_by_shared_link.py`](./get_by_shared_link.py) | Resolve a sharing link |
 | **Get metadata** | [`get_props.py`](./get_props.py) | Name, path, size, item count |
 | **Get system metadata** | [`get_system_metadata.py`](./get_system_metadata.py) | Internal SharePoint fields |
-| **List files inside** | [`list_files.py`](./list_files.py) | All files in a folder |
-| **List subfolders** | [`list_folders.py`](./list_folders.py) | Direct children only |
+| **List files inside** | [`list_files.py`](./list_files.py) | All files in a folder, printed as scanned (progress hook) |
+| **List subfolders** | [`list_folders.py`](./list_folders.py) | Direct children only (add `--recursive`) |
 | **List with custom scope** | [`list_folders_custom.py`](./list_folders_custom.py) | Recursive or filtered |
 | **Get files list** | [`get_files.py`](./get_files.py) | Alternative file listing |
 
@@ -93,7 +93,7 @@ for f in files:
 | What | File | Notes |
 |------|------|-------|
 | **Download as ZIP** | [`download_as_zip.py`](./download_as_zip.py) | Entire folder as a .zip |
-| **Download files** | [`download.py`](./download.py) | Download files inside |
+| **Download files** | [`download.py`](./download.py) | Download files inside (tqdm progress) |
 
 ## Delete
 
