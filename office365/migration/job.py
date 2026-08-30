@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import threading
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
+from office365.migration.assessor import MigrationAssessor
 from office365.migration.base import MigrationOptions, MigrationPhase, MigrationStats
 from office365.migration.checkpoint import Checkpoint
 from office365.migration.manifest import Manifest
@@ -43,12 +44,15 @@ class MigrationJob:
         self._runner = MigrationRunner()
         self._stop_event = threading.Event()
         self._cancel_requested = False
-        self._assess_hook: Optional[Callable[[], object]] = None
+        self._assess_hook: Any = None
 
     # ── Configuration ────────────────────────────────────────────
 
-    def with_assessor(self, hook: Callable[[], object]) -> "MigrationJob":
-        """Attach a pre-flight assessment hook (run during :meth:`assess`)."""
+    def with_assessor(self, hook) -> "MigrationJob":
+        """Attach a pre-flight assessment (a ``MigrationAssessor`` or a callable).
+
+        The hook runs during :meth:`assess` and is the "scan" phase of the job.
+        """
         self._assess_hook = hook
         return self
 
@@ -72,12 +76,20 @@ class MigrationJob:
 
     # ── Lifecycle ────────────────────────────────────────────────
 
-    def assess(self) -> object | None:
-        """Run the pre-migration assessment hook (SPMT-style scan)."""
+    def assess(self, progress: Optional[Callable[["Progress"], None]] = None) -> object | None:
+        """Run the pre-migration assessment (the SPMT-style "scan" phase).
+
+        Accepts a ``MigrationAssessor`` or a callable attached via
+        :meth:`with_assessor`; ``progress`` is forwarded when the hook is a
+        ``MigrationAssessor``.
+        """
         self._checkpoint.phase = MigrationPhase.ASSESSING
         self._save_state()
-        if callable(self._assess_hook):
-            return self._assess_hook()
+        hook = self._assess_hook
+        if isinstance(hook, MigrationAssessor):
+            return hook.assess(progress=progress).execute_query().value
+        if callable(hook):
+            return hook()
         return None
 
     def plan(self, progress: Optional[Callable[["Progress"], None]] = None) -> Manifest:

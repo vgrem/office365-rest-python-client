@@ -14,14 +14,13 @@ permissions::
 
     print(report.summary())
     print(report.blockers)
-    report.to_excel("assessment.xlsx")
-    df = report.to_dataframe()
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Callable, Dict, Optional
 
+from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners import (
     AssessmentOptions,
@@ -35,6 +34,7 @@ from office365.runtime.client_result import ClientResult
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
+    from office365.runtime.operations import Progress
     from office365.sharepoint.webs.web import Web
 
 
@@ -83,8 +83,21 @@ class MigrationAssessor(Entity):
 
     # ── Execution ─────────────────────────────────────────────────
 
-    def assess(self) -> ClientResult[AssessmentReport]:
-        """Run the assessment. Returns AssessmentReport."""
+    def assess(
+        self,
+        progress: Optional[Callable[["Progress"], None]] = None,
+    ) -> ClientResult[AssessmentReport]:
+        """Run the assessment. Returns AssessmentReport.
+
+        Lists that can't be read (unique permissions, protected system lists, or
+        an unreachable site) are skipped with a warning instead of aborting the
+        whole scan — an assessor must report, not crash.
+
+        Args:
+            progress: Optional hook invoked once per list as its scan completes,
+              with a ``Progress`` snapshot (``done`` = lists scanned so far,
+              ``total`` = list count, ``items`` = the list just scanned).
+        """
 
         return_type = ClientResult[AssessmentReport](self.context, AssessmentReport())
 
@@ -95,31 +108,86 @@ class MigrationAssessor(Entity):
             "permissions": PermissionScanner(self._options),
         }
 
+        def _flag_failure(location: str, error: Exception) -> None:
+            report = return_type.value
+            if location == "web/webs":
+                report.webs_skipped = True
+            elif location == "web/lists":
+                report.lists_skipped = True
+            self._flag(report, "warning", "access", location, f"skipped — {error}")
+
         def _assess_webs(webs) -> None:
             WebScanner(self._options).run(webs, return_type.value)
 
         def _assess(lists) -> None:
             report = return_type.value
             report.total_lists = len(lists)
+            total = len(lists)
+            completed = {"count": 0}
+
+            def _progress(lst) -> None:
+                completed["count"] += 1
+                if callable(progress):
+                    from office365.runtime.operations import Progress
+
+                    progress(Progress(done=completed["count"], total=total, stage="assessing", items=[lst]))
+
             for lst in lists:
                 if lst.hidden:
+                    _progress(lst)
                     continue
+                location = f"lists/{lst.title}"
+                pending = {"count": 0}
+
+                def _scan_done(lst=lst, pending=pending) -> None:
+                    pending["count"] -= 1
+                    if pending["count"] <= 0:
+                        _progress(lst)
+
+                def _fail(e, loc=location, lst=lst, done=_scan_done) -> None:
+                    _flag_failure(loc, e)
+                    done(lst)
+
                 if self._enabled["fields"]:
-                    lst.fields.get().after_execute(
-                        lambda col, lst=lst: scanners["fields"].run(col, report, location=f"lists/{lst.title}")
+                    pending["count"] += 1
+                    lst.fields.get().on_error(_fail).after_execute(
+                        lambda col, lst=lst, loc=location, done=_scan_done: (
+                            scanners["fields"].run(col, report, location=loc),
+                            done(lst),
+                        )
                     )
                 if self._enabled["paths"] or self._enabled["files"]:
-                    lst.items.select(["FileRef", "FileLeafRef", "File/Length"]).expand(["File"]).get().after_execute(
-                        lambda col: self._scan_items(scanners, col, report)
+                    pending["count"] += 1
+                    lst.items.select(["FileRef", "FileLeafRef", "File/Length"]).expand(["File"]).get().on_error(
+                        _fail
+                    ).after_execute(
+                        lambda col, lst=lst, done=_scan_done: (self._scan_items(scanners, col, report), done(lst))
                     )
                 if self._enabled["permissions"]:
-                    lst.items.select(["HasUniqueRoleAssignments", "FileRef"]).get_all().after_execute(
-                        lambda col, lst=lst: scanners["permissions"].run(col, report, location=f"lists/{lst.title}")
+                    pending["count"] += 1
+                    lst.items.select(["HasUniqueRoleAssignments", "FileRef"]).get_all().on_error(_fail).after_execute(
+                        lambda col, lst=lst, loc=location, done=_scan_done: (
+                            scanners["permissions"].run(col, report, location=loc),
+                            done(lst),
+                        )
                     )
+                if pending["count"] == 0:  # no sub-scans enabled
+                    _progress(lst)
 
-        self._web.lists.get().after_execute(_assess)
-        self._web.webs.get().after_execute(_assess_webs)
+        self._web.lists.get().on_error(lambda e: _flag_failure("web/lists", e)).after_execute(_assess)
+        self._web.webs.get().on_error(lambda e: _flag_failure("web/webs", e)).after_execute(_assess_webs)
         return return_type
+
+    def _flag(
+        self,
+        report: AssessmentReport,
+        severity: str,
+        category: str,
+        location: str,
+        message: str,
+        suggestion: str = "",
+    ) -> None:
+        report.issues.append(AssessmentIssue(severity, category, location, message, suggestion))
 
     @staticmethod
     def _scan_items(scanners: dict, items, report: AssessmentReport) -> None:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
 
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.runtime.client_value import ClientValue
@@ -17,6 +16,10 @@ class AssessmentReport(ClientValue):
     total_files: int = 0
     total_size_gb: float = 0.0
 
+    # Scans that could not run (e.g. access denied) — counts are not meaningful
+    lists_skipped: bool = False
+    webs_skipped: bool = False
+
     # Issues
     issues: list[AssessmentIssue] = field(default_factory=list)
 
@@ -29,40 +32,20 @@ class AssessmentReport(ClientValue):
         return [i for i in self.issues if i.severity == "warning"]
 
     @property
+    def info(self) -> list[AssessmentIssue]:
+        return [i for i in self.issues if i.severity == "info"]
+
+    @property
     def is_ready(self) -> bool:
         return len(self.blockers) == 0
 
     def summary(self) -> str:
-        lines = [
-            f"Webs: {self.total_webs} | Lists: {self.total_lists} | "
-            f"Files: {self.total_files} | Size: {self.total_size_gb:.2f}GB",
-            f"Blockers: {len(self.blockers)} | Warnings: {len(self.warnings)}",
-        ]
-        if self.blockers:
-            lines.append("\nBLOCKERS (must fix before migration):")
-            for b in self.blockers:
-                lines.append(f"  - [{b.category}] {b.location}: {b.message}")
-                if b.suggestion:
-                    lines.append(f"    -> {b.suggestion}")
-        return "\n".join(lines)
-
-    def to_dataframe(self):
-        try:
-            import pandas as pd  # type: ignore[import-not-found]
-        except ImportError:
-            raise ImportError("pip install office365-rest-python-client[pandas]") from None
-        return pd.DataFrame(
-            [
-                {
-                    "severity": i.severity,
-                    "category": i.category,
-                    "location": i.location,
-                    "message": i.message,
-                    "suggestion": i.suggestion,
-                }
-                for i in self.issues
-            ]
+        """A concise one-liner — the detailed issue list is the caller's rendering."""
+        webs = "n/a" if self.webs_skipped else self.total_webs
+        lists = "n/a" if self.lists_skipped else self.total_lists
+        status = "ready" if self.is_ready else "blocked"
+        return (
+            f"Webs: {webs} | Lists: {lists} | Files: {self.total_files} | "
+            f"Size: {self.total_size_gb:.2f}GB | Blockers: {len(self.blockers)} | "
+            f"Warnings: {len(self.warnings)} | {status}"
         )
-
-    def to_excel(self, path: str | Path) -> None:
-        self.to_dataframe().to_excel(path, index=False)
