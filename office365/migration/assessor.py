@@ -1,7 +1,9 @@
 """
 Pre-migration assessment — surface blockers and warnings before touching data.
 
-Follows deferred execution pattern::
+Follows deferred execution pattern and dispatches to modular scanners
+(``assessment/scanners/``), one per concern — sites, fields, paths, files,
+permissions::
 
     from office365.migration import MigrationAssessor
 
@@ -18,37 +20,22 @@ Follows deferred execution pattern::
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
-from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
+from office365.migration.assessment.scanners import (
+    AssessmentOptions,
+    FieldScanner,
+    FileScanner,
+    PathScanner,
+    PermissionScanner,
+    WebScanner,
+)
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.fields.collection import FieldCollection
-from office365.sharepoint.listitems.collection import ListItemCollection
-from office365.sharepoint.lists.collection import ListCollection
-from office365.sharepoint.lists.list import List
 
 if TYPE_CHECKING:
     from office365.sharepoint.webs.web import Web
-
-
-# ── Known problematic field names (from issue #688 and MigrationAssessor memory) ──
-
-APPROVAL_WORKFLOW_FIELDS = {
-    "_ApprovalStatus",
-    "_ApprovalRespondedBy",
-    "_ApprovalAssignedTo",
-}
-
-# Attrs that must be stripped before migrating field XML
-STRIP_FIELD_ATTRS = {"ReadOnly", "ColName", "RowOrdinal", "SourceID", "Version"}
-
-# SharePoint path/name constraints
-MAX_PATH_LENGTH = 400
-MAX_NAME_LENGTH = 128
-INVALID_CHARS = set(r'~"#%&*:<>?/\{|}')
-LARGE_FILE_BYTES = 15 * 1024 * 1024 * 1024  # 15GB — SPMT limit
 
 
 class MigrationAssessor(Entity):
@@ -64,31 +51,34 @@ class MigrationAssessor(Entity):
 
     """
 
-    def __init__(self, web: Web) -> None:
+    def __init__(self, web: "Web", options: AssessmentOptions | None = None) -> None:
         super().__init__(web.context)
         self._web = web
-        self._check_paths = True
-        self._check_fields = True
-        self._check_files = True
-        self._check_permissions = False
-        self._check_versions = False
+        self._options = options or AssessmentOptions()
+        self._enabled: Dict[str, bool] = {
+            "paths": True,
+            "fields": True,
+            "files": True,
+            "permissions": False,
+        }
+
+    # ── Configuration ────────────────────────────────────────────
 
     def include_permissions(self) -> "MigrationAssessor":
         """Include unique permissions scan (expensive — many API calls)."""
-        self._check_permissions = True
+        self._enabled["permissions"] = True
         return self
 
     def include_versions(self) -> "MigrationAssessor":
         """Include version history in size estimates."""
-        self._check_versions = True
         return self
 
     def skip_path_checks(self) -> "MigrationAssessor":
-        self._check_paths = False
+        self._enabled["paths"] = False
         return self
 
     def skip_field_checks(self) -> "MigrationAssessor":
-        self._check_fields = False
+        self._enabled["fields"] = False
         return self
 
     # ── Execution ─────────────────────────────────────────────────
@@ -98,146 +88,44 @@ class MigrationAssessor(Entity):
 
         return_type = ClientResult[AssessmentReport](self.context, AssessmentReport())
 
-        def _assess(lists: ListCollection):
-            return_type.value.total_lists = len(lists)
+        scanners = {
+            "fields": FieldScanner(self._options),
+            "paths": PathScanner(self._options),
+            "files": FileScanner(self._options),
+            "permissions": PermissionScanner(self._options),
+        }
+
+        def _assess_webs(webs) -> None:
+            WebScanner(self._options).run(webs, return_type.value)
+
+        def _assess(lists) -> None:
+            report = return_type.value
+            report.total_lists = len(lists)
             for lst in lists:
                 if lst.hidden:
                     continue
-
-                if self._check_fields:
-                    lst.fields.get().after_execute(lambda col, lst=lst: self._assess_fields(lst, col, return_type.value))
-                if (self._check_paths or self._check_files) and lst.base_type == 1:
-                    lst.items.select(["FileRef", "FileLeafRef", "File/Length"]).expand(["File"]).get().after_execute(
-                        lambda col, lst=lst: self._assess_items(col, return_type.value)
+                if self._enabled["fields"]:
+                    lst.fields.get().after_execute(
+                        lambda col, lst=lst: scanners["fields"].run(col, report, location=f"lists/{lst.title}")
                     )
-                if self._check_permissions:
+                if self._enabled["paths"] or self._enabled["files"]:
+                    lst.items.select(["FileRef", "FileLeafRef", "File/Length"]).expand(["File"]).get().after_execute(
+                        lambda col: self._scan_items(scanners, col, report)
+                    )
+                if self._enabled["permissions"]:
                     lst.items.select(["HasUniqueRoleAssignments", "FileRef"]).get_all().after_execute(
-                        lambda col, lst=lst: self._assess_permissions(lst, col, return_type.value)
+                        lambda col, lst=lst: scanners["permissions"].run(col, report, location=f"lists/{lst.title}")
                     )
 
         self._web.lists.get().after_execute(_assess)
-
+        self._web.webs.get().after_execute(_assess_webs)
         return return_type
 
-    def _flag(
-        self,
-        report: AssessmentReport,
-        severity: str,
-        category: str,
-        location: str,
-        message: str,
-        suggestion: str = "",
-    ) -> None:
-        report.issues.append(AssessmentIssue(severity, category, location, message, suggestion))
-
-    def _assess_fields(self, lst: List, fields: FieldCollection, report: AssessmentReport) -> None:
-        """Check site columns for migration blockers."""
-
-        for f in fields:
-            name = f.properties.get("InternalName", "")
-            schema = f.properties.get("SchemaXml", "")
-            location = f"lists/{lst.title}/{name}"
-
-            # ReadOnly fields
-            if 'ReadOnly="TRUE"' in schema:
-                self._flag(
-                    report,
-                    "warning",
-                    "field",
-                    location,
-                    "ReadOnly field — cannot be written to via REST API",
-                    "Strip ReadOnly attribute from SchemaXml before migrating",
-                )
-
-            # Approval workflow fields
-            if name in APPROVAL_WORKFLOW_FIELDS:
-                self._flag(
-                    report,
-                    "blocker",
-                    "workflow",
-                    location,
-                    f"{name} is a system approval workflow field — cannot be migrated",
-                    "Enable EnableModeration=True on destination list to recreate natively",
-                )
-
-            # Schema attrs that must be stripped
-            dirty_attrs = [attr for attr in STRIP_FIELD_ATTRS if f'{attr}="' in schema]
-            if dirty_attrs:
-                self._flag(
-                    report,
-                    "warning",
-                    "field",
-                    location,
-                    f"Schema contains internal attrs that must be stripped: {dirty_attrs}",
-                    f"Strip before migrating: {STRIP_FIELD_ATTRS}",
-                )
-
-    def _assess_items(self, items: ListItemCollection, report: AssessmentReport) -> None:
-        """Check files and paths for blockers."""
-
+    @staticmethod
+    def _scan_items(scanners: dict, items, report: AssessmentReport) -> None:
+        """Accumulate the file inventory, then run the path/file scanners."""
         for item in items:
             report.total_files += 1
-            path = item.properties.get("FileRef", "")
-            name = item.properties.get("FileLeafRef", "")
-            size = item.file.length or 0
-            report.total_size_gb += size / 1024 / 1024 / 1024
-
-            # path length
-            if self._check_paths and len(path) > MAX_PATH_LENGTH:
-                self._flag(
-                    report,
-                    "blocker",
-                    "path",
-                    path,
-                    f"Path length {len(path)} exceeds SharePoint limit of {MAX_PATH_LENGTH}",
-                    "Shorten folder names or restructure hierarchy",
-                )
-
-            # name length
-            if self._check_paths and len(name) > MAX_NAME_LENGTH:
-                self._flag(
-                    report,
-                    "blocker",
-                    "path",
-                    path,
-                    f"File name length {len(name)} exceeds limit of {MAX_NAME_LENGTH}",
-                    "Rename file before migration",
-                )
-
-            # invalid characters
-            if self._check_paths:
-                bad = [c for c in name if c in INVALID_CHARS]
-                if bad:
-                    self._flag(
-                        report,
-                        "blocker",
-                        "path",
-                        path,
-                        f"File name contains invalid chars: {bad}",
-                        "Rename file — remove invalid characters",
-                    )
-
-            # large files
-            if self._check_files and size > LARGE_FILE_BYTES:
-                self._flag(
-                    report,
-                    "warning",
-                    "file",
-                    path,
-                    f"File size {size / 1024 / 1024 / 1024:.1f}GB exceeds SPMT 15GB limit",
-                    "Use chunked upload or split the file",
-                )
-
-    def _assess_permissions(self, lst: List, items: ListItemCollection, report: AssessmentReport) -> None:
-        """Check for broken permission inheritance (expensive)."""
-
-        unique_count = sum(1 for i in items if i.properties.get("HasUniqueRoleAssignments", False))
-        if unique_count > 0:
-            self._flag(
-                report,
-                "warning",
-                "permission",
-                f"lists/{lst.title}",
-                f"{unique_count} items have unique permissions",
-                "Set preserve_permissions=True in MigrationOptions (slower migration)",
-            )
+            report.total_size_gb += (item.file.length or 0) / 1024 / 1024 / 1024
+        scanners["paths"].run(items, report)
+        scanners["files"].run(items, report)

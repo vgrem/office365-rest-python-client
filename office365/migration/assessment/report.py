@@ -13,6 +13,7 @@ class AssessmentReport(ClientValue):
 
     # Inventory
     total_lists: int = 0
+    total_webs: int = 0
     total_files: int = 0
     total_size_gb: float = 0.0
 
@@ -33,15 +34,16 @@ class AssessmentReport(ClientValue):
 
     def summary(self) -> str:
         lines = [
-            f"Lists: {self.total_lists} | Files: {self.total_files} | Size: {self.total_size_gb:.2f}GB",
+            f"Webs: {self.total_webs} | Lists: {self.total_lists} | "
+            f"Files: {self.total_files} | Size: {self.total_size_gb:.2f}GB",
             f"Blockers: {len(self.blockers)} | Warnings: {len(self.warnings)}",
         ]
         if self.blockers:
             lines.append("\nBLOCKERS (must fix before migration):")
             for b in self.blockers:
-                lines.append(f"  ✗ [{b.category}] {b.location}: {b.message}")
+                lines.append(f"  - [{b.category}] {b.location}: {b.message}")
                 if b.suggestion:
-                    lines.append(f"    → {b.suggestion}")
+                    lines.append(f"    -> {b.suggestion}")
         return "\n".join(lines)
 
     def to_dataframe(self):
