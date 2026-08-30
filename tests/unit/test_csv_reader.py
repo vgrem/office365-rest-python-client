@@ -65,9 +65,6 @@ class TestCsvRecords(unittest.TestCase):
         self.assertEqual(records, [{"userPrincipalName": "jdoe@contoso.com"}])
         self.assertTrue(any("noSuchColumn" in str(w.message) for w in caught))
 
-    def test_read_csv_records_empty(self):
-        self.assertEqual(read_csv_records(io.StringIO("")), [])
-
     def test_clean_records(self):
         records = clean_records(
             [

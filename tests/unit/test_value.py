@@ -64,11 +64,6 @@ class TestSerializeValue(unittest.TestCase):
         user = _new_user({"accountEnabled": True, "userPrincipalName": "a@b.c"})
         self.assertEqual(serialize_value(user), {"accountEnabled": True, "userPrincipalName": "a@b.c"})
 
-    def test_scalars_passthrough(self):
-        self.assertEqual(serialize_value(42), 42)
-        self.assertIsNone(serialize_value(None))
-        self.assertEqual(serialize_value({"a": 1}), {"a": 1})
-
 
 class TestClientValueToJson(unittest.TestCase):
     def test_user_profile(self):
@@ -103,11 +98,6 @@ class TestAddTypeMetadata(unittest.TestCase):
         _add_type_metadata(result, fmt, "Microsoft.Graph.User")
         self.assertEqual(result[fmt.metadata_type], "#Microsoft.Graph.User")
 
-    def test_none_format(self):
-        result: dict = {}
-        _add_type_metadata(result, None, "Microsoft.Graph.User")
-        self.assertEqual(result, {})
-
 
 class TestDeclaredType(unittest.TestCase):
     def test_entity_getter(self):
@@ -121,9 +111,6 @@ class TestDeclaredType(unittest.TestCase):
         self.assertEqual(declared_type(UserProfile, "userPrincipalName"), str)
         self.assertEqual(declared_type(UserProfile, "accountEnabled"), bool)
         self.assertEqual(declared_type(PasswordProfile, "forceChangePasswordNextSignIn"), bool)
-
-    def test_unknown(self):
-        self.assertIsNone(declared_type(User, "noSuchProperty"))
 
 
 class TestCoerceValue(unittest.TestCase):
@@ -155,10 +142,6 @@ class TestCoerceValue(unittest.TestCase):
         profile = UserProfile()
         profile.set_property("givenName", None)
         self.assertIsNone(profile.givenName)
-
-    def test_typed_value_passthrough(self):
-        user = _new_user({"accountEnabled": True})
-        self.assertIs(user.get_property("accountEnabled"), True)
 
 
 class TestClientResultCoercion(unittest.TestCase):

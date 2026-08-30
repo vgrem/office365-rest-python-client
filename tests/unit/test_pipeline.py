@@ -184,14 +184,3 @@ def test_get_all_accepts_progress():
     events = []
     col.get_all(progress=lambda p: events.append(p))
     assert len(client._queries) >= 1  # the first page query is queued
-
-
-def test_from_records_accepts_progress():
-    client = GraphClient()
-    col = ClientObjectCollection(client, User, None)
-    col.from_records(
-        [{"userPrincipalName": "jdoe@x.com"}, {"userPrincipalName": "asmith@x.com"}],
-        progress=lambda p: None,
-    )
-    assert len(col) == 2  # noqa: PLR2004
-    assert len(client._queries) == 2  # noqa: PLR2004

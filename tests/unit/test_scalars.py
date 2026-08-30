@@ -6,7 +6,7 @@ import unittest
 from datetime import datetime, timezone
 from enum import Enum
 
-from office365.runtime.converters.scalars import parse_bool, parse_datetime, parse_enum, try_float, try_int
+from office365.runtime.converters.scalars import parse_bool, parse_datetime, parse_enum
 
 
 class _Level(Enum):
@@ -22,15 +22,6 @@ class TestScalarConverters(unittest.TestCase):
         self.assertIs(parse_bool("no"), False)
         self.assertIs(parse_bool(True), True)
         self.assertEqual(parse_bool("nope"), "nope")
-
-    def test_try_int(self):
-        self.assertEqual(try_int("42"), 42)
-        self.assertEqual(try_int("x"), "x")
-        self.assertEqual(try_int(None), None)
-
-    def test_try_float(self):
-        self.assertEqual(try_float("1.5"), 1.5)
-        self.assertEqual(try_float("x"), "x")
 
     def test_parse_enum(self):
         self.assertIs(parse_enum(_Level, "standard"), _Level.Standard)

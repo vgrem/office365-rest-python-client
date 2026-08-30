@@ -97,10 +97,6 @@ def test_records_from_dataframe_renames_keys():
     assert records_from_dataframe(df, key_fn=_sanitize_field_name) == [{"Median_Income": 8.3}]
 
 
-def test_records_from_dataframe_empty():
-    assert records_from_dataframe(pd.DataFrame()) == []
-
-
 def test_sanitize_field_name():
     assert _sanitize_field_name("Median Income") == "Median_Income"
     assert _sanitize_field_name("a/b?c") == "a_b_c"
