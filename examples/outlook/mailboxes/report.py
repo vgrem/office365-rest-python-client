@@ -18,7 +18,7 @@ users = client.users.select(["id", "displayName", "userPrincipalName"]).top(20).
 print(f"Mailbox audit for {len(users)} users:\n")
 for u in users:
     try:
-        settings = client.users[u.id].mailbox_settings.get().execute_query()
+        settings = u.mailbox_settings.get().execute_query()
         ar = settings.automatic_replies_status or "disabled"
         print(f"  {u.display_name:25s}  auto-replies: {ar}")
     except Exception:
