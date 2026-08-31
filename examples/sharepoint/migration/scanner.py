@@ -36,9 +36,11 @@ def progress_bar(description: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Assess a SharePoint site for migration readiness")
-    parser.add_argument("--site-url", default=team_site_url, help="site URL to assess")
+    parser.add_argument("--site-url", default=team_site_url, help="site URL to assess (scans subsites too)")
     parser.add_argument("--permissions", action="store_true", help="scan for unique permissions (slower)")
+    parser.add_argument("--no-recursive", action="store_true", help="scan only the root web, not subsites")
     parser.add_argument("--no-progress", action="store_true", help="do not show a tqdm progress bar")
+    parser.add_argument("--output", help="directory to export AssessmentReport.csv/.json into")
     args = parser.parse_args()
 
     ctx = ClientContext(args.site_url).with_username_and_password(
@@ -49,8 +51,14 @@ def main():
         assessor.include_permissions()
 
     hook = None if args.no_progress else progress_bar("Assessing")
-    report = assessor.assess(progress=hook).execute_query().value
+    report = assessor.assess(progress=hook, recursive=not args.no_recursive).execute_query().value
     print(report.summary())
+
+    if args.output:
+        from office365.migration.assessment.export import export_assessment
+
+        written = export_assessment(report, args.output)
+        print("Exported:", ", ".join(written))
 
     if report.blockers:
         print("\nBlockers (must fix before migrating):")

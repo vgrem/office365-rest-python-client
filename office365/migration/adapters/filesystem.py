@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List
 
@@ -26,6 +27,9 @@ class FileSystemSource:
     def root(self) -> Path:
         return self._root
 
+    def label(self) -> str:
+        return str(self._root)
+
     def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
         items: List[MigrationItem] = []
         for path in sorted(self._root.rglob("*")):
@@ -35,6 +39,7 @@ class FileSystemSource:
                 source_path=str(path),
                 dest_path=str(path.relative_to(self._root)).replace("\\", "/"),
                 size_bytes=path.stat().st_size,
+                modified=datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(timespec="seconds"),
             )
             items.append(item)
             if callable(progress):
@@ -63,6 +68,9 @@ class FileSystemTarget:
     def root(self) -> Path:
         return self._root
 
+    def label(self) -> str:
+        return str(self._root)
+
     def exists(self, item: MigrationItem) -> bool:
         return (self._root / item.dest_path).exists()
 
@@ -74,11 +82,54 @@ class FileSystemTarget:
     def list_paths(self) -> List[str]:
         return [str(p.relative_to(self._root)).replace("\\", "/") for p in self._root.rglob("*") if p.is_file()]
 
+    def modified(self, item: MigrationItem) -> str:
+        """Last-modified of the target file, for incremental migration."""
+        return datetime.fromtimestamp((self._root / item.dest_path).stat().st_mtime, timezone.utc).isoformat(
+            timespec="seconds"
+        )
+
     def checksum(self, item: MigrationItem) -> str:
         return _md5(self._root / item.dest_path)
 
     def commit(self) -> None:
         pass
+
+    def close(self) -> None:
+        pass
+
+
+class JsonFileSource:
+    """Reads record payloads (one JSON file per item) — the import counterpart
+    of :class:`JsonFileTarget`. Enables records round-trips through the filesystem.
+    """
+
+    def __init__(self, root: str | Path) -> None:
+        self._root = Path(root)
+
+    def label(self) -> str:
+        return str(self._root)
+
+    def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
+        items: List[MigrationItem] = []
+        for path in sorted(self._root.rglob("*.json")):
+            item = MigrationItem(
+                source_path=str(path),
+                dest_path=path.relative_to(self._root).with_suffix("").as_posix(),
+                item_type="record",
+            )
+            items.append(item)
+            if callable(progress):
+                from office365.runtime.operations import Progress
+
+                progress(Progress(done=len(items), stage="planning", items=[item]))
+        return items
+
+    def read(self, item: MigrationItem) -> object:
+        with open(item.source_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    def checksum(self, item: MigrationItem) -> str:
+        return _md5(Path(item.source_path))
 
     def close(self) -> None:
         pass

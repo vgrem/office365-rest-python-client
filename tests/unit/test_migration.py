@@ -4,7 +4,12 @@ checkpoint, resume, conflict resolution, and verification."""
 from __future__ import annotations
 
 from office365.migration import ConflictResolution, MigrationJob, MigrationOptions, MigrationPhase
-from office365.migration.adapters.filesystem import FileSystemSource, FileSystemTarget
+from office365.migration.adapters.filesystem import (
+    FileSystemSource,
+    FileSystemTarget,
+    JsonFileSource,
+    JsonFileTarget,
+)
 
 
 def _seed_tree(root) -> None:
@@ -154,3 +159,113 @@ def test_pause_then_resume(tmp_path):
     assert job.phase == MigrationPhase.COMPLETED
     assert job.stats.errors == 0
     assert len(list(dst.rglob("*.txt"))) == 20  # noqa: PLR2004
+
+
+def test_export_reports_csv_and_json(tmp_path):
+    import json as jsonlib
+
+    src, dst = tmp_path / "src", tmp_path / "dst"
+    _seed_tree(src)
+    job = MigrationJob(FileSystemSource(src), FileSystemTarget(dst))
+    job.plan()
+    job.run()
+
+    out = tmp_path / "reports"
+    job.export_reports(out)
+
+    assert (out / "SummaryReport.csv").exists()
+    assert (out / "ItemReport.csv").exists()
+    assert (out / "FailureReport.csv").exists() is False  # no failures
+    assert (out / "SummaryReport.json").exists()
+
+    summary = jsonlib.loads((out / "SummaryReport.json").read_text())
+    assert summary[0]["total_items"] == 3  # noqa: PLR2004
+    assert summary[0]["success"] == 3  # noqa: PLR2004
+    assert summary[0]["errors"] == 0
+    assert summary[0]["duration_secs"] >= 0
+    assert job.duration is not None
+
+    items = jsonlib.loads((out / "ItemReport.json").read_text())
+    assert len(items) == 3  # noqa: PLR2004
+    assert all(i["status"] == "done" for i in items)
+
+
+def test_export_reports_failure(tmp_path):
+    import json as jsonlib
+
+    src, dst = tmp_path / "src", tmp_path / "dst"
+    _seed_tree(src)
+    job = MigrationJob(_FlakySource(src, "docs/sub/b.txt"), FileSystemTarget(dst))
+    job.plan()
+    job.run()
+
+    out = tmp_path / "reports"
+    job.export_reports(out)
+
+    assert (out / "FailureReport.csv").exists()  # failures present
+    failures = jsonlib.loads((out / "FailureReport.json").read_text())
+    assert len(failures) == 1
+    assert failures[0]["destination_path"] == "docs/sub/b.txt"
+    assert "transient read error" in failures[0]["error"]
+
+
+def test_incremental_skips_up_to_date_target(tmp_path):
+    src, dst = tmp_path / "src", tmp_path / "dst"
+    _seed_tree(src)
+    job = MigrationJob(FileSystemSource(src), FileSystemTarget(dst))
+    job.plan()
+    job.run()
+    assert job.stats.success == 3  # noqa: PLR2004
+
+    # re-run incrementally: the target is at least as new as the source -> all skipped
+    job2 = MigrationJob(
+        FileSystemSource(src),
+        FileSystemTarget(dst),
+        options=MigrationOptions(incremental=True, conflict_resolution=ConflictResolution.OVERWRITE),
+    )
+    job2.plan()
+    stats2 = job2.run()
+    assert stats2.skipped == 3  # noqa: PLR2004
+    assert stats2.success == 0
+
+
+def test_incremental_migrates_changed_source(tmp_path):
+    import time
+
+    src, dst = tmp_path / "src", tmp_path / "dst"
+    _seed_tree(src)
+    job = MigrationJob(FileSystemSource(src), FileSystemTarget(dst))
+    job.plan()
+    job.run()
+
+    time.sleep(1.1)  # ensure the modified source file is strictly newer
+    (src / "img.png").write_bytes(b"newer content")
+
+    job2 = MigrationJob(
+        FileSystemSource(src),
+        FileSystemTarget(dst),
+        options=MigrationOptions(incremental=True, conflict_resolution=ConflictResolution.OVERWRITE),
+    )
+    job2.plan()
+    stats2 = job2.run()
+    assert stats2.success == 1
+    assert stats2.skipped == 2  # noqa: PLR2004
+
+
+def test_json_records_round_trip(tmp_path):
+    import json as jsonlib
+
+    src = tmp_path / "json_src"
+    src.mkdir()
+    (src / "a.json").write_text(jsonlib.dumps({"name": "Alice"}, indent=2))
+    (src / "b.json").write_text(jsonlib.dumps({"name": "Bob"}, indent=2))
+
+    out = tmp_path / "json_dst"
+    job = MigrationJob(JsonFileSource(src), JsonFileTarget(out))
+    job.plan()
+    stats = job.run()
+
+    assert stats.success == 2  # noqa: PLR2004
+    assert (out / "a.json").exists()
+    assert jsonlib.loads((out / "a.json").read_text()) == {"name": "Alice"}
+    assert job.verify().ok

@@ -31,7 +31,9 @@ from office365.migration.base import (
 from office365.migration.checkpoint import Checkpoint
 from office365.migration.job import MigrationJob
 from office365.migration.manifest import Manifest
+from office365.migration.report import MigrationReport, build_report, export_reports
 from office365.migration.runner import MigrationRunner
+from office365.migration.server_job import MigrationServerJob
 from office365.migration.validators import VerificationReport, verify
 
 __all__ = [
@@ -47,8 +49,12 @@ __all__ = [
     "MigrationMode",
     "MigrationOptions",
     "MigrationPhase",
+    "MigrationReport",
     "MigrationRunner",
+    "MigrationServerJob",
     "MigrationStats",
     "VerificationReport",
+    "build_report",
+    "export_reports",
     "verify",
 ]

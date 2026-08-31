@@ -67,6 +67,7 @@ class MigrationItem:
     item_type: str = "file"
     status: ItemStatus = ItemStatus.PENDING
     error: str | None = None
+    modified: str | None = None  # source last-modified (ISO-8601), for incremental
 
 
 @dataclass
@@ -89,6 +90,7 @@ class MigrationStats:
 @dataclass
 class MigrationOptions:
     conflict_resolution: ConflictResolution = ConflictResolution.SKIP
+    incremental: bool = False  # skip items whose target is at least as new as the source
     preserve_timestamps: bool = True
     preserve_permissions: bool = False
     preserve_versions: bool = False
@@ -106,6 +108,7 @@ def item_to_dict(item: MigrationItem) -> dict:
         "item_type": item.item_type,
         "status": item.status.value,
         "error": str(item.error) if item.error else None,
+        "modified": item.modified,
     }
 
 
@@ -118,4 +121,5 @@ def item_from_dict(data: dict) -> MigrationItem:
         item_type=data.get("item_type", "file"),
         status=ItemStatus(data.get("status", ItemStatus.PENDING.value)),
         error=data.get("error"),
+        modified=data.get("modified"),
     )

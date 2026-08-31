@@ -94,7 +94,9 @@ class MigrationRunner:
 
     @staticmethod
     def _migrate(source, target: DataTarget, item: MigrationItem, options: MigrationOptions) -> bool:
-        """Move one item; returns ``False`` when skipped by conflict resolution."""
+        """Move one item; returns ``False`` when skipped (conflict/incremental)."""
+        if options.incremental and _target_up_to_date(source, target, item):
+            return False
         if options.conflict_resolution == ConflictResolution.SKIP and target.exists(item):
             return False
         dest = resolve_dest(item, target, options.conflict_resolution)
@@ -102,6 +104,17 @@ class MigrationRunner:
         payload = source.read(item)
         target.write(item, payload)
         return True
+
+
+def _target_up_to_date(source, target: DataTarget, item: MigrationItem) -> bool:
+    """SPMT-style incremental check: skip when the target is at least as new as the source."""
+    if item.modified is None:
+        return False
+    target_modified = getattr(target, "modified", None)
+    if not callable(target_modified) or not target.exists(item):
+        return False
+    target_value = target_modified(item)
+    return target_value is not None and str(target_value) >= item.modified
 
 
 def _call_optional(adapter, method: str) -> None:

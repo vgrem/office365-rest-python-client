@@ -157,3 +157,55 @@ class TestFieldScannerNoise(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRecursiveAssessment(unittest.TestCase):
+    def test_site_collection_scan_aggregates(self):
+        def _web(url: str) -> dict:
+            return {"__metadata": {"type": "SP.Web"}, "Url": url}
+
+        transport = _ScriptedTransport(
+            [
+                {"d": {"results": [_list("1", "RootList")]}},  # root.lists
+                {"d": {"Webs": {"results": [_web("https://x/sites/sub1")]}}},  # get_all_webs
+                {"d": {"results": []}},  # RootList.fields
+                {"d": {"results": [_file_item()]}},  # RootList.items
+                {"d": {"Webs": {"results": []}}},  # sub1.webs (recursion, empty)
+                {"d": {"results": [_list("2", "SubList")]}},  # sub1.lists
+                {
+                    "d": {
+                        "results": [
+                            {
+                                "__metadata": {"type": "SP.Field"},
+                                "InternalName": "MyField",
+                                "SchemaXml": '<Field ReadOnly="TRUE" SourceID="x"/>',
+                            }
+                        ]
+                    }
+                },  # SubList.fields
+                {"d": {"results": [_file_item()]}},  # SubList.items
+            ]
+        )
+        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        ctx.pending_request().beforeExecute.clear()
+        ctx.pending_request().transport = transport
+
+        report = MigrationAssessor(ctx.web).assess().execute_query().value
+
+        self.assertEqual(report.total_webs, 1)
+        self.assertEqual(report.total_lists, 2)  # noqa: PLR2004
+        self.assertEqual(report.total_files, 2)  # noqa: PLR2004
+        locations = [i.location for i in report.issues]
+        self.assertTrue(any(loc.startswith("https://x/sites/sub1/lists/") for loc in locations))
+
+
+def test_report_to_records():
+    from office365.migration.assessment.issue import AssessmentIssue
+    from office365.migration.assessment.report import AssessmentReport
+
+    report = AssessmentReport()
+    report.issues.append(AssessmentIssue("blocker", "path", "/a.txt", "too long", "shorten"))
+    records = report.to_records()
+    assert records == [
+        {"severity": "blocker", "category": "path", "location": "/a.txt", "message": "too long", "suggestion": "shorten"}
+    ]

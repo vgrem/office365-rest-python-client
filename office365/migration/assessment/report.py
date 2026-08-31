@@ -49,3 +49,20 @@ class AssessmentReport(ClientValue):
             f"Size: {self.total_size_gb:.2f}GB | Blockers: {len(self.blockers)} | "
             f"Warnings: {len(self.warnings)} | {status}"
         )
+
+    def to_records(self) -> list[dict]:
+        """Project the issues into plain records — the pipeline's neutral form.
+
+        Useful for exporting the assessment (CSV/JSON) without coupling the
+        report model to a specific format.
+        """
+        return [
+            {
+                "severity": issue.severity,
+                "category": issue.category,
+                "location": issue.location,
+                "message": issue.message,
+                "suggestion": issue.suggestion,
+            }
+            for issue in self.issues
+        ]

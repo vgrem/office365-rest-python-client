@@ -8,6 +8,7 @@ from a persisted checkpoint. The job is platform-agnostic — it works against a
 from __future__ import annotations
 
 import threading
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Optional
 
@@ -45,6 +46,8 @@ class MigrationJob:
         self._stop_event = threading.Event()
         self._cancel_requested = False
         self._assess_hook: Any = None
+        self._started_at: Optional[datetime] = None
+        self._finished_at: Optional[datetime] = None
 
     # ── Configuration ────────────────────────────────────────────
 
@@ -74,6 +77,32 @@ class MigrationJob:
     def checkpoint(self) -> Checkpoint:
         return self._checkpoint
 
+    @property
+    def source_label(self) -> str:
+        """A human-readable label for the source (adapter type / root)."""
+        label = getattr(self._source, "label", None)
+        return str(label()) if callable(label) else type(self._source).__name__
+
+    @property
+    def target_label(self) -> str:
+        label = getattr(self._target, "label", None)
+        return str(label()) if callable(label) else type(self._target).__name__
+
+    @property
+    def started_at(self) -> Optional[datetime]:
+        return self._started_at
+
+    @property
+    def finished_at(self) -> Optional[datetime]:
+        return self._finished_at
+
+    @property
+    def duration(self) -> Optional[float]:
+        """Wall-clock duration of the last run, in seconds."""
+        if self._started_at is None or self._finished_at is None:
+            return None
+        return (self._finished_at - self._started_at).total_seconds()
+
     # ── Lifecycle ────────────────────────────────────────────────
 
     def assess(self, progress: Optional[Callable[["Progress"], None]] = None) -> object | None:
@@ -102,6 +131,7 @@ class MigrationJob:
     def run(self, progress: Optional[Callable[["Progress"], None]] = None) -> MigrationStats:
         """Execute the migration (resumable; re-drives pending/failed items)."""
         self._checkpoint.phase = MigrationPhase.RUNNING
+        self._started_at = datetime.now(timezone.utc)
         self._stats = self._runner.run(
             self._source,
             self._target,
@@ -112,6 +142,7 @@ class MigrationJob:
             progress,
             stop_event=self._stop_event.is_set,
         )
+        self._finished_at = datetime.now(timezone.utc)
         if self._checkpoint.phase == MigrationPhase.PAUSED and self._cancel_requested:
             self._checkpoint.phase = MigrationPhase.CANCELLED
             self._save_state()
@@ -144,6 +175,22 @@ class MigrationJob:
         report = _verify(self._source, self._target, self._manifest, spot_checks)
         self._checkpoint.phase = MigrationPhase.COMPLETED if report.ok else MigrationPhase.COMPLETED_WITH_ERRORS
         return report
+
+    def export_reports(self, output_dir: str | Path):
+        """Write Summary/Item/Failure reports (CSV + JSON) for the last run.
+
+        Reuses the migration state (stats, manifest, checkpoint) through the
+        records form — see :mod:`office365.migration.report`.
+
+        Args:
+            output_dir: Directory to write the report files into.
+
+        Returns:
+            List of written file paths.
+        """
+        from office365.migration.report import export_reports as _export_reports
+
+        return _export_reports(self, output_dir)
 
     # ── Helpers ──────────────────────────────────────────────────
 
