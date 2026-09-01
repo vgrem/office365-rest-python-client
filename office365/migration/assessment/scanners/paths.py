@@ -11,7 +11,7 @@ class PathScanner(BaseScanner):
 
     category = "path"
 
-    def run(self, items, report: AssessmentReport) -> None:
+    def on_items(self, items, report: AssessmentReport, location: str = "") -> None:
         for item in items:
             path = item.properties.get("FileRef", "")
             name = item.properties.get("FileLeafRef", "")

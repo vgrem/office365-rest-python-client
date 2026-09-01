@@ -16,7 +16,10 @@ Quick start (filesystem -> filesystem):
     print(job.verify().summary())
 """
 
-from office365.migration.assessment.report import AssessmentReport
+from office365.migration.assessment.registry import SCANS, ScanDefinition, enabled_scans, get_scan
+from office365.migration.assessment.report import AssessmentReport, ScanReport
+from office365.migration.assessment.scan_category import ScanCategory
+from office365.migration.assessment.scanners import AssessmentOptions, LargeSitesScanner
 from office365.migration.assessor import MigrationAssessor
 from office365.migration.base import (
     ConflictResolution,
@@ -37,11 +40,13 @@ from office365.migration.server_job import MigrationServerJob
 from office365.migration.validators import VerificationReport, verify
 
 __all__ = [
+    "AssessmentOptions",
     "AssessmentReport",
     "Checkpoint",
     "ConflictResolution",
     "ExportFormat",
     "ItemStatus",
+    "LargeSitesScanner",
     "Manifest",
     "MigrationAssessor",
     "MigrationItem",
@@ -53,8 +58,14 @@ __all__ = [
     "MigrationRunner",
     "MigrationServerJob",
     "MigrationStats",
+    "SCANS",
+    "ScanCategory",
+    "ScanDefinition",
+    "ScanReport",
     "VerificationReport",
     "build_report",
+    "enabled_scans",
     "export_reports",
+    "get_scan",
     "verify",
 ]

@@ -1,8 +1,10 @@
-"""Pre-migration scanners, one per concern: sites, fields, paths, files, permissions."""
+"""Pre-migration scanners: issue scanners (fields, paths, files, permissions,
+sites) plus SMAT-style scan reports (LargeSites)."""
 
 from office365.migration.assessment.scanners.base import AssessmentOptions, BaseScanner
 from office365.migration.assessment.scanners.fields import FieldScanner
 from office365.migration.assessment.scanners.files import FileScanner
+from office365.migration.assessment.scanners.large_sites import LargeSitesScanner
 from office365.migration.assessment.scanners.paths import PathScanner
 from office365.migration.assessment.scanners.permissions import PermissionScanner
 from office365.migration.assessment.scanners.sites import WebScanner
@@ -12,6 +14,7 @@ __all__ = [
     "BaseScanner",
     "FieldScanner",
     "FileScanner",
+    "LargeSitesScanner",
     "PathScanner",
     "PermissionScanner",
     "WebScanner",

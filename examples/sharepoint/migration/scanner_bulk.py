@@ -3,7 +3,8 @@ Assess multiple sites in bulk — SPMT-style bulk scan.
 
 Reads a file with one site URL per line, runs the recursive assessment for each
 site, and aggregates the results into a combined report. Useful for tenant-level
-readiness reviews before a migration program.
+readiness reviews before a migration program. Per-scan detail records (e.g. the
+LargeSites list) are merged so the combined report holds one row per site.
 
 Requires: read access to each site.
 """
@@ -11,7 +12,7 @@ Requires: read access to each site.
 import argparse
 
 from office365.migration import MigrationAssessor
-from office365.migration.assessment.report import AssessmentReport
+from office365.migration.assessment.report import AssessmentReport, ScanReport
 from office365.runtime.operations import Progress
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, tenant, username
@@ -53,9 +54,23 @@ def main():
         combined.lists_skipped = combined.lists_skipped or report.lists_skipped
         combined.webs_skipped = combined.webs_skipped or report.webs_skipped
         combined.issues.extend(report.issues)
+        _merge_scan_reports(combined, report)
 
     print(f"\nCombined ({len(urls)} sites):")
     print(combined.summary())
+
+
+def _merge_scan_reports(combined: AssessmentReport, report: AssessmentReport) -> None:
+    """Concatenate per-scan detail records across sites (one row per site)."""
+    for name, scan in report.scan_reports.items():
+        if name in combined.scan_reports:
+            combined.scan_reports[name].records.extend(scan.records)
+        else:
+            combined.scan_reports[name] = ScanReport(name, scan.category, scan.columns, list(scan.records))
+
+
+if __name__ == "__main__":
+    main()
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class FileScanner(BaseScanner):
 
     category = "file"
 
-    def run(self, items, report: AssessmentReport) -> None:
+    def on_items(self, items, report: AssessmentReport, location: str = "") -> None:
         for item in items:
             path = item.properties.get("FileRef", "")
             size = (item.file.length if getattr(item, "file", None) is not None else None) or 0

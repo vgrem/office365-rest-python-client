@@ -11,7 +11,7 @@ class FieldScanner(BaseScanner):
 
     category = "field"
 
-    def run(self, fields, report: AssessmentReport, location: str) -> None:
+    def on_fields(self, fields, report: AssessmentReport, location: str) -> None:
         for field in fields:
             name = field.properties.get("InternalName", "")
             schema = field.properties.get("SchemaXml", "")

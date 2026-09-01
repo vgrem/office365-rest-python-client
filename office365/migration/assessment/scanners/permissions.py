@@ -11,7 +11,7 @@ class PermissionScanner(BaseScanner):
 
     category = "permission"
 
-    def run(self, items, report: AssessmentReport, location: str) -> None:
+    def on_items(self, items, report: AssessmentReport, location: str) -> None:
         unique = sum(1 for i in items if i.properties.get("HasUniqueRoleAssignments", False))
         if unique > 0:
             self.flag(

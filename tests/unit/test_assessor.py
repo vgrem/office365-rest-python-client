@@ -23,6 +23,16 @@ def _list(list_id: str, title: str) -> dict:
     return {"__metadata": {"type": "SP.List"}, "Id": list_id, "Title": title, "Hidden": False}
 
 
+def _site() -> dict:
+    return {
+        "__metadata": {"type": "SP.Site"},
+        "Id": "00000000-0000-0000-0000-000000000001",
+        "Url": "https://contoso.sharepoint.com/sites/x",
+        "UsageInfo": {},
+        "Owner": {"__metadata": {"type": "SP.User"}, "Title": "Site Owner", "Email": "owner@contoso.com"},
+    }
+
+
 def _file_item() -> dict:
     return {
         "__metadata": {"type": "SP.ListItem"},
@@ -63,6 +73,7 @@ class TestAssessorResilience(unittest.TestCase):
     def test_inaccessible_list_is_skipped_not_fatal(self):
         transport = _ScriptedTransport(
             [
+                _site(),  # site collection metadata (LargeSites scan)
                 {"d": {"results": [_list("1", "Restricted"), _list("2", "Public")]}},  # web.lists
                 {"d": {"results": []}},  # web.webs
                 {"d": {"results": []}},  # Restricted.fields
@@ -84,6 +95,7 @@ class TestAssessorResilience(unittest.TestCase):
     def test_progress_fires_per_list(self):
         transport = _ScriptedTransport(
             [
+                _site(),  # site collection metadata (LargeSites scan)
                 {"d": {"results": [_list("1", "A"), _list("2", "B")]}},  # web.lists
                 {"d": {"results": []}},  # web.webs
                 {"d": {"results": []}},  # A.fields
@@ -104,6 +116,7 @@ class TestAssessorResilience(unittest.TestCase):
     def test_unreachable_site_reports_warning(self):
         transport = _ScriptedTransport(
             [
+                _site(),  # site collection metadata (LargeSites scan)
                 ("deny",),  # web.lists -> 403
                 {"d": {"results": []}},  # web.webs
             ]
@@ -126,7 +139,7 @@ class TestFieldScannerNoise(unittest.TestCase):
         from office365.migration.assessment.scanners import FieldScanner
 
         report = AssessmentReport()
-        FieldScanner().run(
+        FieldScanner().on_fields(
             [SimpleNamespace(properties=f) for f in fields],
             report,
             location="lists/L",
@@ -166,6 +179,7 @@ class TestRecursiveAssessment(unittest.TestCase):
 
         transport = _ScriptedTransport(
             [
+                _site(),  # site collection metadata (LargeSites scan)
                 {"d": {"results": [_list("1", "RootList")]}},  # root.lists
                 {"d": {"Webs": {"results": [_web("https://x/sites/sub1")]}}},  # get_all_webs
                 {"d": {"results": []}},  # RootList.fields
