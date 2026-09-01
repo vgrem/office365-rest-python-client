@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from time import sleep
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from requests import Response
@@ -64,7 +63,9 @@ class ODataV4BatchRequest(ODataRequest):
         Per the Microsoft Graph batching guidance, a throttled sub-request
         (HTTP 429/503) is retried on its own after the longest ``Retry-After``
         (or exponential backoff) — already-succeeded sub-requests are not
-        re-applied, so a partial batch failure doesn't duplicate writes.
+        re-applied, so a partial batch failure doesn't duplicate writes. Routes
+        the retry loop through the shared
+        :func:`~office365.runtime.retry.retry` primitive.
 
         Args:
             query: The batch query to execute
@@ -72,30 +73,35 @@ class ODataV4BatchRequest(ODataRequest):
             base_delay: Base delay for exponential backoff (seconds)
             jitter: Whether to randomize the delay (default True)
         """
-        from office365.runtime.retry import TRANSIENT_STATUS_CODES, backoff_delay, response_retry_after
+        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry
 
-        pending = query
-        last_error: ClientRequestException | None = None
-        for attempt in range(1, max_retry + 1):
-            response = self.execute_request_direct(self.build_request(pending))
+        state: dict = {"pending": query, "retry_after": None}
+
+        def _attempt() -> None:
+            response = self.execute_request_direct(self.build_request(state["pending"]))
             failures: list[tuple[ClientQuery, Response]] = []
             retry_after: Optional[int] = None
-            for sub_qry, sub_resp in self._extract_response(response, pending):
+            for sub_qry, sub_resp in self._extract_response(response, state["pending"]):
                 if sub_resp.status_code in TRANSIENT_STATUS_CODES:
                     failures.append((sub_qry, sub_resp))
                     retry_after = max(retry_after or 0, response_retry_after(sub_resp) or 0)
                 else:
                     self._raise_for_status(sub_resp)
-                    super().process_response(sub_resp, sub_qry)
+                    super(ODataV4BatchRequest, self).process_response(sub_resp, sub_qry)
             if not failures:
                 self.afterExecute(response)
                 return
-            last_error = ClientRequestException.from_response(failures[0][1])
-            delay = retry_after if retry_after else backoff_delay(attempt, base_delay, None, jitter)
-            sleep(delay)
-            pending = BatchQuery(query.context, [qry for qry, _ in failures])
-        assert last_error is not None
-        raise last_error
+            state["retry_after"] = retry_after or None
+            state["pending"] = BatchQuery(query.context, [qry for qry, _ in failures])
+            raise ClientRequestException.from_response(failures[0][1])
+
+        retry(
+            _attempt,
+            max_retry=max_retry,
+            timeout_secs=base_delay,
+            jitter=jitter,
+            on_failure=lambda _attempt_num, _ex: state["retry_after"],
+        )
 
     @staticmethod
     def _extract_response(response: Response, query: BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]:

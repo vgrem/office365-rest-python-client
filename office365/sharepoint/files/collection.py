@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import os
+import tempfile
 import uuid
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
@@ -20,6 +22,8 @@ from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
+
+_DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024  # simple-upload threshold / upload-session chunk
 
 
 class FileCollection(EntityCollection[File]):
@@ -59,6 +63,25 @@ class FileCollection(EntityCollection[File]):
             name = file_name or os.path.basename(path_or_file.name)
             content = path_or_file.read()
             return self.add(name, content, True)
+
+    def upload_content(self, content: bytes, file_name: str, chunk_size: int = _DEFAULT_CHUNK_SIZE) -> File:
+        """Uploads in-memory content, dispatching by size.
+
+        Files at or below ``chunk_size`` use the simple :meth:`upload`; larger
+        ones use a resumable :meth:`create_upload_session` (staged to a temp
+        file). The returned :class:`File` is deferred — the caller executes it.
+
+        Args:
+            content (bytes): File content to upload.
+            file_name (str): New file name.
+            chunk_size (int): Upload-session chunk size / size threshold (bytes).
+        """
+        if len(content) <= chunk_size:
+            return self.upload(io.BytesIO(content), file_name)
+        with tempfile.NamedTemporaryFile(suffix=file_name) as tmp:
+            tmp.write(content)
+            tmp.flush()
+            return self.create_upload_session(tmp.name, chunk_size=chunk_size, file_name=file_name)
 
     def upload_with_checksum(self, file_object: IO, chunk_size: int = 1024) -> File:
         """ """

@@ -56,7 +56,7 @@ class TestBatchSubRequestRetry(unittest.TestCase):
         req = ODataV4BatchRequest("", V4JsonFormat())
         req.transport = transport
 
-        with mock.patch("office365.runtime.odata.v4.batch_request.sleep"):
+        with mock.patch("office365.runtime.retry.sleep"):
             req.execute_query_with_retry(_make_batch(client, 2), max_retry=3, base_delay=1, jitter=False)
 
         # two batch round-trips: the full batch, then only the failed sub-request
@@ -91,7 +91,7 @@ class TestBatchSubRequestRetry(unittest.TestCase):
         req = ODataV4BatchRequest("", V4JsonFormat())
         req.transport = transport
 
-        with mock.patch("office365.runtime.odata.v4.batch_request.sleep"):
+        with mock.patch("office365.runtime.retry.sleep"):
             with self.assertRaises(ClientRequestException):
                 req.execute_query_with_retry(_make_batch(client, 1), max_retry=2, base_delay=1, jitter=False)
 
@@ -103,7 +103,7 @@ class TestBatchSubRequestRetry(unittest.TestCase):
         req = ODataV4BatchRequest("", V4JsonFormat())
         req.transport = transport
 
-        with mock.patch("office365.runtime.odata.v4.batch_request.sleep") as sleep_mock:
+        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
             req.execute_query_with_retry(_make_batch(client, 2), max_retry=3, jitter=False)
 
         sleep_mock.assert_called_once_with(7)

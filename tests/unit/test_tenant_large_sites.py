@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-import json as jsonlib
 import unittest
 
 from office365.migration import MigrationTenantAssessor
 from office365.migration.assessment.scanners import AssessmentOptions
-from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
-from requests import Response
+from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 
 _GB = 1024
 
@@ -26,22 +24,6 @@ def _site_props(site_id: str, url: str, storage_mb: int, webs_count: int = 3, ow
         "LastContentModifiedDate": "2024-01-02T03:04:05Z",
         "LockState": "Unlock",
     }
-
-
-class _ScriptedTransport(BaseTransport):
-    def __init__(self, payloads: list) -> None:
-        self._payloads = payloads
-        self.calls = 0
-
-    def execute(self, request):
-        payload = self._payloads[self.calls]
-        self.calls += 1
-        resp = Response()
-        resp.url = request.url
-        resp.status_code = 200
-        resp.headers.update({"Content-Type": "application/json;odata=verbose"})
-        resp._content = jsonlib.dumps(payload).encode("utf-8")
-        return resp
 
 
 def _assess(payload: dict, options: AssessmentOptions | None = None):
@@ -114,27 +96,9 @@ class TestTenantLargeSites(unittest.TestCase):
         self.assertEqual(report.scan_reports, {})
 
     def test_tenant_access_denied_is_warning_not_fatal(self):
-        _denied = {
-            "error": {
-                "code": "-2147024891, System.UnauthorizedAccessException",
-                "message": {"value": "Access is denied."},
-            }
-        }
-
         ctx = ClientContext("https://contoso-admin.sharepoint.com")
         ctx.pending_request().beforeExecute.clear()
-
-        class _Deny(_ScriptedTransport):
-            def execute(self, request):
-                self.calls += 1
-                resp = Response()
-                resp.url = request.url
-                resp.status_code = 403
-                resp.headers.update({"Content-Type": "application/json"})
-                resp._content = jsonlib.dumps(_denied).encode("utf-8")
-                return resp
-
-        ctx.pending_request().transport = _Deny([])
+        ctx.pending_request().transport = _ScriptedTransport([("deny",)])
         report = MigrationTenantAssessor(Tenant(ctx)).assess().execute_query().value
         access = [i for i in report.issues if i.category == "access"]
         self.assertEqual(len(access), 1)

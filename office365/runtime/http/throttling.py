@@ -15,6 +15,8 @@ Two ways to use it:
 
 from __future__ import annotations
 
+import threading
+import time
 from contextlib import contextmanager
 from dataclasses import astuple, dataclass
 from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional
@@ -127,3 +129,77 @@ def _to_int(value: Any) -> Optional[int]:
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+class RateLimiter:
+    """Thread-safe gate shared across workers so parallel requests pace as a group.
+
+    Unlike :func:`throttle_guard` (reactive, per-context) and the per-request
+    backoff in ``retry.py``, this limiter coordinates a *fleet* of clones/workers:
+    before any request is sent it blocks until the group gate is open, and when
+    any worker observes throttling it pauses the whole group.
+
+    Opt-in — attach it to a context (or a clone) with :meth:`bind`; the existing
+    per-request retry remains as the safety net.
+    """
+
+    _SLEEP_GRANULARITY = 0.05
+
+    def __init__(self, health_threshold: int = 80, min_interval: float = 0.0) -> None:
+        self._lock = threading.RLock()
+        self._next_available_at = 0.0
+        self._health_threshold = health_threshold
+        self._min_interval = min_interval
+
+    def acquire(self) -> None:
+        """Block the calling thread until the group gate opens.
+
+        Called before a request is sent; safe to invoke from many threads.
+        """
+        while True:
+            with self._lock:
+                wait = self._next_available_at - time.monotonic()
+            if wait <= 0:
+                return
+            time.sleep(min(wait, self._SLEEP_GRANULARITY))
+
+    def observe(self, response: Optional[Response]) -> None:
+        """Record throttling signals and pause the group when the server asks.
+
+        A throttled response (``Retry-After``) gates the fleet for that long;
+        a high ``X-SharePointHealthScore`` applies a short, scaled pace so the
+        group eases off as the farm heats up.
+        """
+        if response is None:
+            return
+        limits = parse_throttling(response)
+        if limits is None:
+            return
+        now = time.monotonic()
+        with self._lock:
+            if limits.retry_after is not None and limits.retry_after > 0:
+                self._next_available_at = max(self._next_available_at, now + limits.retry_after)
+            if limits.health_score is not None and limits.health_score >= self._health_threshold:
+                pace = (limits.health_score - self._health_threshold) / 20.0
+                self._next_available_at = max(self._next_available_at, now + max(pace, self._min_interval))
+
+    def bind(self, context: "ClientRuntimeContext") -> "RateLimiter":
+        """Attach this limiter to a context (or ``clone``) — every request paces as a group.
+
+        Health signals are read on successful responses (``afterExecute``);
+        throttled responses (429/503) raise before ``afterExecute``, so their
+        ``Retry-After`` is read via ``onError`` instead.
+
+        Args:
+            context: The client context to monitor and gate.
+        """
+        request = context.pending_request()
+        request.beforeExecute += lambda _: self.acquire()
+        request.afterExecute += lambda response: self.observe(response)
+        request.onError += lambda ex: self.observe(getattr(ex, "response", None))
+        return self
+
+    def reset(self) -> None:
+        """Clear the current gate (used by tests / recovery)."""
+        with self._lock:
+            self._next_available_at = 0.0

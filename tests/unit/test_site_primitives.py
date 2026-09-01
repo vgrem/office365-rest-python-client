@@ -7,28 +7,10 @@ sentinels on ``LastItem*Date`` (no more naive ``datetime.min``).
 
 from __future__ import annotations
 
-import json as jsonlib
 import unittest
 
-from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
-from requests import Response
-
-
-class _ScriptedTransport(BaseTransport):
-    def __init__(self, payloads: list) -> None:
-        self._payloads = payloads
-        self.calls = 0
-
-    def execute(self, request):
-        payload = self._payloads[self.calls]
-        self.calls += 1
-        resp = Response()
-        resp.url = request.url
-        resp.status_code = 200
-        resp.headers.update({"Content-Type": "application/json;odata=verbose"})
-        resp._content = jsonlib.dumps(payload).encode("utf-8")
-        return resp
+from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 
 
 def _ctx(payloads: list) -> ClientContext:
@@ -80,6 +62,88 @@ class TestSitePrimitives(unittest.TestCase):
         ctx = _ctx([{"d": {"__metadata": {"type": "SP.Web"}, "Url": "https://x"}}])
         web = ctx.web.get().execute_query()
         self.assertIsNone(web.last_item_modified_date)
+
+    def test_ensure_folder_delegates_to_ensure_by_path(self):
+        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        folder = ctx.web.root_folder
+        calls = []
+
+        class _FakeFolders:
+            def ensure_by_path(self, path):
+                calls.append(path)
+                return "resolved-folder"
+
+        folder._properties["Folders"] = _FakeFolders()
+        self.assertEqual(folder.ensure_folder("a/b/c"), "resolved-folder")
+        self.assertEqual(calls, ["a/b/c"])
+
+    def test_ensure_folders_dedups_and_sorts(self):
+        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        folder = ctx.web.root_folder
+        calls = []
+
+        class _FakeFolders:
+            def ensure_by_path(self, path):
+                calls.append(path)
+                return "folder"
+
+        folder._properties["Folders"] = _FakeFolders()
+        result = folder.ensure_folders(["a/b", "a/b", "a/c", "docs"])
+        self.assertEqual(result, folder)
+        self.assertEqual(calls, ["a/b", "a/c", "docs"])  # deduped, sorted
+
+    def test_ensure_folders_skips_ancestor_paths(self):
+        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        folder = ctx.web.root_folder
+        calls = []
+
+        class _FakeFolders:
+            def ensure_by_path(self, path):
+                calls.append(path)
+                return "folder"
+
+        folder._properties["Folders"] = _FakeFolders()
+        # "a/b" is covered by the nested "a/b/c" — only the deepest is ensured
+        folder.ensure_folders(["a/b", "a/b/c", "a/b/d"])
+        self.assertEqual(calls, ["a/b/c", "a/b/d"])
+
+    def test_upload_content_dispatches_by_size(self):
+        ctx = _ctx([{"d": {"results": []}}])
+        files = ctx.web.root_folder.files
+        files.upload_content(b"x" * 10, "small.bin")
+        files.upload_content(b"x" * (4 * 1024 * 1024 + 1), "large.bin")
+        self.assertTrue(ctx.has_pending_request)  # both dispatch paths built queries
+
+    def test_folder_upload_file_ensures_parent_and_uploads(self):
+        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        folder = ctx.web.root_folder
+        calls = []
+
+        class _FakeFiles:
+            def upload_content(self, content, file_name, chunk_size=4 * 1024 * 1024):
+                calls.append(("upload_content", file_name))
+                return "file"
+
+        class _FakeFolder:
+            @property
+            def files(self):
+                return _FakeFiles()
+
+        class _FakeFolders:
+            def ensure_by_path(self, path):
+                calls.append(("ensure", path))
+                return _FakeFolder()
+
+        folder._properties["Files"] = _FakeFiles()
+        folder._properties["Folders"] = _FakeFolders()
+
+        result = folder.upload_file("a/b/c.txt", b"data")
+        self.assertEqual(result, "file")
+        self.assertEqual(calls, [("ensure", "a/b"), ("upload_content", "c.txt")])
+
+        calls.clear()
+        folder.upload_file("root.txt", b"data")
+        self.assertEqual(calls, [("upload_content", "root.txt")])  # no parent ensure at root
 
 
 if __name__ == "__main__":

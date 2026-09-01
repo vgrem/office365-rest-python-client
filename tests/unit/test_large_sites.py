@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import json as jsonlib
 import unittest
 
 from office365.migration import MigrationAssessor
 from office365.migration.assessment.scanners import AssessmentOptions
-from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
-from requests import Response
+from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 
 _GB = 1024**3
 
@@ -48,22 +46,6 @@ def _users(*logins: str) -> dict:
             ]
         }
     }
-
-
-class _ScriptedTransport(BaseTransport):
-    def __init__(self, payloads: list) -> None:
-        self._payloads = payloads
-        self.calls = 0
-
-    def execute(self, request):
-        payload = self._payloads[self.calls]
-        self.calls += 1
-        resp = Response()
-        resp.url = request.url
-        resp.status_code = 200
-        resp.headers.update({"Content-Type": "application/json;odata=verbose"})
-        resp._content = jsonlib.dumps(payload).encode("utf-8")
-        return resp
 
 
 class _Base(unittest.TestCase):

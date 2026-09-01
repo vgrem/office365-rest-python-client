@@ -2,21 +2,12 @@
 
 from __future__ import annotations
 
-import json as jsonlib
 import unittest
 
 from office365.migration import MigrationAssessor
 from office365.migration.assessment.report import AssessmentReport
-from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
-from requests import Response
-
-_DENIED = {
-    "error": {
-        "code": "-2147024891, System.UnauthorizedAccessException",
-        "message": {"value": "Access is denied."},
-    }
-}
+from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 
 
 def _list(list_id: str, title: str) -> dict:
@@ -40,27 +31,6 @@ def _file_item() -> dict:
         "FileLeafRef": "a.txt",
         "File": {"__metadata": {"type": "SP.File"}, "Length": 100},
     }
-
-
-class _ScriptedTransport(BaseTransport):
-    def __init__(self, payloads: list) -> None:
-        self._payloads = payloads
-        self.calls = 0
-
-    def execute(self, request):
-        payload = self._payloads[self.calls]
-        self.calls += 1
-        resp = Response()
-        resp.url = request.url
-        if isinstance(payload, tuple) and payload[0] == "deny":
-            resp.status_code = 403
-            resp.headers.update({"Content-Type": "application/json"})
-            resp._content = jsonlib.dumps(_DENIED).encode("utf-8")
-        else:
-            resp.status_code = 200
-            resp.headers.update({"Content-Type": "application/json;odata=verbose"})
-            resp._content = jsonlib.dumps(payload).encode("utf-8")
-        return resp
 
 
 class TestAssessorResilience(unittest.TestCase):

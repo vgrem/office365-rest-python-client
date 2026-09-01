@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import os
-from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional
+from pathlib import Path
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Iterable, Optional, Tuple, Union, cast
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import Progress, ProgressCallback
@@ -12,6 +13,14 @@ from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.folder import Folder
+
+_DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024  # simple-upload threshold / upload-session chunk
+
+UploadSource = Union[
+    str,
+    Path,
+    Iterable[Union[str, Path, Tuple[str, Union[str, Path, bytes]]]],
+]
 
 
 class MoveCopyUtil(Entity):
@@ -217,3 +226,109 @@ class MoveCopyUtil(Entity):
 
         _download_folder(remove_folder)
         return remove_folder
+
+    @staticmethod
+    def upload_folder(
+        target_folder: Folder,
+        source: UploadSource,
+        after_file_uploaded: Optional[Callable[[File], None]] = None,
+        recursive: bool = True,
+        progress: Optional[ProgressCallback] = None,
+        chunk_size: int = _DEFAULT_CHUNK_SIZE,
+    ) -> Folder:
+        """Upload a local directory / files into a folder tree — sequential, deferred.
+
+        The counterpart of :meth:`download_folder`: ``source`` may be
+
+        - a **directory** ``str``/``Path`` (walked recursively, files uploaded
+          at their relative path),
+        - a **file** ``str``/``Path`` (uploaded at its file name),
+        - an **iterable of file paths** (each uploaded at its file name), or
+        - an **iterable of ``(relative_path, content)``** pairs where content is
+          ``bytes`` (as-is), ``str`` (text, utf-8), or a ``Path`` (read lazily).
+
+        Uploads run sequentially via a deferred ``after_execute`` chain — content
+        is read lazily per file, and the caller's single ``execute_query()``
+        drives the whole chain (bounded memory).
+
+        Args:
+            target_folder (office365.sharepoint.folders.folder.Folder): Target folder.
+            source: Local directory / file / file list / (path, content) pairs.
+            after_file_uploaded ((office365.sharepoint.files.file.File)->None): Per-file callback.
+            recursive (bool): Traverse subdirectories when ``source`` is a directory.
+            progress: Optional hook invoked per uploaded file with a ``Progress`` snapshot.
+            chunk_size (int): Upload-session chunk size / size threshold (bytes).
+
+        Returns:
+            The target folder (chainable).
+        """
+        entries = MoveCopyUtil._collect_upload_entries(source, recursive)
+        state = {"index": 0, "done": 0}
+        total = len(entries)
+
+        def _upload_next() -> None:
+            if state["index"] >= total:
+                return
+            relative_path, provider = entries[state["index"]]
+            state["index"] += 1
+
+            def _after(file, rel=relative_path) -> None:
+                state["done"] += 1
+                if callable(after_file_uploaded):
+                    after_file_uploaded(file)
+                if callable(progress):
+                    progress(Progress(done=state["done"], total=total, stage="uploading"))
+                _upload_next()
+
+            target_folder.upload_file(relative_path, provider(), chunk_size).after_execute(_after)
+
+        if total:
+            _upload_next()
+        return target_folder
+
+    @staticmethod
+    def _collect_upload_entries(source: UploadSource, recursive: bool):
+        """Normalize ``source`` into ``[(relative_path, lazy_content_provider)]``."""
+        entries = []
+
+        def _path_provider(path: Path) -> Callable[[], bytes]:
+            return lambda: path.read_bytes()
+
+        if isinstance(source, (str, Path)):
+            path = Path(source)
+            if path.is_dir():
+                items = path.rglob("*") if recursive else path.iterdir()
+                for item in sorted(items):
+                    if item.is_file():
+                        entries.append((item.relative_to(path).as_posix(), _path_provider(item)))
+            elif path.is_file():
+                entries.append((path.name, _path_provider(path)))
+            return entries
+
+        items = list(source)
+        if not items:
+            return entries
+        first = items[0]
+        if isinstance(first, tuple):  # noqa: PLR2004 — (path, content) pairs
+            pairs = cast("list[Tuple[str, Union[str, Path, bytes]]]", items)
+            for relative_path, content in pairs:
+                entries.append((relative_path, _content_provider(content)))
+        else:
+            paths = cast("list[Union[str, Path]]", items)
+            for item in paths:
+                path = Path(item)
+                entries.append((path.name, _path_provider(path)))
+        return entries
+
+
+def _content_provider(content):
+    """Return a lazy bytes provider for ``(relative_path, content)`` values.
+
+    ``bytes`` is used as-is, ``Path`` is read from disk lazily, and ``str`` is
+    treated as text content (utf-8) — pass a ``Path`` when you mean a local file.
+    """
+    if isinstance(content, bytes):
+        return lambda: content
+    if isinstance(content, Path):
+        return lambda: content.read_bytes()
+    return lambda: str(content).encode("utf-8")
