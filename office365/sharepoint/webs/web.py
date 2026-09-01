@@ -1958,6 +1958,12 @@ class Web(SecurableObject):
         """Specifies the site identifier for the site"""
         return self.properties.get("Id", None)
 
+    @odata(name="SiteId")
+    @property
+    def site_id(self) -> Optional[str]:
+        """Specifies the site collection identifier for the site collection that contains the site"""
+        return self.properties.get("SiteId", None)
+
     @property
     def language(self) -> Optional[int]:
         """Specifies the language code identifier (LCID) for the language that is used on the site"""
@@ -1967,7 +1973,7 @@ class Web(SecurableObject):
     @property
     def last_item_modified_date(self) -> Optional[datetime]:
         """Specifies when an item was last modified in the site"""
-        return self.properties.get("LastItemModifiedDate", datetime.min)
+        return self.properties.get("LastItemModifiedDate", None)
 
     @odata(name="AccessRequestsList")
     @property

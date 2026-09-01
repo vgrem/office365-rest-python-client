@@ -42,6 +42,7 @@ from office365.sharepoint.sites.migration.job_status import SPMigrationJobStatus
 from office365.sharepoint.sites.upgrade_info import UpgradeInfo
 from office365.sharepoint.sites.usage_info import UsageInfo
 from office365.sharepoint.sites.version_policy_manager import SiteVersionPolicyManager
+from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
 from office365.sharepoint.tenant.administration.hubsites.creation_information import (
     HubSiteCreationInformation,
 )
@@ -548,6 +549,17 @@ class Site(Entity):
         qry = ServiceOperationQuery(self, "ProcessStorageMetricsChanges")
         self.context.add_query(qry)
         return self
+
+    def get_storage_metrics(self) -> StorageMetrics:
+        """Gets storage-related metrics for the site collection.
+
+        Unlike ``usage_info.Storage``, ``TotalSize`` includes file versions —
+        closer to the site size reported for migration planning.
+        """
+        return_type = StorageMetrics(self.context, ServiceOperationPath("GetStorageMetrics", None, self.resource_path))
+        qry = ServiceOperationQuery(self, "GetStorageMetrics", None, None, None, return_type)
+        self.context.add_query(qry)
+        return return_type
 
     def register_hub_site(self, create_info: Optional[HubSiteCreationInformation] = None) -> Self:
         """Registers an existing site as a hub site.

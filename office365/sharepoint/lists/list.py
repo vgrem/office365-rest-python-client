@@ -1416,31 +1416,29 @@ class List(SecurableObject):
 
     @odata(name="LastItemDeletedDate")
     @property
-    def last_item_deleted_date(self) -> datetime:
+    def last_item_deleted_date(self) -> Optional[datetime]:
         """
         Specifies the last time a list item was deleted from the list. It MUST return Created if no list item has
         been deleted from the list yet.
         """
-        return self.properties.get("LastItemDeletedDate", datetime.min)
+        return self.properties.get("LastItemDeletedDate", None)
 
     @odata(name="LastItemModifiedDate")
     @property
-    def last_item_modified_date(self) -> datetime:
+    def last_item_modified_date(self) -> Optional[datetime]:
         """
         Specifies the last time a list item, field, or property of the list was modified.
         It MUST return Created if the list has not been modified.
         """
-        return self.properties.get("LastItemModifiedDate", datetime.min)
+        return self.properties.get("LastItemModifiedDate", None)
 
     @odata(name="LastItemUserModifiedDate")
     @property
-    def last_item_user_modified_date(self) -> datetime:
+    def last_item_user_modified_date(self) -> Optional[datetime]:
         """
-        Specifies when an item of the list was last modified by a non-system update. A non-system update is a change
-        to a list item that is visible to end users. If no item has been created in the list, the list creation time
-        is returned.
+        Specifies the last time a list item was modified by a user.
         """
-        return self.properties.get("LastItemUserModifiedDate", datetime.min)
+        return self.properties.get("LastItemUserModifiedDate", None)
 
     @property
     def list_experience_options(self) -> Optional[int]:
