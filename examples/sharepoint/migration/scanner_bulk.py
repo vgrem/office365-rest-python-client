@@ -1,5 +1,5 @@
 """
-Assess multiple sites in bulk — SPMT-style bulk scan.
+Assess multiple sites in bulk — a tenant-wide readiness review.
 
 Reads a file with one site URL per line, runs the recursive assessment for each
 site, and aggregates the results into a combined report. Useful for tenant-level

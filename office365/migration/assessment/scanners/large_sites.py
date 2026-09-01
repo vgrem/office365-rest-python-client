@@ -1,6 +1,6 @@
 """Large Sites scan — SMAT ``LargeSites-detail`` report.
 
-Flags site collections over the SPMT size threshold (500 GB): migration becomes
+Flags site collections over the 500 GB size threshold: migration becomes
 harder to schedule and predict above that. Emits one detail row per site
 collection, mirroring SMAT's column layout.
 
@@ -162,7 +162,7 @@ class LargeSitesScanner(BaseScanner):
                 report,
                 "warning",
                 self._site_url or "site",
-                f"Site size {size_gb:.1f}GB exceeds SPMT guidance of "
-                f"{self.options.large_site_threshold_gb:g}GB — migration takes longer to schedule and run",
+                f"Site size {size_gb:.1f}GB exceeds the {self.options.large_site_threshold_gb:g}GB guidance — "
+                "migration takes longer to schedule and run",
                 "Split the site collection, archive old content, or store large binaries externally",
             )

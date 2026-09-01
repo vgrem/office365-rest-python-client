@@ -1,4 +1,4 @@
-"""Offline tests for the SPMT-style server-side migration job wrapper."""
+"""Offline tests for the server-side migration job wrapper."""
 
 from __future__ import annotations
 

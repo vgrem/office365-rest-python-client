@@ -20,8 +20,8 @@ class AssessmentOptions:
     max_path_length: int = 400
     max_name_length: int = 128
     invalid_chars: Set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
-    large_file_bytes: int = 15 * 1024 * 1024 * 1024  # SPMT 15GB limit
-    large_site_threshold_gb: float = 500.0  # SPMT: sites over 500GB migrate slower
+    large_file_bytes: int = 15 * 1024 * 1024 * 1024  # 15GB file-size limit
+    large_site_threshold_gb: float = 500.0  # sites over 500GB migrate slower
     strip_field_attrs: Set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
     approval_workflow_fields: Set[str] = field(
         default_factory=lambda: {"_ApprovalStatus", "_ApprovalRespondedBy", "_ApprovalAssignedTo"}

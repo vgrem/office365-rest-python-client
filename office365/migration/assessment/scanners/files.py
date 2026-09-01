@@ -7,7 +7,7 @@ from office365.migration.assessment.scanners.base import BaseScanner
 
 
 class FileScanner(BaseScanner):
-    """Flags files exceeding the SPMT size limit."""
+    """Flags files exceeding the size limit."""
 
     category = "file"
 
@@ -20,6 +20,6 @@ class FileScanner(BaseScanner):
                     report,
                     "warning",
                     path,
-                    f"File size {size / 1024 / 1024 / 1024:.1f}GB exceeds SPMT limit",
+                    f"File size {size / 1024 / 1024 / 1024:.1f}GB exceeds the size limit",
                     "Use chunked upload or split the file",
                 )

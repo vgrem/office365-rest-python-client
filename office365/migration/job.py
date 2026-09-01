@@ -1,6 +1,6 @@
 """Migration job — the orchestration entry point and state machine.
 
-Mirrors SPMT's lifecycle: ``assess -> plan -> run -> verify``, with pause/resume
+Lifecycle: ``assess -> plan -> run -> verify``, with pause/resume
 from a persisted checkpoint. The job is platform-agnostic — it works against any
 ``DataSource`` / ``DataTarget`` adapter pair.
 """
@@ -106,7 +106,7 @@ class MigrationJob:
     # ── Lifecycle ────────────────────────────────────────────────
 
     def assess(self, progress: Optional[Callable[["Progress"], None]] = None) -> object | None:
-        """Run the pre-migration assessment (the SPMT-style "scan" phase).
+        """Run the pre-migration assessment (the "scan" phase).
 
         Accepts a ``MigrationAssessor`` or a callable attached via
         :meth:`with_assessor`; ``progress`` is forwarded when the hook is a

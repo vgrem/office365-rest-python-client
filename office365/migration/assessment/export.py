@@ -2,7 +2,7 @@
 
 Uses the report's records form (:meth:`AssessmentReport.to_records`) and the
 per-scan detail records (:attr:`AssessmentReport.scan_reports`), so the report
-model stays format-agnostic while the caller gets the SPMT-style downloadable
+model stays format-agnostic while the caller gets the downloadable
 assessment. Scan detail files land in a ``ScannerReports`` subfolder, mirroring
 SMAT's output layout (``<ScanName>-detail.csv``).
 """

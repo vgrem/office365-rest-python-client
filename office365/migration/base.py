@@ -39,7 +39,7 @@ class ItemStatus(str, Enum):
 
 
 class MigrationPhase(str, Enum):
-    """Lifecycle of a migration job (mirrors SPMT: scan -> plan -> run -> monitor).
+    """Lifecycle of a migration job (scan -> plan -> run -> monitor).
 
     ``paused`` / ``failed`` / ``cancelled`` all retain a persisted checkpoint, so
     the job can be resumed from where it stopped.

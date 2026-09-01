@@ -10,7 +10,7 @@ Scans are registered in ``office365.migration.assessment.registry`` (mirroring
 SMAT's ScanDef.json); ``--disable-scan`` turns one off (its data is not
 collected), ``--only-scan`` runs just one.
 
-The assessment is the "scan" phase of the SPMT-style workflow — pair it with
+The assessment is the "scan" phase of the migration workflow — pair it with
 ``MigrationJob`` (see ``migrate_files.py`` / ``export_list_to_json.py``) to
 assess, then migrate, then verify.
 

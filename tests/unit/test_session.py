@@ -1,4 +1,4 @@
-"""Offline tests for the SPMT-PS-aligned MigrationSession."""
+"""Offline tests for the MigrationSession."""
 
 from __future__ import annotations
 
@@ -26,12 +26,12 @@ def test_session_lifecycle(tmp_path):
         options=MigrationOptions(conflict_resolution=ConflictResolution.OVERWRITE),
     )
 
-    task = session.add_task()  # Add-SPMTTask
+    task = session.add_task()
     assert len(session.tasks) == 1
     assert task.source_label == src
 
-    session.start()  # Start-SPMTMigration
-    status = session.status()[0]  # Get-SPMTMigration
+    session.start()
+    status = session.status()[0]
     assert status["phase"] == MigrationPhase.COMPLETED.value
     assert status["stats"]["success"] == 2  # noqa: PLR2004
     assert status["stats"]["errors"] == 0
@@ -40,8 +40,8 @@ def test_session_lifecycle(tmp_path):
     assert (Path(dst) / "docs" / "a.txt").exists()
 
     session.stop()
-    session.remove_task(task)  # Remove-SPMTTask
-    session.unregister()  # Unregister-SPMTMigration
+    session.remove_task(task)
+    session.unregister()
     assert session.tasks == []
 
 

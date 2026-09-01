@@ -1,18 +1,16 @@
-"""SPMT-PS-aligned migration session — register / add task / start / status / stop.
+"""Migration session — register / add task / start / status / stop.
 
-Mirrors the ``Microsoft.SharePoint.MigrationTool.PowerShell`` cmdlet surface
-(``Register-SPMTMigration``, ``Add-SPMTTask``, ``Start-SPMTMigration``,
-``Get-SPMTMigration``, ``Stop-SPMTMigration``, ``Remove-SPMTTask``,
-``Unregister-SPMTMigration``) but **bidirectional**: a task pairs any
+A PowerShell-style migration lifecycle (register, add a task, start, get
+status, stop, remove, unregister), **bidirectional**: a task pairs any
 ``DataSource``/``DataTarget`` adapter — filesystem ↔ library, library ↔ library,
 records ↔ list, and so on.
 
     session = MigrationSession(FileSystemSource("src"), SharePointLibraryTarget(folder))
-    session.add_task()                  # Add-SPMTTask
-    session.start()                     # Start-SPMTMigration
-    print(session.status())             # Get-SPMTMigration
-    session.stop()                      # Stop-SPMTMigration
-    session.unregister()                # Unregister-SPMTMigration
+    session.add_task()
+    session.start()
+    print(session.status())
+    session.stop()
+    session.unregister()
 """
 
 from __future__ import annotations
@@ -24,7 +22,7 @@ from office365.migration.job import MigrationJob
 
 
 class MigrationTask:
-    """One source → target migration within a session (SPMT ``Add-SPMTTask``)."""
+    """One source → target migration within a session."""
 
     def __init__(
         self,
@@ -58,7 +56,7 @@ class MigrationTask:
         return self._job.stats
 
     def to_dict(self) -> dict:
-        """Project the task state — the status form of ``Get-SPMTMigration``."""
+        """Project the task state — the status form of a session."""
         return {
             "source": self.source_label,
             "target": self.target_label,
@@ -74,7 +72,7 @@ class MigrationTask:
 
 
 class MigrationSession:
-    """A registered migration session (SPMT ``Register-SPMTMigration``).
+    """A registered migration session.
 
     Tasks added without their own source/target inherit the session defaults,
     so a simple filesystem → library migration is::
@@ -107,7 +105,7 @@ class MigrationSession:
         manifest_path=None,
         checkpoint_path=None,
     ) -> MigrationTask:
-        """Add a migration task to the session (SPMT ``Add-SPMTTask``)."""
+        """Add a migration task to the session."""
         task = MigrationTask(
             source if source is not None else self._source,
             target if target is not None else self._target,
@@ -119,7 +117,7 @@ class MigrationSession:
         return task
 
     def start(self, progress=None) -> List[dict]:
-        """Start the migration: plan + run every registered task (SPMT ``Start-SPMTMigration``)."""
+        """Start the migration: plan + run every registered task."""
         statuses: List[dict] = []
         for task in self._tasks:
             if task.phase in (MigrationPhase.COMPLETED, MigrationPhase.COMPLETED_WITH_ERRORS, MigrationPhase.CANCELLED):
@@ -135,18 +133,18 @@ class MigrationSession:
         return [task.job.verify(spot_checks) for task in self._tasks]
 
     def status(self) -> List[dict]:
-        """Get the current per-task status (SPMT ``Get-SPMTMigration``)."""
+        """Get the current per-task status."""
         return [task.to_dict() for task in self._tasks]
 
     def stop(self) -> None:
-        """Request a clean stop at the next batch boundary (SPMT ``Stop-SPMTMigration``)."""
+        """Request a clean stop at the next batch boundary."""
         for task in self._tasks:
             task.job.pause()
 
     def remove_task(self, task: MigrationTask) -> None:
-        """Remove a task from the session (SPMT ``Remove-SPMTTask``)."""
+        """Remove a task from the session."""
         self._tasks.remove(task)
 
     def unregister(self) -> None:
-        """Drop all tasks and release the session (SPMT ``Unregister-SPMTMigration``)."""
+        """Drop all tasks and release the session."""
         self._tasks.clear()

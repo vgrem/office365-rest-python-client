@@ -1,4 +1,4 @@
-"""Migration toolkit — SPMT-style, resumable, client-side migrations.
+"""Migration toolkit — resumable, client-side migrations.
 
 The toolkit composes the client (SharePoint v1 / Graph) with a data pipeline to
 move items between source and target adapters with checkpoints, resumption, and

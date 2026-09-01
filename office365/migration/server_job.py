@@ -1,12 +1,12 @@
-"""SPMT-style server-side migration job — submit + monitor.
+"""Server-side migration job — submit + monitor.
 
 The SharePoint Migration API runs large migrations server-side: content is
 packaged and uploaded to Azure Storage, then an *ingestion job* ingests it. This
 wrapper submits such a job (``Site.create_migration_ingestion_job``) and polls
-its status with a ``Progress`` hook, mirroring SPMT's task monitoring.
+its status with a ``Progress`` hook.
 
 The status source is abstracted (``status_fn``) so callers can poll whichever
-endpoint reports the job — e.g. the Azure report queue SPMT writes to, or the
+endpoint reports the job — e.g. the Azure report queue, or the
 Graph ``SharePointMigrationJob`` progress events.
 """
 

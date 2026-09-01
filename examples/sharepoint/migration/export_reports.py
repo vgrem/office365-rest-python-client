@@ -1,5 +1,5 @@
 """
-Migrate a directory tree and write SPMT-style reports (Summary/Item/Failure).
+Migrate a directory tree and write summary/Item/Failure reports.
 
 Demonstrates the "monitor and report" phase of the migration workflow: run a
 ``MigrationJob``, then export its results as CSV + JSON through the records

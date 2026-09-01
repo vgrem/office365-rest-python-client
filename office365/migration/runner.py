@@ -194,7 +194,7 @@ class MigrationRunner:
 
 
 def _target_up_to_date(source, target: DataTarget, item: MigrationItem) -> bool:
-    """SPMT-style incremental check: skip when the target is at least as new as the source."""
+    """Incremental check: skip when the target is at least as new as the source."""
     if item.modified is None:
         return False
     target_modified = getattr(target, "modified", None)

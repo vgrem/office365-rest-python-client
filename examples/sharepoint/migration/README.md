@@ -1,11 +1,11 @@
 # Migration
 
 Assess, migrate, monitor, and report using the migration toolkit — a resumable,
-checkpointed migration layer (SPMT-style) built on the client and the data
-pipeline. Works **into** SharePoint, **from** it, and between the filesystem /
-records — directional (export/import).
+checkpointed migration layer built on the client and the data pipeline. Works
+**into** SharePoint, **from** it, and between the filesystem / records —
+directional (export/import).
 
-Workflow mirrors SPMT: **scan/assess -> create a task -> monitor and report**.
+Workflow: **scan/assess -> create a task -> monitor and report**.
 
 ---
 
@@ -28,7 +28,7 @@ Workflow mirrors SPMT: **scan/assess -> create a task -> monitor and report**.
 | Copy a local directory tree (filesystem → filesystem) | [`migrate_files.py`](./migrate_files.py) | none (local) |
 | Export a SharePoint list to local JSON records | [`export_list_to_json.py`](./export_list_to_json.py) | Read access |
 | Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate_library.py`](./migrate_library.py) | Read/Write access |
-| Migrate local files into a library via an SPMT-PS session (parallel) | [`migrate_session.py`](./migrate_session.py) | Write access |
+| Migrate local files into a library via a migration session (parallel) | [`migrate_session.py`](./migrate_session.py) | Write access |
 | Migrate a tree and write Summary/Item/Failure reports | [`export_reports.py`](./export_reports.py) | none (local) |
 
 ---
@@ -66,8 +66,8 @@ print([d.name for d in SCANS])                      # the registered scans
 written = export_assessment(report, "out")          # issues + ScannerReports/
 ```
 
-**Large Sites** (SPSite, on by default) validates site size against the SPMT
-guidance of 500 GB and reports the SMAT columns (SiteId, SiteURL, SiteOwner,
+**Large Sites** (SPSite, on by default) validates site size against the 500 GB
+guidance and reports the SMAT columns (SiteId, SiteURL, SiteOwner,
 SiteSizeInMB, NumOfWebs, LastContentModifiedDate, TotalItemCount, Hits,
 SizeInGB, ...). On-prem-only fields (`ContentDB*`, usage-logging metrics)
 report `n/a`. Disable it or any scan with `--disable-scan LargeSites` /
@@ -120,7 +120,7 @@ print(job.verify().summary())            # reconcile source vs target
 ### Incremental re-runs
 
 Set `incremental=True` (with `OVERWRITE` conflict resolution) to copy only items
-whose source is newer than the target — SPMT-style:
+whose source is newer than the target:
 
 ```python
 from office365.migration import MigrationJob, MigrationOptions, ConflictResolution
@@ -156,24 +156,24 @@ job = MigrationJob(
 )
 ```
 
-`MigrationSession` mirrors the [SPMT PowerShell cmdlets](https://learn.microsoft.com/en-us/powershell/module/microsoft.sharepoint.migrationtool.powershell/?view=spmt-ps)
-but is **bidirectional** (any source/target adapter pair):
+`MigrationSession` drives a PowerShell-style lifecycle — **register, add a task,
+start, get status, stop, remove, unregister** — and is **bidirectional** (any
+source/target adapter pair):
 
-| SPMT PowerShell | This library |
+| Lifecycle | This library |
 |---|---|
-| `Register-SPMTMigration` | `MigrationSession(source, target, options)` |
-| `Add-SPMTTask` | `session.add_task(...)` |
-| `Start-SPMTMigration` | `session.start()` |
-| `Get-SPMTMigration` | `session.status()` |
-| `Stop-SPMTMigration` | `session.stop()` |
-| `Remove-SPMTTask` | `session.remove_task(task)` |
-| `Unregister-SPMTMigration` | `session.unregister()` |
+| register | `MigrationSession(source, target, options)` |
+| add a task | `session.add_task(...)` |
+| start | `session.start()` |
+| get status | `session.status()` |
+| stop | `session.stop()` |
+| remove a task | `session.remove_task(task)` |
+| unregister | `session.unregister()` |
 
 ---
 
 ## API reference
 
 - [SharePoint Migration API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/migration-api-reference)
-- [SharePoint Migration Tool (SPMT) overview](https://learn.microsoft.com/en-us/sharepointmigration/introducing-the-sharepoint-migration-tool)
 - [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap)
 - [Large Sites scan](https://learn.microsoft.com/en-us/sharepointmigration/migration-assessment-scan-large-sites)

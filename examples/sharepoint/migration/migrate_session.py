@@ -1,9 +1,8 @@
 """
-SPMT-PS-aligned migration session — register, add a task, start, monitor, stop.
+Migration session — register, add a task, start, monitor, stop.
 
-Mirrors the Microsoft.SharePoint.MigrationTool.PowerShell cmdlet flow
-(Register-SPMTMigration -> Add-SPMTTask -> Start-SPMTMigration ->
-Get-SPMTMigration), but bidirectional: a task pairs any source/target adapter.
+A PowerShell-style migration lifecycle (register -> add a task -> start ->
+get status), bidirectional: a task pairs any source/target adapter.
 Here: migrate a local directory tree **into** a SharePoint document library with
 parallel uploads (``MigrationOptions.concurrency``).
 
@@ -39,11 +38,11 @@ def main():
         target=SharePointLibraryTarget(folder, concurrency=args.concurrency),
         options=options,
     )
-    task = session.add_task()  # Add-SPMTTask
+    task = session.add_task()
     print(f"Registered task: {task.source_label} -> {task.target_label}")
 
-    session.start()  # Start-SPMTMigration
-    for status in session.status():  # Get-SPMTMigration
+    session.start()
+    for status in session.status():
         stats = status["stats"]
         print(
             f"[{status['phase']}] success={stats['success']} skipped={stats['skipped']} "

@@ -1,4 +1,4 @@
-"""Migration reports — SPMT-style summary, item, and failure exports.
+"""Migration reports — summary, item, and failure exports.
 
 Builds records from the job's existing state (:class:`MigrationStats`, the
 manifest's per-item status, and the checkpoint) and exports them as CSV and JSON
@@ -64,7 +64,7 @@ def build_report(job: "MigrationJob") -> MigrationReport:
 def export_reports(job: "MigrationJob", output_dir: str | Path) -> List[str]:
     """Write SummaryReport, ItemReport, and FailureReport (CSV + JSON).
 
-    Mirrors SPMT: the failure report is only written when failures exist.
+    The failure report is only written when failures exist.
 
     Args:
         job: The migration job to report on.

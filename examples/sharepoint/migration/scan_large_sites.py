@@ -4,7 +4,7 @@ site collections over 500 GB across the tenant.
 
 Enumerates site collections at **tenant scope** via the SPO.Tenant admin API
 (the SMAT model: get the site list first, then report the large ones) and
-writes only the sites that exceed the SPMT size guidance. Mirrors the
+writes only the sites that exceed the 500 GB size guidance. Mirrors the
 SharePoint Migration Assessment Tool's ``LargeSites-detail`` scan output:
 
     python scan_large_sites.py --output out/
@@ -79,10 +79,10 @@ def main():
     scan = report.scan_reports.get("LargeSites")
     written = write_report(args.output, scan)
     if written and scan is not None:
-        print(f"\n{len(scan.records)} site(s) over the SPMT size guidance:")
+        print(f"\n{len(scan.records)} site(s) over the 500 GB size guidance:")
         print("Report:", ", ".join(written))
     else:
-        print("\nNo site collections over the SPMT size guidance were found.")
+        print("\nNo site collections over the 500 GB size guidance were found.")
 
 
 if __name__ == "__main__":
