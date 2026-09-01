@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import csv
+import io
+import json
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Callable, Optional
 
 from office365.migration.assessment.issue import AssessmentIssue
@@ -10,12 +14,42 @@ from office365.runtime.client_value import ClientValue
 
 @dataclass
 class ScanReport:
-    """SMAT-style detail report produced by one scan (``<Scan>-detail.csv``)."""
+    """SMAT-style detail report produced by one scan (``<Scan>-detail.csv``).
+
+    ``records`` are typed values (each scan declares its own record type, whose
+    dataclass fields are the SMAT column headers), so the neutral records form
+    and the CSV/JSON projections are trivial.
+    """
 
     name: str
     category: ScanCategory
     columns: tuple[str, ...]
-    records: list[dict]
+    records: list[ClientValue]
+
+    def to_records(self) -> list[dict]:
+        """Project rows to plain dicts keyed by the SMAT columns (``None`` -> ``n/a``)."""
+        rows = []
+        for record in self.records:
+            row = {}
+            for column in self.columns:
+                value = getattr(record, column, None)
+                if isinstance(value, datetime):
+                    value = value.isoformat()
+                row[column] = value if value is not None else "n/a"
+            rows.append(row)
+        return rows
+
+    def to_json(self) -> str:
+        """Compact JSON of the report rows."""
+        return json.dumps(self.to_records(), indent=2)
+
+    def to_csv(self) -> str:
+        """CSV of the report rows, header from ``columns``."""
+        buffer = io.StringIO()
+        writer = csv.DictWriter(buffer, fieldnames=list(self.columns), restval="n/a")
+        writer.writeheader()
+        writer.writerows(self.to_records())
+        return buffer.getvalue()
 
 
 @dataclass

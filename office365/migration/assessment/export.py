@@ -53,7 +53,7 @@ def export_scan_reports(report: AssessmentReport, output_dir: str | Path) -> Lis
             os.path.join(output_dir, "ScannerReports"),
             f"{scan.name}-detail",
             list(scan.columns),
-            scan.records,
+            scan.to_records(),
         )
     return written
 

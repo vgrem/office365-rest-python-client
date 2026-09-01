@@ -79,6 +79,11 @@ class BaseScanner:
     category: str = "general"
     scan_name: str = ""
 
+    # Typed report row for scans that emit SMAT-style detail records. Its
+    # dataclass fields ARE the report columns (SMAT headers), so ``columns``
+    # and the CSV/JSON export stay trivial.
+    record_type: Optional[type] = None
+
     # Data gates — which events this scan needs the assessor to collect.
     # Keep them False when the scan only inspects already-loaded data.
     needs_collection: bool = False  # site collection metadata (UsageInfo, Owner)
@@ -87,12 +92,13 @@ class BaseScanner:
 
     def __init__(self, options: Optional[AssessmentOptions] = None) -> None:
         self.options = options or AssessmentOptions()
-        self.records: list[dict] = []
+        self.records: list[Any] = []
 
     @property
     def columns(self) -> tuple[str, ...]:
         """SMAT detail-report columns (``<ScanName>-detail.csv`` header)."""
-        return ()
+        fields = getattr(self.record_type, "__dataclass_fields__", None)
+        return tuple(fields) if fields else ()
 
     def flag(
         self,

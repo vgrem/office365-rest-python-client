@@ -14,6 +14,7 @@ Workflow mirrors SPMT: **scan/assess -> create a task -> monitor and report**.
 | Requirement | Description | Reference |
 |---|---|---|
 | **Read access** to the target site | Required to scan lists, files, and permissions. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+| **SharePoint admin** (for tenant-scope scans) | `scan_large_sites.py` enumerates site collections via the SPO.Tenant API — SMAT's farm-account prerequisite. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
 
 ---
 
@@ -23,7 +24,7 @@ Workflow mirrors SPMT: **scan/assess -> create a task -> monitor and report**.
 |---|---|---|
 | Assess a site (site + subsites) for migration readiness | [`scanner.py`](./scanner.py) | Read access |
 | Bulk-assess a list of sites | [`scanner_bulk.py`](./scanner_bulk.py) | Read access |
-| Generate the SMAT `LargeSites-detail.csv` report (sites over 500 GB) | [`scan_large_sites.py`](./scan_large_sites.py) | Read access |
+| Generate the SMAT `LargeSites-detail.csv` report (all tenant sites over 500 GB) | [`scan_large_sites.py`](./scan_large_sites.py) | SharePoint admin |
 | Copy a local directory tree (filesystem → filesystem) | [`migrate_files.py`](./migrate_files.py) | none (local) |
 | Export a SharePoint list to local JSON records | [`export_list_to_json.py`](./export_list_to_json.py) | Read access |
 | Export a document library to local files | [`migrate_library.py`](./migrate_library.py) | Read access |
@@ -71,6 +72,22 @@ SizeInGB, ...). On-prem-only fields (`ContentDB*`, usage-logging metrics)
 report `n/a`. Disable it or any scan with `--disable-scan LargeSites` /
 `assessor.disable_scan("LargeSites")` — the assessor then skips collecting its
 data.
+
+Run it at **tenant scope** (SMAT model: enumerate site collections first, then
+report the large ones) with `MigrationTenantAssessor`:
+
+```python
+from office365.migration import MigrationTenantAssessor
+from office365.sharepoint.tenant.administration.tenant import Tenant
+
+report = MigrationTenantAssessor(Tenant(admin_client)).assess().execute_query().value
+scan = report.scan_reports["LargeSites"]
+print(scan.to_csv())   # SMAT LargeSites-detail.csv (typed rows -> trivial export)
+```
+
+Each scan report has a typed row model — the dataclass fields are the SMAT
+column headers — so `to_records()` / `to_json()` / `to_csv()` are one-liners
+and `None` renders as `n/a`.
 
 Implemented | SMAT roadmap scans (planned)
 --- | ---

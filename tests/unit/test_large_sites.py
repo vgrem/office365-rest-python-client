@@ -97,21 +97,26 @@ class TestLargeSitesScan(_Base):
         self.assertEqual(len(scan.records), 1)
         row = scan.records[0]
 
-        self.assertEqual(row["SiteId"], "11111111-1111-1111-1111-111111111111")
-        self.assertEqual(row["SiteURL"], "https://contoso.sharepoint.com/sites/big")
-        self.assertEqual(row["SiteOwner"], "Site Owner")
-        self.assertEqual(row["SiteSizeInMB"], round(600 * 1024, 1))
-        self.assertEqual(row["SizeInGB"], 600.0)
-        self.assertEqual(row["NumOfWebs"], 1)
-        self.assertEqual(row["TotalItemCount"], 3000)  # noqa: PLR2004
-        self.assertEqual(row["Hits"], 1000)  # noqa: PLR2004
-        self.assertIn("2024-05-06T07:08:09", row["LastContentModifiedDate"])
-        self.assertEqual(row["ContentDBName"], "n/a")
-        self.assertEqual(row["ContentDBServerName"], "n/a")
-        self.assertEqual(row["ContentDBSizeInMB"], "n/a")
-        self.assertEqual(row["DistinctUsers"], "n/a")
-        self.assertEqual(row["DaysOfUsageData"], "n/a")
-        self.assertEqual(row["ScanID"], report.scan_id)
+        self.assertEqual(row.SiteId, "11111111-1111-1111-1111-111111111111")
+        self.assertEqual(row.SiteURL, "https://contoso.sharepoint.com/sites/big")
+        self.assertEqual(row.SiteOwner, "Site Owner")
+        self.assertEqual(row.SiteSizeInMB, round(600 * 1024, 1))
+        self.assertEqual(row.SizeInGB, 600.0)
+        self.assertEqual(row.NumOfWebs, 1)
+        self.assertEqual(row.TotalItemCount, 3000)  # noqa: PLR2004
+        self.assertEqual(row.Hits, 1000)  # noqa: PLR2004
+        self.assertIn("2024-05-06T07:08:09", row.LastContentModifiedDate.isoformat())
+        self.assertIsNone(row.ContentDBName)
+        self.assertIsNone(row.ContentDBServerName)
+        self.assertIsNone(row.ContentDBSizeInMB)
+        self.assertIsNone(row.DistinctUsers)
+        self.assertIsNone(row.DaysOfUsageData)
+        self.assertEqual(row.ScanID, report.scan_id)
+
+        # the exported/neutral form renders unavailable fields as n/a
+        record = scan.to_records()[0]
+        self.assertEqual(record["ContentDBName"], "n/a")
+        self.assertEqual(record["DistinctUsers"], "n/a")
 
         flagged = [i for i in report.issues if i.category == "site" and i.severity == "warning"]
         self.assertEqual(len(flagged), 1)
@@ -128,7 +133,7 @@ class TestLargeSitesScan(_Base):
         )
 
         scan = report.scan_reports["LargeSites"]
-        self.assertEqual(scan.records[0]["SizeInGB"], 50.0)
+        self.assertEqual(scan.records[0].SizeInGB, 50.0)
         self.assertFalse(any(i.category == "site" and i.severity == "warning" for i in report.issues))
 
     def test_usage_info_unavailable_reports_na(self):
@@ -141,9 +146,13 @@ class TestLargeSitesScan(_Base):
         )
 
         row = report.scan_reports["LargeSites"].records[0]
-        self.assertEqual(row["SiteSizeInMB"], "n/a")
-        self.assertEqual(row["SizeInGB"], "n/a")
-        self.assertEqual(row["Hits"], "n/a")
+        self.assertIsNone(row.SiteSizeInMB)
+        self.assertIsNone(row.SizeInGB)
+        self.assertIsNone(row.Hits)
+        record = report.scan_reports["LargeSites"].to_records()[0]
+        self.assertEqual(record["SiteSizeInMB"], "n/a")
+        self.assertEqual(record["SizeInGB"], "n/a")
+        self.assertEqual(record["Hits"], "n/a")
         self.assertFalse(any(i.category == "site" for i in report.issues))
 
     def test_disabling_scan_drops_site_query_and_report(self):
@@ -177,8 +186,8 @@ class TestLargeSitesScan(_Base):
         )
 
         row = report.scan_reports["LargeSites"].records[0]
-        self.assertIn("alice@contoso.com", row["SiteAdmins"])
-        self.assertIn("bob@contoso.com", row["SiteAdmins"])
+        self.assertIn("alice@contoso.com", row.SiteAdmins)
+        self.assertIn("bob@contoso.com", row.SiteAdmins)
 
     def test_summary_includes_scan_counts(self):
         report = self._assess(
