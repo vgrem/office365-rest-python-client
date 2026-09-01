@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, List, Optional, cast
 
 from office365.migration.adapters import MigrationProgress
 from office365.migration.base import MigrationItem
+from office365.migration.transfer import Failure
 
 if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
@@ -90,8 +91,11 @@ class SharePointListTarget:
     def checksum(self, item: MigrationItem) -> str:
         return ""
 
-    def commit(self) -> None:
-        self._list.context.execute_batch()
+    def commit(self, options=None) -> None:
+        """Flush the queued record writes through an OData batch (JSON-only parallel mode)."""
+        batch_size = getattr(options, "batch_size", None) or 100
+        concurrency = getattr(options, "concurrency", None) or 1
+        self._list.context.execute_batch(items_per_batch=batch_size, concurrency=concurrency)
 
     def close(self) -> None:
         pass
@@ -148,12 +152,13 @@ class SharePointLibrarySource:
 class SharePointLibraryTarget:
     """Writes files into a document library, creating folders as needed.
 
-    Uses the simple upload for files up to ~4MB; use ``create_upload_session``
-    for larger files.
+    Uses the simple upload for files up to ~4MB; ``write_many`` (parallel,
+    ``concurrency > 1``) uses ``create_upload_session`` for larger files.
     """
 
-    def __init__(self, library_folder: "Folder") -> None:
+    def __init__(self, library_folder: "Folder", concurrency: int = 1) -> None:
         self._folder = library_folder
+        self._concurrency = concurrency
 
     def label(self) -> str:
         return f"library:{self._folder.server_relative_url}"
@@ -169,13 +174,31 @@ class SharePointLibraryTarget:
             return False
 
     def write(self, item: MigrationItem, payload: object) -> None:
-        parts = item.dest_path.split("/")
-        name = parts[-1]
-        folder = self._folder
-        if len(parts) > 1:
-            folder = self._folder.folders.ensure_by_path("/".join(parts[:-1])).execute_query()
         content = payload if isinstance(payload, bytes) else str(payload).encode("utf-8")
-        folder.files.upload(io.BytesIO(content), name).execute_query()
+        self._folder.upload_file(item.dest_path, content).execute_query()
+
+    def write_many(
+        self,
+        items: List[MigrationItem],
+        payloads: List[object],
+        concurrency: Optional[int] = None,
+    ) -> List[Failure]:
+        """Transfer a batch of items in parallel (fast path — see :mod:`office365.migration.transfer`).
+
+        Returns:
+            List of ``(dest_path, error)`` for files that failed.
+        """
+        from office365.migration.transfer import transfer_files_parallel
+
+        files = [
+            (item.dest_path, payload if isinstance(payload, bytes) else str(payload).encode("utf-8"))
+            for item, payload in zip(items, payloads)
+        ]
+        return transfer_files_parallel(
+            self._folder,
+            files,
+            concurrency=concurrency or self._concurrency or 1,
+        )
 
     def list_paths(self) -> List[str]:
         root = (self._folder.server_relative_url or "").rstrip("/")
@@ -188,7 +211,7 @@ class SharePointLibraryTarget:
         file.download(buffer).execute_query()
         return hashlib.md5(buffer.getvalue()).hexdigest()
 
-    def commit(self) -> None:
+    def commit(self, options=None) -> None:
         pass
 
     def close(self) -> None:

@@ -46,6 +46,21 @@ class DataTarget(ABC):
     def write(self, item: MigrationItem, payload: object) -> None:
         """Write the item's payload to its destination."""
 
+    def write_many(
+        self,
+        items: List[MigrationItem],
+        payloads: List[object],
+        concurrency: int = 1,
+    ) -> List:
+        """Bulk-write a batch; the default falls back to per-item :meth:`write`.
+
+        Targets that support true parallel writes (e.g. the SharePoint library
+        target) override this. Returns a list of ``(path, error)`` failures.
+        """
+        for item, payload in zip(items, payloads):
+            self.write(item, payload)
+        return []
+
     @abstractmethod
     def list_paths(self) -> Iterable[str]:
         """Return all destination paths present on the target (for verification)."""

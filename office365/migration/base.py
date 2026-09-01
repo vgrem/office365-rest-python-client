@@ -97,6 +97,7 @@ class MigrationOptions:
     include_patterns: list[str] = field(default_factory=list)
     exclude_patterns: list[str] = field(default_factory=list)
     batch_size: int = 100
+    concurrency: int = 1  # parallel workers for bulk file upload / batched writes
 
 
 def item_to_dict(item: MigrationItem) -> dict:

@@ -91,7 +91,7 @@ class FileSystemTarget:
     def checksum(self, item: MigrationItem) -> str:
         return _md5(self._root / item.dest_path)
 
-    def commit(self) -> None:
+    def commit(self, options=None) -> None:
         pass
 
     def close(self) -> None:

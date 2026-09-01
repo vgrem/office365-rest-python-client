@@ -37,6 +37,7 @@ from office365.migration.manifest import Manifest
 from office365.migration.report import MigrationReport, build_report, export_reports
 from office365.migration.runner import MigrationRunner
 from office365.migration.server_job import MigrationServerJob
+from office365.migration.session import MigrationSession, MigrationTask
 from office365.migration.tenant_assessor import MigrationTenantAssessor
 from office365.migration.validators import VerificationReport, verify
 
@@ -58,7 +59,9 @@ __all__ = [
     "MigrationReport",
     "MigrationRunner",
     "MigrationServerJob",
+    "MigrationSession",
     "MigrationStats",
+    "MigrationTask",
     "MigrationTenantAssessor",
     "SCANS",
     "ScanCategory",

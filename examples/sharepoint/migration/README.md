@@ -27,7 +27,8 @@ Workflow mirrors SPMT: **scan/assess -> create a task -> monitor and report**.
 | Generate the SMAT `LargeSites-detail.csv` report (all tenant sites over 500 GB) | [`scan_large_sites.py`](./scan_large_sites.py) | SharePoint admin |
 | Copy a local directory tree (filesystem → filesystem) | [`migrate_files.py`](./migrate_files.py) | none (local) |
 | Export a SharePoint list to local JSON records | [`export_list_to_json.py`](./export_list_to_json.py) | Read access |
-| Export a document library to local files | [`migrate_library.py`](./migrate_library.py) | Read access |
+| Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate_library.py`](./migrate_library.py) | Read/Write access |
+| Migrate local files into a library via an SPMT-PS session (parallel) | [`migrate_session.py`](./migrate_session.py) | Write access |
 | Migrate a tree and write Summary/Item/Failure reports | [`export_reports.py`](./export_reports.py) | none (local) |
 
 ---
@@ -130,6 +131,43 @@ job = MigrationJob(
     options=MigrationOptions(incremental=True, conflict_resolution=ConflictResolution.OVERWRITE),
 )
 ```
+
+### Parallel transfer & sessions (fast)
+
+File bytes **cannot ride an OData batch** — SharePoint doesn't support batched file
+uploads — so throughput comes from **concurrency**: `MigrationOptions.concurrency`
+spins up parallel workers, each on a cloned `ClientContext` (reusing auth +
+transport), all sharing one `RateLimiter` that paces the fleet on
+`Retry-After` / `X-SharePointHealthScore`. This is the migration domain's
+**transfer** (`office365.migration.transfer.transfer_files_parallel`) — the
+concurrent driver over the library's *deferred* `upload_file`/`upload_content`
+primitives. Record/list writes use the JSON-only
+`execute_batch(items_per_batch=…, concurrency=…)` instead.
+
+```python
+from office365.migration import MigrationJob, MigrationOptions
+from office365.migration.adapters.filesystem import FileSystemSource
+from office365.migration.adapters.sharepoint import SharePointLibraryTarget
+
+job = MigrationJob(
+    FileSystemSource("src"),
+    SharePointLibraryTarget(library_folder, concurrency=4),
+    options=MigrationOptions(concurrency=4),
+)
+```
+
+`MigrationSession` mirrors the [SPMT PowerShell cmdlets](https://learn.microsoft.com/en-us/powershell/module/microsoft.sharepoint.migrationtool.powershell/?view=spmt-ps)
+but is **bidirectional** (any source/target adapter pair):
+
+| SPMT PowerShell | This library |
+|---|---|
+| `Register-SPMTMigration` | `MigrationSession(source, target, options)` |
+| `Add-SPMTTask` | `session.add_task(...)` |
+| `Start-SPMTMigration` | `session.start()` |
+| `Get-SPMTMigration` | `session.status()` |
+| `Stop-SPMTMigration` | `session.stop()` |
+| `Remove-SPMTTask` | `session.remove_task(task)` |
+| `Unregister-SPMTMigration` | `session.unregister()` |
 
 ---
 
