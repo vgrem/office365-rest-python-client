@@ -1,12 +1,53 @@
-"""Assessment scanner base — options, the shared flag helper, and the hooks."""
+"""Assessment scanner base — options, the shared flag helper, and the run contract."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Optional, Set
 
+from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
+
+
+@dataclass(frozen=True)
+class ScanTarget:
+    """A loaded payload handed to a scan — its container, data, and location.
+
+    ``location`` is derived once by the walker (no hand-built paths in scans).
+    For ``SITE`` scans ``entity`` is the walker-built ``SiteScanSummary``.
+    """
+
+    container: ScanContainer
+    entity: Any
+    location: str = ""
+
+
+@dataclass
+class SiteScanSummary:
+    """The site collection's scan state, aggregated by the walker.
+
+    Built as the walker visits the site collection (usage), its web tree
+    (``web_count``) and every list (``item_count``, ``last_modified``); handed
+    to ``SITE``-container scans once the whole subtree has settled.
+
+    The tenant walker populates it from ``SiteProperties`` instead and sets
+    ``report_impacted_only`` so SMAT-style scans only list impacted sites
+    (e.g. LargeSites lists only collections over the threshold, and locked
+    ones are surfaced by the LockedSites scan).
+    """
+
+    site_id: Optional[str] = None
+    site_url: Optional[str] = None
+    owner: Optional[str] = None
+    admins: Optional[str] = None
+    storage_bytes: Optional[int] = None
+    hits: Optional[int] = None
+    web_count: int = 0
+    item_count: int = 0
+    last_modified: Optional[Any] = None
+    lock_state: Optional[str] = None
+    report_impacted_only: bool = False
 
 
 @dataclass
@@ -68,27 +109,27 @@ class AssessmentOptions:
 
 
 class BaseScanner:
-    """A focused pre-migration check.
+    """A focused pre-migration check scoped to a container.
 
-    Scanners are driven by the assessor's generic hook dispatch: each scan
-    implements only the events it cares about (``on_collection``, ``on_lists``,
-    ``on_webs``, ``on_fields``, ``on_items``) and optionally ``finalize`` to
-    assemble its SMAT-style detail record once all data has settled.
+    Scanners implement a single :meth:`run` over the data the walker loads for
+    their container. ``record_type`` marks report scans (whose dataclass fields
+    ARE the detail-report columns); issue scanners only ``flag``. ``finalize``
+    is reserved for ``SITE`` report scans that assemble a row after the walk
+    settles.
     """
 
-    category: str = "general"
-    scan_name: str = ""
+    category: str = "general"  # issue-category label (AssessmentIssue.category)
+    scan_name: str = ""  # report name for scans that emit records (e.g. "LargeSites")
+
+    # Which list-items projection this scan consumes. ITEMS container scans
+    # normally share the default load; a scan needing a different projection
+    # (e.g. paged unique-permission items) overrides this.
+    items_load: str = "default"
 
     # Typed report row for scans that emit SMAT-style detail records. Its
     # dataclass fields ARE the report columns (SMAT headers), so ``columns``
     # and the CSV/JSON export stay trivial.
     record_type: Optional[type] = None
-
-    # Data gates — which events this scan needs the assessor to collect.
-    # Keep them False when the scan only inspects already-loaded data.
-    needs_collection: bool = False  # site collection metadata (UsageInfo, Owner)
-    needs_list_metadata: bool = False  # ItemCount / LastItemModifiedDate on lists
-    needs_webs: bool = False  # the web tree
 
     def __init__(self, options: Optional[AssessmentOptions] = None) -> None:
         self.options = options or AssessmentOptions()
@@ -110,22 +151,9 @@ class BaseScanner:
     ) -> None:
         report.issues.append(AssessmentIssue(severity, self.category, location, message, suggestion))
 
-    # ── Event hooks (default no-op) ───────────────────────────────
-
-    def on_collection(self, site: Any, report: AssessmentReport) -> None:
-        """Site collection metadata is ready (Id, Url, UsageInfo, Owner)."""
-
-    def on_lists(self, lists: Any, report: AssessmentReport) -> None:
-        """A web's list metadata is ready (Id, Title, ItemCount, LastItemModifiedDate)."""
-
-    def on_webs(self, webs: Any, report: AssessmentReport) -> None:
-        """The web tree is ready (all subsites of the collection)."""
-
-    def on_fields(self, fields: Any, report: AssessmentReport, location: str) -> None:
-        """A list's field schema is ready."""
-
-    def on_items(self, items: Any, report: AssessmentReport, location: str) -> None:
-        """A batch of a list's items is ready."""
+    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+        """Inspect a loaded container payload (target.entity) and flag / record."""
+        raise NotImplementedError
 
     def finalize(self, report: AssessmentReport) -> None:
         """All scans for the collection have settled — build rows / flag issues."""

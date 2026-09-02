@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from office365.migration.assessment.report import AssessmentReport
-from office365.migration.assessment.scanners.base import BaseScanner
+from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
 
 
 class FileScanner(BaseScanner):
@@ -11,8 +11,8 @@ class FileScanner(BaseScanner):
 
     category = "file"
 
-    def on_items(self, items, report: AssessmentReport, location: str = "") -> None:
-        for item in items:
+    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+        for item in target.entity:
             path = item.properties.get("FileRef", "")
             size = (item.file.length if getattr(item, "file", None) is not None else None) or 0
             if size > self.options.large_file_bytes:

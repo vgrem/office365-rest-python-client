@@ -1,16 +1,15 @@
 """
-Tenant-scope pre-migration assessment.
+Tenant-scope pre-migration assessment (the TENANT container walker).
 
 Enumerates **all site collections** through the SharePoint Online tenant admin
-API and runs the SPSite-category scans against the site-property bag — e.g. the
-SMAT ``LargeSites-detail`` report across the whole tenant, without per-site
-web-tree enumeration.
+API and runs every enabled SITE-container scan from ``assessment.registry``
+against each site's property bag — e.g. the SMAT ``LargeSites`` and
+``LockedSites`` reports across the whole tenant, without per-site web-tree
+enumeration. Mirrors SMAT's farm-level scan: the site list comes from the
+tenant first, then each site collection is checked.
 
-Mirrors SMAT's farm-level scan: the site list comes from the tenant first, then
-each site collection is checked against the scan criteria.
-
-Requires SharePoint admin access (``SPO.Tenant`` read) — SMAT's farm-account
-prerequisite. Use ``ClientContext(admin_site_url)`` + ``Tenant(ctx)``.
+Requires SharePoint admin access (``SPO.Tenant`` read). Use
+``ClientContext(admin_site_url)`` + ``Tenant(ctx)``.
 """
 
 from __future__ import annotations
@@ -19,13 +18,14 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Callable, Optional
 
+from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
+from office365.migration.assessment.registry import active_scan_pairs
 from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scan_category import ScanCategory
-from office365.migration.assessment.scanners import AssessmentOptions
-from office365.migration.assessment.scanners.large_sites import (
-    LargeSitesScanner,
-    build_large_site_record,
+from office365.migration.assessment.scanners import (
+    AssessmentOptions,
+    ScanTarget,
+    SiteScanSummary,
 )
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.entity import Entity
@@ -63,7 +63,7 @@ class MigrationTenantAssessor(Entity):
         self,
         progress: Optional[Callable[["Progress"], None]] = None,
     ) -> ClientResult[AssessmentReport]:
-        """Enumerate all site collections and run the tenant scans.
+        """Enumerate all site collections and run the SITE-container scans.
 
         Args:
             progress: Optional hook fired per site collection as it is checked.
@@ -72,7 +72,11 @@ class MigrationTenantAssessor(Entity):
         report = return_type.value
         report.scan_id = str(uuid.uuid4())
 
-        scanner = LargeSitesScanner(self._options)
+        site_scans = [
+            scanner
+            for definition, scanner in active_scan_pairs(self._options, tenant_scope=True)
+            if definition.container is ScanContainer.SITE
+        ]
         done = {"count": 0}
 
         def _progress() -> None:
@@ -84,28 +88,21 @@ class MigrationTenantAssessor(Entity):
 
         def _on_site_properties(sites) -> None:
             for site in sites:
-                # locked / no-access sites are skipped (SMAT behavior)
-                if site.lock_state and site.lock_state != "Unlock":
-                    _progress()
-                    continue
-                # SiteId / StorageUsageCurrent are returned by the tenant API but
-                # not part of the generated SiteProperties model — read the raw bag
-                size_mb = site.properties.get("StorageUsageCurrent")
-                # SMAT reports site collections *over* 500 GB
-                if size_mb is None or size_mb / 1024 <= self._options.large_site_threshold_gb:
-                    _progress()
-                    continue
-                scanner.records.append(
-                    build_large_site_record(
-                        site_id=site.properties.get("SiteId"),
-                        site_url=site.url,
-                        site_owner=site.owner_login_name,
-                        size_mb=float(size_mb),
-                        num_of_webs=_coerce_int(site.webs_count),
-                        last_modified=_clean_modified(site.last_content_modified_date),
-                        scan_id=report.scan_id,
-                    )
+                props = site.properties
+                size_mb = props.get("StorageUsageCurrent")  # tenant API, MB — not in the model
+                summary = SiteScanSummary(
+                    site_id=props.get("SiteId"),
+                    site_url=site.url,
+                    owner=site.owner_login_name,
+                    storage_bytes=int(float(size_mb) * 1024 * 1024) if size_mb is not None else None,
+                    web_count=_coerce_int(site.webs_count) or 0,
+                    last_modified=_clean_modified(site.last_content_modified_date),
+                    lock_state=site.lock_state,
+                    report_impacted_only=True,
                 )
+                target = ScanTarget(ScanContainer.SITE, summary, site.url or "")
+                for scan in site_scans:
+                    scan.run(target, report)
                 _progress()
 
         def _fail(e: Exception) -> None:
@@ -116,13 +113,15 @@ class MigrationTenantAssessor(Entity):
         )
 
         def _finalize() -> None:
-            if scanner.records:
-                scanner.records.sort(key=lambda r: r.SizeInGB or 0, reverse=True)
-                report._scan_reports[scanner.scan_name] = ScanReport(
-                    name=scanner.scan_name,
-                    category=ScanCategory.SPSITE,
-                    columns=scanner.columns,
-                    records=scanner.records,
+            for scan in site_scans:
+                if not scan.records:
+                    continue
+                scan.records.sort(key=lambda r: getattr(r, "SizeInGB", 0) or 0, reverse=True)
+                report._scan_reports[scan.scan_name] = ScanReport(
+                    name=scan.scan_name,
+                    container=ScanContainer.SITE,
+                    columns=scan.columns,
+                    records=scan.records,
                 )
 
         report.attach_finalizer(_finalize)

@@ -42,7 +42,7 @@ def progress_bar(description: str):
 def print_scan_reports(report) -> None:
     """Print the SMAT-style detail reports (e.g. LargeSites)."""
     for name, scan in report.scan_reports.items():
-        print(f"\n{name} ({scan.category.value}): {len(scan.records)} row(s)")
+        print(f"\n{name} ({scan.container.value}): {len(scan.records)} row(s)")
         for row in scan.to_records():
             print("  " + " | ".join(f"{k}={row[k]}" for k in scan.columns))
 

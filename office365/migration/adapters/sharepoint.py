@@ -16,8 +16,8 @@ import json
 from typing import TYPE_CHECKING, List, Optional, cast
 
 from office365.migration.adapters import MigrationProgress
+from office365.migration.adapters._transfer import Failure
 from office365.migration.base import MigrationItem
-from office365.migration.transfer import Failure
 
 if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
@@ -183,18 +183,18 @@ class SharePointLibraryTarget:
         payloads: List[object],
         concurrency: Optional[int] = None,
     ) -> List[Failure]:
-        """Transfer a batch of items in parallel (fast path — see :mod:`office365.migration.transfer`).
+        """Transfer a batch of items in parallel (fast path — the library-target transfer).
 
         Returns:
             List of ``(dest_path, error)`` for files that failed.
         """
-        from office365.migration.transfer import transfer_files_parallel
+        from office365.migration.adapters._transfer import _transfer_files_parallel
 
         files = [
             (item.dest_path, payload if isinstance(payload, bytes) else str(payload).encode("utf-8"))
             for item, payload in zip(items, payloads)
         ]
-        return transfer_files_parallel(
+        return _transfer_files_parallel(
             self._folder,
             files,
             concurrency=concurrency or self._concurrency or 1,

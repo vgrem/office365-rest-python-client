@@ -106,13 +106,13 @@ class TestFieldScannerNoise(unittest.TestCase):
     def _run(self, fields) -> AssessmentReport:
         from types import SimpleNamespace
 
-        from office365.migration.assessment.scanners import FieldScanner
+        from office365.migration.assessment.containers import ScanContainer
+        from office365.migration.assessment.scanners import FieldScanner, ScanTarget
 
         report = AssessmentReport()
-        FieldScanner().on_fields(
-            [SimpleNamespace(properties=f) for f in fields],
+        FieldScanner().run(
+            ScanTarget(ScanContainer.FIELDS, [SimpleNamespace(properties=f) for f in fields], "lists/L"),
             report,
-            location="lists/L",
         )
         return report
 

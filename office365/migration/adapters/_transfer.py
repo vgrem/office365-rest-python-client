@@ -1,4 +1,4 @@
-"""Parallel file transfer into a SharePoint document library (migration domain).
+"""Parallel file transfer into a SharePoint document library (adapter-internal).
 
 Unlike the library's **deferred** upload primitives (``upload_folder`` /
 ``upload_file`` / ``upload_content`` — single context, sequential, queue-then-
@@ -11,6 +11,8 @@ the shared :class:`RateLimiter` the primitive wires up.
 
 Folders are created once (deduplicated) before transferring; the per-file upload
 delegates to the library's size-dispatching :meth:`FileCollection.upload_content`.
+
+Internal: consumed by :class:`SharePointLibraryTarget.write_many`.
 """
 
 from __future__ import annotations
@@ -27,7 +29,7 @@ _DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024
 Failure = Tuple[str, str]  # (dest_path, error)
 
 
-def transfer_files_parallel(
+def _transfer_files_parallel(
     target_folder: "Folder",
     files: Iterable[Tuple[str, bytes]],
     *,

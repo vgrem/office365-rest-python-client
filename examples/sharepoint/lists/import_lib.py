@@ -11,8 +11,8 @@ Notes:
 - Enumeration is a single HTTP call (git trees API, ``HEAD`` ref); downloads go
   over plain HTTP from ``raw.githubusercontent.com``.
 - ``--limit 0`` imports every discovered file; cap it with ``--limit N``.
-- For parallel transfers use the migration toolkit's
-  ``transfer_files_parallel`` (see ``examples/sharepoint/migration``).
+- For parallel transfers use ``MigrationOptions.concurrency`` with the migration
+  toolkit's ``MigrationJob`` (see ``examples/sharepoint/migration``).
 - The target library is expected to be fresh: existing folders are not
   overwritten, so re-running against the same library may fail on duplicates.
 

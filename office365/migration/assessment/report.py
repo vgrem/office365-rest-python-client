@@ -7,8 +7,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Callable, Optional
 
+from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
-from office365.migration.assessment.scan_category import ScanCategory
 from office365.runtime.client_value import ClientValue
 
 
@@ -22,7 +22,7 @@ class ScanReport:
     """
 
     name: str
-    category: ScanCategory
+    container: ScanContainer
     columns: tuple[str, ...]
     records: list[ClientValue]
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from office365.migration.assessment.report import AssessmentReport
-from office365.migration.assessment.scanners.base import BaseScanner
+from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
 
 
 class PathScanner(BaseScanner):
@@ -11,8 +11,8 @@ class PathScanner(BaseScanner):
 
     category = "path"
 
-    def on_items(self, items, report: AssessmentReport, location: str = "") -> None:
-        for item in items:
+    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+        for item in target.entity:
             path = item.properties.get("FileRef", "")
             name = item.properties.get("FileLeafRef", "")
 

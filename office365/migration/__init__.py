@@ -16,10 +16,10 @@ Quick start (filesystem -> filesystem):
     print(job.verify().summary())
 """
 
-from office365.migration.assessment.registry import SCANS, ScanDefinition, enabled_scans, get_scan
+from office365.migration.assessment.containers import ScanContainer
+from office365.migration.assessment.registry import SCANS, ScanDefinition, active_scan_pairs, enabled_scans, get_scan
 from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scan_category import ScanCategory
-from office365.migration.assessment.scanners import AssessmentOptions, LargeSitesScanner
+from office365.migration.assessment.scanners import AssessmentOptions, SiteLockedScanner, SiteStorageScanner
 from office365.migration.assessor import MigrationAssessor
 from office365.migration.base import (
     ConflictResolution,
@@ -37,7 +37,7 @@ from office365.migration.manifest import Manifest
 from office365.migration.report import MigrationReport, build_report, export_reports
 from office365.migration.runner import MigrationRunner
 from office365.migration.server_job import MigrationServerJob
-from office365.migration.session import MigrationSession, MigrationTask
+from office365.migration.session import MigrationSession
 from office365.migration.tenant_assessor import MigrationTenantAssessor
 from office365.migration.validators import VerificationReport, verify
 
@@ -48,7 +48,8 @@ __all__ = [
     "ConflictResolution",
     "ExportFormat",
     "ItemStatus",
-    "LargeSitesScanner",
+    "SiteLockedScanner",
+    "SiteStorageScanner",
     "Manifest",
     "MigrationAssessor",
     "MigrationItem",
@@ -61,13 +62,13 @@ __all__ = [
     "MigrationServerJob",
     "MigrationSession",
     "MigrationStats",
-    "MigrationTask",
     "MigrationTenantAssessor",
     "SCANS",
-    "ScanCategory",
+    "ScanContainer",
     "ScanDefinition",
     "ScanReport",
     "VerificationReport",
+    "active_scan_pairs",
     "build_report",
     "enabled_scans",
     "export_reports",

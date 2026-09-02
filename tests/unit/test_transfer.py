@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import unittest
 
+from office365.migration.adapters._transfer import _transfer_files_parallel
 from office365.migration.base import ConflictResolution, ItemStatus, MigrationItem, MigrationOptions
 from office365.migration.checkpoint import Checkpoint
 from office365.migration.runner import MigrationRunner
-from office365.migration.transfer import transfer_files_parallel
 from office365.runtime.types.event_handler import EventHandler
 
 
@@ -104,7 +104,7 @@ class TestTransferFilesParallel(unittest.TestCase):
     def test_transfers_all_files_and_dedups_folders(self):
         log = []
         root = _Folder(_Context(log), log)
-        failures = transfer_files_parallel(
+        failures = _transfer_files_parallel(
             root,
             [("a.txt", b"x"), ("docs/b.txt", b"y"), ("docs/c.txt", b"z")],
             concurrency=4,
@@ -119,14 +119,14 @@ class TestTransferFilesParallel(unittest.TestCase):
         log = []
         root = _Folder(_Context(log), log)
         big = b"x" * (4 * 1024 * 1024 + 1)
-        transfer_files_parallel(root, [("big.bin", big)], concurrency=1)
+        _transfer_files_parallel(root, [("big.bin", big)], concurrency=1)
         self.assertIn(("session", "big.bin"), log)
         self.assertNotIn(("upload", "big.bin"), log)
 
     def test_empty_input_is_noop(self):
         log = []
         root = _Folder(_Context(log), log)
-        self.assertEqual(transfer_files_parallel(root, []), [])
+        self.assertEqual(_transfer_files_parallel(root, []), [])
         self.assertEqual(log, [])
 
 

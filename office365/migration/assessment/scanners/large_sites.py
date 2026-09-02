@@ -1,22 +1,22 @@
-"""Large Sites scan — SMAT ``LargeSites-detail`` report.
+"""Site storage scan — the SMAT ``LargeSites`` report (site size readiness).
 
-Flags site collections over the 500 GB size threshold: migration becomes
-harder to schedule and predict above that. Emits one detail row per site
-collection, mirroring SMAT's column layout.
+A ``SITE``-container scan: it receives the walker-aggregated
+:class:`SiteScanSummary` (storage/owner/webs/item counts) and flags site
+collections over the 500 GB size threshold — migration becomes harder to
+schedule above that. Emits one detail row per site collection.
 
 Columns that only exist on-premises (ContentDB*, usage-logging-based metrics)
-are ``None`` and exported as ``n/a`` — mirroring SMAT's own behavior when the
-usage logging service is disabled.
+are ``None`` and exported as ``n/a``.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
 from office365.migration.assessment.report import AssessmentReport
-from office365.migration.assessment.scanners.base import BaseScanner
+from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
 from office365.runtime.client_value import ClientValue
 
 
@@ -73,95 +73,49 @@ def build_large_site_record(
     )
 
 
-class LargeSitesScanner(BaseScanner):
-    """Per-site-collection inventory: size, webs, item counts, last modified."""
+class SiteStorageScanner(BaseScanner):
+    """SITE-container scan: storage/size readiness (report ``LargeSites``).
+
+    In the site-scope walker (``report_impacted_only=False``) it emits a row per
+    collection; in the tenant walker (``report_impacted_only=True``) it lists
+    only collections over the threshold — locked ones are skipped (surfaced by
+    the LockedSites scan).
+    """
 
     category = "site"
     scan_name = "LargeSites"
     record_type = LargeSitesRecord
 
-    needs_collection = True
-    needs_list_metadata = True
-    needs_webs = True
+    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+        summary = target.entity  # SiteScanSummary
+        size_gb = (summary.storage_bytes or 0) / (1024**3) if summary.storage_bytes else None
+        size_mb = round((summary.storage_bytes or 0) / (1024**2), 1) if summary.storage_bytes else None
+        locked = summary.lock_state in {"NoAccess", "Locked"}
+        over = size_gb is not None and size_gb > self.options.large_site_threshold_gb
 
-    def __init__(self, options=None) -> None:
-        super().__init__(options)
-        self._site_id: Optional[str] = None
-        self._site_url: Optional[str] = None
-        self._owner: Optional[str] = None
-        self._admins: Optional[str] = None
-        self._storage_bytes: Optional[int] = None
-        self._hits: Optional[int] = None
-        self._web_count: Optional[int] = 0
-        self._item_count: int = 0
-        self._last_modified: Optional[datetime] = None
+        if summary.report_impacted_only and (locked or not over):
+            return
 
-    def on_collection(self, site: Any, report: AssessmentReport) -> None:
-        self._site_id = site.id
-        self._site_url = site.url
-
-        usage = site.properties.get("UsageInfo")
-        if usage is not None:
-            self._storage_bytes = getattr(usage, "Storage", None)
-            self._hits = getattr(usage, "Hits", None)
-
-        owner = site.properties.get("Owner")
-        if owner is not None:
-            title = owner.properties.get("Title") or owner.properties.get("LoginName")
-            if title:
-                self._owner = title
-
-        if self.options.include_site_admins:
-            self._query_site_admins(site)
-
-    def _query_site_admins(self, site) -> None:
-        def _set_admins(users) -> None:
-            logins = [
-                u.properties.get("LoginName") or u.properties.get("Title")
-                for u in users
-                if u.properties.get("LoginName") or u.properties.get("Title")
-            ]
-            if logins:
-                self._admins = "; ".join(logins)
-
-        site.root_web.associated_owner_group.users.get().on_error(lambda e: None).after_execute(_set_admins)
-
-    def on_lists(self, lists, report: AssessmentReport) -> None:
-        for lst in lists:
-            count = lst.item_count
-            if isinstance(count, int):
-                self._item_count += count
-            modified = lst.last_item_modified_date
-            if modified is not None and (self._last_modified is None or modified > self._last_modified):
-                self._last_modified = modified
-
-    def on_webs(self, webs, report: AssessmentReport) -> None:
-        self._web_count = len(webs)
-
-    def finalize(self, report: AssessmentReport) -> None:
-        size_gb = (self._storage_bytes or 0) / (1024**3) if self._storage_bytes else None
-        size_mb = round((self._storage_bytes or 0) / (1024**2), 1) if self._storage_bytes else None
         self.records.append(
             build_large_site_record(
-                site_id=self._site_id,
-                site_url=self._site_url,
-                site_owner=self._owner,
-                site_admins=self._admins,
+                site_id=summary.site_id,
+                site_url=summary.site_url,
+                site_owner=summary.owner,
+                site_admins=summary.admins,
                 size_mb=size_mb,
-                num_of_webs=self._web_count,
-                last_modified=self._last_modified,
-                hits=self._hits,
+                num_of_webs=summary.web_count,
+                last_modified=summary.last_modified,
+                hits=summary.hits,
                 scan_id=report.scan_id or None,
             )
         )
-        # TotalItemCount is only meaningful here (deep, per-site scan)
-        self.records[-1].TotalItemCount = self._item_count
+        self.records[-1].TotalItemCount = summary.item_count
 
-        if size_gb is not None and size_gb >= self.options.large_site_threshold_gb:
+        if over and not summary.report_impacted_only:
             self.flag(
                 report,
                 "warning",
-                self._site_url or "site",
+                summary.site_url or "site",
                 f"Site size {size_gb:.1f}GB exceeds the {self.options.large_site_threshold_gb:g}GB guidance — "
                 "migration takes longer to schedule and run",
                 "Split the site collection, archive old content, or store large binaries externally",

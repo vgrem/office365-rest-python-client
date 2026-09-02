@@ -92,7 +92,7 @@ and `None` renders as `n/a`.
 
 Implemented | SMAT roadmap scans (planned)
 --- | ---
-Large Sites | Large Lists, Large List Views, Large Excel Files, Checked-out files, File Versions, Locked Sites, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
+Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Checked-out files, File Versions, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
 
 ### 2. Create a migration task and run (Step 3)
 
@@ -132,15 +132,14 @@ job = MigrationJob(
 )
 ```
 
-### Parallel transfer & sessions (fast)
+### Parallel migration & sessions (fast)
 
 File bytes **cannot ride an OData batch** — SharePoint doesn't support batched file
 uploads — so throughput comes from **concurrency**: `MigrationOptions.concurrency`
 spins up parallel workers, each on a cloned `ClientContext` (reusing auth +
 transport), all sharing one `RateLimiter` that paces the fleet on
-`Retry-After` / `X-SharePointHealthScore`. This is the migration domain's
-**transfer** (`office365.migration.transfer.transfer_files_parallel`) — the
-concurrent driver over the library's *deferred* `upload_file`/`upload_content`
+`Retry-After` / `X-SharePointHealthScore`. The library target applies this via
+its `write_many` fast path over the *deferred* `upload_file`/`upload_content`
 primitives. Record/list writes use the JSON-only
 `execute_batch(items_per_batch=…, concurrency=…)` instead.
 
@@ -154,21 +153,33 @@ job = MigrationJob(
     SharePointLibraryTarget(library_folder, concurrency=4),
     options=MigrationOptions(concurrency=4),
 )
+job.plan()
+job.run()
 ```
 
-`MigrationSession` drives a PowerShell-style lifecycle — **register, add a task,
-start, get status, stop, remove, unregister** — and is **bidirectional** (any
-source/target adapter pair):
+A `MigrationSession` coordinates a **batch of migrations** — each task is a
+source → target `MigrationJob` added explicitly, then started together:
 
-| Lifecycle | This library |
-|---|---|
-| register | `MigrationSession(source, target, options)` |
-| add a task | `session.add_task(...)` |
-| start | `session.start()` |
-| get status | `session.status()` |
-| stop | `session.stop()` |
-| remove a task | `session.remove_task(task)` |
-| unregister | `session.unregister()` |
+```python
+from office365.migration import MigrationOptions, MigrationSession
+
+session = MigrationSession()
+session.add_task(
+    FileSystemSource("src-a"),
+    SharePointLibraryTarget(library_a, concurrency=4),
+    options=MigrationOptions(concurrency=4),
+)
+session.add_task(
+    FileSystemSource("src-b"),
+    SharePointLibraryTarget(library_b, concurrency=4),
+    options=MigrationOptions(concurrency=4),
+)
+session.start()
+print(session.status())
+```
+
+A single migration needs no session — `MigrationJob(source, target, options)`
+with `plan()`/`run()`/`verify()` is the primary entry point.
 
 ---
 
@@ -177,3 +188,4 @@ source/target adapter pair):
 - [SharePoint Migration API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/migration-api-reference)
 - [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap)
 - [Large Sites scan](https://learn.microsoft.com/en-us/sharepointmigration/migration-assessment-scan-large-sites)
+- [Locked Sites scan](https://learn.microsoft.com/en-us/sharepointmigration/migration-assessment-scan-locked-sites)

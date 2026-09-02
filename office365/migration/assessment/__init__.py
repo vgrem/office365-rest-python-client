@@ -1,19 +1,19 @@
-"""Pre-migration assessment — SMAT-style modular scans.
+"""Pre-migration assessment — SMAT-style modular scans, scoped to containers."""
 
-Public surface: the assessor, the report model, and the scan registry.
-"""
-
-from office365.migration.assessment.registry import SCANS, ScanDefinition, enabled_scans, get_scan
+from office365.migration.assessment.containers import ScanContainer
+from office365.migration.assessment.registry import SCANS, ScanDefinition, active_scan_pairs, enabled_scans, get_scan
 from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scan_category import ScanCategory
 from office365.migration.assessment.scanners import (
     AssessmentOptions,
     BaseScanner,
     FieldScanner,
     FileScanner,
-    LargeSitesScanner,
     PathScanner,
     PermissionScanner,
+    ScanTarget,
+    SiteLockedScanner,
+    SiteScanSummary,
+    SiteStorageScanner,
 )
 
 __all__ = [
@@ -22,13 +22,17 @@ __all__ = [
     "BaseScanner",
     "FieldScanner",
     "FileScanner",
-    "LargeSitesScanner",
     "PathScanner",
     "PermissionScanner",
     "SCANS",
-    "ScanCategory",
+    "ScanContainer",
     "ScanDefinition",
     "ScanReport",
+    "ScanTarget",
+    "SiteLockedScanner",
+    "SiteScanSummary",
+    "SiteStorageScanner",
+    "active_scan_pairs",
     "enabled_scans",
     "get_scan",
 ]

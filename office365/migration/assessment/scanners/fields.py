@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from office365.migration.assessment.report import AssessmentReport
-from office365.migration.assessment.scanners.base import BaseScanner
+from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
 
 
 class FieldScanner(BaseScanner):
@@ -11,11 +11,11 @@ class FieldScanner(BaseScanner):
 
     category = "field"
 
-    def on_fields(self, fields, report: AssessmentReport, location: str) -> None:
-        for field in fields:
+    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+        for field in target.entity:
             name = field.properties.get("InternalName", "")
             schema = field.properties.get("SchemaXml", "")
-            loc = f"{location}/{name}"
+            loc = f"{target.location}/{name}"
 
             # approval workflow fields — a real blocker, even though they are system fields
             if name in self.options.approval_workflow_fields:

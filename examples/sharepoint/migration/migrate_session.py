@@ -1,10 +1,11 @@
 """
-Migration session — register, add a task, start, monitor, stop.
+Migration session — add a task, start, monitor, stop.
 
-A PowerShell-style migration lifecycle (register -> add a task -> start ->
-get status), bidirectional: a task pairs any source/target adapter.
-Here: migrate a local directory tree **into** a SharePoint document library with
-parallel uploads (``MigrationOptions.concurrency``).
+A job-centric batch: each task is a source → target :class:`MigrationJob` added
+explicitly to a :class:`MigrationSession`, then started together. Bidirectional —
+a task pairs any source/target adapter. Here: migrate a local directory tree
+**into** a SharePoint document library with parallel uploads
+(``MigrationOptions.concurrency``).
 
     python migrate_session.py --source ./data --library-url /sites/project/Shared Documents
 
@@ -31,15 +32,16 @@ def main():
         tenant=tenant, client_id=client_id, username=username, password=password
     )
     folder = ctx.web.get_folder_by_server_relative_path(args.library_url)
-    options = MigrationOptions(concurrency=args.concurrency, checkpoint_path="session-checkpoint.json")
+    options = MigrationOptions(concurrency=args.concurrency)
 
-    session = MigrationSession(
-        source=FileSystemSource(args.source),
-        target=SharePointLibraryTarget(folder, concurrency=args.concurrency),
+    session = MigrationSession()
+    job = session.add_task(
+        FileSystemSource(args.source),
+        SharePointLibraryTarget(folder, concurrency=args.concurrency),
         options=options,
+        checkpoint_path="session-checkpoint.json",
     )
-    task = session.add_task()
-    print(f"Registered task: {task.source_label} -> {task.target_label}")
+    print(f"Task: {job.source_label} -> {job.target_label}")
 
     session.start()
     for status in session.status():

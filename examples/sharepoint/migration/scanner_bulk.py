@@ -66,7 +66,7 @@ def _merge_scan_reports(combined: AssessmentReport, report: AssessmentReport) ->
         if name in combined.scan_reports:
             combined.scan_reports[name].records.extend(scan.records)
         else:
-            combined.scan_reports[name] = ScanReport(name, scan.category, scan.columns, list(scan.records))
+            combined.scan_reports[name] = ScanReport(name, scan.container, scan.columns, list(scan.records))
 
 
 if __name__ == "__main__":

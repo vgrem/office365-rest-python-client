@@ -1,8 +1,9 @@
-"""Migration job — the orchestration entry point and state machine.
+"""Migration job — a single client-side copy between source and target.
 
 Lifecycle: ``assess -> plan -> run -> verify``, with pause/resume
 from a persisted checkpoint. The job is platform-agnostic — it works against any
-``DataSource`` / ``DataTarget`` adapter pair.
+``DataSource`` / ``DataTarget`` adapter pair. (For server-side Azure ingestion,
+see :class:`MigrationServerJob` instead.)
 """
 
 from __future__ import annotations

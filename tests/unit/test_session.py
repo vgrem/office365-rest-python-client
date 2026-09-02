@@ -1,4 +1,4 @@
-"""Offline tests for the MigrationSession."""
+"""Offline tests for the MigrationSession (job-centric batch API)."""
 
 from __future__ import annotations
 
@@ -20,15 +20,15 @@ def _tree(tmp_path):
 
 def test_session_lifecycle(tmp_path):
     src, dst = _tree(tmp_path)
-    session = MigrationSession(
-        source=FileSystemSource(src),
-        target=FileSystemTarget(dst),
+    session = MigrationSession()
+
+    job = session.add_task(
+        FileSystemSource(src),
+        FileSystemTarget(dst),
         options=MigrationOptions(conflict_resolution=ConflictResolution.OVERWRITE),
     )
-
-    task = session.add_task()
-    assert len(session.tasks) == 1
-    assert task.source_label == src
+    assert len(session.jobs) == 1
+    assert job.source_label == src
 
     session.start()
     status = session.status()[0]
@@ -40,18 +40,17 @@ def test_session_lifecycle(tmp_path):
     assert (Path(dst) / "docs" / "a.txt").exists()
 
     session.stop()
-    session.remove_task(task)
+    session.remove_task(job)
     session.unregister()
-    assert session.tasks == []
+    assert session.jobs == []
 
 
 def test_add_task_with_own_options(tmp_path):
     src, dst = _tree(tmp_path)
     session = MigrationSession()
-    session.add_task(
-        source=FileSystemSource(src),
-        target=FileSystemTarget(dst),
+    job = session.add_task(
+        FileSystemSource(src),
+        FileSystemTarget(dst),
         options=MigrationOptions(concurrency=2),
     )
-    task = session.tasks[0]
-    assert task.job._options.concurrency == 2  # noqa: SLF001, PLR2004
+    assert job._options.concurrency == 2  # noqa: SLF001, PLR2004
