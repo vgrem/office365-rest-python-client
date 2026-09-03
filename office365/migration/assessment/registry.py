@@ -16,7 +16,7 @@ from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.scanners.base import AssessmentOptions, BaseScanner
 from office365.migration.assessment.scanners.fields import FieldScanner
 from office365.migration.assessment.scanners.files import FileScanner
-from office365.migration.assessment.scanners.large_sites import SiteStorageScanner
+from office365.migration.assessment.scanners.large_sites import LargeSitesScanner
 from office365.migration.assessment.scanners.locked_sites import SiteLockedScanner
 from office365.migration.assessment.scanners.paths import PathScanner
 from office365.migration.assessment.scanners.permissions import PermissionScanner
@@ -46,7 +46,7 @@ SCANS: List[ScanDefinition] = [
     ScanDefinition(name="permissions", scanner=PermissionScanner, container=ScanContainer.ITEMS),
     ScanDefinition(
         name="LargeSites",
-        scanner=SiteStorageScanner,
+        scanner=LargeSitesScanner,
         container=ScanContainer.SITE,
         properties={"large_site_threshold_gb": 500.0},
     ),

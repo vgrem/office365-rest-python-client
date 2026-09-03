@@ -9,9 +9,9 @@ from office365.migration.assessment.registry import active_scan_pairs
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners import (
     AssessmentOptions,
+    LargeSitesScanner,
     ScanTarget,
     SiteScanSummary,
-    SiteStorageScanner,
 )
 
 _GB = 1024**3
@@ -52,7 +52,7 @@ class TestScanContainerDispatch(unittest.TestCase):
             web_count=3,
             item_count=4000,
         )
-        scanner = SiteStorageScanner()
+        scanner = LargeSitesScanner()
         scanner.run(ScanTarget(ScanContainer.SITE, summary, summary.site_url or ""), report)
 
         self.assertEqual(len(scanner.records), 1)
@@ -69,7 +69,7 @@ class TestScanContainerDispatch(unittest.TestCase):
     def test_site_storage_scan_small_site_not_flagged(self):
         report = AssessmentReport()
         summary = SiteScanSummary(storage_bytes=50 * _GB, site_url="https://x/small")
-        SiteStorageScanner().run(ScanTarget(ScanContainer.SITE, summary, "https://x/small"), report)
+        LargeSitesScanner().run(ScanTarget(ScanContainer.SITE, summary, "https://x/small"), report)
         self.assertFalse(any(i.category == "site" for i in report.issues))
 
 

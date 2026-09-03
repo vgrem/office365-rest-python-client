@@ -8,12 +8,12 @@ from office365.migration.assessment.scanners import (
     BaseScanner,
     FieldScanner,
     FileScanner,
+    LargeSitesScanner,
     PathScanner,
     PermissionScanner,
     ScanTarget,
     SiteLockedScanner,
     SiteScanSummary,
-    SiteStorageScanner,
 )
 
 __all__ = [
@@ -31,7 +31,7 @@ __all__ = [
     "ScanTarget",
     "SiteLockedScanner",
     "SiteScanSummary",
-    "SiteStorageScanner",
+    "LargeSitesScanner",
     "active_scan_pairs",
     "enabled_scans",
     "get_scan",

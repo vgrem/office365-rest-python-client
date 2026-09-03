@@ -73,7 +73,7 @@ def build_large_site_record(
     )
 
 
-class SiteStorageScanner(BaseScanner):
+class LargeSitesScanner(BaseScanner):
     """SITE-container scan: storage/size readiness (report ``LargeSites``).
 
     In the site-scope walker (``report_impacted_only=False``) it emits a row per

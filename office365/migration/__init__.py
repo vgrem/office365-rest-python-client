@@ -19,7 +19,7 @@ Quick start (filesystem -> filesystem):
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.registry import SCANS, ScanDefinition, active_scan_pairs, enabled_scans, get_scan
 from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scanners import AssessmentOptions, SiteLockedScanner, SiteStorageScanner
+from office365.migration.assessment.scanners import AssessmentOptions, LargeSitesScanner, SiteLockedScanner
 from office365.migration.assessor import MigrationAssessor
 from office365.migration.base import (
     ConflictResolution,
@@ -49,7 +49,7 @@ __all__ = [
     "ExportFormat",
     "ItemStatus",
     "SiteLockedScanner",
-    "SiteStorageScanner",
+    "LargeSitesScanner",
     "Manifest",
     "MigrationAssessor",
     "MigrationItem",
