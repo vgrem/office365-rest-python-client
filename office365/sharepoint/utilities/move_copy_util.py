@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import zipfile
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, AnyStr, Callable, Iterable, Optional, Tuple, Union, cast
 
@@ -149,9 +150,9 @@ class MoveCopyUtil(Entity):
         return binding_type
 
     @staticmethod
-    def download_folder(
+    def download_folder_as_zip(
         remove_folder: Folder,
-        download_file: IO,
+        download_file: Union[str, Path, IO],
         after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
         include_versions: bool = False,
@@ -161,7 +162,8 @@ class MoveCopyUtil(Entity):
 
         Args:
             remove_folder (office365.sharepoint.folders.folder.Folder): Parent folder
-            download_file (typing.IO): A download zip file object
+            download_file (str or pathlib.Path or IO): Destination zip (a path or
+              a seekable file object).
             after_file_downloaded ((office365.sharepoint.files.file.File)->None): A download callback
             recursive (bool): Determines whether to traverse folders recursively
             include_versions (bool): If True, also downloads each file's version history
@@ -170,8 +172,6 @@ class MoveCopyUtil(Entity):
               ``Progress`` snapshot (total is unknown until the folder tree is
               walked).
         """
-        import zipfile
-
         files_downloaded = 0
 
         def _get_relative_file_path(file: File) -> str:
@@ -193,7 +193,7 @@ class MoveCopyUtil(Entity):
                     label = (version.version_label or str(version.id)).replace(".", "_")
 
                     def _save(vresult: ClientResult[AnyStr], fn: str = filename, lbl: str = label) -> None:
-                        with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
+                        with zipfile.ZipFile(download_file, "a", zipfile.ZIP_DEFLATED) as zf:
                             zf.writestr(f"versions/{fn}/v{lbl}", vresult.value)
 
                     version.open_binary_stream().after_execute(_save)
@@ -206,7 +206,7 @@ class MoveCopyUtil(Entity):
                 filename = _get_relative_file_path(file)
                 if callable(after_file_downloaded):
                     after_file_downloaded(file)
-                with zipfile.ZipFile(download_file.name, "a", zipfile.ZIP_DEFLATED) as zf:
+                with zipfile.ZipFile(download_file, "a", zipfile.ZIP_DEFLATED) as zf:
                     zf.writestr(filename, result.value)
                 files_downloaded += 1
                 if callable(progress):
@@ -228,6 +228,52 @@ class MoveCopyUtil(Entity):
         return remove_folder
 
     @staticmethod
+    def download_folder(
+        remove_folder: Folder,
+        download_file: Union[str, Path, IO],
+        after_file_downloaded: Optional[Callable[[File], None]] = None,
+        recursive: bool = True,
+        include_versions: bool = False,
+        progress: Optional[ProgressCallback] = None,
+    ) -> Folder:
+        """Deprecated alias of :meth:`download_folder_as_zip`."""
+        return MoveCopyUtil.download_folder_as_zip(
+            remove_folder, download_file, after_file_downloaded, recursive, include_versions, progress
+        )
+
+    @staticmethod
+    def upload_folder_from_zip(
+        target_folder: Folder,
+        source_zip: Union[str, Path, IO],
+        after_file_uploaded: Optional[Callable[[File], None]] = None,
+        progress: Optional[ProgressCallback] = None,
+        chunk_size: int = _DEFAULT_CHUNK_SIZE,
+    ) -> Folder:
+        """Upload a zip archive's file/folder hierarchy into a folder tree.
+
+        The counterpart of :meth:`download_folder_as_zip`: entries are read from
+        the archive **in memory, one at a time** (no temp dir) and uploaded at
+        their literal relative paths via ``upload_file`` (ensuring folders and
+        size-dispatching). Deferred — the caller executes once; a single
+        ``execute_query()`` drives the whole chain.
+
+        Args:
+            target_folder (office365.sharepoint.folders.folder.Folder): Target folder.
+            source_zip (str or pathlib.Path or IO): A zip archive (path or file object).
+            after_file_uploaded ((office365.sharepoint.files.file.File)->None): Per-file callback.
+            progress: Optional hook invoked per uploaded file with a ``Progress`` snapshot.
+            chunk_size (int): Upload-session chunk size / size threshold (bytes).
+
+        Returns:
+            The target folder (chainable).
+        """
+        zf = zipfile.ZipFile(source_zip)
+        names = sorted(name for name in zf.namelist() if not name.endswith("/"))
+        entries = [(name, (lambda n=name: zf.read(n))) for name in names]
+        _chain_uploads(target_folder, entries, after_file_uploaded, progress, chunk_size, on_done=zf.close)
+        return target_folder
+
+    @staticmethod
     def upload_folder(
         target_folder: Folder,
         source: UploadSource,
@@ -238,7 +284,7 @@ class MoveCopyUtil(Entity):
     ) -> Folder:
         """Upload a local directory / files into a folder tree — sequential, deferred.
 
-        The counterpart of :meth:`download_folder`: ``source`` may be
+        The counterpart of :meth:`download_folder_as_zip`: ``source`` may be
 
         - a **directory** ``str``/``Path`` (walked recursively, files uploaded
           at their relative path),
@@ -263,27 +309,7 @@ class MoveCopyUtil(Entity):
             The target folder (chainable).
         """
         entries = MoveCopyUtil._collect_upload_entries(source, recursive)
-        state = {"index": 0, "done": 0}
-        total = len(entries)
-
-        def _upload_next() -> None:
-            if state["index"] >= total:
-                return
-            relative_path, provider = entries[state["index"]]
-            state["index"] += 1
-
-            def _after(file, rel=relative_path) -> None:
-                state["done"] += 1
-                if callable(after_file_uploaded):
-                    after_file_uploaded(file)
-                if callable(progress):
-                    progress(Progress(done=state["done"], total=total, stage="uploading"))
-                _upload_next()
-
-            target_folder.upload_file(relative_path, provider(), chunk_size).after_execute(_after)
-
-        if total:
-            _upload_next()
+        _chain_uploads(target_folder, entries, after_file_uploaded, progress, chunk_size)
         return target_folder
 
     @staticmethod
@@ -319,6 +345,48 @@ class MoveCopyUtil(Entity):
                 path = Path(item)
                 entries.append((path.name, _path_provider(path)))
         return entries
+
+
+def _chain_uploads(
+    target_folder,
+    entries: list,
+    after_file_uploaded: Optional[Callable[[File], None]],
+    progress: Optional[ProgressCallback],
+    chunk_size: int,
+    on_done: Optional[Callable[[], None]] = None,
+) -> None:
+    """Upload ``[(relative_path, content_provider)]`` entries — sequential, deferred.
+
+    One entry is read (via its provider) and uploaded at a time with
+    ``upload_file``; the caller's single ``execute_query()`` drives the whole
+    chain (bounded memory). ``on_done`` runs once the chain has fully drained
+    (e.g. to close an archive).
+    """
+    state = {"index": 0, "done": 0}
+    total = len(entries)
+
+    def _upload_next() -> None:
+        if state["index"] >= total:
+            if callable(on_done):
+                on_done()
+            return
+        relative_path, provider = entries[state["index"]]
+        state["index"] += 1
+
+        def _after(file, rel=relative_path) -> None:
+            state["done"] += 1
+            if callable(after_file_uploaded):
+                after_file_uploaded(file)
+            if callable(progress):
+                progress(Progress(done=state["done"], total=total, stage="uploading"))
+            _upload_next()
+
+        target_folder.upload_file(relative_path, provider(), chunk_size).after_execute(_after)
+
+    if total:
+        _upload_next()
+    elif callable(on_done):
+        on_done()
 
 
 def _content_provider(content):

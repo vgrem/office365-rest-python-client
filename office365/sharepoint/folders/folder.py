@@ -61,9 +61,9 @@ class Folder(Entity):
         relative_url = abs_url.replace(ctx.base_url, "")
         return ctx.web.get_folder_by_server_relative_url(relative_url)
 
-    def download_folder(
+    def download_folder_as_zip(
         self,
-        download_file: IO,
+        download_file: Union[str, Path, IO],
         after_file_downloaded: Optional[Callable[[File], None]] = None,
         recursive: bool = True,
         include_versions: bool = False,
@@ -72,7 +72,8 @@ class Folder(Entity):
         """Downloads a folder into a zip file
 
         Args:
-            download_file (typing.IO): A download zip file object
+            download_file (str or pathlib.Path or IO): Destination zip (a path or
+              a seekable file object).
             after_file_downloaded ((office365.sharepoint.files.file.File)->None): A download callback
             recursive (bool): Determines whether to traverse folders recursively
             include_versions (bool): If True, also downloads each file's version history
@@ -80,9 +81,20 @@ class Folder(Entity):
             progress: Optional hook invoked per downloaded file with a
               ``Progress`` snapshot.
         """
-        return MoveCopyUtil.download_folder(
+        return MoveCopyUtil.download_folder_as_zip(
             self, download_file, after_file_downloaded, recursive, include_versions, progress
         )
+
+    def download_folder(
+        self,
+        download_file: Union[str, Path, IO],
+        after_file_downloaded: Optional[Callable[[File], None]] = None,
+        recursive: bool = True,
+        include_versions: bool = False,
+        progress: Optional[ProgressCallback] = None,
+    ):
+        """Deprecated alias of :meth:`download_folder_as_zip`."""
+        return self.download_folder_as_zip(download_file, after_file_downloaded, recursive, include_versions, progress)
 
     def upload_folder(
         self,
@@ -94,7 +106,7 @@ class Folder(Entity):
     ):
         """Upload a local directory / files into this folder — sequential, deferred.
 
-        Counterpart of :meth:`download_folder`; see
+        Counterpart of :meth:`download_folder_as_zip`; see
         :meth:`MoveCopyUtil.upload_folder` for the ``source`` forms (directory,
         file, list of file paths, or ``(relative_path, content)`` pairs).
 
@@ -109,6 +121,30 @@ class Folder(Entity):
             The target folder (chainable).
         """
         return MoveCopyUtil.upload_folder(self, source, after_file_uploaded, recursive, progress, chunk_size)
+
+    def upload_folder_from_zip(
+        self,
+        source_zip: Union[str, Path, IO],
+        after_file_uploaded: Optional[Callable[[File], None]] = None,
+        progress: Optional[ProgressCallback] = None,
+        chunk_size: int = _DEFAULT_CHUNK_SIZE,
+    ):
+        """Upload a zip archive's file/folder hierarchy into this folder.
+
+        Counterpart of :meth:`download_folder_as_zip`; see
+        :meth:`MoveCopyUtil.upload_folder_from_zip`. Entries are read in memory,
+        one at a time, and uploaded at their literal relative paths (deferred).
+
+        Args:
+            source_zip (str or pathlib.Path or IO): A zip archive (path or file object).
+            after_file_uploaded ((office365.sharepoint.files.file.File)->None): Per-file callback.
+            progress: Optional hook invoked per uploaded file with a ``Progress`` snapshot.
+            chunk_size (int): Upload-session chunk size / size threshold (bytes).
+
+        Returns:
+            The target folder (chainable).
+        """
+        return MoveCopyUtil.upload_folder_from_zip(self, source_zip, after_file_uploaded, progress, chunk_size)
 
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """Returns the user permissions for a folder"""

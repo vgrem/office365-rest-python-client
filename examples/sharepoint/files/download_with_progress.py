@@ -43,7 +43,7 @@ def main():
     folder = ctx.web.get_folder_by_server_relative_url(args.folder_url)
     output = args.output or os.path.join(tempfile.mkdtemp(), f"{os.path.basename(args.folder_url)}.zip")
     with open(output, "wb") as download_file:
-        folder.download_folder(
+        folder.download_folder_as_zip(
             download_file,
             progress=progress_bar(f"Downloading {os.path.basename(args.folder_url)}"),
             include_versions=True,

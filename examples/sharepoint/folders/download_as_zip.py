@@ -28,7 +28,7 @@ def main():
     from_folder = ctx.web.lists.get_by_title(args.list_title).root_folder
     zip_path = os.path.join(tempfile.mkdtemp(), "download.zip")
     with open(zip_path, "wb") as to_file:
-        from_folder.download_folder(to_file, print_progress).execute_query()
+        from_folder.download_folder_as_zip(to_file, print_progress).execute_query()
         print(f"Files has been downloaded: {zip_path}")
 
 
