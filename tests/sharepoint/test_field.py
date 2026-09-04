@@ -25,7 +25,9 @@ class TestField(SPTestCase):
     def test_02_get_field(self):
         """Get a field by internal name and verify its type."""
         field = (
-            self.client.site.root_web.fields.get_by_internal_name_or_title(self.target_field_name).get().execute_query()
+            self.client.site.root_web.fields.get_by_internal_name_or_title(self.target_field_name, FieldText)
+            .get()
+            .execute_query()
         )
         self.assertIsNotNone(field.internal_name)
         self.assertEqual(field.internal_name, self.target_field_name)
