@@ -8,12 +8,11 @@ for collections.
 
 from __future__ import annotations
 
-import csv
-import json
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING
+
+from office365.migration._util import iso, write_csv_json
 
 if TYPE_CHECKING:
     from office365.migration.job import MigrationJob
@@ -23,9 +22,9 @@ if TYPE_CHECKING:
 class MigrationReport:
     """Record sets for a migration run (one summary row, per-item rows)."""
 
-    summary: List[Dict[str, object]] = field(default_factory=list)
-    items: List[Dict[str, object]] = field(default_factory=list)
-    failures: List[Dict[str, object]] = field(default_factory=list)
+    summary: list[dict[str, object]] = field(default_factory=list)
+    items: list[dict[str, object]] = field(default_factory=list)
+    failures: list[dict[str, object]] = field(default_factory=list)
 
 
 def build_report(job: "MigrationJob") -> MigrationReport:
@@ -41,8 +40,8 @@ def build_report(job: "MigrationJob") -> MigrationReport:
             "skipped": stats.skipped,
             "errors": stats.errors,
             "bytes_transferred": stats.bytes_transferred,
-            "started_at": _iso(job.started_at),
-            "finished_at": _iso(job.finished_at),
+            "started_at": iso(job.started_at),
+            "finished_at": iso(job.finished_at),
             "duration_secs": round(job.duration, 1) if job.duration is not None else None,
         }
     ]
@@ -61,7 +60,7 @@ def build_report(job: "MigrationJob") -> MigrationReport:
     return MigrationReport(summary=summary, items=items, failures=failures)
 
 
-def export_reports(job: "MigrationJob", output_dir: str | Path) -> List[str]:
+def export_reports(job: "MigrationJob", output_dir: str | Path) -> list[str]:
     """Write SummaryReport, ItemReport, and FailureReport (CSV + JSON).
 
     The failure report is only written when failures exist.
@@ -74,8 +73,7 @@ def export_reports(job: "MigrationJob", output_dir: str | Path) -> List[str]:
         List of written file paths.
     """
     report = build_report(job)
-    os.makedirs(output_dir, exist_ok=True)
-    written: List[str] = []
+    written: list[str] = []
     for name, records in (
         ("SummaryReport", report.summary),
         ("ItemReport", report.items),
@@ -83,25 +81,5 @@ def export_reports(job: "MigrationJob", output_dir: str | Path) -> List[str]:
     ):
         if not records:
             continue
-        written += _write(name, records, output_dir)
+        written += write_csv_json(output_dir, name, records)
     return written
-
-
-def _write(name: str, records: List[Dict[str, object]], output_dir: str | Path) -> List[str]:
-    csv_path = os.path.join(output_dir, f"{name}.csv")
-    with open(csv_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(records[0].keys()))
-        writer.writeheader()
-        writer.writerows(records)
-
-    json_path = os.path.join(output_dir, f"{name}.json")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(records, f, indent=2)
-
-    return [csv_path, json_path]
-
-
-def _iso(value) -> str:
-    if value is None:
-        return ""
-    return value.isoformat(timespec="seconds")

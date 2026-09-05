@@ -10,7 +10,6 @@ walker collecting its container's data.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List, Optional, Tuple
 
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.scanners.base import AssessmentOptions, BaseScanner
@@ -39,7 +38,7 @@ class ScanDefinition:
     properties: dict = field(default_factory=dict)
 
 
-SCANS: List[ScanDefinition] = [
+SCANS: list[ScanDefinition] = [
     ScanDefinition(name="fields", scanner=FieldScanner, container=ScanContainer.FIELDS),
     ScanDefinition(name="paths", scanner=PathScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="files", scanner=FileScanner, container=ScanContainer.ITEMS),
@@ -59,7 +58,7 @@ SCANS: List[ScanDefinition] = [
 ]
 
 
-def get_scan(name: str) -> Optional[ScanDefinition]:
+def get_scan(name: str) -> ScanDefinition | None:
     """Look up a scan by name (SMAT ``Name``)."""
     for definition in SCANS:
         if definition.name == name:
@@ -68,9 +67,9 @@ def get_scan(name: str) -> Optional[ScanDefinition]:
 
 
 def active_scan_pairs(
-    options: Optional[AssessmentOptions] = None,
+    options: AssessmentOptions | None = None,
     tenant_scope: bool = False,
-) -> List[Tuple[ScanDefinition, BaseScanner]]:
+) -> list[tuple[ScanDefinition, BaseScanner]]:
     """The enabled ``(definition, scanner)`` pairs, in registry order.
 
     Args:
@@ -78,7 +77,7 @@ def active_scan_pairs(
         tenant_scope: Include ``tenant_only`` scans (the TENANT walker).
     """
     options = options or AssessmentOptions()
-    pairs: List[Tuple[ScanDefinition, BaseScanner]] = []
+    pairs: list[tuple[ScanDefinition, BaseScanner]] = []
     for definition in SCANS:
         if not (definition.enabled and definition.name not in options.disabled_scans):
             continue
@@ -88,6 +87,6 @@ def active_scan_pairs(
     return pairs
 
 
-def enabled_scans(options: Optional[AssessmentOptions] = None) -> List[BaseScanner]:
+def enabled_scans(options: AssessmentOptions | None = None) -> list[BaseScanner]:
     """Instantiate the enabled scans (for callers that don't need the definition)."""
     return [scanner for _, scanner in active_scan_pairs(options, tenant_scope=True)]

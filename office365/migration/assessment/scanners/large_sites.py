@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
@@ -28,34 +27,34 @@ class LargeSitesRecord(ClientValue):
     as ``n/a`` (the report's convention for unavailable data).
     """
 
-    SiteId: Optional[str] = None
-    SiteURL: Optional[str] = None
-    SiteOwner: Optional[str] = None
-    SiteAdmins: Optional[str] = None
-    SiteSizeInMB: Optional[float] = None
-    NumOfWebs: Optional[int] = None
-    ContentDBName: Optional[str] = None
-    ContentDBServerName: Optional[str] = None
-    ContentDBSizeInMB: Optional[str] = None
-    LastContentModifiedDate: Optional[datetime] = None
-    TotalItemCount: Optional[int] = None
-    Hits: Optional[int] = None
-    DistinctUsers: Optional[str] = None
-    DaysOfUsageData: Optional[str] = None
-    SizeInGB: Optional[float] = None
-    ScanID: Optional[str] = None
+    SiteId: str | None = None
+    SiteURL: str | None = None
+    SiteOwner: str | None = None
+    SiteAdmins: str | None = None
+    SiteSizeInMB: float | None = None
+    NumOfWebs: int | None = None
+    ContentDBName: str | None = None
+    ContentDBServerName: str | None = None
+    ContentDBSizeInMB: str | None = None
+    LastContentModifiedDate: datetime | None = None
+    TotalItemCount: int | None = None
+    Hits: int | None = None
+    DistinctUsers: str | None = None
+    DaysOfUsageData: str | None = None
+    SizeInGB: float | None = None
+    ScanID: str | None = None
 
 
 def build_large_site_record(
-    site_id: Optional[str] = None,
-    site_url: Optional[str] = None,
-    site_owner: Optional[str] = None,
-    site_admins: Optional[str] = None,
-    size_mb: Optional[float] = None,
-    num_of_webs: Optional[int] = None,
-    last_modified: Optional[datetime] = None,
-    hits: Optional[int] = None,
-    scan_id: Optional[str] = None,
+    site_id: str | None = None,
+    site_url: str | None = None,
+    site_owner: str | None = None,
+    site_admins: str | None = None,
+    size_mb: float | None = None,
+    num_of_webs: int | None = None,
+    last_modified: datetime | None = None,
+    hits: int | None = None,
+    scan_id: str | None = None,
 ) -> LargeSitesRecord:
     """Build a LargeSites report row (shared by the site and tenant scans)."""
     size_gb = round(size_mb / 1024, 2) if size_mb is not None else None

@@ -11,7 +11,7 @@ from __future__ import annotations
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable
 
 from office365.migration.assessor import MigrationAssessor
 from office365.migration.base import MigrationOptions, MigrationPhase, MigrationStats
@@ -30,10 +30,10 @@ class MigrationJob:
         self,
         source,
         target,
-        options: Optional[MigrationOptions] = None,
-        run_id: Optional[str] = None,
-        manifest_path: Optional[str | Path] = None,
-        checkpoint_path: Optional[str | Path] = None,
+        options: MigrationOptions | None = None,
+        run_id: str | None = None,
+        manifest_path: str | Path | None = None,
+        checkpoint_path: str | Path | None = None,
     ) -> None:
         self._source = source
         self._target = target
@@ -47,8 +47,8 @@ class MigrationJob:
         self._stop_event = threading.Event()
         self._cancel_requested = False
         self._assess_hook: Any = None
-        self._started_at: Optional[datetime] = None
-        self._finished_at: Optional[datetime] = None
+        self._started_at: datetime | None = None
+        self._finished_at: datetime | None = None
 
     # ── Configuration ────────────────────────────────────────────
 
@@ -90,15 +90,15 @@ class MigrationJob:
         return str(label()) if callable(label) else type(self._target).__name__
 
     @property
-    def started_at(self) -> Optional[datetime]:
+    def started_at(self) -> datetime | None:
         return self._started_at
 
     @property
-    def finished_at(self) -> Optional[datetime]:
+    def finished_at(self) -> datetime | None:
         return self._finished_at
 
     @property
-    def duration(self) -> Optional[float]:
+    def duration(self) -> float | None:
         """Wall-clock duration of the last run, in seconds."""
         if self._started_at is None or self._finished_at is None:
             return None
@@ -106,7 +106,7 @@ class MigrationJob:
 
     # ── Lifecycle ────────────────────────────────────────────────
 
-    def assess(self, progress: Optional[Callable[["Progress"], None]] = None) -> object | None:
+    def assess(self, progress: Callable[["Progress"], None] | None = None) -> object | None:
         """Run the pre-migration assessment (the "scan" phase).
 
         Accepts a ``MigrationAssessor`` or a callable attached via
@@ -122,14 +122,14 @@ class MigrationJob:
             return hook()
         return None
 
-    def plan(self, progress: Optional[Callable[["Progress"], None]] = None) -> Manifest:
+    def plan(self, progress: Callable[["Progress"], None] | None = None) -> Manifest:
         """Enumerate the source into a persisted manifest."""
         self._checkpoint.phase = MigrationPhase.PLANNING
         self._manifest = Manifest.from_source(self._source, progress)
         self._save_state()
         return self._manifest
 
-    def run(self, progress: Optional[Callable[["Progress"], None]] = None) -> MigrationStats:
+    def run(self, progress: Callable[["Progress"], None] | None = None) -> MigrationStats:
         """Execute the migration (resumable; re-drives pending/failed items)."""
         self._checkpoint.phase = MigrationPhase.RUNNING
         self._started_at = datetime.now(timezone.utc)
@@ -158,7 +158,7 @@ class MigrationJob:
         self._cancel_requested = True
         self._stop_event.set()
 
-    def resume(self, progress: Optional[Callable[["Progress"], None]] = None) -> MigrationStats:
+    def resume(self, progress: Callable[["Progress"], None] | None = None) -> MigrationStats:
         """Reload persisted state (if any) and continue from the last checkpoint."""
         self._load_state()
         self._stop_event.clear()

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Optional, Set
+from typing import Any
 
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
@@ -37,16 +37,16 @@ class SiteScanSummary:
     ones are surfaced by the LockedSites scan).
     """
 
-    site_id: Optional[str] = None
-    site_url: Optional[str] = None
-    owner: Optional[str] = None
-    admins: Optional[str] = None
-    storage_bytes: Optional[int] = None
-    hits: Optional[int] = None
+    site_id: str | None = None
+    site_url: str | None = None
+    owner: str | None = None
+    admins: str | None = None
+    storage_bytes: int | None = None
+    hits: int | None = None
     web_count: int = 0
     item_count: int = 0
-    last_modified: Optional[Any] = None
-    lock_state: Optional[str] = None
+    last_modified: Any | None = None
+    lock_state: str | None = None
     report_impacted_only: bool = False
 
 
@@ -60,16 +60,16 @@ class AssessmentOptions:
 
     max_path_length: int = 400
     max_name_length: int = 128
-    invalid_chars: Set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
+    invalid_chars: set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
     large_file_bytes: int = 15 * 1024 * 1024 * 1024  # 15GB file-size limit
     large_site_threshold_gb: float = 500.0  # sites over 500GB migrate slower
-    strip_field_attrs: Set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
-    approval_workflow_fields: Set[str] = field(
+    strip_field_attrs: set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
+    approval_workflow_fields: set[str] = field(
         default_factory=lambda: {"_ApprovalStatus", "_ApprovalRespondedBy", "_ApprovalAssignedTo"}
     )
-    disabled_scans: Set[str] = field(default_factory=lambda: {"permissions"})
+    disabled_scans: set[str] = field(default_factory=lambda: {"permissions"})
     include_site_admins: bool = False
-    system_field_names: Set[str] = field(
+    system_field_names: set[str] = field(
         default_factory=lambda: {
             "ContentTypeId",
             "ContentType",
@@ -129,9 +129,9 @@ class BaseScanner:
     # Typed report row for scans that emit SMAT-style detail records. Its
     # dataclass fields ARE the report columns (SMAT headers), so ``columns``
     # and the CSV/JSON export stay trivial.
-    record_type: Optional[type] = None
+    record_type: type | None = None
 
-    def __init__(self, options: Optional[AssessmentOptions] = None) -> None:
+    def __init__(self, options: AssessmentOptions | None = None) -> None:
         self.options = options or AssessmentOptions()
         self.records: list[Any] = []
 

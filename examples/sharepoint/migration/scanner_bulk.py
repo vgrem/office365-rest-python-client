@@ -10,6 +10,8 @@ Requires: read access to each site.
 """
 
 import argparse
+import json
+import os
 
 from office365.migration import MigrationAssessor
 from office365.migration.assessment.report import AssessmentReport, ScanReport
@@ -32,10 +34,24 @@ def progress_bar(description: str):
     return hook
 
 
+def write_report(report, output_dir: str) -> str:
+    """Write the combined assessment (issues + scan details) as one JSON file."""
+    data = {
+        "issues": report.to_records(),
+        "scans": {name: scan.to_records() for name, scan in report.scan_reports.items()},
+    }
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, "AssessmentReport.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    return path
+
+
 def main():
     parser = argparse.ArgumentParser(description="Bulk-assess a list of sites")
     parser.add_argument("--sites-file", required=True, help="file with one site URL per line")
     parser.add_argument("--no-progress", action="store_true", help="do not show tqdm progress bars")
+    parser.add_argument("--output", default="/tmp", help="directory for the combined AssessmentReport.json report")
     args = parser.parse_args()
 
     urls = [line.strip() for line in open(args.sites_file, encoding="utf-8") if line.strip()]
@@ -58,6 +74,7 @@ def main():
 
     print(f"\nCombined ({len(urls)} sites):")
     print(combined.summary())
+    print("Report:", write_report(combined, args.output))
 
 
 def _merge_scan_reports(combined: AssessmentReport, report: AssessmentReport) -> None:
@@ -67,10 +84,6 @@ def _merge_scan_reports(combined: AssessmentReport, report: AssessmentReport) ->
             combined.scan_reports[name].records.extend(scan.records)
         else:
             combined.scan_reports[name] = ScanReport(name, scan.container, scan.columns, list(scan.records))
-
-
-if __name__ == "__main__":
-    main()
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 """
-Shared types, enums, and the MigrationQuery base class.
+Shared types and enums for the migration toolkit.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from enum import Enum
 
 
@@ -102,25 +102,15 @@ class MigrationOptions:
 
 def item_to_dict(item: MigrationItem) -> dict:
     """Serialize a ``MigrationItem`` to a JSON-safe dict (enum/error by value)."""
-    return {
-        "source_path": item.source_path,
-        "dest_path": item.dest_path,
-        "size_bytes": item.size_bytes,
-        "item_type": item.item_type,
-        "status": item.status.value,
-        "error": str(item.error) if item.error else None,
-        "modified": item.modified,
-    }
+    data = asdict(item)
+    data["status"] = item.status.value
+    data["error"] = str(item.error) if item.error else None
+    return data
 
 
 def item_from_dict(data: dict) -> MigrationItem:
-    """Rebuild a ``MigrationItem`` from :func:`item_to_dict` output."""
-    return MigrationItem(
-        source_path=data["source_path"],
-        dest_path=data["dest_path"],
-        size_bytes=int(data.get("size_bytes", 0)),
-        item_type=data.get("item_type", "file"),
-        status=ItemStatus(data.get("status", ItemStatus.PENDING.value)),
-        error=data.get("error"),
-        modified=data.get("modified"),
-    )
+    """Rebuild a ``MigrationItem`` (missing fields fall back to dataclass defaults)."""
+    kwargs = {f.name: data[f.name] for f in fields(MigrationItem) if f.name in data}
+    if "status" in kwargs:
+        kwargs["status"] = ItemStatus(kwargs["status"])
+    return MigrationItem(**kwargs)

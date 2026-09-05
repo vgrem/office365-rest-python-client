@@ -13,8 +13,6 @@ source → target migration; add it explicitly and start the whole batch::
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 from office365.migration.base import MigrationOptions, MigrationPhase
 from office365.migration.job import MigrationJob
 
@@ -46,19 +44,19 @@ class MigrationSession:
         session.start()
     """
 
-    def __init__(self, options: Optional[MigrationOptions] = None) -> None:
+    def __init__(self, options: MigrationOptions | None = None) -> None:
         self._options = options
-        self._jobs: List[MigrationJob] = []
+        self._jobs: list[MigrationJob] = []
 
     @property
-    def jobs(self) -> List[MigrationJob]:
+    def jobs(self) -> list[MigrationJob]:
         return self._jobs
 
     def add_task(
         self,
         source,
         target,
-        options: Optional[MigrationOptions] = None,
+        options: MigrationOptions | None = None,
         manifest_path=None,
         checkpoint_path=None,
     ) -> MigrationJob:
@@ -73,9 +71,9 @@ class MigrationSession:
         self._jobs.append(job)
         return job
 
-    def start(self, progress=None) -> List[dict]:
+    def start(self, progress=None) -> list[dict]:
         """Start the migration: plan + run every registered task."""
-        statuses: List[dict] = []
+        statuses: list[dict] = []
         for job in self._jobs:
             if job.phase in (MigrationPhase.COMPLETED, MigrationPhase.COMPLETED_WITH_ERRORS, MigrationPhase.CANCELLED):
                 statuses.append(_job_status(job))
@@ -89,7 +87,7 @@ class MigrationSession:
         """Reconcile source vs target for every task after migration."""
         return [job.verify(spot_checks) for job in self._jobs]
 
-    def status(self) -> List[dict]:
+    def status(self) -> list[dict]:
         """Get the current per-task status."""
         return [_job_status(job) for job in self._jobs]
 

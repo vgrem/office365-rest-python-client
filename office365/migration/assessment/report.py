@@ -5,7 +5,7 @@ import io
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Callable
 
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
@@ -77,7 +77,7 @@ class AssessmentReport(ClientValue):
 
     # Lazy finalize — scans assemble their detail rows once the deferred batch
     # has settled (post ``execute_query``); the first consumer triggers it.
-    _finalizer: Optional[Callable[[], None]] = field(default=None, init=False, repr=False)
+    _finalizer: Callable[[], None] | None = field(default=None, init=False, repr=False)
     _finalized: bool = field(default=False, init=False, repr=False)
 
     def attach_finalizer(self, fn: Callable[[], None]) -> None:

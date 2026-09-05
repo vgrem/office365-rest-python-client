@@ -24,12 +24,12 @@ Workflow: **scan/assess -> create a task -> monitor and report**.
 |---|---|---|
 | Assess a site (site + subsites) for migration readiness | [`scanner.py`](./scanner.py) | Read access |
 | Bulk-assess a list of sites | [`scanner_bulk.py`](./scanner_bulk.py) | Read access |
-| Generate the SMAT `LargeSites-detail.csv` report (all tenant sites over 500 GB) | [`scan_large_sites.py`](./scan_large_sites.py) | SharePoint admin |
+| Generate the SMAT `LargeSites-detail.json` report (all tenant sites over 500 GB) | [`scan_large_sites.py`](./scan_large_sites.py) | SharePoint admin |
 | Copy a local directory tree (filesystem → filesystem) | [`migrate_files.py`](./migrate_files.py) | none (local) |
 | Export a SharePoint list to local JSON records | [`export_list_to_json.py`](./export_list_to_json.py) | Read access |
 | Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate_library.py`](./migrate_library.py) | Read/Write access |
 | Migrate local files into a library via a migration session (parallel) | [`migrate_session.py`](./migrate_session.py) | Write access |
-| Migrate a tree and write Summary/Item/Failure reports | [`export_reports.py`](./export_reports.py) | none (local) |
+| Migrate a tree and write one JSON migration report | [`export_reports.py`](./export_reports.py) | none (local) |
 
 ---
 

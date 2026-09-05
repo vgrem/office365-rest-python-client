@@ -23,7 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description="Migrate a document library to/from a local directory")
     parser.add_argument("--library-url", required=True, help="server-relative library URL")
     parser.add_argument("--import", dest="import_dir", help="local directory to import INTO the library")
-    parser.add_argument("--target", help="local output directory (export only)")
+    parser.add_argument("--target", default="/tmp", help="local output directory (export only)")
     parser.add_argument("--concurrency", type=int, default=4, help="parallel upload workers (import only)")
     args = parser.parse_args()
 
@@ -40,8 +40,6 @@ def main():
             options=options,
         )
     else:
-        if not args.target:
-            parser.error("--target is required for export")
         job = MigrationJob(SharePointLibrarySource(folder), FileSystemTarget(args.target))
 
     job.plan()

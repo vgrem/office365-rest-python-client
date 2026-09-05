@@ -9,7 +9,6 @@ walker over ``SPO.Tenant.SiteProperties.LockState``.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
@@ -22,8 +21,8 @@ _LOCKED_STATES = {"NoAccess", "Locked"}
 class LockedSitesRecord(ClientValue):
     """One row of the SMAT ``LockedSites-detail`` report."""
 
-    URL: Optional[str] = None
-    ScanID: Optional[str] = None
+    URL: str | None = None
+    ScanID: str | None = None
 
 
 class SiteLockedScanner(BaseScanner):

@@ -17,7 +17,8 @@ Internal: consumed by :class:`SharePointLibraryTarget.write_many`.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Iterable, List, Optional, Tuple
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Tuple
 
 from office365.runtime.parallel import run_parallel
 
@@ -26,18 +27,19 @@ if TYPE_CHECKING:
 
 _DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024
 
+# runtime-evaluated alias (typing form: the ``|``/``tuple[...]`` operators need 3.9+)
 Failure = Tuple[str, str]  # (dest_path, error)
 
 
 def _transfer_files_parallel(
     target_folder: "Folder",
-    files: Iterable[Tuple[str, bytes]],
+    files: Iterable[tuple[str, bytes]],
     *,
     concurrency: int = 4,
-    progress: Optional[Callable] = None,
+    progress: Callable | None = None,
     chunk_size: int = _DEFAULT_CHUNK_SIZE,
-    context_factory: Optional[Callable] = None,
-) -> List[Failure]:
+    context_factory: Callable | None = None,
+) -> list[Failure]:
     """Transfer ``(dest_path, content)`` pairs into a library folder tree in parallel.
 
     Folders are ensured once each (deduplicated); files at or below ``chunk_size``
@@ -68,10 +70,10 @@ def _transfer_files_parallel(
     if parents:
         target_folder.ensure_folders(parents).execute_query()
 
-    failures: List[Failure] = []
+    failures: list[Failure] = []
     context_factory = context_factory or (lambda: target_folder.context.clone(target_folder.context.base_url))
 
-    def _worker(clone, item: Tuple[str, bytes]) -> None:
+    def _worker(clone, item: tuple[str, bytes]) -> None:
         dest_path, content = item
         parts = dest_path.split("/")
         name = parts[-1]

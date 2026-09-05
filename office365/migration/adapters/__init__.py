@@ -9,13 +9,15 @@ SharePoint, the filesystem, and (later) S3 / PostgreSQL / Kafka all plug in here
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable, Iterable, List, Optional
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Optional
 
 from office365.migration.base import ConflictResolution, MigrationItem
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
 
+# NOTE: runtime-evaluated alias, so keep Optional (the ``|`` operator is 3.10+).
 MigrationProgress = Optional[Callable[["Progress"], None]]
 
 
@@ -23,7 +25,7 @@ class DataSource(ABC):
     """Reads migration items from a source."""
 
     @abstractmethod
-    def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
+    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         """Enumerate the items to migrate (with per-item progress)."""
 
     @abstractmethod
@@ -48,10 +50,10 @@ class DataTarget(ABC):
 
     def write_many(
         self,
-        items: List[MigrationItem],
-        payloads: List[object],
+        items: list[MigrationItem],
+        payloads: list[object],
         concurrency: int = 1,
-    ) -> List:
+    ) -> list:
         """Bulk-write a batch; the default falls back to per-item :meth:`write`.
 
         Targets that support true parallel writes (e.g. the SharePoint library

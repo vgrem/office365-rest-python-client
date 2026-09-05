@@ -15,8 +15,9 @@ concurrency, paced by a shared rate limiter.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterable, List, Optional
+from typing import TYPE_CHECKING, Callable, Iterable
 
+from office365.migration._util import emit_progress
 from office365.migration.adapters import DataTarget, resolve_dest
 from office365.migration.base import (
     ConflictResolution,
@@ -42,9 +43,9 @@ class MigrationRunner:
         items: Iterable[MigrationItem],
         options: MigrationOptions,
         checkpoint: Checkpoint,
-        checkpoint_path: Optional[str | Path] = None,
-        progress: Optional[Callable[["Progress"], None]] = None,
-        stop_event: Optional[Callable[[], bool]] = None,
+        checkpoint_path: str | Path | None = None,
+        progress: Callable[["Progress"], None] | None = None,
+        stop_event: Callable[[], bool] | None = None,
     ) -> MigrationStats:
         parallel = (
             options.concurrency > 1
@@ -74,9 +75,9 @@ class MigrationRunner:
         items: Iterable[MigrationItem],
         options: MigrationOptions,
         checkpoint: Checkpoint,
-        checkpoint_path: Optional[str | Path],
-        progress: Optional[Callable[["Progress"], None]],
-        stop_event: Optional[Callable[[], bool]],
+        checkpoint_path: str | Path | None,
+        progress: Callable[["Progress"], None] | None,
+        stop_event: Callable[[], bool] | None,
     ) -> MigrationStats:
         stats = MigrationStats(total=0)
         for index, item in enumerate(items):
@@ -113,12 +114,12 @@ class MigrationRunner:
         items: Iterable[MigrationItem],
         options: MigrationOptions,
         checkpoint: Checkpoint,
-        checkpoint_path: Optional[str | Path],
-        progress: Optional[Callable[["Progress"], None]],
-        stop_event: Optional[Callable[[], bool]],
+        checkpoint_path: str | Path | None,
+        progress: Callable[["Progress"], None] | None,
+        stop_event: Callable[[], bool] | None,
     ) -> MigrationStats:
         stats = MigrationStats(total=0)
-        chunk: List[MigrationItem] = []
+        chunk: list[MigrationItem] = []
 
         def _flush() -> None:
             if not chunk:
@@ -167,17 +168,7 @@ class MigrationRunner:
     @staticmethod
     def _report_progress(progress, stats: MigrationStats, item: MigrationItem) -> None:
         processed = stats.success + stats.skipped + stats.errors
-        if callable(progress):
-            from office365.runtime.operations import Progress
-
-            progress(
-                Progress(
-                    done=processed,
-                    total=stats.total,
-                    stage="migrating",
-                    items=[item],
-                )
-            )
+        emit_progress(progress, done=processed, total=stats.total, stage="migrating", items=[item])
 
     @staticmethod
     def _migrate(source, target: DataTarget, item: MigrationItem, options: MigrationOptions) -> bool:

@@ -11,8 +11,8 @@ import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List
 
+from office365.migration._util import emit_progress, iso
 from office365.migration.adapters import MigrationProgress
 from office365.migration.base import MigrationItem
 
@@ -30,22 +30,20 @@ class FileSystemSource:
     def label(self) -> str:
         return str(self._root)
 
-    def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
-        items: List[MigrationItem] = []
+    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
+        items: list[MigrationItem] = []
         for path in sorted(self._root.rglob("*")):
             if not path.is_file():
                 continue
+            stat = path.stat()
             item = MigrationItem(
                 source_path=str(path),
                 dest_path=str(path.relative_to(self._root)).replace("\\", "/"),
-                size_bytes=path.stat().st_size,
-                modified=datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(timespec="seconds"),
+                size_bytes=stat.st_size,
+                modified=iso(datetime.fromtimestamp(stat.st_mtime, timezone.utc)),
             )
             items.append(item)
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=len(items), stage="planning", items=[item]))
+            emit_progress(progress, done=len(items), stage="planning", items=[item])
         return items
 
     def read(self, item: MigrationItem) -> bytes:
@@ -79,14 +77,12 @@ class FileSystemTarget:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(payload if isinstance(payload, bytes) else str(payload).encode("utf-8"))
 
-    def list_paths(self) -> List[str]:
+    def list_paths(self) -> list[str]:
         return [str(p.relative_to(self._root)).replace("\\", "/") for p in self._root.rglob("*") if p.is_file()]
 
     def modified(self, item: MigrationItem) -> str:
         """Last-modified of the target file, for incremental migration."""
-        return datetime.fromtimestamp((self._root / item.dest_path).stat().st_mtime, timezone.utc).isoformat(
-            timespec="seconds"
-        )
+        return iso(datetime.fromtimestamp((self._root / item.dest_path).stat().st_mtime, timezone.utc))
 
     def checksum(self, item: MigrationItem) -> str:
         return _md5(self._root / item.dest_path)
@@ -109,8 +105,8 @@ class JsonFileSource:
     def label(self) -> str:
         return str(self._root)
 
-    def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
-        items: List[MigrationItem] = []
+    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
+        items: list[MigrationItem] = []
         for path in sorted(self._root.rglob("*.json")):
             item = MigrationItem(
                 source_path=str(path),
@@ -118,10 +114,7 @@ class JsonFileSource:
                 item_type="record",
             )
             items.append(item)
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=len(items), stage="planning", items=[item]))
+            emit_progress(progress, done=len(items), stage="planning", items=[item])
         return items
 
     def read(self, item: MigrationItem) -> object:
@@ -154,7 +147,7 @@ class JsonFileTarget(FileSystemTarget):
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
 
-    def list_paths(self) -> List[str]:
+    def list_paths(self) -> list[str]:
         return [p.relative_to(self._root).with_suffix("").as_posix() for p in self._root.rglob("*.json")]
 
     def checksum(self, item: MigrationItem) -> str:

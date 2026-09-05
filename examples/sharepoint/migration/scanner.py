@@ -18,6 +18,8 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/migration-api-reference
 """
 
 import argparse
+import json
+import os
 
 from office365.migration import SCANS, MigrationAssessor
 from office365.runtime.operations import Progress
@@ -39,6 +41,19 @@ def progress_bar(description: str):
     return hook
 
 
+def write_report(report, output_dir: str) -> str:
+    """Write the assessment (issues + scan details) as one ``AssessmentReport.json``."""
+    data = {
+        "issues": report.to_records(),
+        "scans": {name: scan.to_records() for name, scan in report.scan_reports.items()},
+    }
+    os.makedirs(output_dir, exist_ok=True)
+    path = os.path.join(output_dir, "AssessmentReport.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    return path
+
+
 def print_scan_reports(report) -> None:
     """Print the SMAT-style detail reports (e.g. LargeSites)."""
     for name, scan in report.scan_reports.items():
@@ -56,7 +71,7 @@ def main():
     parser.add_argument("--no-progress", action="store_true", help="do not show a tqdm progress bar")
     parser.add_argument("--disable-scan", action="append", help="disable a scan (e.g. LargeSites)")
     parser.add_argument("--only-scan", help="run only this scan (e.g. LargeSites)")
-    parser.add_argument("--output", help="directory to export AssessmentReport.csv/.json + ScannerReports/")
+    parser.add_argument("--output", default="/tmp", help="directory for the AssessmentReport.json report")
     args = parser.parse_args()
 
     ctx = ClientContext(args.site_url).with_username_and_password(
@@ -77,12 +92,7 @@ def main():
     hook = None if args.no_progress else progress_bar("Assessing")
     report = assessor.assess(progress=hook, recursive=not args.no_recursive).execute_query().value
     print(report.summary())
-
-    if args.output:
-        from office365.migration.assessment.export import export_assessment
-
-        written = export_assessment(report, args.output)
-        print("Exported:", ", ".join(written))
+    print("Report:", write_report(report, args.output))
 
     print_scan_reports(report)
 

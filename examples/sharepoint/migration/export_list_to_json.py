@@ -21,7 +21,7 @@ from tests.settings import client_id, password, team_site_url, tenant, username
 def main():
     parser = argparse.ArgumentParser(description="Export a SharePoint list to local JSON records")
     parser.add_argument("--list-title", required=True, help="source list title")
-    parser.add_argument("--target", required=True, help="output directory")
+    parser.add_argument("--target", default="/tmp", help="directory to write the JSON records into")
     parser.add_argument("--select", default=None, help="comma-separated fields to export")
     args = parser.parse_args()
 

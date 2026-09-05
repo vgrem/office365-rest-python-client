@@ -14,7 +14,10 @@ from __future__ import annotations
 
 import time
 import uuid
-from typing import TYPE_CHECKING, Callable, Optional, Tuple
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
+from office365.migration._util import emit_progress
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
@@ -32,7 +35,7 @@ class MigrationServerJob:
         azure_container_source_uri: str,
         azure_container_manifest_uri: str,
         azure_queue_report_uri: str,
-        ingestion_task_key: Optional[str] = None,
+        ingestion_task_key: str | None = None,
     ) -> str:
         """Submit an ingestion job and return its job id.
 
@@ -55,10 +58,10 @@ class MigrationServerJob:
     def monitor(
         self,
         job_id: str,
-        status_fn: Callable[[str], Tuple[str, int, Optional[int]]],
+        status_fn: Callable[[str], tuple[str, int, int | None]],
         interval: int = 5,
         timeout: int = 1800,
-        progress: Optional[Callable[["Progress"], None]] = None,
+        progress: Callable[["Progress"], None] | None = None,
     ) -> str:
         """Poll a job until it reaches a terminal status.
 
@@ -79,10 +82,7 @@ class MigrationServerJob:
         elapsed = 0
         while elapsed < timeout:
             status, done, total = status_fn(job_id)
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=done, total=total, stage="migrating"))
+            emit_progress(progress, done=done, total=total, stage="migrating")
             if status.lower() in ("succeeded", "completed", "failed", "cancelled"):
                 return status
             time.sleep(interval)

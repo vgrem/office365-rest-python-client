@@ -1,13 +1,14 @@
 """
-Generate the SMAT-style ``LargeSites-detail.csv`` scan report — the list of all
-site collections over 500 GB across the tenant.
+Generate the SMAT-style ``LargeSites-detail`` scan report — site collections
+over a size threshold across the tenant.
 
 Enumerates site collections at **tenant scope** via the SPO.Tenant admin API
 (the SMAT model: get the site list first, then report the large ones) and
-writes only the sites that exceed the 500 GB size guidance. Mirrors the
-SharePoint Migration Assessment Tool's ``LargeSites-detail`` scan output:
+writes only the sites above the size guidance (``--size-threshold``, default
+500 GB) as one JSON file. Mirrors the SharePoint Migration Assessment Tool's
+``LargeSites-detail`` scan:
 
-    python scan_large_sites.py --output out/
+    python scan_large_sites.py --size-threshold 250
 
 Requires: SharePoint admin access (SPO.Tenant read) — SMAT's farm-account
 prerequisite. Use ``--site-url`` for a single-site deep scan instead.
@@ -40,24 +41,22 @@ def progress_bar(description: str):
     return hook
 
 
-def write_report(output_dir: str, scan) -> list[str]:
-    """Write ``LargeSites-detail.csv`` + ``.json`` from the scan's typed rows."""
-    if not scan.records:
-        return []
+def write_report(output_dir: str, scan) -> str | None:
+    """Write the scan's typed rows as one ``LargeSites-detail.json``."""
+    if scan is None or not scan.records:
+        return None
     os.makedirs(output_dir, exist_ok=True)
-    csv_path = os.path.join(output_dir, "LargeSites-detail.csv")
-    json_path = os.path.join(output_dir, "LargeSites-detail.json")
-    with open(csv_path, "w", encoding="utf-8") as f:
-        f.write(scan.to_csv())
-    with open(json_path, "w", encoding="utf-8") as f:
+    path = os.path.join(output_dir, "LargeSites-detail.json")
+    with open(path, "w", encoding="utf-8") as f:
         f.write(scan.to_json())
-    return [csv_path, json_path]
+    return path
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Write the SMAT LargeSites-detail.csv scan report")
+    parser = argparse.ArgumentParser(description="Write the SMAT LargeSites-detail scan report")
     parser.add_argument("--site-url", help="single site collection deep scan (skips tenant scope)")
-    parser.add_argument("--output", default="reports", help="directory for the LargeSites-detail report")
+    parser.add_argument("--size-threshold", type=float, default=1.0, help="size guidance in GB (default: 500)")
+    parser.add_argument("--output", default="/tmp", help="directory for the LargeSites-detail report")
     parser.add_argument("--no-progress", action="store_true", help="do not show a tqdm progress bar")
     args = parser.parse_args()
 
@@ -65,24 +64,28 @@ def main():
         ctx = ClientContext(args.site_url).with_username_and_password(
             tenant=tenant, client_id=client_id, username=username, password=password
         )
-        options = AssessmentOptions(disabled_scans={"permissions", "fields", "paths", "files"})
+        options = AssessmentOptions(
+            disabled_scans={"permissions", "fields", "paths", "files"},
+            large_site_threshold_gb=args.size_threshold,
+        )
         hook = None if args.no_progress else progress_bar("Assessing")
         report = MigrationAssessor(ctx.web, options).assess(progress=hook).execute_query().value
     else:
         ctx = ClientContext(admin_site_url).with_username_and_password(
             tenant=tenant, client_id=client_id, username=username, password=password
         )
+        options = AssessmentOptions(large_site_threshold_gb=args.size_threshold)
         hook = None if args.no_progress else progress_bar("Scanning tenant")
-        report = MigrationTenantAssessor(Tenant(ctx)).assess(progress=hook).execute_query().value
+        report = MigrationTenantAssessor(Tenant(ctx), options).assess(progress=hook).execute_query().value
     print(report.summary())
 
     scan = report.scan_reports.get("LargeSites")
-    written = write_report(args.output, scan)
-    if written and scan is not None:
-        print(f"\n{len(scan.records)} site(s) over the 500 GB size guidance:")
-        print("Report:", ", ".join(written))
+    path = write_report(args.output, scan)
+    if path is not None and scan is not None:
+        print(f"\n{len(scan.records)} site(s) over the {args.size_threshold:g} GB size guidance:")
+        print("Report:", path)
     else:
-        print("\nNo site collections over the 500 GB size guidance were found.")
+        print(f"\nNo site collections over the {args.size_threshold:g} GB size guidance were found.")
 
 
 if __name__ == "__main__":

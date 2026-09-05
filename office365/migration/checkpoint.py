@@ -12,10 +12,9 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Optional
 
+from office365.migration._util import utc_now_iso
 from office365.migration.base import ItemStatus, MigrationItem, MigrationPhase
 
 
@@ -26,15 +25,15 @@ class Checkpoint:
     run_id: str
     phase: MigrationPhase = MigrationPhase.CREATED
     updated_at: str = ""
-    source_watermark: Optional[str] = None
-    items: Dict[str, str] = field(default_factory=dict)  # dest_path -> ItemStatus.value
+    source_watermark: str | None = None
+    items: dict[str, str] = field(default_factory=dict)  # dest_path -> ItemStatus.value
 
     @classmethod
-    def create(cls, run_id: Optional[str] = None) -> "Checkpoint":
+    def create(cls, run_id: str | None = None) -> "Checkpoint":
         return cls(
             run_id=run_id or uuid.uuid4().hex[:12],
             phase=MigrationPhase.CREATED,
-            updated_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            updated_at=utc_now_iso(),
         )
 
     def status_of(self, item: MigrationItem) -> ItemStatus:
@@ -43,7 +42,7 @@ class Checkpoint:
     def record(self, item: MigrationItem, status: ItemStatus) -> None:
         self.items[item.dest_path] = status.value
         item.status = status
-        self.updated_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        self.updated_at = utc_now_iso()
 
     def done_count(self) -> int:
         return sum(1 for v in self.items.values() if v == ItemStatus.DONE.value)

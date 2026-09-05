@@ -15,9 +15,11 @@ Requires SharePoint admin access (``SPO.Tenant`` read). Use
 from __future__ import annotations
 
 import uuid
+from collections.abc import Callable
 from datetime import datetime
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING
 
+from office365.migration._util import emit_progress
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.registry import active_scan_pairs
@@ -35,14 +37,14 @@ if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.tenant import Tenant
 
 
-def _coerce_int(value) -> Optional[int]:
+def _coerce_int(value) -> int | None:
     try:
         return int(value) if value is not None else None
     except (TypeError, ValueError):
         return None
 
 
-def _clean_modified(value) -> Optional[datetime]:
+def _clean_modified(value) -> datetime | None:
     """Drop the naive ``datetime.min`` sentinel (unset) without comparing aware vs naive."""
     if value is None:
         return None
@@ -54,14 +56,14 @@ def _clean_modified(value) -> Optional[datetime]:
 class MigrationTenantAssessor(Entity):
     """Tenant-scope assessment driven by the ``SPO.Tenant`` site-property bag."""
 
-    def __init__(self, tenant: "Tenant", options: Optional[AssessmentOptions] = None) -> None:
+    def __init__(self, tenant: "Tenant", options: AssessmentOptions | None = None) -> None:
         super().__init__(tenant.context)
         self._tenant = tenant
         self._options = options or AssessmentOptions()
 
     def assess(
         self,
-        progress: Optional[Callable[["Progress"], None]] = None,
+        progress: Callable[["Progress"], None] | None = None,
     ) -> ClientResult[AssessmentReport]:
         """Enumerate all site collections and run the SITE-container scans.
 
@@ -81,20 +83,17 @@ class MigrationTenantAssessor(Entity):
 
         def _progress() -> None:
             done["count"] += 1
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=done["count"], total=None, stage="assessing"))
+            emit_progress(progress, done=done["count"], stage="assessing")
 
         def _on_site_properties(sites) -> None:
             for site in sites:
                 props = site.properties
-                size_mb = props.get("StorageUsageCurrent")  # tenant API, MB — not in the model
+                storage = props.get("StorageUsage")  # SiteProperties.StorageUsage — bytes
                 summary = SiteScanSummary(
                     site_id=props.get("SiteId"),
                     site_url=site.url,
                     owner=site.owner_login_name,
-                    storage_bytes=int(float(size_mb) * 1024 * 1024) if size_mb is not None else None,
+                    storage_bytes=int(storage) if storage is not None else None,
                     web_count=_coerce_int(site.webs_count) or 0,
                     last_modified=_clean_modified(site.last_content_modified_date),
                     lock_state=site.lock_state,
@@ -108,9 +107,9 @@ class MigrationTenantAssessor(Entity):
         def _fail(e: Exception) -> None:
             report.issues.append(AssessmentIssue("warning", "access", "tenant", f"skipped — {e}"))
 
-        self._tenant.get_site_properties_from_sharepoint_by_filters("", None, False).on_error(_fail).after_execute(
-            _on_site_properties
-        )
+        self._tenant.get_site_properties_from_sharepoint_by_filters("", None, include_detail=True).on_error(
+            _fail
+        ).after_execute(_on_site_properties)
 
         def _finalize() -> None:
             for scan in site_scans:

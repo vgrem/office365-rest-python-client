@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass, field
-from typing import List
 
 from office365.migration.adapters import DataSource, DataTarget
 from office365.migration.manifest import Manifest
@@ -19,7 +18,7 @@ class VerificationReport:
     source_count: int = 0
     target_count: int = 0
     checked: int = 0
-    mismatches: List[str] = field(default_factory=list)
+    mismatches: list[str] = field(default_factory=list)
 
     @property
     def ok(self) -> bool:

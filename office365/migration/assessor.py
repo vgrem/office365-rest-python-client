@@ -20,8 +20,10 @@ method, :meth:`BaseScanner.run`::
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING, Callable, Optional
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
+from office365.migration._util import emit_progress
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.registry import active_scan_pairs
@@ -36,10 +38,11 @@ from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
+    from office365.sharepoint.sites.site import Site
     from office365.sharepoint.webs.web import Web
 
 
-def _scan_for(active, container: ScanContainer, items_load: Optional[str] = None):
+def _scan_for(active, container: ScanContainer, items_load: str | None = None):
     """Scans registered for a container (optionally an items projection)."""
     return [s for d, s in active if d.container is container and (items_load is None or s.items_load == items_load)]
 
@@ -100,7 +103,7 @@ class MigrationAssessor(Entity):
 
     def assess(
         self,
-        progress: Optional[Callable[["Progress"], None]] = None,
+        progress: Callable[["Progress"], None] | None = None,
         recursive: bool = True,
     ) -> ClientResult[AssessmentReport]:
         """Run the assessment — the whole web tree (site + subsites) by default.
@@ -211,7 +214,7 @@ class MigrationAssessor(Entity):
 
     def _on_site_loaded(
         self,
-        site,
+        site: Site,
         report: AssessmentReport,
         summary: SiteScanSummary,
         site_scans,
@@ -262,7 +265,7 @@ class MigrationAssessor(Entity):
         items_scans,
         unique_items_scans,
         needs_list_metadata: bool,
-        progress: Optional[Callable[["Progress"], None]],
+        progress: Callable[["Progress"], None] | None,
         flag_failure: Callable,
         dispatch,
     ) -> None:
@@ -281,10 +284,7 @@ class MigrationAssessor(Entity):
 
         def _progress(lst) -> None:
             completed["count"] += 1
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=completed["count"], total=total, stage="assessing", items=[lst]))
+            emit_progress(progress, done=completed["count"], total=total, stage="assessing", items=[lst])
 
         for lst in lists:
             if lst.hidden:

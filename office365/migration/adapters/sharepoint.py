@@ -13,8 +13,9 @@ from __future__ import annotations
 import hashlib
 import io
 import json
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, cast
 
+from office365.migration._util import emit_progress
 from office365.migration.adapters import MigrationProgress
 from office365.migration.adapters._transfer import Failure
 from office365.migration.base import MigrationItem
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
 class SharePointListSource:
     """Enumerates a SharePoint list's items into record migration items."""
 
-    def __init__(self, source_list: "SPList", select: Optional[List[str]] = None) -> None:
+    def __init__(self, source_list: "SPList", select: list[str] | None = None) -> None:
         self._list = source_list
         self._select = select
         self._records: dict[str, dict] = {}
@@ -36,13 +37,13 @@ class SharePointListSource:
     def label(self) -> str:
         return f"list:{self._list.title}"
 
-    def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
+    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         items = self._list.items
         if self._select:
             items = items.select(self._select)
         loaded = items.get_all().execute_query()
 
-        result: List[MigrationItem] = []
+        result: list[MigrationItem] = []
         for item in loaded:
             record = {k: v for k, v in item.properties.items() if not str(k).startswith("__")}
             self._records[str(item.id)] = record
@@ -53,10 +54,7 @@ class SharePointListSource:
                     item_type="record",
                 )
             )
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=len(result), stage="planning", items=[item]))
+            emit_progress(progress, done=len(result), stage="planning", items=[item])
         return result
 
     def read(self, item: MigrationItem) -> dict:
@@ -85,7 +83,7 @@ class SharePointListTarget:
     def write(self, item: MigrationItem, payload: object) -> None:
         self._list.items.from_records([cast(dict, payload)])
 
-    def list_paths(self) -> List[str]:
+    def list_paths(self) -> list[str]:
         return [str(i.id) for i in self._list.items.get().execute_query()]
 
     def checksum(self, item: MigrationItem) -> str:
@@ -111,11 +109,11 @@ class SharePointLibrarySource:
     def label(self) -> str:
         return f"library:{self._folder.server_relative_url}"
 
-    def list_items(self, progress: MigrationProgress = None) -> List[MigrationItem]:
+    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         root = (self._folder.server_relative_url or "").rstrip("/")
         loaded = self._folder.get_files(recursive=True).execute_query()
 
-        result: List[MigrationItem] = []
+        result: list[MigrationItem] = []
         for file in loaded:
             url = file.server_relative_url or ""
             rel = url[len(root) :].lstrip("/") if root else url.lstrip("/")
@@ -128,10 +126,7 @@ class SharePointLibrarySource:
                     item_type="file",
                 )
             )
-            if callable(progress):
-                from office365.runtime.operations import Progress
-
-                progress(Progress(done=len(result), stage="planning", items=[file]))
+            emit_progress(progress, done=len(result), stage="planning", items=[file])
         return result
 
     def read(self, item: MigrationItem) -> bytes:
@@ -179,10 +174,10 @@ class SharePointLibraryTarget:
 
     def write_many(
         self,
-        items: List[MigrationItem],
-        payloads: List[object],
-        concurrency: Optional[int] = None,
-    ) -> List[Failure]:
+        items: list[MigrationItem],
+        payloads: list[object],
+        concurrency: int | None = None,
+    ) -> list[Failure]:
         """Transfer a batch of items in parallel (fast path — the library-target transfer).
 
         Returns:
@@ -200,7 +195,7 @@ class SharePointLibraryTarget:
             concurrency=concurrency or self._concurrency or 1,
         )
 
-    def list_paths(self) -> List[str]:
+    def list_paths(self) -> list[str]:
         root = (self._folder.server_relative_url or "").rstrip("/")
         loaded = self._folder.get_files(recursive=True).execute_query()
         return [(f.server_relative_url or "")[len(root) :].lstrip("/") for f in loaded]

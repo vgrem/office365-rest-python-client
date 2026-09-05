@@ -9,8 +9,9 @@ planned, audited, and resumed.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable, Iterator, List, Optional
+from typing import TYPE_CHECKING
 
 from office365.migration.base import ItemStatus, MigrationItem, item_from_dict, item_to_dict
 
@@ -21,14 +22,14 @@ if TYPE_CHECKING:
 class Manifest:
     """A serializable plan of ``MigrationItem`` units."""
 
-    def __init__(self, items: Optional[List[MigrationItem]] = None) -> None:
-        self._items: List[MigrationItem] = list(items or [])
+    def __init__(self, items: list[MigrationItem] | None = None) -> None:
+        self._items: list[MigrationItem] = list(items or [])
 
     @classmethod
     def from_source(
         cls,
         source,
-        progress: Optional[Callable[["Progress"], None]] = None,
+        progress: Callable[["Progress"], None] | None = None,
     ) -> "Manifest":
         """Enumerate a source into a manifest (with per-item progress)."""
         return cls(source.list_items(progress))
@@ -38,15 +39,15 @@ class Manifest:
         return self
 
     @property
-    def items(self) -> List[MigrationItem]:
+    def items(self) -> list[MigrationItem]:
         return self._items
 
     @property
-    def pending(self) -> List[MigrationItem]:
+    def pending(self) -> list[MigrationItem]:
         return [i for i in self._items if i.status == ItemStatus.PENDING]
 
     @property
-    def failed(self) -> List[MigrationItem]:
+    def failed(self) -> list[MigrationItem]:
         return [i for i in self._items if i.status == ItemStatus.FAILED]
 
     def by_dest(self) -> dict[str, MigrationItem]:
