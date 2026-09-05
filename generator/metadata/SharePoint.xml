@@ -2802,6 +2802,7 @@
             <Property Name="ExcludeFromOfflineClient" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ExcludeFromOfflineMode" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ExemptFromBlockDownloadOfNonViewableFiles" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="ExtendedSharePointPermissionOfflineDaysForLibrary" Type="Edm.Int32" Nullable="false"/>
             <Property Name="FileSavePostProcessingEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ForceCheckout" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="HasContentAssemblyTemplates" Type="Edm.Boolean" Nullable="false"/>
@@ -2863,6 +2864,7 @@
             <NavigationProperty Name="DefaultView" Relationship="SP.SP_List_DefaultView_SP_View_DefaultViewPartner" ToRole="DefaultView" FromRole="DefaultViewPartner"/>
             <NavigationProperty Name="DescriptionResource" Relationship="SP.SP_List_DescriptionResource_SP_UserResource_DescriptionResourcePartner" ToRole="DescriptionResource" FromRole="DescriptionResourcePartner"/>
             <NavigationProperty Name="EventReceivers" Relationship="SP.SP_List_EventReceivers_SP_EventReceiverDefinition_EventReceiversPartner" ToRole="EventReceivers" FromRole="EventReceiversPartner"/>
+            <NavigationProperty Name="ExtendedSharePointPermissionSettings" Relationship="SP.SP_List_ExtendedSharePointPermissionSettings_SP_ExtendedSharePointPermissionSettings_ExtendedSharePointPermissionSettingsPartner" ToRole="ExtendedSharePointPermissionSettings" FromRole="ExtendedSharePointPermissionSettingsPartner"/>
             <NavigationProperty Name="Fields" Relationship="SP.SP_List_Fields_SP_Field_FieldsPartner" ToRole="Fields" FromRole="FieldsPartner"/>
             <NavigationProperty Name="Forms" Relationship="SP.SP_List_Forms_SP_Form_FormsPartner" ToRole="Forms" FromRole="FormsPartner"/>
             <NavigationProperty Name="InformationRightsManagementSettings" Relationship="SP.SP_List_InformationRightsManagementSettings_SP_InformationRightsManagementSettings_InformationRightsManagementSettingsPartner" ToRole="InformationRightsManagementSettings" FromRole="InformationRightsManagementSettingsPartner"/>
@@ -2946,6 +2948,13 @@
             </Key>
             <Property Name="SchemaXml" Type="Edm.String" Nullable="false"/>
             <Property Name="Items" Type="Collection(Edm.String)"/>
+         </EntityType>
+         <EntityType Name="ExtendedSharePointPermissionSettings">
+            <Key>
+               <PropertyRef Name="Enabled"/>
+            </Key>
+            <Property Name="Enabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="OfflineDays" Type="Edm.Int32" Nullable="false"/>
          </EntityType>
          <EntityType Name="Form">
             <Key>
@@ -4866,6 +4875,10 @@
             <End Type="SP.EventReceiverDefinition" Role="EventReceivers" Multiplicity="*"/>
             <End Type="SP.List" Role="EventReceiversPartner" Multiplicity="0..1"/>
          </Association>
+         <Association Name="SP_List_ExtendedSharePointPermissionSettings_SP_ExtendedSharePointPermissionSettings_ExtendedSharePointPermissionSettingsPartner">
+            <End Type="SP.ExtendedSharePointPermissionSettings" Role="ExtendedSharePointPermissionSettings" Multiplicity="0..1"/>
+            <End Type="SP.List" Role="ExtendedSharePointPermissionSettingsPartner" Multiplicity="0..1"/>
+         </Association>
          <Association Name="SP_List_Fields_SP_Field_FieldsPartner">
             <End Type="SP.Field" Role="Fields" Multiplicity="*"/>
             <End Type="SP.List" Role="FieldsPartner" Multiplicity="0..1"/>
@@ -5267,6 +5280,7 @@
             <EntitySet Name="Fontpackages" EntityType="SP.FontPackage"/>
             <EntitySet Name="GroupServices" EntityType="Microsoft.SharePoint.Portal.GroupService"/>
             <EntitySet Name="Groupsitemanagers" EntityType="Microsoft.SharePoint.Portal.GroupSiteManager"/>
+            <EntitySet Name="Htmlpages" EntityType="SP.HtmlPages.HtmlPageService"/>
             <EntitySet Name="Hubsites" EntityType="SP.HubSite"/>
             <EntitySet Name="HubSitesUtilitys" EntityType="Microsoft.SharePoint.Portal.SPHubSitesUtility"/>
             <EntitySet Name="KnowledgeHubs" EntityType="SP.KnowledgeHub"/>
@@ -5515,6 +5529,7 @@
             <EntitySet Name="Campaigns" EntityType="Microsoft.SharePoint.Publishing.Campaigns.Campaign"/>
             <EntitySet Name="PageCopyResponses" EntityType="Microsoft.SharePoint.Publishing.PageCopyWithAssets.PageCopyResponse"/>
             <EntitySet Name="BaseCustomPropertys" EntityType="Microsoft.SharePoint.Publishing.RestOnly.BaseCustomProperty"/>
+            <EntitySet Name="ConsumerQuotaInfoApis" EntityType="Microsoft.SharePoint.QuotaManagement.Consumer.Merlin.QuotaInfo.ConsumerQuotaInfoApi"/>
             <EntitySet Name="NonQuotaBackfillApis" EntityType="Microsoft.SharePoint.QuotaManagement.Consumer.NonQuotaBackfillApi"/>
             <EntitySet Name="NonQuotaMigrationApis" EntityType="Microsoft.SharePoint.QuotaManagement.Consumer.NonQuotaMigrationApi"/>
             <EntitySet Name="QuotaMigrationApis" EntityType="Microsoft.SharePoint.QuotaManagement.Consumer.QuotaMigrationApi"/>
@@ -5682,6 +5697,7 @@
             <EntitySet Name="eSignInternals" EntityType="SP.eSignInternal"/>
             <EntitySet Name="eSignSelectedWriteBackInternals" EntityType="SP.eSignSelectedWriteBackInternal"/>
             <EntitySet Name="EventReceiverDefinitions" EntityType="SP.EventReceiverDefinition"/>
+            <EntitySet Name="ExtendedSharePointPermissionSettingss" EntityType="SP.ExtendedSharePointPermissionSettings"/>
             <EntitySet Name="FavoriteItemCollections" EntityType="SP.FavoriteItemCollection"/>
             <EntitySet Name="FavoriteListss" EntityType="SP.FavoriteLists"/>
             <EntitySet Name="FavoriteListsSubstrates" EntityType="SP.FavoriteListsSubstrate"/>
@@ -5698,6 +5714,7 @@
             <EntitySet Name="Forms" EntityType="SP.Form"/>
             <EntitySet Name="GlutamateControllers" EntityType="SP.GlutamateController"/>
             <EntitySet Name="Groups1" EntityType="SP.Group"/>
+            <EntitySet Name="HtmlPages" EntityType="SP.HtmlPages.HtmlPage"/>
             <EntitySet Name="InformationRightsManagementFileSettingss" EntityType="SP.InformationRightsManagementFileSettings"/>
             <EntitySet Name="InformationRightsManagementSettingss" EntityType="SP.InformationRightsManagementSettings"/>
             <EntitySet Name="ApprovalsManagers" EntityType="SP.Internal.ApprovalsManager"/>
@@ -5926,6 +5943,7 @@
             <FunctionImport Name="fontpackages" ReturnType="Collection(SP.FontPackage)" IsComposable="true" EntitySet="Fontpackages"/>
             <FunctionImport Name="GroupService" ReturnType="Microsoft.SharePoint.Portal.GroupService" IsComposable="true" EntitySet="GroupServices"/>
             <FunctionImport Name="groupsitemanager" ReturnType="Microsoft.SharePoint.Portal.GroupSiteManager" IsComposable="true" EntitySet="Groupsitemanagers"/>
+            <FunctionImport Name="htmlpages" ReturnType="SP.HtmlPages.HtmlPageService" IsComposable="true" EntitySet="Htmlpages"/>
             <FunctionImport Name="hubsites" ReturnType="Collection(SP.HubSite)" IsComposable="true" EntitySet="Hubsites"/>
             <FunctionImport Name="HubSitesUtility" ReturnType="Microsoft.SharePoint.Portal.SPHubSitesUtility" IsComposable="true" EntitySet="HubSitesUtilitys"/>
             <FunctionImport Name="KnowledgeHub" ReturnType="SP.KnowledgeHub" IsComposable="true" EntitySet="KnowledgeHubs"/>
@@ -6383,7 +6401,7 @@
                <Parameter Name="modelID" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_Office_Server_ContentCenter_SPMachineLearningWorkItemEntityData" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItemEntityData" IsComposable="true" EntitySet="SPMachineLearningWorkItemEntityDatas"/>
-            <FunctionImport Name="AutofillDocLibSynchronous" ReturnType="Edm.String" IsBindable="true">
+            <FunctionImport Name="AutofillDocLibSynchronous" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
                <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData"/>
             </FunctionImport>
@@ -11823,6 +11841,7 @@
                <Parameter Name="target" Type="Edm.Int32" Nullable="false"/>
                <Parameter Name="type" Type="Edm.Int32" Nullable="false"/>
                <Parameter Name="hash" Type="Edm.String"/>
+               <Parameter Name="groupId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SetSiteLogo" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Portal.SiteIconManager"/>
@@ -12410,6 +12429,10 @@
             <FunctionImport Name="MigrateQuota" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.QuotaManagement.Consumer.QuotaMigrationApi"/>
                <Parameter Name="IsMaxQuotaCall" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="Microsoft_SharePoint_QuotaManagement_Consumer_Merlin_QuotaInfo_ConsumerQuotaInfoApi" ReturnType="Microsoft.SharePoint.QuotaManagement.Consumer.Merlin.QuotaInfo.ConsumerQuotaInfoApi" IsComposable="true" EntitySet="ConsumerQuotaInfoApis"/>
+            <FunctionImport Name="GetQuotaInfo" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.QuotaManagement.Consumer.Merlin.QuotaInfo.ConsumerQuotaInfoApi"/>
             </FunctionImport>
             <FunctionImport Name="SP_SPHSite" ReturnType="SP.SPHSite" IsComposable="true" EntitySet="SPHSites"/>
             <FunctionImport Name="AddHomeSite" ReturnType="SP.TargetedSiteDetails" IsBindable="true">
@@ -13890,6 +13913,141 @@
                <Parameter Name="ViewId" Type="Edm.String"/>
                <Parameter Name="ViewPath" Type="Edm.String"/>
                <Parameter Name="WebPartId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_List_GetListDataFromIDAsStream" ReturnType="Edm.Stream" IsSideEffecting="false">
+               <Parameter Name="docId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="siteRouteKey" Type="Edm.String"/>
+               <Parameter Name="parameters" Type="SP.RenderListDataParameters"/>
+               <Parameter Name="CascDelWarnMessage" Type="Edm.String"/>
+               <Parameter Name="CustomAction" Type="Edm.String"/>
+               <Parameter Name="DrillDown" Type="Edm.String"/>
+               <Parameter Name="Field" Type="Edm.String"/>
+               <Parameter Name="FieldInternalName" Type="Edm.String"/>
+               <Parameter Name="Filter" Type="Edm.String"/>
+               <Parameter Name="FilterData" Type="Edm.String"/>
+               <Parameter Name="FilterData1" Type="Edm.String"/>
+               <Parameter Name="FilterData10" Type="Edm.String"/>
+               <Parameter Name="FilterData2" Type="Edm.String"/>
+               <Parameter Name="FilterData3" Type="Edm.String"/>
+               <Parameter Name="FilterData4" Type="Edm.String"/>
+               <Parameter Name="FilterData5" Type="Edm.String"/>
+               <Parameter Name="FilterData6" Type="Edm.String"/>
+               <Parameter Name="FilterData7" Type="Edm.String"/>
+               <Parameter Name="FilterData8" Type="Edm.String"/>
+               <Parameter Name="FilterData9" Type="Edm.String"/>
+               <Parameter Name="FilterField" Type="Edm.String"/>
+               <Parameter Name="FilterField1" Type="Edm.String"/>
+               <Parameter Name="FilterField10" Type="Edm.String"/>
+               <Parameter Name="FilterField2" Type="Edm.String"/>
+               <Parameter Name="FilterField3" Type="Edm.String"/>
+               <Parameter Name="FilterField4" Type="Edm.String"/>
+               <Parameter Name="FilterField5" Type="Edm.String"/>
+               <Parameter Name="FilterField6" Type="Edm.String"/>
+               <Parameter Name="FilterField7" Type="Edm.String"/>
+               <Parameter Name="FilterField8" Type="Edm.String"/>
+               <Parameter Name="FilterField9" Type="Edm.String"/>
+               <Parameter Name="FilterFields" Type="Edm.String"/>
+               <Parameter Name="FilterFields1" Type="Edm.String"/>
+               <Parameter Name="FilterFields10" Type="Edm.String"/>
+               <Parameter Name="FilterFields2" Type="Edm.String"/>
+               <Parameter Name="FilterFields3" Type="Edm.String"/>
+               <Parameter Name="FilterFields4" Type="Edm.String"/>
+               <Parameter Name="FilterFields5" Type="Edm.String"/>
+               <Parameter Name="FilterFields6" Type="Edm.String"/>
+               <Parameter Name="FilterFields7" Type="Edm.String"/>
+               <Parameter Name="FilterFields8" Type="Edm.String"/>
+               <Parameter Name="FilterFields9" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId1" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId10" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId2" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId3" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId4" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId5" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId6" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId7" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId8" Type="Edm.String"/>
+               <Parameter Name="FilterLookupId9" Type="Edm.String"/>
+               <Parameter Name="FilterOp" Type="Edm.String"/>
+               <Parameter Name="FilterOp1" Type="Edm.String"/>
+               <Parameter Name="FilterOp10" Type="Edm.String"/>
+               <Parameter Name="FilterOp2" Type="Edm.String"/>
+               <Parameter Name="FilterOp3" Type="Edm.String"/>
+               <Parameter Name="FilterOp4" Type="Edm.String"/>
+               <Parameter Name="FilterOp5" Type="Edm.String"/>
+               <Parameter Name="FilterOp6" Type="Edm.String"/>
+               <Parameter Name="FilterOp7" Type="Edm.String"/>
+               <Parameter Name="FilterOp8" Type="Edm.String"/>
+               <Parameter Name="FilterOp9" Type="Edm.String"/>
+               <Parameter Name="FilterValue" Type="Edm.String"/>
+               <Parameter Name="FilterValue1" Type="Edm.String"/>
+               <Parameter Name="FilterValue10" Type="Edm.String"/>
+               <Parameter Name="FilterValue2" Type="Edm.String"/>
+               <Parameter Name="FilterValue3" Type="Edm.String"/>
+               <Parameter Name="FilterValue4" Type="Edm.String"/>
+               <Parameter Name="FilterValue5" Type="Edm.String"/>
+               <Parameter Name="FilterValue6" Type="Edm.String"/>
+               <Parameter Name="FilterValue7" Type="Edm.String"/>
+               <Parameter Name="FilterValue8" Type="Edm.String"/>
+               <Parameter Name="FilterValue9" Type="Edm.String"/>
+               <Parameter Name="FilterValues" Type="Edm.String"/>
+               <Parameter Name="FilterValues1" Type="Edm.String"/>
+               <Parameter Name="FilterValues10" Type="Edm.String"/>
+               <Parameter Name="FilterValues2" Type="Edm.String"/>
+               <Parameter Name="FilterValues3" Type="Edm.String"/>
+               <Parameter Name="FilterValues4" Type="Edm.String"/>
+               <Parameter Name="FilterValues5" Type="Edm.String"/>
+               <Parameter Name="FilterValues6" Type="Edm.String"/>
+               <Parameter Name="FilterValues7" Type="Edm.String"/>
+               <Parameter Name="FilterValues8" Type="Edm.String"/>
+               <Parameter Name="FilterValues9" Type="Edm.String"/>
+               <Parameter Name="GroupString" Type="Edm.String"/>
+               <Parameter Name="HasOverrideSelectCommand" Type="Edm.String"/>
+               <Parameter Name="ID" Type="Edm.String"/>
+               <Parameter Name="InplaceFullListSearch" Type="Edm.String"/>
+               <Parameter Name="InplaceSearchQuery" Type="Edm.String"/>
+               <Parameter Name="IsCSR" Type="Edm.String"/>
+               <Parameter Name="IsGroupRender" Type="Edm.String"/>
+               <Parameter Name="IsXslView" Type="Edm.String"/>
+               <Parameter Name="ListViewPageUrl" Type="Edm.String"/>
+               <Parameter Name="OverrideRowLimit" Type="Edm.String"/>
+               <Parameter Name="OverrideScope" Type="Edm.String"/>
+               <Parameter Name="OverrideSelectCommand" Type="Edm.String"/>
+               <Parameter Name="PageFirstRow" Type="Edm.String"/>
+               <Parameter Name="PageLastRow" Type="Edm.String"/>
+               <Parameter Name="QueryParams" Type="Collection(SP.KeyValue)"/>
+               <Parameter Name="RootFolder" Type="Edm.String"/>
+               <Parameter Name="RootFolderUniqueId" Type="Edm.String"/>
+               <Parameter Name="SortDir" Type="Edm.String"/>
+               <Parameter Name="SortDir1" Type="Edm.String"/>
+               <Parameter Name="SortDir10" Type="Edm.String"/>
+               <Parameter Name="SortDir2" Type="Edm.String"/>
+               <Parameter Name="SortDir3" Type="Edm.String"/>
+               <Parameter Name="SortDir4" Type="Edm.String"/>
+               <Parameter Name="SortDir5" Type="Edm.String"/>
+               <Parameter Name="SortDir6" Type="Edm.String"/>
+               <Parameter Name="SortDir7" Type="Edm.String"/>
+               <Parameter Name="SortDir8" Type="Edm.String"/>
+               <Parameter Name="SortDir9" Type="Edm.String"/>
+               <Parameter Name="SortField" Type="Edm.String"/>
+               <Parameter Name="SortField1" Type="Edm.String"/>
+               <Parameter Name="SortField10" Type="Edm.String"/>
+               <Parameter Name="SortField2" Type="Edm.String"/>
+               <Parameter Name="SortField3" Type="Edm.String"/>
+               <Parameter Name="SortField4" Type="Edm.String"/>
+               <Parameter Name="SortField5" Type="Edm.String"/>
+               <Parameter Name="SortField6" Type="Edm.String"/>
+               <Parameter Name="SortField7" Type="Edm.String"/>
+               <Parameter Name="SortField8" Type="Edm.String"/>
+               <Parameter Name="SortField9" Type="Edm.String"/>
+               <Parameter Name="SortFields" Type="Edm.String"/>
+               <Parameter Name="SortFieldValues" Type="Edm.String"/>
+               <Parameter Name="View" Type="Edm.String"/>
+               <Parameter Name="ViewCount" Type="Edm.String"/>
+               <Parameter Name="ViewId" Type="Edm.String"/>
+               <Parameter Name="ViewPath" Type="Edm.String"/>
+               <Parameter Name="WebPartId" Type="Edm.String"/>
+               <Parameter Name="webId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="GetListForms" ReturnType="Collection(SP.ListForm)" IsSideEffecting="false" IsBindable="true">
                <Parameter Name="this" Type="SP.List"/>
@@ -16317,10 +16475,6 @@
             <FunctionImport Name="EnsurePublishedFile" ReturnType="Microsoft.SharePoint.FilePublish.Model.FileStatus" IsBindable="true" EntitySet="FileStatuss">
                <Parameter Name="this" Type="Collection(SP.File)"/>
                <Parameter Name="baseFilePath" Type="SP.ResourcePath"/>
-            </FunctionImport>
-            <FunctionImport Name="GetBaseFile" ReturnType="Microsoft.SharePoint.FilePublish.Model.FileStatus" IsComposable="true" IsBindable="true" EntitySet="FileStatuss">
-               <Parameter Name="this" Type="Collection(SP.File)"/>
-               <Parameter Name="publishedFilePath" Type="SP.ResourcePath"/>
             </FunctionImport>
             <FunctionImport Name="GetByPathOrAddStub" ReturnType="SP.File" IsBindable="true" EntitySet="Files12">
                <Parameter Name="this" Type="Collection(SP.File)"/>
@@ -19224,6 +19378,10 @@
             <FunctionImport Name="GetRansomwareEventsOverview" ReturnType="Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminRansomwareEventsOverview" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
             </FunctionImport>
+            <FunctionImport Name="GetRansomwareSiteRestorePoints" ReturnType="Edm.Stream" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
+               <Parameter Name="parameters" Type="SP.RenderListDataParameters"/>
+            </FunctionImport>
             <FunctionImport Name="GetRootSiteUrl" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
             </FunctionImport>
@@ -20715,6 +20873,10 @@
                <End Role="VivaResourcesPartner" EntitySet="EEs"/>
                <End Role="VivaResources" EntitySet="VivaResourcess"/>
             </AssociationSet>
+            <AssociationSet Name="SP_HtmlPages_HtmlPageService_Pages_SP_HtmlPages_HtmlPage_PagesPartnerSet" Association="SP.HtmlPages.SP_HtmlPages_HtmlPageService_Pages_SP_HtmlPages_HtmlPage_PagesPartner">
+               <End Role="PagesPartner" EntitySet="Htmlpages"/>
+               <End Role="Pages" EntitySet="HtmlPages"/>
+            </AssociationSet>
             <AssociationSet Name="SP_List_Author_SP_User_AuthorPartnerSet" Association="SP.SP_List_Author_SP_User_AuthorPartner">
                <End Role="AuthorPartner" EntitySet="Lists"/>
                <End Role="Author" EntitySet="Users1"/>
@@ -20738,6 +20900,10 @@
             <AssociationSet Name="SP_List_EventReceivers_SP_EventReceiverDefinition_EventReceiversPartnerSet" Association="SP.SP_List_EventReceivers_SP_EventReceiverDefinition_EventReceiversPartner">
                <End Role="EventReceiversPartner" EntitySet="Lists"/>
                <End Role="EventReceivers" EntitySet="EventReceiverDefinitions"/>
+            </AssociationSet>
+            <AssociationSet Name="SP_List_ExtendedSharePointPermissionSettings_SP_ExtendedSharePointPermissionSettings_ExtendedSharePointPermissionSettingsPartnerSet" Association="SP.SP_List_ExtendedSharePointPermissionSettings_SP_ExtendedSharePointPermissionSettings_ExtendedSharePointPermissionSettingsPartner">
+               <End Role="ExtendedSharePointPermissionSettingsPartner" EntitySet="Lists"/>
+               <End Role="ExtendedSharePointPermissionSettings" EntitySet="ExtendedSharePointPermissionSettingss"/>
             </AssociationSet>
             <AssociationSet Name="SP_List_Fields_SP_Field_FieldsPartnerSet" Association="SP.SP_List_Fields_SP_Field_FieldsPartner">
                <End Role="FieldsPartner" EntitySet="Lists"/>
@@ -24042,6 +24208,27 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewResult/Value">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults/Failed">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults/NoText">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults/NothingToDo">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults/NoUsableValue">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults/Queued">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults/Succeeded">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData">
@@ -28794,6 +28981,9 @@
          <Annotations Target="SP.Publishing.SitePage/SourceDynamicSectionId">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.Publishing.SitePage/TemplateScope">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.TranslationStatusCollection">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -30040,6 +30230,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.Online.SharePoint.TenantAdministration.Internal.SPOWebAppServicePrincipal/ServicePrincipalObjectIds">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.HtmlPages.HtmlPageService/Pages">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/JoinGroup(SP.Directory.DirectorySession, Edm.Guid)">
@@ -31728,7 +31921,7 @@
          <Annotations Target="SP.ApiData/VivaBackendSiteUrlFromName(Microsoft.SharePoint.Portal.SPSiteManager, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
-         <Annotations Target="SP.ApiData/GetSiteLogo(Microsoft.SharePoint.Portal.SiteIconManager, Edm.String, Edm.Int32, Edm.Int32, Edm.String)">
+         <Annotations Target="SP.ApiData/GetSiteLogo(Microsoft.SharePoint.Portal.SiteIconManager, Edm.String, Edm.Int32, Edm.Int32, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SetSiteLogo(Microsoft.SharePoint.Portal.SiteIconManager, Edm.String, Edm.Int32, Edm.Int32, Edm.Double, Edm.Double, Edm.Boolean)">
@@ -32458,6 +32651,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_List_GetListDataAsStream(Edm.String, SP.RenderListDataParameters, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Collection(SP.KeyValue), Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_List_GetListDataFromIDAsStream(Edm.Guid, Edm.String, SP.RenderListDataParameters, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Collection(SP.KeyValue), Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/GetListForms(SP.List, Edm.Boolean)">
@@ -34138,6 +34334,14 @@
          <ComplexType Name="SPMachineLearningColumnAutofillPreviewResult">
             <Property Name="Status" Type="Edm.String"/>
             <Property Name="Value" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="SPMachineLearningDocLibAutofillItemResults">
+            <Property Name="Failed" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="NoText" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="NothingToDo" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="NoUsableValue" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="Queued" Type="Collection(Edm.Int32)" Nullable="false"/>
+            <Property Name="Succeeded" Type="Collection(Edm.Int32)" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="SPMachineLearningListAutofillEntityData">
             <Property Name="FillMode" Type="Edm.String"/>
@@ -38884,6 +39088,7 @@
             <Property Name="PublicationRecipients" Type="Edm.String"/>
             <Property Name="SitePageFlags" Type="Edm.String"/>
             <Property Name="SourceDynamicSectionId" Type="Edm.String"/>
+            <Property Name="TemplateScope" Type="Edm.Int32" Nullable="false"/>
             <NavigationProperty Name="Translations" Relationship="SP.SP_Publishing_SitePage_Translations_SP_TranslationStatusCollection_TranslationsPartner" ToRole="Translations" FromRole="TranslationsPartner"/>
          </EntityType>
          <EntityType Name="CampaignPublication" BaseType="SP.Publishing.SitePage">
@@ -42657,6 +42862,7 @@
             <Property Name="impactedAssetsCount" Type="Edm.Int32" Nullable="false"/>
             <Property Name="lastActivityTime" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="oneDriveActivityCount" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="restorePointIntegrationEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="sharePointActivityCount" Type="Edm.Int32" Nullable="false"/>
             <Property Name="totalActivitiesCount" Type="Edm.Int32" Nullable="false"/>
             <Property Name="totalHighVolumeComponentActivityDetectionCount" Type="Edm.Int32" Nullable="false"/>
@@ -42705,6 +42911,7 @@
             <Property Name="restorePointTimeUtc" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="restorePointType" Type="Edm.String"/>
             <Property Name="siteId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="siteUrl" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="TenantAdminRansomwareEventsOverview">
             <Property Name="activeEventsCount" Type="Edm.Int32" Nullable="false"/>
@@ -47097,6 +47304,14 @@
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
       </Schema>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.QuotaManagement.Consumer.Merlin.QuotaInfo">
+         <EntityType Name="ConsumerQuotaInfoApi">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+         </EntityType>
+      </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="Microsoft.SharePoint.Photos">
          <EntityType Name="PhotosMigration">
             <Key>
@@ -47714,6 +47929,25 @@
             </Key>
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
+      </Schema>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="SP.HtmlPages">
+         <EntityType Name="HtmlPageService">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
+            <NavigationProperty Name="Pages" Relationship="SP.HtmlPages.SP_HtmlPages_HtmlPageService_Pages_SP_HtmlPages_HtmlPage_PagesPartner" ToRole="Pages" FromRole="PagesPartner"/>
+         </EntityType>
+         <EntityType Name="HtmlPage">
+            <Key>
+               <PropertyRef Name="Id"/>
+            </Key>
+            <Property Name="Id" Type="Edm.Int32" Nullable="false"/>
+         </EntityType>
+         <Association Name="SP_HtmlPages_HtmlPageService_Pages_SP_HtmlPages_HtmlPage_PagesPartner">
+            <End Type="SP.HtmlPages.HtmlPage" Role="Pages" Multiplicity="*"/>
+            <End Type="SP.HtmlPages.HtmlPageService" Role="PagesPartner" Multiplicity="0..1"/>
+         </Association>
       </Schema>
       <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="SP.Data">
          <EntityType Name="OData__x005f_catalogs_x002f_hubsiteItem" BaseType="SP.ListItem">

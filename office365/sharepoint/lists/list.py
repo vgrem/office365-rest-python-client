@@ -316,11 +316,11 @@ class List(SecurableObject):
 
         return_type = ConnectorResult(self.context)
 
-        def _loaded():
-            assert self.title is not None
-            FlowPermissions.get_flow_permission_level_on_list(self.context, self.title, return_type)
+        def _get_flow_permission_level(title: str | None):
+            assert title is not None
+            FlowPermissions.get_flow_permission_level_on_list(self.context, title, return_type)
 
-        self.ensure_property("Title").after_execute(lambda _: _loaded())
+        self.ensure_property("Title").after_execute(lambda _: _get_flow_permission_level(self.title))
         return return_type
 
     def get_sharing_settings(self) -> ObjectSharingSettings:

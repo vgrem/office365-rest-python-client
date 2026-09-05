@@ -23,10 +23,10 @@ def main():
     )
     custom_list = ctx.web.lists.ensure_list(args.list_title).get().execute_query()
 
-    print("1. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
+    print(f"1. Adding a taxonomy field into list '{custom_list.title}'...")
     custom_list.fields.create_taxonomy_field(args.field_name, args.term_set_id).execute_query()
 
-    print("2. Adding a taxonomy field into list '{0}'...".format(custom_list.title))
+    print(f"2. Adding a taxonomy field into list '{custom_list.title}'...")
     custom_list.fields.create_taxonomy_field(
         args.multi_field_name, args.term_set_id, allow_multiple_values=True
     ).execute_query()

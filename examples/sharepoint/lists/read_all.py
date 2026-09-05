@@ -17,7 +17,7 @@ def print_progress(items: ListItemCollection) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Retrieve all list items from a large list")
     parser.add_argument("--list-title", default="Contacts_Large", help="target list title")
-    parser.add_argument("--page-size", type=int, default=1000, help="items per page")
+    parser.add_argument("--page-size", type=int, default=5000, help="items per page")
     args = parser.parse_args()
 
     ctx = ClientContext(team_site_url).with_client_certificate(
