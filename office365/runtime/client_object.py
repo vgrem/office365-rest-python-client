@@ -99,13 +99,20 @@ class ClientObject:
         """
         Resets the client object's state, clearing any pending changes.
 
-        Returns:
-            The current instance for method chaining
+        Persist-marked properties are kept so they stay present and are sent
+        again on subsequent updates (``persist=True`` means "always include"),
+        while explicitly changed, non-persistable props are dropped.
         """
-        self._properties = {k: v for k, v in self._properties.items() if k not in self._changes}
+        persistable = self._persistable_names
+        self._properties = {k: v for k, v in self._properties.items() if k not in self._changes or k in persistable}
         self._changes.clear()
         self._query_options = QueryOptions()
         return self
+
+    @property
+    def _persistable_names(self) -> set[str]:
+        """Names of properties marked ``@odata(persist=True)``."""
+        return {name for name, m in type(self)._odata_meta.items() if m.persist}
 
     def execute_query(self) -> Self:
         """
@@ -409,7 +416,8 @@ class ClientObject:
             json = {k: self.get_property(k) for k in self._properties}
         else:
             include_control_info = self.entity_type_name is not None and json_format.include_control_information
-            json = {k: self.get_property(k) for k in self._changes if k in self._properties}
+            persistable = self._persistable_names
+            json = {k: self.get_property(k) for k in self._properties if k in self._changes or k in persistable}
         json = {k: serialize_value(v, json_format) for k, v in json.items()}
 
         if json and include_control_info:

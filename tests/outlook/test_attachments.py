@@ -70,7 +70,7 @@ class TestAttachments(GraphDelegatedTestCase):
         if not msg:
             self.skipTest("No target message available")
 
-        msg.add_file_attachment("hello.txt", "Hello World!").update().execute_query()
+        msg.add_file_attachment("hello.txt", "Hello World!").execute_query()
 
         attachments = msg.attachments.get().execute_query()
         matched = [a for a in attachments if a.name == "hello.txt"]
@@ -86,12 +86,7 @@ class TestAttachments(GraphDelegatedTestCase):
         if not msg:
             self.skipTest("No target message available")
 
-        import base64
-        import io
-
-        content = base64.b64encode(io.BytesIO(b"This is binary content").read()).decode()
-
-        msg.add_file_attachment("data.bin", base64_content=content).execute_query()
+        msg.add_file_attachment("data.bin", content=b"This is binary content").execute_query()
 
         attachments = msg.attachments.get().execute_query()
         matched = [a for a in attachments if a.name == "data.bin"]

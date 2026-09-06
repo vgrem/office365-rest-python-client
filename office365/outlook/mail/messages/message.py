@@ -82,19 +82,33 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return return_type
 
-    def add_file_attachment(self, name: str, content=None, content_type=None, base64_content=None):
-        """Attach a file to message
+    def add_file_attachment(self, name: str, content: bytes | str | None = None, content_type: str | None = None):
+        """Attach a file to a message.
+
+        For a **new draft** (message not yet created) the attachment rides along
+        with the message ``POST`` (inline ``attachments``). For an **existing**
+        message it queues a ``POST`` to the message's ``attachments`` collection,
+        so a subsequent ``execute_query()`` uploads it.
 
         Args:
             name (str): The name representing the text that is displayed below the icon representing the embedded
               attachment
-            content (str or None): The contents of the file
+            content (str or bytes): The file content — text (str) or raw bytes.
             content_type (str or None): The content type of the attachment.
-            base64_content (str or None): The contents of the file in the form of a base64 string.
         """
-        if not content and (not base64_content):
-            raise TypeError("Either content or base64_content is required")
-        self.attachments.add_file(name, content, content_type, base64_content)
+        if not content:
+            raise TypeError("Content is required")
+
+        attachment = self.attachments.create_file(name, content, content_type)
+        if self.id is not None:
+            # existing message: upload via POST /messages/{id}/attachments
+            from office365.runtime.queries.create_entity import CreateEntityQuery
+
+            qry = CreateEntityQuery(self.attachments, attachment, attachment)
+            self.context.add_query(qry)
+        else:
+            # new draft (no id yet): register inline so it rides the message create
+            self.attachments.add_child(attachment)
         return self
 
     def upload_attachment(self, file_path: str, chunk_uploaded: Optional[Callable[[int], None]] = None):

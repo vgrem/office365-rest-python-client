@@ -12,6 +12,7 @@ run as a dry run unless ``--apply`` is passed.
 Requires application permissions Team.ReadBasic.All, TeamMember.Read.All,
 Directory.Read.All (+ ChannelSettings.ReadWrite.All to archive).
 """
+
 from __future__ import annotations
 
 import argparse

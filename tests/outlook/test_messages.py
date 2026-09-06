@@ -15,8 +15,6 @@ Tests cover:
 
 from __future__ import annotations
 
-import base64
-import io
 import os
 import tempfile
 from typing import ClassVar, Optional
@@ -144,12 +142,10 @@ class TestOutlookMessages(GraphDelegatedTestCase):
     )
     def test_09_create_message_with_attachments(self):
         """Creating a draft with text and binary attachments should succeed."""
-        content = base64.b64encode(io.BytesIO(b"This is some file content").read()).decode()
-
         draft = (
             self.client.me.messages.add(subject="Check out this attachment", body="The new cafeteria is open.")
             .add_file_attachment("TextAttachment.txt", "Hello World!")
-            .add_file_attachment("BinaryAttachment.txt", base64_content=content)
+            .add_file_attachment("BinaryAttachment.txt", content=b"This is some file content")
             .execute_query()
         )
         self.assertIsNotNone(draft.id)

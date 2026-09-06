@@ -16,7 +16,7 @@ class MessageRule(Entity):
     @property
     def actions(self) -> MessageRuleActions:
         """Actions to be taken on a message when the corresponding conditions are fulfilled."""
-        return self.properties.get("actions", MessageRuleActions())
+        return self.properties.setdefault("actions", MessageRuleActions())
 
     @odata(name="conditions")
     @property

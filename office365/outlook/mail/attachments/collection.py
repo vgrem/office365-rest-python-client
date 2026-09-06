@@ -33,34 +33,49 @@ class AttachmentCollection(EntityCollection[Attachment]):
         name: str,
         content: bytes | str | None = None,
         content_type: str | None = None,
-        base64_content: bytes | None = None,
     ):
-        """Attach a file to message
+        """Build a FileAttachment and register it as a child (inline attachments).
+
+        Use this for a draft that is about to be created. For an existing message
+        use :meth:`Message.add_file_attachment`, which POSTs the file to the
+        message's ``attachments`` collection instead.
 
         Args:
-            name (str): The name representing the text that is displayed below the icon representing the embedded
-              attachment
-            content (str or None): The contents of the file
+            name (str): The name of the file.
+            content (str or bytes): The file content — text (str) or raw bytes.
             content_type (str or None): The content type of the attachment.
-            base64_content (str or None): The contents of the file in the form of a base64 string.
+
+        Returns:
+            The built FileAttachment.
         """
-        if not content and not base64_content:
-            raise TypeError("Either content or base64_content is required")
+        attachment = self.create_file(name, content, content_type)
+        self.add_child(attachment)
+        return attachment
+
+    def create_file(
+        self,
+        name: str,
+        content: bytes | str | None = None,
+        content_type: str | None = None,
+    ):
+        """Build a FileAttachment without registering it (for a direct create).
+
+        Args:
+            name (str): The name of the file.
+            content (str or bytes): The file content — text (str) or raw bytes.
+            content_type (str or None): The content type of the attachment.
+        """
+        if not content:
+            raise TypeError("Content is required")
         from office365.outlook.mail.attachments.file import FileAttachment
 
+        raw = content.encode("utf-8") if isinstance(content, str) else content
         return_type = FileAttachment(self.context)
         return_type.name = name
-        if base64_content:
-            content_bytes: bytes = base64_content
-        else:
-            assert content is not None
-            content_str = content if isinstance(content, str) else content.decode("utf-8")
-            content_bytes = base64.b64encode(content_str.encode("utf-8"))
-        return_type.content_bytes = content_bytes
+        return_type.content_bytes = base64.b64encode(raw)
         if content_type:
             return_type.content_type = content_type
-        self.add_child(return_type)
-        return self
+        return return_type
 
     def resumable_upload(
         self,
