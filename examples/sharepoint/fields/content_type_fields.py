@@ -35,7 +35,7 @@ def main():
     links = content_type.field_links.get().execute_query()
     print(f"Field links ({len(links)}):")
     for link in links:
-        print(f"  {link.properties.get('FieldInternalName')}")
+        print(f"  {link.field_internal_name}")
 
 
 if __name__ == "__main__":
