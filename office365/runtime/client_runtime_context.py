@@ -78,7 +78,9 @@ class ClientRuntimeContext(ABC):
         from office365.runtime.retry import retry
 
         def _on_failure(_attempt: int, ex: Exception) -> Optional[int]:
-            if self.current_query is not None:
+            # Re-queue the failed query for a retry, except on the last attempt —
+            # otherwise the context is left with a stale, un-executed query.
+            if _attempt < max_retry and self.current_query is not None:
                 self.add_query(self.current_query)
             return failure_callback(_attempt, ex) if callable(failure_callback) else None
 
@@ -86,16 +88,31 @@ class ClientRuntimeContext(ABC):
             if callable(success_callback) and self.current_query is not None:
                 success_callback(self.current_query.return_type)
 
-        retry(
-            self.execute_query,
-            max_retry=max_retry,
-            timeout_secs=timeout_secs,
-            max_delay=max_delay,
-            jitter=jitter,
-            exceptions=exceptions,
-            on_failure=_on_failure,
-            on_success=_on_success,
-        )
+        try:
+            retry(
+                self.execute_query,
+                max_retry=max_retry,
+                timeout_secs=timeout_secs,
+                max_delay=max_delay,
+                jitter=jitter,
+                exceptions=exceptions,
+                on_failure=_on_failure,
+                on_success=_on_success,
+            )
+        except BaseException:
+            self._clear_retry_state()
+            raise
+
+    def _clear_retry_state(self) -> None:
+        """Undo any failed-query re-queue and reset the cursor after an error.
+
+        Called when ``execute_query_retry`` exits by exception so the context is
+        never left dirty (a re-queued query would otherwise be re-run on reuse).
+        """
+        current = self._current_query
+        if current is not None and self._queries and self._queries[-1] is current:
+            self._queries.pop()
+        self._current_query = None
 
     def __enter__(self) -> Self:
         return self

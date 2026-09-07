@@ -197,3 +197,79 @@ class TestBackoffDelay(unittest.TestCase):
     def test_jitter_is_randomized(self):
         with mock.patch("office365.runtime.retry.random.uniform", side_effect=lambda low, high: (low + high) / 2):
             self.assertEqual(backoff_delay(1, base=10), 5.0)  # noqa: PLR2004
+
+
+class TestContextStateAfterRetryFailure(unittest.TestCase):
+    """Issue #938 — execute_query_retry must not leave the context dirty."""
+
+    def test_exhausted_retries_leave_queue_clean(self):
+        from office365.runtime.queries.client_query import ClientQuery
+
+        ctx = ClientContext("https://contoso.sharepoint.com")
+        qry = ClientQuery(ctx)
+        ctx.add_query(qry)
+        attempts = {"n": 0}
+
+        def _execute_query():
+            attempts["n"] += 1
+            if ctx._queries:
+                ctx._current_query = ctx._queries.popleft()
+            raise _make_exception(503)
+
+        ctx.execute_query = _execute_query  # type: ignore[method-assign]
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            with self.assertRaises(ClientRequestException):
+                ctx.execute_query_retry(max_retry=3, timeout_secs=5, jitter=False)
+
+        self.assertEqual(attempts["n"], 3)  # noqa: PLR2004
+        # no stale query left queued and no cursor retained
+        self.assertEqual(len(ctx._queries), 0)
+        self.assertIsNone(ctx.current_query)
+
+    def test_permanent_error_leaves_queue_clean(self):
+        from office365.runtime.queries.client_query import ClientQuery
+
+        ctx = ClientContext("https://contoso.sharepoint.com")
+        qry = ClientQuery(ctx)
+        ctx.add_query(qry)
+
+        def _execute_query():
+            if ctx._queries:
+                ctx._current_query = ctx._queries.popleft()
+            raise _make_exception(400)
+
+        ctx.execute_query = _execute_query  # type: ignore[method-assign]
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            with self.assertRaises(ClientRequestException):
+                ctx.execute_query_retry(max_retry=3, timeout_secs=5, jitter=False)
+
+        self.assertEqual(len(ctx._queries), 0)
+        self.assertIsNone(ctx.current_query)
+
+    def test_transient_then_success_still_works(self):
+        from office365.runtime.queries.client_query import ClientQuery
+
+        ctx = ClientContext("https://contoso.sharepoint.com")
+        qry = ClientQuery(ctx)
+        ctx.add_query(qry)
+        outcomes = [_make_exception(503), None]
+        attempts = {"n": 0}
+
+        def _execute_query():
+            attempt = attempts["n"]
+            attempts["n"] += 1
+            if ctx._queries:
+                ctx._current_query = ctx._queries.popleft()
+            outcome = outcomes[attempt]
+            if outcome is not None:
+                raise outcome
+
+        ctx.execute_query = _execute_query  # type: ignore[method-assign]
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            ctx.execute_query_retry(max_retry=3, timeout_secs=5, jitter=False)
+
+        self.assertEqual(attempts["n"], 2)  # noqa: PLR2004
+        self.assertEqual(len(ctx._queries), 0)
