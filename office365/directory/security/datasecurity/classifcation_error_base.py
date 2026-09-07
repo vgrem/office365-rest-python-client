@@ -7,7 +7,7 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class ClassificationErrorBase(ClientValue):
+class ClassifcationErrorBase(ClientValue):
     code: str | None = None
     innerError: ClassificationInnerError = field(default_factory=ClassificationInnerError)
     message: str | None = None
@@ -15,4 +15,4 @@ class ClassificationErrorBase(ClientValue):
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.ClassificationErrorBase"
+        return "microsoft.graph.ClassifcationErrorBase"

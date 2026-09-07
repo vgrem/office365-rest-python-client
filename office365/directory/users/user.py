@@ -213,7 +213,7 @@ class User(DirectoryObject):
         def _assign_manager(user_id: str | None) -> None:
             if user_id is None:
                 return
-            payload = {"@odata.id": f"https://graph.microsoft.com/v1.0/users/{user_id}"}
+            payload = {"@odata.id": f"{self.context.users.resource_url}/{user_id}"}
             qry = ServiceOperationQuery(self.manager, "$ref", None, payload)
             self.context.add_query(qry).before_execute(_construct_request)
 

@@ -6,7 +6,10 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class ClassificationError(ClientValue):
+class AttributeSetEntry(ClientValue):
+    name: str | None = None
+    value: str | None = None
+
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.ClassificationError"
+        return "microsoft.graph.identityGovernance.AttributeSetEntry"

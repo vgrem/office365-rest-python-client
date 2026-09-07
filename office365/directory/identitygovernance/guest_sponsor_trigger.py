@@ -6,7 +6,9 @@ from office365.runtime.client_value import ClientValue
 
 
 @dataclass
-class ClassificationError(ClientValue):
+class GuestSponsorTrigger(ClientValue):
+    minimumRequiredSponsors: int | None = None
+
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.ClassificationError"
+        return "microsoft.graph.identityGovernance.GuestSponsorTrigger"
