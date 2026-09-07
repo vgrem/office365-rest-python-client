@@ -6,9 +6,7 @@ from office365.runtime.paths.v4.entity import EntityPath
 
 def _url_to_shared_token(url: str) -> str:
     """Converts url into shared token"""
-    value = base64.b64encode(url.encode("ascii")).decode("ascii")
-    if value.endswith("="):
-        value = value[:-1]
+    value = base64.b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
     return "u!" + value.replace("/", "_").replace("+", "-")
 
 
