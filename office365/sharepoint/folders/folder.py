@@ -162,21 +162,35 @@ class Folder(Entity):
             progress: Optional hook invoked per scanned folder with a
               ``Progress[Folder]`` snapshot (``done`` = folders discovered so
               far; ``items`` = the folders found in the folder just scanned).
+
+        The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
+        collection is honored on every per-folder load.
         """
+        from office365.runtime.odata.query_options import apply_options
+        from office365.runtime.queries.deferred import DeferredOperationQuery
         from office365.sharepoint.folders.collection import FolderCollection
 
         return_type = FolderCollection(self.context, self.folders.resource_path, self)
 
         def _get_folders(parent: Folder) -> None:
-            for folder in parent.folders:
-                return_type.add_child(folder)
-            if callable(progress):
-                progress(Progress(done=len(return_type), stage="scanning", items=list(parent.folders)))
-            if recursive:
-                for folder in parent.folders:
-                    folder.ensure_properties(["Folders"]).after_execute(lambda _, f=folder: _get_folders(parent=f))
+            def _on_loaded(folders) -> None:
+                for folder in folders:
+                    return_type.add_child(folder)
+                if callable(progress):
+                    progress(Progress(done=len(return_type), stage="scanning", items=list(folders)))
+                if recursive:
+                    for folder in folders:
+                        _get_folders(folder)
 
-        self.ensure_properties(["Folders"]).after_execute(lambda _: _get_folders(parent=self))
+            child_folders = parent.folders
+            apply_options(child_folders, return_type.query_options)
+            if return_type.query_options.select:
+                fields = sorted({"Id", "Name", "ServerRelativeUrl"} | set(return_type.query_options.select))
+                child_folders.select(fields)
+            child_folders.get().after_execute(_on_loaded)
+
+        placeholder = DeferredOperationQuery(self.context)
+        self.context.add_query(placeholder).after_execute(lambda _: _get_folders(self))
         return return_type
 
     def get_files(
@@ -191,7 +205,12 @@ class Folder(Entity):
             progress: Optional hook invoked per scanned folder with a
               ``Progress[File]`` snapshot (``done`` = files discovered so far;
               ``items`` = the files found in the folder just scanned).
+
+        The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
+        collection is honored on every per-folder file load.
         """
+        from office365.runtime.odata.query_options import apply_options
+        from office365.runtime.queries.deferred import DeferredOperationQuery
         from office365.sharepoint.files.collection import FileCollection
 
         resource_path = self.files.resource_path
@@ -199,17 +218,24 @@ class Folder(Entity):
         return_type = FileCollection(self.context, resource_path, self)
 
         def _get_files(parent: Folder) -> None:
-            for file in parent.files:
-                return_type.add_child(file)
-            if callable(progress):
-                progress(Progress(done=len(return_type), stage="scanning", items=list(parent.files)))
-            if recursive:
-                for folder in parent.folders:
-                    folder.ensure_properties(["Files", "Folders"]).after_execute(
-                        lambda _, f=folder: _get_files(parent=f)
-                    )
+            def _on_files_loaded(col) -> None:
+                for file in col:
+                    return_type.add_child(file)
+                if callable(progress):
+                    progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
+                if recursive:
+                    subfolders = parent.folders
+                    subfolders.get().after_execute(lambda _: [_get_files(folder) for folder in subfolders])
 
-        self.ensure_properties(["Files", "Folders"]).after_execute(lambda _: _get_files(parent=self))
+            files = parent.files
+            apply_options(files, return_type.query_options)
+            if return_type.query_options.select:
+                fields = sorted({"Id", "Name", "ServerRelativeUrl"} | set(return_type.query_options.select))
+                files.select(fields)
+            files.get().after_execute(_on_files_loaded)
+
+        placeholder = DeferredOperationQuery(self.context)
+        self.context.add_query(placeholder).after_execute(lambda _: _get_files(self))
         return return_type
 
     def get_sharing_information(self) -> ObjectSharingInformation:

@@ -12,20 +12,16 @@ from requests import Response
 _METADATA = {"__metadata": {"type": "SP.Folder"}}
 
 
-def _folder_payload(files: list[dict], folders: list[dict]) -> dict:
-    return {"d": {"Files": files, "Folders": folders}}
-
-
-def _file(url: str) -> dict:
-    return {"__metadata": {"type": "SP.File"}, "ServerRelativeUrl": url}
-
-
-def _subfolder(url: str) -> dict:
-    return {**_METADATA, "ServerRelativeUrl": url}
-
-
 def _web(url: str) -> dict:
     return {"__metadata": {"type": "SP.Web"}, "Url": url}
+
+
+def _files_result(urls: list[str]) -> dict:
+    return {"d": {"results": [{"__metadata": {"type": "SP.File"}, "ServerRelativeUrl": u} for u in urls]}}
+
+
+def _folders_result(urls: list[str]) -> dict:
+    return {"d": {"results": [{**_METADATA, "ServerRelativeUrl": u} for u in urls]}}
 
 
 class _ScriptedTransport(BaseTransport):
@@ -52,7 +48,7 @@ class TestScanProgress(unittest.TestCase):
         return ctx
 
     def test_get_files_progress_fires_once(self):
-        ctx = self._context(_ScriptedTransport([_folder_payload([_file("/a.txt"), _file("/b.txt")], [])]))
+        ctx = self._context(_ScriptedTransport([_files_result(["/a.txt", "/b.txt"])]))
         seen = []
         folder = ctx.web.get_folder_by_server_relative_url("Shared Documents")
 
@@ -64,7 +60,7 @@ class TestScanProgress(unittest.TestCase):
         self.assertEqual([f.server_relative_url for f in (seen[0].items or [])], ["/a.txt", "/b.txt"])
 
     def test_get_folders_progress_fires_once(self):
-        ctx = self._context(_ScriptedTransport([_folder_payload([], [_subfolder("/sub")])]))
+        ctx = self._context(_ScriptedTransport([_folders_result(["/sub"])]))
         seen = []
         folder = ctx.web.get_folder_by_server_relative_url("Shared Documents")
 
@@ -76,8 +72,10 @@ class TestScanProgress(unittest.TestCase):
 
     def test_get_files_recursive_fires_per_folder(self):
         payloads = [
-            _folder_payload([_file("/a.txt"), _file("/b.txt")], [_subfolder("/sub")]),
-            _folder_payload([_file("/sub/c.txt")], []),
+            _files_result(["/a.txt", "/b.txt"]),  # root folder's files
+            _folders_result(["/sub"]),  # root folder's sub-folders
+            _files_result(["/sub/c.txt"]),  # the sub-folder's files
+            _folders_result([]),  # the sub-folder has no further sub-folders
         ]
         ctx = self._context(_ScriptedTransport(payloads))
         seen = []
@@ -88,6 +86,24 @@ class TestScanProgress(unittest.TestCase):
         # root scan then the sub-folder scan, with cumulative done
         self.assertEqual([p.done for p in seen], [2, 3])  # noqa: PLR2004
         self.assertEqual([f.server_relative_url for f in (seen[-1].items or [])], ["/sub/c.txt"])
+
+    def test_get_files_forward_select(self):
+        """Fluent .select() on get_files is forwarded to the file collection GET."""
+        urls = []
+
+        class _CaptureTransport(_ScriptedTransport):
+            def execute(self, request):
+                urls.append(request.url)
+                return super().execute(request)
+
+        ctx = self._context(_CaptureTransport([_files_result(["/a.txt"])]))
+        folder = ctx.web.get_folder_by_server_relative_url("Shared Documents")
+
+        result = folder.get_files(False)
+        result.select(["Name"])
+        result.execute_query()
+
+        self.assertTrue(any("$select=" in url and "Name" in url and "ServerRelativeUrl" in url for url in urls))
 
     def test_get_all_webs_progress_fires_per_web(self):
         payloads = [

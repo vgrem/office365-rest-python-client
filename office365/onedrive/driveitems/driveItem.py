@@ -135,7 +135,13 @@ class DriveItem(BaseItem):
             page_size (int): Page size
             progress: Optional hook invoked per page with a ``Progress[DriveItem]``
               snapshot (``done`` = files discovered so far; ``items`` = the page's items).
+
+        The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
+        collection is honored on every ``children`` page the scan loads.
         """
+        from office365.runtime.odata.query_options import apply_options
+        from office365.runtime.queries.deferred import DeferredOperationQuery
+
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
         def _get_files(parent_drive_item: DriveItem) -> None:
@@ -152,9 +158,15 @@ class DriveItem(BaseItem):
                 if callable(progress):
                     progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
 
-            parent_drive_item.children.get_all(page_size=page_size, page_loaded=_after_loaded)
+            children = parent_drive_item.children
+            apply_options(children, return_type.query_options)
+            if return_type.query_options.select:
+                fields = sorted({"folder", "id"} | set(return_type.query_options.select))
+                children.select(fields)
+            children.get_all(page_size=page_size, page_loaded=_after_loaded)
 
-        _get_files(self)
+        placeholder = DeferredOperationQuery(self.context)
+        self.context.add_query(placeholder).after_execute(lambda _: _get_files(self))
         return return_type
 
     def get_folders(
@@ -170,7 +182,13 @@ class DriveItem(BaseItem):
             page_size (int): Page size
             progress: Optional hook invoked per page with a ``Progress[DriveItem]``
               snapshot (``done`` = folders discovered so far; ``items`` = the page's items).
+
+        The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
+        collection is honored on every ``children`` page the scan loads.
         """
+        from office365.runtime.odata.query_options import apply_options
+        from office365.runtime.queries.deferred import DeferredOperationQuery
+
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
 
         def _get_folders(parent: DriveItem) -> None:
@@ -185,9 +203,15 @@ class DriveItem(BaseItem):
                 if callable(progress):
                     progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
 
-            parent.children.filter("folder ne null").get_all(page_size=page_size, page_loaded=_after_loaded)
+            children = parent.children.filter("folder ne null")
+            apply_options(children, return_type.query_options)
+            if return_type.query_options.select:
+                fields = sorted({"folder", "id"} | set(return_type.query_options.select))
+                children.select(fields)
+            children.get_all(page_size=page_size, page_loaded=_after_loaded)
 
-        _get_folders(self)
+        placeholder = DeferredOperationQuery(self.context)
+        self.context.add_query(placeholder).after_execute(lambda _: _get_folders(self))
         return return_type
 
     @require_permission(
