@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 from urllib.parse import urlparse
 
 import requests
@@ -16,7 +16,7 @@ from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.url import get_absolute_url
-from office365.runtime.odata.v3.batch_request import ODataBatchV3Request
+from office365.runtime.odata.v3.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataBatchV3Request
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
@@ -273,34 +273,38 @@ class ClientContext(ClientRuntimeContext):
         items_per_batch: int = 100,
         success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
         concurrency: int = 1,
+        max_batch_bytes: Optional[int] = None,
     ) -> Self:
         """Construct and submit to a server a batch request
 
         With ``concurrency`` > 1 the batches run on a thread pool; each batch
-        is an independent HTTP request. Throttled sub-requests (HTTP 429/503)
-        are retried individually, honoring ``Retry-After`` — only the failed
-        sub-requests are re-sent, so successful writes aren't re-applied.
-        ``success_callback`` runs on the caller thread in completion order
-        (not submission order).
+        is an independent HTTP request. Batches are capped by item count
+        (``items_per_batch``) and by estimated payload size (``max_batch_bytes``).
+        Throttled sub-requests (HTTP 429/503) are retried individually, honoring
+        ``Retry-After`` — only the failed sub-requests are re-sent, so successful
+        writes aren't re-applied. ``success_callback`` runs on the caller thread
+        in completion order (not submission order).
 
         Args:
             items_per_batch (int): Maximum to be selected for bulk operation
             success_callback ((List[ClientObject|ClientResult])-> None): A success callback
             concurrency (int): Maximum number of concurrent batch requests (default 1)
+            max_batch_bytes (int or None): Maximum estimated batch payload size (default ~1 MB)
         """
+        max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
+        batches = self._split_batches(items_per_batch, max_bytes)
         if concurrency <= 1:
             batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
             batch_request.beforeExecute += self.authentication_context.authenticate_request
             batch_request.beforeExecute += self.pending_request().ensure_form_digest
-            while self.has_pending_request:
-                qry = cast("BatchQuery", self._get_next_query(items_per_batch))
+            for qry in batches:
                 batch_request.execute_query_with_retry(qry)
                 if callable(success_callback) and qry.return_type is not None:
                     success_callback(qry.return_type)
             return self
 
         self.pending_request()
-        self._execute_batches_in_parallel(self._split_batches(items_per_batch), concurrency, success_callback)
+        self._execute_batches_in_parallel(batches, concurrency, success_callback)
         return self
 
     def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:

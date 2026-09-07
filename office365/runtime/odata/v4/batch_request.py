@@ -9,9 +9,12 @@ from requests.structures import CaseInsensitiveDict
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.odata.batch_util import WHOLE_BATCH_REJECT_CODES, WholeBatchRejected
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.queries.batch import BatchQuery
 from office365.runtime.queries.client_query import ClientQuery
+
+DEFAULT_MAX_BATCH_BYTES = 3 * 1024 * 1024  # Microsoft Graph JSON-batch limit is ~4 MB; conservative cap
 
 
 class ODataV4BatchRequest(ODataRequest):
@@ -78,7 +81,15 @@ class ODataV4BatchRequest(ODataRequest):
         state: dict = {"pending": query, "retry_after": None}
 
         def _attempt() -> None:
-            response = self.execute_request_direct(self.build_request(state["pending"]))
+            try:
+                response = self.execute_request_direct(self.build_request(state["pending"]))
+            except ClientRequestException as exc:
+                status = getattr(getattr(exc, "response", None), "status_code", None)
+                if status in WHOLE_BATCH_REJECT_CODES:
+                    # Whole-batch transport rejection (nothing was applied) —
+                    # signal callers to split, not mask per-item errors.
+                    raise WholeBatchRejected(state["pending"].queries, exc) from exc
+                raise
             failures: list[tuple[ClientQuery, Response]] = []
             retry_after: Optional[int] = None
             for sub_qry, sub_resp in self._extract_response(response, state["pending"]):
@@ -95,13 +106,35 @@ class ODataV4BatchRequest(ODataRequest):
             state["pending"] = BatchQuery(query.context, [qry for qry, _ in failures])
             raise ClientRequestException.from_response(failures[0][1])
 
-        retry(
-            _attempt,
-            max_retry=max_retry,
-            timeout_secs=base_delay,
-            jitter=jitter,
-            on_failure=lambda _attempt_num, _ex: state["retry_after"],
-        )
+        try:
+            retry(
+                _attempt,
+                max_retry=max_retry,
+                timeout_secs=base_delay,
+                jitter=jitter,
+                on_failure=lambda _attempt_num, _ex: state["retry_after"],
+            )
+        except WholeBatchRejected as reject:
+            self._split_and_retry(query, reject, max_retry, base_delay, jitter)
+
+    def _split_and_retry(
+        self,
+        query: BatchQuery,
+        reject: WholeBatchRejected,
+        max_retry: int,
+        base_delay: int,
+        jitter: bool,
+    ) -> None:
+        """Halve a whole-rejected batch and retry each half (down to a single request)."""
+        queries = reject.queries
+        if len(queries) <= 1:
+            first = queries[0]
+            req = first.build_request()
+            message = f"{reject}; a batch of 1 was still rejected — request {req.method} {req.url}"
+            raise ClientRequestException(message, response=reject.response) from reject
+        mid = len(queries) // 2  # noqa: PLR2004
+        for half in (queries[:mid], queries[mid:]):
+            self.execute_query_with_retry(BatchQuery(query.context, half), max_retry, base_delay, jitter)
 
     @staticmethod
     def _extract_response(response: Response, query: BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]:

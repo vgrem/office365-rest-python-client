@@ -266,28 +266,35 @@ class ClientRuntimeContext(ABC):
         self._current_query = qry
         return qry
 
-    def _split_batches(self, items_per_batch: int) -> list["BatchQuery"]:
+    def _split_batches(
+        self,
+        items_per_batch: int,
+        max_batch_bytes: Optional[int] = None,
+    ) -> list["BatchQuery"]:
         """Drain the pending queue into independent batch units.
 
         Unlike ``_get_next_query``, this does not mutate ``_current_query``,
         making it safe to pre-split the queue before concurrent execution.
+        Batches are capped by item count and (when ``max_batch_bytes`` is given)
+        by estimated payload size — a single oversized query still goes alone.
 
         Args:
             items_per_batch: Maximum queries per batch
+            max_batch_bytes: Maximum estimated batch payload size in bytes
 
         Returns:
             List of BatchQuery objects preserving submission order
         """
+        from office365.runtime.odata.batch_util import partition_by_limits
         from office365.runtime.queries.batch import BatchQuery
 
-        batches = []
+        queries = []
         while self.has_pending_request:
-            qry = BatchQuery(self)
-            count = 0
-            while self.has_pending_request and count < items_per_batch:
-                qry.add(self._queries.popleft())
-                count = count + 1
-            batches.append(qry)
+            queries.append(self._queries.popleft())
+
+        batches = []
+        for chunk in partition_by_limits(queries, items_per_batch, max_batch_bytes):
+            batches.append(BatchQuery(self, chunk))
         return batches
 
     def _execute_batches_in_parallel(

@@ -39,6 +39,7 @@ class Entity(ClientObject):
         self,
         items_per_batch: int = 100,
         success_callback: Optional[Callable[[List[Union[ClientObject, ClientResult]]], None]] = None,
+        max_batch_bytes: Optional[int] = None,
     ) -> Self:
         """
         Construct and submit a batch request to the server
@@ -46,11 +47,12 @@ class Entity(ClientObject):
         Args:
             items_per_batch: Number of items per batch (default: 100)
             success_callback: Callback function for successful batch execution
+            max_batch_bytes: Maximum estimated batch payload size in bytes
 
         Returns:
             self: Supports method chaining
         """
-        self.context.execute_batch(items_per_batch, success_callback)
+        self.context.execute_batch(items_per_batch, success_callback, max_batch_bytes=max_batch_bytes)
         return self
 
     def with_credentials(self, credentials: Union[UserCredential, ClientCredential]) -> Self:
