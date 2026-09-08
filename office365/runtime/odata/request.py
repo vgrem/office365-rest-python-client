@@ -145,24 +145,28 @@ class ODataRequest(ClientRequest):
                     yield index, transformed if isinstance(item, dict) else item
             elif isinstance(json, dict):
                 for name, value in json.items():
-                    if isinstance(json_format, JsonLightFormat):
-                        is_valid = name != json_format.metadata_type and not (
-                            isinstance(value, dict) and "__deferred" in value
-                        )
-                    else:
-                        is_valid = "@odata" not in name
-
-                    if is_valid:
-                        transformed = None
-                        if isinstance(value, dict):
-                            transformed = {k: v for k, v in self._next_property(value, json_format)}
-                        yield name, transformed if isinstance(value, dict) else value
-                    elif name == "@odata.etag":
-                        yield "__etag", value
+                    yield from self._next_object_property(name, value, json_format)
             else:
                 yield "__value", json
         elif json is not None:
             yield "__value", json
+
+    def _next_object_property(self, name: str, value: Any, json_format: ODataJsonFormat) -> Iterator[Tuple[str, Any]]:
+        """Yields a single property from a JSON object according to the OData format."""
+        if isinstance(json_format, JsonLightFormat):
+            is_valid = name != json_format.metadata_type and not (isinstance(value, dict) and "__deferred" in value)
+        else:
+            is_valid = "@odata" not in name
+
+        if is_valid:
+            if isinstance(value, dict):
+                yield name, {k: v for k, v in self._next_property(value, json_format)}
+            else:
+                yield name, value
+        elif name == json_format.etag:
+            yield "__etag", value
+        elif name == json_format.metadata_type and isinstance(value, str):
+            yield "__odata_type", value
 
     def _build_payload(self, query: ClientQuery) -> Union[Dict[str, Any], List[Any], str, bytes]:
         """

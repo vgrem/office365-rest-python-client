@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Union
+from typing import List, Type, Union
 
 from typing_extensions import Self
 
@@ -12,11 +12,41 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
+def _resolve_directory_type(odata_type: object) -> Type[DirectoryObject]:
+    """Resolves an ``@odata.type`` value (e.g. ``#microsoft.graph.user``) to a concrete class."""
+    # Local imports avoid circular imports (User/Group/etc. import DirectoryObjectCollection)
+    from office365.directory.applications.application import Application
+    from office365.directory.groups.group import Group
+    from office365.directory.rolemanagement.roles.role import DirectoryRole
+    from office365.directory.serviceprincipals.service_principal import ServicePrincipal
+    from office365.directory.users.user import User
+    from office365.intune.devices.device import Device
+    from office365.intune.organizations.contact import OrgContact
+
+    mapping: dict[str, Type[DirectoryObject]] = {
+        "microsoft.graph.user": User,
+        "microsoft.graph.group": Group,
+        "microsoft.graph.device": Device,
+        "microsoft.graph.orgcontact": OrgContact,
+        "microsoft.graph.serviceprincipal": ServicePrincipal,
+        "microsoft.graph.application": Application,
+        "microsoft.graph.directoryrole": DirectoryRole,
+    }
+    if not isinstance(odata_type, str):
+        return DirectoryObject
+    return mapping.get(odata_type.lstrip("#").lower(), DirectoryObject)
+
+
 class DirectoryObjectCollection(CountCollection[DirectoryObject]):
     """DirectoryObject's collection"""
 
     def __init__(self, context, resource_path=None):
         super().__init__(context, DirectoryObject, resource_path)
+
+    def set_property(self, name, value, persist_changes=False):
+        if isinstance(value, dict):
+            self._item_type = _resolve_directory_type(value.get("__odata_type"))
+        return super().set_property(name, value, persist_changes)
 
     def get_by_ids(self, ids: List[str], types: list[str] | None = None) -> DirectoryObjectCollection:
         """Returns the directory objects specified in a list of IDs.

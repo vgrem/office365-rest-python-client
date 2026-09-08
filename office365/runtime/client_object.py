@@ -290,6 +290,8 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
+        if name == "__odata_type":
+            return self
         if persist_changes:
             self._changes.add(name)
         self._properties[name] = deserialize_value(
