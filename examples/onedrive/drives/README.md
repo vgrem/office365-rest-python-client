@@ -25,6 +25,7 @@ with `require_application_permission(...)`.
 | Search a keyword across all drives | [`search_all.py`](./search_all.py) | [driveItem search](https://learn.microsoft.com/en-us/graph/api/driveitem-search) |
 | Tenant-wide storage report (quota) | [`storage_report.py`](./storage_report.py) | [drive list](https://learn.microsoft.com/en-us/graph/api/drive-list) |
 | A user's drive and quota | [`user_drive.py`](./user_drive.py) | [user drive](https://learn.microsoft.com/en-us/graph/api/user-list-drive) |
+| Recursively download a user's drive (no `/me`) | [`export_user_drive.py`](./export_user_drive.py) | [driveItem children](https://learn.microsoft.com/en-us/graph/api/driveitem-list-children) |
 
 ---
 
