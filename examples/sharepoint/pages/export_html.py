@@ -6,7 +6,8 @@ Reads each page and writes its title plus canvas content (the raw HTML in the
 Files, images, and videos embedded in the pages are not exported.
 
 Uses offset paging: the site pages endpoint does not return a server-side next
-link, so ``get_all()``/``paged()`` cannot advance past the first page.
+link, so ``get_all()``/``paged()`` fall back to client-driven offset requests
+automatically.
 
 A Python port of PnP's ``spo-export-page-html`` script sample:
 https://github.com/pnp/script-samples/tree/main/scripts/spo-export-page-html
@@ -34,15 +35,7 @@ def main():
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
 
-    pages = []
-    offset = 0
-    while True:
-        batch = list(ctx.site_pages.pages.skip(offset).top(PAGE_SIZE).get().execute_query())
-        if not batch:
-            break
-        pages.extend(batch)
-        offset += PAGE_SIZE
-
+    pages = list(ctx.site_pages.pages.paged(PAGE_SIZE).get().execute_query())
     pages = [page for page in pages if page.file_name and page.file_name.endswith(".aspx")]
     if not pages:
         sys.exit("No modern pages found.")

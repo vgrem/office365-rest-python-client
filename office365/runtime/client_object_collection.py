@@ -51,6 +51,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self._item_type: Type[ClientObjectT] = item_type
         self._page_loaded: EventHandler = EventHandler(False)
         self._paged_mode: bool = False
+        self._page_size: int | None = None
         self._current_pos: int | None = None
         self._next_request_url: str | None = None
         self._page_headers: dict[str, str] | None = None
@@ -259,6 +260,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             self: Supports fluent method chaining
         """
         self._paged_mode = True
+        self._page_size = page_size
         if callable(page_loaded):
             self._page_loaded += page_loaded
         if page_size:
@@ -554,6 +556,24 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
                 self.context.after_execute(hook)
         return self
 
+    def _can_offset_next(self) -> bool:
+        """Whether the next page can be fetched with a client-driven offset request.
+
+        Some SharePoint endpoints (e.g. ``SP.Publishing.SitePageService/pages``)
+        never emit a server-side ``__next`` link, even when more items exist.
+        When the client requested an explicit page size and the last page came
+        back full, fall back to ``$skip``/``$top`` paging. Graph is excluded:
+        it always reports ``@odata.nextLink`` and does not honor ``$skip``.
+        """
+        if not self._paged_mode or not self._page_size or self._next_request_url is not None:
+            return False
+        from office365.runtime.odata.v3.json_light_format import JsonLightFormat
+
+        json_format = getattr(self.context.pending_request(), "json_format", None)
+        if not isinstance(json_format, JsonLightFormat):
+            return False
+        return len(self.current_page) == self._page_size
+
     def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""
 
@@ -567,7 +587,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
                 )
 
         if self._next_request_url is None:
-            raise ValueError("Next page not available")
+            if not self._can_offset_next():
+                raise ValueError("Next page not available")
+            self.skip(len(self._data))
+            return self.get()
         return self.get().before_execute(_construct_request)
 
     def first(self, expression: str) -> ClientObjectT:
@@ -628,8 +651,13 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
     @property
     def has_next(self) -> bool:
-        """Check if more pages are available in server-driven paging."""
-        return self._next_request_url is not None
+        """Check if more pages are available.
+
+        True when the server signalled a next page (``__next``/``@odata.nextLink``)
+        or when a SharePoint collection loaded a full explicit page and the next
+        one can still be fetched via ``$skip``.
+        """
+        return self._next_request_url is not None or self._can_offset_next()
 
     @property
     def current_page(self) -> List[ClientObjectT]:

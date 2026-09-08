@@ -1,8 +1,9 @@
-"""Page through all site pages using client-driven (offset) paging.
+"""Page through all site pages.
 
 The ``SP.Publishing.SitePageService/pages`` endpoint does not return a
-server-side next link (unlike the classic list REST API), so server-driven
-``paged()`` cannot advance beyond the first page. Use offset paging instead.
+server-side next link (unlike the classic list REST API), so paging falls
+back to client-driven offset requests automatically: ``paged(page_size)``
+keeps fetching subsequent pages via ``$skip`` until a short/empty page.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference
 """
@@ -14,7 +15,7 @@ from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tena
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Page through all site pages by offset")
+    parser = argparse.ArgumentParser(description="Page through all site pages")
     parser.add_argument("--page-size", type=int, default=5, help="pages per request (default: 5)")
     args = parser.parse_args()
 
@@ -22,17 +23,11 @@ def main():
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
 
-    offset, total = 0, 0
-    while True:
-        batch = list(ctx.site_pages.pages.skip(offset).top(args.page_size).get().execute_query())
-        if not batch:
-            break
-        total += len(batch)
-        for page in batch:
-            print(f"  {page.file_name}")
-        print(f"  -- {total} pages so far")
-        offset += args.page_size
-
+    total = 0
+    pages = ctx.site_pages.pages.paged(args.page_size).get().execute_query()
+    for page in pages:
+        total += 1
+        print(f"  {page.file_name}")
     print(f"\nTotal site pages: {total}")
 
 

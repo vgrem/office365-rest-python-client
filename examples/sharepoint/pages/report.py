@@ -1,8 +1,8 @@
 """Report on site pages — list all pages with author, created date, last modified,
 and promotion status.
 
-Uses offset paging: the site pages endpoint does not return a server-side next
-link, so ``get_all()``/``paged()`` cannot advance past the first page.
+The site pages endpoint does not return a server-side next link, so paging falls
+back to client-driven offset requests automatically.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-pages-api-reference
 """
@@ -18,14 +18,7 @@ def main():
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
 
-    pages = []
-    offset = 0
-    while True:
-        batch = list(ctx.site_pages.pages.skip(offset).top(PAGE_SIZE).get().execute_query())
-        if not batch:
-            break
-        pages.extend(batch)
-        offset += PAGE_SIZE
+    pages = list(ctx.site_pages.pages.paged(PAGE_SIZE).get().execute_query())
 
     print(f"{'Title':40s}  {'Author':25s}  {'Created':15s}  {'Modified':15s}  {'Promoted'}")
     print("-" * 105)
