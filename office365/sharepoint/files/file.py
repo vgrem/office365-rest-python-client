@@ -636,9 +636,11 @@ class File(AbstractFile):
     def save_binary(context: ClientContext, server_relative_url: str, content: bytes):
         """Uploads a file"""
         try:
-            decoded_server_relative_url = unquote(server_relative_url)
+            decoded = unquote(server_relative_url)
         except (ValueError, AttributeError, TypeError):
-            decoded_server_relative_url = server_relative_url
+            decoded = server_relative_url
+        # OData literals escape embedded single quotes by doubling them (' -> '')
+        decoded_server_relative_url = decoded.replace("'", "''")
 
         url = quote(
             rf"{context.service_root_url}/web/getFileByServerRelativePath"
@@ -659,9 +661,11 @@ class File(AbstractFile):
         Returns the file object located at the specified server-relative URL.
         """
         try:
-            decoded_server_relative_url = unquote(server_relative_url)
+            decoded = unquote(server_relative_url)
         except (ValueError, AttributeError, TypeError):
-            decoded_server_relative_url = server_relative_url
+            decoded = server_relative_url
+        # OData literals escape embedded single quotes by doubling them (' -> '')
+        decoded_server_relative_url = decoded.replace("'", "''")
 
         url = quote(
             rf"{context.service_root_url}/web/getFileByServerRelativePath("
