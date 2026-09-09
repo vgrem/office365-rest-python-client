@@ -130,6 +130,34 @@ with open("users.csv", "w", newline="") as f:
     client.users.get_all().select(["displayName", "userPrincipalName"]).to_csv(f).execute_query()
 ```
 
+### DataFrame import / bulk load
+
+Every collection exposes the same deferred adapters: `to_dataframe()` /
+`from_dataframe()` (plus `to_records`/`from_records`, CSV, NDJSON, Excel,
+JSON) over one shared projection. SharePoint lists additionally infer a typed
+schema from the DataFrame dtypes (`List.from_dataframe`).
+
+For **large** frames, don't materialize the whole file or loop row-by-row:
+read the source in memory-bounded chunks, provision the columns once, and flush
+each chunk's queued creates through `execute_batch` (server-side batches;
+`concurrency>1` runs them in parallel with per-sub-request throttling retries):
+
+```python
+import pandas as pd
+
+lst = ctx.web.lists.ensure_list("Housing").execute_query()
+lst.ensure_fields({"median_income": FieldType.Number, ...}).execute_query()  # once
+
+reader = pd.read_csv("housing.csv", chunksize=1000)          # bounded memory
+for chunk in reader:
+    lst.items.from_dataframe(chunk)                          # queue item creates
+    ctx.execute_batch(items_per_batch=100, concurrency=5)    # batched + concurrent
+```
+
+See `examples/sharepoint/lists/import_dataframe_large.py` (full dtype→field
+mapping + open-data walkthrough) and the `examples/entraid` DataFrame export
+for the Graph side.
+
 ## Learn more
 
 -   **[Products](products/index.md)** — start with the SharePoint area, then

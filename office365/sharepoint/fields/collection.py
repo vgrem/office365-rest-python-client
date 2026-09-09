@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
+from typing_extensions import Self
+
 from office365.runtime.client_request_exception import (
     ClientRequestException,
     ObjectNotFoundException,
@@ -31,6 +33,19 @@ from office365.sharepoint.taxonomy.sets.set import TermSet
 
 T = TypeVar("T", bound=Field)
 
+_FIELD_TYPE_BY_KIND = {
+    "boolean": FieldType.Boolean,
+    "datetime": FieldType.DateTime,
+    "number": FieldType.Number,
+    "text": FieldType.Text,
+}
+
+
+def field_type_from_kind(kind: str) -> FieldType:
+    """Map a generic pandas dtype kind (see ``series_kind``) to a SharePoint ``FieldType``."""
+    return _FIELD_TYPE_BY_KIND[kind]
+
+
 if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List
     from office365.sharepoint.webs.web import Web
@@ -41,6 +56,40 @@ class FieldCollection(EntityCollection[Field]):
 
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Field, resource_path, parent)
+
+    def from_dataframe(self, df, progress=None) -> Self:
+        """Define a field per DataFrame column, inferring the field type.
+
+        The schema counterpart of ``ClientObjectCollection.from_dataframe``
+        (which imports rows): here each column becomes a field definition.
+        Column names are sanitized into field internal names and the
+        ``FieldType`` is inferred from the pandas dtype (Boolean/DateTime/
+        Number/Text). Each field is ensured idempotently (looked up first,
+        created when missing). Deferred — run the lookups/creates with
+        ``execute_query()``:
+
+            >>> lst.fields.from_dataframe(df).execute_query()
+
+        Requires ``pip install office365-rest-python-client[pandas]``.
+
+        Args:
+            df: A pandas DataFrame whose columns become the field definitions.
+
+        Returns:
+            Self: The field collection, for method chaining.
+        """
+        from office365.runtime.converters.dataframe import require_pandas, series_kind
+        from office365.sharepoint.fields.name import internal_field_name
+
+        pd = require_pandas()
+        for column in df.columns:
+            field_type = field_type_from_kind(series_kind(pd, df[column]))
+            info = FieldCreationInformation(
+                Title=internal_field_name(str(column)),
+                FieldTypeKind=field_type,
+            )
+            self.ensure(info)
+        return self
 
     def ensure(self, parameters: FieldCreationInformation) -> Field:
         from office365.runtime.queries.deferred import DeferredOperationQuery

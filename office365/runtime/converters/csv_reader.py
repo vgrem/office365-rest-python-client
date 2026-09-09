@@ -31,13 +31,15 @@ def read_csv_records(file: IO[str], delimiter: str = ",") -> list[dict]:
     return [{k: v for k, v in row.items() if v not in ("", None)} for row in reader]
 
 
-def coerce_records(item_type: type, records: list[dict]) -> list[dict]:
+def coerce_records(item_type: type, records: list[dict], *, allow_unknown: bool = False) -> list[dict]:
     """Normalize plain dict records to the entity's declared property types.
 
     Dotted keys (``a/b/c``) are re-nested into dicts; ``"; "``-joined strings are
     split for collection-typed fields; non-importable keys (``@*``, ``id``) and
     ``None`` cells are dropped; columns mapping to no known property are skipped
-    with a warning. Shared by every import format.
+    with a warning. Pass ``allow_unknown=True`` for schema-flexible targets whose
+    fields are only known at runtime (SharePoint list items). Shared by every
+    import format.
     """
     coerced: list[dict[str, Any]] = []
     for record in records:
@@ -49,16 +51,16 @@ def coerce_records(item_type: type, records: list[dict]) -> list[dict]:
                 continue
             if "/" in key:
                 nav = key.split("/", 1)[0]
-                if declared_type(item_type, nav) is None:
+                if declared_type(item_type, nav) is None and not allow_unknown:
                     warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
                     continue
                 _set_nested(item, key, raw)
                 continue
             declared = declared_type(item_type, key)
-            if declared is None:
+            if declared is None and not allow_unknown:
                 warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
                 continue
-            if isinstance(raw, str) and _is_collection(declared):
+            if isinstance(raw, str) and declared is not None and _is_collection(declared):
                 item[key] = raw.split(_LIST_SEPARATOR)
             else:
                 item[key] = raw

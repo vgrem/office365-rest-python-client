@@ -72,6 +72,16 @@ graph TD
 | Filter list collection | [`filter.py`](./filter.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Parallel import (concurrent batches) | [`import_list_parallel.py`](./import_list_parallel.py) | Member on list | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 
+### Pandas DataFrame
+
+| Operation | File | Required role | Notes |
+|---|---|---|---|
+| Import DataFrame | [`import_dataframe.py`](./import_dataframe.py) | Member on list | Columns provisioned from dtypes |
+| Import large DataFrame (fast) | [`import_dataframe_large.py`](./import_dataframe_large.py) | Member on list | Chunked memory slices + `execute_batch` concurrency |
+| Export list to DataFrame | [`export_dataframe.py`](./export_dataframe.py) | Read access | `to_dataframe()` |
+
+Requires `pip install office365-rest-python-client[pandas]`.
+
 ---
 
 ## Quick start

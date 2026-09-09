@@ -1,6 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from typing_extensions import Self
+
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.listitems.listitem import ListItem
+
+if TYPE_CHECKING:
+    from office365.runtime.operations import ProgressCallback
 
 
 class ListItemCollection(EntityCollection[ListItem]):
@@ -8,6 +17,25 @@ class ListItemCollection(EntityCollection[ListItem]):
 
     def __init__(self, context, resource_path=None):
         super().__init__(context, ListItem, resource_path)
+
+    def from_records(self, records, progress: "ProgressCallback | None" = None) -> Self:
+        """Queue an item create per record.
+
+        List item columns are defined per list at runtime, not on the ``ListItem``
+        class, so every record key is forwarded to the server (no unknown-column
+        filtering). Deferred — run the creates with ``execute_query()``.
+
+        Args:
+            records: Plain dict records to import.
+            progress: Optional hook invoked per queued create as it completes
+              during ``execute_query()``.
+
+        Returns:
+            Self: The item collection, for method chaining.
+        """
+        from office365.runtime.converters.csv_reader import coerce_records
+
+        return self._import_records(coerce_records(self._item_type, records, allow_unknown=True), progress=progress)
 
     def get_by_id(self, item_id: int) -> ListItem:
         """Returns the list item with the specified list item identifier.

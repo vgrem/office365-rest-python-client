@@ -21,8 +21,9 @@ from office365.runtime.converters.dataframe import (
     series_kind,
     write_dataframe,
 )
+from office365.sharepoint.fields.collection import field_type_from_kind
+from office365.sharepoint.fields.name import internal_field_name
 from office365.sharepoint.fields.type import FieldType
-from office365.sharepoint.lists.list import _field_kind, _sanitize_field_name
 
 
 def _collection(properties: list[dict], context=None) -> ClientObjectCollection:
@@ -94,19 +95,19 @@ def test_records_from_dataframe_drops_nan_cells():
 
 def test_records_from_dataframe_renames_keys():
     df = pd.DataFrame({"Median Income": [8.3]})
-    assert records_from_dataframe(df, key_fn=_sanitize_field_name) == [{"Median_Income": 8.3}]
+    assert records_from_dataframe(df, key_fn=internal_field_name) == [{"Median_Income": 8.3}]
 
 
-def test_sanitize_field_name():
-    assert _sanitize_field_name("Median Income") == "Median_Income"
-    assert _sanitize_field_name("a/b?c") == "a_b_c"
+def test_internal_field_name():
+    assert internal_field_name("Median Income") == "Median_Income"
+    assert internal_field_name("a/b?c") == "a_b_c"
 
 
-def test_field_kind_mapping():
-    assert _field_kind(pd, pd.Series([True])) is FieldType.Boolean
-    assert _field_kind(pd, pd.Series(pd.to_datetime(["2025-01-01"]))) is FieldType.DateTime
-    assert _field_kind(pd, pd.Series([1.5])) is FieldType.Number
-    assert _field_kind(pd, pd.Series(["text"])) is FieldType.Text
+def test_field_type_mapping():
+    assert field_type_from_kind(series_kind(pd, pd.Series([True]))) is FieldType.Boolean
+    assert field_type_from_kind(series_kind(pd, pd.Series(pd.to_datetime(["2025-01-01"])))) is FieldType.DateTime
+    assert field_type_from_kind(series_kind(pd, pd.Series([1.5]))) is FieldType.Number
+    assert field_type_from_kind(series_kind(pd, pd.Series(["text"]))) is FieldType.Text
 
 
 def test_series_kind():

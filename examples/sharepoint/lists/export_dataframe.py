@@ -1,8 +1,8 @@
 """Export a SharePoint list back into a pandas DataFrame.
 
-Reads a list (default: the California_Housing list created by
-``import_dataframe.py``) and materializes it into a DataFrame via the deferred
-``to_dataframe()`` — ``.execute_query().value`` holds the result.
+Reads a list (default: the Stocks_5yr list created by ``import_dataframe.py``)
+and materializes it into a DataFrame via the deferred ``to_dataframe()`` —
+``.execute_query().value`` holds the result.
 
 The symmetric counterpart (importing a DataFrame into a list) is
 ``import_dataframe.py``.
@@ -43,10 +43,10 @@ def progress_bar(description: str):
 
 def main():
     p = argparse.ArgumentParser(description="Export a SharePoint list into a pandas DataFrame")
-    p.add_argument("--list-title", default="California_Housing")
+    p.add_argument("--list-title", default="Stocks_5yr")
     p.add_argument(
         "--select",
-        default="Id,median_income,housing_median_age",
+        default="Id,date,open,high,low,close,volume,Name",
         help="comma-separated fields to export",
     )
     p.add_argument("--no-progress", action="store_true", help="do not print per-page progress")

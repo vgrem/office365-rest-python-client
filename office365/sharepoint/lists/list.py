@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import re
 from datetime import datetime
 from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional, Union
 
@@ -79,31 +78,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
     from office365.sharepoint.webs.web import Web
-
-
-def _sanitize_field_name(name: str) -> str:
-    """SharePoint field internal names cannot contain spaces or punctuation."""
-    return re.sub(r"\W", "_", name)
-
-
-_FIELD_TYPE_BY_KIND = {
-    "boolean": FieldType.Boolean,
-    "datetime": FieldType.DateTime,
-    "number": FieldType.Number,
-    "text": FieldType.Text,
-}
-
-
-def _field_kind(pd, series) -> FieldType:
-    """Map a pandas column dtype to a SharePoint field type.
-
-    The dtype detection lives in the pandas boundary
-    (``converters.dataframe.series_kind``); this maps the generic kind onto a
-    SharePoint ``FieldType``.
-    """
-    from office365.runtime.converters.dataframe import series_kind
-
-    return _FIELD_TYPE_BY_KIND[series_kind(pd, series)]
 
 
 class List(SecurableObject):
@@ -729,11 +703,10 @@ class List(SecurableObject):
     def from_dataframe(self, df, progress: "ProgressCallback | None" = None) -> Self:
         """Import a pandas DataFrame into this list.
 
-        Provisions a column per DataFrame column (inferred from the dtype and
-        created idempotently via ``ensure_field``), then queues an item create
-        per row. Each missing column is created in its queue slot (a deferred
-        placeholder), so all columns exist before any item create — fully
-        deferred, run the whole import with ``execute_query()``:
+        Defines a column per DataFrame column via ``fields.from_dataframe``
+        (type inferred from the dtype, created idempotently), then queues an
+        item create per row — fully deferred, run the whole import with
+        ``execute_query()``:
 
             >>> lst = ctx.web.lists.ensure_list("My List").execute_query()
             >>> lst.from_dataframe(df).execute_query()
@@ -751,11 +724,11 @@ class List(SecurableObject):
         Returns:
             Self: The list, for method chaining.
         """
-        from office365.runtime.converters.dataframe import records_from_dataframe, require_pandas
+        from office365.runtime.converters.dataframe import records_from_dataframe
+        from office365.sharepoint.fields.name import internal_field_name
 
-        pd = require_pandas()
-        records = records_from_dataframe(df, key_fn=_sanitize_field_name)
-        self.ensure_fields({_sanitize_field_name(c): _field_kind(pd, df[c]) for c in df.columns})
+        records = records_from_dataframe(df, key_fn=internal_field_name)
+        self.fields.from_dataframe(df)
         self.items.from_records(records, progress=progress)
         return self
 

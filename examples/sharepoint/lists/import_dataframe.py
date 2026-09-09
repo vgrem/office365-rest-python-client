@@ -1,9 +1,10 @@
 """Import a pandas DataFrame into a SharePoint list.
 
-Loads a CSV (default: California housing, ~20k rows), creates the list with
+Loads a CSV (default: S&P 500 daily prices, ~1.5M rows), creates the list with
 typed columns if missing (fields inferred from the DataFrame dtypes), and
-imports all rows via the deferred ``List.from_dataframe`` — the progress hook
+imports rows via the deferred ``List.from_dataframe`` — the progress hook
 fires per row as each queued create completes during ``execute_query()``.
+``--limit 40000`` (default) imports a 40k slice; ``--limit 0`` imports all.
 
 The symmetric counterpart (reading a list back into a DataFrame) is
 ``export_dataframe.py``.
@@ -16,7 +17,7 @@ import argparse
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
-DEFAULT_URL = "https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.csv"
+DEFAULT_URL = "https://raw.githubusercontent.com/plotly/datasets/master/all_stocks_5yr.csv"
 
 
 def progress_bar(description: str):
@@ -41,13 +42,11 @@ def main():
     p = argparse.ArgumentParser(description="Import a DataFrame into a SharePoint list")
     p.add_argument("--url", default=DEFAULT_URL)
     p.add_argument("--file")
-    p.add_argument("--list-title", default="California_Housing")
-    p.add_argument("--limit", type=int, default=1000, help="0 = all rows")
+    p.add_argument("--list-title", default="Stocks_5yr")
+    p.add_argument("--limit", type=int, default=40000, help="rows to import (0 = all)")
     args = p.parse_args()
 
-    df = pd.read_csv(args.file or args.url)
-    if args.limit > 0:
-        df = df.head(args.limit)
+    df = pd.read_csv(args.file or args.url, nrows=args.limit if args.limit > 0 else None)
 
     ctx = ClientContext(team_site_url).with_username_and_password(
         tenant=tenant, client_id=client_id, username=username, password=password
