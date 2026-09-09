@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable
 
 import requests
 from typing_extensions import Self
@@ -26,8 +26,8 @@ class TeamCollection(EntityCollection[Team]):
 
     def get_all(
         self,
-        page_size: Optional[int] = None,
-        page_loaded: Optional[Callable[[Any], None]] = None,
+        page_size: int | None = None,
+        page_loaded: Callable[[Any], None] | None = None,
         progress: "ProgressCallback | None" = None,
     ) -> Self:
         """List all teams in Microsoft Teams for an organization"""
@@ -48,7 +48,7 @@ class TeamCollection(EntityCollection[Team]):
     def create(
         self,
         display_name: str,
-        description: Optional[str] = None,
+        description: str | None = None,
         template: str = "standard",
     ) -> TeamsAsyncOperation:
         """Create a new team (async) — returns the ``teamsAsyncOperation``.
@@ -67,7 +67,7 @@ class TeamCollection(EntityCollection[Team]):
         return_type = TeamsAsyncOperation(self.context, EntityPath(None, self.resource_path))
 
         def _process_response(resp: requests.Response) -> None:
-            loc = resp.headers.get("Location", None)
+            loc = resp.headers.get("Location")
             if loc is not None:
                 operation_path = ODataPathBuilder.parse_url(loc)
                 return_type._resource_path = operation_path
@@ -84,7 +84,7 @@ class TeamCollection(EntityCollection[Team]):
     def create_and_wait(
         self,
         display_name: str,
-        description: Optional[str] = None,
+        description: str | None = None,
         template: str = "standard",
     ) -> Team:
         """Create a team and wait for provisioning (deferred).
@@ -102,12 +102,12 @@ class TeamCollection(EntityCollection[Team]):
         self.add_child(return_type)
 
         def _process_response(resp: requests.Response) -> None:
-            content_loc = resp.headers.get("Content-Location", None)
+            content_loc = resp.headers.get("Content-Location")
             assert content_loc is not None
             team_path = ODataPathBuilder.parse_url(content_loc)
             return_type.set_property("id", team_path.segment, False)
 
-            loc = resp.headers.get("Location", None)
+            loc = resp.headers.get("Location")
             assert loc is not None
             operation = TeamsAsyncOperation(self.context, ODataPathBuilder.parse_url(loc))
 

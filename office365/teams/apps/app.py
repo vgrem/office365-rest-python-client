@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -14,14 +14,14 @@ class TeamsApp(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str | None:
         """The title of the TeamsApp."""
-        return self.properties.get("displayName", None)
+        return self.properties.get("displayName")
 
     @property
-    def distribution_method(self) -> Optional[str]:
+    def distribution_method(self) -> str | None:
         """The title of the TeamsApp."""
-        return self.properties.get("distributionMethod", None)
+        return self.properties.get("distributionMethod")
 
     @odata(name="appDefinitions")
     @property

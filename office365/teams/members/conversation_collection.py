@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING
 
 from office365.entity_collection import EntityCollection
 from office365.teams.members.conversation import ConversationMember
@@ -18,9 +18,9 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
 
     def add(
         self,
-        user: Union[str, User],
-        roles: List[str],
-        visible_history_start_datetime: Optional[datetime] = None,
+        user: str | User,
+        roles: list[str],
+        visible_history_start_datetime: datetime | None = None,
     ):
         """Add a conversationMember.
 
@@ -37,11 +37,7 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         return_type = super().add(roles=roles)
 
         if isinstance(user, User):
-
-            def _set_user_id():
-                return_type.set_property("userId", user.id)
-
-            user.ensure_property("id").after_execute(lambda _: _set_user_id())
+            user.ensure_property("id").after_execute(lambda _: return_type.set_property("userId", user.id))
         else:
             return_type.set_property("userId", user)
         return return_type

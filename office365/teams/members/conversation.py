@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
@@ -11,9 +11,9 @@ class ConversationMember(Entity):
         return self.display_name or self.entity_type_name
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str | None:
         """The display name of the user."""
-        return self.properties.get("displayName", None)
+        return self.properties.get("displayName")
 
     @property
     def roles(self) -> StringCollection:

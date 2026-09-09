@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
 
 from office365.directory.permissions.grants.resource_specific import ResourceSpecificPermissionGrant
 from office365.entity import Entity
@@ -20,7 +21,7 @@ class Chat(Entity):
     """A chat is a collection of chatMessages between one or more participants. Participants can be users or apps."""
 
     @property
-    def chat_type(self) -> Optional[str]:
+    def chat_type(self) -> str | None:
         """Specifies the type of chat. Possible values are: group, oneOnOne, meeting, unknownFutureValue."""
         return self.properties.get("chatType", None)
 
@@ -31,13 +32,13 @@ class Chat(Entity):
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def is_hidden_for_all_members(self) -> Optional[bool]:
+    def is_hidden_for_all_members(self) -> bool | None:
         """Indicates whether the chat is hidden for all its members."""
         return self.properties.get("isHiddenForAllMembers", None)
 
     @odata(name="lastUpdatedDateTime")
     @property
-    def last_updated_datetime(self) -> Optional[datetime]:
+    def last_updated_datetime(self) -> datetime | None:
         """Date and time at which the chat was renamed or the list of members was last changed."""
         return self.properties.get("lastUpdatedDateTime", datetime.min)
 
@@ -49,12 +50,12 @@ class Chat(Entity):
         return self.properties.get("onlineMeetingInfo", TeamworkOnlineMeetingInfo())
 
     @property
-    def tenant_id(self) -> Optional[str]:
+    def tenant_id(self) -> str | None:
         """The identifier of the tenant in which the chat was created. Read-only."""
         return self.properties.get("tenantId", None)
 
     @property
-    def topic(self) -> Optional[str]:
+    def topic(self) -> str | None:
         """(Optional) Subject or topic for the chat. Only available for group chats."""
         return self.properties.get("topic", None)
 
@@ -66,7 +67,7 @@ class Chat(Entity):
         return self.properties.get("viewpoint", ChatViewpoint())
 
     @property
-    def web_url(self) -> Optional[str]:
+    def web_url(self) -> str | None:
         """The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed."""
         return self.properties.get("webUrl", None)
 
@@ -120,17 +121,7 @@ class Chat(Entity):
         )
 
     @property
-    def created_date_time(self) -> Optional[datetime]:
-        """Gets the createdDateTime property"""
-        return self.properties.get("createdDateTime", datetime.min)
-
-    @property
-    def last_updated_date_time(self) -> Optional[datetime]:
-        """Gets the lastUpdatedDateTime property"""
-        return self.properties.get("lastUpdatedDateTime", datetime.min)
-
-    @property
-    def original_created_date_time(self) -> Optional[datetime]:
+    def original_created_date_time(self) -> datetime | None:
         """Gets the originalCreatedDateTime property"""
         return self.properties.get("originalCreatedDateTime", datetime.min)
 

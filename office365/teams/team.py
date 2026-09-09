@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 from typing_extensions import Self
@@ -80,26 +80,26 @@ class Team(Entity):
         return self.properties.get("guestSettings", TeamMessagingSettings())
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str | None:
         """The name of the team."""
-        return self.properties.get("displayName", None)
+        return self.properties.get("displayName")
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """An optional description for the team."""
-        return self.properties.get("description", None)
+        return self.properties.get("description")
 
     @property
-    def classification(self) -> Optional[str]:
+    def classification(self) -> str | None:
         """An optional label. Typically describes the data or business sensitivity of the team.
         Must match one of a pre-configured set in the tenant's directory.
         """
-        return self.properties.get("classification", None)
+        return self.properties.get("classification")
 
     @property
-    def is_archived(self) -> Optional[bool]:
+    def is_archived(self) -> bool | None:
         """Whether this team is in read-only mode."""
-        return self.properties.get("isArchived", None)
+        return self.properties.get("isArchived")
 
     @property
     def visibility(self) -> TeamVisibilityType:
@@ -107,17 +107,17 @@ class Team(Entity):
         return self.properties.get("visibility", TeamVisibilityType.unknown)
 
     @property
-    def web_url(self) -> Optional[str]:
+    def web_url(self) -> str | None:
         """A hyperlink that will go to the team in the Microsoft Teams client. This is the URL that you get when
         you right-click a team in the Microsoft Teams client and select Get link to team. This URL should be treated
         as an opaque blob, and not parsed."""
-        return self.properties.get("webUrl", None)
+        return self.properties.get("webUrl")
 
     @odata(name="createdDateTime")
     @property
     def created_datetime(self):
         """Timestamp at which the team was created."""
-        return self.properties.get("createdDateTime", None)
+        return self.properties.get("createdDateTime")
 
     @odata(name="allChannels")
     @property
@@ -198,9 +198,9 @@ class Team(Entity):
         return self.properties.get("summary", TeamSummary())
 
     @property
-    def tenant_id(self) -> Optional[str]:
+    def tenant_id(self) -> str | None:
         """The ID of the Azure Active Directory tenant."""
-        return self.properties.get("tenantId", None)
+        return self.properties.get("tenantId")
 
     @property
     def tags(self) -> EntityCollection[TeamworkTag]:
@@ -221,14 +221,14 @@ class Team(Entity):
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def first_channel_name(self) -> Optional[str]:
+    def first_channel_name(self) -> str | None:
         """Gets the firstChannelName property"""
-        return self.properties.get("firstChannelName", None)
+        return self.properties.get("firstChannelName")
 
     @property
-    def internal_id(self) -> Optional[str]:
+    def internal_id(self) -> str | None:
         """Gets the internalId property"""
-        return self.properties.get("internalId", None)
+        return self.properties.get("internalId")
 
     @property
     def specialization(self) -> TeamSpecialization:
@@ -291,7 +291,7 @@ class Team(Entity):
         return_type = TeamsAsyncOperation(self.context)
 
         def _process_response(resp: requests.Response) -> None:
-            loc = resp.headers.get("Location", None)
+            loc = resp.headers.get("Location")
             if loc is not None:
                 return_type._resource_path = ODataPathBuilder.parse_url(loc)
 
@@ -338,7 +338,7 @@ class Team(Entity):
         self.context.teams.add_child(return_type)
 
         def _process_response(resp: requests.Response) -> None:
-            loc = resp.headers.get("Location", None)
+            loc = resp.headers.get("Location")
             assert loc is not None
             operation = TeamsAsyncOperation(self.context, ODataPathBuilder.parse_url(loc))
 
@@ -370,7 +370,7 @@ class Team(Entity):
         activity_type: str,
         chain_id: str,
         preview_text: str,
-        template_parameters: Dict[str, Any],
+        template_parameters: dict[str, Any],
         recipient: TeamworkNotificationRecipient,
     ):
         """Send an activity feed notification in the scope of a team.

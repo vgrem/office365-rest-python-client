@@ -1,4 +1,6 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.function import FunctionQuery
@@ -13,7 +15,7 @@ class ChannelCollection(EntityCollection[Channel]):
         super().__init__(context, Channel, resource_path)
 
     def add(
-        self, display_name: str, description: Optional[str] = None, membership_type: Optional[str] = None, **kwargs: Any
+        self, display_name: str, description: str | None = None, membership_type: str | None = None, **kwargs: Any
     ) -> Channel:
         """Create a new channel in a Microsoft Team, as specified in the request body.
 

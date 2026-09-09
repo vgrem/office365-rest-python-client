@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.teams.members.conversation import ConversationMember
@@ -8,9 +8,9 @@ class AadUserConversationMember(ConversationMember):
     """Represents an Azure Active Directory user in a team, a channel, or a chat."""
 
     @property
-    def user_id(self) -> Optional[str]:
+    def user_id(self) -> str | None:
         """The guid of the user."""
-        return self.properties.get("userId", None)
+        return self.properties.get("userId")
 
     @property
     def user(self):
@@ -22,5 +22,5 @@ class AadUserConversationMember(ConversationMember):
         return {
             "@odata.type": "#" + self.entity_type_name,
             "roles": self.roles.to_json(json_format),
-            "user@odata.bind": f"https://graph.microsoft.com/v1.0/users/{self.user_id}",
+            "user@odata.bind": f"{self.context.users.resource_url}/{self.user_id}",
         }

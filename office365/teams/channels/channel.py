@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
 from urllib.parse import quote
 
 from office365.entity import Entity
@@ -26,9 +27,9 @@ class Channel(Entity):
 
     def does_user_have_access(
         self,
-        user_id: Optional[str] = None,
-        tenant_id: Optional[str] = None,
-        user_principal_name: Optional[str] = None,
+        user_id: str | None = None,
+        tenant_id: str | None = None,
+        user_principal_name: str | None = None,
     ) -> ClientResult[bool]:
         """Determine whether a user has access to a shared channel.
 
@@ -78,44 +79,44 @@ class Channel(Entity):
 
     @odata(name="createdDateTime")
     @property
-    def created_datetime(self) -> Optional[datetime]:
+    def created_datetime(self) -> datetime | None:
         """
         Read only. Timestamp at which the channel was created.
         """
         return self.properties.get("createdDateTime", datetime.min)
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Optional textual description for the channel."""
-        return self.properties.get("Description", None)
+        return self.properties.get("Description")
 
     @property
-    def display_name(self) -> Optional[str]:
+    def display_name(self) -> str | None:
         """Channel name as it will appear to the user in Microsoft Teams. The maximum length is 50 characters"""
-        return self.properties.get("displayName", None)
+        return self.properties.get("displayName")
 
     @property
-    def email(self) -> Optional[str]:
+    def email(self) -> str | None:
         """The email address for sending messages to the channel. Read-only."""
-        return self.properties.get("email", None)
+        return self.properties.get("email")
 
     @property
-    def is_archived(self) -> Optional[bool]:
+    def is_archived(self) -> bool | None:
         """Indicates whether the channel is archived. Read-only."""
-        return self.properties.get("isArchived", None)
+        return self.properties.get("isArchived")
 
     @property
-    def is_favorite_by_default(self) -> Optional[bool]:
+    def is_favorite_by_default(self) -> bool | None:
         """Indicates whether the channel should be marked as recommended for all members of the team to show in
         their channel list. Note: All recommended channels automatically show in the channels list for
         education and frontline worker users. The property can only be set programmatically via the Create team method.
         The default value is false"""
-        return self.properties.get("isFavoriteByDefault", None)
+        return self.properties.get("isFavoriteByDefault")
 
     @property
-    def tenant_id(self) -> Optional[str]:
+    def tenant_id(self) -> str | None:
         """The ID of the Microsoft Entra tenant."""
-        return self.properties.get("tenantId", None)
+        return self.properties.get("tenantId")
 
     @odata(name="membershipType")
     @property
@@ -129,11 +130,11 @@ class Channel(Entity):
         return self.properties.get("membershipType", ChannelMembershipType.invalid)
 
     @property
-    def web_url(self) -> Optional[str]:
+    def web_url(self) -> str | None:
         """A hyperlink that will navigate to the channel in Microsoft Teams. This is the URL that you get when you
         right-click a channel in Microsoft Teams and select Get link to channel. This URL should be treated as an
         opaque blob, and not parsed. Read-only."""
-        return self.properties.get("webUrl", None)
+        return self.properties.get("webUrl")
 
     @odata(name="filesFolder")
     @property

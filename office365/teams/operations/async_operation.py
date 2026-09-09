@@ -3,7 +3,6 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 from datetime import datetime
-from typing import Optional
 
 from typing_extensions import Self
 
@@ -90,7 +89,7 @@ class TeamsAsyncOperation(Entity):
             if callable(failure_callback):
                 failure_callback(self)
 
-        def _poll():
+        def _poll() -> None:
             qry = self.get()
 
             def _on_error(exc: Exception) -> None:
@@ -122,7 +121,7 @@ class TeamsAsyncOperation(Entity):
 
     @odata(name="attemptsCount")
     @property
-    def attempts_count(self) -> Optional[int]:
+    def attempts_count(self) -> int | None:
         """Number of times the operation was attempted before being marked as succeeded or failed."""
         return self.properties.get("attemptsCount", None)
 
@@ -155,12 +154,12 @@ class TeamsAsyncOperation(Entity):
         return self.properties.get("status", TeamsAsyncOperationStatus.invalid)
 
     @property
-    def target_resource_id(self) -> Optional[str]:
+    def target_resource_id(self) -> str | None:
         """The ID of the object that's created or modified as result of this async operation, typically a team."""
         return self.properties.get("targetResourceId", None)
 
     @property
-    def target_resource_location(self) -> Optional[str]:
+    def target_resource_location(self) -> str | None:
         """The location of the object that's created or modified as result of this async operation.
         This URL should be treated as an opaque value and not parsed into its component paths.
         """
