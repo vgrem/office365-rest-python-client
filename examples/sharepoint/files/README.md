@@ -181,6 +181,7 @@ For libraries with required check-out or content approval:
 |------|------|-------|
 | List versions | [`versions/list.py`](./versions/list.py) | |
 | Get by label | [`versions/get_by_label.py`](./versions/get_by_label.py) | A specific version |
+| Delete / recycle versions | [`versions/delete.py`](./versions/delete.py) | Keep N / delete all; retry + timeout for large files |
 | Restore a version | [`restore_version.py`](./restore_version.py) | Roll back |
 
 ## Audit & Compliance
