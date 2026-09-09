@@ -7,7 +7,6 @@ import tempfile
 import uuid
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
-from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -24,6 +23,25 @@ if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
 
 _DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024  # simple-upload threshold / upload-session chunk
+
+
+def _stream_size(stream: IO) -> int:
+    """Byte length of a seekable stream (file or ``io.BytesIO``), preserving position.
+
+    Raises:
+        ValueError: When the upload source is not seekable.
+    """
+    pos = stream.tell()
+    try:
+        stream.seek(0, io.SEEK_END)
+        return stream.tell()
+    except OSError as e:
+        raise ValueError("Upload source must be a seekable file or stream") from e
+    finally:
+        try:
+            stream.seek(pos)
+        except OSError:
+            pass
 
 
 class FileCollection(EntityCollection[File]):
@@ -143,14 +161,15 @@ class FileCollection(EntityCollection[File]):
         else:
             f = file_or_path
 
-        file_size = os.fstat(f.fileno()).st_size
-        file_name = file_name if file_name else os.path.basename(f.name)
+        file_size = _stream_size(f)
+        if file_name is None:
+            stream_name = getattr(f, "name", None)
+            file_name = os.path.basename(stream_name) if stream_name else None
+        if not file_name:
+            raise ValueError("file_name is required when uploading from an unnamed stream")
         upload_id = str(uuid.uuid4())
 
         def _upload(return_type: File) -> None:
-            def _after_uploaded(result: ClientResult) -> None:
-                _upload(return_type)
-
             uploaded_bytes = f.tell()
             if callable(chunk_uploaded):
                 chunk_uploaded(uploaded_bytes, **kwargs)  # type: ignore[call-arg]
@@ -164,9 +183,11 @@ class FileCollection(EntityCollection[File]):
                 return
 
             if uploaded_bytes == 0:
-                return_type.start_upload(upload_id, content).after_execute(_after_uploaded)
+                return_type.start_upload(upload_id, content).after_execute(lambda _: _upload(return_type))
             elif uploaded_bytes + len(content) < file_size:
-                return_type.continue_upload(upload_id, uploaded_bytes, content).after_execute(_after_uploaded)
+                return_type.continue_upload(upload_id, uploaded_bytes, content).after_execute(
+                    lambda _: _upload(return_type)
+                )
             else:
                 return_type.finish_upload(upload_id, uploaded_bytes, content).after_execute(_upload)
 
