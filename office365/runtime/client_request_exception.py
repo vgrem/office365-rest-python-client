@@ -48,7 +48,7 @@ class ClientRequestException(RequestException):
             or "already exists" in msg_text.lower()
         ):
             exc: ClientRequestException = DuplicatedObjectException(response=response)
-        elif "-2147024809" in code:
+        elif "-2147024809" in code or code.lower() in {"itemnotfound", "resourcenotfound", "notfound"}:
             exc: ClientRequestException = ObjectNotFoundException(response=response)
         else:
             exc = cls(response=response)

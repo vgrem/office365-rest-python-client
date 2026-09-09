@@ -230,6 +230,62 @@ class DriveItem(BaseItem):
         """Retrieve DriveItem by server relative path"""
         return DriveItem(self.context, UrlPath(url_path, self.resource_path), self.children)
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Ensure a nested folder exists in a drive",
+    )
+    def ensure_folder(self, url_path: str) -> DriveItem:
+        """Ensure a folder exists at the given path, creating missing levels.
+
+        Walks the path segment by segment (e.g. ``"2024/Q1/Reports"``) and, per
+        level, reuses the existing folder when present or creates it otherwise.
+        Fully deferred — run the chain with ``execute_query()`` and the returned
+        item addresses the target folder:
+
+            >>> folder = drive_item.ensure_folder("2024/Q1/Reports").execute_query()
+
+        Args:
+            url_path (str): Path to the folder, relative to this item.
+
+        Returns:
+            DriveItem: The target folder (existing or newly created).
+        """
+        from office365.runtime.client_request_exception import ObjectNotFoundException
+
+        names = [name for name in url_path.replace("\\", "/").split("/") if name]
+        if not names:
+            raise ValueError("Path is empty")
+        return_type = DriveItem(self.context)
+
+        def _walk(parent: DriveItem, idx: int) -> None:
+            if idx == len(names):
+                return_type._resource_path = parent._resource_path
+                return_type.copy_from(parent)
+                return
+
+            child = parent.get_by_path(names[idx])
+
+            def _on_found(_) -> None:
+                _walk(child, idx + 1)
+
+            def _on_missing(error) -> None:
+                if not isinstance(error, ObjectNotFoundException):
+                    raise error
+                created = parent.create_folder(names[idx])
+                created.after_execute(lambda _: _reload(idx))
+
+            child.get().after_execute(_on_found).on_error(_on_missing)
+
+        def _reload(idx: int) -> None:
+            # Re-resolve the freshly created folder by path so the next level has
+            # a stable, addressable parent entity.
+            prefix = "/".join(names[: idx + 1])
+            self.get_by_path(prefix).get().after_execute(lambda resolved: _walk(resolved, idx + 1))
+
+        _walk(self, 0)
+        return return_type
+
     def create_powerpoint(self, name: str) -> DriveItem:
         """Creates a PowerPoint file
 
