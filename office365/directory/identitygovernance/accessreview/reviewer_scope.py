@@ -10,6 +10,7 @@ class AccessReviewReviewerScope(ClientValue):
     query: str | None = None
     queryRoot: str | None = None
     queryType: str | None = None
+    reviewerId: str | None = None
 
     @property
     def entity_type_name(self) -> str:
