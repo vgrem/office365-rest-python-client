@@ -1006,6 +1006,24 @@ class Web(SecurableObject):
         """
         return self.content_types.ensure(name, description, group)
 
+    def ensure_list(
+        self,
+        title: str,
+        description: Optional[str] = None,
+        template_type: ListTemplateType = ListTemplateType.GenericList,
+    ) -> List:
+        """Ensure a list with the given title exists (idempotent).
+
+        Creates the list when a list with the given title doesn't exist; otherwise
+        returns the existing list.
+
+        Args:
+            title (str): Specifies the display name of the list.
+            description (str or None): Specifies the description of the list.
+            template_type (ListTemplateType): Specifies the list server template of the list.
+        """
+        return self.lists.ensure_list(title, description, template_type)
+
     def ensure_edu_class_setup(self, bypass_for_automation):
         """Args:
         bypass_for_automation (bool):
