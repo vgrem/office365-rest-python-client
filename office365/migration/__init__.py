@@ -22,6 +22,8 @@ re-exported lazily, so importing the core never pulls in SharePoint or Outlook.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.registry import ScanDefinition, scan_pairs
 from office365.migration.assessment.report import AssessmentReport, ScanReport
@@ -44,6 +46,21 @@ from office365.migration.runner import MigrationRunner
 from office365.migration.server_job import MigrationServerJob
 from office365.migration.session import MigrationSession
 from office365.migration.validators import VerificationReport, verify
+
+if TYPE_CHECKING:
+    # Product conveniences resolved lazily by ``__getattr__`` (declared here so
+    # type checkers and ``__all__`` see them without importing the products).
+    from office365.migration.outlook import OUTLOOK_SCANS, MailboxAssessor, OutlookOptions
+    from office365.migration.sharepoint import (
+        SHAREPOINT_SCANS,
+        MigrationAssessor,
+        MigrationTenantAssessor,
+    )
+    from office365.migration.teams import (
+        TeamsArchiveSource,
+        TeamsArchiveTarget,
+        TeamsExportOptions,
+    )
 
 _LAZY_EXPORTS = {
     "MigrationAssessor": "office365.migration.sharepoint",

@@ -3,7 +3,11 @@ Export messages for compliance/backup using the deferred collection adapters.
 
     python export_messages.py --output ./messages --team <team-id>
     python export_messages.py --output ./messages --user user@contoso.com
+    python export_messages.py --output ./messages --tenant
     python export_messages.py --output ./messages --filter "createdDateTime gt 2024-01-01T00:00:00Z"
+
+Scope defaults to ``--user`` (the configured test user); pass ``--team`` for a
+team's channels or ``--tenant`` for tenant-wide channel messages.
 
 Writes ``messages.ndjson`` and (unless ``--no-attachments``) inline images under
 ``attachments/``. Everything is deferred: the single ``execute_query()`` pages
@@ -17,14 +21,15 @@ import argparse
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, client_secret, tenant, user_principal
 
 
 def main():
     parser = argparse.ArgumentParser(description="Export Teams messages to NDJSON")
     parser.add_argument("--output", default="./messages_export", help="output directory")
     parser.add_argument("--team", default=None, help="team id (all channel messages)")
-    parser.add_argument("--user", default=None, help="user id/UPN (that user's chats)")
+    parser.add_argument("--user", default=user_principal, help=f"user id/UPN (default: {user_principal})")
+    parser.add_argument("--tenant", action="store_true", help="tenant-wide channel messages (overrides --user)")
     parser.add_argument("--filter", default=None, help="OData $filter, e.g. a date range")
     parser.add_argument("--no-attachments", action="store_true", help="skip hosted contents")
     args = parser.parse_args()
@@ -33,10 +38,10 @@ def main():
 
     if args.team:
         messages = client.teams[args.team].channels.get_all_messages()
-    elif args.user:
-        messages = client.users[args.user].chats.get_all_messages()
-    else:
+    elif args.tenant:
         messages = client.teams.get_all_messages()
+    else:
+        messages = client.users[args.user].chats.get_all_messages()
     if args.filter:
         messages.filter(args.filter)
 

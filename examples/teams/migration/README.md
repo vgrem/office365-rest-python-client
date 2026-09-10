@@ -30,6 +30,7 @@ python export_team.py --all --output ./backup --resume
 # Compliance message export (deferred collection adapters)
 python export_messages.py --output ./messages --team <team-id>
 python export_messages.py --output ./messages --user user@contoso.com
+python export_messages.py --output ./messages --tenant
 python export_messages.py --output ./messages --filter "createdDateTime gt 2024-01-01T00:00:00Z"
 ```
 
