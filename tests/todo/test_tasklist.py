@@ -160,6 +160,23 @@ class TestTaskList(GraphDelegatedTestCase):
         "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
+    def test_09a_attach_file(self):
+        """Attaching a small file to a task should succeed and be listable/deletable."""
+        task = TestTaskList.task
+        if not task:
+            self.skipTest("No task created from previous test")
+
+        attachment = task.upload_attachment(b"hello world", name="sdk.txt", content_type="text/plain")
+        self.assertIsNotNone(attachment.id)
+
+        attachments = task.attachments.get().execute_query()
+        self.assertGreaterEqual(len(attachments), 1)
+        attachment.delete_object().execute_query()
+
+    @requires_delegated(
+        "Tasks.ReadWrite",
+        bypass_roles=["Global Administrator"],
+    )
     def test_10_delete_task(self):
         """Deleting an individual task should succeed."""
         task = TestTaskList.task

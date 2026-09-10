@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import os
-from typing import BinaryIO, Callable, Optional
+from typing import IO, Callable, Optional
 
 from requests import Response
-from typing_extensions import Self
 
 from office365.runtime.client_request import ClientRequest
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.queries.client_query import ClientQuery
 
 
 class UploadSessionRequest(ClientRequest):
@@ -17,9 +16,11 @@ class UploadSessionRequest(ClientRequest):
 
     def __init__(
         self,
-        file_object: BinaryIO,
+        file_object: IO,
         chunk_size: int,
         chunk_uploaded: Callable[[int], None] | None = None,
+        upload_url: str | None = None,
+        file_size: int | None = None,
     ) -> None:
         """Initialize an upload session request.
 
@@ -27,21 +28,27 @@ class UploadSessionRequest(ClientRequest):
             file_object: The file-like object to upload
             chunk_size: Size of each upload chunk in bytes
             chunk_uploaded: Callback invoked after each chunk is uploaded
+            upload_url: Explicit upload-session URL (when the session was created
+              outside of an ``UploadSessionQuery``, e.g. Microsoft To Do)
+            file_size: Total size override (for streams without a file descriptor)
         """
         super().__init__()
         self._file_object = file_object
         self._chunk_size = chunk_size
         self._chunk_uploaded = chunk_uploaded
+        self._upload_url = upload_url
+        self._file_size = file_size
         self._range_data: Optional[bytes] = None
+        self.last_response: Response | None = None
 
     @property
     def service_root_url(self) -> str:
         return ""
 
-    def build_request(self, query: UploadSessionQuery) -> RequestOptions:  # type: ignore[reportIncompatibleMethodOverride]
+    def build_request(self, query: ClientQuery) -> RequestOptions:
         """Build a request for uploading a single chunk."""
         assert self._range_data is not None
-        upload_url = query.upload_session_url
+        upload_url = self._upload_url or getattr(query, "upload_session_url", None)
         assert upload_url is not None
         request = RequestOptions(upload_url)
         request.method = HttpMethod.Put
@@ -54,18 +61,18 @@ class UploadSessionRequest(ClientRequest):
         request.data = self._range_data
         return request
 
-    def process_response(self, response: Response, query: UploadSessionQuery) -> None:  # type: ignore[reportIncompatibleMethodOverride]
+    def process_response(self, response: Response, query: ClientQuery) -> None:
         """Handle the response after uploading a chunk."""
         response.raise_for_status()
+        self.last_response = response
         if callable(self._chunk_uploaded):
             self._chunk_uploaded(self.range_end)
 
-    def execute_query(self, query: UploadSessionQuery) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
+    def execute_query(self, query: ClientQuery) -> None:
         """Execute the upload query for each chunk."""
         for chunk_data in self._read_next():
             self._range_data = chunk_data
             super().execute_query(query)
-        return self
 
     def _read_next(self):
         """Generate fixed-size chunks from the file object.
@@ -82,7 +89,16 @@ class UploadSessionRequest(ClientRequest):
     @property
     def file_size(self) -> int:
         """Get the total size of the file being uploaded."""
-        return os.fstat(self._file_object.fileno()).st_size
+        if self._file_size is not None:
+            return self._file_size
+        try:
+            return os.fstat(self._file_object.fileno()).st_size
+        except (AttributeError, OSError):
+            pos = self._file_object.tell()
+            self._file_object.seek(0, os.SEEK_END)
+            size = self._file_object.tell()
+            self._file_object.seek(pos)
+            return size
 
     @property
     def range_start(self) -> int:

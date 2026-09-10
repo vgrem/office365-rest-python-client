@@ -71,4 +71,16 @@ for lst in client.me.todo.lists.get().execute_query():
 ```
 
 
+### [Attach a file](attachments.py)
+
+Attach a file to a task — small files are posted directly, larger ones use an
+upload session with chunked uploads.
+
+```python
+task = client.me.todo.lists[list_id].tasks[task_id].get().execute_query()
+attachment = task.upload_attachment("./report.pdf", progress=lambda p: print(p.done, p.total))
+print(attachment.name, attachment.size)
+```
+
+
 ---

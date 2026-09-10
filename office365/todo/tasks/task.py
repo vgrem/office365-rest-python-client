@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import os
 from datetime import datetime
-from typing import Optional
+from os import PathLike
+from typing import IO, Optional, Union
 
 from office365.directory.extensions.extension import Extension
+from office365.directory.extensions.open_type import OpenTypeExtension
+from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.print.taskstatus import TaskStatus
@@ -12,12 +16,29 @@ from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-from office365.todo.attachments.base import AttachmentBase
+from office365.todo.attachments.collection import AttachmentBaseCollection
 from office365.todo.attachments.session import AttachmentSession
+from office365.todo.attachments.task_file import TaskFileAttachment
 from office365.todo.checklist_item import ChecklistItem
 from office365.todo.linked_resource import LinkedResource
+
+DEFAULT_ATTACHMENT_CHUNK_SIZE = 4 * 1024 * 1024
+MAX_SIMPLE_ATTACHMENT_BYTES = 3 * 1024 * 1024
+
+
+def _stream_size(stream: IO) -> int:
+    """Byte length of a seekable stream (file or ``io.BytesIO``), preserving position."""
+    try:
+        return os.fstat(stream.fileno()).st_size
+    except (AttributeError, OSError):
+        position = stream.tell()
+        stream.seek(0, os.SEEK_END)
+        size = stream.tell()
+        stream.seek(position)
+        return size
 
 
 class TodoTask(Entity):
@@ -135,15 +156,11 @@ class TodoTask(Entity):
         )
 
     @property
-    def attachments(self) -> EntityCollection[AttachmentBase]:
+    def attachments(self) -> AttachmentBaseCollection:
         """A collection of file attachments for the task."""
         return self.properties.get(
             "attachments",
-            EntityCollection(
-                self.context,
-                AttachmentBase,
-                ResourcePath("attachments", self.resource_path),
-            ),
+            AttachmentBaseCollection(self.context, ResourcePath("attachments", self.resource_path)),
         )
 
     @property
@@ -179,6 +196,76 @@ class TodoTask(Entity):
                 ResourcePath("linkedResources", self.resource_path),
             ),
         )
+
+    @require_permission(delegated=["Tasks.ReadWrite"])
+    def upload_attachment(
+        self,
+        source: Union[str, PathLike, bytes, bytearray, IO],
+        name: Optional[str] = None,
+        content_type: Optional[str] = None,
+        chunk_size: int = DEFAULT_ATTACHMENT_CHUNK_SIZE,
+        progress=None,
+    ) -> TaskFileAttachment:
+        """Attach a file to the task, dispatching by size.
+
+        Files up to 3 MB are posted as a ``taskFileAttachment``; larger ones
+        (up to 25 MB) use an upload session and chunked upload.
+
+        Args:
+            source: Path, raw bytes, or a binary stream.
+            name (str): Display name of the attachment (defaults to the file name).
+            content_type (str): MIME type of the attachment.
+            chunk_size (int): Upload-session chunk size (4 MB by default).
+            progress: Optional per-chunk ``Progress`` hook for session uploads.
+        """
+        stream: Optional[IO] = None
+        if isinstance(source, (bytes, bytearray)):
+            content: Optional[bytes] = bytes(source)
+            size: Optional[int] = len(source)
+            default_name = None
+        elif isinstance(source, (str, PathLike)):
+            content = None
+            size = os.path.getsize(source)
+            default_name = os.path.basename(str(source))
+        else:
+            stream = source
+            content = None
+            size = _stream_size(stream)
+            default_name = os.path.basename(getattr(stream, "name", "") or "")
+
+        attachment_name = name or default_name or "attachment"
+        if size is not None and size <= MAX_SIMPLE_ATTACHMENT_BYTES:
+            if content is None:
+                if stream is None:
+                    with open(str(source), "rb") as file_object:
+                        content = file_object.read()
+                else:
+                    position = stream.tell()
+                    stream.seek(0)
+                    content = stream.read()
+                    stream.seek(position)
+            assert content is not None
+            return self.attachments.add(attachment_name, content, content_type, size).execute_query()
+
+        session = self.attachments.create_upload_session(attachment_name, size or 0, content_type).execute_query()
+        return session.upload(source, chunk_size=chunk_size, progress=progress)
+
+    @require_permission(delegated=["Tasks.ReadWrite"])
+    def add_extension(self, name: str, **properties) -> OpenTypeExtension:
+        """Create an open type extension on the task.
+
+        Args:
+            name (str): Unique text identifier (``extensionName``).
+            **properties: Additional custom properties to store on the extension.
+        """
+        return_type = OpenTypeExtension(self.context)
+        return_type.set_property("extensionName", name)
+        for key, value in properties.items():
+            return_type.set_property(key, value)
+        self.extensions.add_child(return_type)
+        qry = CreateEntityQuery(self.extensions, return_type, return_type)
+        self.context.add_query(qry)
+        return return_type
 
     @property
     def entity_type_name(self) -> str:
