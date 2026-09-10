@@ -1,19 +1,79 @@
-"""Offline tests for per-sub-request batch retry (only failed sub-requests re-sent)."""
+"""Merged unit tests (consolidated; see git history for originals)."""
 
 from __future__ import annotations
 
 import json as jsonlib
+import threading
+import time
 import unittest
 from unittest import mock
 
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.odata.batch_util import (
+    WHOLE_BATCH_REJECT_CODES,
+    WholeBatchRejected,
+    estimate_query_bytes,
+    partition_by_limits,
+)
 from office365.runtime.odata.v4.batch_request import ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.queries.batch import BatchQuery
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.transport.base import BaseTransport
+from office365.sharepoint.client_context import ClientContext
 from requests import Response
+
+
+def _make_batches(ctx: ClientContext, count: int) -> list[BatchQuery]:
+    return [BatchQuery(ctx) for _ in range(count)]
+
+
+class _ParallelHarness(ClientContext):
+    def __init__(self) -> None:
+        super().__init__("https://contoso.sharepoint.com")
+        self.executed: list[object] = []
+        self.max_active = 0
+        self._active = 0
+        self._lock = threading.Lock()
+
+    def _execute_batch(self, batch_qry):
+        with self._lock:
+            self._active += 1
+            self.max_active = max(self.max_active, self._active)
+        time.sleep(0.05)
+        with self._lock:
+            self._active -= 1
+        self.executed.append(batch_qry)
+        return [batch_qry]
+
+
+class TestExecuteBatchesInParallel(unittest.TestCase):
+    def test_batches_run_concurrently(self):
+        ctx = _ParallelHarness()
+        batches = _make_batches(ctx, 4)
+
+        results = []
+        ctx._execute_batches_in_parallel(batches, concurrency=4, success_callback=results.append)
+
+        self.assertEqual(len(results), 4)
+        self.assertEqual(len(ctx.executed), 4)
+        self.assertGreater(ctx.max_active, 1)
+
+    def test_failure_re_raised_without_success_callback(self):
+        ctx = _ParallelHarness()
+
+        def _boom(batch_qry):
+            raise RuntimeError("boom")
+
+        ctx._execute_batch = _boom  # type: ignore[method-assign]
+
+        results = []
+        batches = _make_batches(ctx, 2)
+        with self.assertRaises(RuntimeError):
+            ctx._execute_batches_in_parallel(batches, concurrency=2, success_callback=results.append)
+
+        self.assertEqual(results, [])
 
 
 def _envelope(sub_statuses: list[int], retry_after: int | None = None) -> dict:
@@ -109,5 +169,47 @@ class TestBatchSubRequestRetry(unittest.TestCase):
         sleep_mock.assert_called_once_with(7)
 
 
-if __name__ == "__main__":
-    unittest.main()
+class _FakeQuery:
+    def __init__(self, url: str, payload: dict | str | None = None, headers: dict | None = None):
+        self.url = url
+        self.parameters_type = payload
+        self.custom_headers = headers or {}
+
+
+def test_estimate_query_bytes():
+    big = _FakeQuery("https://x/site/_api/web/lists/guid/items(1)", {"title": "x" * 5000})
+    small = _FakeQuery("https://x/site/_api/web/lists/guid/items(1)", None)
+    assert estimate_query_bytes(big) > estimate_query_bytes(small)
+
+
+def test_partition_respects_item_cap():
+    queries = [_FakeQuery("u") for _ in range(7)]
+    batches = partition_by_limits(queries, max_items=3, max_bytes=None)
+    assert [len(b) for b in batches] == [3, 3, 1]
+    assert [q.url for q in batches[0]] == ["u", "u", "u"]  # order preserved
+
+
+def test_partition_respects_byte_cap():
+    queries = [
+        _FakeQuery("u", {"data": "a" * 100}),
+        _FakeQuery("u", {"data": "b" * 100}),
+        _FakeQuery("u", {"data": "c" * 100}),
+    ]
+    batches = partition_by_limits(queries, max_items=None, max_bytes=estimate_query_bytes(queries[0]) * 2 + 200)
+    assert len(batches) >= 2  # noqa: PLR2004 — big payloads don't all land in one batch
+
+
+def test_oversized_single_stays_alone():
+    huge = _FakeQuery("u", {"data": "x" * 100000})
+    queries = [huge, _FakeQuery("u", None)]
+    batches = partition_by_limits(queries, max_items=None, max_bytes=1000)
+    assert len(batches) == 2  # noqa: PLR2004
+    assert len(batches[0]) == 1
+
+
+def test_whole_batch_reject_marker_carries_queries_and_cause():
+    cause = ClientRequestException("400 body too large")
+    reject = WholeBatchRejected([_FakeQuery("u")], cause)
+    assert len(reject.queries) == 1
+    assert reject.__cause__ is cause
+    assert 413 in WHOLE_BATCH_REJECT_CODES  # noqa: PLR2004
