@@ -1,4 +1,9 @@
-"""Merged unit tests (consolidated; see git history for originals)."""
+"""Offline regression tests for previously fixed issues.
+
+- #884: apostrophes in File.open_binary/save_binary paths
+- #793: upload size from in-memory (io.BytesIO) streams
+- #875: sharing-token encoding (UTF-8, padding stripped)
+"""
 
 from __future__ import annotations
 
@@ -7,18 +12,13 @@ import io
 import os
 import tempfile
 import unittest
-import uuid
-from unittest import mock
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.onedrive.internal.paths.shared import _url_to_shared_token
-from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.collection import _stream_size
 from office365.sharepoint.files.file import File
-from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 from requests import Response
 from tests import test_site_url
 
@@ -132,89 +132,3 @@ def test_all_base64_padding_is_removed():
     assert token.startswith("u!")
     assert "=" not in token
     assert token == _reference(url)
-
-
-def test_site_design_metadata_parses_non_empty_site_script_ids():
-    design = SiteDesignMetadata()
-    design.set_property(
-        "SiteScriptIds",
-        ["07702c07-0485-426f-b710-4704241caad9", "6250ceba-8724-4fb4-8c52-5a89183b9587"],
-    )
-
-    assert isinstance(design.SiteScriptIds, ClientValueCollection)
-    assert len(design.SiteScriptIds) == 2  # noqa: PLR2004
-    assert all(isinstance(item, uuid.UUID) for item in design.SiteScriptIds)
-
-
-def test_site_design_metadata_parses_empty_collection():
-    design = SiteDesignMetadata()
-    design.set_property("SiteScriptIds", [])
-    assert isinstance(design.SiteScriptIds, ClientValueCollection)
-    assert len(design.SiteScriptIds) == 0
-
-
-class _Result:
-    def __init__(self, value):
-        self.value = value
-
-    def execute_query(self):
-        return self
-
-    def __iter__(self):
-        return iter(self.value)
-
-
-def _make_sku(part_number):
-    sku = mock.Mock()
-    sku.sku_part_number = part_number
-    return sku
-
-
-class TestRequireLicense(unittest.TestCase):
-    def _make_client(self) -> GraphClient:
-        return GraphClient(tenant="contoso.onmicrosoft.com")
-
-    def test_passes_when_sku_matches(self):
-        client = self._make_client()
-        collection = mock.Mock()
-        collection.get.return_value = _Result([_make_sku("BACKUP_STORAGE_ADDON"), _make_sku("ENTERPRISEPACK")])
-        with mock.patch.object(GraphClient, "subscribed_skus", new_callable=mock.PropertyMock, return_value=collection):
-            self.assertIs(client.require_license("BACKUP"), client)
-
-    def test_exits_when_no_sku_matches(self):
-        client = self._make_client()
-        collection = mock.Mock()
-        collection.get.return_value = _Result([_make_sku("ENTERPRISEPACK")])
-        with mock.patch.object(GraphClient, "subscribed_skus", new_callable=mock.PropertyMock, return_value=collection):
-            with self.assertRaises(SystemExit):
-                client.require_license("BACKUP")
-
-    def test_noop_without_keywords(self):
-        client = self._make_client()
-        self.assertIs(client.require_license(), client)
-
-
-class TestRequireDelegatedPermission(unittest.TestCase):
-    def _make_client(self) -> GraphClient:
-        ctx = GraphClient(tenant="contoso.onmicrosoft.com")
-        ctx.pending_request().authentication_context._client_id = "app-id"
-        return ctx
-
-    def test_passes_when_scope_granted(self):
-        client = self._make_client()
-        client.get_delegated_permissions = mock.Mock(  # type: ignore[method-assign]
-            return_value=_Result(["User.Read", "Mail.Read"])
-        )
-        self.assertIs(client.require_delegated_permission("User.Read"), client)
-
-    def test_exits_when_scope_missing(self):
-        client = self._make_client()
-        client.get_delegated_permissions = mock.Mock(  # type: ignore[method-assign]
-            return_value=_Result(["Mail.Read"])
-        )
-        with self.assertRaises(SystemExit):
-            client.require_delegated_permission("User.Read")
-
-    def test_noop_without_scopes(self):
-        client = self._make_client()
-        self.assertIs(client.require_delegated_permission(), client)

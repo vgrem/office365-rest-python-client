@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import unittest
+import uuid
 from datetime import datetime, timezone
 from enum import Enum
 from typing import cast
@@ -24,6 +25,7 @@ from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.collections import StringCollection
 from office365.search.hits.container import SearchHitsContainer
 from office365.search.response import SearchResponse
+from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 
 
 class scalars__Level(Enum):
@@ -235,3 +237,24 @@ class TestIterRecords(unittest.TestCase):
             out.getvalue(),
             "displayName,accountEnabled,businessPhones\r\nJohn,True,+1-555-0101; +1-555-0102\r\n",
         )
+
+
+class TestSiteDesignMetadataDefaults(unittest.TestCase):
+    """ClientValueCollection-typed fields keep their item type from defaults."""
+
+    def test_parses_non_empty_site_script_ids(self):
+        design = SiteDesignMetadata()
+        design.set_property(
+            "SiteScriptIds",
+            ["07702c07-0485-426f-b710-4704241caad9", "6250ceba-8724-4fb4-8c52-5a89183b9587"],
+        )
+
+        assert isinstance(design.SiteScriptIds, ClientValueCollection)
+        assert len(design.SiteScriptIds) == 2  # noqa: PLR2004
+        assert all(isinstance(item, uuid.UUID) for item in design.SiteScriptIds)
+
+    def test_parses_empty_collection(self):
+        design = SiteDesignMetadata()
+        design.set_property("SiteScriptIds", [])
+        assert isinstance(design.SiteScriptIds, ClientValueCollection)
+        assert len(design.SiteScriptIds) == 0
