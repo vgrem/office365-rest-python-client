@@ -32,6 +32,7 @@ class TestSharePointUser(SPTestCase):
         self.assertIsNotNone(target_user.login_name)
         result_user = self.client.web.ensure_user(target_user.login_name).execute_query()
         self.assertIsNotNone(result_user.user_id)
+        self.assertIsInstance(result_user.id, int)
 
     def test_03_get_user(self):
         """Get user by login name."""

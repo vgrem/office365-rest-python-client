@@ -61,6 +61,7 @@ class Principal(Entity):
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
+        # Fallback only: address by login name when no identifier (Id) pinned the path.
         if self._resource_path is None:
             if name == "LoginName" and self.parent_collection is not None:
                 self._resource_path = ServiceOperationPath("GetByName", [value], self.parent_collection.resource_path)
