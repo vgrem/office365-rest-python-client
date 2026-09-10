@@ -11,6 +11,8 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.queries.function import FunctionQuery
+from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.operations.async_operation import TeamsAsyncOperation, wait_for_operation
 from office365.teams.team import Team
 
@@ -44,6 +46,20 @@ class TeamCollection(EntityCollection[Team]):
             page_size, page_loaded=_init_teams, progress=progress
         )
         return self
+
+    def get_all_messages(self) -> ChatMessageCollection:
+        """Export every channel message across all teams (``GET /teams/getAllMessages``).
+
+        Application-only (``Teamwork.Migrate.All``). Deferred — run with
+        ``execute_query()``.
+
+        Chain ``.filter(...)``/``.select(...)``/``.top(...)`` on the returned
+        collection to shape the request.
+        """
+        return_type = ChatMessageCollection(self.context, self.resource_path)
+        qry = FunctionQuery(self, "getAllMessages", None, return_type)
+        self.context.add_query(qry)
+        return return_type
 
     def create(
         self,

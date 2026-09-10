@@ -14,7 +14,7 @@ from office365.runtime.types.odata_property import odata
 from office365.teams.channels.membership_type import ChannelMembershipType
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
 from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
-from office365.teams.chats.messages.message import ChatMessage
+from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.members.conversation import ConversationMember
 from office365.teams.tabs.tab import TeamsTab
 
@@ -154,11 +154,11 @@ class Channel(Entity):
         )
 
     @property
-    def messages(self) -> EntityCollection[ChatMessage]:
+    def messages(self) -> ChatMessageCollection:
         """A collection of all the messages in the channel."""
         return self.properties.get(
             "messages",
-            EntityCollection(self.context, ChatMessage, ResourcePath("messages", self.resource_path)),
+            ChatMessageCollection(self.context, ResourcePath("messages", self.resource_path)),
         )
 
     @property

@@ -35,6 +35,8 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
         from office365.directory.users.user import User
 
         return_type = super().add(roles=roles)
+        if visible_history_start_datetime is not None:
+            return_type.set_property("visibleHistoryStartDateTime", visible_history_start_datetime)
 
         if isinstance(user, User):
             user.ensure_property("id").after_execute(lambda _: return_type.set_property("userId", user.id))

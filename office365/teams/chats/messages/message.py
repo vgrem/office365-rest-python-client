@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -12,6 +13,9 @@ from office365.teams.channels.iIdentity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
 from office365.teams.chats.messages.body import ChatMessageBody
+from office365.teams.chats.messages.hosted_content import ChatMessageHostedContent
+from office365.teams.chats.messages.mention import ChatMessageMention
+from office365.teams.chats.messages.reaction import ChatMessageReaction
 
 
 class ChatMessage(Entity):
@@ -53,6 +57,67 @@ class ChatMessage(Entity):
     def created_datetime(self) -> datetime:
         """Timestamp of when the chat message was created."""
         return self.properties.get("createdDateTime", datetime.min)
+
+    @odata(name="lastModifiedDateTime")
+    @property
+    def last_modified_datetime(self) -> datetime:
+        """Timestamp of when the chat message was last modified."""
+        return self.properties.get("lastModifiedDateTime", datetime.min)
+
+    @property
+    def etag(self) -> Optional[str]:
+        """Version marker for the chat message."""
+        return self.properties.get("etag", None)
+
+    @odata(name="from")
+    @property
+    def from_(self) -> IdentitySet:
+        """Details of the sender of the chat message."""
+        return self.properties.get("from", IdentitySet())
+
+    @property
+    def reply_to_id(self) -> Optional[str]:
+        """Id of the parent/root message when this message is a reply."""
+        return self.properties.get("replyToId", None)
+
+    @property
+    def message_type(self) -> Optional[str]:
+        """The type of the chat message (``message``, ``systemEventMessage``, ...)."""
+        return self.properties.get("messageType", None)
+
+    @property
+    def mentions(self) -> ClientValueCollection[ChatMessageMention]:
+        """The mentions for the chat message."""
+        return self.properties.get("mentions", ClientValueCollection(ChatMessageMention))
+
+    @property
+    def reactions(self) -> ClientValueCollection[ChatMessageReaction]:
+        """The reactions for the chat message."""
+        return self.properties.get("reactions", ClientValueCollection(ChatMessageReaction))
+
+    @property
+    def hosted_contents(self) -> EntityCollection[ChatMessageHostedContent]:
+        """Content hosted by Teams as part of the message (e.g. inline images).
+
+        Graph inlines these as plain objects, so normalize the raw list into a
+        typed collection for convenient navigation (``id``, ``get_content()``).
+        """
+        value = self.properties.get("hostedContents")
+        if isinstance(value, list):
+            collection = EntityCollection(
+                self.context, ChatMessageHostedContent, ResourcePath("hostedContents", self.resource_path)
+            )
+            for index, item in enumerate(value):
+                if isinstance(item, dict):
+                    collection.set_property(str(index), item, False)
+                else:
+                    collection.add_child(item)
+            return collection
+        if value is None:
+            return EntityCollection(
+                self.context, ChatMessageHostedContent, ResourcePath("hostedContents", self.resource_path)
+            )
+        return value
 
     @odata(name="deletedDateTime")
     @property

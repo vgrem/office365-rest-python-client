@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from typing import List, Optional, Union
 
 from office365.entity_collection import EntityCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.queries.function import FunctionQuery
 from office365.teams.chats.chat import Chat
+from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.chats.type import ChatType
 
 
@@ -39,5 +43,20 @@ class ChatCollection(EntityCollection[Chat]):
                 return_type.members.add_child(owner)
         self.add_child(return_type)
         qry = CreateEntityQuery(self, return_type, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_all_messages(self) -> ChatMessageCollection:
+        """Export every chat message visible to the collection scope.
+
+        Works for the tenant scope (``GET /chats/getAllMessages``) and a user's
+        chats (``GET /users/{id}/chats/getAllMessages``). Application-only
+        (``Teamwork.Migrate.All``). Deferred — run with ``execute_query()``.
+
+        Chain ``.filter(...)``/``.select(...)``/``.top(...)`` on the returned
+        collection to shape the request.
+        """
+        return_type = ChatMessageCollection(self.context, self.resource_path)
+        qry = FunctionQuery(self, "getAllMessages", None, return_type)
         self.context.add_query(qry)
         return return_type

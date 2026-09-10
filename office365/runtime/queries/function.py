@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Optional
+
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery, ReturnT
+
+if TYPE_CHECKING:
+    from office365.runtime.odata.query_options import QueryOptions
 
 
 class FunctionQuery(ClientQuery[ReturnT]):
@@ -36,7 +41,27 @@ class FunctionQuery(ClientQuery[ReturnT]):
         """Whether the response should be treated as raw content, not OData JSON."""
         return self._return_raw_content
 
-    def __repr__(self) -> str:
+    @property
+    def query_options(self) -> Optional["QueryOptions"]:
+        """Query options carried by the function's return collection (if any)."""
+        return self._return_type.query_options if isinstance(self._return_type, ClientObject) else None
+
+    @property
+    def url(self) -> str:
+        """The function URL with any fluent query options appended.
+
+        Function endpoints (e.g. ``getAllMessages``) accept standard OData query
+        options, so ``.filter()/.select()/.top()`` set on the returned
+        collection are forwarded to the request.
+        """
+        url = super().url
+        options = self.query_options
+        if options is not None and not options.is_empty:
+            delimiter = "&" if "?" in url else "?"
+            url = f"{url}{delimiter}{options}"
+        return url
+
+    def __repr__(self):
         return f"FunctionQuery(name={self.name})"
 
     @property

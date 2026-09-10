@@ -52,6 +52,9 @@ _LAZY_EXPORTS = {
     "MailboxAssessor": "office365.migration.outlook",
     "OutlookOptions": "office365.migration.outlook",
     "OUTLOOK_SCANS": "office365.migration.outlook",
+    "TeamsArchiveSource": "office365.migration.teams",
+    "TeamsArchiveTarget": "office365.migration.teams",
+    "TeamsExportOptions": "office365.migration.teams",
 }
 
 __all__ = [
@@ -86,6 +89,9 @@ __all__ = [
     "MailboxAssessor",
     "OutlookOptions",
     "OUTLOOK_SCANS",
+    "TeamsArchiveSource",
+    "TeamsArchiveTarget",
+    "TeamsExportOptions",
 ]
 
 
