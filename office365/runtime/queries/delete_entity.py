@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
-from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.queries.client_query import ClientQuery, ReturnT
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
 
 
-class DeleteEntityQuery(ClientQuery):
+class DeleteEntityQuery(ClientQuery[ReturnT]):
     """A query to delete an entity from the server."""
 
     def __init__(self, delete_type: "ClientObject") -> None:

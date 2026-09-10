@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from typing import Any, Generic
 
 from typing_extensions import Self
 
@@ -23,10 +24,10 @@ def create_boundary(prefix: str, compact: bool = False) -> str:
         return prefix + str(uuid.uuid4())
 
 
-class BatchQuery(ClientQuery[ReturnT]):
+class BatchQuery(ClientQuery[Any], Generic[ReturnT]):
     """Client query collection for batch requests."""
 
-    def __init__(self, context: ClientRuntimeContext, queries: list[ClientQuery] | None = None) -> None:
+    def __init__(self, context: ClientRuntimeContext, queries: list[ClientQuery[Any]] | None = None) -> None:
         """
         Initialize a batch query collection.
 
@@ -38,9 +39,9 @@ class BatchQuery(ClientQuery[ReturnT]):
         self._current_boundary = create_boundary("batch_")
         if queries is None:
             queries = []
-        self._queries = queries
+        self._queries: list[ClientQuery[Any]] = queries
 
-    def add(self, query: ClientQuery) -> Self:
+    def add(self, query: ClientQuery[Any]) -> Self:
         """Add a query to the batch.
 
         Args:
@@ -50,7 +51,7 @@ class BatchQuery(ClientQuery[ReturnT]):
         return self
 
     @property
-    def ordered_queries(self) -> list[ClientQuery]:
+    def ordered_queries(self) -> list[ClientQuery[Any]]:
         """Returns all queries in execution order (change sets first, then GET queries)."""
         return self.change_sets + self.get_queries
 
@@ -60,17 +61,17 @@ class BatchQuery(ClientQuery[ReturnT]):
         return self._current_boundary
 
     @property
-    def change_sets(self) -> list[ClientQuery]:
+    def change_sets(self) -> list[ClientQuery[Any]]:
         """Gets all queries that modify data (non-GET operations)."""
         return [qry for qry in self._queries if not isinstance(qry, (ReadEntityQuery, DeferredOperationQuery))]
 
     @property
-    def queries(self) -> list[ClientQuery]:
+    def queries(self) -> list[ClientQuery[Any]]:
         """Gets all queries in the batch."""
         return self._queries
 
     @property
-    def get_queries(self) -> list[ClientQuery]:
+    def get_queries(self) -> list[ClientQuery[Any]]:
         """Gets all read-only (GET) queries in the batch.
 
         DeferredOperationQuery placeholders are excluded: they carry no request
@@ -89,6 +90,10 @@ class BatchQuery(ClientQuery[ReturnT]):
         return f"{self.context.service_root_url}/$batch"
 
     @property
-    def return_type(self) -> list[ReturnT]:  # type:ignore
-        """Gets the return types of all queries in the batch."""
+    def return_types(self) -> list[ReturnT]:
+        """Gets the return types of all queries in the batch.
+
+        Named ``return_types`` (not ``return_type``) because a batch's response
+        is a list, while ``ClientQuery.return_type`` describes a single result.
+        """
         return [q.return_type for q in self._queries if q.return_type]

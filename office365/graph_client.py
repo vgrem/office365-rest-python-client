@@ -397,7 +397,7 @@ class GraphClient(ClientRuntimeContext):
         batch_request = ODataV4BatchRequest("", V4JsonFormat())
         batch_request.beforeExecute += self.pending_request().authenticate_request
         batch_request.execute_query_with_retry(batch_qry)
-        return batch_qry.return_type
+        return batch_qry.return_types
 
     def pending_request(self) -> GraphRequest:
         """Get or create the pending request"""

@@ -1,8 +1,8 @@
 from office365.runtime.client_object import ClientObject
-from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.queries.client_query import ClientQuery, ReturnT
 
 
-class UpdateEntityQuery(ClientQuery):
+class UpdateEntityQuery(ClientQuery[ReturnT]):
     """Represents an OData update operation for modifying an existing entity.
 
     This query type is used to construct and execute PATCH or PUT operations

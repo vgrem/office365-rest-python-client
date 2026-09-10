@@ -5,7 +5,7 @@ from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
-class UploadSessionQuery(ServiceOperationQuery):
+class UploadSessionQuery(ServiceOperationQuery[ClientResult[UploadSession]]):
     """
     The UploadSession query provides information about how to upload large files to OneDrive, OneDrive for
     Business, or SharePoint document libraries

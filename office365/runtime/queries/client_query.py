@@ -44,7 +44,7 @@ class ClientQuery(Generic[ReturnT]):
         self._binding_type = binding_type
         self._parameters_type = parameters_type
         self._parameters_name = parameters_name
-        self._return_type = return_type
+        self._return_type: ReturnT | None = return_type
 
     def build_request(self) -> RequestOptions:
         """Builds a request"""

@@ -313,7 +313,7 @@ class ClientContext(ClientRuntimeContext):
         batch_request.beforeExecute += self.authentication_context.authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
         batch_request.execute_query_with_retry(batch_qry)
-        return batch_qry.return_type
+        return batch_qry.return_types
 
     def pending_request(self) -> SharePointRequest:
         """Provides access to underlying request instance"""
