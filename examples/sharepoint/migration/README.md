@@ -54,16 +54,16 @@ print(report.scan_reports["LargeSites"].records)   # SMAT-style scan detail
 ### Scan reports (SMAT roadmap)
 
 The assessment is modular — scans are registered in
-`office365.migration.assessment.registry` (a ScanDef.json analog: name,
+`office365.migration.sharepoint.registry` (a ScanDef.json analog: name,
 scanner, `ReportCategoryType`, `Enabled`, properties). Each scan emits an
 SMAT-style detail report (`ScannerReports/<Scan>-detail.csv` + `.json`) and can
 flag issues on the assessment report.
 
 ```python
-from office365.migration.assessment.registry import SCANS
+from office365.migration.sharepoint.registry import SHAREPOINT_SCANS
 from office365.migration.assessment.export import export_assessment
 
-print([d.name for d in SCANS])                      # the registered scans
+print([d.name for d in SHAREPOINT_SCANS])                      # the registered scans
 written = export_assessment(report, "out")          # issues + ScannerReports/
 ```
 
@@ -161,7 +161,7 @@ primitives. Record/list writes use the JSON-only
 ```python
 from office365.migration import MigrationJob, MigrationOptions
 from office365.migration.adapters.filesystem import FileSystemSource
-from office365.migration.adapters.sharepoint import SharePointLibraryTarget
+from office365.migration.sharepoint.adapters import SharePointLibraryTarget
 
 job = MigrationJob(
     FileSystemSource("src"),

@@ -19,8 +19,7 @@ from __future__ import annotations
 import argparse
 import os
 
-from office365.migration import MigrationAssessor, MigrationTenantAssessor
-from office365.migration.assessment.scanners import AssessmentOptions
+from office365.migration import AssessmentOptions, MigrationAssessor, MigrationTenantAssessor
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests.settings import admin_site_url, client_id, password, tenant, username

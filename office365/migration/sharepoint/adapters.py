@@ -17,8 +17,8 @@ from typing import TYPE_CHECKING, cast
 
 from office365.migration._util import emit_progress, record_to_json
 from office365.migration.adapters import MigrationProgress
-from office365.migration.adapters._transfer import Failure
 from office365.migration.base import MigrationItem
+from office365.migration.sharepoint.transfer import Failure
 
 if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
@@ -324,7 +324,7 @@ class SharePointLibraryTarget:
         Returns:
             List of ``(dest_path, error)`` for files that failed.
         """
-        from office365.migration.adapters._transfer import _transfer_files_parallel
+        from office365.migration.sharepoint.transfer import _transfer_files_parallel
 
         files = [
             (item.dest_path, payload if isinstance(payload, bytes) else str(payload).encode("utf-8"))

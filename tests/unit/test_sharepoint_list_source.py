@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING, cast
 
 from office365.migration import ConflictResolution, MigrationAssessor, MigrationJob, MigrationOptions
 from office365.migration.adapters.filesystem import JsonFileTarget
-from office365.migration.adapters.sharepoint import (
+from office365.migration.assessment.report import AssessmentReport
+from office365.migration.sharepoint.adapters import (
     SharePointListSource,
     is_taxonomy_validation,
     taxonomy_internal_names,
 )
-from office365.migration.assessment.report import AssessmentReport
 
 if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
@@ -280,7 +280,7 @@ class _FolderLibrary:
 
 
 def test_library_source_omits_site_and_library_prefix(tmp_path):
-    from office365.migration.adapters.sharepoint import SharePointLibrarySource
+    from office365.migration.sharepoint.adapters import SharePointLibrarySource
 
     folder = _FolderLibrary(
         folders=[_UrlItem("/sites/proj/Shared Documents/Archive")],

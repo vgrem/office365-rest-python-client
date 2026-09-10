@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import unittest
 
-from office365.migration.adapters._transfer import _transfer_files_parallel
 from office365.migration.base import ConflictResolution, ItemStatus, MigrationItem, MigrationOptions
 from office365.migration.checkpoint import Checkpoint
 from office365.migration.runner import MigrationRunner
+from office365.migration.sharepoint.transfer import _transfer_files_parallel
 from office365.runtime.types.event_handler import EventHandler
 
 

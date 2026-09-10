@@ -1,8 +1,9 @@
 """Migration toolkit — resumable, client-side migrations.
 
-The toolkit composes the client (SharePoint v1 / Graph) with a data pipeline to
-move items between source and target adapters with checkpoints, resumption, and
-verification.
+The core is product-agnostic: it composes a ``DataSource``/``DataTarget`` pair
+(filesystem, SharePoint, ...) with checkpoints, resumption, and verification.
+Product packages add the platform-specific pieces:
+``office365.migration.sharepoint`` and ``office365.migration.outlook``.
 
 Quick start (filesystem -> filesystem):
 
@@ -14,13 +15,17 @@ Quick start (filesystem -> filesystem):
     job.run()
     print(job.stats.summary())
     print(job.verify().summary())
+
+Product conveniences (``MigrationAssessor``, ``MailboxAssessor``, ...) are
+re-exported lazily, so importing the core never pulls in SharePoint or Outlook.
 """
 
+from __future__ import annotations
+
 from office365.migration.assessment.containers import ScanContainer
-from office365.migration.assessment.registry import SCANS, ScanDefinition, active_scan_pairs, enabled_scans, get_scan
+from office365.migration.assessment.registry import ScanDefinition, scan_pairs
 from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scanners import AssessmentOptions, LargeSitesScanner, SiteLockedScanner
-from office365.migration.assessor import MigrationAssessor
+from office365.migration.assessment.scanners import AssessmentOptions
 from office365.migration.base import (
     ConflictResolution,
     ExportFormat,
@@ -34,14 +39,20 @@ from office365.migration.base import (
 from office365.migration.checkpoint import Checkpoint
 from office365.migration.job import MigrationJob
 from office365.migration.manifest import Manifest
-from office365.migration.outlook.assessor import MailboxAssessor
-from office365.migration.outlook.scanner import MailboxFolderScan, OutlookOptions
 from office365.migration.report import MigrationReport, build_report, export_reports
 from office365.migration.runner import MigrationRunner
 from office365.migration.server_job import MigrationServerJob
 from office365.migration.session import MigrationSession
-from office365.migration.tenant_assessor import MigrationTenantAssessor
 from office365.migration.validators import VerificationReport, verify
+
+_LAZY_EXPORTS = {
+    "MigrationAssessor": "office365.migration.sharepoint",
+    "MigrationTenantAssessor": "office365.migration.sharepoint",
+    "SHAREPOINT_SCANS": "office365.migration.sharepoint",
+    "MailboxAssessor": "office365.migration.outlook",
+    "OutlookOptions": "office365.migration.outlook",
+    "OUTLOOK_SCANS": "office365.migration.outlook",
+}
 
 __all__ = [
     "AssessmentOptions",
@@ -50,13 +61,7 @@ __all__ = [
     "ConflictResolution",
     "ExportFormat",
     "ItemStatus",
-    "SiteLockedScanner",
-    "LargeSitesScanner",
-    "MailboxAssessor",
-    "MailboxFolderScan",
-    "OutlookOptions",
     "Manifest",
-    "MigrationAssessor",
     "MigrationItem",
     "MigrationJob",
     "MigrationMode",
@@ -67,16 +72,28 @@ __all__ = [
     "MigrationServerJob",
     "MigrationSession",
     "MigrationStats",
-    "MigrationTenantAssessor",
-    "SCANS",
     "ScanContainer",
     "ScanDefinition",
     "ScanReport",
     "VerificationReport",
-    "active_scan_pairs",
     "build_report",
-    "enabled_scans",
     "export_reports",
-    "get_scan",
+    "scan_pairs",
     "verify",
+    "MigrationAssessor",
+    "MigrationTenantAssessor",
+    "SHAREPOINT_SCANS",
+    "MailboxAssessor",
+    "OutlookOptions",
+    "OUTLOOK_SCANS",
 ]
+
+
+def __getattr__(name: str):
+    """Resolve product conveniences lazily (keeps the core import light)."""
+    module_name = _LAZY_EXPORTS.get(name)
+    if module_name is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    import importlib
+
+    return getattr(importlib.import_module(module_name), name)

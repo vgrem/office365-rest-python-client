@@ -5,7 +5,7 @@ Basic usage of the modular ``MigrationAssessor``: scan the site, then print a
 summary plus the flagged issues (blockers block a migration, warnings are
 advisory) and the SMAT-style scan detail reports.
 
-Scans are registered in ``office365.migration.assessment.registry`` (mirroring
+Scans are registered in ``office365.migration.sharepoint.registry`` (mirroring
 SMAT's ScanDef.json); ``--disable-scan`` turns one off (its data is not
 collected), ``--only-scan`` runs just one.
 
@@ -20,7 +20,8 @@ import argparse
 import json
 import os
 
-from office365.migration import SCANS, MigrationAssessor
+from office365.migration import MigrationAssessor
+from office365.migration.sharepoint.registry import SHAREPOINT_SCANS
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
@@ -68,7 +69,7 @@ def main():
     for name in args.disable_scan or []:
         assessor.disable_scan(name)
     if args.only_scan:
-        for definition in SCANS:
+        for definition in SHAREPOINT_SCANS:
             if definition.name != args.only_scan:
                 assessor.disable_scan(definition.name)
 

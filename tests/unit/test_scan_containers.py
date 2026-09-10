@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import unittest
 
+from office365.migration import AssessmentOptions
 from office365.migration.assessment.containers import ScanContainer
-from office365.migration.assessment.registry import active_scan_pairs
 from office365.migration.assessment.report import AssessmentReport
-from office365.migration.assessment.scanners import (
-    AssessmentOptions,
-    LargeSitesScanner,
-    ScanTarget,
-    SiteScanSummary,
-)
+from office365.migration.assessment.scanners import ScanTarget
+from office365.migration.sharepoint.registry import sharepoint_scan_pairs
+from office365.migration.sharepoint.scanners import LargeSitesScanner, SiteScanSummary
 
 _GB = 1024**3
 
@@ -20,7 +17,7 @@ _GB = 1024**3
 class TestScanContainerDispatch(unittest.TestCase):
     def test_active_pairs_ignore_disabled_and_respect_containers(self):
         options = AssessmentOptions()  # permissions disabled by default
-        active = active_scan_pairs(options)
+        active = sharepoint_scan_pairs(options)
         names = {definition.name for definition, _ in active}
         self.assertIn("fields", names)
         self.assertIn("paths", names)
@@ -28,7 +25,7 @@ class TestScanContainerDispatch(unittest.TestCase):
         self.assertNotIn("permissions", names)
 
         options.disabled_scans.discard("permissions")
-        active = active_scan_pairs(options)
+        active = sharepoint_scan_pairs(options)
         self.assertIn("permissions", {definition.name for definition, _ in active})
 
         containers = {

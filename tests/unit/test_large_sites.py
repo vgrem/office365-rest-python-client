@@ -4,8 +4,7 @@ from __future__ import annotations
 
 import unittest
 
-from office365.migration import MigrationAssessor
-from office365.migration.assessment.scanners import AssessmentOptions
+from office365.migration import AssessmentOptions, MigrationAssessor
 from office365.sharepoint.client_context import ClientContext
 from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 

@@ -11,9 +11,8 @@ from __future__ import annotations
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 
-from office365.migration.assessor import MigrationAssessor
 from office365.migration.base import MigrationOptions, MigrationPhase, MigrationStats
 from office365.migration.checkpoint import Checkpoint
 from office365.migration.manifest import Manifest
@@ -116,8 +115,10 @@ class MigrationJob:
         self._checkpoint.phase = MigrationPhase.ASSESSING
         self._save_state()
         hook = self._assess_hook
-        if isinstance(hook, MigrationAssessor):
-            return hook.assess(progress=progress).execute_query().value
+        assess: Any = getattr(hook, "assess", None)
+        if callable(assess):
+            result = cast(Any, assess(progress=progress))
+            return result.execute_query().value
         if callable(hook):
             return hook()
         return None

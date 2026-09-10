@@ -22,13 +22,10 @@ from typing import TYPE_CHECKING
 from office365.migration._util import emit_progress
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
-from office365.migration.assessment.registry import active_scan_pairs
 from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scanners import (
-    AssessmentOptions,
-    ScanTarget,
-    SiteScanSummary,
-)
+from office365.migration.assessment.scanners import AssessmentOptions, ScanTarget
+from office365.migration.sharepoint.registry import sharepoint_scan_pairs
+from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 from office365.runtime.client_result import ClientResult
 from office365.sharepoint.entity import Entity
 
@@ -76,7 +73,7 @@ class MigrationTenantAssessor(Entity):
 
         site_scans = [
             scanner
-            for definition, scanner in active_scan_pairs(self._options, tenant_scope=True)
+            for definition, scanner in sharepoint_scan_pairs(self._options, tenant_scope=True)
             if definition.container is ScanContainer.SITE
         ]
         done = {"count": 0}

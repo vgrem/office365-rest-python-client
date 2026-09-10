@@ -275,7 +275,7 @@ for page in pages:
 Assess a SharePoint site for migration readiness using the SharePoint Migration API.
 
 ```python
-from office365.migration.assessor import MigrationAssessor
+from office365.migration.sharepoint.assessor import MigrationAssessor
 
 report = MigrationAssessor(ctx.web).include_permissions().include_versions().assess().execute_query()
 print(report.value.summary())

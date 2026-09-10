@@ -107,7 +107,7 @@ class TestFieldScannerNoise(unittest.TestCase):
         from types import SimpleNamespace
 
         from office365.migration.assessment.containers import ScanContainer
-        from office365.migration.assessment.scanners import FieldScanner, ScanTarget
+        from office365.migration.sharepoint.scanners import FieldScanner, ScanTarget
 
         report = AssessmentReport()
         FieldScanner().run(

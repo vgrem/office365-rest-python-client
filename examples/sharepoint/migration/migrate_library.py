@@ -19,7 +19,7 @@ import tempfile
 
 from office365.migration import ConflictResolution, MigrationJob, MigrationOptions
 from office365.migration.adapters.filesystem import FileSystemSource, FileSystemTarget
-from office365.migration.adapters.sharepoint import SharePointLibrarySource, SharePointLibraryTarget
+from office365.migration.sharepoint.adapters import SharePointLibrarySource, SharePointLibraryTarget
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
