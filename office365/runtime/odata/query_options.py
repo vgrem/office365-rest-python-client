@@ -78,15 +78,17 @@ class QueryOptions:
             else:
                 yield k, str(v)
 
+    def apply_to(self, target) -> None:
+        """Forward ``$select`` / ``$expand`` onto a collection-like target about to load.
 
-def apply_options(collection, options: QueryOptions) -> None:
-    """Forward ``$select`` / ``$expand`` onto a collection that is about to load.
+        Used by recursive scan helpers so the fluent ``.select(...)`` /
+        ``.expand(...)`` applied to their returned collection reaches every
+        request they issue (the scan reads the options at execution time).
 
-    Used by recursive scan helpers so the fluent ``.select(...)`` /
-    ``.expand(...)`` applied to their returned collection reaches every request
-    they issue (the scan reads the options at execution time).
-    """
-    if options.select:
-        collection.select(list(options.select))
-    if options.expand:
-        collection.expand(list(options.expand))
+        Args:
+            target: A collection exposing ``select`` / ``expand`` (duck-typed).
+        """
+        if self.select:
+            target.select(list(self.select))
+        if self.expand:
+            target.expand(list(self.expand))

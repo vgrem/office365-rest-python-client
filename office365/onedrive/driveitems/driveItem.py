@@ -139,7 +139,6 @@ class DriveItem(BaseItem):
         The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
         collection is honored on every ``children`` page the scan loads.
         """
-        from office365.runtime.odata.query_options import apply_options
         from office365.runtime.queries.deferred import DeferredOperationQuery
 
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
@@ -159,7 +158,7 @@ class DriveItem(BaseItem):
                     progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
 
             children = parent_drive_item.children
-            apply_options(children, return_type.query_options)
+            return_type.query_options.apply_to(children)
             if return_type.query_options.select:
                 fields = sorted({"folder", "id"} | set(return_type.query_options.select))
                 children.select(fields)
@@ -186,7 +185,6 @@ class DriveItem(BaseItem):
         The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
         collection is honored on every ``children`` page the scan loads.
         """
-        from office365.runtime.odata.query_options import apply_options
         from office365.runtime.queries.deferred import DeferredOperationQuery
 
         return_type = EntityCollection(self.context, DriveItem, self.resource_path)
@@ -204,7 +202,7 @@ class DriveItem(BaseItem):
                     progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
 
             children = parent.children.filter("folder ne null")
-            apply_options(children, return_type.query_options)
+            return_type.query_options.apply_to(children)
             if return_type.query_options.select:
                 fields = sorted({"folder", "id"} | set(return_type.query_options.select))
                 children.select(fields)

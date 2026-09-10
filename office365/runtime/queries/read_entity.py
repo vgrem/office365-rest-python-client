@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
@@ -22,11 +22,30 @@ class ReadEntityQuery(ClientQuery[ReturnT]):
 
     @property
     def query_options(self) -> "QueryOptions":
-        from office365.runtime.odata.query_options_builder import QueryOptionsBuilder
-
         if self._query_options is None:
-            self._query_options = QueryOptionsBuilder.build(self._return_type, self._properties_to_include)  # type: ignore[reportArgumentType]
+            self._query_options = self._build_query_options()
         return self._query_options
+
+    def _build_query_options(self) -> "QueryOptions":
+        """Resolve query options for the return object, expanding the requested properties."""
+        from office365.runtime.client_object import ClientObject
+        from office365.runtime.client_object_collection import ClientObjectCollection
+
+        client_object = cast(ClientObject, self._return_type)
+        query_options = client_object.query_options
+        for name in self._properties_to_include or []:
+            if name in query_options.select:
+                continue
+
+            if isinstance(client_object, ClientObjectCollection):
+                prop = client_object.create_typed_object().get_property(name)
+            else:
+                prop = client_object.get_property(name)
+
+            if name == "Properties" or isinstance(prop, ClientObject):
+                query_options.expand.append(name)
+            query_options.select.append(name)
+        return query_options
 
     @property
     def url(self) -> str:

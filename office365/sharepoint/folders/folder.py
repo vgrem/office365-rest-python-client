@@ -166,7 +166,6 @@ class Folder(Entity):
         The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
         collection is honored on every per-folder load.
         """
-        from office365.runtime.odata.query_options import apply_options
         from office365.runtime.queries.deferred import DeferredOperationQuery
         from office365.sharepoint.folders.collection import FolderCollection
 
@@ -183,7 +182,7 @@ class Folder(Entity):
                         _get_folders(folder)
 
             child_folders = parent.folders
-            apply_options(child_folders, return_type.query_options)
+            return_type.query_options.apply_to(child_folders)
             if return_type.query_options.select:
                 fields = sorted({"Id", "Name", "ServerRelativeUrl"} | set(return_type.query_options.select))
                 child_folders.select(fields)
@@ -209,7 +208,6 @@ class Folder(Entity):
         The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
         collection is honored on every per-folder file load.
         """
-        from office365.runtime.odata.query_options import apply_options
         from office365.runtime.queries.deferred import DeferredOperationQuery
         from office365.sharepoint.files.collection import FileCollection
 
@@ -228,7 +226,7 @@ class Folder(Entity):
                     subfolders.get().after_execute(lambda _: [_get_files(folder) for folder in subfolders])
 
             files = parent.files
-            apply_options(files, return_type.query_options)
+            return_type.query_options.apply_to(files)
             if return_type.query_options.select:
                 fields = sorted({"Id", "Name", "ServerRelativeUrl"} | set(return_type.query_options.select))
                 files.select(fields)

@@ -6,8 +6,9 @@ import unittest
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.odata.query_options_builder import QueryOptionsBuilder
+from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.type import ODataType
+from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.secondary_administrators_fields_data import (
@@ -48,8 +49,28 @@ class TestClientMetadata(unittest.TestCase):
     def test_build_query_options(self):
         client = ClientContext(test_site_url)
         lib = client.web.default_document_library()
-        options = QueryOptionsBuilder.build(lib, ["Author", "Comments"])
+        options = ReadEntityQuery(lib, ["Author", "Comments"]).query_options
         self.assertEqual(str(options), "$select=Author,Comments&$expand=Author")
+
+    def test_query_options_apply_to(self):
+        class _Target:
+            def select(self, names):
+                self._select = names
+
+            def expand(self, names):
+                self._expand = names
+
+        options = QueryOptions(select=["Title"], expand=["Fields"])
+        target = _Target()
+        options.apply_to(target)
+        self.assertEqual(target._select, ["Title"])
+        self.assertEqual(target._expand, ["Fields"])
+
+        empty = QueryOptions()
+        untouched = _Target()
+        empty.apply_to(untouched)
+        self.assertFalse(hasattr(untouched, "_select"))
+        self.assertFalse(hasattr(untouched, "_expand"))
 
     def test_client_result_wraps_collection(self):
         client = ClientContext(test_site_url)
