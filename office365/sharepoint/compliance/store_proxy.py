@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
+from uuid import UUID
+
+from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
@@ -23,9 +28,7 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def check_site_is_deletable_by_id(
-        context: ClientContext,
-        site_id: str,
-        return_type: Optional[ClientResult[bool]] = None,
+        context: ClientContext, site_id: str, return_type: Optional[ClientResult[bool]] = None
     ) -> ClientResult[bool]:
         """
         Checks whether a site can be deleted based on its ID and compliance policies.
@@ -46,22 +49,14 @@ class SPPolicyStoreProxy(Entity):
             return_type = ClientResult(context, bool())
         payload = {"siteId": site_id}
         qry = ServiceOperationQuery(
-            SPPolicyStoreProxy(context),
-            "CheckSiteIsDeletableById",
-            None,
-            payload,
-            None,
-            return_type,
-            True,
+            SPPolicyStoreProxy(context), "CheckSiteIsDeletableById", None, payload, None, return_type, True
         )
         context.add_query(qry)
         return return_type
 
     @staticmethod
     def is_site_deletable(
-        context: ClientContext,
-        site_url: str,
-        return_type: Optional[ClientResult[bool]] = None,
+        context: ClientContext, site_url: str, return_type: Optional[ClientResult[bool]] = None
     ) -> ClientResult[bool]:
         """
         Determines if a site can be deleted based on its URL and compliance policies.
@@ -78,13 +73,7 @@ class SPPolicyStoreProxy(Entity):
             return_type = ClientResult(context, bool())
         payload = {"siteUrl": site_url}
         qry = ServiceOperationQuery(
-            SPPolicyStoreProxy(context),
-            "IsSiteDeletable",
-            None,
-            payload,
-            None,
-            return_type,
-            True,
+            SPPolicyStoreProxy(context), "IsSiteDeletable", None, payload, None, return_type, True
         )
         context.add_query(qry)
         return return_type
@@ -114,13 +103,7 @@ class SPPolicyStoreProxy(Entity):
             return_type = ClientResult(context, ClientValueCollection(ComplianceTag))
         payload = {"siteUrl": site_url}
         qry = ServiceOperationQuery(
-            SPPolicyStoreProxy(context),
-            "GetAvailableTagsForSite",
-            None,
-            payload,
-            None,
-            return_type,
-            True,
+            SPPolicyStoreProxy(context), "GetAvailableTagsForSite", None, payload, None, return_type, True
         )
         context.add_query(qry)
         return return_type
@@ -147,9 +130,7 @@ class SPPolicyStoreProxy(Entity):
 
     @staticmethod
     def get_list_compliance_tag(
-        context: ClientContext,
-        list_url: str,
-        return_type: Optional[ClientResult[ComplianceTag]] = None,
+        context: ClientContext, list_url: str, return_type: Optional[ClientResult[ComplianceTag]] = None
     ) -> ClientResult[ComplianceTag]:
         """
         Gets the compliance tag currently applied to a list or document library.
@@ -166,13 +147,7 @@ class SPPolicyStoreProxy(Entity):
             return_type = ClientResult(context, ComplianceTag())
         payload = {"listUrl": list_url}
         qry = ServiceOperationQuery(
-            SPPolicyStoreProxy(context),
-            "GetListComplianceTag",
-            None,
-            payload,
-            None,
-            return_type,
-            True,
+            SPPolicyStoreProxy(context), "GetListComplianceTag", None, payload, None, return_type, True
         )
         context.add_query(qry)
         return return_type
@@ -198,15 +173,7 @@ class SPPolicyStoreProxy(Entity):
         """
         payload = {"siteUrl": site_url, "siteId": site_id}
         binding_type = SPPolicyStoreProxy(context)
-        qry = ServiceOperationQuery(
-            binding_type,
-            "RegisterSiteHoldEventReceiver",
-            None,
-            payload,
-            None,
-            None,
-            True,
-        )
+        qry = ServiceOperationQuery(binding_type, "RegisterSiteHoldEventReceiver", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
@@ -228,15 +195,7 @@ class SPPolicyStoreProxy(Entity):
             "syncToItems": sync_to_items,
         }
         binding_type = SPPolicyStoreProxy(context)
-        qry = ServiceOperationQuery(
-            binding_type,
-            "SetListComplianceTag",
-            None,
-            payload,
-            None,
-            None,
-            True,
-        )
+        qry = ServiceOperationQuery(binding_type, "SetListComplianceTag", None, payload, None, None, True)
         context.add_query(qry)
         return binding_type
 
@@ -267,20 +226,9 @@ class SPPolicyStoreProxy(Entity):
         """
         if return_type is None:
             return_type = ClientResult(context, int())
-        payload = {
-            "listUrl": list_url,
-            "itemId": item_id,
-            "refreshLabeledTime": refresh_labeled_time,
-        }
-
+        payload = {"listUrl": list_url, "itemId": item_id, "refreshLabeledTime": refresh_labeled_time}
         qry = ServiceOperationQuery(
-            SPPolicyStoreProxy(context),
-            "LockRecordItem",
-            None,
-            payload,
-            None,
-            return_type,
-            True,
+            SPPolicyStoreProxy(context), "LockRecordItem", None, payload, None, return_type, True
         )
         context.add_query(qry)
         return return_type
@@ -288,3 +236,293 @@ class SPPolicyStoreProxy(Entity):
     @property
     def entity_type_name(self):
         return "SP.CompliancePolicy.SPPolicyStoreProxy"
+
+    @property
+    def policy_store_url(self) -> Optional[str]:
+        """Gets the PolicyStoreUrl property"""
+        return self.properties.get("PolicyStoreUrl", None)
+
+    @property
+    def review_center_url(self) -> Optional[str]:
+        """Gets the ReviewCenterUrl property"""
+        return self.properties.get("ReviewCenterUrl", None)
+
+    @property
+    def support_content_type_retention(self) -> Optional[bool]:
+        """Gets the SupportContentTypeRetention property"""
+        return self.properties.get("SupportContentTypeRetention", None)
+
+    def bulk_update_dynamic_scope_bindings(
+        self, scopes_to_add: StringCollection, scopes_to_remove: StringCollection, site_id: str
+    ) -> Self:
+        """BulkUpdateDynamicScopeBindings operation.
+
+        Args:
+            scopes_to_add (StringCollection): scopesToAdd parameter
+            scopes_to_remove (StringCollection): scopesToRemove parameter
+            site_id (str): siteId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "BulkUpdateDynamicScopeBindings",
+            None,
+            {"scopesToAdd": scopes_to_add, "scopesToRemove": scopes_to_remove, "siteId": site_id},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def extend_review_items_retention(
+        self, item_ids: ClientValueCollection, extension_date: datetime
+    ) -> ClientResult[ClientValueCollection[int]]:
+        """ExtendReviewItemsRetention operation.
+
+        Args:
+            item_ids (ClientValueCollection): itemIds parameter
+            extension_date (datetime): extensionDate parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection(int))
+        qry = ServiceOperationQuery(
+            self,
+            "ExtendReviewItemsRetention",
+            None,
+            {"itemIds": item_ids, "extensionDate": extension_date},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_site_adaptive_policies(self, site_id: str) -> ClientResult[StringCollection]:
+        """GetSiteAdaptivePolicies operation.
+
+        Args:
+            site_id (str): siteId parameter
+        """
+        return_type = ClientResult(self.context, StringCollection())
+        qry = FunctionQuery(self, "GetSiteAdaptivePolicies", [site_id], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_site_adaptive_policies_v2(self, site_id: str) -> ClientResult[StringCollection]:
+        """GetSiteAdaptivePoliciesV2 operation.
+
+        Args:
+            site_id (str): siteId parameter
+        """
+        return_type = ClientResult(self.context, StringCollection())
+        qry = FunctionQuery(self, "GetSiteAdaptivePoliciesV2", [site_id], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def mark_review_items_for_deletion(
+        self, item_ids: ClientValueCollection
+    ) -> ClientResult[ClientValueCollection[int]]:
+        """MarkReviewItemsForDeletion operation.
+
+        Args:
+            item_ids (ClientValueCollection): itemIds parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection(int))
+        qry = ServiceOperationQuery(self, "MarkReviewItemsForDeletion", None, {"itemIds": item_ids}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def open_binary_stream_for_original_item(self, item_id: int) -> ClientResult[bytes]:
+        """OpenBinaryStreamForOriginalItem operation.
+
+        Args:
+            item_id (int): itemId parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = ServiceOperationQuery(
+            self, "OpenBinaryStreamForOriginalItem", None, {"itemId": item_id}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def remove_container_retention_policy(self, site_id: str) -> Self:
+        """RemoveContainerRetentionPolicy operation.
+
+        Args:
+            site_id (str): siteId parameter
+        """
+        qry = ServiceOperationQuery(self, "RemoveContainerRetentionPolicy", None, {"siteId": site_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def remove_container_settings(self, external_id: StringCollection) -> Self:
+        """RemoveContainerSettings operation.
+
+        Args:
+            external_id (StringCollection): externalId parameter
+        """
+        qry = ServiceOperationQuery(self, "RemoveContainerSettings", None, {"externalId": external_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def retag_review_items(
+        self,
+        item_ids: ClientValueCollection,
+        new_tag: str,
+        new_tag_is_record: bool,
+        new_tag_block_delete: bool,
+        new_tag_is_event_based: bool,
+    ) -> ClientResult[ClientValueCollection[int]]:
+        """RetagReviewItems operation.
+
+        Args:
+            item_ids (ClientValueCollection): itemIds parameter
+            new_tag (str): newTag parameter
+            new_tag_is_record (bool): newTagIsRecord parameter
+            new_tag_block_delete (bool): newTagBlockDelete parameter
+            new_tag_is_event_based (bool): newTagIsEventBased parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection(int))
+        qry = ServiceOperationQuery(
+            self,
+            "RetagReviewItems",
+            None,
+            {
+                "itemIds": item_ids,
+                "newTag": new_tag,
+                "newTagIsRecord": new_tag_is_record,
+                "newTagBlockDelete": new_tag_block_delete,
+                "newTagIsEventBased": new_tag_is_event_based,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def retag_review_items_with_metas(
+        self, item_ids: ClientValueCollection, new_tag_name: str, new_tag_metas: StringCollection
+    ) -> ClientResult[ClientValueCollection[int]]:
+        """RetagReviewItemsWithMetas operation.
+
+        Args:
+            item_ids (ClientValueCollection): itemIds parameter
+            new_tag_name (str): newTagName parameter
+            new_tag_metas (StringCollection): newTagMetas parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection(int))
+        qry = ServiceOperationQuery(
+            self,
+            "RetagReviewItemsWithMetas",
+            None,
+            {"itemIds": item_ids, "newTagName": new_tag_name, "newTagMetas": new_tag_metas},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def retag_unified_review_items_with_metas(
+        self, item_ids: StringCollection, original_tag_name: str, new_tag_name: str, new_tag_metas: StringCollection
+    ) -> ClientResult[StringCollection]:
+        """RetagUnifiedReviewItemsWithMetas operation.
+
+        Args:
+            item_ids (StringCollection): itemIds parameter
+            original_tag_name (str): originalTagName parameter
+            new_tag_name (str): newTagName parameter
+            new_tag_metas (StringCollection): newTagMetas parameter
+        """
+        return_type = ClientResult(self.context, StringCollection())
+        qry = ServiceOperationQuery(
+            self,
+            "RetagUnifiedReviewItemsWithMetas",
+            None,
+            {
+                "itemIds": item_ids,
+                "originalTagName": original_tag_name,
+                "newTagName": new_tag_name,
+                "newTagMetas": new_tag_metas,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def set_container_retention_policy(self, site_id: str, default_container_label: UUID) -> Self:
+        """SetContainerRetentionPolicy operation.
+
+        Args:
+            site_id (str): siteId parameter
+            default_container_label (UUID): defaultContainerLabel parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetContainerRetentionPolicy",
+            None,
+            {"siteId": site_id, "defaultContainerLabel": default_container_label},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def update_container_setting(self, site_id: str, external_id: str, setting_type: int, setting: str) -> Self:
+        """UpdateContainerSetting operation.
+
+        Args:
+            site_id (str): siteId parameter
+            external_id (str): externalId parameter
+            setting_type (int): settingType parameter
+            setting (str): setting parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateContainerSetting",
+            None,
+            {"siteId": site_id, "externalId": external_id, "settingType": setting_type, "setting": setting},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def update_site_adaptive_policies(
+        self, policies_to_add: StringCollection, policies_to_remove: StringCollection, site_id: str
+    ) -> Self:
+        """UpdateSiteAdaptivePolicies operation.
+
+        Args:
+            policies_to_add (StringCollection): policiesToAdd parameter
+            policies_to_remove (StringCollection): policiesToRemove parameter
+            site_id (str): siteId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateSiteAdaptivePolicies",
+            None,
+            {"policiesToAdd": policies_to_add, "policiesToRemove": policies_to_remove, "siteId": site_id},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def update_site_adaptive_policies_v2(
+        self, policies_to_add: StringCollection, policies_to_remove: StringCollection, site_id: str
+    ) -> Self:
+        """UpdateSiteAdaptivePoliciesV2 operation.
+
+        Args:
+            policies_to_add (StringCollection): policiesToAdd parameter
+            policies_to_remove (StringCollection): policiesToRemove parameter
+            site_id (str): siteId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateSiteAdaptivePoliciesV2",
+            None,
+            {"policiesToAdd": policies_to_add, "policiesToRemove": policies_to_remove, "siteId": site_id},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
