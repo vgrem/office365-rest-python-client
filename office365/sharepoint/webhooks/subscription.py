@@ -1,7 +1,12 @@
 from datetime import datetime
 from typing import Optional, Union
+from uuid import UUID
+
+from typing_extensions import Self
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 
 
@@ -42,7 +47,6 @@ class Subscription(Entity):
             self.set_property("expirationDateTime", value)
 
     def set_property(self, name, value, persist_changes=True):
-        # fallback: create a new resource path
         if self._resource_path is None:
             if name == "id":
                 assert self._parent_collection is not None
@@ -52,3 +56,39 @@ class Subscription(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Webhooks.Subscription"
+
+    @property
+    def client_state(self) -> Optional[str]:
+        """Gets the clientState property"""
+        return self.properties.get("clientState", None)
+
+    @property
+    def resource(self) -> Optional[str]:
+        """Gets the resource property"""
+        return self.properties.get("resource", None)
+
+    @property
+    def resource_data(self) -> Optional[str]:
+        """Gets the resourceData property"""
+        return self.properties.get("resourceData", None)
+
+    @property
+    def scenarios(self) -> StringCollection:
+        """Gets the scenarios property"""
+        return self.properties.get("scenarios", StringCollection())
+
+    def remove(self, subscription_id: UUID) -> Self:
+        """Remove operation.
+
+        Args:
+            subscription_id (UUID): subscriptionId parameter
+        """
+        qry = ServiceOperationQuery(self, "Remove", None, {"subscriptionId": subscription_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def delete(self) -> Self:
+        """Delete operation."""
+        qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

@@ -1,6 +1,8 @@
 import random
 from typing import AnyStr, Optional, Union
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
@@ -38,3 +40,13 @@ class GroupService(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Portal.GroupService"
+
+    def set_group_image(self, image_stream: bytes) -> Self:
+        """SetGroupImage operation.
+
+        Args:
+            image_stream (bytes): imageStream parameter
+        """
+        qry = ServiceOperationQuery(self, "SetGroupImage", None, {"imageStream": image_stream}, None, None)
+        self.context.add_query(qry)
+        return self
