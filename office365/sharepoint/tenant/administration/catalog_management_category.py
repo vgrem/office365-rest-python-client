@@ -15,6 +15,8 @@ class CatalogManagementCategory(ClientValue):
     groups: ClientValueCollection[CatalogManagementGroup] = field(
         default_factory=lambda: ClientValueCollection(CatalogManagementGroup)
     )
+    groupCount: int | None = None
+    siteCount: int | None = None
 
     @property
     def entity_type_name(self) -> str:

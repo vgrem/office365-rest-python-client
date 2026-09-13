@@ -11,6 +11,7 @@ class CatalogManagementSchema(ClientValue):
     categories: ClientValueCollection[CatalogManagementCategory] = field(
         default_factory=lambda: ClientValueCollection(CatalogManagementCategory)
     )
+    categoryCount: int | None = None
 
     @property
     def entity_type_name(self) -> str:

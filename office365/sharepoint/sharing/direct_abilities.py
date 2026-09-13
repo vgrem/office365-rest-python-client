@@ -30,6 +30,7 @@ class DirectSharingAbilities(ClientValue):
     supportsManageListPermission: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
     supportsReadPermission: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
     supportsRestrictedViewPermission: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
+    canAdjudicateAccessRequest: SharingAbilityStatus = field(default_factory=SharingAbilityStatus)
 
     @property
     def entity_type_name(self):

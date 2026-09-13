@@ -176,7 +176,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "service",
         nargs="?",
-        default="graph",
+        default="sharepoint",
         choices=["graph", "sharepoint"],
         help="which model to generate (default: graph)",
     )

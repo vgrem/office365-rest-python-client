@@ -14,6 +14,7 @@ class TenantAdminRansomwareEventSiteRestorePoint(ClientValue):
     restorePointTimeUtc: datetime | None = field(default_factory=lambda: datetime.min)
     restorePointType: str | None = None
     siteId: UUID | None = None
+    siteUrl: str | None = None
 
     @property
     def entity_type_name(self) -> str:

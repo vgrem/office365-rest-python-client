@@ -1275,7 +1275,6 @@
             </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedMobileLobApp/contentVersions">
-            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
             <Annotation Term="Org.OData.Core.V1.Permissions">
                <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
             </Annotation>
@@ -1383,13 +1382,11 @@
             </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileLobApp/contentVersions">
-            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
             <Annotation Term="Org.OData.Core.V1.Permissions">
                <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
             </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsUniversalAppX/committedContainedApps">
-            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
             <Annotation Term="Org.OData.Core.V1.Permissions">
                <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
             </Annotation>
@@ -1707,7 +1704,6 @@
             </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/windowsProtectionState">
-            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
             <Annotation Term="Org.OData.Core.V1.Permissions">
                <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
             </Annotation>
@@ -4800,6 +4796,14 @@
             <Member Name="error" Value="2"/>
             <Member Name="requested" Value="3"/>
             <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
+         <EnumType Name="accessReviewInstanceDecisionItemApplyResult">
+            <Member Name="new" Value="0"/>
+            <Member Name="appliedSuccessfully" Value="1"/>
+            <Member Name="appliedWithUnknownFailure" Value="2"/>
+            <Member Name="appliedSuccessfullyButObjectNotFound" Value="3"/>
+            <Member Name="applyNotSupported" Value="4"/>
+            <Member Name="unknownFutureValue" Value="5"/>
          </EnumType>
          <EnumType Name="accessReviewInstanceDecisionItemFilterByCurrentUserOptions">
             <Member Name="reviewer" Value="1"/>
@@ -17679,6 +17683,7 @@
             <Property Name="inactiveDuration" Type="Edm.Duration"/>
          </ComplexType>
          <ComplexType Name="accessReviewInstanceDecisionItemResource">
+            <Property Name="description" Type="Edm.String"/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="id" Type="Edm.String"/>
             <Property Name="type" Type="Edm.String"/>
@@ -17693,6 +17698,17 @@
          </ComplexType>
          <ComplexType Name="accessReviewInstanceDecisionItemAzureRoleResource" BaseType="graph.accessReviewInstanceDecisionItemResource" OpenType="true">
             <Property Name="scope" Type="graph.accessReviewInstanceDecisionItemResource"/>
+         </ComplexType>
+         <ComplexType Name="accessReviewInstanceDecisionItemCustomDataProvidedResource" BaseType="graph.accessReviewInstanceDecisionItemResource" OpenType="true">
+            <Property Name="customData" Type="Edm.String"/>
+            <Property Name="scopeDisplayName" Type="Edm.String"/>
+            <Property Name="scopeId" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="accessReviewInstanceDecisionItemPermission">
+            <Property Name="description" Type="Edm.String"/>
+            <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="id" Type="Edm.String"/>
+            <Property Name="type" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="accessReviewInstanceDecisionItemServicePrincipalResource" BaseType="graph.accessReviewInstanceDecisionItemResource" OpenType="true">
             <Property Name="appId" Type="Edm.String"/>
@@ -17808,6 +17824,7 @@
             <Property Name="applyResult" Type="Edm.String"/>
             <Property Name="decision" Type="Edm.String"/>
             <Property Name="justification" Type="Edm.String"/>
+            <Property Name="permission" Type="graph.accessReviewInstanceDecisionItemPermission"/>
             <Property Name="principal" Type="graph.identity"/>
             <Property Name="principalLink" Type="Edm.String"/>
             <Property Name="recommendation" Type="Edm.String"/>
@@ -28721,6 +28738,12 @@
          </Action>
          <Action Name="applyDecisions" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.accessReviewInstance"/>
+         </Action>
+         <Action Name="batchApplyCustomDataProvidedResourceDecisions" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.accessReviewInstance"/>
+            <Parameter Name="applyResult" Type="graph.accessReviewInstanceDecisionItemApplyResult" Nullable="false"/>
+            <Parameter Name="applyDescription" Type="Edm.String" Unicode="false"/>
+            <Parameter Name="customDataProvidedResourceId" Type="Edm.String" Nullable="false" Unicode="false"/>
          </Action>
          <Action Name="batchRecordDecisions" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.accessReviewInstance"/>

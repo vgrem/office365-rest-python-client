@@ -18,7 +18,8 @@ class TenantAdminRansomwareActivitiesOverview(ClientValue):
     totalHighVolumeComponentActivityDetectionCount: int | None = None
     unresolvedActivitiesCount: int | None = None
     usersCount: int | None = None
+    restorePointIntegrationEnabled: bool | None = None
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminRansomwareActivitiesOverview"
