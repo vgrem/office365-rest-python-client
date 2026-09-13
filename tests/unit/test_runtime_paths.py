@@ -112,3 +112,53 @@ def test_entity_method_path_is_not_clobbered_by_id():
     lst.set_property("Id", 6)
 
     assert "GetByTitle" in str(lst.resource_path)
+
+
+class _PathCaptureTransport(ScriptedTransport):
+    def __init__(self, payloads):
+        super().__init__(payloads)
+        self.requests = []
+
+    def execute(self, request):
+        self.requests.append(request)
+        return super().execute(request)
+
+
+def test_odata_literal_keeps_slashes():
+    """Slashes stay literal in OData string literals (no %2F URL inflation)."""
+    ctx = ClientContext(test_site_url)
+    path = "/sites/x/Shared Documents/deep/nested/folder/report.xlsx"
+
+    resource_path = ctx.web.get_file_by_server_relative_path(path).resource_path
+
+    assert "%2F" not in str(resource_path)
+    assert path in str(resource_path)
+
+
+def test_move_file_by_path_sends_paths_in_body():
+    """MoveCopyUtil.MoveFileByPath carries both paths in the request body, not the URL."""
+    from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
+    from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
+
+    src = "/sites/x/Shared Documents/deep/nested/folder/a.xlsx"
+    dest = "/sites/x/Shared Documents/deep/nested/archive/a.xlsx"
+    transport = _PathCaptureTransport([{}])
+    ctx = ClientContext(test_site_url)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+
+    MoveCopyUtil.move_file_by_path(ctx, src, dest, MoveCopyOptions(KeepBoth=False))
+    ctx.execute_query()
+
+    assert len(transport.requests) == 1
+    request = transport.requests[0]
+    assert "MoveFileByPath" in request.url
+    assert "%2F" not in request.url
+    assert request.data["srcPath"]["DecodedUrl"].endswith(src)
+    assert request.data["destPath"]["DecodedUrl"].endswith(dest)
+
+
+def test_file_exposes_move_by_path():
+    ctx = ClientContext(test_site_url)
+    file = ctx.web.get_file_by_server_relative_path("/sites/x/Shared Documents/a.xlsx")
+    assert callable(file.move_by_path)

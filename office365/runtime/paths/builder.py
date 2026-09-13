@@ -13,11 +13,13 @@ if TYPE_CHECKING:
 class ODataPathBuilder:
     """A builder for constructing OData paths with proper encoding and URL handling."""
 
-    # Characters that need special handling in OData URLs
+    # Characters that need special handling in OData URLs.
+    # NOTE: "/" is intentionally *not* encoded — slashes are valid inside OData
+    # string literals, and encoding them inflates path-based URLs (~3x) enough to
+    # hit SharePoint's URL length limit for deep folder structures.
     _SPECIAL_CHARS = {
         "%": "%25",
         "+": "%2B",
-        "/": "%2F",
         "?": "%3F",
         "#": "%23",
         "&": "%26",

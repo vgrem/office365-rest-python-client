@@ -436,6 +436,50 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_file_resolved())
         return self
 
+    def move_by_path(
+        self,
+        destination: Union[str, Folder],
+        flag: MoveOperations = MoveOperations.overwrite,
+    ) -> Self:
+        """Moves the file to the specified destination using ``MoveCopyUtil.MoveFileByPath``.
+
+        Unlike :meth:`move_to_using_path` (``File/MoveToUsingPath``), both paths
+        travel in the request body, so deep folder structures don't hit
+        SharePoint's URL length limit.
+
+        Args:
+            destination (str or office365.sharepoint.folders.folder.Folder): Specifies the
+                destination folder path or an existing folder object.
+            flag (MoveOperations): Specifies the kind of move operation
+                (defaults to ``overwrite``).
+        """
+        from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
+        from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
+
+        def _move_by_path(destination_folder: Folder) -> None:
+            assert self.name is not None
+            assert self.server_relative_path is not None
+            file_path = "/".join([str(destination_folder.server_relative_path), self.name])
+            options = MoveCopyOptions(KeepBoth=flag != MoveOperations.overwrite)
+            MoveCopyUtil.move_file_by_path(self.context, str(self.server_relative_path), file_path, options)
+
+            def _update_file(_) -> None:
+                self.set_property("ServerRelativePath", file_path)
+
+            self.context.after_execute(_update_file)
+
+        def _source_file_resolved() -> None:
+            if isinstance(destination, Folder):
+                dest = destination
+                destination.ensure_property("ServerRelativePath").after_execute(lambda _: _move_by_path(dest))
+            else:
+                self.context.web.ensure_folder_path(destination).get().select(["ServerRelativePath"]).after_execute(
+                    _move_by_path
+                )
+
+        self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_file_resolved())
+        return self
+
     def publish(self, comment: str) -> Self:
         """Submits the file for content approval with the specified comment.
 

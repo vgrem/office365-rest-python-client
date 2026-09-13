@@ -58,6 +58,52 @@ class MoveCopyUtil(Entity):
         return return_type
 
     @staticmethod
+    def move_file(context, src_url, dest_url, options=None):
+        """Moves a file from a source URL to a destination URL.
+
+        Paths travel in the request body, so deep folder structures don't hit
+        SharePoint's URL length limit (unlike ``File/MoveToUsingPath``).
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): client context
+            src_url (str): A full or server relative url that represents the source file.
+            dest_url (str): A full or server relative url that represents the destination file.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions or None):
+        """
+        binding_type = MoveCopyUtil(context)
+        payload = {
+            "srcUrl": str(SPResPath.create_absolute(context.base_url, src_url)),
+            "destUrl": str(SPResPath.create_absolute(context.base_url, dest_url)),
+            "options": options,
+        }
+        qry = ServiceOperationQuery(binding_type, "MoveFile", None, payload, None, None, True)
+        context.add_query(qry)
+        return binding_type
+
+    @staticmethod
+    def move_file_by_path(context, src_path, dest_path, options=None):
+        """Moves a file from a source path to a destination path.
+
+        Paths travel in the request body, so deep folder structures don't hit
+        SharePoint's URL length limit (unlike ``File/MoveToUsingPath``).
+
+        Args:
+            context (office365.sharepoint.client_context.ClientContext): client context
+            src_path (str): A full or server relative path that represents the source file.
+            dest_path (str): A full or server relative path that represents the destination file.
+            options (office365.sharepoint.utilities.move_copy_options.MoveCopyOptions or None):
+        """
+        binding_type = MoveCopyUtil(context)
+        payload = {
+            "srcPath": SPResPath.create_absolute(context.base_url, src_path),
+            "destPath": SPResPath.create_absolute(context.base_url, dest_path),
+            "options": options,
+        }
+        qry = ServiceOperationQuery(binding_type, "MoveFileByPath", None, payload, None, None, True)
+        context.add_query(qry)
+        return binding_type
+
+    @staticmethod
     def copy_folder(context, src_url, dest_url, options=None):
         """Copies a folder from a source URL to a destination URL.
 

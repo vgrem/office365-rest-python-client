@@ -1,6 +1,10 @@
 """
 Demonstrates how to move a file within a site.
 
+Uses ``File.move_by_path`` (``MoveCopyUtil.MoveFileByPath``): both source and
+destination paths travel in the request body, so deep folder structures don't
+hit SharePoint's URL length limit (unlike ``move_to_using_path``).
+
 See https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/file-operations
 """
 
@@ -29,7 +33,7 @@ def main():
     # folder_to = ctx.web.get_folder_by_server_relative_url("Shared Documents")
     folder_to = args.folder_path
 
-    file_to = file_from.move_to_using_path(folder_to, MoveOperations.overwrite).execute_query()
+    file_to = file_from.move_by_path(folder_to, MoveOperations.overwrite).execute_query()
     print(f"'{file_from}' moved into '{file_to.server_relative_path}'")
 
 
