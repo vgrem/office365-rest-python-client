@@ -4,7 +4,7 @@ import ast
 import inspect
 from typing import TYPE_CHECKING, ClassVar
 
-from generator.builders import type_mapping
+from generator.builders.type_descriptor import ParameterType
 
 if TYPE_CHECKING:
     from generator.builders.property import PropertyBuilder
@@ -49,20 +49,19 @@ class TypeReferenceCollector:
         "time",
         "dict",
         "datetime",
+        "list",
     }
 
     def __init__(self, resolver: "ClientTypeResolver") -> None:
         self._resolver = resolver
         self._entries: dict[str, str] = {}
-        self._needs_dataclass = False
+        self.needs_dataclass = False
 
     def add(self, type_name: str) -> None:
         """Track a known type reference."""
         module = self.KNOWN.get(type_name)
         if module:
             self._entries[type_name] = module
-        if type_name not in self.OPTIONAL_TYPES:
-            self._needs_dataclass = True
 
     def add_custom(self, prop: PropertyBuilder) -> None:
         """Resolve a custom (non-builtin) type reference."""
@@ -70,7 +69,6 @@ class TypeReferenceCollector:
         if prop_type in self.KNOWN or prop_type in self.OPTIONAL_TYPES:
             return
         if prop.is_object_type:
-            self._needs_dataclass = True
             return
         cls = prop.resolve_client_type()
         if cls is not None:
@@ -101,7 +99,10 @@ class TypeReferenceCollector:
         for param in schema.Parameters or []:
             type_name = param.get("Type")
             if type_name:
-                self._add_python_type(type_mapping.client_type_name(str(type_name)))
+                param_type = ParameterType(str(type_name))
+                self._add_python_type(param_type.annotation)
+                if param_type.wrapper:
+                    self.add(param_type.wrapper)
 
     def _add_python_type(self, type_name: str) -> None:
         """Add a Python type name (resolving custom types to their modules)."""
@@ -120,9 +121,8 @@ class TypeReferenceCollector:
     def build(self) -> list[ast.ImportFrom]:
         """Generate sorted, deduplicated import statements."""
         imports: list[ast.ImportFrom] = []
-        added: set[str] = set()
 
-        if self._needs_dataclass and "dataclasses" not in added:
+        if self.needs_dataclass:
             imports.append(
                 ast.ImportFrom(
                     module="dataclasses",
@@ -133,17 +133,17 @@ class TypeReferenceCollector:
                     level=0,
                 )
             )
-            added.add("dataclasses")
 
-        for type_name, module in sorted(self._entries.items(), key=lambda x: x[1]):
-            if module not in added:
-                imports.append(
-                    ast.ImportFrom(
-                        module=module,
-                        names=[ast.alias(name=type_name, asname=None)],
-                        level=0,
-                    )
+        modules: dict[str, list[str]] = {}
+        for type_name, module in self._entries.items():
+            modules.setdefault(module, []).append(type_name)
+        for module, names in sorted(modules.items()):
+            imports.append(
+                ast.ImportFrom(
+                    module=module,
+                    names=[ast.alias(name=name, asname=None) for name in sorted(names)],
+                    level=0,
                 )
-                added.add(module)
+            )
 
         return imports

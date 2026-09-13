@@ -335,7 +335,7 @@ class Office365Tenant(Entity):
         return self.properties.get("AllowSelectSecurityGroupsInSPSitesList", StringCollection())
 
     @property
-    def allow_select_s_gs_in_odb_list(self) -> StringCollection:
+    def allow_select_sgs_in_odb_list(self) -> StringCollection:
         """Gets the AllowSelectSGsInODBList property"""
         return self.properties.get("AllowSelectSGsInODBList", StringCollection())
 

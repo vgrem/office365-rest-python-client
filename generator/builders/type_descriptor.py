@@ -29,6 +29,20 @@ _PRIMITIVE_DEFAULTS = {
     dict: "{}",
 }
 
+_PYTHON_TYPE_NAMES = {
+    str: "str",
+    int: "int",
+    float: "float",
+    bool: "bool",
+    bytes: "bytes",
+    uuid.UUID: "UUID",
+    datetime.datetime: "datetime",
+    datetime.date: "date",
+    datetime.time: "time",
+}
+
+_COLLECTION_WRAPPERS = {str: "StringCollection", uuid.UUID: "GuidCollection"}
+
 
 class TypeKind(Enum):
     """Shape of an OData type reference."""
@@ -148,3 +162,50 @@ class ReturnType:
 def _primitive_default(type_name: str | None) -> str:
     """Default expression for a primitive OData type (e.g. ``Edm.Int32`` -> ``int()``)."""
     return _PRIMITIVE_DEFAULTS.get(ODataType.primitive_type_for(type_name), "None")
+
+
+class ParameterType:
+    """Python-facing annotation and runtime wrapping for an operation parameter.
+
+    Primitive collections are exposed as plain Python lists (``list[str]``,
+    ``list[int]``, ``list[UUID]``) and wrapped into the matching runtime
+    collection when the query payload is built.
+    """
+
+    def __init__(self, type_name: str | None) -> None:
+        self._type_name = type_name
+        self._item_type = ODataType.strip_collection(type_name)
+        self._python_item = self._resolve_python_item()
+
+    def _resolve_python_item(self) -> Optional[type]:
+        if self._type_name is None or not ODataType.is_collection_name(self._type_name):
+            return None
+        if not ODataType.is_primitive_name(self._item_type):
+            return None
+        return ODataType.primitive_type_for(self._item_type)
+
+    @property
+    def is_primitive_collection(self) -> bool:
+        return self._python_item in _PYTHON_TYPE_NAMES
+
+    @property
+    def annotation(self) -> str:
+        if self.is_primitive_collection:
+            return f"list[{_PYTHON_TYPE_NAMES[self._python_item]}]"
+        return type_mapping.client_type_name(self._type_name)
+
+    @property
+    def wrapper(self) -> Optional[str]:
+        """Runtime collection class used to wrap the argument, if any."""
+        if not self.is_primitive_collection:
+            return None
+        return _COLLECTION_WRAPPERS.get(self._python_item, "ClientValueCollection")
+
+    def wrap(self, expression: str) -> str:
+        """Wraps a plain Python list argument into its runtime collection."""
+        wrapper = self.wrapper
+        if wrapper is None:
+            return expression
+        if wrapper == "ClientValueCollection":
+            return f"ClientValueCollection({_PYTHON_TYPE_NAMES[self._python_item]}, {expression})"
+        return f"{wrapper}({expression})"

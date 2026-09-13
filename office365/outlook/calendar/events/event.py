@@ -407,11 +407,6 @@ class Event(OutlookItem):
         return self.properties.get("cancelledOccurrences", StringCollection(None))
 
     @property
-    def i_cal_u_id(self) -> Optional[str]:
-        """Gets the iCalUId property"""
-        return self.properties.get("iCalUId", None)
-
-    @property
     def locations(self) -> ClientValueCollection[Location]:
         """Gets the locations property"""
         return self.properties.get("locations", ClientValueCollection[Location](Location))

@@ -155,6 +155,7 @@ class TypeBuilder(ast.NodeTransformer):
         assert self._template is not None
         assert self._options is not None
         collector = TypeReferenceCollector(self._resolver)
+        collector.needs_dataclass = self._schema.BaseTypeFullName == "ComplexType" and bool(self._properties)
 
         for prop in self._properties:
             prop_type = prop.client_type_name
@@ -199,6 +200,9 @@ class TypeBuilder(ast.NodeTransformer):
     def _build_value_properties(self, class_node: ast.ClassDef):
         if not self._properties:
             return
+
+        if not any(isinstance(d, ast.Name) and d.id == "dataclass" for d in class_node.decorator_list):
+            class_node.decorator_list.insert(0, ast.Name(id="dataclass", ctx=ast.Load()))
 
         # Remove any existing __init__ (dataclass generates it)
         class_node.body = [n for n in class_node.body if not (isinstance(n, ast.FunctionDef) and n.name == "__init__")]

@@ -139,7 +139,7 @@ def _build_static_method_type(tmp_path: Path, generate_methods: str) -> str:
 
 def test_generate_methods_disabled_skips_methods_and_imports(tmp_path: Path):
     source = _build_static_method_type(tmp_path, "false")
-    assert "def sp__test_thing__do_it" not in source
+    assert "def sp_test_thing_do_it" not in source
     assert "ServiceOperationQuery" not in source
     assert "ClientContext" not in source
     _compile(source)
@@ -147,7 +147,7 @@ def test_generate_methods_disabled_skips_methods_and_imports(tmp_path: Path):
 
 def test_generate_methods_enabled_emits_method_and_imports(tmp_path: Path):
     source = _build_static_method_type(tmp_path, "true")
-    assert "def sp__test_thing__do_it(context: ClientContext, value: str)" in source
+    assert "def sp_test_thing_do_it(context: ClientContext, value: str)" in source
     assert "from office365.runtime.queries.service_operation import ServiceOperationQuery" in source
     assert "from office365.sharepoint.client_context import ClientContext" in source
     _compile(source)
@@ -155,7 +155,7 @@ def test_generate_methods_enabled_emits_method_and_imports(tmp_path: Path):
 
 def test_generate_methods_flag_is_case_insensitive(tmp_path: Path):
     source = _build_static_method_type(tmp_path, "True")
-    assert "def sp__test_thing__do_it(context: ClientContext, value: str)" in source
+    assert "def sp_test_thing_do_it(context: ClientContext, value: str)" in source
     _compile(source)
 
 
@@ -272,6 +272,42 @@ def test_method_builder_key_value_collection():
 
 def _resolver() -> ClientTypeResolver:
     return ClientTypeResolver(["office365.sharepoint"])
+
+
+def test_method_builder_primitive_collection_param_is_list():
+    schema = MethodInformation(
+        Name="CreatePersonalSiteEnqueueBulk",
+        Parameters=[{"Name": "emailIDs", "Type": "Collection(Edm.String)", "Nullable": True}],
+        ReturnTypeFullName="Collection(Edm.String)",
+        BindingTypeFullName="SP.UserProfiles.ProfileLoader",
+        IsBound=True,
+        IsStatic=False,
+        Kind="action",
+    )
+    source = MethodBuilder(schema).build_source()
+    assert "email_ids: list[str]" in source
+    assert '{"emailIDs": StringCollection(email_ids)}' in source
+    _compile(source)
+
+
+def test_method_builder_primitive_collection_param_wrappers():
+    schema = MethodInformation(
+        Name="SetIds",
+        Parameters=[
+            {"Name": "intIds", "Type": "Collection(Edm.Int32)", "Nullable": True},
+            {"Name": "guidIds", "Type": "Collection(Edm.Guid)", "Nullable": True},
+        ],
+        BindingTypeFullName="SP.Web",
+        IsBound=True,
+        IsStatic=False,
+        Kind="action",
+    )
+    source = MethodBuilder(schema).build_source()
+    assert "int_ids: list[int]" in source
+    assert "guid_ids: list[UUID]" in source
+    assert '"intIds": ClientValueCollection(int, int_ids)' in source
+    assert '"guidIds": GuidCollection(guid_ids)' in source
+    _compile(source)
 
 
 def test_method_builder_stream_maps_to_bytes():

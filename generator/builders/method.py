@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from generator.builders import type_mapping
 from generator.builders.naming import to_snake_case
-from generator.builders.type_descriptor import ReturnType
+from generator.builders.type_descriptor import ParameterType, ReturnType
 
 if TYPE_CHECKING:
     from generator.builders.type_resolver import ClientTypeResolver
@@ -61,11 +61,11 @@ class MethodBuilder:
 
     def _query(self, receiver: str, params: list, is_static: bool, return_type: str) -> str:
         schema = self.schema
-        method_params = ", ".join(self._param_name(p) for p in params)
         if schema.Kind == "function":
+            method_params = ", ".join(self._param_value(p) for p in params)
             raw_content = ", return_raw_content=True" if self._return_type.is_stream else ""
             return f'FunctionQuery({receiver}, "{schema.Name}", [{method_params}], {return_type}{raw_content})'
-        payload = ", ".join(f'"{p["Name"]}": {self._param_name(p)}' for p in params)
+        payload = ", ".join(f'"{p["Name"]}": {self._param_value(p)}' for p in params)
         static = ", True" if is_static else ""
         return f'ServiceOperationQuery({receiver}, "{schema.Name}", None, {{{payload}}}, None, {return_type}{static})'
 
@@ -105,4 +105,11 @@ class MethodBuilder:
         type_name = param.get("Type")
         if type_name is None:
             return "str"
-        return type_mapping.client_type_name(type_name)
+        return ParameterType(str(type_name)).annotation
+
+    def _param_value(self, param: dict) -> str:
+        type_name = param.get("Type")
+        name = self._param_name(param)
+        if type_name is None:
+            return name
+        return ParameterType(str(type_name)).wrap(name)
