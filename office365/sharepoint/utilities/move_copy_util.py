@@ -263,12 +263,26 @@ class MoveCopyUtil(Entity):
             file.get_content().after_execute(_after_downloaded)
 
         def _download_folder(folder: Folder) -> None:
-            def _download_files(rt):
-                [_download_file(file) for file in folder.files]
-                if recursive:
-                    [_download_folder(sub_folder) for sub_folder in folder.folders]
+            files = folder.files
+            folders = folder.folders
+            files_state = {"count": 0}
+            folders_state = {"count": 0}
 
-            folder.expand(["Files", "Folders"]).get().after_execute(_download_files)
+            def _folders_loaded(col) -> None:
+                new_folders = list(col)[folders_state["count"] :]
+                folders_state["count"] = len(col)
+                for sub_folder in new_folders:
+                    _download_folder(sub_folder)
+
+            def _files_loaded(col) -> None:
+                new_files = list(col)[files_state["count"] :]
+                files_state["count"] = len(col)
+                for file in new_files:
+                    _download_file(file)
+                if recursive:
+                    folders.get_all(page_loaded=_folders_loaded)
+
+            files.get_all(page_loaded=_files_loaded)
 
         _download_folder(remove_folder)
         return remove_folder

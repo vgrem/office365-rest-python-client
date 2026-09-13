@@ -571,21 +571,25 @@ class DriveItem(BaseItem):
                 if callable(after_file_downloaded):
                     after_file_downloaded(drive_item)
 
-        def _after_folder_downloaded(parent_item: DriveItem, base_path: str | None = None) -> None:
-            for drive_item in parent_item.children:
+        def _after_folder_downloaded(children, base_path: str | None = None) -> None:
+            for drive_item in children:
                 if drive_item.is_file:
                     drive_item.get_content().after_execute(partial(_after_file_downloaded, drive_item, base_path))
                 elif recursive:
-                    if base_path is None:
-                        next_base_path = str(drive_item.name)
-                    else:
-                        next_base_path = "/".join([base_path, drive_item.name or ""])
+                    next_base_path = "/".join(filter(None, (base_path, drive_item.name)))
                     _download_folder(drive_item, next_base_path)
 
-        def _download_folder(drive_item: "DriveItem", prev_result: str | None = None) -> None:
-            drive_item.ensure_properties(
-                ["children", "name"],
-            ).after_execute(lambda _: _after_folder_downloaded(drive_item, prev_result))
+        def _download_folder(drive_item: "DriveItem", base_path: str | None = None) -> None:
+            children = drive_item.children
+            processed = {"count": 0}
+
+            def _page_loaded(col) -> None:
+                # pages arrive incrementally — process only the new items
+                new_items = list(col)[processed["count"] :]
+                processed["count"] = len(col)
+                _after_folder_downloaded(new_items, base_path)
+
+            children.get_all(page_loaded=_page_loaded)
 
         _download_folder(self)
         return self

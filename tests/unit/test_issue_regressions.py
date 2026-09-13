@@ -3,6 +3,7 @@
 - #884: apostrophes in File.open_binary/save_binary paths
 - #793: upload size from in-memory (io.BytesIO) streams
 - #875: sharing-token encoding (UTF-8, padding stripped)
+- #881: DriveItem.download_folder paginates children (no 200-item cap)
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ import tempfile
 import unittest
 
 import pytest
+from office365.graph_client import GraphClient
 from office365.onedrive.internal.paths.shared import _url_to_shared_token
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
@@ -132,3 +134,40 @@ def test_all_base64_padding_is_removed():
     assert token.startswith("u!")
     assert "=" not in token
     assert token == _reference(url)
+
+
+class _FolderChild:
+    def __init__(self, name: str, is_file: bool = True):
+        self.name = name
+        self.is_file = is_file
+        self.downloaded = False
+
+    def get_content(self):
+        child = self
+
+        class _Result:
+            def after_execute(self_inner, _action):
+                child.downloaded = True
+                return self_inner
+
+        return _Result()
+
+
+def test_download_folder_paginates_children():
+    """#881: every child is queued for download, not just the first Graph page."""
+    client = GraphClient()
+    folder = client.me.drive.root
+    pages = [[_FolderChild("a.txt")], [_FolderChild("b.txt")]]
+
+    class _Children(list):
+        def get_all(self, page_size=None, page_loaded=None, progress=None):
+            accumulated: list = []
+            for page in pages:
+                accumulated = accumulated + page
+                page_loaded(accumulated)
+            return self
+
+    folder._properties["children"] = _Children()
+    folder.download_folder(io.BytesIO(), recursive=False)
+
+    assert all(child.downloaded for page in pages for child in page)

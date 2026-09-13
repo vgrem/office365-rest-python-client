@@ -221,6 +221,111 @@ class ClientRuntimeContext(ABC):
             qry.execute_query(self.pending_request())
         return self
 
+    def execute_query_parallel(
+        self,
+        concurrency: int = 4,
+        progress: Optional[Callable[[Any], None]] = None,
+        max_retry: int = 5,
+        timeout_secs: int = 5,
+        max_delay: Optional[int] = None,
+        jitter: bool = True,
+    ) -> Self:
+        """Executes pending queries concurrently, overlapping their HTTP I/O.
+
+        Intended for **independent** queries (e.g. bulk downloads: queue each
+        ``item.download(f)`` then call this once). Query lifecycle stays on the
+        calling thread — ``before_execute``/``after_execute``/``on_error`` hooks
+        fire as usual — only the network round-trips run on the pool. Transient
+        failures (408/429/5xx) are retried per query, honoring ``Retry-After``.
+
+        Falls back to sequential :meth:`execute_query` when ``concurrency <= 1``
+        or when the context uses a non-standard request (e.g. an upload session).
+
+        Args:
+            concurrency: Maximum number of concurrent requests.
+            progress: Optional hook fired per completed query with a ``Progress``
+              snapshot (``done``/``total``).
+            max_retry: Maximum retry attempts per query.
+            timeout_secs: Base delay for exponential backoff (seconds).
+            max_delay: Optional cap on the exponential delay (seconds).
+            jitter: Whether to randomize the backoff delay.
+
+        Returns:
+            Self for method chaining
+        """
+        if concurrency <= 1 or not self.has_pending_request:
+            return self.execute_query()
+
+        request = self.pending_request()
+        if type(request).execute_query is not ClientRequest.execute_query:
+            return self.execute_query()
+
+        from office365.runtime.parallel import run_parallel
+
+        def _send(_ctx, task: Tuple[ClientQuery, RequestOptions]):
+            return self._send_with_retry(request, task[1], max_retry, timeout_secs, max_delay, jitter)
+
+        while self.has_pending_request:
+            prepared: List[Tuple[ClientQuery, RequestOptions]] = []
+            while self.has_pending_request:
+                qry = self._get_next_query()
+                if type(qry).execute_query is not ClientQuery.execute_query:
+                    qry.execute_query(request)  # deferred/no-op queries stay sequential
+                    continue
+                options = request.build_request(qry)
+                request.beforeExecute(options)
+                prepared.append((qry, options))
+            if not prepared:
+                break
+
+            responses = run_parallel(
+                _send,
+                prepared,
+                concurrency=concurrency,
+                progress=progress,
+                on_error=lambda _task, error: error,
+            )
+
+            for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
+                if isinstance(response, BaseException):
+                    for pending, _ in prepared[index:]:  # keep failed + unhandled queries
+                        self._queries.append(pending)
+                    self._current_query = None
+                    raise response
+                self._current_query = qry
+                request._raise_for_status(response)
+                request.process_response(response, qry)
+                request.afterExecute(response)
+        self._current_query = None
+        return self
+
+    @staticmethod
+    def _send_with_retry(
+        request: ClientRequest,
+        options: RequestOptions,
+        max_retry: int,
+        timeout_secs: int,
+        max_delay: Optional[int],
+        jitter: bool,
+    ):
+        """Send one prepared request, retrying transient failures per ``Retry-After``."""
+        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry
+
+        def _attempt():
+            response = request.transport.execute(options)
+            if response.status_code in TRANSIENT_STATUS_CODES:
+                raise ClientRequestException.from_response(response)
+            return response
+
+        return retry(
+            _attempt,
+            max_retry=max_retry,
+            timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
+            on_failure=lambda _attempt_num, ex: response_retry_after(getattr(ex, "response", None)),
+        )
+
     def add_query(self, query: ClientQuery) -> Self:
         """Adds a query to the pending queue.
 
