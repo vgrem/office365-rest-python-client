@@ -7,14 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-09-13
+
 ### Added
-- `execute_batch(concurrency=N)` on `ClientContext` and `GraphClient` — run
-  batch requests concurrently (thread pool) with transient-failure retry that
-  honors `Retry-After`. `success_callback` fires on the caller thread in
-  completion order. Default remains `1` (sequential).
-- Thread-safe auth and form-digest caches (single-flight refresh) so a context
-  can drive parallel batches; `ClientContext.clone` now shares the auth context
-  and transport instead of deep-copying.
+- **Migration toolkit** — product-agnostic core plus `sharepoint`, `outlook`
+  and `teams` products: resumable `MigrationJob`/`MigrationSession` with
+  checkpoints, filesystem/SharePoint/JSON/Teams archive adapters, parallel
+  transfer, a server-side ingestion job, and summary/item/failure reports.
+- **SMAT-style pre-migration assessment** — modular scans/containers,
+  `MigrationAssessor`/`MigrationTenantAssessor`/`MailboxAssessor`, typed scan
+  reports (`LargeSites`, `LockedSites`, `MailFolders`) and CSV/JSON export.
+- **Parallel execution** — `execute_batch(concurrency=N)` on `ClientContext`
+  and `GraphClient`, plus `execute_query_parallel(concurrency=N)` for
+  pipelined I/O over independent queries; both retry transient failures per
+  request honoring `Retry-After`.
+- **Data pipeline** — CSV/JSON/NDJSON/Excel import-export,
+  `from_csv`/`from_json`/`from_records`, dynamic list-item columns, and an
+  optional pandas bridge (`to_dataframe`/`from_dataframe`).
+- **SharePoint** — taxonomy term store (OData v2.1/V4) support, site
+  primitives, folder download with version history, zip ↔ folder primitives,
+  `Web.ensure_list`, `DriveItem.ensure_folder`, and typed field creators.
+- **Generator** — OData function/action method generation, a return-type
+  descriptor/resolver, and list-typed primitive collection parameters.
+
+### Changed
+- Thread-safe auth and form-digest caches (single-flight refresh);
+  `ClientContext.clone` now shares the auth context and transport.
+- First-class retry (exponential backoff + jitter) and throttling
+  (rate-limit/health headers) primitives; `ClientQuery` generics made
+  consistent.
+- Examples reorganized into product galleries and an SPMT-style migration flow
+  (`assess/` → `migrate/` → `monitor/`).
+
+### Fixed
+- Long file paths in moves ([#988](https://github.com/vgrem/office365-rest-python-client/issues/988)) —
+  body-based `File.move_by_path`/`MoveCopyUtil.move_file_by_path`; slashes are
+  no longer percent-encoded inside OData string literals.
+- Bulk OneDrive downloads ([#881](https://github.com/vgrem/office365-rest-python-client/issues/881)) —
+  `download_folder` paginates children instead of stopping at the first page.
+- SharePoint paging falls back to `$skip` when no next link is returned
+  ([#915](https://github.com/vgrem/office365-rest-python-client/issues/915)),
+  and custom headers are preserved across pages.
+- Apostrophes in file paths ([#884](https://github.com/vgrem/office365-rest-python-client/issues/884)),
+  in-memory upload streams ([#793](https://github.com/vgrem/office365-rest-python-client/issues/793)),
+  sharing-token UTF-8/padding ([#875](https://github.com/vgrem/office365-rest-python-client/issues/875)).
+- `@odata.type` casting for directory collections
+  ([#921](https://github.com/vgrem/office365-rest-python-client/issues/921));
+  principal path precedence ([#895](https://github.com/vgrem/office365-rest-python-client/issues/895));
+  delta-token/custom query-param handling ([#948](https://github.com/vgrem/office365-rest-python-client/issues/948));
+  malformed JSON surfaced as `ClientRequestException`.
+
+### Internal
+- Generator metadata readers/model moved from `office365/runtime/odata` to
+  `generator/odata`; generator checkpoints are no longer tracked.
+- Unit suite consolidated into themed modules and pruned; pyright clean.
 
 ## [3.0.0]
 
