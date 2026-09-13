@@ -1,5 +1,6 @@
 import time
 from typing import AnyStr, Callable, List, Optional
+from uuid import UUID
 
 from typing_extensions import Self
 
@@ -9,106 +10,55 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
-from office365.sharepoint.administration.archiving.file_size_metric import (
-    ArchiveFileSizeMetric,
-)
+from office365.sharepoint.administration.archiving.file_size_metric import ArchiveFileSizeMetric
+from office365.sharepoint.directory.tenant_service_info_value import TenantServiceInfoValue
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.gtp.request_options import ChatGptRequestOptions
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.render_data_parameters import RenderListDataParameters
-from office365.sharepoint.lists.render_override_parameters import (
-    RenderListDataOverrideParameters,
-)
+from office365.sharepoint.lists.render_override_parameters import RenderListDataOverrideParameters
 from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
 from office365.sharepoint.publishing.portalhealth.status import PortalHealthStatus
 from office365.sharepoint.sites.home.details import HomeSitesDetails
 from office365.sharepoint.sites.site import Site
-from office365.sharepoint.tenant.administration.collaboration.insights_data import (
-    CollaborationInsightsData,
-)
-from office365.sharepoint.tenant.administration.collaboration.insights_overview import (
-    CollaborationInsightsOverview,
-)
-from office365.sharepoint.tenant.administration.copilot.promousage import (
-    SPOCopilotPromoUsage,
-)
+from office365.sharepoint.tenant.administration.collaboration.insights_data import CollaborationInsightsData
+from office365.sharepoint.tenant.administration.collaboration.insights_overview import CollaborationInsightsOverview
+from office365.sharepoint.tenant.administration.copilot.promousage import SPOCopilotPromoUsage
 from office365.sharepoint.tenant.administration.deletedsiteproperties import DeletedSiteProperties
-from office365.sharepoint.tenant.administration.hubsites.collection import (
-    HubSiteCollection,
-)
-from office365.sharepoint.tenant.administration.hubsites.properties import (
-    HubSiteProperties,
-)
-from office365.sharepoint.tenant.administration.insights.onedrive_site_sharing import (
-    OneDriveSiteSharingInsights,
-)
-from office365.sharepoint.tenant.administration.insights.top_files_sharing import (
-    TopFilesSharingInsights,
-)
+from office365.sharepoint.tenant.administration.hubsites.collection import HubSiteCollection
+from office365.sharepoint.tenant.administration.hubsites.properties import HubSiteProperties
+from office365.sharepoint.tenant.administration.insights.onedrive_site_sharing import OneDriveSiteSharingInsights
+from office365.sharepoint.tenant.administration.insights.top_files_sharing import TopFilesSharingInsights
 from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
-from office365.sharepoint.tenant.administration.policies.app_billing_properties import (
-    SPOAppBillingProperties,
-)
+from office365.sharepoint.tenant.administration.policies.app_billing_properties import SPOAppBillingProperties
 from office365.sharepoint.tenant.administration.policies.content_security_configuration import (
     SPOContentSecurityPolicyConfiguration,
 )
-from office365.sharepoint.tenant.administration.policies.create_request import (
-    CreatePolicyRequest,
-)
-from office365.sharepoint.tenant.administration.policies.definition import (
-    TenantAdminPolicyDefinition,
-)
-from office365.sharepoint.tenant.administration.policies.file_version_types import (
-    SPOFileVersionBatchDeleteJobProgress,
-)
-from office365.sharepoint.tenant.administration.policies.fileversionsettings import (
-    SPOFileVersionPolicySettings,
-)
-from office365.sharepoint.tenant.administration.powerapps.environment import (
-    PowerAppsEnvironment,
-)
-from office365.sharepoint.tenant.administration.reports.recent_admin_action import (
-    RecentAdminActionReport,
-)
-from office365.sharepoint.tenant.administration.reports.recent_admin_action_payload import (
-    RecentAdminActionReportPayload,
-)
+from office365.sharepoint.tenant.administration.policies.create_request import CreatePolicyRequest
+from office365.sharepoint.tenant.administration.policies.definition import TenantAdminPolicyDefinition
+from office365.sharepoint.tenant.administration.policies.file_version_types import SPOFileVersionBatchDeleteJobProgress
+from office365.sharepoint.tenant.administration.policies.fileversionsettings import SPOFileVersionPolicySettings
+from office365.sharepoint.tenant.administration.powerapps.environment import PowerAppsEnvironment
+from office365.sharepoint.tenant.administration.reports.recent_admin_action import RecentAdminActionReport
+from office365.sharepoint.tenant.administration.reports.recent_admin_action_payload import RecentAdminActionReportPayload
 from office365.sharepoint.tenant.administration.secondary_administrators_fields_data import (
     SecondaryAdministratorsFieldsData,
 )
-from office365.sharepoint.tenant.administration.secondary_administrators_info import (
-    SecondaryAdministratorsInfo,
-)
-from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
-    SiteInfoForSitePicker,
-)
-from office365.sharepoint.tenant.administration.sites.administrators_info import (
-    SiteAdministratorsInfo,
-)
-from office365.sharepoint.tenant.administration.sites.creation_properties import (
-    SiteCreationProperties,
-)
+from office365.sharepoint.tenant.administration.secondary_administrators_info import SecondaryAdministratorsInfo
+from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import SiteInfoForSitePicker
+from office365.sharepoint.tenant.administration.sites.administrators_info import SiteAdministratorsInfo
+from office365.sharepoint.tenant.administration.sites.creation_properties import SiteCreationProperties
 from office365.sharepoint.tenant.administration.sites.properties import SiteProperties
-from office365.sharepoint.tenant.administration.sites.properties_collection import (
-    SitePropertiesCollection,
-)
-from office365.sharepoint.tenant.administration.sites.properties_enumerable_filter import (
-    SitePropertiesEnumerableFilter,
-)
-from office365.sharepoint.tenant.administration.syntex.billing_context import (
-    SyntexBillingContext,
-)
-from office365.sharepoint.tenant.administration.syntex.power_apps import (
-    SyntexPowerAppsEnvironmentsContext,
-)
+from office365.sharepoint.tenant.administration.sites.properties_collection import SitePropertiesCollection
+from office365.sharepoint.tenant.administration.sites.properties_enumerable_filter import SitePropertiesEnumerableFilter
+from office365.sharepoint.tenant.administration.syntex.billing_context import SyntexBillingContext
+from office365.sharepoint.tenant.administration.syntex.power_apps import SyntexPowerAppsEnvironmentsContext
 from office365.sharepoint.tenant.administration.updategroupsitepropertiesparameters import (
     UpdateGroupSitePropertiesParameters,
 )
-from office365.sharepoint.tenant.administration.webs.templates.collection import (
-    SPOTenantWebTemplateCollection,
-)
+from office365.sharepoint.tenant.administration.webs.templates.collection import SPOTenantWebTemplateCollection
 from office365.sharepoint.tenant.settings import TenantSettings
 
 
@@ -116,10 +66,7 @@ class Tenant(Entity):
     """Represents a SharePoint tenant."""
 
     def __init__(self, context):
-        super().__init__(
-            context,
-            StaticPath("Microsoft.Online.SharePoint.TenantAdministration.Tenant"),
-        )
+        super().__init__(context, StaticPath("Microsoft.Online.SharePoint.TenantAdministration.Tenant"))
 
     def accept_syntex_repository_terms_of_service(self) -> Self:
         """
@@ -174,9 +121,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_spo_copilot_promo_usage_statistics(
-        self,
-    ) -> ClientResult[SPOCopilotPromoUsage]:
+    def get_spo_copilot_promo_usage_statistics(self) -> ClientResult[SPOCopilotPromoUsage]:
         """ """
         return_type = ClientResult(self.context, SPOCopilotPromoUsage())
         qry = ServiceOperationQuery(self, "GetSPOCopilotPromoUsageStatistics", None, None, None, return_type)
@@ -221,17 +166,13 @@ class Tenant(Entity):
     def get_collaboration_insights_data(self):
         """"""
         return_type = ClientResult[CollaborationInsightsData](self.context, CollaborationInsightsData())
-
         qry = ServiceOperationQuery(self, "GetCollaborationInsightsData", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def get_collaboration_insights_overview(
-        self,
-    ) -> ClientResult[CollaborationInsightsOverview]:
+    def get_collaboration_insights_overview(self) -> ClientResult[CollaborationInsightsOverview]:
         """"""
         return_type = ClientResult(self.context, CollaborationInsightsOverview())
-
         qry = ServiceOperationQuery(self, "GetCollaborationInsightsOverview", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -239,10 +180,7 @@ class Tenant(Entity):
     def render_recent_admin_actions(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context, bytes())
-        payload = {
-            "parameters": RenderListDataParameters(),
-            "overrideParameters": RenderListDataOverrideParameters(),
-        }
+        payload = {"parameters": RenderListDataParameters(), "overrideParameters": RenderListDataOverrideParameters()}
         qry = ServiceOperationQuery(self, "RenderRecentAdminActions", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -292,10 +230,7 @@ class Tenant(Entity):
 
     def get_home_sites(self) -> ClientResult[ClientValueCollection[HomeSitesDetails]]:
         """Retrieves the Home Site that has been designated for your Microsoft 365 tenant."""
-        return_type = ClientResult(
-            self.context,
-            ClientValueCollection(HomeSitesDetails),
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(HomeSitesDetails))
         qry = ServiceOperationQuery(self, "GetHomeSites", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -327,27 +262,13 @@ class Tenant(Entity):
 
     def is_request_content_management_assessment_eligible(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self,
-            "IsRequestContentManagementAssessmentEligible",
-            None,
-            None,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "IsRequestContentManagementAssessmentEligible", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def is_syntex_repository_terms_of_service_accepted(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(
-            self,
-            "IsSyntexRepositoryTermsOfServiceAccepted",
-            None,
-            None,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "IsSyntexRepositoryTermsOfServiceAccepted", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -367,12 +288,7 @@ class Tenant(Entity):
             list_name (str):
         """
         return_type = ClientResult(self.context)
-        payload = {
-            "viewXml": view_xml,
-            "timeZoneId": time_zone_id,
-            "columnsInfo": columns_info,
-            "listName": list_name,
-        }
+        payload = {"viewXml": view_xml, "timeZoneId": time_zone_id, "columnsInfo": columns_info, "listName": list_name}
         qry = ServiceOperationQuery(self, "ExportToCSV", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -380,10 +296,7 @@ class Tenant(Entity):
     def render_policy_report(self) -> ClientResult[bytes]:
         """"""
         return_type = ClientResult(self.context, bytes())
-        payload = {
-            "parameters": RenderListDataParameters(),
-            "overrideParameters": RenderListDataOverrideParameters(),
-        }
+        payload = {"parameters": RenderListDataParameters(), "overrideParameters": RenderListDataOverrideParameters()}
         qry = ServiceOperationQuery(self, "RenderPolicyReport", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -413,10 +326,7 @@ class Tenant(Entity):
 
     def get_power_apps_environments(self):
         """ """
-        return_type = ClientResult(
-            self.context,
-            ClientValueCollection(PowerAppsEnvironment),
-        )
+        return_type = ClientResult(self.context, ClientValueCollection(PowerAppsEnvironment))
         qry = ServiceOperationQuery(self, "GetPowerAppsEnvironments", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -439,41 +349,20 @@ class Tenant(Entity):
     def get_root_site_url(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self,
-            "GetRootSiteUrl",
-            None,
-            None,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "GetRootSiteUrl", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site_authorization_code_for_migration(self, endpoint_url: str) -> ClientResult[str]:
         return_type = ClientResult(self.context, str())
         payload = {"endpointUrl": endpoint_url}
-        qry = ServiceOperationQuery(
-            self,
-            "GetSiteAuthorizationCodeForMigration",
-            None,
-            payload,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "GetSiteAuthorizationCodeForMigration", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site_subscription_id(self):
         return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self,
-            "GetSiteSubscriptionId",
-            None,
-            None,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "GetSiteSubscriptionId", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -498,10 +387,7 @@ class Tenant(Entity):
     ) -> SPOTenantWebTemplateCollection:
         """ """
         return_type = SPOTenantWebTemplateCollection(self.context)
-        payload = {
-            "cultureName": culture_name,
-            "compatibilityLevel": compatibility_level,
-        }
+        payload = {"cultureName": culture_name, "compatibilityLevel": compatibility_level}
         qry = ServiceOperationQuery(self, "GetSPOAllWebTemplates", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -533,8 +419,7 @@ class Tenant(Entity):
         states (list[int]):
         """
         return_type = ListItemCollection(
-            self.context,
-            ResourcePath("items", self._aggregated_site_collections_list.resource_path),
+            self.context, ResourcePath("items", self._aggregated_site_collections_list.resource_path)
         )
         payload = {"states": states}
         qry = ServiceOperationQuery(self, "GetSitesByState", None, payload, None, return_type)
@@ -565,9 +450,7 @@ class Tenant(Entity):
         return result
 
     def get_site_administrators(
-        self,
-        site_id: str,
-        return_type: Optional[ClientResult[ClientValueCollection[SiteAdministratorsInfo]]] = None,
+        self, site_id: str, return_type: Optional[ClientResult[ClientValueCollection[SiteAdministratorsInfo]]] = None
     ):
         """Gets site collection administrators
 
@@ -593,7 +476,6 @@ class Tenant(Entity):
             self.get_site_administrators(site_props.get_property("SiteId"), return_type)
 
         self.get_site_properties_by_url(site_url).after_execute(_get_site_administrators_by_site_url)
-
         return return_type
 
     def get_site_secondary_administrators(
@@ -802,14 +684,7 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context, SPOFileVersionPolicySettings())
         payload = {"siteUrl": site_url, "listParams": list_params}
-        qry = ServiceOperationQuery(
-            self,
-            "GetFileVersionPolicyForLibrary",
-            None,
-            payload,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "GetFileVersionPolicyForLibrary", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -818,12 +693,7 @@ class Tenant(Entity):
         return_type = ClientResult(self.context, SPOFileVersionBatchDeleteJobProgress())
         payload = {"siteUrl": site_url, "listParams": list_params}
         qry = ServiceOperationQuery(
-            self,
-            "GetFileVersionBatchDeleteJobProgressForLibrary",
-            None,
-            payload,
-            None,
-            return_type,
+            self, "GetFileVersionBatchDeleteJobProgressForLibrary", None, payload, None, return_type
         )
         self.context.add_query(qry)
         return return_type
@@ -859,41 +729,22 @@ class Tenant(Entity):
         return return_type
 
     def get_site_properties_from_sharepoint(
-        self,
-        start_index: Optional[str] = None,
-        include_detail: bool = False,
+        self, start_index: Optional[str] = None, include_detail: bool = False
     ) -> SitePropertiesCollection:
         """ """
         return_type = SitePropertiesCollection(self.context, self.sites.resource_path)
         payload = {"startIndex": start_index, "includeDetail": include_detail}
-        qry = ServiceOperationQuery(
-            self,
-            "getSitePropertiesFromSharePoint",
-            None,
-            payload,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "getSitePropertiesFromSharePoint", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def get_site_properties_from_sharepoint_by_filters(
-        self,
-        filter_text: Optional[str] = None,
-        start_index: Optional[str] = None,
-        include_detail: bool = False,
+        self, filter_text: Optional[str] = None, start_index: Optional[str] = None, include_detail: bool = False
     ) -> SitePropertiesCollection:
         """ """
         return_type = SitePropertiesCollection(self.context, self.sites.resource_path)
         payload = {"speFilter": SitePropertiesEnumerableFilter(filter_text, start_index, include_detail)}
-        qry = ServiceOperationQuery(
-            self,
-            "getSitePropertiesFromSharePointByFilters",
-            None,
-            payload,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "getSitePropertiesFromSharePointByFilters", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -901,14 +752,7 @@ class Tenant(Entity):
         """ """
         return_type = EntityCollection(self.context, DeletedSiteProperties)
         payload = {"startIndex": start_index}
-        qry = ServiceOperationQuery(
-            self,
-            "GetDeletedSiteProperties",
-            None,
-            payload,
-            None,
-            return_type,
-        )
+        qry = ServiceOperationQuery(self, "GetDeletedSiteProperties", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
@@ -977,10 +821,7 @@ class Tenant(Entity):
         return return_type
 
     def set_file_version_policy(
-        self,
-        is_auto_trim_enabled: bool,
-        major_version_limit: int,
-        expire_versions_after_days: int,
+        self, is_auto_trim_enabled: bool, major_version_limit: int, expire_versions_after_days: int
     ) -> Self:
         """Automatically delete older versions of documents after a specified number of days.
         Specify the maximum number of major versions to retain and the number of major versions
@@ -1021,7 +862,6 @@ class Tenant(Entity):
         """ """
         return_type = ClientResult(self.context, str())
         payload = {"groupId": group_id, "siteId": site_id, "updateType": update_type, "parameters": parameters}
-
         qry = ServiceOperationQuery(self, "UpdateGroupSiteProperties", None, payload, None, return_type)
         self.context.add_query(qry)
         return self
@@ -1029,34 +869,27 @@ class Tenant(Entity):
     @property
     def app_service_principal(self):
         """ """
-        from office365.sharepoint.tenant.administration.internal.appservice.principal import (
-            SPOWebAppServicePrincipal,
-        )
+        from office365.sharepoint.tenant.administration.internal.appservice.principal import SPOWebAppServicePrincipal
 
         return SPOWebAppServicePrincipal(self.context)
 
     @property
     def admin_settings(self):
         """Manage various tenant-level settings related to SharePoint administration"""
-        from office365.sharepoint.tenant.administration.settings.service import (
-            TenantAdminSettingsService,
-        )
+        from office365.sharepoint.tenant.administration.settings.service import TenantAdminSettingsService
 
         return TenantAdminSettingsService(self.context)
 
     @property
     def migration_center(self):
         """ """
-        from office365.sharepoint.migrationcenter.service.services import (
-            MigrationCenterServices,
-        )
+        from office365.sharepoint.migrationcenter.service.services import MigrationCenterServices
 
         return MigrationCenterServices(self.context)
 
     @property
     def comms_messages(self):
         """ """
-
         from office365.sharepoint.tenant.administration.coms.messages_service_proxy import (
             Office365CommsMessagesServiceProxy,
         )
@@ -1066,7 +899,6 @@ class Tenant(Entity):
     @property
     def multi_geo(self):
         """ """
-
         from office365.sharepoint.multigeo.service.services import MultiGeoServices
 
         return MultiGeoServices(self.context)
@@ -1095,9 +927,7 @@ class Tenant(Entity):
         return self.properties.get("AllowCommentsTextOnEmailEnabled", None)
 
     @property
-    def allow_everyone_except_external_users_claim_in_private_site(
-        self,
-    ) -> Optional[bool]:
+    def allow_everyone_except_external_users_claim_in_private_site(self) -> Optional[bool]:
         """
         Gets the value if EveryoneExceptExternalUsers claim is allowed or not in people picker in a private group site.
         False value means it is blocked
@@ -1195,8 +1025,7 @@ class Tenant(Entity):
     def sites(self) -> SitePropertiesCollection:
         """Gets a collection of sites."""
         return self.properties.get(
-            "sites",
-            SitePropertiesCollection(self.context, ResourcePath("sites", self.resource_path)),
+            "sites", SitePropertiesCollection(self.context, ResourcePath("sites", self.resource_path))
         )
 
     @property
@@ -1205,15 +1034,12 @@ class Tenant(Entity):
         return self.properties.get(
             "TotalTenantArchiveFileSizeAggregation",
             ArchiveFileSizeMetric(
-                self.context,
-                ResourcePath("TotalTenantArchiveFileSizeAggregation", self.resource_path),
+                self.context, ResourcePath("TotalTenantArchiveFileSizeAggregation", self.resource_path)
             ),
         )
 
     @property
-    def syntex_power_apps_environments_context(
-        self,
-    ) -> SyntexPowerAppsEnvironmentsContext:
+    def syntex_power_apps_environments_context(self) -> SyntexPowerAppsEnvironmentsContext:
         """ """
         return self.properties.get("SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext())
 
@@ -1232,7 +1058,6 @@ class Tenant(Entity):
     @property
     def crawl_versions_info_provider(self):
         """Retrieves information about crawl versions for a tenant in SharePoint"""
-
         from office365.sharepoint.search.administration.providers.crawl_versions_info import (
             TenantCrawlVersionsInfoProvider,
         )
@@ -1249,12 +1074,35 @@ class Tenant(Entity):
     @property
     def admin_endpoints(self):
         """ """
-        from office365.sharepoint.tenant.administration.endpoints import (
-            TenantAdminEndpoints,
-        )
+        from office365.sharepoint.tenant.administration.endpoints import TenantAdminEndpoints
 
         return TenantAdminEndpoints(self.context)
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.Tenant"
+
+    @property
+    def display_name(self) -> Optional[str]:
+        """Gets the displayName property"""
+        return self.properties.get("displayName", None)
+
+    @property
+    def id_(self) -> Optional[UUID]:
+        """Gets the id property"""
+        return self.properties.get("id", None)
+
+    @property
+    def service_info(self) -> ClientValueCollection[TenantServiceInfoValue]:
+        """Gets the serviceInfo property"""
+        return self.properties.get("serviceInfo", ClientValueCollection[TenantServiceInfoValue](TenantServiceInfoValue))
+
+    def create_service_info(self, request_body: dict) -> Self:
+        """CreateServiceInfo operation.
+
+        Args:
+            request_body (dict): requestBody parameter
+        """
+        qry = ServiceOperationQuery(self, "CreateServiceInfo", None, {"requestBody": request_body}, None)
+        self.context.add_query(qry)
+        return self
