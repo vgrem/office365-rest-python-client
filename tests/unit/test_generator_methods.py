@@ -7,9 +7,14 @@ import textwrap
 from pathlib import Path
 
 from generator.builders.method import MethodBuilder
+from generator.builders.type import TypeBuilder
 from office365.runtime.odata.method import MethodInformation
+from office365.runtime.odata.property import PropertyInformation
+from office365.runtime.odata.type_information import TypeInformation
 from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
 from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
+
+_TEMPLATES = Path(__file__).resolve().parents[2] / "generator" / "templates" / "sharepoint"
 
 _V3_METADATA = """<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
@@ -103,6 +108,54 @@ def test_v4_parses_bound_actions_and_functions(tmp_path: Path):
     summary = schema.Methods["summary"]
     assert summary.Kind == "function"
     assert [p["Name"] for p in summary.Parameters] == ["startDateTime"]
+
+
+def _build_static_method_type(tmp_path: Path, generate_methods: str) -> str:
+    schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="SP.TestThing", IsValueObject=True)
+    schema.add_property(PropertyInformation(Name="Title", TypeName="Edm.String"))
+    schema.add_method(
+        MethodInformation(
+            Name="SP_TestThing_DoIt",
+            ReturnTypeFullName="Edm.Int32",
+            Parameters=[{"Name": "value", "Type": "Edm.String"}],
+            IsBound=False,
+            IsStatic=True,
+            Kind="action",
+        )
+    )
+    options = {
+        "template_path": str(_TEMPLATES),
+        "output_path": str(tmp_path),
+        "modules": "office365.sharepoint",
+        "context_type": "ClientContext",
+        "generate_methods": generate_methods,
+    }
+    builder = TypeBuilder(schema, options)
+    builder.build()
+    builder.save()
+    return Path(builder.file).read_text(encoding="utf8")
+
+
+def test_generate_methods_disabled_skips_methods_and_imports(tmp_path: Path):
+    source = _build_static_method_type(tmp_path, "false")
+    assert "def sp__test_thing__do_it" not in source
+    assert "ServiceOperationQuery" not in source
+    assert "ClientContext" not in source
+    _compile(source)
+
+
+def test_generate_methods_enabled_emits_method_and_imports(tmp_path: Path):
+    source = _build_static_method_type(tmp_path, "true")
+    assert "def sp__test_thing__do_it(context, value: str)" in source
+    assert "from office365.runtime.queries.service_operation import ServiceOperationQuery" in source
+    assert "from office365.sharepoint.client_context import ClientContext" in source
+    _compile(source)
+
+
+def test_generate_methods_flag_is_case_insensitive(tmp_path: Path):
+    source = _build_static_method_type(tmp_path, "True")
+    assert "def sp__test_thing__do_it(context, value: str)" in source
+    _compile(source)
 
 
 def _compile(source: str) -> ast.Module:

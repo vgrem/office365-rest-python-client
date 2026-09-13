@@ -159,8 +159,9 @@ class TypeBuilder(ast.NodeTransformer):
                 collector.add_object_type(prop)
 
         context_type = self._options.get("context_type", "ClientContext")
-        for method in self._methods:
-            collector.add_method(method, context_type)
+        if self._generate_methods_enabled():
+            for method in self._methods:
+                collector.add_method(method, context_type)
 
         imports = self._template.build_references(collector)
         existing_imports = [n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))]
@@ -286,9 +287,16 @@ class TypeBuilder(ast.NodeTransformer):
                     class_node.body.insert(insert_pos, method)
                     insert_pos += 1
 
+    def _generate_methods_enabled(self) -> bool:
+        """Whether operation method generation is enabled via config."""
+        if self._options is None:
+            return False
+        value = self._options.get("generate_methods", "")
+        return str(value).strip().lower() in {"true", "1", "yes"}
+
     def _build_methods(self, class_node: ast.ClassDef) -> None:
         """Insert generated operation methods (functions/actions) that are missing."""
-        if not self._methods or self._options is None or self._options.get("generate_methods") != "true":
+        if not self._methods or not self._generate_methods_enabled():
             return
 
         context_type = self._options.get("context_type", "ClientContext")
