@@ -19,7 +19,6 @@ from office365.migration.assessment.scanners.base import (
     BaseScanner,
     ScanTarget,
 )
-from office365.runtime.client_value import ClientValue
 
 _LARGE_FOLDER_ITEMS = 100_000
 
@@ -32,7 +31,17 @@ class OutlookOptions(AssessmentOptions):
 
 
 @dataclass
-class MailboxFolderRecord(ClientValue):
+class MailFolderData:
+    """A MAIL_FOLDER payload handed to the folder scan (plain, testable data)."""
+
+    path: str
+    item_count: int | None = 0
+    unread_count: int | None = 0
+    child_count: int | None = 0
+
+
+@dataclass
+class MailboxFolderRecord:
     """One row of the ``MailFolders`` detail report (field names ARE the columns)."""
 
     FolderPath: str | None = None
@@ -41,7 +50,7 @@ class MailboxFolderRecord(ClientValue):
     ChildFolderCount: int | None = None
 
 
-class MailboxFolderScan(BaseScanner):
+class MailboxFolderScan(BaseScanner[MailboxFolderRecord]):
     """MAIL_FOLDER-container scan: folder inventory + large-folder flags."""
 
     category = "mail"
@@ -49,7 +58,7 @@ class MailboxFolderScan(BaseScanner):
     record_type = MailboxFolderRecord
     container = ScanContainer.MAIL_FOLDER
 
-    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+    def run(self, target: ScanTarget[MailFolderData], report: AssessmentReport) -> None:
         folder = target.entity
         item_count = int(folder.item_count or 0)
         unread = int(folder.unread_count or 0)

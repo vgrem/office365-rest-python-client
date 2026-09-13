@@ -13,7 +13,6 @@ from office365.migration.sharepoint.adapters import (
 from office365.migration.sharepoint.assessor import MigrationAssessor
 from office365.migration.sharepoint.registry import (
     SHAREPOINT_SCANS,
-    enabled_scans,
     get_scan,
     sharepoint_scan_pairs,
 )
@@ -49,7 +48,6 @@ __all__ = [
     "SharePointListTarget",
     "SiteLockedScanner",
     "SiteScanSummary",
-    "enabled_scans",
     "get_scan",
     "sharepoint_scan_pairs",
 ]

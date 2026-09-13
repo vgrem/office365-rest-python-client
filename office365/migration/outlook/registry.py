@@ -18,7 +18,6 @@ OUTLOOK_SCANS: list[ScanDefinition] = [
         name="MailFolders",
         scanner=MailboxFolderScan,
         container=ScanContainer.MAIL_FOLDER,
-        properties={"large_folder_items": 100_000},
     ),
 ]
 

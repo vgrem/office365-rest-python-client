@@ -16,11 +16,11 @@ from datetime import datetime
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
-from office365.runtime.client_value import ClientValue
+from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 
 
 @dataclass
-class LargeSitesRecord(ClientValue):
+class LargeSitesRecord:
     """One row of the SMAT ``LargeSites-detail`` report.
 
     Field names mirror the SMAT column headers exactly; ``None`` is exported
@@ -72,7 +72,7 @@ def build_large_site_record(
     )
 
 
-class LargeSitesScanner(BaseScanner):
+class LargeSitesScanner(BaseScanner[LargeSitesRecord]):
     """SITE-container scan: storage/size readiness (report ``LargeSites``).
 
     In the site-scope walker (``report_impacted_only=False``) it emits a row per
@@ -85,8 +85,8 @@ class LargeSitesScanner(BaseScanner):
     scan_name = "LargeSites"
     record_type = LargeSitesRecord
 
-    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
-        summary = target.entity  # SiteScanSummary
+    def run(self, target: ScanTarget[SiteScanSummary], report: AssessmentReport) -> None:
+        summary = target.entity
         size_gb = (summary.storage_bytes or 0) / (1024**3) if summary.storage_bytes else None
         size_mb = round((summary.storage_bytes or 0) / (1024**2), 1) if summary.storage_bytes else None
         locked = summary.lock_state in {"NoAccess", "Locked"}
@@ -95,20 +95,19 @@ class LargeSitesScanner(BaseScanner):
         if summary.report_impacted_only and (locked or not over):
             return
 
-        self.records.append(
-            build_large_site_record(
-                site_id=summary.site_id,
-                site_url=summary.site_url,
-                site_owner=summary.owner,
-                site_admins=summary.admins,
-                size_mb=size_mb,
-                num_of_webs=summary.web_count,
-                last_modified=summary.last_modified,
-                hits=summary.hits,
-                scan_id=report.scan_id or None,
-            )
+        row = build_large_site_record(
+            site_id=summary.site_id,
+            site_url=summary.site_url,
+            site_owner=summary.owner,
+            site_admins=summary.admins,
+            size_mb=size_mb,
+            num_of_webs=summary.web_count,
+            last_modified=summary.last_modified,
+            hits=summary.hits,
+            scan_id=report.scan_id or None,
         )
-        self.records[-1].TotalItemCount = summary.item_count
+        row.TotalItemCount = summary.item_count
+        self.records.append(row)
 
         if over and not summary.report_impacted_only:
             self.flag(
@@ -119,3 +118,7 @@ class LargeSitesScanner(BaseScanner):
                 "migration takes longer to schedule and run",
                 "Split the site collection, archive old content, or store large binaries externally",
             )
+
+    def finalize(self, report: AssessmentReport) -> None:
+        """Largest collections first (SMAT ordering)."""
+        self.records.sort(key=lambda row: row.SizeInGB or 0, reverse=True)

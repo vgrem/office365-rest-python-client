@@ -9,28 +9,15 @@ dispatches to the registered scans. Reuses the shared :class:`AssessmentReport`
 
 from __future__ import annotations
 
-import uuid
-from dataclasses import dataclass
-
+from office365.migration._util import coerce_int
 from office365.migration.assessment.containers import ScanContainer
-from office365.migration.assessment.issue import AssessmentIssue
-from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scanners.base import ScanTarget
+from office365.migration.assessment.report import AssessmentReport
+from office365.migration.assessment.runner import ScanRunner
 from office365.migration.outlook.registry import outlook_scan_pairs
-from office365.migration.outlook.scanner import OutlookOptions
+from office365.migration.outlook.scanner import MailFolderData, OutlookOptions
 
 # Graph mailFolder properties the walker selects
 _FOLDER_COLUMNS = ["displayName", "totalItemCount", "unreadItemCount", "childFolderCount"]
-
-
-@dataclass
-class MailFolderData:
-    """A MAIL_FOLDER payload handed to the folder scan (plain, testable data)."""
-
-    path: str
-    item_count: int | None = 0
-    unread_count: int | None = 0
-    child_count: int | None = 0
 
 
 class MailboxAssessor:
@@ -38,7 +25,7 @@ class MailboxAssessor:
 
     Example:
         >>> report = MailboxAssessor(client.me).assess()
-        >>> print(report.scan_reports["MailFolders"].to_csv())
+        >>> print(report.scan_report(MailboxFolderScan).to_csv())
     """
 
     def __init__(self, user, options: OutlookOptions | None = None) -> None:
@@ -49,10 +36,8 @@ class MailboxAssessor:
 
     def assess(self, progress=None) -> AssessmentReport:
         """Scan the user's mail-folder tree (eager, Graph reads only)."""
-        report = AssessmentReport()
-        report.scan_id = str(uuid.uuid4())
-        active = outlook_scan_pairs(self._options)
-        folder_scans = [scanner for definition, scanner in active if definition.container is ScanContainer.MAIL_FOLDER]
+        runner = ScanRunner(outlook_scan_pairs(self._options))
+        report = runner.report
 
         def _walk(folders, parent_path: str) -> None:
             for folder in folders:
@@ -60,19 +45,17 @@ class MailboxAssessor:
                 path = f"{parent_path}/{name}" if parent_path else name
                 folder_data = MailFolderData(
                     path=path,
-                    item_count=_to_int(folder.total_item_count),
-                    unread_count=_to_int(folder.unread_item_count),
-                    child_count=_to_int(folder.child_folder_count),
+                    item_count=coerce_int(folder.total_item_count),
+                    unread_count=coerce_int(folder.unread_item_count),
+                    child_count=coerce_int(folder.child_folder_count),
                 )
                 self.folder_count += 1
                 self.message_count += folder_data.item_count or 0
-                target = ScanTarget(ScanContainer.MAIL_FOLDER, folder_data, path)
-                for scanner in folder_scans:
-                    scanner.run(target, report)
+                runner.dispatch(ScanContainer.MAIL_FOLDER, folder_data, path)
                 try:
                     children = folder.child_folders.select(_FOLDER_COLUMNS).get().execute_query()
                 except Exception as e:  # noqa: BLE001 — unreadable subtree is a warning, not fatal
-                    report.issues.append(AssessmentIssue("warning", "access", path, f"folder scan skipped — {e}"))
+                    runner.flag_access(path, e)
                     continue
                 if children:
                     _walk(children, path)
@@ -80,25 +63,11 @@ class MailboxAssessor:
         try:
             root_folders = self._user.mail_folders.select(_FOLDER_COLUMNS).get().execute_query()
         except Exception as e:  # noqa: BLE001
-            report.issues.append(AssessmentIssue("warning", "access", "mailbox", f"mailbox scan skipped — {e}"))
+            runner.flag_access("mailbox", e)
             root_folders = []
 
         if root_folders:
             _walk(root_folders, "")
 
-        for definition, scanner in active:
-            if scanner.records:
-                report._scan_reports[scanner.scan_name] = ScanReport(
-                    name=scanner.scan_name,
-                    container=definition.container,
-                    columns=scanner.columns,
-                    records=scanner.records,
-                )
+        runner.collect()
         return report
-
-
-def _to_int(value) -> int | None:
-    try:
-        return int(value) if value is not None else None
-    except (TypeError, ValueError):
-        return None

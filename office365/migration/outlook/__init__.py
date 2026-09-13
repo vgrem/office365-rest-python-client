@@ -7,10 +7,11 @@ scanners (e.g. the ``MailFolders`` folder inventory).
 
 from office365.migration.outlook.assessor import MailboxAssessor
 from office365.migration.outlook.registry import OUTLOOK_SCANS, outlook_scan_pairs
-from office365.migration.outlook.scanner import MailboxFolderRecord, MailboxFolderScan, OutlookOptions
+from office365.migration.outlook.scanner import MailboxFolderRecord, MailboxFolderScan, MailFolderData, OutlookOptions
 
 __all__ = [
     "OUTLOOK_SCANS",
+    "MailFolderData",
     "MailboxAssessor",
     "MailboxFolderRecord",
     "MailboxFolderScan",

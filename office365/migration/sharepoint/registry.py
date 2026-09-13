@@ -22,12 +22,7 @@ SHAREPOINT_SCANS: list[ScanDefinition] = [
     ScanDefinition(name="paths", scanner=PathScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="files", scanner=FileScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="permissions", scanner=PermissionScanner, container=ScanContainer.ITEMS),
-    ScanDefinition(
-        name="LargeSites",
-        scanner=LargeSitesScanner,
-        container=ScanContainer.SITE,
-        properties={"large_site_threshold_gb": 500.0},
-    ),
+    ScanDefinition(name="LargeSites", scanner=LargeSitesScanner, container=ScanContainer.SITE),
     ScanDefinition(
         name="LockedSites",
         scanner=SiteLockedScanner,
@@ -51,8 +46,3 @@ def sharepoint_scan_pairs(
 ) -> list[tuple[ScanDefinition, BaseScanner]]:
     """The enabled SharePoint ``(definition, scanner)`` pairs, in registry order."""
     return scan_pairs(SHAREPOINT_SCANS, options, tenant_scope)
-
-
-def enabled_scans(options: AssessmentOptions | None = None) -> list[BaseScanner]:
-    """Instantiate the enabled SharePoint scans (for callers that don't need the definition)."""
-    return [scanner for _, scanner in sharepoint_scan_pairs(options, tenant_scope=True)]

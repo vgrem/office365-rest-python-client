@@ -59,8 +59,8 @@ class MigrationServerJob:
         self,
         job_id: str,
         status_fn: Callable[[str], tuple[str, int, int | None]],
-        interval: int = 5,
-        timeout: int = 1800,
+        interval: float = 5,
+        timeout: float = 1800,
         progress: Callable[["Progress"], None] | None = None,
     ) -> str:
         """Poll a job until it reaches a terminal status.
@@ -79,7 +79,7 @@ class MigrationServerJob:
         Raises:
             TimeoutError: When the job doesn't finish within ``timeout`` seconds.
         """
-        elapsed = 0
+        elapsed = 0.0
         while elapsed < timeout:
             status, done, total = status_fn(job_id)
             emit_progress(progress, done=done, total=total, stage="migrating")

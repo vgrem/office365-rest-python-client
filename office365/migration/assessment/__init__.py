@@ -7,6 +7,7 @@ Product-specific scans live in the product packages
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.registry import ScanDefinition, scan_pairs
 from office365.migration.assessment.report import AssessmentReport, ScanReport
+from office365.migration.assessment.runner import ScanRunner
 from office365.migration.assessment.scanners import (
     AssessmentOptions,
     BaseScanner,
@@ -20,6 +21,7 @@ __all__ = [
     "ScanContainer",
     "ScanDefinition",
     "ScanReport",
+    "ScanRunner",
     "ScanTarget",
     "scan_pairs",
 ]

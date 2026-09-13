@@ -14,20 +14,20 @@ method, :meth:`BaseScanner.run`::
 
     print(report.summary())
     print(report.blockers)
-    print(report.scan_reports["LargeSites"].records)
+    print(report.scan_report(LargeSitesScanner).records)
 """
 
 from __future__ import annotations
 
-import uuid
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from office365.migration._util import emit_progress
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
-from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scanners import AssessmentOptions, ScanTarget
+from office365.migration.assessment.report import AssessmentReport
+from office365.migration.assessment.runner import ScanRunner
+from office365.migration.assessment.scanners import AssessmentOptions
 from office365.migration.sharepoint.adapters import is_taxonomy_validation
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
@@ -38,11 +38,6 @@ if TYPE_CHECKING:
     from office365.runtime.operations import Progress
     from office365.sharepoint.sites.site import Site
     from office365.sharepoint.webs.web import Web
-
-
-def _scan_for(active, container: ScanContainer, items_load: str | None = None):
-    """Scans registered for a container (optionally an items projection)."""
-    return [s for d, s in active if d.container is container and (items_load is None or s.items_load == items_load)]
 
 
 class MigrationAssessor(Entity):
@@ -75,18 +70,6 @@ class MigrationAssessor(Entity):
         self._options.include_site_admins = True
         return self
 
-    def include_versions(self) -> "MigrationAssessor":
-        """Include version history in size estimates."""
-        return self
-
-    def skip_path_checks(self) -> "MigrationAssessor":
-        self._options.disabled_scans.add("paths")
-        return self
-
-    def skip_field_checks(self) -> "MigrationAssessor":
-        self._options.disabled_scans.add("fields")
-        return self
-
     def enable_scan(self, name: str) -> "MigrationAssessor":
         """Re-enable a scan disabled in options (SMAT ScanDef ``Enabled``)."""
         self._options.disabled_scans.discard(name)
@@ -116,29 +99,16 @@ class MigrationAssessor(Entity):
               web's list count, ``items`` = the list just scanned).
             recursive: Whether to scan subsites (default True).
         """
+        return_type = ClientResult[AssessmentReport](self.context, AssessmentReport.new())
+        runner = ScanRunner(sharepoint_scan_pairs(self._options), report=return_type.value)
+        report = runner.report
 
-        return_type = ClientResult[AssessmentReport](self.context, AssessmentReport())
-        report = return_type.value
-        report.scan_id = str(uuid.uuid4())
-
-        active = sharepoint_scan_pairs(self._options)
-        site_scans = _scan_for(active, ScanContainer.SITE)
-        fields_scans = _scan_for(active, ScanContainer.FIELDS)
-        items_scans = _scan_for(active, ScanContainer.ITEMS, "default")
-        unique_items_scans = _scan_for(active, ScanContainer.ITEMS, "unique")
-
-        # SITE scans aggregate the site collection -> summary drives the loads
-        needs_site = bool(site_scans)
+        needs_site = bool(runner.scanners(ScanContainer.SITE))
         needs_list_metadata = needs_site  # item counts / last-modified for the summary
         summary = SiteScanSummary()
 
-        def _dispatch(container: ScanContainer, scans, entity, location: str) -> None:
-            target = ScanTarget(container=container, entity=entity, location=location)
-            for scan in scans:
-                scan.run(target, report)
-
         def _flag_failure(location: str, error: Exception) -> None:
-            self._flag_access(report, location, error)
+            self._flag_access(runner, location, error)
 
         def _assess_web(web) -> None:
             """Queue the list scan for one web (root or subsite)."""
@@ -150,15 +120,11 @@ class MigrationAssessor(Entity):
                 lambda lists: self._scan_web_lists(
                     lists,
                     prefix=prefix,
-                    report=report,
+                    runner=runner,
                     summary=summary,
-                    fields_scans=fields_scans,
-                    items_scans=items_scans,
-                    unique_items_scans=unique_items_scans,
                     needs_list_metadata=needs_list_metadata,
                     progress=progress,
                     flag_failure=_flag_failure,
-                    dispatch=_dispatch,
                 )
             )
 
@@ -177,9 +143,7 @@ class MigrationAssessor(Entity):
                 .expand(["Owner"])
                 .get()
                 .on_error(lambda e: _flag_failure("web", e))
-                .after_execute(
-                    lambda site: self._on_site_loaded(site, report, summary, site_scans, needs_site),
-                )
+                .after_execute(lambda site: self._on_site_loaded(site, summary, needs_site))
             )
 
         _assess_web(self._web)
@@ -195,29 +159,13 @@ class MigrationAssessor(Entity):
         # Once the deferred batch has settled, SITE scans assemble their rows
         # from the aggregated summary — the report triggers this lazily.
         def _finalize() -> None:
-            for definition, scanner in active:
-                if definition.container is ScanContainer.SITE:
-                    scanner.run(ScanTarget(ScanContainer.SITE, summary, summary.site_url or ""), report)
-            for definition, scanner in active:
-                if scanner.records:
-                    report._scan_reports[scanner.scan_name] = ScanReport(
-                        name=scanner.scan_name,
-                        container=definition.container,
-                        columns=scanner.columns,
-                        records=scanner.records,
-                    )
+            runner.run_site_scans(summary)
+            runner.collect()
 
         report.attach_finalizer(_finalize)
         return return_type
 
-    def _on_site_loaded(
-        self,
-        site: Site,
-        report: AssessmentReport,
-        summary: SiteScanSummary,
-        site_scans,
-        needs_site: bool,
-    ) -> None:
+    def _on_site_loaded(self, site: Site, summary: SiteScanSummary, needs_site: bool) -> None:
         """Site collection metadata is ready — populate the summary for SITE scans."""
         summary.site_id = site.id
         summary.site_url = site.url
@@ -245,13 +193,15 @@ class MigrationAssessor(Entity):
         if logins:
             summary.admins = "; ".join(logins)
 
-    def _flag_access(self, report: AssessmentReport, location: str, error: Exception) -> None:
+    @staticmethod
+    def _flag_access(runner: ScanRunner, location: str, error: Exception) -> None:
         """Record a warning for an area that could not be read (skipped, not fatal).
 
         A Managed Metadata column pointing to a deleted term set fails the list
         read with ``SPFieldValidationException`` — surface it as a dedicated
         ``taxonomy`` issue so the report names the cause and the fix.
         """
+        report = runner.report
         if location.endswith("web/webs"):
             report.webs_skipped = True
         elif location.endswith("web/lists"):
@@ -268,23 +218,20 @@ class MigrationAssessor(Entity):
                 )
             )
             return
-        report.issues.append(AssessmentIssue("warning", "access", location, f"skipped — {error}"))
+        runner.flag_access(location, error)
 
     def _scan_web_lists(
         self,
         lists,
         prefix: str,
-        report: AssessmentReport,
+        runner: ScanRunner,
         summary: SiteScanSummary,
-        fields_scans,
-        items_scans,
-        unique_items_scans,
         needs_list_metadata: bool,
         progress: Callable[["Progress"], None] | None,
         flag_failure: Callable,
-        dispatch,
     ) -> None:
         """Scan one web's lists — load each list's sub-resources and dispatch by container."""
+        report = runner.report
         report.total_lists += len(lists)
         if needs_list_metadata:
             for lst in lists:
@@ -296,6 +243,10 @@ class MigrationAssessor(Entity):
                     summary.last_modified = modified
         total = len(lists)
         completed = {"count": 0}
+
+        has_fields = bool(runner.scanners(ScanContainer.FIELDS))
+        has_items = bool(runner.scanners(ScanContainer.ITEMS, "default"))
+        has_unique_items = bool(runner.scanners(ScanContainer.ITEMS, "unique"))
 
         def _progress(lst) -> None:
             completed["count"] += 1
@@ -317,25 +268,25 @@ class MigrationAssessor(Entity):
                 flag_failure(loc, e)
                 done(lst)
 
-            if fields_scans:
+            if has_fields:
                 pending["count"] += 1
                 lst.fields.get().on_error(_fail).after_execute(
                     lambda col, lst=lst, loc=location, done=_scan_done: (
-                        dispatch(ScanContainer.FIELDS, fields_scans, col, loc),
+                        runner.dispatch(ScanContainer.FIELDS, col, loc),
                         done(lst),
                     )
                 )
-            if items_scans:
+            if has_items:
                 pending["count"] += 1
                 lst.items.select(["FileRef", "FileLeafRef", "File/Length"]).expand(["File"]).get().on_error(
                     _fail
                 ).after_execute(
                     lambda col, lst=lst, loc=location, done=_scan_done: (
-                        self._scan_items(items_scans, col, report, loc, dispatch),
+                        self._scan_items(runner, col, loc),
                         done(lst),
                     )
                 )
-            if unique_items_scans:
+            if has_unique_items:
                 pending["count"] += 1
                 (
                     lst.items.select(["HasUniqueRoleAssignments", "FileRef"])
@@ -343,7 +294,7 @@ class MigrationAssessor(Entity):
                     .on_error(_fail)
                     .after_execute(
                         lambda col, lst=lst, loc=location, done=_scan_done: (
-                            dispatch(ScanContainer.ITEMS, unique_items_scans, col, loc),
+                            runner.dispatch(ScanContainer.ITEMS, col, loc, items_load="unique"),
                             done(lst),
                         )
                     )
@@ -352,9 +303,10 @@ class MigrationAssessor(Entity):
                 _progress(lst)
 
     @staticmethod
-    def _scan_items(items_scans, items, report: AssessmentReport, location: str, dispatch) -> None:
+    def _scan_items(runner: ScanRunner, items, location: str) -> None:
         """Accumulate the file inventory, then run the item-level scanners."""
+        report = runner.report
         for item in items:
             report.total_files += 1
             report.total_size_gb += (item.file.length or 0) / 1024 / 1024 / 1024
-        dispatch(ScanContainer.ITEMS, items_scans, items, location)
+        runner.dispatch(ScanContainer.ITEMS, items, location, items_load="default")

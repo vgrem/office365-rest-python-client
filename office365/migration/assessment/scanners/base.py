@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 
+PayloadT = TypeVar("PayloadT")
+RecordT = TypeVar("RecordT")
+
 
 @dataclass(frozen=True)
-class ScanTarget:
+class ScanTarget(Generic[PayloadT]):
     """A loaded payload handed to a scan — its container, data, and location.
 
     ``location`` is derived once by the walker (no hand-built paths in scans).
@@ -19,7 +22,7 @@ class ScanTarget:
     """
 
     container: ScanContainer
-    entity: Any
+    entity: PayloadT
     location: str = ""
 
 
@@ -81,7 +84,7 @@ class AssessmentOptions:
     )
 
 
-class BaseScanner:
+class BaseScanner(Generic[RecordT]):
     """A focused pre-migration check scoped to a container.
 
     Scanners implement a single :meth:`run` over the data the walker loads for
@@ -102,11 +105,11 @@ class BaseScanner:
     # Typed report row for scans that emit SMAT-style detail records. Its
     # dataclass fields ARE the report columns (SMAT headers), so ``columns``
     # and the CSV/JSON export stay trivial.
-    record_type: type | None = None
+    record_type: type[RecordT] | None = None
 
     def __init__(self, options: AssessmentOptions | None = None) -> None:
         self.options = options or AssessmentOptions()
-        self.records: list[Any] = []
+        self.records: list[RecordT] = []
 
     @property
     def columns(self) -> tuple[str, ...]:
@@ -124,7 +127,7 @@ class BaseScanner:
     ) -> None:
         report.issues.append(AssessmentIssue(severity, self.category, location, message, suggestion))
 
-    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+    def run(self, target: ScanTarget[Any], report: AssessmentReport) -> None:
         """Inspect a loaded container payload (target.entity) and flag / record."""
         raise NotImplementedError
 

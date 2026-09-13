@@ -3,17 +3,23 @@ from __future__ import annotations
 import csv
 import io
 import json
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Callable
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, cast
 
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.runtime.client_value import ClientValue
 
+if TYPE_CHECKING:
+    from office365.migration.assessment.scanners.base import BaseScanner
+
+RecordT = TypeVar("RecordT")
+
 
 @dataclass
-class ScanReport:
+class ScanReport(Generic[RecordT]):
     """SMAT-style detail report produced by one scan (``<Scan>-detail.csv``).
 
     ``records`` are typed values (each scan declares its own record type, whose
@@ -24,7 +30,7 @@ class ScanReport:
     name: str
     container: ScanContainer
     columns: tuple[str, ...]
-    records: list[ClientValue]
+    records: list[RecordT]
 
     def to_records(self) -> list[dict]:
         """Project rows to plain dicts keyed by the SMAT columns (``None`` -> ``n/a``)."""
@@ -73,12 +79,17 @@ class AssessmentReport(ClientValue):
     issues: list[AssessmentIssue] = field(default_factory=list)
 
     # Per-scan SMAT-style detail reports, keyed by scan name (finalized on read)
-    _scan_reports: dict[str, ScanReport] = field(default_factory=dict, init=False, repr=False)
+    _scan_reports: dict[str, ScanReport[Any]] = field(default_factory=dict, init=False, repr=False)
 
     # Lazy finalize — scans assemble their detail rows once the deferred batch
     # has settled (post ``execute_query``); the first consumer triggers it.
     _finalizer: Callable[[], None] | None = field(default=None, init=False, repr=False)
     _finalized: bool = field(default=False, init=False, repr=False)
+
+    @classmethod
+    def new(cls) -> "AssessmentReport":
+        """A fresh report with a unique SMAT ScanID."""
+        return cls(scan_id=str(uuid.uuid4()))
 
     def attach_finalizer(self, fn: Callable[[], None]) -> None:
         """Register the one-time hook that assembles per-scan detail reports."""
@@ -90,10 +101,29 @@ class AssessmentReport(ClientValue):
                 self._finalizer()
             self._finalized = True
 
+    def add_scan_report(self, scanner: "BaseScanner[Any]", container: ScanContainer) -> None:
+        """Store a scan's typed detail rows (no-op when the scan produced none)."""
+        if not scanner.records:
+            return
+        self._scan_reports[scanner.scan_name] = ScanReport(
+            name=scanner.scan_name,
+            container=container,
+            columns=scanner.columns,
+            records=scanner.records,
+        )
+
+    def add_access_issue(self, location: str, error: Exception) -> None:
+        """Record a warning for an area that could not be read (skipped, not fatal)."""
+        self.issues.append(AssessmentIssue("warning", "access", location, f"skipped — {error}"))
+
     @property
-    def scan_reports(self) -> dict[str, ScanReport]:
+    def scan_reports(self) -> dict[str, ScanReport[Any]]:
         self._ensure_finalized()
         return self._scan_reports
+
+    def scan_report(self, scanner: type["BaseScanner[RecordT]"]) -> ScanReport[RecordT]:
+        """Typed access to a scan's detail report by its scanner class."""
+        return cast(ScanReport[RecordT], self.scan_reports[scanner.scan_name])
 
     @property
     def blockers(self) -> list[AssessmentIssue]:

@@ -14,16 +14,15 @@ Requires SharePoint admin access (``SPO.Tenant`` read). Use
 
 from __future__ import annotations
 
-import uuid
 from collections.abc import Callable
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from office365.migration._util import emit_progress
+from office365.migration._util import coerce_int, emit_progress
 from office365.migration.assessment.containers import ScanContainer
-from office365.migration.assessment.issue import AssessmentIssue
-from office365.migration.assessment.report import AssessmentReport, ScanReport
-from office365.migration.assessment.scanners import AssessmentOptions, ScanTarget
+from office365.migration.assessment.report import AssessmentReport
+from office365.migration.assessment.runner import ScanRunner
+from office365.migration.assessment.scanners import AssessmentOptions
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 from office365.runtime.client_result import ClientResult
@@ -32,13 +31,6 @@ from office365.sharepoint.entity import Entity
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
     from office365.sharepoint.tenant.administration.tenant import Tenant
-
-
-def _coerce_int(value) -> int | None:
-    try:
-        return int(value) if value is not None else None
-    except (TypeError, ValueError):
-        return None
 
 
 def _clean_modified(value) -> datetime | None:
@@ -67,15 +59,9 @@ class MigrationTenantAssessor(Entity):
         Args:
             progress: Optional hook fired per site collection as it is checked.
         """
-        return_type = ClientResult[AssessmentReport](self.context, AssessmentReport())
-        report = return_type.value
-        report.scan_id = str(uuid.uuid4())
-
-        site_scans = [
-            scanner
-            for definition, scanner in sharepoint_scan_pairs(self._options, tenant_scope=True)
-            if definition.container is ScanContainer.SITE
-        ]
+        return_type = ClientResult[AssessmentReport](self.context, AssessmentReport.new())
+        runner = ScanRunner(sharepoint_scan_pairs(self._options, tenant_scope=True), report=return_type.value)
+        report = runner.report
         done = {"count": 0}
 
         def _progress() -> None:
@@ -91,34 +77,17 @@ class MigrationTenantAssessor(Entity):
                     site_url=site.url,
                     owner=site.owner_login_name,
                     storage_bytes=int(storage) if storage is not None else None,
-                    web_count=_coerce_int(site.webs_count) or 0,
+                    web_count=coerce_int(site.webs_count) or 0,
                     last_modified=_clean_modified(site.last_content_modified_date),
                     lock_state=site.lock_state,
                     report_impacted_only=True,
                 )
-                target = ScanTarget(ScanContainer.SITE, summary, site.url or "")
-                for scan in site_scans:
-                    scan.run(target, report)
+                runner.dispatch(ScanContainer.SITE, summary, site.url or "")
                 _progress()
 
-        def _fail(e: Exception) -> None:
-            report.issues.append(AssessmentIssue("warning", "access", "tenant", f"skipped — {e}"))
-
         self._tenant.get_site_properties_from_sharepoint_by_filters("", None, include_detail=True).on_error(
-            _fail
+            lambda e: runner.flag_access("tenant", e)
         ).after_execute(_on_site_properties)
 
-        def _finalize() -> None:
-            for scan in site_scans:
-                if not scan.records:
-                    continue
-                scan.records.sort(key=lambda r: getattr(r, "SizeInGB", 0) or 0, reverse=True)
-                report._scan_reports[scan.scan_name] = ScanReport(
-                    name=scan.scan_name,
-                    container=ScanContainer.SITE,
-                    columns=scan.columns,
-                    records=scan.records,
-                )
-
-        report.attach_finalizer(_finalize)
+        report.attach_finalizer(runner.collect)
         return return_type

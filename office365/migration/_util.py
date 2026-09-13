@@ -43,6 +43,14 @@ def write_csv_json(dir_: str | Path, stem: str, records: list[dict], columns: li
     return [csv_path, json_path]
 
 
+def coerce_int(value) -> int | None:
+    """Best-effort ``int`` conversion (``None`` for unset/invalid values)."""
+    try:
+        return int(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 def utc_now_iso() -> str:
     """Current UTC time as an ISO-8601 string (second precision)."""
     return datetime.now(timezone.utc).isoformat(timespec="seconds")

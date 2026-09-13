@@ -12,27 +12,27 @@ from dataclasses import dataclass
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
-from office365.runtime.client_value import ClientValue
+from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 
 _LOCKED_STATES = {"NoAccess", "Locked"}
 
 
 @dataclass
-class LockedSitesRecord(ClientValue):
+class LockedSitesRecord:
     """One row of the SMAT ``LockedSites-detail`` report."""
 
     URL: str | None = None
     ScanID: str | None = None
 
 
-class SiteLockedScanner(BaseScanner):
+class SiteLockedScanner(BaseScanner[LockedSitesRecord]):
     """SITE-container scan: reports site collections configured as No Access (locked)."""
 
     category = "site"
     scan_name = "LockedSites"
     record_type = LockedSitesRecord
 
-    def run(self, target: ScanTarget, report: AssessmentReport) -> None:
-        summary = target.entity  # per-site summary (SiteProperties-derived)
+    def run(self, target: ScanTarget[SiteScanSummary], report: AssessmentReport) -> None:
+        summary = target.entity
         if summary.lock_state in _LOCKED_STATES:
             self.records.append(LockedSitesRecord(URL=summary.site_url, ScanID=report.scan_id or None))
