@@ -6,11 +6,8 @@ from xml.etree.ElementTree import Element
 from office365.runtime.odata.member import MemberInformation
 from office365.runtime.odata.model import ODataModel
 from office365.runtime.odata.property import PropertyInformation
+from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
-
-
-def _normalize_class_name(name: str) -> str:
-    return name[0].upper() + name[1:]
 
 
 class ODataReader(ABC):
@@ -24,6 +21,18 @@ class ODataReader(ABC):
     @abstractmethod
     def xml_namespaces(self) -> Dict[str, str]:
         """XML namespaces for the specific OData version"""
+
+    @staticmethod
+    def parse_parameters(node: Element, namespaces: Dict[str, str]) -> list:
+        """Extracts ``<Parameter>`` children into plain dicts."""
+        return [
+            {
+                "Name": param.get("Name"),
+                "Type": param.get("Type"),
+                "Nullable": param.get("Nullable") != "false",
+            }
+            for param in node.findall("xmlns:Parameter", namespaces)
+        ]
 
     def format_file(self):
         import xml.dom.minidom
@@ -48,12 +57,18 @@ class ODataReader(ABC):
                     type_schema = self.process_type_node(type_node, schema_node, base_type)
                     model.add_type(type_schema)
 
+        self.process_operations(model)
+
+    @abstractmethod
+    def process_operations(self, model: ODataModel) -> None:
+        """Parses operations (functions/actions) and attaches them to their binding types."""
+
     def process_type_node(self, type_node: Element, schema_node: Element, base_type: str) -> TypeInformation:
         type_schema = TypeInformation()
         type_name = type_node.get("Name")
         if type_name is None:
             raise ValueError("Type node missing 'Name' attribute")
-        type_schema.FullName = f"{schema_node.attrib['Namespace']}.{_normalize_class_name(type_name)}"
+        type_schema.FullName = f"{schema_node.attrib['Namespace']}.{ODataType.normalize_class_name(type_name)}"
         type_schema.BaseTypeFullName = base_type
         type_schema.IsValueObject = base_type == "EntityType"
 

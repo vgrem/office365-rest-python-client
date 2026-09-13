@@ -4,8 +4,11 @@ import ast
 import inspect
 from typing import TYPE_CHECKING, ClassVar
 
+from generator.builders import type_mapping
+
 if TYPE_CHECKING:
     from generator.builders.property import PropertyBuilder
+    from generator.builders.type_resolver import ClientTypeResolver
 
 
 class TypeReferenceCollector:
@@ -27,6 +30,12 @@ class TypeReferenceCollector:
         "ResourcePath": "office365.runtime.paths.resource_path",
         "EntityCollection": "office365.entity_collection",
         "ClientValueCollection": "office365.runtime.client_value_collection",
+        "ClientResult": "office365.runtime.client_result",
+        "ServiceOperationQuery": "office365.runtime.queries.service_operation",
+        "FunctionQuery": "office365.runtime.queries.function",
+        "Self": "typing_extensions",
+        "ClientContext": "office365.sharepoint.client_context",
+        "GraphClient": "office365.graph_client",
     }
 
     OPTIONAL_TYPES: ClassVar[set[str]] = {
@@ -42,8 +51,8 @@ class TypeReferenceCollector:
         "datetime",
     }
 
-    def __init__(self, modules: tuple[str, ...]) -> None:
-        self._modules = modules
+    def __init__(self, resolver: "ClientTypeResolver") -> None:
+        self._resolver = resolver
         self._entries: dict[str, str] = {}
         self._needs_dataclass = False
 
@@ -63,7 +72,7 @@ class TypeReferenceCollector:
         if prop.is_object_type:
             self._needs_dataclass = True
             return
-        cls = prop._client_type.resolve_client_type(self._modules)
+        cls = prop.resolve_client_type()
         if cls is not None:
             mod = inspect.getmodule(cls)
             if mod is not None:
@@ -78,6 +87,37 @@ class TypeReferenceCollector:
                 self._entries["ClientValueCollection"] = self.KNOWN["ClientValueCollection"]
             else:
                 self._entries["EntityCollection"] = self.KNOWN["EntityCollection"]
+
+    def add_method(self, method, context_type: str = "ClientContext") -> None:
+        """Track imports required by a generated operation method."""
+        schema = method.schema
+        if schema.IsStatic and schema.ReturnTypeFullName:
+            self.add(context_type)
+        self.add("FunctionQuery" if schema.Kind == "function" else "ServiceOperationQuery")
+        if schema.ReturnTypeFullName:
+            if method.is_primitive or method.is_collection:
+                self.add("ClientResult")
+            self._add_python_type(method.client_type_name)
+        elif not schema.IsStatic:
+            self.add("Self")
+        for param in schema.Parameters or []:
+            type_name = param.get("Type")
+            if type_name:
+                self._add_python_type(type_mapping.client_type_name(str(type_name)))
+
+    def _add_python_type(self, type_name: str) -> None:
+        """Add a Python type name (resolving custom types to their modules)."""
+        if "[" in type_name and type_name.endswith("]"):
+            self._add_python_type(type_name.split("[", 1)[1][:-1])
+        base_name = type_name.split("[")[0]
+        self.add(base_name)
+        if base_name in self.KNOWN or base_name in self.OPTIONAL_TYPES:
+            return
+        cls = self._resolver.resolve(base_name)
+        if cls is not None:
+            mod = inspect.getmodule(cls)
+            if mod is not None:
+                self._entries[base_name] = mod.__name__
 
     def build(self) -> list[ast.ImportFrom]:
         """Generate sorted, deduplicated import statements."""

@@ -1,0 +1,78 @@
+"""Offline tests for OData type-name formatting and class resolution (codegen side)."""
+
+from __future__ import annotations
+
+from generator.builders import type_mapping
+from generator.builders.collector import TypeReferenceCollector
+from generator.builders.property import PropertyBuilder
+from generator.builders.type_resolver import ClientTypeResolver
+from office365.runtime.odata.property import PropertyInformation
+from office365.runtime.odata.type import ODataType
+
+
+def test_primitive_type_name_formatting():
+    assert type_mapping.client_type_name("Edm.String") == "str"
+    assert type_mapping.client_type_name("Edm.Int32") == "int"
+    assert type_mapping.client_type_name("Edm.Guid") == "UUID"
+    assert type_mapping.client_type_name("Edm.DateTimeOffset") == "datetime"
+
+
+def test_collection_type_name_formatting():
+    assert type_mapping.client_type_name("Collection(Edm.String)") == "StringCollection"
+    assert type_mapping.client_type_name("Collection(Edm.Int32)") == "ClientValueCollection"
+    assert type_mapping.client_type_name("Collection(SP.Web)") == "ClientValueCollection[Web]"
+    assert type_mapping.client_type_name("Collection(SP.Web)", is_object_type=True) == "EntityCollection[Web]"
+
+
+def test_entity_and_complex_type_name_formatting():
+    assert type_mapping.client_type_name("SP.Web") == "Web"
+    assert type_mapping.client_type_name("microsoft.graph.user") == "User"
+    assert type_mapping.client_type_name(None) == ""
+
+
+def test_item_type_name_formatting():
+    assert type_mapping.item_client_type_name("Collection(SP.Web)") == "Web"
+    assert type_mapping.item_client_type_name("SP.Web") == "Web"
+
+
+def test_primitive_and_collection_lookups():
+    assert type_mapping.is_primitive_name("Edm.Int32") is True
+    assert type_mapping.is_primitive_name("SP.Web") is False
+    assert type_mapping.primitive_type_for("Edm.Int32") is int
+    assert type_mapping.primitive_type_for("SP.Web") is None
+    assert type_mapping.is_collection("Collection(SP.Web)") is True
+    assert type_mapping.is_collection("SP.Web") is False
+
+
+def test_runtime_type_utility_is_pure():
+    for removed in ("client_type_name", "is_collection", "is_primitive_name", "primitive_type_for"):
+        assert not hasattr(ODataType, removed)
+    assert ODataType.is_collection_name("Collection(Edm.String)") is True
+    assert ODataType.normalize_type_name("microsoft.graph.user") == "microsoft.graph.User"
+    assert ODataType.resolve_type_name(str) == "Edm.String"
+
+
+def test_resolver_finds_generated_class_and_caches():
+    resolver = ClientTypeResolver(["office365.sharepoint"])
+    resolved = resolver.resolve("SP.Web")
+    assert resolved is not None
+    assert resolved.__name__ == "Web"
+    assert resolver.resolve("SP.Web") is resolved
+    assert resolver.resolve("SP.Unknown") is None
+    ClientTypeResolver.cache_clear()
+
+
+def test_property_builder_uses_injected_resolver():
+    resolver = ClientTypeResolver(["office365.sharepoint"])
+    prop = PropertyBuilder(PropertyInformation(Name="Web", TypeName="SP.Web"), resolver=resolver)
+    assert prop.client_type_name == "Web"
+    assert prop.resolve_client_type() is not None
+
+
+def test_collector_resolves_property_imports():
+    resolver = ClientTypeResolver(["office365.sharepoint"])
+    prop = PropertyBuilder(PropertyInformation(Name="Web", TypeName="SP.Web"), resolver=resolver)
+    collector = TypeReferenceCollector(resolver)
+    collector.add(prop.client_type_name)
+    collector.add_custom(prop)
+    assert collector._entries["Web"] == "office365.sharepoint.webs.web"

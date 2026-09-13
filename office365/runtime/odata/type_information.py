@@ -30,3 +30,8 @@ class TypeInformation:
     def add_member(self, schema: MemberInformation) -> Self:
         self.Members[schema.Name] = schema
         return self
+
+    def add_method(self, schema: MethodInformation) -> Self:
+        if schema.Name is not None:
+            self.Methods[schema.Name] = schema
+        return self

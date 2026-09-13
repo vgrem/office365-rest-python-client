@@ -1,26 +1,25 @@
 from __future__ import annotations
 
 import ast
-import builtins
-import keyword
-import re
 from _ast import Assign, Call, Constant
 from typing import TYPE_CHECKING, List, Optional
 
-from office365.runtime.odata.type import ODataType
+from generator.builders import type_mapping
+from generator.builders.naming import to_snake_case
 
 if TYPE_CHECKING:
     from office365.runtime.odata.property import PropertyInformation
 
     from generator.builders.template_context import TemplateContext
+    from generator.builders.type_resolver import ClientTypeResolver
 
 
 class PropertyBuilder:
-    def __init__(self, schema: PropertyInformation, status="detached"):
+    def __init__(self, schema: PropertyInformation, status="detached", resolver: Optional["ClientTypeResolver"] = None):
         self.schema = schema
         self.status = status
         self.docstring: Optional[str] = None
-        self._client_type: ODataType = ODataType(self.schema.TypeName, self.schema.IsNavigation or False)
+        self._resolver = resolver
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
         getter_node = template.build_get_property(self)
@@ -43,9 +42,9 @@ class PropertyBuilder:
 
     def build_default_value(self) -> Constant | Call:
         """Build default value"""
-        if self._client_type.is_collection:
+        if self.is_collection_type:
             base_name = self.client_type_name.split("[")[0]
-            if self._client_type.is_primitive_type:
+            if type_mapping.is_primitive_name(self.schema.TypeName):
                 return ast.Call(
                     func=ast.Name(id="field", ctx=ast.Load()),
                     args=[],
@@ -75,7 +74,7 @@ class PropertyBuilder:
                         )
                     ],
                 )
-        elif self._client_type.is_primitive_type:
+        elif type_mapping.is_primitive_name(self.schema.TypeName):
             if self.client_type_name == "datetime":
                 return ast.Call(
                     func=ast.Name(id="field", ctx=ast.Load()),
@@ -120,27 +119,26 @@ class PropertyBuilder:
             value=ast.Name(id=self.name, ctx=ast.Load()),
         )
 
+    def resolve_client_type(self):
+        """Resolves the property's OData type to its generated Python class."""
+        return self._resolver.resolve(self.schema.TypeName) if self._resolver is not None else None
+
     @property
     def name(self) -> str:
         """Convert CamelCase to snake_case"""
-        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", self.schema.Name)
-        snake_case = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
-
-        if keyword.iskeyword(snake_case) or hasattr(builtins, snake_case):
-            return snake_case + "_"
-        return snake_case
+        return to_snake_case(self.schema.Name)
 
     @property
     def client_type_name(self) -> str:
-        return str(self._client_type)
+        return type_mapping.client_type_name(self.schema.TypeName, self.is_object_type)
 
     @property
     def client_item_type_name(self) -> str:
-        return str(self._client_type.item_client_type)
+        return type_mapping.item_client_type_name(self.schema.TypeName, self.is_object_type)
 
     @property
     def is_collection_type(self) -> bool:
-        return self._client_type.is_collection
+        return type_mapping.is_collection(self.schema.TypeName)
 
     @property
     def is_object_type(self) -> bool:

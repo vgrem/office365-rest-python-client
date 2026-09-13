@@ -1,20 +1,22 @@
 import ast
 import inspect
 import os
-import re
 from _ast import Module
 from enum import Enum
 from os.path import abspath
 from typing import Dict, List, Optional
 
-from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
 from typing_extensions import Self
 
+from generator.builders import type_mapping
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.member import MemberBuilder
+from generator.builders.method import MethodBuilder
+from generator.builders.naming import to_snake_case
 from generator.builders.property import PropertyBuilder
 from generator.builders.template_context import TemplateContext
+from generator.builders.type_resolver import ClientTypeResolver
 from generator.documentation.baseservice import BaseDocumentationService
 
 
@@ -36,10 +38,11 @@ class TypeBuilder(ast.NodeTransformer):
         self._status: Optional[str] = None
         self._properties: List[PropertyBuilder] = []
         self._members: List[MemberBuilder] = []
+        self._methods: List[MethodBuilder] = []
         self._changes: List[str] = []
         self._docstring: Optional[str] = None
         self._entity_type_name_exists: bool = False
-        self._client_type: ODataType = ODataType(self._schema.FullName, self._schema.IsValueObject or False)
+        self._resolver = ClientTypeResolver((options or {}).get("modules", "").split(","))
 
     def visit_ClassDef(self, node: ast.ClassDef):
         if self._schema:
@@ -47,12 +50,19 @@ class TypeBuilder(ast.NodeTransformer):
 
         options = self._options or {}
         [
-            self._properties.append(PropertyBuilder(prop_schema))
+            self._properties.append(PropertyBuilder(prop_schema, resolver=self._resolver))
             for name, prop_schema in self._schema.Properties.items()
             if name not in options.get("ignored_properties", [])
         ]
 
         [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]
+
+        ignored_methods = set(options.get("ignored_methods", []))
+        self._methods = [
+            MethodBuilder(method_schema)
+            for method_name, method_schema in self._schema.Methods.items()
+            if method_name not in ignored_methods
+        ]
 
         if self._docs_service:
             self._docs_service.build_documentation(self)
@@ -67,6 +77,7 @@ class TypeBuilder(ast.NodeTransformer):
             self._build_object_properties(node)
 
         self._build_post(node)
+        self._build_methods(node)
 
         return node
 
@@ -90,6 +101,10 @@ class TypeBuilder(ast.NodeTransformer):
             matching_prop = next((prop for prop in self._properties if prop.name == node.name), None)
             if matching_prop:
                 matching_prop.status = "attached"
+        else:
+            matching_method = next((m for m in self._methods if m.name == node.name), None)
+            if matching_method:
+                matching_method.status = "attached"
 
         return self.generic_visit(node)
 
@@ -112,7 +127,6 @@ class TypeBuilder(ast.NodeTransformer):
         self._template = TemplateContext(
             self._options.get("template_path", self._options.get("templatepath", "")),
             self._schema,
-            modules=tuple(self._options.get("modules", "").split(",")),
         )
 
         if self.state == "attached":
@@ -133,8 +147,7 @@ class TypeBuilder(ast.NodeTransformer):
         """Build missing imports using TypeReferenceCollector."""
         assert self._template is not None
         assert self._options is not None
-        modules = tuple(self._options.get("modules", "").split(","))
-        collector = TypeReferenceCollector(modules)
+        collector = TypeReferenceCollector(self._resolver)
 
         for prop in self._properties:
             prop_type = prop.client_type_name
@@ -144,6 +157,10 @@ class TypeBuilder(ast.NodeTransformer):
             collector.add_custom(prop)
             if prop.is_object_type:
                 collector.add_object_type(prop)
+
+        context_type = self._options.get("context_type", "ClientContext")
+        for method in self._methods:
+            collector.add_method(method, context_type)
 
         imports = self._template.build_references(collector)
         existing_imports = [n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))]
@@ -234,8 +251,7 @@ class TypeBuilder(ast.NodeTransformer):
 
             # Resolve enum types to use first member as default instead of EnumType()
             if self._options and not prop.is_collection_type:
-                modules = tuple(self._options.get("modules", "").split(","))
-                resolved = prop._client_type.resolve_client_type(modules)
+                resolved = prop.resolve_client_type()
                 if resolved is not None and inspect.isclass(resolved) and issubclass(resolved, Enum):
                     members = list(resolved)
                     if members:
@@ -269,6 +285,19 @@ class TypeBuilder(ast.NodeTransformer):
                 for method in property_methods:
                     class_node.body.insert(insert_pos, method)
                     insert_pos += 1
+
+    def _build_methods(self, class_node: ast.ClassDef) -> None:
+        """Insert generated operation methods (functions/actions) that are missing."""
+        if not self._methods or self._options is None or self._options.get("generate_methods") != "true":
+            return
+
+        context_type = self._options.get("context_type", "ClientContext")
+        for method in self._methods:
+            if method.status == "attached":
+                continue
+            for node in method.build(context_type):
+                class_node.body.append(node)
+            self._changes.append(f"method: {method.name}")
 
     def _build_post(self, class_node: ast.ClassDef):
         """Remove pass, insert/replace type-level description, ensure entity_type_name."""
@@ -353,14 +382,13 @@ class TypeBuilder(ast.NodeTransformer):
     @staticmethod
     def _to_snake_case(name: str) -> str:
         """Convert PascalCase or UpperCamelCase to snake_case."""
-        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+        return to_snake_case(name, avoid_keywords=False)
 
     def _resolve_type(self) -> Dict[str, str]:
         type_info: Dict[str, str] = {}
 
         assert self._options is not None
-        cls = self._client_type.resolve_client_type(tuple(self._options["modules"].split(",")))
+        cls = self._resolver.resolve(self._schema.FullName)
         if cls is not None:
             type_info["state"] = "attached"
             type_info["file"] = inspect.getsourcefile(cls) or ""
@@ -433,7 +461,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     @property
     def client_type_name(self):
-        return str(self._client_type)
+        return type_mapping.client_type_name(self._schema.FullName, self._schema.IsValueObject or False)
 
     @property
     def properties(self) -> List[PropertyBuilder]:
