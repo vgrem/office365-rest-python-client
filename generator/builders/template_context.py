@@ -8,9 +8,9 @@ from enum import Enum
 from os.path import abspath
 from typing import cast
 
+from office365.runtime.odata.type import ODataType
 from office365.runtime.odata.type_information import TypeInformation
 
-from generator.builders import type_mapping
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.member import MemberBuilder
 from generator.builders.property import PropertyBuilder
@@ -92,7 +92,7 @@ class TemplateContext:
                         default_value = f"{prop_type_name}.{members[0].name}"
                 elif resolved is datetime.datetime:
                     default_value = "datetime.min"
-                elif not type_mapping.is_primitive_name(builder.schema.TypeName):
+                elif not ODataType.is_primitive_name(builder.schema.TypeName):
                     default_value = f"{prop_type_name}()"
 
         property_code = f'''

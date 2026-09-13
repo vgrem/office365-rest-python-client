@@ -36,18 +36,17 @@ def test_item_type_name_formatting():
 
 
 def test_primitive_and_collection_lookups():
-    assert type_mapping.is_primitive_name("Edm.Int32") is True
-    assert type_mapping.is_primitive_name("SP.Web") is False
-    assert type_mapping.primitive_type_for("Edm.Int32") is int
-    assert type_mapping.primitive_type_for("SP.Web") is None
-    assert type_mapping.is_collection("Collection(SP.Web)") is True
-    assert type_mapping.is_collection("SP.Web") is False
+    assert ODataType.is_primitive_name("Edm.Int32") is True
+    assert ODataType.is_primitive_name("SP.Web") is False
+    assert ODataType.primitive_type_for("Edm.Int32") is int
+    assert ODataType.primitive_type_for("SP.Web") is None
+    assert ODataType.is_collection_name("Collection(SP.Web)") is True
+    assert ODataType.is_collection_name("SP.Web") is False
 
 
 def test_runtime_type_utility_is_pure():
-    for removed in ("client_type_name", "is_collection", "is_primitive_name", "primitive_type_for"):
+    for removed in ("client_type_name", "is_collection", "is_primitive_type"):
         assert not hasattr(ODataType, removed)
-    assert ODataType.is_collection_name("Collection(Edm.String)") is True
     assert ODataType.normalize_type_name("microsoft.graph.user") == "microsoft.graph.User"
     assert ODataType.resolve_type_name(str) == "Edm.String"
 

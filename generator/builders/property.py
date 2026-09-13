@@ -4,6 +4,8 @@ import ast
 from _ast import Assign, Call, Constant
 from typing import TYPE_CHECKING, List, Optional
 
+from office365.runtime.odata.type import ODataType
+
 from generator.builders import type_mapping
 from generator.builders.naming import to_snake_case
 
@@ -44,7 +46,7 @@ class PropertyBuilder:
         """Build default value"""
         if self.is_collection_type:
             base_name = self.client_type_name.split("[")[0]
-            if type_mapping.is_primitive_name(self.schema.TypeName):
+            if ODataType.is_primitive_name(self.schema.TypeName):
                 return ast.Call(
                     func=ast.Name(id="field", ctx=ast.Load()),
                     args=[],
@@ -74,7 +76,7 @@ class PropertyBuilder:
                         )
                     ],
                 )
-        elif type_mapping.is_primitive_name(self.schema.TypeName):
+        elif ODataType.is_primitive_name(self.schema.TypeName):
             if self.client_type_name == "datetime":
                 return ast.Call(
                     func=ast.Name(id="field", ctx=ast.Load()),
@@ -138,7 +140,7 @@ class PropertyBuilder:
 
     @property
     def is_collection_type(self) -> bool:
-        return type_mapping.is_collection(self.schema.TypeName)
+        return ODataType.is_collection_name(self.schema.TypeName)
 
     @property
     def is_object_type(self) -> bool:

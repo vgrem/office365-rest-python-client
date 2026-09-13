@@ -5,6 +5,8 @@ import datetime
 import uuid
 from typing import TYPE_CHECKING, List, Optional
 
+from office365.runtime.odata.type import ODataType
+
 from generator.builders import type_mapping
 from generator.builders.naming import to_snake_case
 
@@ -28,7 +30,7 @@ _PRIMITIVE_DEFAULTS = {
 
 def _primitive_default(type_name: str | None) -> str:
     """Default expression for a primitive OData type (e.g. ``Edm.Int32`` -> ``int()``)."""
-    return _PRIMITIVE_DEFAULTS.get(type_mapping.primitive_type_for(type_name), "None")
+    return _PRIMITIVE_DEFAULTS.get(ODataType.primitive_type_for(type_name), "None")
 
 
 class MethodBuilder:
@@ -112,7 +114,7 @@ class MethodBuilder:
             collection_defaults = {"Edm.String": "StringCollection()", "Edm.Guid": "GuidCollection()"}
             default = collection_defaults.get(item_type)
             if default is None:
-                primitive = type_mapping.primitive_type_for(item_type)
+                primitive = ODataType.primitive_type_for(item_type)
                 default = (
                     f"ClientValueCollection({primitive.__name__})"
                     if primitive is not None
@@ -151,11 +153,11 @@ class MethodBuilder:
 
     @property
     def is_primitive(self) -> bool:
-        return type_mapping.is_primitive_name(self._return_type_name)
+        return ODataType.is_primitive_name(self._return_type_name)
 
     @property
     def is_collection(self) -> bool:
-        return type_mapping.is_collection(self._return_type_name)
+        return ODataType.is_collection_name(self._return_type_name)
 
     def _param_name(self, param: dict) -> str:
         return to_snake_case(param.get("Name") or "arg")
