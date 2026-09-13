@@ -1,8 +1,8 @@
 """
 Export Teams to a resumable archive via the unified MigrationJob.
 
-    python export_team.py --team <id> --output ./backup --files
-    python export_team.py --all --output ./backup
+    python migrate/export_team.py --team <id> --output ./backup --files
+    python migrate/export_team.py --all --output ./backup
 
 Archive layout: ``<team-id>/team.json``, ``messages.ndjson``, ``attachments/``
 and ``files/<channel>.zip`` (with ``--files``). Re-running resumes from the

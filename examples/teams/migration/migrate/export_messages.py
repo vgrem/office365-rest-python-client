@@ -1,10 +1,10 @@
 """
 Export messages for compliance/backup using the deferred collection adapters.
 
-    python export_messages.py --output ./messages --team <team-id>
-    python export_messages.py --output ./messages --user user@contoso.com
-    python export_messages.py --output ./messages --tenant
-    python export_messages.py --output ./messages --filter "createdDateTime gt 2024-01-01T00:00:00Z"
+    python migrate/export_messages.py --output ./messages --team <team-id>
+    python migrate/export_messages.py --output ./messages --user user@contoso.com
+    python migrate/export_messages.py --output ./messages --tenant
+    python migrate/export_messages.py --output ./messages --filter "createdDateTime gt 2024-01-01T00:00:00Z"
 
 Scope defaults to ``--user`` (the configured test user); pass ``--team`` for a
 team's channels or ``--tenant`` for tenant-wide channel messages.

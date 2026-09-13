@@ -10,7 +10,7 @@ SMAT's ScanDef.json); ``--disable-scan`` turns one off (its data is not
 collected), ``--only-scan`` runs just one.
 
 The assessment is the "scan" phase of the migration workflow — pair it with
-``MigrationJob`` (see ``migrate_files.py`` / ``export_list.py``) to
+``MigrationJob`` (see ``migrate/migrate_files.py`` / ``migrate/export_list.py``) to
 assess, then migrate, then verify.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/apis/migration-api-reference

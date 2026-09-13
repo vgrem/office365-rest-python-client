@@ -277,7 +277,7 @@ Assess a SharePoint site for migration readiness using the SharePoint Migration 
 ```python
 from office365.migration.sharepoint.assessor import MigrationAssessor
 
-report = MigrationAssessor(ctx.web).include_permissions().include_versions().assess().execute_query()
+report = MigrationAssessor(ctx.web).include_permissions().assess().execute_query()
 print(report.value.summary())
 ```
 

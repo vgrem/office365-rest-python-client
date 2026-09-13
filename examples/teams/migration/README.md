@@ -19,19 +19,19 @@ optionally channel files. Import is planned next.
 
 ```bash
 # One team (repeat --team for several), with files
-python export_team.py --team 00000000-0000-0000-0000-000000000000 --output ./backup --files
+python migrate/export_team.py --team 00000000-0000-0000-0000-000000000000 --output ./backup --files
 
 # Every team in the tenant
-python export_team.py --all --output ./backup
+python migrate/export_team.py --all --output ./backup
 
 # Resume an interrupted run
-python export_team.py --all --output ./backup --resume
+python migrate/export_team.py --all --output ./backup --resume
 
 # Compliance message export (deferred collection adapters)
-python export_messages.py --output ./messages --team <team-id>
-python export_messages.py --output ./messages --user user@contoso.com
-python export_messages.py --output ./messages --tenant
-python export_messages.py --output ./messages --filter "createdDateTime gt 2024-01-01T00:00:00Z"
+python migrate/export_messages.py --output ./messages --team <team-id>
+python migrate/export_messages.py --output ./messages --user user@contoso.com
+python migrate/export_messages.py --output ./messages --tenant
+python migrate/export_messages.py --output ./messages --filter "createdDateTime gt 2024-01-01T00:00:00Z"
 ```
 
 ## Permissions (application)

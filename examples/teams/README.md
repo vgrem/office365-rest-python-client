@@ -31,8 +31,8 @@ python export_teams.py --output /tmp
 
 | Script | What it does |
 |---|---|
-| [`migration/export_team.py`](./migration/export_team.py) | Resumable team archive via `MigrationJob` adapters: structure, members, channels, tabs, apps, messages, inline images (`--files` adds channel files) |
-| [`migration/export_messages.py`](./migration/export_messages.py) | Compliance message export via deferred collection adapters (`to_ndjson` + `download_hosted_contents`) |
+| [`migration/migrate/export_team.py`](./migration/migrate/export_team.py) | Resumable team archive via `MigrationJob` adapters: structure, members, channels, tabs, apps, messages, inline images (`--files` adds channel files) |
+| [`migration/migrate/export_messages.py`](./migration/migrate/export_messages.py) | Compliance message export via deferred collection adapters (`to_ndjson` + `download_hosted_contents`) |
 
 See [`migration/README.md`](./migration/README.md) for the archive layout and permissions.
 

@@ -5,7 +5,16 @@ checkpointed migration layer built on the client and the data pipeline. Works
 **into** SharePoint, **from** it, and between the filesystem / records —
 directional (export/import).
 
-Workflow: **scan/assess -> create a task -> monitor and report**.
+The examples mirror the [SharePoint Migration Tool (SPMT) workflow](https://learn.microsoft.com/en-us/sharepointmigration/introducing-the-sharepoint-migration-tool):
+
+**Step 2 — Scan and assess → Step 3 — Create a migration task → Step 4 — Monitor and report**
+
+```
+migration/
+  assess/          # Step 2 — scan and assess (+ reports/ for the SMAT scan reports)
+  migrate/         # Step 3 — create and run a migration task
+  monitor/         # Step 4 — monitor and report
+```
 
 ---
 
@@ -14,32 +23,20 @@ Workflow: **scan/assess -> create a task -> monitor and report**.
 | Requirement | Description | Reference |
 |---|---|---|
 | **Read access** to the target site | Required to scan lists, files, and permissions. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
-| **SharePoint admin** (for tenant-scope scans) | `scan_large_sites.py` enumerates site collections via the SPO.Tenant API — SMAT's farm-account prerequisite. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
+| **SharePoint admin** (for tenant-scope scans) | [`assess/reports/large_sites.py`](./assess/reports/large_sites.py) enumerates site collections via the SPO.Tenant API — SMAT's farm-account prerequisite. | [SharePoint admin roles](https://learn.microsoft.com/en-us/sharepoint/sharepoint-admin-role) |
 
 ---
 
-## Examples
+## Step 2 — Scan and assess
 
 | Operation | File | Required role |
 |---|---|---|
-| Assess a site (site + subsites) for migration readiness | [`scanner.py`](./scanner.py) | Read access |
-| Bulk-assess a list of sites | [`scanner_bulk.py`](./scanner_bulk.py) | Read access |
-| Generate the SMAT `LargeSites-detail.json` report (all tenant sites over 500 GB) | [`scan_large_sites.py`](./scan_large_sites.py) | SharePoint admin |
-| Copy a local directory tree (filesystem → filesystem) | [`migrate_files.py`](./migrate_files.py) | none (local) |
-| Export a SharePoint list to local JSON records | [`export_list.py`](export_list.py) | Read access |
-| Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate_library.py`](./migrate_library.py) | Read/Write access |
-| Migrate local files into a library via a migration session (parallel) | [`migrate_session.py`](./migrate_session.py) | Write access |
-| Migrate a tree and write one JSON migration report | [`export_reports.py`](./export_reports.py) | none (local) |
-| Monitor a local migration (live progress, Ctrl-C pause, re-run to resume) | [`monitor.py`](./monitor.py) | none (local) |
-
----
-
-## Quick start
-
-### 1. Scan and assess (Step 2)
+| Assess a site (site + subsites) for migration readiness | [`assess/assess_site.py`](./assess/assess_site.py) | Read access |
+| Bulk-assess a list of sites | [`assess/assess_bulk.py`](./assess/assess_bulk.py) | Read access |
 
 ```python
 from office365.migration import MigrationAssessor
+from office365.migration.sharepoint.scanners import LargeSitesScanner
 from office365.sharepoint.client_context import ClientContext
 
 ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
@@ -48,23 +45,23 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_sec
 report = MigrationAssessor(ctx.web).include_permissions().assess(recursive=True).execute_query().value
 print(report.summary())          # Webs/Lists/Files/Size + blockers/warnings + ready
 print(report.to_records())       # issues as records (CSV/JSON export)
-print(report.scan_reports["LargeSites"].records)   # SMAT-style scan detail
+print(report.scan_report(LargeSitesScanner).records)   # typed SMAT-style scan detail
 ```
 
 ### Scan reports (SMAT roadmap)
 
 The assessment is modular — scans are registered in
 `office365.migration.sharepoint.registry` (a ScanDef.json analog: name,
-scanner, `ReportCategoryType`, `Enabled`, properties). Each scan emits an
-SMAT-style detail report (`ScannerReports/<Scan>-detail.csv` + `.json`) and can
-flag issues on the assessment report.
+scanner, `ReportCategoryType`, `Enabled`). Each scan emits an SMAT-style detail
+report (`ScannerReports/<Scan>-detail.csv` + `.json`) and can flag issues on the
+assessment report.
 
 ```python
 from office365.migration.sharepoint.registry import SHAREPOINT_SCANS
 from office365.migration.assessment.export import export_assessment
 
-print([d.name for d in SHAREPOINT_SCANS])                      # the registered scans
-written = export_assessment(report, "out")          # issues + ScannerReports/
+print([d.name for d in SHAREPOINT_SCANS])            # the registered scans
+written = export_assessment(report, "out")           # issues + ScannerReports/
 ```
 
 **Large Sites** (SPSite, on by default) validates site size against the 500 GB
@@ -75,15 +72,16 @@ report `n/a`. Disable it or any scan with `--disable-scan LargeSites` /
 `assessor.disable_scan("LargeSites")` — the assessor then skips collecting its
 data.
 
-Run it at **tenant scope** (SMAT model: enumerate site collections first, then
-report the large ones) with `MigrationTenantAssessor`:
+Generate the tenant-wide `LargeSites-detail.json` report
+([`assess/reports/large_sites.py`](./assess/reports/large_sites.py)):
 
 ```python
 from office365.migration import MigrationTenantAssessor
+from office365.migration.sharepoint.scanners import LargeSitesScanner
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
 report = MigrationTenantAssessor(Tenant(admin_client)).assess().execute_query().value
-scan = report.scan_reports["LargeSites"]
+scan = report.scan_report(LargeSitesScanner)
 print(scan.to_csv())   # SMAT LargeSites-detail.csv (typed rows -> trivial export)
 ```
 
@@ -95,7 +93,16 @@ Implemented | SMAT roadmap scans (planned)
 --- | ---
 Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Checked-out files, File Versions, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
 
-### 2. Create a migration task and run (Step 3)
+---
+
+## Step 3 — Create a migration task
+
+| Operation | File | Required role |
+|---|---|---|
+| Copy a local directory tree (filesystem → filesystem) | [`migrate/migrate_files.py`](./migrate/migrate_files.py) | none (local) |
+| Export a SharePoint list to local JSON records | [`migrate/export_list.py`](./migrate/export_list.py) | Read access |
+| Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate/migrate_library.py`](./migrate/migrate_library.py) | Read/Write access |
+| Migrate local files into a library via a migration session (parallel) | [`migrate/migrate_session.py`](./migrate/migrate_session.py) | Write access |
 
 ```python
 from office365.migration import MigrationJob
@@ -109,27 +116,6 @@ job = MigrationJob(
 job.plan()
 job.run()
 print(job.stats.summary())
-```
-
-### 3. Monitor and report (Step 4)
-
-```python
-job.export_reports("reports")            # SummaryReport / ItemReport / FailureReport (CSV + JSON)
-print(job.verify().summary())            # reconcile source vs target
-```
-
-Reports carry SPMT-style summary columns (total/migrated/not-migrated bytes & GB,
-items, GB/hour, run id, timestamps) plus per-item `file_name`, `extension`,
-`error`, and `error_code`; the failure report is only written when failures
-occur.
-
-To watch a migration live — progress bars for planning/migrating, and a clean
-SPMT-style pause on **Ctrl-C** (the checkpoint is saved; re-running the same
-command resumes) — use the monitor example (any local directories, no
-credentials needed):
-
-```bash
-python monitor.py --source ./data-a --target ./dst-a
 ```
 
 ### Incremental re-runs
@@ -195,6 +181,34 @@ print(session.status())
 
 A single migration needs no session — `MigrationJob(source, target, options)`
 with `plan()`/`run()`/`verify()` is the primary entry point.
+
+---
+
+## Step 4 — Monitor and report
+
+| Operation | File | Required role |
+|---|---|---|
+| Migrate a tree and write one JSON migration report | [`monitor/export_reports.py`](./monitor/export_reports.py) | none (local) |
+| Monitor a local migration (live progress, Ctrl-C pause, re-run to resume) | [`monitor/monitor.py`](./monitor/monitor.py) | none (local) |
+
+```python
+job.export_reports("reports")            # SummaryReport / ItemReport / FailureReport (CSV + JSON)
+print(job.verify().summary())            # reconcile source vs target
+```
+
+Reports carry SPMT-style summary columns (total/migrated/not-migrated bytes & GB,
+items, GB/hour, run id, timestamps) plus per-item `file_name`, `extension`,
+`error`, and `error_code`; the failure report is only written when failures
+occur.
+
+To watch a migration live — progress bars for planning/migrating, and a clean
+SPMT-style pause on **Ctrl-C** (the checkpoint is saved; re-running the same
+command resumes) — use the monitor example (any local directories, no
+credentials needed):
+
+```bash
+python monitor/monitor.py --source ./data-a --target ./dst-a
+```
 
 ---
 

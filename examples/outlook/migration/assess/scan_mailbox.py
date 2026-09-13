@@ -6,7 +6,7 @@ child counts (the ``MailFolders`` scan) plus flags for folders over a large
 item-count threshold. The report (issues + scan details) is written as one
 ``AssessmentReport.json`` under the system temp dir (``--output`` overrides).
 
-    python scan_mailbox.py --user-id me@contoso.onmicrosoft.com
+    python assess/scan_mailbox.py --user-id me@contoso.onmicrosoft.com
 
 Requires delegated ``Mail.Read`` (``client.me``), or ``Mail.Read.All`` with a
 ``--user-id`` for app-only access.

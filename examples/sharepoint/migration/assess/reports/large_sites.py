@@ -8,7 +8,7 @@ writes only the sites above the size guidance (``--size-threshold``, default
 500 GB) as one JSON file. Mirrors the SharePoint Migration Assessment Tool's
 ``LargeSites-detail`` scan:
 
-    python scan_large_sites.py --size-threshold 250
+    python assess/reports/large_sites.py --size-threshold 250
 
 Requires: SharePoint admin access (SPO.Tenant read) — SMAT's farm-account
 prerequisite. Use ``--site-url`` for a single-site deep scan instead.
