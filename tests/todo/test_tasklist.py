@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.intune.print.taskstatus import TaskStatus
 from office365.todo.tasks.lists.list import TodoTaskList
 from office365.todo.tasks.task import TodoTask
 from tests import create_unique_name
@@ -108,10 +109,10 @@ class TestTaskList(GraphDelegatedTestCase):
             self.skipTest("No task created from previous test")
 
         task.title = "SDK Updated Task Title"
-        task.status = "completed"
+        task.status = TaskStatus.completed
         task.update().execute_query()
         self.assertEqual(task.title, "SDK Updated Task Title")
-        self.assertEqual(task.status, "completed")
+        self.assertEqual(task.status, TaskStatus.completed)
 
     @requires_delegated(
         "Tasks.Read",

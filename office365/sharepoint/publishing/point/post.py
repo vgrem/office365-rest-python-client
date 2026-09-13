@@ -1,7 +1,12 @@
 from datetime import datetime
 from typing import Optional
 
+from office365.runtime.client_result import ClientResult
+from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.files.file import File
 
 
 class PointPublishingPost(Entity):
@@ -53,3 +58,26 @@ class PointPublishingPost(Entity):
     @property
     def entity_type_name(self):
         return "SP.Publishing.PointPublishingPost"
+
+    @property
+    def id(self) -> Optional[int]:
+        """Gets the Id property"""
+        return self.properties.get("Id", None)
+
+    @property
+    def images(self) -> EntityCollection[File]:
+        """Gets the images property"""
+        return self.properties.get(
+            "images", EntityCollection[File](self.context, File, ResourcePath("images", self.resource_path))
+        )
+
+    def add_image_from_url(self, from_image_url: str) -> ClientResult[str]:
+        """AddImageFromUrl operation.
+
+        Args:
+            from_image_url (str): fromImageUrl parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "AddImageFromUrl", None, {"fromImageUrl": from_image_url}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

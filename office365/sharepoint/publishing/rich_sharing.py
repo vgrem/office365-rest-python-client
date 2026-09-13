@@ -1,5 +1,7 @@
 from typing import List
 
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -53,3 +55,13 @@ class RichSharing(Entity):
     @property
     def entity_type_name(self):
         return "SP.Publishing.RichSharing"
+
+    def share_page_by_email_stream(self, content_stream: bytes) -> Self:
+        """SharePageByEmailStream operation.
+
+        Args:
+            content_stream (bytes): contentStream parameter
+        """
+        qry = ServiceOperationQuery(self, "SharePageByEmailStream", None, {"contentStream": content_stream}, None, None)
+        self.context.add_query(qry)
+        return self

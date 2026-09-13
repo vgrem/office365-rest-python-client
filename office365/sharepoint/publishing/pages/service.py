@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -9,12 +11,13 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
-from office365.sharepoint.clientsidecomponent.query_result import (
-    SPClientSideComponentQueryResult,
-)
+from office365.sharepoint.clientsidecomponent.query_result import SPClientSideComponentQueryResult
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.file import File
+from office365.sharepoint.publishing.campaign.campaign import Campaign
 from office365.sharepoint.publishing.file_picker_options import FilePickerOptions
+from office365.sharepoint.publishing.gettyimage import GettyImage
 from office365.sharepoint.publishing.pages.collection import SitePageCollection
 from office365.sharepoint.publishing.pages.page import SitePage
 from office365.sharepoint.publishing.primary_city_time import PrimaryCityTime
@@ -36,23 +39,32 @@ class SitePageService(Entity):
     @property
     def pages(self) -> SitePageCollection:
         """Gets the SitePageCollection for the current web."""
-        return self.properties.get(
-            "pages",
-            SitePageCollection(self.context, ResourcePath("pages", self.resource_path)),
-        )
+        return self.properties.get("pages", SitePageCollection(self.context, ResourcePath("pages", self.resource_path)))
 
     @odata(name="CommunicationSite")
     @property
     def communication_site(self) -> CommunicationSite:
         """Gets a CommunicationSite for the current web."""
         return self.properties.get(
-            "CommunicationSite",
-            CommunicationSite(self.context, ResourcePath("CommunicationSite", self.resource_path)),
+            "CommunicationSite", CommunicationSite(self.context, ResourcePath("CommunicationSite", self.resource_path))
         )
 
     @property
     def entity_type_name(self):
         return "SP.Publishing.SitePageService"
+
+    @property
+    def custom_content_approval_enabled(self) -> Optional[bool]:
+        """Gets the CustomContentApprovalEnabled property"""
+        return self.properties.get("CustomContentApprovalEnabled", None)
+
+    @property
+    def campaigns(self) -> EntityCollection[Campaign]:
+        """Gets the Campaigns property"""
+        return self.properties.get(
+            "Campaigns",
+            EntityCollection[Campaign](self.context, Campaign, ResourcePath("Campaigns", self.resource_path)),
+        )
 
     def create_page(self, title: str, language: Optional[str] = None) -> SitePage:
         """Create a new sitePage in the site pages list in a site.
@@ -148,31 +160,17 @@ class SitePageService(Entity):
         return_type = ClientResult(context, ClientValueCollection(SPClientSideComponentQueryResult))
         params = {"includeErrors": include_errors, "project": project}
         qry = ServiceOperationQuery(
-            SitePageService(context),
-            "GetAvailableFullPageApplications",
-            None,
-            params,
-            None,
-            return_type,
-            True,
+            SitePageService(context), "GetAvailableFullPageApplications", None, params, None, return_type, True
         )
         context.add_query(qry)
         return return_type
 
     @staticmethod
-    def is_file_picker_external_image_search_enabled(
-        context: ClientContext,
-    ) -> ClientResult[bool]:
+    def is_file_picker_external_image_search_enabled(context: ClientContext) -> ClientResult[bool]:
         return_type = ClientResult[bool](context)
         binding_type = SitePageService(context)
         qry = ServiceOperationQuery(
-            binding_type,
-            "IsFilePickerExternalImageSearchEnabled",
-            None,
-            None,
-            None,
-            return_type,
-            True,
+            binding_type, "IsFilePickerExternalImageSearchEnabled", None, None, None, return_type, True
         )
         context.add_query(qry)
         return return_type
@@ -186,9 +184,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
-    def file_picker_tab_options(
-        context: ClientContext,
-    ) -> ClientResult[FilePickerOptions]:
+    def file_picker_tab_options(context: ClientContext) -> ClientResult[FilePickerOptions]:
         return_type = ClientResult(context, FilePickerOptions())
         svc = SitePageService(context)
         qry = ServiceOperationQuery(svc, "FilePickerTabOptions", None, None, None, return_type, True)
@@ -207,11 +203,7 @@ class SitePageService(Entity):
             File
         """
         return_type = File(self.context)
-        params = {
-            "pageName": page_name,
-            "imageFileName": image_file_name,
-            "imageStream": image_stream,
-        }
+        params = {"pageName": page_name, "imageFileName": image_file_name, "imageStream": image_stream}
         qry = ServiceOperationQuery(self, "AddImage", params, None, None, return_type, True)
         self.context.add_query(qry)
         return return_type
@@ -237,5 +229,71 @@ class SitePageService(Entity):
         }
         qry = ServiceOperationQuery(self, "AddImageFromExternalUrl", params, None, None, return_type)
         qry.static = True
+        self.context.add_query(qry)
+        return return_type
+
+    def enable_amplify_from_anywhere(self) -> Self:
+        """EnableAmplifyFromAnywhere operation."""
+        qry = ServiceOperationQuery(self, "EnableAmplifyFromAnywhere", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def enable_announcements(self) -> Self:
+        """EnableAnnouncements operation."""
+        qry = ServiceOperationQuery(self, "EnableAnnouncements", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def enable_categories(self) -> Self:
+        """EnableCategories operation."""
+        qry = ServiceOperationQuery(self, "EnableCategories", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def enable_lightweight_campaign(self) -> Self:
+        """EnableLightweightCampaign operation."""
+        qry = ServiceOperationQuery(self, "EnableLightweightCampaign", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def get_or_create_asset_folder(
+        self, page_name: str, create_folder_if_needed: bool, sub_folder_name: str, page_id: int
+    ) -> ClientResult[str]:
+        """GetOrCreateAssetFolder operation.
+
+        Args:
+            page_name (str): pageName parameter
+            create_folder_if_needed (bool): createFolderIfNeeded parameter
+            sub_folder_name (str): subFolderName parameter
+            page_id (int): pageId parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "GetOrCreateAssetFolder",
+            None,
+            {
+                "pageName": page_name,
+                "createFolderIfNeeded": create_folder_if_needed,
+                "subFolderName": sub_folder_name,
+                "pageId": page_id,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def report_getty_images(self, images: ClientValueCollection[GettyImage], is_timer_job: bool) -> ClientResult[bool]:
+        """ReportGettyImages operation.
+
+        Args:
+            images (ClientValueCollection[GettyImage]): images parameter
+            is_timer_job (bool): isTimerJob parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self, "ReportGettyImages", None, {"images": images, "isTimerJob": is_timer_job}, None, return_type
+        )
         self.context.add_query(qry)
         return return_type

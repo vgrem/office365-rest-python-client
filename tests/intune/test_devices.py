@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.intune.devices.device import Device
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -21,7 +22,7 @@ from tests.graph_case import GraphDelegatedTestCase
 class TestDevices(GraphDelegatedTestCase):
     """Device CRUD, ownership, and delta."""
 
-    device: ClassVar[Optional[object]] = None
+    device: ClassVar[Optional[Device]] = None
 
     @requires_delegated(
         "Device.Read.All",

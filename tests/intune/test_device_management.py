@@ -38,7 +38,7 @@ class TestDeviceManagement(GraphDelegatedTestCase):
     def test_02_device_management_has_intune_brand(self):
         """Device management should expose an intuneBrand property."""
         result = self.client.device_management.get().execute_query()
-        brand = result.get_property("intuneBrand")
+        brand = result.intune_brand
         self.assertIsNotNone(brand)
 
     @requires_delegated(

@@ -1,3 +1,5 @@
+from typing_extensions import Self
+
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -23,3 +25,13 @@ class PageDiagnosticsController(Entity):
     @property
     def entity_type_name(self):
         return "SP.Publishing.PageDiagnosticsController"
+
+    def save(self, page_diagnostics_result: str) -> Self:
+        """Save operation.
+
+        Args:
+            page_diagnostics_result (str): pageDiagnosticsResult parameter
+        """
+        qry = ServiceOperationQuery(self, "Save", None, {"pageDiagnosticsResult": page_diagnostics_result}, None, None)
+        self.context.add_query(qry)
+        return self

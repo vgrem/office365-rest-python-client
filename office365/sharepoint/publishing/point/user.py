@@ -1,5 +1,8 @@
 from typing import Optional
 
+from typing_extensions import Self
+
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
 
@@ -62,3 +65,9 @@ class PointPublishingUser(Entity):
     @property
     def entity_type_name(self):
         return "SP.Publishing.PointPublishingUser"
+
+    def delete_user_from_container_group(self) -> Self:
+        """DeleteUserFromContainerGroup operation."""
+        qry = ServiceOperationQuery(self, "DeleteUserFromContainerGroup", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

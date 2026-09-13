@@ -5,14 +5,11 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.publishing.sites.communication.creation_request import (
-    CommunicationSiteCreationRequest,
-)
-from office365.sharepoint.publishing.sites.communication.creation_response import (
-    CommunicationSiteCreationResponse,
-)
+from office365.sharepoint.publishing.sites.communication.creation_request import CommunicationSiteCreationRequest
+from office365.sharepoint.publishing.sites.communication.creation_response import CommunicationSiteCreationResponse
 
 
 class CommunicationSite(Entity):
@@ -80,3 +77,14 @@ class CommunicationSite(Entity):
     @property
     def entity_type_name(self):
         return "SP.Publishing.CommunicationSite"
+
+    def status(self, url: str) -> ClientResult[CommunicationSiteCreationResponse]:
+        """Status operation.
+
+        Args:
+            url (str): url parameter
+        """
+        return_type = ClientResult(self.context, CommunicationSiteCreationResponse())
+        qry = FunctionQuery(self, "Status", [url], return_type)
+        self.context.add_query(qry)
+        return return_type

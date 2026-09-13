@@ -1,18 +1,32 @@
 from __future__ import annotations
 
 from typing import Optional
+from uuid import UUID
 
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.documents.coauthconfiguration import CoAuthConfiguration
+from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
+from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
+from office365.sharepoint.publishing.amplify.history import AmplifyPublishingHistory
+from office365.sharepoint.publishing.amplify.requestparams import AmplifyRequestParams
+from office365.sharepoint.publishing.boostfieldsdata import BoostFieldsData
+from office365.sharepoint.publishing.pages.boostproperties import SitePageBoostProperties
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
+from office365.sharepoint.publishing.pages.collaborator import SitePageCollaborator
 from office365.sharepoint.publishing.pages.dependency_metadata import SitePageDependencyMetadata
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 from office365.sharepoint.publishing.pages.metadata import SitePageMetadata
+from office365.sharepoint.publishing.pages.sendtestemailresponse import SendTestEmailResponse
+from office365.sharepoint.publishing.pages.sendtestteamsmessageresponse import SendTestTeamsMessageResponse
 from office365.sharepoint.publishing.pages.sharepagepreviewbyemailfieldsdata import SharePagePreviewByEmailFieldsData
+from office365.sharepoint.publishing.pages.versioninfocollection import SitePageVersionInfoCollection
+from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAuthoringMetadata
 from office365.sharepoint.translation.status_collection import TranslationStatusCollection
 
 
@@ -237,3 +251,448 @@ class SitePage(SitePageMetadata):
     @property
     def entity_type_name(self) -> str:
         return "SP.Publishing.SitePage"
+
+    @property
+    def alternative_url_map(self) -> Optional[str]:
+        """Gets the AlternativeUrlMap property"""
+        return self.properties.get("AlternativeUrlMap", None)
+
+    @property
+    def amplify_publishing_history(self) -> AmplifyPublishingHistory:
+        """Gets the AmplifyPublishingHistory property"""
+        return self.properties.get("AmplifyPublishingHistory", AmplifyPublishingHistory())
+
+    @property
+    def authoring_metadata(self) -> SitePageAuthoringMetadata:
+        """Gets the AuthoringMetadata property"""
+        return self.properties.get("AuthoringMetadata", SitePageAuthoringMetadata())
+
+    @property
+    def boost_properties(self) -> SitePageBoostProperties:
+        """Gets the BoostProperties property"""
+        return self.properties.get("BoostProperties", SitePageBoostProperties())
+
+    @property
+    def campaign_metadata(self) -> Optional[str]:
+        """Gets the CampaignMetadata property"""
+        return self.properties.get("CampaignMetadata", None)
+
+    @property
+    def canvas_content1(self) -> Optional[str]:
+        """Gets the CanvasContent1 property"""
+        return self.properties.get("CanvasContent1", None)
+
+    @property
+    def canvas_json1(self) -> Optional[str]:
+        """Gets the CanvasJson1 property"""
+        return self.properties.get("CanvasJson1", None)
+
+    @property
+    def check_in(self) -> Optional[bool]:
+        """Gets the CheckIn property"""
+        return self.properties.get("CheckIn", None)
+
+    @property
+    def co_auth_state(self) -> SitePageCoAuthState:
+        """Gets the CoAuthState property"""
+        return self.properties.get("CoAuthState", SitePageCoAuthState())
+
+    @property
+    def co_auth_tenant_configuration(self) -> CoAuthConfiguration:
+        """Gets the CoAuthTenantConfiguration property"""
+        return self.properties.get("CoAuthTenantConfiguration", CoAuthConfiguration())
+
+    @property
+    def collaborators(self) -> ClientValueCollection[SitePageCollaborator]:
+        """Gets the Collaborators property"""
+        return self.properties.get("Collaborators", ClientValueCollection[SitePageCollaborator](SitePageCollaborator))
+
+    @property
+    def creation_mode(self) -> Optional[int]:
+        """Gets the CreationMode property"""
+        return self.properties.get("CreationMode", None)
+
+    @property
+    def is_liked_by_current_user(self) -> Optional[bool]:
+        """Gets the IsLikedByCurrentUser property"""
+        return self.properties.get("IsLikedByCurrentUser", None)
+
+    @property
+    def is_template(self) -> Optional[bool]:
+        """Gets the IsTemplate property"""
+        return self.properties.get("IsTemplate", None)
+
+    @property
+    def layout_webparts_content(self) -> Optional[str]:
+        """Gets the LayoutWebpartsContent property"""
+        return self.properties.get("LayoutWebpartsContent", None)
+
+    @property
+    def name(self) -> Optional[str]:
+        """Gets the Name property"""
+        return self.properties.get("Name", None)
+
+    @property
+    def publication_metadata(self) -> Optional[str]:
+        """Gets the PublicationMetadata property"""
+        return self.properties.get("PublicationMetadata", None)
+
+    @property
+    def publication_recipients(self) -> Optional[str]:
+        """Gets the PublicationRecipients property"""
+        return self.properties.get("PublicationRecipients", None)
+
+    @property
+    def site_page_flags(self) -> Optional[str]:
+        """Gets the SitePageFlags property"""
+        return self.properties.get("SitePageFlags", None)
+
+    @property
+    def source_dynamic_section_id(self) -> Optional[str]:
+        """Gets the SourceDynamicSectionId property"""
+        return self.properties.get("SourceDynamicSectionId", None)
+
+    @property
+    def template_scope(self) -> Optional[int]:
+        """Gets the TemplateScope property"""
+        return self.properties.get("TemplateScope", None)
+
+    def create_app_page(self, web_part_data_as_json: str) -> ClientResult[str]:
+        """CreateAppPage operation.
+
+        Args:
+            web_part_data_as_json (str): webPartDataAsJson parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self, "CreateAppPage", None, {"webPartDataAsJson": web_part_data_as_json}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_page_column_state(self, url: str) -> ClientResult[int]:
+        """GetPageColumnState operation.
+
+        Args:
+            url (str): url parameter
+        """
+        return_type = ClientResult(self.context, int())
+        qry = FunctionQuery(self, "GetPageColumnState", [url], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def is_site_page(self, url: str) -> ClientResult[bool]:
+        """IsSitePage operation.
+
+        Args:
+            url (str): url parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = FunctionQuery(self, "IsSitePage", [url], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def set_html_pages_feature(self, enabled: bool) -> Self:
+        """SetHtmlPagesFeature operation.
+
+        Args:
+            enabled (bool): enabled parameter
+        """
+        qry = ServiceOperationQuery(self, "SetHtmlPagesFeature", None, {"enabled": enabled}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_multilingual(self, enabled: bool) -> Self:
+        """SetMultilingual operation.
+
+        Args:
+            enabled (bool): enabled parameter
+        """
+        qry = ServiceOperationQuery(self, "SetMultilingual", None, {"enabled": enabled}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_scheduling(self, enabled: bool) -> Self:
+        """SetScheduling operation.
+
+        Args:
+            enabled (bool): enabled parameter
+        """
+        qry = ServiceOperationQuery(self, "SetScheduling", None, {"enabled": enabled}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_app_page(
+        self, page_id: int, web_part_data_as_json: str, title: str, include_in_navigation: bool
+    ) -> ClientResult[str]:
+        """UpdateAppPage operation.
+
+        Args:
+            page_id (int): pageId parameter
+            web_part_data_as_json (str): webPartDataAsJson parameter
+            title (str): title parameter
+            include_in_navigation (bool): includeInNavigation parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateAppPage",
+            None,
+            {
+                "pageId": page_id,
+                "webPartDataAsJson": web_part_data_as_json,
+                "title": title,
+                "includeInNavigation": include_in_navigation,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def update_full_page_app(self, server_relative_url: str, web_part_data_as_json: str) -> Self:
+        """UpdateFullPageApp operation.
+
+        Args:
+            server_relative_url (str): serverRelativeUrl parameter
+            web_part_data_as_json (str): webPartDataAsJson parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateFullPageApp",
+            None,
+            {"serverRelativeUrl": server_relative_url, "webPartDataAsJson": web_part_data_as_json},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
+        """Amplify operation.
+
+        Args:
+            request (AmplifyRequestParams): request parameter
+        """
+        return_type = ClientResult(self.context, ClientAmplifyAnywhereResults())
+        qry = ServiceOperationQuery(self, "Amplify", None, {"request": request}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def amplify_history(self) -> ClientResult[AmplifyPublishingHistory]:
+        """AmplifyHistory operation."""
+        return_type = ClientResult(self.context, AmplifyPublishingHistory())
+        qry = ServiceOperationQuery(self, "AmplifyHistory", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def amplify_send_test_email_message(self, content_stream: bytes) -> ClientResult[ClientAmplifyResults]:
+        """AmplifySendTestEmailMessage operation.
+
+        Args:
+            content_stream (bytes): contentStream parameter
+        """
+        return_type = ClientResult(self.context, ClientAmplifyResults())
+        qry = ServiceOperationQuery(
+            self, "AmplifySendTestEmailMessage", None, {"contentStream": content_stream}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def amplify_send_test_teams_message(
+        self, audience_id: str, group_id: UUID, transpile_content: str, channel_name: str, team_name: str
+    ) -> ClientResult[ClientAmplifyResults]:
+        """AmplifySendTestTeamsMessage operation.
+
+        Args:
+            audience_id (str): audienceId parameter
+            group_id (UUID): groupId parameter
+            transpile_content (str): transpileContent parameter
+            channel_name (str): channelName parameter
+            team_name (str): teamName parameter
+        """
+        return_type = ClientResult(self.context, ClientAmplifyResults())
+        qry = ServiceOperationQuery(
+            self,
+            "AmplifySendTestTeamsMessage",
+            None,
+            {
+                "audienceId": audience_id,
+                "groupId": group_id,
+                "transpileContent": transpile_content,
+                "channelName": channel_name,
+                "teamName": team_name,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def boost_news(self, site_page_boost: BoostFieldsData) -> Self:
+        """BoostNews operation.
+
+        Args:
+            site_page_boost (BoostFieldsData): SitePageBoost parameter
+        """
+        qry = ServiceOperationQuery(self, "BoostNews", None, {"SitePageBoost": site_page_boost}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def check_out(self) -> ClientResult[bool]:
+        """CheckOut operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "CheckOut", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def extend_session_co_auth(
+        self, authoring_metadata: SitePageAuthoringMetadata, connectivity_update_reason: int
+    ) -> ClientResult[SitePageCoAuthState]:
+        """ExtendSessionCoAuth operation.
+
+        Args:
+            authoring_metadata (SitePageAuthoringMetadata): authoringMetadata parameter
+            connectivity_update_reason (int): connectivityUpdateReason parameter
+        """
+        return_type = ClientResult(self.context, SitePageCoAuthState())
+        qry = ServiceOperationQuery(
+            self,
+            "ExtendSessionCoAuth",
+            None,
+            {"authoringMetadata": authoring_metadata, "connectivityUpdateReason": connectivity_update_reason},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_latest_versions_in_descending_order(
+        self, num_versions: int
+    ) -> ClientResult[ClientValueCollection[SitePageVersionInfoCollection]]:
+        """GetLatestVersionsInDescendingOrder operation.
+
+        Args:
+            num_versions (int): numVersions parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection[SitePageVersionInfoCollection]())
+        qry = FunctionQuery(self, "GetLatestVersionsInDescendingOrder", [num_versions], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def publish_co_auth(self, page_stream: bytes) -> ClientResult[SitePageCoAuthState]:
+        """PublishCoAuth operation.
+
+        Args:
+            page_stream (bytes): pageStream parameter
+        """
+        return_type = ClientResult(self.context, SitePageCoAuthState())
+        qry = ServiceOperationQuery(self, "PublishCoAuth", None, {"pageStream": page_stream}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def restore_by_label(self, versionlabel: str) -> Self:
+        """RestoreByLabel operation.
+
+        Args:
+            versionlabel (str): versionlabel parameter
+        """
+        qry = ServiceOperationQuery(self, "RestoreByLabel", None, {"versionlabel": versionlabel}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def save_streams(self, content_stream: bytes, shared_lock_id: str, scenario: int) -> Self:
+        """SaveStreams operation.
+
+        Args:
+            content_stream (bytes): contentStream parameter
+            shared_lock_id (str): sharedLockId parameter
+            scenario (int): scenario parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SaveStreams",
+            None,
+            {"contentStream": content_stream, "sharedLockId": shared_lock_id, "scenario": scenario},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def send_test_email(
+        self, transpile_content: str, subject: str, sensitivity_label_id: str
+    ) -> ClientResult[SendTestEmailResponse]:
+        """SendTestEmail operation.
+
+        Args:
+            transpile_content (str): transpileContent parameter
+            subject (str): subject parameter
+            sensitivity_label_id (str): sensitivityLabelId parameter
+        """
+        return_type = ClientResult(self.context, SendTestEmailResponse())
+        qry = ServiceOperationQuery(
+            self,
+            "SendTestEmail",
+            None,
+            {"transpileContent": transpile_content, "subject": subject, "sensitivityLabelId": sensitivity_label_id},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def send_test_email_stream(self, content_stream: bytes) -> ClientResult[SendTestEmailResponse]:
+        """SendTestEmailStream operation.
+
+        Args:
+            content_stream (bytes): contentStream parameter
+        """
+        return_type = ClientResult(self.context, SendTestEmailResponse())
+        qry = ServiceOperationQuery(
+            self, "SendTestEmailStream", None, {"contentStream": content_stream}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def send_test_teams_message(
+        self, audience_id: str, transpile_content: str
+    ) -> ClientResult[SendTestTeamsMessageResponse]:
+        """SendTestTeamsMessage operation.
+
+        Args:
+            audience_id (str): audienceId parameter
+            transpile_content (str): transpileContent parameter
+        """
+        return_type = ClientResult(self.context, SendTestTeamsMessageResponse())
+        qry = ServiceOperationQuery(
+            self,
+            "SendTestTeamsMessage",
+            None,
+            {"audienceId": audience_id, "transpileContent": transpile_content},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def start_exclusive_authoring(self) -> ClientResult[bool]:
+        """StartExclusiveAuthoring operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "StartExclusiveAuthoring", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def try_process_source_page_after_page_move_publish(self) -> ClientResult[bool]:
+        """TryProcessSourcePageAfterPageMovePublish operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "TryProcessSourcePageAfterPageMovePublish", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def try_process_source_page_before_page_move_publish(self) -> ClientResult[bool]:
+        """TryProcessSourcePageBeforePageMovePublish operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "TryProcessSourcePageBeforePageMovePublish", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

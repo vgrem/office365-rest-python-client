@@ -42,3 +42,14 @@ class RankingLabeling(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Query.RankingLabeling"
+
+    def get_judgements_for_query(self, query: str) -> ClientResult[dict]:
+        """GetJudgementsForQuery operation.
+
+        Args:
+            query (str): query parameter
+        """
+        return_type = ClientResult(self.context, dict())
+        qry = ServiceOperationQuery(self, "GetJudgementsForQuery", None, {"query": query}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

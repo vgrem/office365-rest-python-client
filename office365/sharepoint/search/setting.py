@@ -2,13 +2,14 @@ from typing import Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.search.promoted_results_operations_result import (
-    PromotedResultsOperationsResult,
-)
+from office365.sharepoint.search.promoted_results_operations_result import PromotedResultsOperationsResult
 from office365.sharepoint.search.query.configuration import QueryConfiguration
 from office365.sharepoint.search.reports.base import ReportBase
+from office365.sharepoint.search.scs_endpoint import ScsEndpoint
+from office365.sharepoint.search.xssearchpolicy import XSSearchPolicy
 
 
 class SearchSetting(Entity):
@@ -46,13 +47,7 @@ class SearchSetting(Entity):
         return return_type
 
     def export_search_reports(
-        self,
-        tenant_id,
-        report_type=None,
-        interval=None,
-        start_date=None,
-        end_date=None,
-        site_collection_id=None,
+        self, tenant_id, report_type=None, interval=None, start_date=None, end_date=None, site_collection_id=None
     ) -> ClientResult[ReportBase]:
         """Args:
         tenant_id (str):
@@ -102,11 +97,7 @@ class SearchSetting(Entity):
               Default value is 100. It is used together with the offset to page through a large result set.
         """
         return_type = ClientResult(self.context, PromotedResultsOperationsResult())
-        payload = {
-            "siteCollectionLevel": site_collection_level,
-            "offset": offset,
-            "numberOfRules": number_of_rules,
-        }
+        payload = {"siteCollectionLevel": site_collection_level, "offset": offset, "numberOfRules": number_of_rules}
         qry = ServiceOperationQuery(self, "getpromotedresultqueryrules", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -114,3 +105,72 @@ class SearchSetting(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Office.Server.Search.REST.SearchSetting"
+
+    def getpromotedresultqueryrules(
+        self, site_collection_level: bool, offset: int, number_of_rules: int
+    ) -> ClientResult[PromotedResultsOperationsResult]:
+        """getpromotedresultqueryrules operation.
+
+        Args:
+            site_collection_level (bool): siteCollectionLevel parameter
+            offset (int): offset parameter
+            number_of_rules (int): numberOfRules parameter
+        """
+        return_type = ClientResult(self.context, PromotedResultsOperationsResult())
+        qry = FunctionQuery(
+            self, "getpromotedresultqueryrules", [site_collection_level, offset, number_of_rules], return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def getqueryconfiguration(
+        self, call_local_search_farms_only: bool, skip_group_object_id_lookup: bool, throw_on_remote_api_check: bool
+    ) -> ClientResult[QueryConfiguration]:
+        """getqueryconfiguration operation.
+
+        Args:
+            call_local_search_farms_only (bool): callLocalSearchFarmsOnly parameter
+            skip_group_object_id_lookup (bool): skipGroupObjectIdLookup parameter
+            throw_on_remote_api_check (bool): throwOnRemoteApiCheck parameter
+        """
+        return_type = ClientResult(self.context, QueryConfiguration())
+        qry = FunctionQuery(
+            self,
+            "getqueryconfiguration",
+            [call_local_search_farms_only, skip_group_object_id_lookup, throw_on_remote_api_check],
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def getxssearchpolicy(self) -> ClientResult[XSSearchPolicy]:
+        """getxssearchpolicy operation."""
+        return_type = ClientResult(self.context, XSSearchPolicy())
+        qry = FunctionQuery(self, "getxssearchpolicy", [], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def pingadminendpoint(self) -> ClientResult[bool]:
+        """pingadminendpoint operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = FunctionQuery(self, "pingadminendpoint", [], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def scspartialupdateendpointinfo(self) -> ClientResult[ScsEndpoint]:
+        """scspartialupdateendpointinfo operation."""
+        return_type = ClientResult(self.context, ScsEndpoint())
+        qry = FunctionQuery(self, "scspartialupdateendpointinfo", [], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def setxssearchpolicy(self, policy: str) -> ClientResult[XSSearchPolicy]:
+        """setxssearchpolicy operation.
+
+        Args:
+            policy (str): policy parameter
+        """
+        return_type = ClientResult(self.context, XSSearchPolicy())
+        qry = ServiceOperationQuery(self, "setxssearchpolicy", None, {"policy": policy}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

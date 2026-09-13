@@ -262,3 +262,64 @@ class SearchService(Entity):
     @property
     def entity_type_name(self) -> str:
         return "Microsoft.Office.Server.Search.REST.SearchService"
+
+    def autocompletions(
+        self, querytext: str, sources: str, number_of_completions: int, cursor_position: int
+    ) -> ClientResult[QueryAutoCompletionResults]:
+        """autocompletions operation.
+
+        Args:
+            querytext (str): querytext parameter
+            sources (str): sources parameter
+            number_of_completions (int): numberOfCompletions parameter
+            cursor_position (int): cursorPosition parameter
+        """
+        return_type = ClientResult(self.context, QueryAutoCompletionResults())
+        qry = FunctionQuery(
+            self, "autocompletions", [querytext, sources, number_of_completions, cursor_position], return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def exportmanualsuggestions(self) -> ClientResult[TenantCustomQuerySuggestions]:
+        """exportmanualsuggestions operation."""
+        return_type = ClientResult(self.context, TenantCustomQuerySuggestions())
+        qry = FunctionQuery(self, "exportmanualsuggestions", [], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def exportpopulartenantqueries(self, count: int) -> ClientResult[ClientValueCollection[PopularTenantQuery]]:
+        """exportpopulartenantqueries operation.
+
+        Args:
+            count (int): count parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection[PopularTenantQuery]())
+        qry = FunctionQuery(self, "exportpopulartenantqueries", [count], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def postquery(self, request: SearchRequest) -> ClientResult[SearchResult]:
+        """postquery operation.
+
+        Args:
+            request (SearchRequest): request parameter
+        """
+        return_type = ClientResult(self.context, SearchResult())
+        qry = FunctionQuery(self, "postquery", [request], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def resultspageaddress(self) -> ClientResult[str]:
+        """resultspageaddress operation."""
+        return_type = ClientResult(self.context, str())
+        qry = FunctionQuery(self, "resultspageaddress", [], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def searchcenterurl(self) -> ClientResult[str]:
+        """searchcenterurl operation."""
+        return_type = ClientResult(self.context, str())
+        qry = FunctionQuery(self, "searchcenterurl", [], return_type)
+        self.context.add_query(qry)
+        return return_type
