@@ -26,7 +26,13 @@ class GraphOpenService(BaseDocumentationService):
             path = Path(__file__).parent / "graphopenapi.yaml"
             with open(path, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
-            return data.get("components", {}).get("schemas", {})
+            if not isinstance(data, dict):
+                return {}
+            components = data.get("components", {})
+            if not isinstance(components, dict):
+                return {}
+            schemas = components.get("schemas", {})
+            return schemas if isinstance(schemas, dict) else {}
         except Exception:
             return {}
 
