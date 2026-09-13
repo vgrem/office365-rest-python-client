@@ -25,7 +25,7 @@ def main():
     parser = argparse.ArgumentParser(description="Export Teams to a resumable archive")
     parser.add_argument("--team", action="append", default=[], help="team id (repeatable)")
     parser.add_argument("--all", action="store_true", help="export every team in the tenant")
-    parser.add_argument("--output", default="./teams_export", help="output directory")
+    parser.add_argument("--output", default="/tmp", help="output directory")
     parser.add_argument("--files", action="store_true", help="also download channel files")
     parser.add_argument("--no-messages", action="store_true", help="skip messages")
     parser.add_argument("--resume", action="store_true", help="continue from the checkpoint")

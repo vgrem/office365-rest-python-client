@@ -26,7 +26,7 @@ from tests.settings import client_id, client_secret, tenant, user_principal
 
 def main():
     parser = argparse.ArgumentParser(description="Export Teams messages to NDJSON")
-    parser.add_argument("--output", default="./messages_export", help="output directory")
+    parser.add_argument("--output", default="/tmp", help="output directory")
     parser.add_argument("--team", default=None, help="team id (all channel messages)")
     parser.add_argument("--user", default=user_principal, help=f"user id/UPN (default: {user_principal})")
     parser.add_argument("--tenant", action="store_true", help="tenant-wide channel messages (overrides --user)")

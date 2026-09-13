@@ -26,7 +26,7 @@ def main():
     print("Moving folder...")
     # folder_to = folder_from.move_to_using_path(folder_to_parent).execute_query()
     folder_to = folder_from.move_to(folder_to_parent).execute_query()
-    print("Folder has been moved into '{0}'".format(folder_to.server_relative_url))
+    print(f"Folder has been moved into '{folder_to.server_relative_url}'")
 
     print("Cleaning up temporary folders ...")
     folder_to_parent.delete_object().execute_query()
