@@ -14,3 +14,6 @@ tests/selfsigncert.pem
 
 # Docs build output (mkdocs)
 /site/
+
+# Generator run checkpoints
+generator/.checkpoints/
