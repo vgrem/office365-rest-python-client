@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
-from office365.runtime.odata.type_information import TypeInformation
 from typing_extensions import Self
 
 from generator.builders import type_mapping
@@ -20,6 +19,7 @@ from generator.builders.property import PropertyBuilder
 from generator.builders.template_context import TemplateContext
 from generator.builders.type_resolver import ClientTypeResolver
 from generator.documentation.baseservice import BaseDocumentationService
+from generator.odata.type_information import TypeInformation
 
 # Base model members that generated operation methods must not shadow.
 _RESERVED_METHOD_NAMES = (

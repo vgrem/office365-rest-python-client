@@ -6,7 +6,7 @@ from generator.builders import type_mapping
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.property import PropertyBuilder
 from generator.builders.type_resolver import ClientTypeResolver
-from office365.runtime.odata.property import PropertyInformation
+from generator.odata.property import PropertyInformation
 from office365.runtime.odata.type import ODataType
 
 

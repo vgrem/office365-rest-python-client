@@ -9,11 +9,11 @@ from os.path import abspath
 from typing import cast
 
 from office365.runtime.odata.type import ODataType
-from office365.runtime.odata.type_information import TypeInformation
 
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.member import MemberBuilder
 from generator.builders.property import PropertyBuilder
+from generator.odata.type_information import TypeInformation
 
 
 class TemplateContext:

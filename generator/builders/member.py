@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 from typing import TYPE_CHECKING
 
-from office365.runtime.odata.member import MemberInformation
+from generator.odata.member import MemberInformation
 
 if TYPE_CHECKING:
     from generator.builders.template_context import TemplateContext

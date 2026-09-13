@@ -10,10 +10,9 @@ from generator.builders import type_mapping
 from generator.builders.naming import to_snake_case
 
 if TYPE_CHECKING:
-    from office365.runtime.odata.property import PropertyInformation
-
     from generator.builders.template_context import TemplateContext
     from generator.builders.type_resolver import ClientTypeResolver
+    from generator.odata.property import PropertyInformation
 
 
 class PropertyBuilder:

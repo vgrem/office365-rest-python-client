@@ -3,9 +3,9 @@ from typing import Dict, Optional
 
 from typing_extensions import Self
 
-from office365.runtime.odata.member import MemberInformation
-from office365.runtime.odata.method import MethodInformation
-from office365.runtime.odata.property import PropertyInformation
+from generator.odata.member import MemberInformation
+from generator.odata.method import MethodInformation
+from generator.odata.property import PropertyInformation
 
 
 @dataclass

@@ -7,17 +7,22 @@ from configparser import ConfigParser
 from pathlib import Path
 from typing import Optional
 
-from office365.runtime.odata.model import ODataModel
-from office365.runtime.odata.type_information import TypeInformation
-from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
-from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
-
 from generator.builders.type import TypeBuilder
 from generator.documentation.baseservice import BaseDocumentationService
 from generator.documentation.graphdocsservice import GraphOpenService
 from generator.documentation.sharepointdocsservice import SharePointService
+from generator.odata.model import ODataModel
+from generator.odata.reader import ODataReader
+from generator.odata.type_information import TypeInformation
+from generator.odata.v3.metadata_reader import ODataV3Reader
+from generator.odata.v4.metadata_reader import ODataV4Reader
 
 _GENERATOR_DIR = Path(__file__).parent
+
+_SERVICES = {
+    "sharepoint": (ODataV3Reader, SharePointService),
+    "graph": (ODataV4Reader, GraphOpenService),
+}
 
 
 def _resolve_path(value: str) -> str:
@@ -27,28 +32,41 @@ def _resolve_path(value: str) -> str:
     return str((_GENERATOR_DIR / value).resolve())
 
 
+def _parse_list(raw: str) -> list[str]:
+    """Splits a comma/newline separated config value into stripped items."""
+    return [item.strip() for item in raw.replace("\n", ",").split(",") if item.strip()]
+
+
+def _split_ignored(raw: str) -> tuple[list[str], list[str]]:
+    """Splits ignored type patterns into exact names and ``prefix*`` patterns."""
+    exact: list[str] = []
+    prefix: list[str] = []
+    for pattern in _parse_list(raw):
+        if pattern.endswith("*"):
+            prefix.append(pattern[:-1])
+        else:
+            exact.append(pattern)
+    return exact, prefix
+
+
 def _should_skip(
-    name: str, type_schema, processed_types: set, exact_ignored: list, prefix_ignored: list, options: dict
-) -> tuple[bool, bool]:
-    """Check skip conditions. Returns (should_skip, raised_error)."""
+    name: str,
+    type_schema: TypeInformation,
+    processed_types: set,
+    exact_ignored: list,
+    prefix_ignored: list,
+    allowed_base_types: set,
+) -> bool:
+    """Check whether a type should be skipped."""
     if name in processed_types:
-        return True, False
-
-    pending_skip_type = options.get("include_base_types", "")
-    if pending_skip_type:
-        allowed = set(t.strip() for t in pending_skip_type.split(","))
-        if type_schema.BaseTypeFullName not in allowed:
-            processed_types.add(name)
-            print(f"  Skipping {name} (BaseType={type_schema.BaseTypeFullName})")
-            return True, False
-
-    if name in exact_ignored:
-        return True, False
-
-    if any(name.startswith(p) for p in prefix_ignored):
-        return True, False
-
-    return False, False
+        return True
+    if allowed_base_types and type_schema.BaseTypeFullName not in allowed_base_types:
+        processed_types.add(name)
+        print(f"  Skipping {name} (BaseType={type_schema.BaseTypeFullName})")
+        return True
+    if name in exact_ignored or any(name.startswith(p) for p in prefix_ignored):
+        return True
+    return False
 
 
 def _process_type(
@@ -84,21 +102,9 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
     else:
         processed_types = set()
 
-    ignored_types_raw = options.get("filters_ignored_types", "")
-    ignored_types = [t.strip() for t in ignored_types_raw.replace("\n", ",").split(",") if t.strip()]
-    exact_ignored = []
-    prefix_ignored = []
-
-    for ignored_type in ignored_types:
-        if ignored_type.endswith("*"):
-            prefix_ignored.append(ignored_type[:-1])
-        else:
-            exact_ignored.append(ignored_type)
-
-    ignored_properties_raw = options.get("filters_ignored_properties", "")
-    options["ignored_properties"] = [
-        t.strip() for t in ignored_properties_raw.replace("\n", ",").split(",") if t.strip()
-    ]
+    options = {**options, "ignored_properties": _parse_list(options.get("filters_ignored_properties", ""))}
+    exact_ignored, prefix_ignored = _split_ignored(options.get("filters_ignored_types", ""))
+    allowed_base_types = set(_parse_list(options.get("include_base_types", "")))
 
     start_at = options.get("start_at", "").strip()
     total_types = len(model.types)
@@ -126,7 +132,7 @@ def generate_files(model: ODataModel, options: dict, docs_service: Optional[Base
                 continue
 
         type_schema = model.types[name]
-        skip, _ = _should_skip(name, type_schema, processed_types, exact_ignored, prefix_ignored, options)
+        skip = _should_skip(name, type_schema, processed_types, exact_ignored, prefix_ignored, allowed_base_types)
         if skip:
             continue
 
@@ -154,21 +160,14 @@ def _load_options(cp: ConfigParser, section: str) -> dict:
     return options
 
 
-def generate_sharepoint_model(cp: ConfigParser) -> None:
-    reader = ODataV3Reader(_resolve_path(cp.get("sharepoint", "metadata_path")))
-    # reader.format_file()
-    model = reader.generate_model()
-    docs_service = SharePointService()
-    options = _load_options(cp, "sharepoint")
-    generate_files(model, options, docs_service)
-
-
-def generate_graph_model(cp: ConfigParser) -> None:
-    reader = ODataV4Reader(_resolve_path(cp.get("graph", "metadata_path")))
-    model = reader.generate_model()
-    docs_service = GraphOpenService()
-    options = _load_options(cp, "graph")
-    generate_files(model, options, docs_service)
+def generate(service: str) -> None:
+    """Reads the service metadata and generates/updates the corresponding model files."""
+    cfg = ConfigParser()
+    cfg.read(_GENERATOR_DIR / f"settings.{service}.cfg")
+    reader_cls, docs_cls = _SERVICES[service]
+    options = _load_options(cfg, service)
+    reader: ODataReader = reader_cls(options["metadata_path"])
+    generate_files(reader.read(), options, docs_cls())
 
 
 if __name__ == "__main__":
@@ -177,15 +176,8 @@ if __name__ == "__main__":
         "service",
         nargs="?",
         default="sharepoint",
-        choices=["graph", "sharepoint"],
-        help="which model to generate (default: graph)",
+        choices=sorted(_SERVICES),
+        help="which model to generate (default: sharepoint)",
     )
     args = parser.parse_args()
-
-    cfg = ConfigParser()
-    cfg.read(Path(__file__).parent / f"settings.{args.service}.cfg")
-
-    if args.service == "graph":
-        generate_graph_model(cfg)
-    else:
-        generate_sharepoint_model(cfg)
+    generate(args.service)

@@ -1,11 +1,12 @@
 from typing import Dict, Optional
 from xml.etree.ElementTree import Element
 
-from office365.runtime.odata.method import MethodInformation
-from office365.runtime.odata.model import ODataModel
-from office365.runtime.odata.property import PropertyInformation
-from office365.runtime.odata.reader import ODataReader
 from office365.runtime.odata.type import ODataType
+
+from generator.odata.method import MethodInformation
+from generator.odata.model import ODataModel
+from generator.odata.property import PropertyInformation
+from generator.odata.reader import ODataReader
 
 _MIN_TYPE_ENCODED_PARTS = 3
 
@@ -14,15 +15,11 @@ class ODataV3Reader(ODataReader):
     """OData v3 reader"""
 
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
-        schema = PropertyInformation()
-        schema.Name = node.get("Name") or ""
-        schema.IsNavigation = True
+        schema = self._new_navigation(node)
 
         relationship = node.get("Relationship")
-        if relationship is None:
-            return None
         to_role = node.get("ToRole")
-        if to_role is None:
+        if relationship is None or to_role is None:
             return None
 
         association_name = relationship.split(".")[-1] if "." in relationship else relationship
@@ -36,17 +33,12 @@ class ODataV3Reader(ODataReader):
         if end_node is None:
             return None
 
-        multiplicity = end_node.get("Multiplicity")
-
-        if multiplicity == "*":
+        if end_node.get("Multiplicity") == "*":
             schema.TypeName = f"Collection({end_node.get('Type')})"
         else:
             schema.TypeName = end_node.get("Type")
 
         return schema
-
-    def process_method_node(self):
-        pass
 
     def process_operations(self, model: ODataModel) -> None:
         assert self._root is not None
@@ -75,16 +67,11 @@ class ODataV3Reader(ODataReader):
                 remaining = params
                 is_static = True
 
-            if binding_type is None:
-                continue
-            type_schema = model.types.get(binding_type)
-            if type_schema is None:
-                continue
-
             is_composable = node.get("IsComposable") == "true"
             is_side_effecting = node.get("IsSideEffecting") != "false"
-            kind = "function" if (is_composable or not is_side_effecting) else "action"
-            type_schema.add_method(
+            self._attach_method(
+                model,
+                binding_type,
                 MethodInformation(
                     Name=method_name,
                     Parameters=remaining,
@@ -92,10 +79,10 @@ class ODataV3Reader(ODataReader):
                     BindingTypeFullName=binding_type,
                     IsBound=is_bindable,
                     IsStatic=is_static,
-                    Kind=kind,
+                    Kind="function" if (is_composable or not is_side_effecting) else "action",
                     IsComposable=is_composable,
                     IsSideEffecting=is_side_effecting,
-                )
+                ),
             )
 
     @property

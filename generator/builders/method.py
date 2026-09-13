@@ -8,9 +8,8 @@ from generator.builders.naming import to_snake_case
 from generator.builders.type_descriptor import ReturnType
 
 if TYPE_CHECKING:
-    from office365.runtime.odata.method import MethodInformation
-
     from generator.builders.type_resolver import ClientTypeResolver
+    from generator.odata.method import MethodInformation
 
 
 class MethodBuilder:

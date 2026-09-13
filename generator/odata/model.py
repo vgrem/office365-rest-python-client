@@ -1,8 +1,8 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from typing_extensions import Self
 
-from office365.runtime.odata.type_information import TypeInformation
+from generator.odata.type_information import TypeInformation
 
 
 class ODataModel:
@@ -16,39 +16,33 @@ class ODataModel:
 
     @property
     def types(self) -> Dict[str, TypeInformation]:
-        """Gets the type mapping dictionary.
-
-        Returns:
-            A dictionary mapping type names to their schemas
-        """
+        """Gets the type mapping dictionary."""
         return self._types
 
     def add_type(self, type_schema: TypeInformation) -> Self:
         """Registers a type schema in the model.
 
         Args:
-            type_schema: The type schema to register
-
-        Returns:
-            The registered type schema (for method chaining)
+            type_schema: The type schema to register.
 
         Example:
             >>> model = ODataModel()
-            >>> model.add_type(TypeInformation("SP.User"))
+            >>> model.add_type(TypeInformation(FullName="SP.User"))
         """
         self._types[type_schema.FullName] = type_schema
         return self
+
+    def find_type(self, type_name: str) -> Optional[TypeInformation]:
+        """Returns the type schema by name, or ``None`` when it is unknown."""
+        return self._types.get(type_name)
 
     def get_type(self, type_name: str) -> TypeInformation:
         """Retrieves a type schema by name.
 
         Args:
-            type_name: The name of the type to retrieve
-
-        Returns:
-            The type schema if found
+            type_name: The name of the type to retrieve.
 
         Raises:
-            KeyError: If the type is not registered
+            KeyError: If the type is not registered.
         """
         return self._types[type_name]

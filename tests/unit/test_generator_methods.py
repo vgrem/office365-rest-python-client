@@ -9,11 +9,11 @@ from pathlib import Path
 from generator.builders.method import MethodBuilder
 from generator.builders.type import TypeBuilder
 from generator.builders.type_resolver import ClientTypeResolver
-from office365.runtime.odata.method import MethodInformation
-from office365.runtime.odata.property import PropertyInformation
-from office365.runtime.odata.type_information import TypeInformation
-from office365.runtime.odata.v3.metadata_reader import ODataV3Reader
-from office365.runtime.odata.v4.metadata_reader import ODataV4Reader
+from generator.odata.method import MethodInformation
+from generator.odata.property import PropertyInformation
+from generator.odata.type_information import TypeInformation
+from generator.odata.v3.metadata_reader import ODataV3Reader
+from generator.odata.v4.metadata_reader import ODataV4Reader
 
 _TEMPLATES = Path(__file__).resolve().parents[2] / "generator" / "templates" / "sharepoint"
 
@@ -75,7 +75,7 @@ def _write(tmp_path: Path, name: str, content: str) -> str:
 
 
 def test_v3_parses_bound_and_static_function_imports(tmp_path: Path):
-    model = ODataV3Reader(_write(tmp_path, "sp.xml", _V3_METADATA)).generate_model()
+    model = ODataV3Reader(_write(tmp_path, "sp.xml", _V3_METADATA)).read()
     schema = model.types["SP.ObjectSharingInformation"]
 
     static = schema.Methods["CanCurrentUserShareRemote"]
@@ -95,7 +95,7 @@ def test_v3_parses_bound_and_static_function_imports(tmp_path: Path):
 
 
 def test_v4_parses_bound_actions_and_functions(tmp_path: Path):
-    model = ODataV4Reader(_write(tmp_path, "graph.xml", _V4_METADATA)).generate_model()
+    model = ODataV4Reader(_write(tmp_path, "graph.xml", _V4_METADATA)).read()
     schema = model.types["microsoft.graph.identityGovernance.Workflow"]
 
     activate = schema.Methods["activate"]

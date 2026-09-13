@@ -1,27 +1,22 @@
 from typing import Dict, Optional
 from xml.etree.ElementTree import Element
 
-from office365.runtime.odata.method import MethodInformation
-from office365.runtime.odata.model import ODataModel
-from office365.runtime.odata.property import PropertyInformation
-from office365.runtime.odata.reader import ODataReader
 from office365.runtime.odata.type import ODataType
+
+from generator.odata.method import MethodInformation
+from generator.odata.model import ODataModel
+from generator.odata.property import PropertyInformation
+from generator.odata.reader import ODataReader
 
 
 class ODataV4Reader(ODataReader):
     """OData v4 reader"""
 
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
-        schema = PropertyInformation()
-        schema.Name = node.get("Name") or ""
+        schema = self._new_navigation(node)
         schema.TypeName = node.get("Type")
-        schema.IsNavigation = True
         schema.IsBeta = False
-
         return schema
-
-    def process_method_node(self):
-        pass
 
     def process_operations(self, model: ODataModel) -> None:
         assert self._root is not None
@@ -36,26 +31,21 @@ class ODataV4Reader(ODataReader):
             if binding_param.get("Type") is None:
                 continue
             binding_type = ODataType.normalize_type_name(binding_param["Type"])
-            if binding_type is None:
-                continue
-            type_schema = model.types.get(binding_type)
-            if type_schema is None:
-                continue
-
             return_node = node.find("xmlns:ReturnType", self.xml_namespaces)
-            return_type = return_node.get("Type") if return_node is not None else None
             kind = "action" if node.tag.endswith("Action") else "function"
-            type_schema.add_method(
+            self._attach_method(
+                model,
+                binding_type,
                 MethodInformation(
                     Name=name,
                     Parameters=params[1:],
-                    ReturnTypeFullName=return_type,
+                    ReturnTypeFullName=return_node.get("Type") if return_node is not None else None,
                     BindingTypeFullName=binding_type,
                     IsBound=True,
                     IsStatic=False,
                     Kind=kind,
                     IsSideEffecting=kind == "action",
-                )
+                ),
             )
 
     @property
