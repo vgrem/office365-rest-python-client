@@ -7,6 +7,7 @@ import unittest
 
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
 from requests import Response
 
 _METADATA = {"__metadata": {"type": "SP.Folder"}}
@@ -91,7 +92,7 @@ class TestNavigationGetAll(unittest.TestCase):
         {"d": {"results": []}},  # Team.children
     ]
 
-    def _walk(self, progress=None) -> tuple[list, list]:
+    def _walk(self, progress=None) -> tuple[NavigationNodeCollection, list]:
         ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
         ctx.pending_request().beforeExecute.clear()
         ctx.pending_request().transport = _ScriptedTransport(self._PAYLOADS)

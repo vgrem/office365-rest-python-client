@@ -37,7 +37,7 @@ class _FakeTransport(BaseTransport):
         resp.url = request.url
         resp.headers.update({"Content-Type": "application/json"})
         resp._content = jsonlib.dumps({"@odata.nextLink": NEXT_LINK, "value": []}).encode("utf-8")
-        resp.request = SimpleNamespace(headers=dict(PAGE_1_HEADERS))
+        resp.request = SimpleNamespace(headers=dict(PAGE_1_HEADERS))  # type: ignore[assignment]
         return resp
 
 

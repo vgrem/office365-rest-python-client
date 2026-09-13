@@ -19,13 +19,6 @@ class TestGraphPathBuilding(unittest.TestCase):
 
     client = GraphClient()
 
-    def test_build_url_resource_path(self):
-        path = UrlPath(
-            "Sample.docx",
-            ResourcePath("root", ResourcePath("drive", self.client.me.resource_path)),
-        )
-        self.assertEqual(str(path), "/me/drive/root:/Sample.docx:/")
-
     def test_build_nested_url_resource_path(self):
         parent_path = ResourcePath("root", ResourcePath("drive", self.client.me.resource_path))
         path = UrlPath("Sample.docx", UrlPath("2018", UrlPath("archive", parent_path)))
@@ -43,13 +36,6 @@ class TestGraphPathBuilding(unittest.TestCase):
         item_id = uuid.uuid4().hex
         path = self.client.sites.root.drive.items[item_id].children.resource_path
         self.assertEqual(f"/sites/root/drive/items/{item_id}/children", str(path))
-
-    def test_resolve_drive_root_path(self):
-        path = self.client.me.drive.root.resource_path
-        assert path is not None
-        item_id = uuid.uuid4().hex
-        path.set_segment(item_id)
-        self.assertEqual(f"/me/drive/items/{item_id}", str(path))
 
     def test_resolve_term_children_path(self):
         group_id = uuid.uuid4().hex

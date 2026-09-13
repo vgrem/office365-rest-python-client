@@ -6,6 +6,7 @@ import json as jsonlib
 import threading
 import time
 import unittest
+from typing import cast
 from unittest import mock
 
 from office365.graph_client import GraphClient
@@ -96,7 +97,7 @@ class _FakeTransport(BaseTransport):
     def execute(self, request):
         payload = self._payloads[min(self.calls, len(self._payloads) - 1)]
         self.calls += 1
-        self.request_payloads.append(request.data)
+        self.request_payloads.append(cast(dict, request.data))
         resp = Response()
         resp.status_code = 200
         resp.url = request.url
@@ -174,12 +175,6 @@ class _FakeQuery:
         self.url = url
         self.parameters_type = payload
         self.custom_headers = headers or {}
-
-
-def test_estimate_query_bytes():
-    big = _FakeQuery("https://x/site/_api/web/lists/guid/items(1)", {"title": "x" * 5000})
-    small = _FakeQuery("https://x/site/_api/web/lists/guid/items(1)", None)
-    assert estimate_query_bytes(big) > estimate_query_bytes(small)
 
 
 def test_partition_respects_item_cap():

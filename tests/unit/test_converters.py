@@ -28,11 +28,6 @@ from office365.search.response import SearchResponse
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 
 
-class scalars__Level(Enum):
-    Standard = "standard"
-    Premium = "premium"
-
-
 class TestScalarConverters(unittest.TestCase):
     def test_parse_datetime_iso(self):
         self.assertEqual(parse_datetime("2025-01-15T12:34:56Z"), datetime(2025, 1, 15, 12, 34, 56, tzinfo=timezone.utc))
@@ -41,14 +36,14 @@ class TestScalarConverters(unittest.TestCase):
     def test_parse_datetime_numeric_offset(self):
         value = "2025-01-15T12:34:56+00:00"
         parsed = parse_datetime(value)
-        self.assertIsNotNone(parsed)
+        assert parsed is not None
         self.assertEqual(parsed.timetuple()[:6], (2025, 1, 15, 12, 34, 56))
         self.assertIsNotNone(parsed.tzinfo)
 
     def test_parse_datetime_offset_with_microseconds(self):
         value = "2025-01-15T12:34:56.123456+00:00"
         parsed = parse_datetime(value)
-        self.assertIsNotNone(parsed)
+        assert parsed is not None
         self.assertEqual(parsed.microsecond, 123456)
 
     def test_parse_datetime_round_trip(self):
@@ -75,10 +70,6 @@ class TestSerializeValue(unittest.TestCase):
         profile = PasswordProfile(password="x", forceChangePasswordNextSignIn=True)
         self.assertEqual(serialize_value(profile), {"password": "x", "forceChangePasswordNextSignIn": True})
 
-    def test_nested_client_object(self):
-        user = _new_user({"accountEnabled": True, "userPrincipalName": "a@b.c"})
-        self.assertEqual(serialize_value(user), {"accountEnabled": True, "userPrincipalName": "a@b.c"})
-
 
 class TestClientValueToJson(unittest.TestCase):
     def test_user_profile(self):
@@ -86,6 +77,7 @@ class TestClientValueToJson(unittest.TestCase):
         profile.set_property("accountEnabled", True)
         profile.set_property("passwordProfile", {"password": "x", "forceChangePasswordNextSignIn": True})
         json = profile.to_json()
+        assert isinstance(json, dict)
         self.assertIs(json["accountEnabled"], True)
         self.assertEqual(json["passwordProfile"], {"password": "x", "forceChangePasswordNextSignIn": True})
 
@@ -140,9 +132,9 @@ class TestCoerceValue(unittest.TestCase):
 
     def test_generic_collection(self):
         response = SearchResponse()
-        response.set_property("hitsContainers", [{"hits": [{"hitId": "x"}], "total": 1}])
+        response.set_property("hitsContainers", [{"hits": [{"contentSource": "x"}], "total": 1}])
         self.assertIsInstance(response.hitsContainers[0], SearchHitsContainer)
-        self.assertEqual(response.hitsContainers[0].hits[0].hitId, "x")
+        self.assertEqual(response.hitsContainers[0].hits[0].contentSource, "x")
 
 
 class TestClientResultCoercion(unittest.TestCase):

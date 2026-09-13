@@ -243,7 +243,7 @@ class TestContextStateAfterRetryFailure(unittest.TestCase):
 def throttling__response(headers: dict) -> Response:
     resp = Response()
     resp.status_code = 200
-    resp.headers = dict(headers)
+    resp.headers.update(headers)
     return resp
 
 
@@ -274,6 +274,7 @@ def test_parse_throttling_non_sharepoint_response():
 def test_parse_throttling_malformed_values():
     limits = parse_throttling(throttling__response({"RateLimit-Remaining": "abc", "RateLimit-Reset": "30"}))
     assert limits == ThrottleLimits(remaining=None, reset=30)
+    assert limits is not None
     assert limits.remaining is None
 
 
@@ -416,7 +417,7 @@ class TestRunParallel(unittest.TestCase):
             _worker,
             [1, 2, 3, 4],  # noqa: PLR2004
             concurrency=2,  # noqa: PLR2004
-            context_factory=factory,
+            context_factory=factory,  # type: ignore[arg-type]
         )
 
         self.assertEqual(len(contexts), 2)  # noqa: PLR2004 — one context per worker thread

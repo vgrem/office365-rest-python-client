@@ -607,7 +607,7 @@ class TestTransferFilesParallel(unittest.TestCase):
         log = []
         root = _Folder(_Context(log), log)
         failures = _transfer_files_parallel(
-            root,
+            root,  # type: ignore[arg-type]
             [("a.txt", b"x"), ("docs/b.txt", b"y"), ("docs/c.txt", b"z")],
             concurrency=4,
         )
@@ -621,7 +621,7 @@ class TestTransferFilesParallel(unittest.TestCase):
         log = []
         root = _Folder(_Context(log), log)
         big = b"x" * (4 * 1024 * 1024 + 1)
-        _transfer_files_parallel(root, [("big.bin", big)], concurrency=1)
+        _transfer_files_parallel(root, [("big.bin", big)], concurrency=1)  # type: ignore[arg-type]
         self.assertIn(("session", "big.bin"), log)
         self.assertNotIn(("upload", "big.bin"), log)
 
@@ -678,7 +678,7 @@ class TestRunnerParallel(unittest.TestCase):
         options = MigrationOptions(concurrency=2, batch_size=2)
         checkpoint = Checkpoint.create()
 
-        stats = MigrationRunner().run(source, target, items, options, checkpoint)
+        stats = MigrationRunner().run(source, target, items, options, checkpoint)  # type: ignore[arg-type]
 
         self.assertEqual(stats.total, 5)  # noqa: PLR2004
         self.assertEqual(stats.success, 5)  # noqa: PLR2004
@@ -697,7 +697,7 @@ class TestRunnerParallel(unittest.TestCase):
 
         target = _Failing()
         options = MigrationOptions(concurrency=2, batch_size=100)
-        stats = MigrationRunner().run(source, target, items, options, Checkpoint.create())
+        stats = MigrationRunner().run(source, target, items, options, Checkpoint.create())  # type: ignore[arg-type]
 
         self.assertEqual(stats.errors, 1)
         self.assertEqual(stats.success, 2)  # noqa: PLR2004

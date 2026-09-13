@@ -41,7 +41,7 @@ class _Transport(BaseTransport):
         return resp
 
 
-def teamsarchive__client(transport) -> GraphClient:
+def _client(transport) -> GraphClient:
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport
@@ -60,7 +60,7 @@ def test_archive_job_round_trip(tmp_path: Path):
         ("json", _TEAM),  # run: structure read
         ("json", _TEAM),  # verify: structure checksum
     ]
-    client = teamsarchive__client(_Transport(payloads))
+    client = _client(_Transport(payloads))
     job = MigrationJob(
         TeamsArchiveSource(client, ["t1"], _options()),
         TeamsArchiveTarget(tmp_path),
@@ -114,13 +114,6 @@ _MESSAGE = {
 }
 
 
-def teamsmessages__client(transport) -> GraphClient:
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client
-
-
 class teamsmessages__CaptureTransport(BaseTransport):
     def __init__(self, content: bytes = b"", content_type: str = "application/octet-stream"):
         super().__init__()
@@ -138,27 +131,8 @@ class teamsmessages__CaptureTransport(BaseTransport):
         return resp
 
 
-class _QueueTransport(BaseTransport):
-    def __init__(self, payloads: list[tuple[str, object]]):
-        super().__init__()
-        self._payloads = payloads
-
-    def execute(self, request):
-        kind, payload = self._payloads.pop(0)
-        resp = Response()
-        resp.status_code = 200
-        resp.url = request.url
-        if kind == "raw":
-            resp.headers["Content-Type"] = "application/octet-stream"
-            resp._content = payload  # type: ignore[assignment]
-        else:
-            resp.headers["Content-Type"] = "application/json"
-            resp._content = json.dumps(payload).encode()
-        return resp
-
-
 def test_team_get_all_messages_parses_rich_fields():
-    client = teamsmessages__client(ScriptedTransport([{"value": [_MESSAGE]}]))
+    client = _client(ScriptedTransport([{"value": [_MESSAGE]}]))
     messages = client.teams.get_all_messages().execute_query()
 
     assert len(messages) == 1
@@ -177,7 +151,7 @@ def test_chat_get_all_messages_filter_in_url():
     transport = teamsmessages__CaptureTransport(
         content=json.dumps({"value": []}).encode(), content_type="application/json"
     )
-    client = teamsmessages__client(transport)
+    client = _client(transport)
 
     client.chats.get_all_messages().filter("createdDateTime gt 2024-01-01T00:00:00Z").execute_query()
 
@@ -187,7 +161,7 @@ def test_chat_get_all_messages_filter_in_url():
 
 def test_hosted_content_get_content():
     transport = teamsmessages__CaptureTransport(content=b"\x89PNG", content_type="application/octet-stream")
-    client = teamsmessages__client(transport)
+    client = _client(transport)
     hosted = ChatMessageHostedContent(client)
 
     result = hosted.get_content().execute_query()
@@ -197,7 +171,7 @@ def test_hosted_content_get_content():
 
 
 def test_visible_history_start_datetime_is_set():
-    client = teamsmessages__client(ScriptedTransport([]))
+    client = _client(ScriptedTransport([]))
     team = client.teams["t1"]
     start = datetime(2024, 1, 1, tzinfo=timezone.utc)
 
@@ -207,8 +181,8 @@ def test_visible_history_start_datetime_is_set():
 
 
 def test_download_hosted_contents_deferred(tmp_path):
-    client = teamsmessages__client(
-        _QueueTransport(
+    client = _client(
+        _Transport(
             [
                 ("json", {"value": [_MESSAGE]}),
                 ("raw", b"\x89PNG"),

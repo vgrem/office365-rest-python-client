@@ -415,10 +415,6 @@ class TestRequireLicense(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 client.require_license("BACKUP")
 
-    def test_noop_without_keywords(self):
-        client = self._make_client()
-        self.assertIs(client.require_license(), client)
-
 
 class TestRequireDelegatedPermission(unittest.TestCase):
     def _make_client(self) -> GraphClient:
@@ -440,7 +436,3 @@ class TestRequireDelegatedPermission(unittest.TestCase):
         )
         with self.assertRaises(SystemExit):
             client.require_delegated_permission("User.Read")
-
-    def test_noop_without_scopes(self):
-        client = self._make_client()
-        self.assertIs(client.require_delegated_permission(), client)

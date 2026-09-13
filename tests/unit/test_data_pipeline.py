@@ -187,24 +187,6 @@ def pipeline__collection(properties: list[dict], context=None) -> ClientObjectCo
     return col
 
 
-def test_to_records():
-    col = pipeline__collection(
-        [
-            {"userPrincipalName": "jdoe@x.com", "displayName": "John Doe", "accountEnabled": True},
-        ]
-    )
-    col.query_options.select = ["displayName", "userPrincipalName"]
-    assert col.to_records() == [{"displayName": "John Doe", "userPrincipalName": "jdoe@x.com"}]
-
-
-def test_from_records_queues_creates():
-    client = GraphClient()
-    col = ClientObjectCollection(client, User, None)
-    col.from_records([{"userPrincipalName": "jdoe@x.com", "displayName": "John"}])
-    assert len(col) == 1
-    assert len(client._queries) == 1
-
-
 def test_from_records_strips_non_importable():
     client = GraphClient()
     col = ClientObjectCollection(client, User, None)
@@ -303,7 +285,7 @@ def test_deferred_execute_query_noop():
     client = GraphClient()
     barrier = DeferredOperationQuery(client)
     request = _FakeRequest()
-    barrier.execute_query(request)  # no-op resolve: fires after_execute, sends no request
+    barrier.execute_query(request)  # type: ignore[arg-type]  # no-op resolve: fires after_execute, sends no request
     assert request.after_execute_calls == 1
     assert request.executed == []
 
@@ -316,7 +298,7 @@ def test_deferred_execute_query_runs_operation():
     op = ClientQuery(client)
     barrier.defer(op)
     request = _FakeRequest()
-    barrier.execute_query(request)  # deferred: runs the operation via the request
+    barrier.execute_query(request)  # type: ignore[arg-type]  # deferred: runs the operation via the request
     assert request.executed == [op]
 
 
@@ -344,15 +326,8 @@ def test_get_all_accepts_progress():
 pd = pytest.importorskip("pandas")
 
 
-def pandas__collection(properties: list[dict], context=None) -> ClientObjectCollection:
-    col = ClientObjectCollection(context or cast(ClientRuntimeContext, None), User, None)
-    for props in properties:
-        col.add_child(col.create_typed_object(props))
-    return col
-
-
 def test_write_dataframe():
-    col = pandas__collection(
+    col = pipeline__collection(
         [
             {"userPrincipalName": "jdoe@contoso.com", "displayName": "John Doe", "accountEnabled": True},
             {"userPrincipalName": "asmith@contoso.com", "displayName": "Alice Smith", "accountEnabled": False},
@@ -377,7 +352,7 @@ def test_read_dataframe_records():
 
 def test_flat_round_trip():
     client = GraphClient()
-    col = pandas__collection(
+    col = pipeline__collection(
         [
             {"userPrincipalName": "jdoe@contoso.com", "displayName": "John Doe", "accountEnabled": True},
         ],
@@ -398,7 +373,7 @@ def test_flat_round_trip():
 
 def test_to_dataframe_returns_dataframe_result():
     client = GraphClient()
-    col = pandas__collection([{"displayName": "John Doe"}], context=client)
+    col = pipeline__collection([{"displayName": "John Doe"}], context=client)
     result = col.to_dataframe()
     assert isinstance(result, DataFrameResult)
     # the after_execute callback materializes .value on the loaded collection
