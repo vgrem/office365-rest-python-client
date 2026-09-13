@@ -15,6 +15,7 @@ def test_primitive_type_name_formatting():
     assert type_mapping.client_type_name("Edm.Int32") == "int"
     assert type_mapping.client_type_name("Edm.Guid") == "UUID"
     assert type_mapping.client_type_name("Edm.DateTimeOffset") == "datetime"
+    assert type_mapping.client_type_name("Edm.Stream") == "bytes"
 
 
 def test_collection_type_name_formatting():
@@ -39,6 +40,7 @@ def test_primitive_and_collection_lookups():
     assert ODataType.is_primitive_name("Edm.Int32") is True
     assert ODataType.is_primitive_name("SP.Web") is False
     assert ODataType.primitive_type_for("Edm.Int32") is int
+    assert ODataType.primitive_type_for("Edm.Stream") is bytes
     assert ODataType.primitive_type_for("SP.Web") is None
     assert ODataType.is_collection_name("Collection(SP.Web)") is True
     assert ODataType.is_collection_name("SP.Web") is False

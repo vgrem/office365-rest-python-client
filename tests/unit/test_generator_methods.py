@@ -8,6 +8,7 @@ from pathlib import Path
 
 from generator.builders.method import MethodBuilder
 from generator.builders.type import TypeBuilder
+from generator.builders.type_resolver import ClientTypeResolver
 from office365.runtime.odata.method import MethodInformation
 from office365.runtime.odata.property import PropertyInformation
 from office365.runtime.odata.type_information import TypeInformation
@@ -146,7 +147,7 @@ def test_generate_methods_disabled_skips_methods_and_imports(tmp_path: Path):
 
 def test_generate_methods_enabled_emits_method_and_imports(tmp_path: Path):
     source = _build_static_method_type(tmp_path, "true")
-    assert "def sp__test_thing__do_it(context, value: str)" in source
+    assert "def sp__test_thing__do_it(context: ClientContext, value: str)" in source
     assert "from office365.runtime.queries.service_operation import ServiceOperationQuery" in source
     assert "from office365.sharepoint.client_context import ClientContext" in source
     _compile(source)
@@ -154,7 +155,7 @@ def test_generate_methods_enabled_emits_method_and_imports(tmp_path: Path):
 
 def test_generate_methods_flag_is_case_insensitive(tmp_path: Path):
     source = _build_static_method_type(tmp_path, "True")
-    assert "def sp__test_thing__do_it(context, value: str)" in source
+    assert "def sp__test_thing__do_it(context: ClientContext, value: str)" in source
     _compile(source)
 
 
@@ -175,7 +176,7 @@ def test_method_builder_static_function():
     source = MethodBuilder(schema).build_source()
 
     assert "@staticmethod" in source
-    assert "def can_current_user_share_remote(context, doc_id: str) -> ClientResult[int]:" in source
+    assert "def can_current_user_share_remote(context: ClientContext, doc_id: str) -> ClientResult[int]:" in source
     assert "ServiceOperationQuery(" in source
     assert "None, return_type, True" in source  # is_static
     _compile(source)
@@ -206,4 +207,143 @@ def test_method_builder_instance_void_and_primitive():
     source = MethodBuilder(primitive).build_source()
     assert "-> ClientResult[int]:" in source
     assert "FunctionQuery(self" in source
+    _compile(source)
+
+
+def test_method_builder_void_action_keeps_payload():
+    schema = MethodInformation(
+        Name="AddModelDependency",
+        Parameters=[
+            {"Name": "modelId", "Type": "Edm.String", "Nullable": True},
+            {"Name": "updateExisting", "Type": "Edm.Boolean", "Nullable": True},
+        ],
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningModel",
+        IsBound=True,
+        IsStatic=False,
+        Kind="action",
+    )
+    source = MethodBuilder(schema).build_source()
+    assert "def add_model_dependency(self, model_id: str, update_existing: bool) -> Self:" in source
+    assert '{"modelId": model_id, "updateExisting": update_existing}' in source
+    assert "return self" in source
+    _compile(source)
+
+
+def test_method_builder_stream_function_uses_raw_content():
+    function = MethodInformation(
+        Name="DownloadStream",
+        ReturnTypeFullName="Edm.Stream",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningModel",
+        IsBound=True,
+        IsStatic=False,
+        Kind="function",
+    )
+    source = MethodBuilder(function).build_source()
+    assert 'FunctionQuery(self, "DownloadStream", [], return_type, return_raw_content=True)' in source
+    _compile(source)
+
+    action = MethodInformation(
+        Name="InvokeConnectorQuery",
+        ReturnTypeFullName="Edm.Stream",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningModel",
+        IsBound=True,
+        IsStatic=False,
+        Kind="action",
+    )
+    source = MethodBuilder(action).build_source()
+    assert "return_raw_content" not in source
+    _compile(source)
+
+
+def test_method_builder_key_value_collection():
+    schema = MethodInformation(
+        Name="GetProperties",
+        ReturnTypeFullName="Collection(SP.KeyValue)",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningHub",
+        IsBound=True,
+        IsStatic=False,
+        Kind="function",
+    )
+    source = MethodBuilder(schema, resolver=_resolver()).build_source()
+    assert "-> ClientResult[dict]:" in source
+    assert "return_type = ClientResult(self.context, dict())" in source
+    _compile(source)
+
+
+def _resolver() -> ClientTypeResolver:
+    return ClientTypeResolver(["office365.sharepoint"])
+
+
+def test_method_builder_stream_maps_to_bytes():
+    schema = MethodInformation(
+        Name="InvokeConnectorQuery",
+        ReturnTypeFullName="Edm.Stream",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningModel",
+        IsBound=True,
+        IsStatic=False,
+        Kind="action",
+    )
+    source = MethodBuilder(schema, resolver=_resolver()).build_source()
+    assert "def invoke_connector_query(self) -> ClientResult[bytes]:" in source
+    assert "return_type = ClientResult(self.context, bytes())" in source
+    _compile(source)
+
+
+def test_method_builder_complex_return_is_wrapped_in_client_result():
+    schema = MethodInformation(
+        Name="GetColumnLLMInfo",
+        ReturnTypeFullName="SP.Utilities.LLMColumnInfo",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningHub",
+        IsBound=True,
+        IsStatic=False,
+        Kind="function",
+    )
+    source = MethodBuilder(schema, resolver=_resolver()).build_source()
+    assert "def get_column_llm_info(self) -> ClientResult[LLMColumnInfo]:" in source
+    assert "return_type = ClientResult(self.context, LLMColumnInfo())" in source
+    _compile(source)
+
+
+def test_method_builder_entity_return_is_direct():
+    schema = MethodInformation(
+        Name="GetByContentTypeId",
+        ReturnTypeFullName="SP.Web",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningHub",
+        IsBound=True,
+        IsStatic=False,
+        Kind="function",
+    )
+    source = MethodBuilder(schema, resolver=_resolver()).build_source()
+    assert "def get_by_content_type_id(self) -> Web:" in source
+    assert "return_type = Web(self.context)" in source
+    _compile(source)
+
+
+def test_method_builder_entity_collection_is_direct():
+    schema = MethodInformation(
+        Name="GetWebs",
+        ReturnTypeFullName="Collection(SP.Web)",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningHub",
+        IsBound=True,
+        IsStatic=False,
+        Kind="function",
+    )
+    source = MethodBuilder(schema, resolver=_resolver()).build_source()
+    assert "-> EntityCollection[Web]:" in source
+    assert "return_type = EntityCollection(self.context, Web)" in source
+    _compile(source)
+
+
+def test_method_builder_complex_collection_is_wrapped():
+    schema = MethodInformation(
+        Name="GetRetentionLabels",
+        ReturnTypeFullName="Collection(SP.Compliance.Tags.ComplianceTag)",
+        BindingTypeFullName="SP.ContentCenter.SPMachineLearningHub",
+        IsBound=True,
+        IsStatic=False,
+        Kind="function",
+    )
+    source = MethodBuilder(schema, resolver=_resolver()).build_source()
+    assert "-> ClientResult[ClientValueCollection[ComplianceTag]]:" in source
+    assert "return_type = ClientResult(self.context, ClientValueCollection[ComplianceTag]())" in source
     _compile(source)

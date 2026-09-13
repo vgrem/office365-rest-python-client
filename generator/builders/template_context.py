@@ -82,7 +82,10 @@ class TemplateContext:
             else:
                 default_value = f"{prop_type_name}(self.context, ResourcePath('{prop_name}', self.resource_path))"
         elif builder.is_collection_type:
-            default_value = f"{prop_type_name}({builder.client_item_type_name})"
+            if prop_type_name in ("StringCollection", "GuidCollection"):
+                default_value = f"{prop_type_name}()"
+            else:
+                default_value = f"{prop_type_name}({builder.client_item_type_name})"
         else:
             resolved = builder.resolve_client_type()
             if resolved is not None and inspect.isclass(resolved):

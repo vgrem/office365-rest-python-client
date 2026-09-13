@@ -16,6 +16,7 @@ _PRIMITIVE_TYPES = {
     "Edm.Single": float,
     "Edm.Double": float,
     "Edm.Binary": bytes,
+    "Edm.Stream": bytes,
     "Edm.DateTimeOffset": datetime.datetime,
     "Edm.DateTime": datetime.datetime,
     "Edm.Duration": datetime.timedelta,

@@ -6,6 +6,8 @@ from enum import Enum
 from os.path import abspath
 from typing import Dict, List, Optional
 
+from office365.runtime.client_object import ClientObject
+from office365.runtime.client_value import ClientValue
 from office365.runtime.odata.type_information import TypeInformation
 from typing_extensions import Self
 
@@ -18,6 +20,11 @@ from generator.builders.property import PropertyBuilder
 from generator.builders.template_context import TemplateContext
 from generator.builders.type_resolver import ClientTypeResolver
 from generator.documentation.baseservice import BaseDocumentationService
+
+# Base model members that generated operation methods must not shadow.
+_RESERVED_METHOD_NAMES = (
+    {name for name in dir(ClientObject)} | {name for name in dir(ClientValue)} | {"update", "delete_object", "id"}
+)
 
 
 class TypeBuilder(ast.NodeTransformer):
@@ -59,9 +66,9 @@ class TypeBuilder(ast.NodeTransformer):
 
         ignored_methods = set(options.get("ignored_methods", []))
         self._methods = [
-            MethodBuilder(method_schema)
+            MethodBuilder(method_schema, resolver=self._resolver)
             for method_name, method_schema in self._schema.Methods.items()
-            if method_name not in ignored_methods
+            if method_name not in ignored_methods and to_snake_case(method_name) not in _RESERVED_METHOD_NAMES
         ]
 
         if self._docs_service:
@@ -298,7 +305,7 @@ class TypeBuilder(ast.NodeTransformer):
         """Insert generated operation methods (functions/actions) that are missing."""
         if not self._methods or not self._generate_methods_enabled():
             return
-
+        assert self._options is not None
         context_type = self._options.get("context_type", "ClientContext")
         for method in self._methods:
             if method.status == "attached":
@@ -355,7 +362,6 @@ class TypeBuilder(ast.NodeTransformer):
             body=[ast.Return(value=ast.Constant(value=full_name))],
             decorator_list=[ast.Name(id="property", ctx=ast.Load())],
             returns=ast.Name(id="str", ctx=ast.Load()),
-            type_params=[],
         )
 
     def _ensure_entity_type_name(self, class_node: ast.ClassDef):

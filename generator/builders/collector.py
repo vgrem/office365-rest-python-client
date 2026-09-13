@@ -91,13 +91,11 @@ class TypeReferenceCollector:
     def add_method(self, method, context_type: str = "ClientContext") -> None:
         """Track imports required by a generated operation method."""
         schema = method.schema
-        if schema.IsStatic and schema.ReturnTypeFullName:
+        if schema.IsStatic:
             self.add(context_type)
         self.add("FunctionQuery" if schema.Kind == "function" else "ServiceOperationQuery")
         if schema.ReturnTypeFullName:
-            if method.is_primitive or method.is_collection:
-                self.add("ClientResult")
-            self._add_python_type(method.client_type_name)
+            self._add_python_type(method.return_annotation)
         elif not schema.IsStatic:
             self.add("Self")
         for param in schema.Parameters or []:
