@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-09-13
+
+### Fixed
+- `File.open_binary` / `File.save_binary` mangled the URL by percent-encoding
+  the whole OData call (`(`→`%28`, `)`→`%29`, `$`→`%24`) and adding a stray
+  backslash before `$value`, causing a `400 Bad Request`
+  ([#978](https://github.com/vgrem/office365-rest-python-client/issues/978)).
+  Only the path value is encoded now; the call syntax and `/$value` stay
+  literal.
+
 ## [3.1.0] - 2026-09-13
 
 ### Added
