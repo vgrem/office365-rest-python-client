@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+from uuid import UUID
 
 from typing_extensions import Self
 
@@ -9,29 +10,21 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.file import File
 from office365.sharepoint.marketplace.app_metadata import CorporateCatalogAppMetadata
-from office365.sharepoint.marketplace.app_metadata_collection import (
-    CorporateCatalogAppMetadataCollection,
-)
-from office365.sharepoint.marketplace.corporatecuratedgallery.app_request_information import (
-    SPStoreAppRequestInformation,
-)
+from office365.sharepoint.marketplace.app_metadata_collection import CorporateCatalogAppMetadataCollection
+from office365.sharepoint.marketplace.corporatecuratedgallery.app_request_information import SPStoreAppRequestInformation
 from office365.sharepoint.marketplace.corporatecuratedgallery.app_response_information import (
     SPStoreAppResponseInformation,
 )
-from office365.sharepoint.marketplace.corporatecuratedgallery.app_upgrade_availability import (
-    AppUpgradeAvailability,
+from office365.sharepoint.marketplace.corporatecuratedgallery.app_upgrade_availability import AppUpgradeAvailability
+from office365.sharepoint.marketplace.corporatecuratedgallery.carddesigns.card_designs import CardDesigns
+from office365.sharepoint.marketplace.corporatecuratedgallery.spappaddanddeployresponseinfomation import (
+    SPAppAddAndDeployResponseInfomation,
 )
-from office365.sharepoint.marketplace.corporatecuratedgallery.carddesigns.card_designs import (
-    CardDesigns,
-)
-from office365.sharepoint.marketplace.corporatecuratedgallery.teams_package_download import (
-    TeamsPackageDownload,
-)
-from office365.sharepoint.marketplace.sitecollection.appcatalog.allowed_items import (
-    SiteCollectionAppCatalogAllowedItems,
-)
+from office365.sharepoint.marketplace.corporatecuratedgallery.teams_package_download import TeamsPackageDownload
+from office365.sharepoint.marketplace.sitecollection.appcatalog.allowed_items import SiteCollectionAppCatalogAllowedItems
 
 
 class TenantCorporateCatalogAccessor(Entity):
@@ -102,12 +95,7 @@ class TenantCorporateCatalogAccessor(Entity):
 
     def upload(self, content, overwrite, url, xor_hash=None):
         """"""
-        payload = {
-            "Content": content,
-            "Overwrite": overwrite,
-            "Url": url,
-            "XorHash": xor_hash,
-        }
+        payload = {"Content": content, "Overwrite": overwrite, "Url": url, "XorHash": xor_hash}
         qry = ServiceOperationQuery(self, "Upload", None, payload)
         self.context.add_query(qry)
         return self
@@ -136,25 +124,114 @@ class TenantCorporateCatalogAccessor(Entity):
     def card_designs(self) -> CardDesigns:
         """Returns the card designs available in this corporate catalog."""
         return self.properties.get(
-            "CardDesigns",
-            CardDesigns(self.context, ResourcePath("CardDesigns", self.resource_path)),
+            "CardDesigns", CardDesigns(self.context, ResourcePath("CardDesigns", self.resource_path))
         )
 
     @odata(name="SiteCollectionAppCatalogsSites")
     @property
-    def site_collection_app_catalogs_sites(
-        self,
-    ) -> SiteCollectionAppCatalogAllowedItems:
+    def site_collection_app_catalogs_sites(self) -> SiteCollectionAppCatalogAllowedItems:
         """Returns an accessor to the allow list of site collections allowed to have site collection corporate
         catalogs."""
         return self.properties.get(
             "SiteCollectionAppCatalogsSites",
             SiteCollectionAppCatalogAllowedItems(
-                self.context,
-                ResourcePath("SiteCollectionAppCatalogsSites", self.resource_path),
+                self.context, ResourcePath("SiteCollectionAppCatalogsSites", self.resource_path)
             ),
         )
 
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.TenantCorporateCatalogAccessor"
+
+    @property
+    def store_apps(self) -> EntityCollection[CorporateCatalogAppMetadata]:
+        """Gets the StoreApps property"""
+        return self.properties.get(
+            "StoreApps",
+            EntityCollection[CorporateCatalogAppMetadata](
+                self.context, CorporateCatalogAppMetadata, ResourcePath("StoreApps", self.resource_path)
+            ),
+        )
+
+    def add_and_deploy_store_app_by_id(
+        self,
+        caller_id: str,
+        cmu: str,
+        is_updating_app: bool,
+        overwrite: bool,
+        skip_feature_deployment: bool,
+        store_asset_id: str,
+    ) -> ClientResult[SPAppAddAndDeployResponseInfomation]:
+        """AddAndDeployStoreAppById operation.
+
+        Args:
+            caller_id (str): CallerId parameter
+            cmu (str): CMU parameter
+            is_updating_app (bool): isUpdatingApp parameter
+            overwrite (bool): Overwrite parameter
+            skip_feature_deployment (bool): SkipFeatureDeployment parameter
+            store_asset_id (str): StoreAssetId parameter
+        """
+        return_type = ClientResult(self.context, SPAppAddAndDeployResponseInfomation())
+        qry = ServiceOperationQuery(
+            self,
+            "AddAndDeployStoreAppById",
+            None,
+            {
+                "CallerId": caller_id,
+                "CMU": cmu,
+                "isUpdatingApp": is_updating_app,
+                "Overwrite": overwrite,
+                "SkipFeatureDeployment": skip_feature_deployment,
+                "StoreAssetId": store_asset_id,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def solution_contains_teams_component(self, id_: UUID) -> ClientResult[bool]:
+        """SolutionContainsTeamsComponent operation.
+
+        Args:
+            id_ (UUID): id parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "SolutionContainsTeamsComponent", None, {"id": id_}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def sync_solution_to_teams(self, id_: int) -> ClientResult[int]:
+        """SyncSolutionToTeams operation.
+
+        Args:
+            id_ (int): id parameter
+        """
+        return_type = ClientResult(self.context, int())
+        qry = ServiceOperationQuery(self, "SyncSolutionToTeams", None, {"id": id_}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def sync_solution_to_teams_by_unique_id(self, id_: UUID) -> Self:
+        """SyncSolutionToTeamsByUniqueId operation.
+
+        Args:
+            id_ (UUID): id parameter
+        """
+        qry = ServiceOperationQuery(self, "SyncSolutionToTeamsByUniqueId", None, {"id": id_}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_my_request_status(self, request_id: UUID, status: int) -> Self:
+        """UpdateMyRequestStatus operation.
+
+        Args:
+            request_id (UUID): RequestId parameter
+            status (int): Status parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "UpdateMyRequestStatus", None, {"RequestId": request_id, "Status": status}, None, None
+        )
+        self.context.add_query(qry)
+        return self

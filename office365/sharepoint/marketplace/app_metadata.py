@@ -75,9 +75,105 @@ class CorporateCatalogAppMetadata(Entity):
 
     @property
     def property_ref_name(self):
-        # return "AadAppId"
         return "ID"
 
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.CorporateCatalogAppMetadata"
+
+    @property
+    def aad_app_id(self) -> Optional[str]:
+        """Gets the AadAppId property"""
+        return self.properties.get("AadAppId", None)
+
+    @property
+    def cdn_location(self) -> Optional[str]:
+        """Gets the CDNLocation property"""
+        return self.properties.get("CDNLocation", None)
+
+    @property
+    def contains_tenant_wide_extension(self) -> Optional[bool]:
+        """Gets the ContainsTenantWideExtension property"""
+        return self.properties.get("ContainsTenantWideExtension", None)
+
+    @property
+    def current_version_deployed(self) -> Optional[bool]:
+        """Gets the CurrentVersionDeployed property"""
+        return self.properties.get("CurrentVersionDeployed", None)
+
+    @property
+    def deployed(self) -> Optional[bool]:
+        """Gets the Deployed property"""
+        return self.properties.get("Deployed", None)
+
+    @property
+    def error_message(self) -> Optional[str]:
+        """Gets the ErrorMessage property"""
+        return self.properties.get("ErrorMessage", None)
+
+    @property
+    def id_(self) -> Optional[str]:
+        """Gets the ID property"""
+        return self.properties.get("ID", None)
+
+    @property
+    def installed_version(self) -> Optional[str]:
+        """Gets the InstalledVersion property"""
+        return self.properties.get("InstalledVersion", None)
+
+    @property
+    def is_enabled(self) -> Optional[bool]:
+        """Gets the IsEnabled property"""
+        return self.properties.get("IsEnabled", None)
+
+    @property
+    def is_package_default_skip_feature_deployment(self) -> Optional[bool]:
+        """Gets the IsPackageDefaultSkipFeatureDeployment property"""
+        return self.properties.get("IsPackageDefaultSkipFeatureDeployment", None)
+
+    @property
+    def is_valid_app_package(self) -> Optional[bool]:
+        """Gets the IsValidAppPackage property"""
+        return self.properties.get("IsValidAppPackage", None)
+
+    @property
+    def product_id(self) -> Optional[str]:
+        """Gets the ProductId property"""
+        return self.properties.get("ProductId", None)
+
+    @property
+    def short_description(self) -> Optional[str]:
+        """Gets the ShortDescription property"""
+        return self.properties.get("ShortDescription", None)
+
+    @property
+    def skip_deployment_feature(self) -> Optional[bool]:
+        """Gets the SkipDeploymentFeature property"""
+        return self.properties.get("SkipDeploymentFeature", None)
+
+    @property
+    def store_asset_id(self) -> Optional[str]:
+        """Gets the StoreAssetId property"""
+        return self.properties.get("StoreAssetId", None)
+
+    @property
+    def supports_teams_tabs(self) -> Optional[bool]:
+        """Gets the SupportsTeamsTabs property"""
+        return self.properties.get("SupportsTeamsTabs", None)
+
+    @property
+    def thumbnail_url(self) -> Optional[str]:
+        """Gets the ThumbnailUrl property"""
+        return self.properties.get("ThumbnailUrl", None)
+
+    def retract(self) -> Self:
+        """Retract operation."""
+        qry = ServiceOperationQuery(self, "Retract", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def upgrade(self) -> Self:
+        """Upgrade operation."""
+        qry = ServiceOperationQuery(self, "Upgrade", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

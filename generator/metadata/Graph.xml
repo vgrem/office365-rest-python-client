@@ -770,9 +770,6 @@
          <Annotations Target="microsoft.graph.application/createdByAppId">
             <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
          </Annotations>
-         <Annotations Target="microsoft.graph.managedAppRegistration">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The ManagedAppRegistration resource represents the details of an app, with management capability, used by a member of the organization."/>
-         </Annotations>
          <Annotations Target="microsoft.graph.servicePrincipal/createdByAppId">
             <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
          </Annotations>
@@ -806,20 +803,8 @@
                </Collection>
             </Annotation>
          </Annotations>
-         <Annotations Target="microsoft.graph.bookingPageSettings/privacyPolicyWebUrl">
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="Example: https://www.contoso.com"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingPageSettings/termsAndConditionsWebUrl">
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="Example: https://www.contoso.com"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingAppointment/anonymousJoinWebUrl">
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-         </Annotations>
          <Annotations Target="microsoft.graph.bookingAppointment/customerNotes">
             <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The value of this property is only available when reading an individual booking appointment by id. Its value can only be set when creating a new appointment with a new customer, ie, without specifying a CustomerId. After that, the property is computed from the customer represented by CustomerId."/>
          </Annotations>
          <Annotations Target="microsoft.graph.bookingAppointment/duration">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
@@ -827,59 +812,20 @@
          <Annotations Target="microsoft.graph.bookingAppointment/filledAttendeesCount">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
-         <Annotations Target="microsoft.graph.bookingAppointment/joinWebUrl">
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingAppointment/reminders">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The value of this property is only available when reading an individual booking appointment by id."/>
-         </Annotations>
          <Annotations Target="microsoft.graph.bookingAppointment/serviceId">
             <Annotation Term="Org.OData.Core.V1.Immutable" Bool="true"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingAppointment/serviceName">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="This property is optional when creating a new appointment. If not specified, it is computed from the service associated with the appointment by the service id."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingAppointment/serviceNotes">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The value of this property is only available when reading an individual booking appointment by id."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingBusiness">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The bookingBusiness is the top level object which contains business information and related business objects such as appointments, customers, services and staff members."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingBusiness/displayName">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The display name is suitable for human-readable interfaces."/>
          </Annotations>
          <Annotations Target="microsoft.graph.bookingBusiness/isPublished">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
          <Annotations Target="microsoft.graph.bookingBusiness/publicUrl">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingBusiness/webSiteUrl">
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="Example: https://www.contoso.com"/>
          </Annotations>
          <Annotations Target="microsoft.graph.bookingCurrency/symbol">
             <Annotation Term="Org.OData.Core.V1.IsLanguageDependent" Bool="true"/>
          </Annotations>
-         <Annotations Target="microsoft.graph.bookingCustomer/displayName">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The display name is suitable for human-readable interfaces."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingCustomQuestion/displayName">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The display name is suitable for human-readable interfaces."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingService/defaultReminders">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The value of this property is only available when reading an individual booking service by id."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingService/displayName">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The display name is suitable for human-readable interfaces."/>
-         </Annotations>
          <Annotations Target="microsoft.graph.bookingService/webUrl">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.IsURL" Bool="true"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.bookingStaffMember/displayName">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The display name is suitable for human-readable interfaces."/>
          </Annotations>
          <Annotations Target="microsoft.graph.identityProvider">
             <Annotation Term="Org.OData.Core.V1.Revisions">
@@ -955,9 +901,6 @@
                   </Record>
                </Collection>
             </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.security.sensorSettings/networkAdapters">
-            <Annotation Term="Org.OData.Core.V1.AutoExpand" Bool="true"/>
          </Annotations>
          <Annotations Target="microsoft.graph.remoteTenantGroup">
             <Annotation Term="Org.OData.Core.V1.Revisions">
@@ -1125,9 +1068,6 @@
          <Annotations Target="microsoft.graph.educationSubmission/webUrl">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
-         <Annotations Target="microsoft.graph.restorePointSearchResult/restorePoint">
-            <Annotation Term="Org.OData.Core.V1.AutoExpand" Bool="true"/>
-         </Annotations>
          <Annotations Target="microsoft.graph.backupRestoreRoot/protectionUnits">
             <Annotation Term="Org.OData.Core.V1.ExplicitOperationBindings">
                <Collection>
@@ -1253,496 +1193,236 @@
                </Collection>
             </Annotation>
          </Annotations>
-         <Annotations Target="microsoft.graph.callRecords.callRecord/organizer_v2">
-            <Annotation Term="Org.OData.Core.V1.AutoExpand" Bool="true"/>
-         </Annotations>
          <Annotations Target="microsoft.graph.androidStoreApp/packageId">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedApp/appAvailability">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedMobileLobApp/size">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.managedMobileLobApp/contentVersions">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileApp/createdDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileApp/lastModifiedDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileApp/publishingState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppCategory/lastModifiedDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppContentFile/azureStorageUri">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppContentFile/azureStorageUriExpirationDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppContentFile/createdDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppContentFile/isCommitted">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppContentFile/uploadState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/sourceDisplayName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/sourceDisplayVersion">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/sourceId">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/sourcePublisherDisplayName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/targetDisplayName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/targetDisplayVersion">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileAppRelationship/targetPublisherDisplayName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.mobileLobApp/size">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.mobileLobApp/contentVersions">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.windowsUniversalAppX/committedContainedApps">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/activationLockBypassCode">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/androidSecurityPatchLevel">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/azureADDeviceId">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/azureADRegistered">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/complianceGracePeriodExpirationDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/complianceState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/configurationManagerClientEnabledFeatures">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/deviceActionResults">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/deviceCategoryDisplayName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/deviceEnrollmentType">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/deviceHealthAttestationState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/deviceName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/deviceRegistrationState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/easActivated">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/easActivationDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/easDeviceId">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/emailAddress">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/enrolledDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/enrollmentProfileName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/ethernetMacAddress">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/exchangeAccessState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/exchangeAccessStateReason">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/exchangeLastSuccessfulSyncDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/freeStorageSpaceInBytes">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/iccid">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/imei">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/isEncrypted">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/isSupervised">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/jailBroken">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/lastSyncDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/managementAgent">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/managementCertificateExpirationDate">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/managementState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/manufacturer">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/meid">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/model">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/operatingSystem">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/osVersion">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/partnerReportedThreatState">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/phoneNumber">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/physicalMemoryInBytes">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/remoteAssistanceSessionErrorDetails">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/remoteAssistanceSessionUrl">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/requireUserEnrollmentApproval">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/serialNumber">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/subscriberCarrier">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/totalStorageSpaceInBytes">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/udid">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/userDisplayName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/userId">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/userPrincipalName">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.managedDevice/wiFiMacAddress">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.managedDevice/windowsProtectionState">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.windows81GeneralConfiguration/applyOnlyToWindows81">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsPhone81GeneralConfiguration/applyOnlyToWindowsPhone81">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsUpdateForBusinessConfiguration/featureUpdatesPauseStartDate">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.windowsUpdateForBusinessConfiguration/qualityUpdatesPauseStartDate">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.applePushNotificationCertificate/certificateSerialNumber">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.androidManagedAppRegistration">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The ManagedAppRegistration resource represents the details of an app, with management capability, used by a member of the organization."/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.iosManagedAppRegistration">
-            <Annotation Term="Org.OData.Core.V1.LongDescription" String="The ManagedAppRegistration resource represents the details of an app, with management capability, used by a member of the organization."/>
          </Annotations>
          <Annotations Target="microsoft.graph.security.alert/category">
             <Annotation Term="Org.OData.Core.V1.Revisions">
@@ -1839,9 +1519,6 @@
          </Annotations>
          <Annotations Target="microsoft.graph.usedInsight/resourceVisualization">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.windowsSetting/instances">
-            <Annotation Term="Org.OData.Core.V1.AutoExpand" Bool="true"/>
          </Annotations>
          <Annotations Target="microsoft.graph.alertDetection">
             <Annotation Term="Org.OData.Core.V1.Revisions">
@@ -2143,46 +1820,11 @@
          <Annotations Target="microsoft.graph.relatedTenant/isMicrosoftInfrastructure">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
-         <Annotations Target="microsoft.graph.community/groupId">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.engagementAsyncOperation/operationType">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.engagementAsyncOperation/resourceId">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.engagementConversation/creationMode">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Write</EnumMember>
-            </Annotation>
-         </Annotations>
-         <Annotations Target="microsoft.graph.engagementConversation/starterId">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
-         </Annotations>
          <Annotations Target="microsoft.graph.engagementConversationMessage/createdDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
-         <Annotations Target="microsoft.graph.engagementConversationMessage/creationMode">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Write</EnumMember>
-            </Annotation>
-         </Annotations>
          <Annotations Target="microsoft.graph.engagementConversationMessage/lastModifiedDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
-         </Annotations>
-         <Annotations Target="microsoft.graph.engagementConversationMessage/replyToId">
-            <Annotation Term="Org.OData.Core.V1.Permissions">
-               <EnumMember>Org.OData.Core.V1.Permission/Read</EnumMember>
-            </Annotation>
          </Annotations>
          <Annotations Target="microsoft.graph.engagementConversationMessageReaction/createdDateTime">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
@@ -2383,6 +2025,28 @@
          </Annotations>
          <Annotations Target="microsoft.graph.createSnapshot(Collection(microsoft.graph.configurationBaseline), Edm.String, Edm.String, Collection(Edm.String))">
             <Annotation Term="Org.OData.Core.V1.RequiresExplicitBinding" Bool="true"/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.GraphService/identityProviders">
+            <Annotation Term="Org.OData.Core.V1.Revisions">
+               <Collection>
+                  <Record>
+                     <PropertyValue Property="Date" Date="2021-08-24"/>
+                     <PropertyValue Property="Description" String="The identityProvider API is deprecated and will stop returning data on March 2023. Please use the new identityProviderBase API."/>
+                     <PropertyValue Property="Kind">
+                        <EnumMember>Org.OData.Core.V1.RevisionKind/Deprecated</EnumMember>
+                     </PropertyValue>
+                     <PropertyValue Property="RemovalDate" Date="2023-03-15"/>
+                     <PropertyValue Property="Version" String="2021-05/identityProvider"/>
+                  </Record>
+               </Collection>
+            </Annotation>
+         </Annotations>
+         <Annotations Target="microsoft.graph.GraphService/admin/configurationManagement/configurationSnapshots">
+            <Annotation Term="Org.OData.Core.V1.ExplicitOperationBindings">
+               <Collection>
+                  <String>microsoft.graph.createSnapshot</String>
+               </Collection>
+            </Annotation>
          </Annotations>
       </Schema>
       <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="microsoft.graph" Alias="graph">

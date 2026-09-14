@@ -202,8 +202,8 @@ class TestGraphChannel(GraphDelegatedTestCase):
         if not channel:
             self.skipTest("No channel created from previous test")
 
-        message = channel.messages.add(body={"content": "Hello world!"}).execute_query()
-        self.assertIsNotNone(message.get_property("id"))
+        message = channel.messages.add("Hello world!").execute_query()
+        self.assertIsNotNone(message.id)
         TestGraphChannel.target_message = message
 
     @requires_delegated("ChannelMessage.Send")
@@ -214,7 +214,7 @@ class TestGraphChannel(GraphDelegatedTestCase):
             self.skipTest("No message sent from previous test")
 
         reply = msg.replies.add(body={"content": "Hello world back!"}).execute_query()
-        self.assertIsNotNone(reply.get_property("id"))
+        self.assertIsNotNone(reply.id)
 
     @requires_delegated(
         "Channel.Delete.All",

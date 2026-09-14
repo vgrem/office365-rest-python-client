@@ -1,5 +1,9 @@
 from typing import Optional
+from uuid import UUID
 
+from typing_extensions import Self
+
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
 
@@ -23,3 +27,28 @@ class SiteCollectionAppCatalogAllowedItem(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.SiteCollectionAppCatalogAllowedItem"
+
+    @property
+    def error_message(self) -> Optional[str]:
+        """Gets the ErrorMessage property"""
+        return self.properties.get("ErrorMessage", None)
+
+    def remove(self, absolute_path: str) -> Self:
+        """Remove operation.
+
+        Args:
+            absolute_path (str): absolutePath parameter
+        """
+        qry = ServiceOperationQuery(self, "Remove", None, {"absolutePath": absolute_path}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def remove_by_id(self, site_id: UUID) -> Self:
+        """RemoveById operation.
+
+        Args:
+            site_id (UUID): siteId parameter
+        """
+        qry = ServiceOperationQuery(self, "RemoveById", None, {"siteId": site_id}, None, None)
+        self.context.add_query(qry)
+        return self
