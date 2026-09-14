@@ -4,6 +4,7 @@
 - #793: upload size from in-memory (io.BytesIO) streams
 - #875: sharing-token encoding (UTF-8, padding stripped)
 - #881: DriveItem.download_folder paginates children (no 200-item cap)
+- #978: File.open_binary/save_binary keep the OData call syntax literal
 """
 
 from __future__ import annotations
@@ -72,6 +73,25 @@ class TestFilePathQuoting(unittest.TestCase):
 
         self.assertEqual(result.status_code, 200)
         self.assertIn("macdonald%27%27s", transport.url)
+
+    def test_odata_call_syntax_stays_literal(self):
+        """#978: only the path value is encoded — the call, parens and $value stay literal."""
+        ctx, transport = self._context()
+        File.open_binary(ctx, "/sites/x/Shared Documents/Folder 1/conversation.docx")
+
+        self.assertIn("getFileByServerRelativePath(DecodedUrl='", transport.url)
+        self.assertTrue(transport.url.endswith(")/$value"))
+        self.assertIn("Folder%201", transport.url)  # the value itself is encoded
+        for encoded in ("%28", "%29", "%24", "%5C"):
+            self.assertNotIn(encoded, transport.url)
+
+    def test_write_odata_call_syntax_stays_literal(self):
+        ctx, transport = self._context()
+        File.save_binary(ctx, "/sites/x/Shared Documents/Folder 1/conversation.docx", b"content")
+
+        self.assertIn("getFileByServerRelativePath(DecodedUrl='", transport.url)
+        self.assertTrue(transport.url.endswith(")/$value"))
+        self.assertNotIn("%5C", transport.url)
 
 
 class _Unseekable(io.BytesIO):

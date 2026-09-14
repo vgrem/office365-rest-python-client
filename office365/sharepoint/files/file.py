@@ -686,10 +686,9 @@ class File(AbstractFile):
         # OData literals escape embedded single quotes by doubling them (' -> '')
         decoded_server_relative_url = decoded.replace("'", "''")
 
-        url = quote(
-            rf"{context.service_root_url}/web/getFileByServerRelativePath"
-            rf"(DecodedUrl='{decoded_server_relative_url}')/\$value",
-            safe=":/",
+        url = (
+            f"{context.service_root_url}/web/getFileByServerRelativePath"
+            f"(DecodedUrl='{quote(decoded_server_relative_url)}')/$value"
         )
 
         request = RequestOptions(url)
@@ -711,10 +710,9 @@ class File(AbstractFile):
         # OData literals escape embedded single quotes by doubling them (' -> '')
         decoded_server_relative_url = decoded.replace("'", "''")
 
-        url = quote(
-            rf"{context.service_root_url}/web/getFileByServerRelativePath("
-            rf"DecodedUrl='{decoded_server_relative_url}')/\$value",
-            safe=":/",
+        url = (
+            f"{context.service_root_url}/web/getFileByServerRelativePath"
+            f"(DecodedUrl='{quote(decoded_server_relative_url)}')/$value"
         )
 
         request = RequestOptions(url)
