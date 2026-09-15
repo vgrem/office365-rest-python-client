@@ -9,6 +9,7 @@ risk of requiring the ``[pandas]`` extra.
 from __future__ import annotations
 
 import math
+from datetime import date, datetime
 from os import PathLike
 from typing import TYPE_CHECKING, Any, Callable, Dict, Iterator, List, Optional, cast
 
@@ -82,17 +83,34 @@ def series_kind(pd, series) -> str:
     Kept in the pandas boundary so callers can map the generic kind onto their
     own schema (e.g. a SharePoint ``FieldType``) without importing pandas.
 
+    Nullable dtypes are handled; complex and timedelta map to ``"text"`` (no
+    SharePoint equivalent), and an object column holding only ``datetime``/``date``
+    values is treated as ``"datetime"``.
+
     Args:
         pd: The pandas module (e.g. from :func:`require_pandas`).
         series: A pandas Series (a DataFrame column).
     """
-    if pd.api.types.is_bool_dtype(series):
+    dtype = series.dtype
+    if pd.api.types.is_bool_dtype(dtype):
         return "boolean"
-    if pd.api.types.is_datetime64_any_dtype(series):
+    if pd.api.types.is_datetime64_any_dtype(dtype):
         return "datetime"
-    if pd.api.types.is_numeric_dtype(series):
+    if pd.api.types.is_complex_dtype(dtype):
+        return "text"
+    if pd.api.types.is_numeric_dtype(dtype):
         return "number"
+    if pd.api.types.is_object_dtype(dtype) and _holds_datetimes(series):
+        return "datetime"
     return "text"
+
+
+def _holds_datetimes(series) -> bool:
+    """Whether an object-dtype column holds only ``datetime``/``date`` values."""
+    non_null = series.dropna()
+    if non_null.empty:
+        return False
+    return all(isinstance(value, (datetime, date)) for value in non_null.head(100))
 
 
 def records_from_dataframe(

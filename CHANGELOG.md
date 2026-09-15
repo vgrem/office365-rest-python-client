@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - The SharePoint list migration target flushes each chunk and discards the
   queued entities, keeping large record migrations memory-bounded.
 
+### Fixed
+- DataFrame import no longer silently drops a column whose title collides with a
+  built-in SharePoint field (e.g. `Name` resolves to `FileLeafRef`): the column
+  is imported with a `_` suffix and a warning is emitted.
+- `series_kind`/`field_type_from_kind` now handle complex, timedelta, category
+  and object-datetime columns, and unknown kinds fall back to `Text` instead of
+  raising `KeyError`.
+
 ## [3.1.1] - 2026-09-13
 
 ### Fixed

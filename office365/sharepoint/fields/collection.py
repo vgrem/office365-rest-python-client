@@ -40,8 +40,14 @@ _FIELD_TYPE_BY_KIND = {
 
 
 def field_type_from_kind(kind: str) -> FieldType:
-    """Map a generic pandas dtype kind (see ``series_kind``) to a SharePoint ``FieldType``."""
-    return _FIELD_TYPE_BY_KIND[kind]
+    """Map a generic pandas dtype kind (see ``series_kind``) to a SharePoint ``FieldType``.
+
+    Unknown kinds fall back to ``FieldType.Text``. Only the four basic column
+    types can be inferred from a pandas dtype; richer SharePoint types (Choice,
+    Lookup, User, URL, Currency, MultiLineText, ...) require an explicit
+    ``schema`` passed to ``List.from_dataframe``.
+    """
+    return _FIELD_TYPE_BY_KIND.get(kind, FieldType.Text)
 
 
 if TYPE_CHECKING:
@@ -68,6 +74,10 @@ class FieldCollection(EntityCollection[Field]):
 
             >>> lst.fields.from_dataframe(df).execute_query()
 
+        A column whose title collides with a built-in field (e.g. ``Name`` ->
+        ``FileLeafRef``) is suffixed with ``_`` and a warning is emitted, since
+        SharePoint cannot create a second column with that display name.
+
         Requires ``pip install office365-rest-python-client[pandas]``.
 
         Args:
@@ -76,11 +86,19 @@ class FieldCollection(EntityCollection[Field]):
         Returns:
             Self: The field collection, for method chaining.
         """
+        import warnings
+
         from office365.runtime.converters.dataframe import require_pandas, series_kind
-        from office365.sharepoint.fields.name import internal_field_name
+        from office365.sharepoint.fields.name import internal_field_name, is_reserved_field_title
 
         pd = require_pandas()
         for column in df.columns:
+            if is_reserved_field_title(str(column)):
+                warnings.warn(
+                    f"Column '{column}' collides with a built-in SharePoint field; "
+                    f"importing it as '{internal_field_name(str(column))}'.",
+                    stacklevel=2,
+                )
             field_type = field_type_from_kind(series_kind(pd, df[column]))
             info = FieldCreationInformation(
                 Title=internal_field_name(str(column)),

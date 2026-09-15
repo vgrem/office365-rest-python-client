@@ -391,3 +391,26 @@ def test_field_type_mapping():
     assert field_type_from_kind(series_kind(pd, pd.Series(pd.to_datetime(["2025-01-01"])))) is FieldType.DateTime
     assert field_type_from_kind(series_kind(pd, pd.Series([1.5]))) is FieldType.Number
     assert field_type_from_kind(series_kind(pd, pd.Series(["text"]))) is FieldType.Text
+
+
+def test_field_type_mapping_extra_dtypes():
+    # complex / timedelta / category have no SharePoint equivalent -> Text
+    assert field_type_from_kind(series_kind(pd, pd.Series([1 + 2j]))) is FieldType.Text
+    assert field_type_from_kind(series_kind(pd, pd.Series(pd.to_timedelta(["1 days"])))) is FieldType.Text
+    assert field_type_from_kind(series_kind(pd, pd.Series(["a", "b"], dtype="category"))) is FieldType.Text
+    # an object column holding only datetimes is DateTime
+    assert field_type_from_kind(series_kind(pd, pd.Series([datetime(2025, 1, 1), None]))) is FieldType.DateTime
+    # unknown kinds fall back to Text
+    assert field_type_from_kind("unknown") is FieldType.Text
+
+
+def test_internal_field_name_sanitizes_and_avoids_reserved_titles():
+    from office365.sharepoint.fields.name import internal_field_name, is_reserved_field_title
+
+    assert internal_field_name("My Column") == "My_Column"
+    assert internal_field_name("Symbol") == "Symbol"
+    # reserved built-in display names are suffixed so the column can be created
+    assert internal_field_name("Name") == "Name_"
+    assert internal_field_name("Title") == "Title_"
+    assert is_reserved_field_title("name")
+    assert not is_reserved_field_title("Symbol")
