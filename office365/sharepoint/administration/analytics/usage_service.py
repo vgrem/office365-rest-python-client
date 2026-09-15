@@ -1,5 +1,9 @@
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.administration.usageentry import UsageEntry
 from office365.sharepoint.entity import Entity
 
 
@@ -20,13 +24,7 @@ class SPAnalyticsUsageService(Entity):
             site (str):
             user (str):
         """
-        payload = {
-            "EventTypeId": event_type_id,
-            "ItemId": item_id,
-            "ScopeId": scope_id,
-            "Site": site,
-            "User": user,
-        }
+        payload = {"EventTypeId": event_type_id, "ItemId": item_id, "ScopeId": scope_id, "Site": site, "User": user}
         qry = ServiceOperationQuery(self, "logevent", None, payload)
         self.context.add_query(qry)
         return self
@@ -34,3 +32,13 @@ class SPAnalyticsUsageService(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.SPAnalyticsUsageService"
+
+    def logevent(self, usage_entry: UsageEntry) -> Self:
+        """logevent operation.
+
+        Args:
+            usage_entry (UsageEntry): usageEntry parameter
+        """
+        qry = FunctionQuery(self, "logevent", [usage_entry], None)
+        self.context.add_query(qry)
+        return self

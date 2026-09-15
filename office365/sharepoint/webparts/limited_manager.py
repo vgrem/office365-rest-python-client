@@ -1,13 +1,11 @@
-from typing import Union
+from typing import Optional, Union
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.webparts.definitions.collection import (
-    WebPartDefinitionCollection,
-)
+from office365.sharepoint.webparts.definitions.collection import WebPartDefinitionCollection
 from office365.sharepoint.webparts.definitions.definition import WebPartDefinition
 
 
@@ -36,7 +34,6 @@ class LimitedWebPartManager(Entity):
             web_part.ensure_property("Id").after_execute(lambda _: _web_part_loaded())
         else:
             _export_web_part(web_part)
-
         return return_type
 
     def import_web_part(self, web_part_xml: str) -> WebPartDefinition:
@@ -65,10 +62,35 @@ class LimitedWebPartManager(Entity):
         """A collection of the Web Parts on the Web Part Page available to the current user based
         on the current user’s permissions."""
         return self.properties.get(
-            "WebParts",
-            WebPartDefinitionCollection(self.context, ResourcePath("WebParts", self.resource_path)),
+            "WebParts", WebPartDefinitionCollection(self.context, ResourcePath("WebParts", self.resource_path))
         )
 
     @property
     def entity_type_name(self):
         return "SP.WebParts.LimitedWebPartManager"
+
+    @property
+    def has_personalized_parts(self) -> Optional[bool]:
+        """Gets the HasPersonalizedParts property"""
+        return self.properties.get("HasPersonalizedParts", None)
+
+    @property
+    def has_web_part_connections(self) -> Optional[bool]:
+        """Gets the HasWebPartConnections property"""
+        return self.properties.get("HasWebPartConnections", None)
+
+    @property
+    def scope(self) -> Optional[int]:
+        """Gets the Scope property"""
+        return self.properties.get("Scope", None)
+
+    def export_web_part_ex(self, web_part_id: str) -> ClientResult[str]:
+        """ExportWebPartEx operation.
+
+        Args:
+            web_part_id (UUID): webPartId parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "ExportWebPartEx", None, {"webPartId": web_part_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -1,6 +1,10 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
+from typing_extensions import Self
+
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 
@@ -49,3 +53,18 @@ class SPTenantIBPolicyComplianceReport(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.AuthPolicy.SPTenantIBPolicyComplianceReport"
+
+    @property
+    def id(self) -> Optional[str]:
+        """Gets the Id property"""
+        return self.properties.get("Id", None)
+
+    def remove_finalized_report(self, report_id: UUID) -> Self:
+        """RemoveFinalizedReport operation.
+
+        Args:
+            report_id (UUID): ReportId parameter
+        """
+        qry = ServiceOperationQuery(self, "RemoveFinalizedReport", None, {"ReportId": report_id}, None, None)
+        self.context.add_query(qry)
+        return self

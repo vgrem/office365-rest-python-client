@@ -77,3 +77,16 @@ class WebPartDefinition(Entity):
     @property
     def entity_type_name(self):
         return "SP.WebParts.WebPartDefinition"
+
+    def move_web_part_to(self, zone_id: str, zone_index: int) -> Self:
+        """MoveWebPartTo operation.
+
+        Args:
+            zone_id (str): zoneID parameter
+            zone_index (int): zoneIndex parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "MoveWebPartTo", None, {"zoneID": zone_id, "zoneIndex": zone_index}, None, None
+        )
+        self.context.add_query(qry)
+        return self
