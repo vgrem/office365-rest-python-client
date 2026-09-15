@@ -185,6 +185,26 @@ def test_resume_skips_committed_records(tmp_path):
     assert driver.value.success == 2  # noqa: PLR2004
 
 
+def test_resume_progress_includes_committed_offset(tmp_path):
+    path = tmp_path / "ckpt.json"
+    _driver(_FakeContext(), _FakeCollection(), _batches(2, 2), checkpoint=str(path)).execute_query()
+
+    seen: list[Progress] = []
+    driver = _driver(_FakeContext(), _FakeCollection(), _batches(2, 2, 2), checkpoint=str(path), progress=seen.append)
+    driver.execute_query()
+
+    assert [p.done for p in seen] == [6]  # 4 committed + 2 processed this run
+
+
+def test_checkpoint_save_is_atomic(tmp_path):
+    path = tmp_path / "ckpt.json"
+
+    ImportCheckpoint(cursor=3).save(path)
+
+    assert ImportCheckpoint.load(path).cursor == 3  # noqa: PLR2004
+    assert list(tmp_path.glob(".*.tmp")) == []  # no leftover temp file
+
+
 def test_resume_does_not_reprovision_fields(tmp_path):
     path = tmp_path / "ckpt.json"
     _driver(_FakeContext(), _FakeCollection(), _batches(1), checkpoint=str(path)).execute_query()

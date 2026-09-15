@@ -16,10 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   source and provisions the columns once.
 - **Resumable imports:** `ImportResult` accepts a `checkpoint`
   (`ImportCheckpoint` or path) and persists the committed cursor after each
-  chunk, so an interrupted long-running run resumes by skipping the
-  already-committed records. `on_error="collect"` records a failing chunk
-  (`ImportStats.errors` + `checkpoint.failures`) and continues instead of
-  aborting.
+  chunk (atomically), so an interrupted long-running run resumes by skipping the
+  already-committed chunks; progress continues from the committed offset.
+  `on_error="collect"` records a failing chunk (`ImportStats.errors` +
+  `checkpoint.failures`) and continues instead of aborting.
 - `List.ensure_fields_from_dataframe()` — deferred, idempotent column provisioning.
 - `ClientObjectCollection.clear()` and a `concurrency` argument on
   `Entity.execute_batch()`.

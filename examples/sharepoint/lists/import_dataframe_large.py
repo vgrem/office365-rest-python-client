@@ -46,6 +46,18 @@ def progress_bar(no_progress: bool):
     return hook
 
 
+def committed_rows(checkpoint_path: str | None) -> int:
+    """Rows already committed in the checkpoint (0 when absent/disabled)."""
+    if not checkpoint_path:
+        return 0
+    from pathlib import Path
+
+    from office365.runtime.imports import ImportCheckpoint
+
+    path = Path(checkpoint_path)
+    return ImportCheckpoint.load(path).cursor if path.exists() else 0
+
+
 def main():
     import pandas as pd  # type: ignore[import-not-found]
 
@@ -57,33 +69,50 @@ def main():
     p.add_argument("--chunk", type=int, default=2000, help="rows per memory slice")
     p.add_argument("--items-per-batch", type=int, default=100, help="item creates per batch request")
     p.add_argument("--concurrency", type=int, default=5, help="parallel batch requests")
-    p.add_argument("--checkpoint", default=None, help="checkpoint path (resume by re-running)")
+    p.add_argument("--checkpoint", default=None, help="checkpoint path (default: <list-title>.checkpoint.json)")
+    p.add_argument("--no-checkpoint", action="store_true", help="disable checkpointing/resume")
     p.add_argument("--on-error", choices=("raise", "collect"), default="raise", help="failed-chunk policy")
     p.add_argument("--no-progress", action="store_true", help="do not show tqdm progress")
     args = p.parse_args()
 
+    checkpoint = None if args.no_checkpoint else (args.checkpoint or f"{args.list_title}.checkpoint.json")
     ctx = ClientContext(team_site_url).with_username_and_password(
         tenant=tenant, client_id=client_id, username=username, password=password
     )
+    lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
 
-    # The chunk iterator owns chunking; the driver owns fields-once + streaming.
+    done_before = committed_rows(checkpoint)
+    if done_before:
+        print(f"Resuming: {done_before:,} row(s) already committed — skipping them")
+
+    # Re-read the same source; the driver skips the committed chunks on resume.
     chunks = pd.read_csv(
         args.file or args.url,
         chunksize=args.chunk,
         nrows=args.rows if args.rows > 0 else None,
     )
-    lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
-    stats = (
-        lst.from_dataframe(
-            chunks,
-            progress=progress_bar(args.no_progress),
-            checkpoint=args.checkpoint,
-            on_error=args.on_error,
+    try:
+        stats = (
+            lst.from_dataframe(
+                chunks,
+                progress=progress_bar(args.no_progress),
+                checkpoint=checkpoint,
+                on_error=args.on_error,
+            )
+            .execute_batch(items_per_batch=args.items_per_batch, concurrency=args.concurrency)
+            .value
         )
-        .execute_batch(items_per_batch=args.items_per_batch, concurrency=args.concurrency)
-        .value
-    )
+    except KeyboardInterrupt:
+        print(f"\nInterrupted after {committed_rows(checkpoint):,} row(s). Re-run the same command to resume.")
+        raise SystemExit(130) from None
+    except Exception as ex:  # noqa: BLE001 — report and point at the resumable checkpoint
+        print(f"\nImport failed: {ex}")
+        print(f"Committed {committed_rows(checkpoint):,} row(s). Re-run the same command to resume.")
+        raise SystemExit(1) from ex
+
     print(f"\n{stats.summary()} into '{lst.title}'")
+    if checkpoint:
+        print(f"Checkpoint: {checkpoint} ({committed_rows(checkpoint):,} rows committed)")
 
 
 if __name__ == "__main__":

@@ -30,6 +30,7 @@ import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from itertools import islice
 from os import PathLike
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator, Optional, Union, cast
@@ -50,9 +51,10 @@ ON_ERROR_MODES = ("raise", "collect")
 class ImportStats(OperationStats):
     """Outcome of a streaming import (the ``ImportResult.value``).
 
-    ``total`` is the records attempted, ``success`` the records committed,
-    ``errors`` the records skipped under ``on_error="collect"`` (a chunk's size
-    per failed chunk).
+    Counts are **per invocation**: ``total`` records attempted, ``success``
+    committed, ``errors`` skipped under ``on_error="collect"`` (a chunk's size per
+    failed chunk). For the overall committed total across resumes, read
+    ``ImportCheckpoint.cursor``.
     """
 
     chunks: int = 0
@@ -78,9 +80,15 @@ class ImportCheckpoint:
     updated_at: str = ""
 
     def save(self, path: Union[str, PathLike]) -> None:
-        """Persist the checkpoint as JSON."""
+        """Persist the checkpoint as JSON, atomically (write-then-rename).
+
+        The rename is atomic, so a crash mid-write never leaves a truncated file
+        that would break the next resume.
+        """
         self.updated_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        with open(path, "w", encoding="utf-8") as f:
+        target = Path(path)
+        tmp = target.with_name(f".{target.name}.tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(
                 {
                     "cursor": self.cursor,
@@ -92,6 +100,7 @@ class ImportCheckpoint:
                 f,
                 indent=2,
             )
+        tmp.replace(target)
 
     @classmethod
     def load(cls, path: Union[str, PathLike]) -> "ImportCheckpoint":
@@ -152,6 +161,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._on_error = on_error
         self._started_at: Optional[float] = None
         self._checkpoint_path, self._checkpoint = self._resolve_checkpoint(checkpoint)
+        self._progress_base = self._checkpoint.cursor  # records committed before this run
 
     # ── Terminals ────────────────────────────────────────────────
 
@@ -217,22 +227,25 @@ class ImportResult(ClientResult[ImportStats]):
         self._finish()
 
     def _iter_records(self) -> Iterator[tuple[Any, list[dict]]]:
-        """Yield ``(raw_chunk, records)``, skipping already-committed records.
+        """Yield ``(raw_chunk, records)``, skipping already-committed chunks.
 
-        The checkpoint cursor is always a chunk boundary, so whole chunks are
-        skipped; ``prepare`` runs only on a fresh run (fields already exist when
-        resuming).
+        Commits are whole chunks, so resume skips by the checkpoint's ``chunks``
+        count (cheap — no ``to_records`` on committed data). A record-level
+        ``cursor`` fallback covers a hand-built checkpoint without a chunk count.
+        ``prepare`` runs only on a fresh run (fields already exist when resuming).
         """
-        skip = self._checkpoint.cursor
-        prepared = skip > 0
-        for raw in self._chunks:
+        skip_chunks = self._checkpoint.chunks
+        skip_records = 0 if skip_chunks else self._checkpoint.cursor
+        prepared = skip_chunks > 0 or skip_records > 0
+        source = islice(self._chunks, skip_chunks, None) if skip_chunks else self._chunks
+        for raw in source:
             records = self._to_records(raw)
-            if skip:
-                if len(records) <= skip:
-                    skip -= len(records)
+            if skip_records:
+                if len(records) <= skip_records:
+                    skip_records -= len(records)
                     continue
-                records = records[skip:]
-                skip = 0
+                records = records[skip_records:]
+                skip_records = 0
             if not prepared:
                 if callable(self._prepare):
                     self._prepare(raw)
@@ -247,7 +260,8 @@ class ImportResult(ClientResult[ImportStats]):
         self._collection.from_records(records)
         self.value.total += len(records)
         if callable(self._progress):
-            self._progress(Progress(done=self.value.total, total=self._total, stage="importing"))
+            done = self._progress_base + self.value.total  # overall, across resumes
+            self._progress(Progress(done=done, total=self._total, stage="importing"))
 
     def _commit(self, records: list[dict]) -> None:
         self.value.success += len(records)

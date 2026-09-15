@@ -163,10 +163,10 @@ for _ in lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
 (honoring `Retry-After`).
 
 For **long-running** jobs, pass a `checkpoint` (path or `ImportCheckpoint`): the
-committed cursor is persisted after each chunk, so an interrupted run resumes by
-skipping the already-committed records. `on_error="collect"` records a failing
-chunk (in `ImportStats.errors` and the checkpoint's `failures`) and continues
-instead of aborting:
+committed cursor is persisted atomically after each chunk, so an interrupted run
+resumes by skipping the already-committed chunks (progress continues from that
+offset). `on_error="collect"` records a failing chunk (in `ImportStats.errors`
+and the checkpoint's `failures`) and continues instead of aborting:
 
 ```python
 lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
