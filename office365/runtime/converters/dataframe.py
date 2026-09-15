@@ -127,7 +127,8 @@ def dataframe_chunks(source: Any, chunksize: int) -> tuple[Iterator[Any], Option
     """Split a DataFrame/CSV source into chunks, with the total when known.
 
     Accepts a ``DataFrame`` (sliced into ``chunksize``-row slices), a CSV
-    path/URL/file (read with ``pandas.read_csv(chunksize=)``), or any iterable of
+    path/URL/file (read with ``pandas.read_csv(chunksize=)``), a pandas chunk
+    reader (``pd.read_csv(..., chunksize=)``, used as-is), or any iterable of
     chunks (used as-is). Returns ``(chunks, total)`` — ``total`` is ``None`` when
     it can't be known upfront (a CSV stream or an opaque iterable).
 
@@ -138,6 +139,8 @@ def dataframe_chunks(source: Any, chunksize: int) -> tuple[Iterator[Any], Option
     if hasattr(source, "iloc"):  # a pandas DataFrame — slice it (bounded queue)
         total = len(source)
         return (source.iloc[start : start + chunksize] for start in range(0, total, chunksize)), total
+    if hasattr(source, "get_chunk"):  # a pandas TextFileReader (already chunked) — iterate
+        return iter(source), None
     if isinstance(source, (str, PathLike)) or hasattr(source, "read"):
         pd = require_pandas()
         return pd.read_csv(source, chunksize=chunksize), None

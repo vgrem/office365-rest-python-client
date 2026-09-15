@@ -266,6 +266,17 @@ def test_dataframe_chunks_reads_csv(tmp_path):
     assert len(list(chunks)) == 3  # noqa: PLR2004
 
 
+def test_dataframe_chunks_accepts_a_pandas_chunk_reader():
+    import io
+
+    # regression: a TextFileReader has .read, so it must not be re-read as a file
+    reader = pd.read_csv(io.StringIO("n\na\nb\nc\n"), chunksize=1)
+    chunks, total = dataframe_chunks(reader, chunksize=1)
+
+    assert total is None
+    assert [len(c) for c in chunks] == [1, 1, 1]
+
+
 def test_list_from_dataframe_returns_import_result():
     from office365.sharepoint.lists.list import List
 
