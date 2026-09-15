@@ -20,19 +20,28 @@ from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.transport.base import BaseTransport
 
 
 class ODataRequest(ClientRequest):
     """Handles OData protocol specific request/response processing for API calls."""
 
-    def __init__(self, base_url: str, json_format: ODataJsonFormat) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        json_format: ODataJsonFormat,
+        transport: "BaseTransport | None" = None,
+    ) -> None:
         """
         Initialize a new OData request processor.
 
         Args:
+            base_url: The service base URL.
             json_format: The JSON format handler for OData serialization/deserialization
+            transport: Optional shared transport (e.g. one pooled ``Session`` for
+                parallel batch requests); defaults to a new ``RequestsTransport``.
         """
-        super().__init__()
+        super().__init__(transport=transport)
         self._base_url = base_url
         self._default_json_format = json_format
         self.beforeExecute += self._ensure_http_headers

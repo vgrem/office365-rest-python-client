@@ -580,6 +580,10 @@ class _Pending:
     beforeExecute = EventHandler()
     afterExecute = EventHandler()
     onError = EventHandler()
+    transport = None  # never executed in these fakes
+
+    def with_rate_limiter(self, limiter):
+        return self
 
 
 class _Context:

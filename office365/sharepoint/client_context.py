@@ -297,7 +297,9 @@ class ClientContext(ClientRuntimeContext):
         request.warm_up()  # fetch the form digest once before dispatching any batch
         batches = self._split_batches(items_per_batch, max_bytes)
         if concurrency <= 1:
-            batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
+            batch_request = ODataBatchV3Request(
+                self._base_url, JsonLightFormat(), transport=self.pending_request().transport
+            )
             batch_request.beforeExecute += self.authentication_context.authenticate_request
             batch_request.beforeExecute += request.ensure_form_digest
             for qry in batches:
@@ -320,7 +322,9 @@ class ClientContext(ClientRuntimeContext):
 
     def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
         """Execute a single batch unit on a worker thread (with per-request retry)."""
-        batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
+        batch_request = ODataBatchV3Request(
+            self._base_url, JsonLightFormat(), transport=self.pending_request().transport
+        )
         batch_request.beforeExecute += self.authentication_context.authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
         self._run_batch(batch_request, batch_qry)

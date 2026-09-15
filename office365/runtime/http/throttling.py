@@ -5,12 +5,21 @@ response and ``Retry-After`` on throttled (429/503) responses. Per the current
 Microsoft guidance it does **not** return IETF ``RateLimit-*`` headers — those
 are parsed defensively here in case a proxy or other source provides them.
 
-Two ways to use it:
+Two distinct concerns live here:
 
-- Attach :func:`rate_limit_hook` per query (``after_execute(..., include_response=True)``)
-  or to the request event handler for every response;
-- Wrap a workload in :func:`throttle_guard` for a scoped, self-removing guard
-  that hides the event plumbing entirely.
+**Control** — act on the signals to pace the fleet. :class:`RateLimiter` +
+:func:`paced` (used by ``ThrottledTransport``) gate every send and observe every
+response, including failures, without touching error propagation. This is the
+mature pipeline/transport-policy pattern (Azure ``RetryPolicy``, botocore
+adaptive mode, urllib3 ``Retry``).
+
+**Observability** — report the signals to the caller. :func:`rate_limit_hook`
+and :func:`throttle_guard` attach to the request's ``afterExecute`` event and
+never change control flow. Use these when you only want to *know* about
+throttling; use the limiter when you want to *act* on it.
+
+Note: request ``onError`` handlers mark an error as handled (they swallow it —
+see :meth:`ClientRequest.on_error`), so they must not be used for observation.
 """
 
 from __future__ import annotations
@@ -73,6 +82,7 @@ def parse_throttling(response: Response) -> Optional[ThrottleLimits]:
 def rate_limit_hook(callback: Optional[Callable[[ThrottleLimits], None]] = None) -> Callable[[Response], None]:
     """Return an after-execute hook that reports parsed throttling / health state.
 
+    Observation only — it never changes control flow (unlike :class:`RateLimiter`).
     The returned hook is compatible with ``after_execute`` (it expects the raw
     ``Response``). It fires ``callback`` only when the response carries any of
     the tracked headers — silent otherwise.
@@ -131,6 +141,76 @@ def _to_int(value: Any) -> Optional[int]:
         return None
 
 
+@dataclass(frozen=True)
+class PaceState:
+    """The group gate: a monotonic deadline before which requests must wait.
+
+    Produced only by :func:`pace` (pure) so the pacing policy is trivially
+    testable without a clock, a lock, or a sleep.
+    """
+
+    next_available_at: float = 0.0
+
+
+def pace(
+    state: PaceState,
+    limits: Optional[ThrottleLimits],
+    *,
+    now: float,
+    health_threshold: int = 80,
+    min_interval: float = 0.0,
+) -> PaceState:
+    """Pure transition: observed server limits -> next gate state.
+
+    A ``Retry-After`` gates the fleet for that long; a high
+    ``X-SharePointHealthScore`` applies a short, scaled pace so the group eases
+    off as the farm heats up. Returns ``state`` unchanged when nothing applies.
+
+    Args:
+        state: The current gate state.
+        limits: Parsed throttling/health signals (or ``None``).
+        now: Monotonic "now" (injected — the function reads no clock).
+        health_threshold: Health score at/above which the group paces.
+        min_interval: Minimum pause applied on a high health score.
+    """
+    if limits is None:
+        return state
+    delay = 0.0
+    if limits.retry_after is not None and limits.retry_after > 0:
+        delay = max(delay, float(limits.retry_after))
+    if limits.health_score is not None and limits.health_score >= health_threshold:
+        delay = max(delay, (limits.health_score - health_threshold) / 20.0, min_interval)
+    if delay <= 0:
+        return state
+    return PaceState(max(state.next_available_at, now + delay))
+
+
+def wait_delay(state: PaceState, *, now: float) -> float:
+    """Pure: seconds until the gate opens (``0`` when already open)."""
+    return max(0.0, state.next_available_at - now)
+
+
+def paced(func: Callable[[], Response], gate: "RateLimiter") -> Response:
+    """Run ``func`` under a shared rate limiter — the functional guard.
+
+    Mirrors :func:`~office365.runtime.retry.retry`: it waits for the group gate,
+    then feeds the outcome (returned response or ``exception.response``) back to
+    the limiter. No call-site side effects; composable and thread-safe.
+
+    Args:
+        func: Callable performing one request/operation.
+        gate: The shared :class:`RateLimiter` to pace against.
+    """
+    gate.acquire()
+    try:
+        result = func()
+    except Exception as ex:
+        gate.observe(getattr(ex, "response", None))
+        raise
+    gate.observe(result)
+    return result
+
+
 class RateLimiter:
     """Thread-safe gate shared across workers so parallel requests pace as a group.
 
@@ -139,17 +219,34 @@ class RateLimiter:
     before any request is sent it blocks until the group gate is open, and when
     any worker observes throttling it pauses the whole group.
 
-    Opt-in — attach it to a context (or a clone) with :meth:`bind`; the existing
-    per-request retry remains as the safety net.
+    The pacing policy lives in the pure :func:`pace` / :func:`wait_delay`; this
+    class is only the thread-safe state holder with injectable ``clock`` and
+    ``sleep`` (so tests can run without real time). Opt-in — wrap a transport
+    with :class:`~office365.runtime.transport.throttled_transport.ThrottledTransport`
+    or attach it to a context with :meth:`bind`; the existing per-request retry
+    remains as the safety net.
     """
 
     _SLEEP_GRANULARITY = 0.05
 
-    def __init__(self, health_threshold: int = 80, min_interval: float = 0.0) -> None:
-        self._lock = threading.RLock()
-        self._next_available_at = 0.0
+    def __init__(
+        self,
+        health_threshold: int = 80,
+        min_interval: float = 0.0,
+        clock: Callable[[], float] = time.monotonic,
+        sleep: Callable[[float], None] = time.sleep,
+    ) -> None:
+        self._lock = threading.Lock()
+        self._state = PaceState()
         self._health_threshold = health_threshold
         self._min_interval = min_interval
+        self._clock = clock
+        self._sleep = sleep
+
+    def snapshot(self) -> PaceState:
+        """Return the current gate state (a pure value)."""
+        with self._lock:
+            return self._state
 
     def acquire(self) -> None:
         """Block the calling thread until the group gate opens.
@@ -158,48 +255,41 @@ class RateLimiter:
         """
         while True:
             with self._lock:
-                wait = self._next_available_at - time.monotonic()
+                wait = wait_delay(self._state, now=self._clock())
             if wait <= 0:
                 return
-            time.sleep(min(wait, self._SLEEP_GRANULARITY))
+            self._sleep(min(wait, self._SLEEP_GRANULARITY))
 
     def observe(self, response: Optional[Response]) -> None:
-        """Record throttling signals and pause the group when the server asks.
-
-        A throttled response (``Retry-After``) gates the fleet for that long;
-        a high ``X-SharePointHealthScore`` applies a short, scaled pace so the
-        group eases off as the farm heats up.
-        """
+        """Record throttling signals and pause the group when the server asks."""
         if response is None:
             return
         limits = parse_throttling(response)
         if limits is None:
             return
-        now = time.monotonic()
         with self._lock:
-            if limits.retry_after is not None and limits.retry_after > 0:
-                self._next_available_at = max(self._next_available_at, now + limits.retry_after)
-            if limits.health_score is not None and limits.health_score >= self._health_threshold:
-                pace = (limits.health_score - self._health_threshold) / 20.0
-                self._next_available_at = max(self._next_available_at, now + max(pace, self._min_interval))
+            self._state = pace(
+                self._state,
+                limits,
+                now=self._clock(),
+                health_threshold=self._health_threshold,
+                min_interval=self._min_interval,
+            )
 
     def bind(self, context: "ClientRuntimeContext") -> "RateLimiter":
-        """Attach this limiter to a context (or ``clone``) — every request paces as a group.
+        """Pace every request of a context (or ``clone``) by wrapping its transport.
 
-        Health signals are read on successful responses (``afterExecute``);
-        throttled responses (429/503) raise before ``afterExecute``, so their
-        ``Retry-After`` is read via ``onError`` instead.
+        Delegates to :meth:`ClientRequest.with_rate_limiter` on the context's
+        request, so the shared limiter gates each send and observes each response
+        (and any error's ``response``).
 
         Args:
-            context: The client context to monitor and gate.
+            context: The client context to gate.
         """
-        request = context.pending_request()
-        request.beforeExecute += lambda _: self.acquire()
-        request.afterExecute += lambda response: self.observe(response)
-        request.onError += lambda ex: self.observe(getattr(ex, "response", None))
+        context.pending_request().with_rate_limiter(self)
         return self
 
     def reset(self) -> None:
         """Clear the current gate (used by tests / recovery)."""
         with self._lock:
-            self._next_available_at = 0.0
+            self._state = PaceState()

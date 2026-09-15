@@ -13,16 +13,22 @@ from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.throttling import (
+    PaceState,
     RateLimiter,
     ThrottleLimits,
+    pace,
+    paced,
     parse_throttling,
     rate_limit_hook,
     throttle_guard,
+    wait_delay,
 )
 from office365.runtime.operations import ProgressTracker
 from office365.runtime.parallel import run_parallel
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.retry import backoff_delay, retry, retry_after_delay
+from office365.runtime.transport.base import BaseTransport
+from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.request import SharePointRequest
@@ -333,7 +339,60 @@ def _elapsed(fn) -> float:
     return time.monotonic() - start
 
 
+class TestPacePolicy(unittest.TestCase):
+    """The pacing policy is pure: no clock, no lock, no sleep."""
+
+    def test_retry_after_advances_the_gate(self):
+        state = pace(PaceState(), ThrottleLimits(retry_after=5), now=100.0)
+        self.assertEqual(state, PaceState(105.0))
+
+    def test_health_score_above_threshold_paces(self):
+        state = pace(PaceState(), ThrottleLimits(health_score=90), now=100.0, health_threshold=80)
+        self.assertEqual(state, PaceState(100.5))
+
+    def test_health_score_below_threshold_is_a_noop(self):
+        state = PaceState()
+        self.assertIs(pace(state, ThrottleLimits(health_score=2), now=100.0), state)
+
+    def test_missing_limits_is_a_noop(self):
+        state = PaceState()
+        self.assertIs(pace(state, None, now=100.0), state)
+
+    def test_min_interval_applies_on_high_health(self):
+        state = pace(PaceState(), ThrottleLimits(health_score=100), now=100.0, min_interval=3.0)
+        self.assertEqual(state, PaceState(103.0))
+
+    def test_gate_never_retreats(self):
+        state = PaceState(next_available_at=110.0)
+        self.assertEqual(pace(state, ThrottleLimits(retry_after=2), now=100.0), state)
+
+    def test_wait_delay(self):
+        self.assertEqual(wait_delay(PaceState(105.0), now=100.0), 5.0)  # noqa: PLR2004
+        self.assertEqual(wait_delay(PaceState(95.0), now=100.0), 0.0)
+
+
+class _FakeClock:
+    def __init__(self) -> None:
+        self.t = 0.0
+
+    def __call__(self) -> float:
+        return self.t
+
+
 class TestRateLimiter(unittest.TestCase):
+    def test_gate_uses_injected_clock_and_sleep(self):
+        clock = _FakeClock()
+        slept: list[float] = []
+
+        def _sleep(delay: float) -> None:
+            slept.append(delay)
+            clock.t += delay
+
+        limiter = RateLimiter(clock=clock, sleep=_sleep)
+        limiter.observe(ratelimiter__response(retry_after="5"))
+        limiter.acquire()
+        self.assertGreaterEqual(sum(slept), 5.0)
+
     def test_retry_after_gates_the_group(self):
         limiter = RateLimiter()
         limiter.observe(ratelimiter__response(retry_after="1"))
@@ -362,21 +421,98 @@ class TestRateLimiter(unittest.TestCase):
         thread.join()
         self.assertGreaterEqual(time.monotonic() - start, 0.9)
 
-    def test_bind_attaches_hooks_and_reports_to_limiter(self):
+    def test_bind_wraps_transport_and_reports_to_limiter(self):
         ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
         ctx.pending_request().beforeExecute.clear()
-        ctx.pending_request().afterExecute.clear()
+        inner = _ScriptedTransport([{"status": 429, "retry_after": 2, "body": {}}])
+        ctx.pending_request().transport = inner
         limiter = RateLimiter()
         limiter.bind(ctx)
 
-        self.assertEqual(len(ctx.pending_request().beforeExecute), 1)
-        self.assertEqual(len(ctx.pending_request().afterExecute), 1)
+        wrapped = ctx.pending_request().transport
+        self.assertIsInstance(wrapped, ThrottledTransport)
+        self.assertIs(wrapped.inner, inner)
 
-        ctx.pending_request().transport = _ScriptedTransport([{"status": 429, "retry_after": 2, "body": {}}])
-        ctx.load(ctx.web).execute_query()
+        with self.assertRaises(ClientRequestException):
+            ctx.load(ctx.web).execute_query()
 
-        # the 429 response observed by the hook must gate the group
+        # the 429 response observed by the wrapped transport must gate the group
         self.assertGreaterEqual(_elapsed(limiter.acquire), 1.8)
+
+
+class _StubTransport(BaseTransport):
+    def __init__(self, response: Response | None = None, error: Exception | None = None) -> None:
+        self._response = response
+        self._error = error
+        self.closed = False
+
+    def execute(self, request) -> Response:
+        if self._error is not None:
+            raise self._error
+        assert self._response is not None
+        return self._response
+
+    @property
+    def proxies(self) -> dict[str, str] | None:
+        return {"https": "http://proxy"}
+
+    @property
+    def verify(self) -> bool | str:
+        return False
+
+    @property
+    def timeout(self) -> int | None:
+        return 7
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class TestPacedGuard(unittest.TestCase):
+    def test_paced_observes_success(self):
+        gate = mock.Mock()
+        response = ratelimiter__response()
+        result = paced(lambda: response, gate)
+        self.assertIs(result, response)
+        gate.acquire.assert_called_once_with()
+        gate.observe.assert_called_once_with(response)
+
+    def test_paced_observes_error_response_and_reraises(self):
+        gate = mock.Mock()
+        err = ClientRequestException("boom", response=ratelimiter__response(retry_after="3"))
+
+        def _boom():
+            raise err
+
+        with self.assertRaises(ClientRequestException):
+            paced(_boom, gate)
+        gate.observe.assert_called_once_with(err.response)
+
+    def test_throttled_transport_delegates_and_paces(self):
+        gate = mock.Mock()
+        response = ratelimiter__response()
+        inner = _StubTransport(response=response)
+        transport = ThrottledTransport(inner, gate)
+
+        self.assertEqual(transport.proxies, {"https": "http://proxy"})
+        self.assertIs(transport.verify, False)
+        self.assertEqual(transport.timeout, 7)  # noqa: PLR2004
+        self.assertIs(transport.execute(mock.Mock()), response)
+        gate.acquire.assert_called_once_with()
+        gate.observe.assert_called_once_with(response)
+
+        transport.close()
+        self.assertTrue(inner.closed)
+
+    def test_throttled_transport_observes_error(self):
+        gate = mock.Mock()
+        inner = _StubTransport(error=RuntimeError("down"))
+        transport = ThrottledTransport(inner, gate)
+
+        with self.assertRaises(RuntimeError):
+            transport.execute(object())
+        gate.acquire.assert_called_once_with()
+        gate.observe.assert_called_once_with(None)
 
 
 class _Pending:
@@ -384,6 +520,11 @@ class _Pending:
         self.beforeExecute = EventHandler()
         self.afterExecute = EventHandler()
         self.onError = EventHandler()
+        self.transport = _StubTransport()
+
+    def with_rate_limiter(self, limiter) -> "_Pending":
+        self.transport = ThrottledTransport(self.transport, limiter)
+        return self
 
 
 class _FakeContext:
@@ -423,9 +564,7 @@ class TestRunParallel(unittest.TestCase):
         self.assertEqual(len(contexts), 2)  # noqa: PLR2004 — one context per worker thread
         self.assertEqual(len({r[0] for r in results}), 2)  # noqa: PLR2004
         for ctx in contexts:
-            self.assertEqual(len(ctx.pending.beforeExecute), 1)
-            self.assertEqual(len(ctx.pending.afterExecute), 1)
-            self.assertEqual(len(ctx.pending.onError), 1)
+            self.assertIsInstance(ctx.pending.transport, ThrottledTransport)
 
     def test_on_error_returns_fallback(self):
         def worker(_ctx, task):

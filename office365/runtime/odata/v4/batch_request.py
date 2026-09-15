@@ -51,6 +51,7 @@ class ODataV4BatchRequest(ODataRequest):
             HTTPError: If any sub-request in the batch fails
         """
         for sub_qry, sub_resp in self._extract_response(response, query):
+            self._observe_throttle(sub_resp)
             sub_resp.raise_for_status()
             super().process_response(sub_resp, sub_qry)
 
@@ -93,6 +94,7 @@ class ODataV4BatchRequest(ODataRequest):
             failures: list[tuple[ClientQuery, Response]] = []
             retry_after: Optional[int] = None
             for sub_qry, sub_resp in self._extract_response(response, state["pending"]):
+                self._observe_throttle(sub_resp)
                 if sub_resp.status_code in TRANSIENT_STATUS_CODES:
                     failures.append((sub_qry, sub_resp))
                     retry_after = max(retry_after or 0, response_retry_after(sub_resp) or 0)

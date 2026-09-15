@@ -17,6 +17,7 @@ from office365.runtime.queries.read_entity import ReadEntityQuery
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+    from office365.runtime.http.throttling import RateLimiter
     from office365.runtime.queries.batch import BatchQuery
 
 
@@ -188,6 +189,12 @@ class ClientRuntimeContext(ABC):
         return self
 
     def on_error(self, action: Callable[[ClientRequestException], None], once: bool = True) -> Self:
+        """Attach an error handler for the pending query — the error is swallowed.
+
+        This is a control hook (see :meth:`ClientRequest.on_error`): once a
+        handler is attached, a failing query is considered handled and does not
+        re-raise. Use ``after_execute`` / ``throttle_guard`` for observation.
+        """
         if len(self._queries) == 0:
             return self
         query = self._queries[-1]
@@ -209,6 +216,33 @@ class ClientRuntimeContext(ABC):
             Raw response from server
         """
         return self.pending_request().execute_request(path)
+
+    @property
+    def rate_limiter(self) -> "RateLimiter | None":
+        """The shared rate limiter pacing this context's requests, if any.
+
+        Returns ``None`` until :meth:`with_rate_limit` (or a shared limiter via
+        ``ClientRequest.with_rate_limiter``) is configured.
+        """
+        return self.pending_request().rate_limiter
+
+    def with_rate_limit(self, health_threshold: int = 80, min_interval: float = 0.0) -> Self:
+        """Enable fleet-wide pacing for this context (opt-in).
+
+        Wraps the context transport with a shared rate limiter, so every request
+        — including the parallel batches dispatched by ``execute_batch`` — is
+        gated by ``Retry-After`` / ``X-SharePointHealthScore`` as a group. Call
+        this after any transport configuration (``with_transport``).
+
+        Args:
+            health_threshold: Health score at/above which the group paces.
+            min_interval: Minimum pause applied on a high health score (seconds).
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self.pending_request().with_rate_limit(health_threshold=health_threshold, min_interval=min_interval)
+        return self
 
     def execute_query(self) -> Self:
         """Executes all pending queries.

@@ -17,11 +17,15 @@ from office365.runtime.odata.batch_util import (
     estimate_query_bytes,
     partition_by_limits,
 )
+from office365.runtime.odata.v3.batch_request import ODataBatchV3Request
+from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.batch_request import ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.queries.batch import BatchQuery
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.transport.base import BaseTransport
+from office365.runtime.transport.requests_transport import RequestsTransport
+from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.sharepoint.client_context import ClientContext
 from requests import Response
 
@@ -168,6 +172,68 @@ class TestBatchSubRequestRetry(unittest.TestCase):
             req.execute_query_with_retry(_make_batch(client, 2), max_retry=3, jitter=False)
 
         sleep_mock.assert_called_once_with(7)
+
+
+class TestBatchTransportSharing(unittest.TestCase):
+    def test_execute_batch_shares_context_transport_across_workers(self):
+        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx.pending_request().beforeExecute.clear()
+        transport = _FakeTransport([])
+        ctx.pending_request().transport = transport
+        captured: list[object] = []
+        real_cls = ODataBatchV3Request
+
+        def _factory(base_url, json_format, transport=None):
+            captured.append(transport)
+            req = real_cls(base_url, json_format, transport=transport)
+            req.execute_query_with_retry = mock.Mock()
+            return req
+
+        with mock.patch("office365.sharepoint.client_context.ODataBatchV3Request", side_effect=_factory):
+            ctx._execute_batch(BatchQuery(ctx))
+            ctx._execute_batch(BatchQuery(ctx))
+
+        self.assertIs(captured[0], transport)
+        self.assertIs(captured[0], captured[1])
+
+    def test_with_rate_limit_wraps_the_context_transport(self):
+        ctx = ClientContext("https://contoso.sharepoint.com")
+        inner = _FakeTransport([])
+        ctx.pending_request().transport = inner
+
+        ctx.with_rate_limit(min_interval=0.0)
+
+        wrapped = ctx.pending_request().transport
+        self.assertIsInstance(wrapped, ThrottledTransport)
+        self.assertIs(wrapped.inner, inner)
+
+    def test_context_rate_limiter_accessor(self):
+        ctx = ClientContext("https://contoso.sharepoint.com")
+        self.assertIsNone(ctx.rate_limiter)
+
+        ctx.with_rate_limit(min_interval=0.0)
+
+        self.assertIsNotNone(ctx.rate_limiter)
+        self.assertIs(ctx.rate_limiter, ctx.pending_request().rate_limiter)
+
+    def test_request_with_rate_limit_wraps_and_is_preserved(self):
+        req = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())
+
+        req.with_rate_limit(min_interval=0.0)
+        limiter = req.rate_limiter
+        self.assertIsInstance(req.transport, ThrottledTransport)
+        self.assertIs(req.transport.limiter, limiter)
+
+        # re-configuring the transport keeps the limiter
+        req.with_transport(verify=False)
+        self.assertIsInstance(req.transport, ThrottledTransport)
+        self.assertIs(req.transport.limiter, limiter)
+
+        # re-applying with_rate_limit replaces the limiter without stacking
+        req.with_rate_limit(min_interval=0.0)
+        self.assertIsInstance(req.transport, ThrottledTransport)
+        self.assertIsInstance(req.transport.inner, RequestsTransport)
+        self.assertIsNot(req.transport.limiter, limiter)
 
 
 class _FakeQuery:
