@@ -74,6 +74,7 @@ from office365.sharepoint.views.view import View
 from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
 if TYPE_CHECKING:
+    from office365.runtime.imports import ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
@@ -700,37 +701,89 @@ class List(SecurableObject):
             self.ensure_field(name, field_type)
         return self
 
-    def from_dataframe(self, df, progress: "ProgressCallback | None" = None) -> Self:
-        """Import a pandas DataFrame into this list.
+    def ensure_fields_from_dataframe(self, df) -> Self:
+        """Ensure a column exists for every DataFrame column (deferred, idempotent).
 
-        Defines a column per DataFrame column via ``fields.from_dataframe``
-        (type inferred from the dtype, created idempotently), then queues an
-        item create per row — fully deferred, run the whole import with
-        ``execute_query()``:
+        The field type is inferred from the pandas dtype; existing columns are
+        kept. Run it once before importing rows (the streaming importer does this
+        automatically):
 
-            >>> lst = ctx.web.lists.ensure_list("My List").execute_query()
-            >>> lst.from_dataframe(df).execute_query()
-            >>> lst.from_dataframe(df, progress=my_callback).execute_query()
+            >>> lst.ensure_fields_from_dataframe(df).execute_query()
 
-        Column names are sanitized into SharePoint field internal names
-        (spaces/punctuation -> ``_``); NaN cells are skipped.
+        Requires ``pip install office365-rest-python-client[pandas]``.
+        """
+        self.fields.from_dataframe(df)
+        return self
+
+    def from_dataframe(
+        self,
+        source,
+        *,
+        schema: "Dict[str, FieldType] | None" = None,
+        chunksize: int = 2000,
+        progress: "ProgressCallback | None" = None,
+        checkpoint: "ImportCheckpoint | str | None" = None,
+        on_error: str = "raise",
+    ) -> "ImportResult":
+        """Import a DataFrame (or a chunked CSV) into this list, memory-bounded.
+
+        Returns a deferred :class:`~office365.runtime.imports.ImportResult`
+        driver — no execution happens until you pick a terminal, mirroring the
+        deferred/streaming split of mature SDKs:
+
+            >>> lst.from_dataframe(df).execute_query()  # sequential
+            >>> lst.from_dataframe(pd.read_csv(url, chunksize=2000)).execute_batch(concurrency=5)
+            >>> for _ in lst.from_dataframe(chunks):  # drive it yourself
+            ...     ctx.execute_batch(items_per_batch=100, concurrency=5)
+
+        Fields are provisioned once (from the first chunk, or from ``schema``)
+        before the first item batch; each chunk is executed and discarded, so
+        memory stays bounded. Column names are sanitized into SharePoint field
+        internal names; NaN cells are skipped.
+
+        For long-running jobs, pass ``checkpoint`` (an
+        :class:`~office365.runtime.imports.ImportCheckpoint` or a path) to resume
+        an interrupted run by skipping the already-committed records, and
+        ``on_error="collect"`` to record + skip a failing chunk instead of
+        aborting.
 
         Args:
-            df: A pandas DataFrame (requires ``pip install
-                office365-rest-python-client[pandas]``).
-            progress: Optional hook invoked per row as its item create completes
-              during ``execute_query()``.
+            source: A ``pandas.DataFrame``, an iterable of DataFrame chunks, or a
+                CSV path/URL/file (read with ``chunksize``).
+            schema: Optional explicit ``{column: FieldType}``; inferred from the
+                first chunk's dtypes when omitted.
+            chunksize: Rows per chunk for a single DataFrame or a CSV source.
+            progress: Optional hook fired per queued chunk with a ``Progress``.
+            checkpoint: Optional resumable-run checkpoint (object or path).
+            on_error: ``"raise"`` (default) or ``"collect"``.
 
         Returns:
-            Self: The list, for method chaining.
+            ImportResult: The deferred streaming import driver.
         """
-        from office365.runtime.converters.dataframe import records_from_dataframe
+        from office365.runtime.converters.dataframe import dataframe_chunks, records_from_dataframe
+        from office365.runtime.imports import ImportResult
         from office365.sharepoint.fields.name import internal_field_name
 
-        records = records_from_dataframe(df, key_fn=internal_field_name)
-        self.fields.from_dataframe(df)
-        self.items.from_records(records, progress=progress)
-        return self
+        chunks, total = dataframe_chunks(source, chunksize)
+
+        def _prepare(first_chunk) -> None:
+            if schema is not None:
+                self.ensure_fields(schema)
+            else:
+                self.ensure_fields_from_dataframe(first_chunk)
+            self.context.execute_query()
+
+        return ImportResult(
+            self.context,
+            self.items,
+            chunks,
+            to_records=lambda chunk: records_from_dataframe(chunk, key_fn=internal_field_name),
+            prepare=_prepare,
+            total=total,
+            progress=progress,
+            checkpoint=checkpoint,
+            on_error=on_error,
+        )
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:
         """The recommended way to add a list item is to send a POST request to the ListItemCollection resource endpoint,

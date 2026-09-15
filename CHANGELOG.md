@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `ImportResult` — a deferred, source-agnostic streaming import driver. Chunks
+  are queued, executed, and discarded (bounded memory), and the caller picks the
+  terminal: `execute_query()` (sequential), `execute_batch(...)` (server-side,
+  concurrent), or iterating the driver. `ClientObjectCollection.import_records()`
+  streams record batches; `List.from_dataframe()` streams a DataFrame / CSV
+  source and provisions the columns once.
+- **Resumable imports:** `ImportResult` accepts a `checkpoint`
+  (`ImportCheckpoint` or path) and persists the committed cursor after each
+  chunk, so an interrupted long-running run resumes by skipping the
+  already-committed records. `on_error="collect"` records a failing chunk
+  (`ImportStats.errors` + `checkpoint.failures`) and continues instead of
+  aborting.
+- `List.ensure_fields_from_dataframe()` — deferred, idempotent column provisioning.
+- `ClientObjectCollection.clear()` and a `concurrency` argument on
+  `Entity.execute_batch()`.
+- `OperationStats` — a shared counter base for bulk operations — with
+  `ImportStats` and `MigrationStats` as specializations (no lossy conversion
+  between them).
+
+### Changed
+- **Breaking:** `List.from_dataframe()` returns an `ImportResult` driver instead
+  of the `List`; `progress` is now keyword-only and the whole frame is no longer
+  queued — execution happens on the chosen terminal.
+- The SharePoint list migration target flushes each chunk and discards the
+  queued entities, keeping large record migrations memory-bounded.
+
 ## [3.1.1] - 2026-09-13
 
 ### Fixed

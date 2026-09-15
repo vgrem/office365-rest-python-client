@@ -1,13 +1,14 @@
-"""Import a pandas DataFrame into a SharePoint list.
+"""Import a pandas DataFrame into a SharePoint list (deferred, one call).
 
 Loads a CSV (default: S&P 500 daily prices, ~1.5M rows), creates the list with
-typed columns if missing (fields inferred from the DataFrame dtypes), and
-imports rows via the deferred ``List.from_dataframe`` — the progress hook
-fires per row as each queued create completes during ``execute_query()``.
-``--limit 40000`` (default) imports a 40k slice; ``--limit 0`` imports all.
+typed columns if missing (fields inferred from the DataFrame dtypes), and imports
+rows via ``List.from_dataframe`` — a deferred streaming driver. Fields are
+provisioned once, chunks are executed and discarded (bounded memory), and the
+progress hook fires per chunk.
 
-The symmetric counterpart (reading a list back into a DataFrame) is
-``export_dataframe.py``.
+``--limit 40000`` (default) imports a 40k slice; ``--limit 0`` imports all.
+For a memory-bounded CSV stream with concurrent batches see
+``import_dataframe_large.py``.
 
 Requires: pip install office365-rest-python-client[pandas]
 """
@@ -44,6 +45,7 @@ def main():
     p.add_argument("--file")
     p.add_argument("--list-title", default="Stocks_5yr")
     p.add_argument("--limit", type=int, default=40000, help="rows to import (0 = all)")
+    p.add_argument("--chunk", type=int, default=2000, help="rows per chunk")
     args = p.parse_args()
 
     df = pd.read_csv(args.file or args.url, nrows=args.limit if args.limit > 0 else None)
@@ -52,11 +54,11 @@ def main():
         tenant=tenant, client_id=client_id, username=username, password=password
     )
 
-    # Creates the list (if missing), provisions columns from the DataFrame
-    # dtypes, and imports every row — all in one deferred chain.
+    # Creates the list (if missing), provisions the columns once, and imports
+    # every chunk — all in one deferred chain.
     lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
-    lst.from_dataframe(df, progress=progress_bar(f"Importing {len(df)} rows")).execute_query()
-    print(f"\nImported {len(df)} rows into '{lst.title}'")
+    stats = lst.from_dataframe(df, chunksize=args.chunk, progress=progress_bar("Importing")).execute_query().value
+    print(f"\n{stats.summary()} into '{lst.title}'")
 
 
 if __name__ == "__main__":

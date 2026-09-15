@@ -1,7 +1,21 @@
 from __future__ import annotations
 
 from os import PathLike
-from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Generic, Iterator, List, Optional, Type, Union, cast
+from typing import (
+    IO,
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Type,
+    Union,
+    cast,
+)
 
 from typing_extensions import Self
 
@@ -16,6 +30,7 @@ from office365.runtime.types.exceptions import NotFoundException
 
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
+    from office365.runtime.imports import ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
 
 
@@ -146,12 +161,25 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Remove an item from the collection.
 
         Args:
-            client_object: The item to remove
+            client_object: The item to remove from the collection
 
         Returns:
             self: Supports fluent method chaining
         """
         self._data = [item for item in self._data if item != client_object]
+        return self
+
+    def clear(self) -> Self:
+        """Discard the collection's items, keeping its configuration.
+
+        Unlike :meth:`clear_state` this only drops the loaded/queued entities
+        (``_data``) — used by streaming imports to keep memory bounded between
+        chunks.
+
+        Returns:
+            self: Supports fluent method chaining
+        """
+        self._data = []
         return self
 
     def __iter__(self) -> Iterator[ClientObjectT]:
@@ -423,6 +451,47 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         from office365.runtime.converters.csv_reader import coerce_records
 
         return self._import_records(coerce_records(self._item_type, records), progress=progress)
+
+    def import_records(
+        self,
+        batches: "Iterable[List[dict]]",
+        progress: "ProgressCallback | None" = None,
+        checkpoint: "ImportCheckpoint | str | PathLike | None" = None,
+        on_error: str = "raise",
+    ) -> "ImportResult":
+        """Stream record batches into this collection, memory-bounded.
+
+        The streaming counterpart of :meth:`from_records`: returns a deferred
+        :class:`~office365.runtime.imports.ImportResult` that queues, executes,
+        and discards one batch at a time, so the collection never accumulates the
+        whole result set. Pick the terminal — ``execute_query()`` (sequential) or
+        ``execute_batch(...)`` (batched/concurrent) — or iterate the driver:
+
+            >>> users.import_records(batches).execute_batch(concurrency=5)
+            >>> users.import_records(batches, checkpoint="run.json").execute_batch(concurrency=5)
+
+        Args:
+            batches: An iterable of record batches (``list[dict]`` each).
+            progress: Optional hook fired per batch with a ``Progress`` snapshot.
+            checkpoint: Optional :class:`~office365.runtime.imports.ImportCheckpoint`
+                or path for resumable runs.
+            on_error: ``"raise"`` (default) or ``"collect"`` (record + skip failed
+                batches, then continue).
+
+        Returns:
+            ImportResult: The deferred streaming import driver.
+        """
+        from office365.runtime.imports import ImportResult
+
+        return ImportResult(
+            self.context,
+            self,
+            batches,
+            to_records=lambda batch: batch,
+            progress=progress,
+            checkpoint=checkpoint,
+            on_error=on_error,
+        )
 
     def to_dataframe(self) -> "DataFrameResult":
         """Build a pandas DataFrame from the loaded items.

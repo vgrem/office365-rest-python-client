@@ -184,6 +184,26 @@ class SharePointListTarget:
     def write(self, item: MigrationItem, payload: object) -> None:
         self._list.items.from_records([cast(dict, payload)])
 
+    def write_many(
+        self,
+        items: list[MigrationItem],
+        payloads: list[object],
+        concurrency: int = 1,
+    ) -> list[Failure]:
+        """Queue a chunk and flush it immediately, then discard the entities.
+
+        Flushing per chunk (instead of only at :meth:`commit`) keeps a large list
+        migration memory-bounded — the queued creates never accumulate for the
+        whole run.
+
+        Returns:
+            No failures (a batch failure raises; there are no partial successes).
+        """
+        for payload in payloads:
+            self._list.items.from_records([cast(dict, payload)])
+        self._flush(len(payloads), concurrency)
+        return []
+
     def list_paths(self) -> list[str]:
         return [str(i.id) for i in self._list.items.get().execute_query()]
 
@@ -191,10 +211,16 @@ class SharePointListTarget:
         return ""
 
     def commit(self, options=None) -> None:
-        """Flush the queued record writes through an OData batch (JSON-only parallel mode)."""
+        """Flush any remaining queued record writes through an OData batch."""
         batch_size = getattr(options, "batch_size", None) or 100
         concurrency = getattr(options, "concurrency", None) or 1
+        self._flush(batch_size, concurrency)
+
+    def _flush(self, batch_size: int, concurrency: int) -> None:
+        if not self._list.context.has_pending_request:
+            return
         self._list.context.execute_batch(items_per_batch=batch_size, concurrency=concurrency)
+        self._list.items.clear()
 
     def close(self) -> None:
         pass

@@ -7,6 +7,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, fields
 from enum import Enum
 
+from office365.runtime.operations import OperationStats
+
 
 class ConflictResolution(str, Enum):
     SKIP = "skip"
@@ -72,11 +74,7 @@ class MigrationItem:
 
 
 @dataclass
-class MigrationStats:
-    total: int = 0
-    success: int = 0
-    skipped: int = 0
-    errors: int = 0
+class MigrationStats(OperationStats):
     bytes_transferred: int = 0
 
     def summary(self) -> str:

@@ -49,6 +49,22 @@ class Progress(Generic[T_co]):
 ProgressCallback = Callable[[Progress[Any]], None]
 
 
+@dataclass
+class OperationStats:
+    """Common counters shared by bulk operations (imports, migrations).
+
+    The base carries only the fields every operation can report, so a consumer
+    that needs just totals accepts any specialization (``ImportStats``,
+    ``MigrationStats``) without a lossy conversion. Specializations add their own
+    extras (``chunks``/``duration``, ``bytes_transferred``).
+    """
+
+    total: int = 0
+    success: int = 0
+    skipped: int = 0
+    errors: int = 0
+
+
 class ProgressTracker:
     """Shared emitter that turns operation sub-steps into ``Progress`` snapshots.
 

@@ -134,29 +134,51 @@ with open("users.csv", "w", newline="") as f:
 
 Every collection exposes the same deferred adapters: `to_dataframe()` /
 `from_dataframe()` (plus `to_records`/`from_records`, CSV, NDJSON, Excel,
-JSON) over one shared projection. SharePoint lists additionally infer a typed
-schema from the DataFrame dtypes (`List.from_dataframe`).
+JSON) over one shared projection.
 
-For **large** frames, don't materialize the whole file or loop row-by-row:
-read the source in memory-bounded chunks, provision the columns once, and flush
-each chunk's queued creates through `execute_batch` (server-side batches;
-`concurrency>1` runs them in parallel with per-sub-request throttling retries):
+`List.from_dataframe()` returns a deferred, **streaming** import driver
+(`ImportResult`): it provisions the typed columns once (inferred from the
+dtypes, or from an explicit `schema`), then queues, executes, and discards each
+chunk — so memory stays bounded no matter the row count. Pick the execution
+terminal — the driver itself carries no execution knobs:
 
 ```python
 import pandas as pd
 
 lst = ctx.web.lists.ensure_list("Housing").execute_query()
-lst.ensure_fields({"median_income": FieldType.Number, ...}).execute_query()  # once
 
-reader = pd.read_csv("housing.csv", chunksize=1000)          # bounded memory
-for chunk in reader:
-    lst.items.from_dataframe(chunk)                          # queue item creates
-    ctx.execute_batch(items_per_batch=100, concurrency=5)    # batched + concurrent
+lst.from_dataframe(df).execute_query()                          # small / sequential
+lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)) \
+   .execute_batch(items_per_batch=100, concurrency=5)           # large / batched
 ```
 
-See `examples/sharepoint/lists/import_dataframe_large.py` (full dtype→field
-mapping + open-data walkthrough) and the `examples/entraid` DataFrame export
-for the Graph side.
+For full control, iterate the driver and drive execution yourself:
+
+```python
+for _ in lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
+    ctx.execute_batch(items_per_batch=100, concurrency=5)
+```
+
+`concurrency>1` runs batches in parallel with per-sub-request throttling retries
+(honoring `Retry-After`).
+
+For **long-running** jobs, pass a `checkpoint` (path or `ImportCheckpoint`): the
+committed cursor is persisted after each chunk, so an interrupted run resumes by
+skipping the already-committed records. `on_error="collect"` records a failing
+chunk (in `ImportStats.errors` and the checkpoint's `failures`) and continues
+instead of aborting:
+
+```python
+lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
+                   checkpoint="housing.run.json",
+                   on_error="collect") \
+   .execute_batch(items_per_batch=100, concurrency=5)
+```
+
+The generic entry point is `collection.import_records(batches)` for any
+`ClientObjectCollection`. See `examples/sharepoint/lists/import_dataframe.py`
+and `import_dataframe_large.py`, and the `examples/entraid` DataFrame export for
+the Graph side.
 
 ## Learn more
 

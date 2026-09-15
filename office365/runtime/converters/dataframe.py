@@ -9,7 +9,8 @@ risk of requiring the ``[pandas]`` extra.
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, cast
+from os import PathLike
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterator, List, Optional, cast
 
 from typing_extensions import Self
 
@@ -120,3 +121,24 @@ def records_from_dataframe(
             record[key_fn(key) if key_fn is not None else key] = value
         records.append(record)
     return records
+
+
+def dataframe_chunks(source: Any, chunksize: int) -> tuple[Iterator[Any], Optional[int]]:
+    """Split a DataFrame/CSV source into chunks, with the total when known.
+
+    Accepts a ``DataFrame`` (sliced into ``chunksize``-row slices), a CSV
+    path/URL/file (read with ``pandas.read_csv(chunksize=)``), or any iterable of
+    chunks (used as-is). Returns ``(chunks, total)`` — ``total`` is ``None`` when
+    it can't be known upfront (a CSV stream or an opaque iterable).
+
+    Args:
+        source: A DataFrame, a CSV path/URL/file, or an iterable of chunks.
+        chunksize: Rows per chunk for a DataFrame or CSV source.
+    """
+    if hasattr(source, "iloc"):  # a pandas DataFrame — slice it (bounded queue)
+        total = len(source)
+        return (source.iloc[start : start + chunksize] for start in range(0, total, chunksize)), total
+    if isinstance(source, (str, PathLike)) or hasattr(source, "read"):
+        pd = require_pandas()
+        return pd.read_csv(source, chunksize=chunksize), None
+    return iter(source), None
