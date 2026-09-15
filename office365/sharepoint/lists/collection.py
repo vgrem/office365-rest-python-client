@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath

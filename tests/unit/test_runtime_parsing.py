@@ -16,12 +16,12 @@ from office365.directory.users.user import User
 from office365.graph_client import GraphClient
 from office365.intune.devices.device import Device
 from office365.onedrive.driveitems.driveItem import DriveItem
-from office365.runtime.client_request_exception import (
-    ClientRequestException,
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.client_result import ClientResult
+from office365.runtime.exceptions import (
     DuplicatedObjectException,
     ObjectNotFoundException,
 )
-from office365.runtime.client_result import ClientResult
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat

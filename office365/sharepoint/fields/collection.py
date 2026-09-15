@@ -4,10 +4,8 @@ from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
 from typing_extensions import Self
 
-from office365.runtime.client_request_exception import (
-    ClientRequestException,
-    ObjectNotFoundException,
-)
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.exceptions import ObjectNotFoundException
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery

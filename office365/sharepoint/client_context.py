@@ -20,6 +20,7 @@ from office365.runtime.odata.v3.batch_request import DEFAULT_MAX_BATCH_BYTES, OD
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
@@ -292,27 +293,37 @@ class ClientContext(ClientRuntimeContext):
             max_batch_bytes (int or None): Maximum estimated batch payload size (default ~1 MB)
         """
         max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
+        request = self.pending_request()
+        request.warm_up()  # fetch the form digest once before dispatching any batch
         batches = self._split_batches(items_per_batch, max_bytes)
         if concurrency <= 1:
             batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
             batch_request.beforeExecute += self.authentication_context.authenticate_request
-            batch_request.beforeExecute += self.pending_request().ensure_form_digest
+            batch_request.beforeExecute += request.ensure_form_digest
             for qry in batches:
-                batch_request.execute_query_with_retry(qry)
+                self._run_batch(batch_request, qry)
                 if callable(success_callback) and qry.return_type is not None:
                     success_callback(qry.return_type)
             return self
 
-        self.pending_request()
         self._execute_batches_in_parallel(batches, concurrency, success_callback)
         return self
+
+    def _run_batch(self, batch_request: ODataBatchV3Request, batch_qry: "BatchQuery") -> None:
+        """Execute one batch, refreshing an expired form digest once and retrying."""
+        try:
+            batch_request.execute_query_with_retry(batch_qry)
+        except SecurityValidationException:
+            self.pending_request().invalidate_digest()
+            self.pending_request().warm_up()
+            batch_request.execute_query_with_retry(batch_qry)
 
     def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
         """Execute a single batch unit on a worker thread (with per-request retry)."""
         batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat())
         batch_request.beforeExecute += self.authentication_context.authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
-        batch_request.execute_query_with_retry(batch_qry)
+        self._run_batch(batch_request, batch_qry)
         return batch_qry.return_types
 
     def pending_request(self) -> SharePointRequest:

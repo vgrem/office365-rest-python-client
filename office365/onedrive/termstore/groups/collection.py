@@ -1,7 +1,8 @@
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.groups.group import Group
-from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.exceptions import DuplicatedObjectException
 
 
 class GroupCollection(EntityCollection[Group]):

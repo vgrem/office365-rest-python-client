@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [3.1.1] - 2026-09-13
 
 ### Fixed
+- SharePoint form digest is cached correctly again (`_valid_from` is set when
+  the digest is fetched) and refreshed with a safety margin, so
+  `/_api/contextInfo` is no longer requested on **every** call — it is fetched
+  once per site/run and pre-warmed before parallel `execute_batch`, which
+  removes the throttling (`429`) storm seen on long batch imports.
+- A throttled digest refresh (`429`/`503`) is now retried honoring
+  `Retry-After`, and an expired/invalidated digest (`403`, security validation)
+  is refreshed and the affected request retried once. The error is surfaced as
+  `SecurityValidationException` (`office365/sharepoint/exceptions.py`),
+  dispatched by `ClientRequestException.from_response` via a registry so the
+  runtime stays product-agnostic.
+- Whole-batch throttling (`429`/`503`) now honors `Retry-After` instead of
+  falling back to exponential backoff.
 - `File.open_binary` / `File.save_binary` mangled the URL by percent-encoding
   the whole OData call (`(`→`%28`, `)`→`%29`, `$`→`%24`) and adding a stray
   backslash before `$value`, causing a `400 Bad Request`

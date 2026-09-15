@@ -249,7 +249,7 @@ class DriveItem(BaseItem):
         Returns:
             DriveItem: The target folder (existing or newly created).
         """
-        from office365.runtime.client_request_exception import ObjectNotFoundException
+        from office365.runtime.exceptions import ObjectNotFoundException
 
         names = [name for name in url_path.replace("\\", "/").split("/") if name]
         if not names:

@@ -13,7 +13,7 @@ import argparse
 import sys
 
 from office365.graph_client import GraphClient
-from office365.runtime.client_request_exception import DuplicatedObjectException
+from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.types.exceptions import NotFoundException
 from tests.settings import client_id, client_secret, tenant
 

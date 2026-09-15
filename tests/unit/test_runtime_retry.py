@@ -533,13 +533,9 @@ class TestThreadSafety(unittest.TestCase):
 
     def test_ensure_form_digest_single_flight(self):
         request = SharePointRequest("https://contoso.sharepoint.com")
-        context_info = ContextWebInformation(
-            FormDigestValue="digest",
-            FormDigestTimeoutSeconds=1800,
-            _valid_from=time.time(),
-        )
+        context_info = ContextWebInformation(FormDigestValue="digest", FormDigestTimeoutSeconds=1800)
         fetch = mock.Mock(return_value=context_info)
-        request._get_context_web_information = fetch  # type: ignore[method-assign]
+        request._fetch_context_web_information = fetch  # type: ignore[method-assign]
 
         requests_with_header = []
 

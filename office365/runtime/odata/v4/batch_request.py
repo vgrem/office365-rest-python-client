@@ -76,7 +76,7 @@ class ODataV4BatchRequest(ODataRequest):
             base_delay: Base delay for exponential backoff (seconds)
             jitter: Whether to randomize the delay (default True)
         """
-        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry
+        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry, retry_after_delay
 
         state: dict = {"pending": query, "retry_after": None}
 
@@ -112,7 +112,7 @@ class ODataV4BatchRequest(ODataRequest):
                 max_retry=max_retry,
                 timeout_secs=base_delay,
                 jitter=jitter,
-                on_failure=lambda _attempt_num, _ex: state["retry_after"],
+                on_failure=lambda _attempt_num, ex: state["retry_after"] or retry_after_delay(ex),
             )
         except WholeBatchRejected as reject:
             self._split_and_retry(query, reject, max_retry, base_delay, jitter)

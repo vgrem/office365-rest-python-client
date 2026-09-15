@@ -1,6 +1,7 @@
 from office365.delta_collection import DeltaCollection
 from office365.outlook.contacts.folders.folder import ContactFolder
-from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.exceptions import DuplicatedObjectException
 
 
 class ContactFolderCollection(DeltaCollection[ContactFolder]):

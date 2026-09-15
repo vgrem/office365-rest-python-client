@@ -4,8 +4,9 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.terms.label import LocalizedLabel
 from office365.onedrive.termstore.terms.term import Term
-from office365.runtime.client_request_exception import ClientRequestException, DuplicatedObjectException
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 

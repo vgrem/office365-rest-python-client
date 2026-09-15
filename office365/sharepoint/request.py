@@ -20,6 +20,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 
 
@@ -102,27 +103,60 @@ class SharePointRequest(ODataRequest):
                 request.ensure_header("IF-MATCH", "*")
         return request
 
-    def _get_context_web_information(self):
-        """Returns a ContextWebInformation object that specifies metadata about the site."""
-        client = ODataRequest(self._base_url, JsonLightFormat())
-        client._transport = self._transport
-        client.beforeExecute += self._auth_context.authenticate_request
-        request = RequestOptions(f"{self.service_root_url}/contextInfo")
-        request.method = HttpMethod.Post
-        response = client.execute_request_direct(request)
-        json_format = JsonLightFormat()
-        json_format.function = "GetContextWebInformation"
-        return_value = ContextWebInformation()
-        client.map_json(response.json(), return_value, json_format)
-        return return_value
+    def _fetch_context_web_information(self) -> ContextWebInformation:
+        """Fetches the form digest (``/_api/contextInfo``), retrying throttling.
 
-    def ensure_form_digest(self, request: RequestOptions) -> None:
+        A throttled digest refresh would otherwise abort the whole run; retry
+        transient failures honoring the server's ``Retry-After``.
+        """
+        from office365.runtime.retry import response_retry_after, retry
+
+        def _attempt() -> ContextWebInformation:
+            client = ODataRequest(self._base_url, JsonLightFormat())
+            client._transport = self._transport
+            client.beforeExecute += self._auth_context.authenticate_request
+            request = RequestOptions(f"{self.service_root_url}/contextInfo")
+            request.method = HttpMethod.Post
+            response = client.execute_request_direct(request)
+            json_format = JsonLightFormat()
+            json_format.function = "GetContextWebInformation"
+            return_value = ContextWebInformation()
+            client.map_json(response.json(), return_value, json_format)
+            return return_value
+
+        return retry(
+            _attempt,
+            on_failure=lambda _attempt_num, ex: response_retry_after(getattr(ex, "response", None)),
+        )
+
+    def _ensure_digest(self) -> None:
+        """Single-flight fetch of a valid form digest."""
         if not self.context_info.is_valid:
             with self._digest_lock:
                 if not self.context_info.is_valid:
-                    self._ctx_web_info = self._get_context_web_information()
+                    self._ctx_web_info = self._fetch_context_web_information()
+
+    def warm_up(self) -> None:
+        """Fetch the form digest once (e.g. before dispatching parallel batches)."""
+        self._ensure_digest()
+
+    def invalidate_digest(self) -> None:
+        """Drop the cached digest so the next request re-fetches it."""
+        with self._digest_lock:
+            self._ctx_web_info = None
+
+    def ensure_form_digest(self, request: RequestOptions) -> None:
+        self._ensure_digest()
         assert self._ctx_web_info is not None
         request.set_header("X-RequestDigest", self._ctx_web_info.FormDigestValue)
+
+    def execute_request_direct(self, request: RequestOptions) -> Response:
+        """Send a request, recovering once from an expired/invalidated form digest."""
+        try:
+            return super().execute_request_direct(request)
+        except SecurityValidationException:
+            self.invalidate_digest()
+            return super().execute_request_direct(request)
 
     @property
     def context_info(self) -> ContextWebInformation:
