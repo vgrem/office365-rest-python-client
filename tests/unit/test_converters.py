@@ -139,7 +139,7 @@ class TestCoerceValue(unittest.TestCase):
 
 class TestClientResultCoercion(unittest.TestCase):
     def test_enum_keep_on_fail(self):
-        result = ClientResult(cast(ClientRuntimeContext, None), value__Level.Standard)
+        result = ClientResult(cast(ClientRuntimeContext, cast(object, None)), value__Level.Standard)
         result.set_property("__value", "nope")
         self.assertIs(result.value, value__Level.Standard)
 
