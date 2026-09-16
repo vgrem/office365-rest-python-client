@@ -24,7 +24,7 @@ _PRIMITIVE_DEFAULTS = {
     uuid.UUID: "uuid.UUID(int=0)",
     datetime.datetime: "datetime.min",
     datetime.date: "datetime.min",
-    datetime.time: "datetime.min",
+    datetime.time: "time.min",
     datetime.timedelta: "datetime.timedelta(0)",
     dict: "{}",
 }

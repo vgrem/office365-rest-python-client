@@ -28,6 +28,13 @@ def test_primitive_and_stream():
     assert stream.default("context") == "ClientResult(context, bytes())"
 
 
+def test_time_primitive():
+    time_type = ReturnType("Edm.Time")
+    assert time_type.kind is TypeKind.PRIMITIVE
+    assert time_type.annotation == "ClientResult[time]"
+    assert time_type.default("self.context") == "ClientResult(self.context, time.min)"
+
+
 def test_entity_and_client_value():
     entity = ReturnType("SP.Web", _resolver())
     assert entity.kind is TypeKind.ENTITY

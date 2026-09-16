@@ -22,6 +22,7 @@ _PRIMITIVE_TYPES = {
     "Edm.Duration": datetime.timedelta,
     "Edm.Date": datetime.date,
     "Edm.TimeOfDay": datetime.time,
+    "Edm.Time": datetime.time,  # OData v3 name for a time-of-day (kept after TimeOfDay for reverse lookup)
     "Edm.Json": dict,
     "Collection(SP.KeyValue)": dict,
     "Collection(Edm.Guid)": GuidCollection,

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import datetime
+
 from generator.builders import type_mapping
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.property import PropertyBuilder
@@ -44,6 +46,15 @@ def test_primitive_and_collection_lookups():
     assert ODataType.primitive_type_for("SP.Web") is None
     assert ODataType.is_collection_name("Collection(SP.Web)") is True
     assert ODataType.is_collection_name("SP.Web") is False
+
+
+def test_odata_v3_time_primitive():
+    # Edm.Time is the OData v3 name for a time-of-day (v4: Edm.TimeOfDay)
+    assert type_mapping.client_type_name("Edm.Time") == "time"
+    assert ODataType.is_primitive_name("Edm.Time") is True
+    assert ODataType.primitive_type_for("Edm.Time") is datetime.time
+    # reverse lookup keeps returning the v4 name
+    assert ODataType.resolve_type_name(datetime.time) == "Edm.TimeOfDay"
 
 
 def test_runtime_type_utility_is_pure():
