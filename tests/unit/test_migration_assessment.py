@@ -255,13 +255,27 @@ class _Field:
         self.hidden = hidden
 
 
+class _QueryOptions:
+    def __init__(self, select):
+        self.select = select or []
+        self.expand: list[str] = []
+
+
+class _LoadedCollection(list):
+    """A loaded collection stub exposing the query options the projection reads."""
+
+    def __init__(self, items, select):
+        super().__init__(items)
+        self.query_options = _QueryOptions(select)
+
+
 class _Query:
     def __init__(self, load, select):
         self._load = load
         self._select = select
 
     def execute_query(self):
-        return self._load(self._select)
+        return _LoadedCollection(self._load(self._select), self._select)
 
 
 class _ItemsEndpoint:

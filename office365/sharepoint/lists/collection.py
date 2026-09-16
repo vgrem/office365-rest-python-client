@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath
@@ -74,39 +72,47 @@ class ListCollection(EntityCollection[List]):
         )
 
     def ensure_list(
-        self, title: str, description: str | None = None, template_type: ListTemplateType = ListTemplateType.GenericList
+        self,
+        title: str,
+        description: str | None = None,
+        template_type: ListTemplateType = ListTemplateType.GenericList,
+        allow_content_types: bool = False,
+        *,
+        on_conflict: str = "skip",
     ) -> List:
         """Gets the list with the given title, or creates it if it does not exist.
 
-        Attempts to create the list via ``add_list``; if the server reports that
-        a list with the title already exists (``DuplicatedObjectException``), the
-        existing list is loaded instead and its properties are copied into the
-        returned object. All other errors propagate.
-
-        The result is deferred: resolve it with ``execute_query()`` before use,
-        e.g.::
-
-            >>> lst = ctx.web.lists.ensure_list("My List").execute_query()
+        Idempotent (deferred — resolve with ``execute_query()``). With
+        ``on_conflict="update"`` the existing list's description is reconciled.
 
         Args:
             title: Title of the list to get or create
             description: Description of the list to get or create
             template_type: Type of list to get or create
+            allow_content_types: Whether to enable content types
+            on_conflict: ``"skip"`` (default) or ``"update"``.
 
         Returns:
             List: The existing or newly created list
         """
-        return_type = self.add_list(title=title, description=description, template_type=template_type)
+        from office365.runtime.queries.get_or_create import create_or_get
 
-        def _on_name_exists(error: ClientRequestException):
-            if not isinstance(error, DuplicatedObjectException):
-                raise error
-            self.get_by_title(title).get().after_execute(
-                lambda existing: return_type.copy_from(existing), execute_first=True
-            )
+        def _reconcile(lst: List) -> None:
+            if description is not None and lst.properties.get("Description") != description:
+                lst.set_property("Description", description)
+                lst.update()
 
-        return_type.on_error(_on_name_exists)
-        return return_type
+        return create_or_get(
+            create=lambda: self.add_list(
+                title=title,
+                description=description,
+                template_type=template_type,
+                allow_content_types=allow_content_types,
+            ),
+            find=lambda: self.get_by_title(title).get(),
+            on_conflict=on_conflict,
+            reconcile=_reconcile,
+        )
 
     def ensure_client_rendered_site_pages_library(self) -> List:
         """

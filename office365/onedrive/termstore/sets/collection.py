@@ -6,9 +6,7 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.sets.set import Set
-from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -77,12 +75,6 @@ class SetCollection(EntityCollection[Set]):
 
     def ensure_set(self, name: str) -> Set:
         """Gets existing set by name or creates a new one (idempotent)."""
-        return_type = self.add(name)
+        from office365.runtime.queries.get_or_create import create_or_get
 
-        def _on_error(error: ClientRequestException):
-            if not isinstance(error, DuplicatedObjectException):
-                raise error
-            self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
-
-        return_type.on_error(_on_error)
-        return return_type
+        return create_or_get(create=lambda: self.add(name), find=lambda: self.get_by_name(name))

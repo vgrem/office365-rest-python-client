@@ -4,9 +4,7 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.terms.label import LocalizedLabel
 from office365.onedrive.termstore.terms.term import Term
-from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -51,13 +49,7 @@ class TermCollection(EntityCollection[Term]):
         return return_type
 
     def ensure(self, label: str) -> Term:
-        return_type = self.add(label)
+        """Gets an existing term by label or creates it (idempotent)."""
+        from office365.runtime.queries.get_or_create import create_or_get
 
-        def _on_error(error: ClientRequestException):
-            if not isinstance(error, DuplicatedObjectException):
-                raise error
-
-            self.get_by_label(label).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
-
-        return_type.on_error(_on_error)
-        return return_type
+        return create_or_get(create=lambda: self.add(label), find=lambda: self.get_by_label(label))

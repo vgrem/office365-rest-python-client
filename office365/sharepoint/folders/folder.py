@@ -616,23 +616,23 @@ class Folder(Entity):
         """
         return self.folders.ensure_by_path(relative_path)
 
-    def ensure_folders(self, relative_paths: Iterable[str]) -> Folder:
+    def ensure_folders(self, relative_paths: Iterable[str]) -> list[Folder]:
         """Ensure a set of nested folder paths under this folder — deduplicated.
 
         Since :meth:`ensure_folder` already creates intermediate folders for a
         nested path, only the *deepest* paths are ensured: a path that is an
         ancestor of another is covered by it. All ensures are queued as one
         deferred batch; the caller executes them in a single round-trip.
-        Returns ``self`` for chaining.
 
         Args:
             relative_paths (Iterable[str]): Paths relative to this folder.
+
+        Returns:
+            list[Folder]: The ensured folders.
         """
         paths = sorted(set(relative_paths))
         deepest = [path for path in paths if not any(other.startswith(f"{path}/") for other in paths if other != path)]
-        for path in deepest:
-            self.ensure_folder(path)
-        return self
+        return [self.ensure_folder(path) for path in deepest]
 
     @odata(name="ParentFolder")
     @property

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional, Union
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional, Union, cast
 
 from typing_extensions import Self
 
@@ -74,6 +74,7 @@ from office365.sharepoint.views.view import View
 from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
 if TYPE_CHECKING:
+    from office365.runtime.converters.dataframe import DataFrameResult
     from office365.runtime.imports import ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
     from office365.sharepoint.client_context import ClientContext
@@ -118,10 +119,18 @@ class List(SecurableObject):
         include_content: bool = False,
         item_exported: Optional[Callable[[ExportListProgress], None]] = None,
     ) -> Self:
-        """Exports SharePoint List"""
+        """Export the list as a **package** (``.zip``): per-item JSON + optional content.
+
+        This is the package exporter (``ListExporter``), distinct from the record
+        export on :meth:`export_to`/``list.items.export_to``. Run with
+        ``execute_query()``:
+
+            >>> with open("Orders.zip", "wb") as f:
+            ...     lst.export(f, include_content=True).execute_query()
+        """
         from office365.sharepoint.lists.exporter import ListExporter
 
-        return ListExporter.export(self, local_file, include_content, item_exported)  # type: ignore[override]
+        return cast(Self, ListExporter.export(self, local_file, include_content, item_exported))
 
     def can_customize_forms(self) -> ConnectorResult:
         """"""
@@ -667,123 +676,172 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def ensure_field(self, name: str, field_type: FieldType = FieldType.Text, description: str | None = None) -> Self:
+    def ensure_field(
+        self,
+        name: str,
+        field_type: FieldType = FieldType.Text,
+        description: str | None = None,
+        *,
+        on_conflict: str = "skip",
+    ) -> Field:
         """Ensure a single column exists on the list, creating it if missing.
 
         The check is deferred — the column is looked up and created when the
         caller executes the query (e.g. ``list.ensure_field("Status").execute_query()``).
+        With ``on_conflict="update"`` an existing column's type/description is
+        reconciled.
 
         Args:
             name: The column title
             field_type: The field type to create it with if missing (Text by default)
             description: The description of the column
-        """
-        self.fields.ensure(FieldCreationInformation(Title=name, FieldTypeKind=field_type, Description=description))
-        return self
+            on_conflict: ``"skip"`` (default) or ``"update"``.
 
-    def ensure_fields(self, columns: "Dict[str, FieldType] | list[str]") -> Self:
+        Returns:
+            Field: The existing or newly created field.
+        """
+        return self.fields.ensure(
+            FieldCreationInformation(Title=name, FieldTypeKind=field_type, Description=description),
+            on_conflict=on_conflict,
+        )
+
+    def ensure_fields(self, columns: "Dict[str, FieldType] | list[str]", *, on_conflict: str = "skip") -> list[Field]:
         """Ensure the specified columns exist on the list, creating missing ones.
 
-        Reconciles the source schema with the target list before data import,
-        like migration tools do: existing fields are kept, missing ones are
-        created with the given type (Text by default).
-
-        The check is deferred — the fields are read and missing ones created
-        when the caller executes the query (e.g.
-        ``list.ensure_fields(...).execute_query()``).
+        Reconciles the source schema with the target list before data import:
+        existing fields are kept (or reconciled with ``on_conflict="update"``),
+        missing ones are created with the given type (Text by default). Deferred —
+        execute the query after.
 
         Args:
             columns: Either a list of field names (created as Text) or a mapping
                 of field name -> FieldType
+            on_conflict: ``"skip"`` (default) or ``"update"``.
+
+        Returns:
+            list[Field]: The existing or newly created fields.
         """
         spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
-        for name, field_type in spec:
-            self.ensure_field(name, field_type)
-        return self
+        return [self.ensure_field(name, field_type, on_conflict=on_conflict) for name, field_type in spec]
 
-    def ensure_fields_from_dataframe(self, df) -> Self:
-        """Ensure a column exists for every DataFrame column (deferred, idempotent).
-
-        The field type is inferred from the pandas dtype; existing columns are
-        kept. Run it once before importing rows (the streaming importer does this
-        automatically):
-
-            >>> lst.ensure_fields_from_dataframe(df).execute_query()
-
-        Requires ``pip install office365-rest-python-client[pandas]``.
-        """
-        self.fields.from_dataframe(df)
-        return self
-
-    def from_dataframe(
+    def import_from(
         self,
         source,
         *,
+        format: str = "dataframe",  # noqa: A002
         schema: "Dict[str, FieldType] | None" = None,
         chunksize: int = 2000,
         progress: "ProgressCallback | None" = None,
         checkpoint: "ImportCheckpoint | str | None" = None,
         on_error: str = "raise",
+        key: "str | list[str] | None" = None,
+        key_field: str = "MigrationKey",
+        on_conflict: str = "skip",
+        enforce_unique: bool = False,
+        dry_run: bool = False,
     ) -> "ImportResult":
-        """Import a DataFrame (or a chunked CSV) into this list, memory-bounded.
+        """Stream a source into this list's items, memory-bounded.
 
-        Returns a deferred :class:`~office365.runtime.imports.ImportResult`
-        driver — no execution happens until you pick a terminal, mirroring the
-        deferred/streaming split of mature SDKs:
+        The **streaming** entry point: returns an
+        :class:`~office365.runtime.imports.ImportResult`; run it with
+        ``execute_query()`` (sequential) or ``execute_batch(...)``
+        (batched/concurrent):
 
-            >>> lst.from_dataframe(df).execute_query()  # sequential
-            >>> lst.from_dataframe(pd.read_csv(url, chunksize=2000)).execute_batch(concurrency=5)
-            >>> for _ in lst.from_dataframe(chunks):  # drive it yourself
-            ...     ctx.execute_batch(items_per_batch=100, concurrency=5)
+            >>> lst.import_from(pd.read_csv(url, chunksize=2000)).execute_batch(concurrency=5)
 
-        Fields are provisioned once (from the first chunk, or from ``schema``)
-        before the first item batch; each chunk is executed and discarded, so
-        memory stays bounded. Column names are sanitized into SharePoint field
-        internal names; NaN cells are skipped.
-
-        For long-running jobs, pass ``checkpoint`` (an
-        :class:`~office365.runtime.imports.ImportCheckpoint` or a path) to resume
-        an interrupted run by skipping the already-committed records, and
-        ``on_error="collect"`` to record + skip a failing chunk instead of
-        aborting.
+        Fields are provisioned once (from the first chunk, or ``schema``) for the
+        ``dataframe``/``csv`` formats. Column names are sanitized into SharePoint
+        field internal names; NaN cells are skipped. ``checkpoint`` resumes an
+        interrupted run; ``key`` makes it idempotent (skip/upsert);
+        ``enforce_unique``/``dry_run`` are supported.
 
         Args:
-            source: A ``pandas.DataFrame``, an iterable of DataFrame chunks, or a
-                CSV path/URL/file (read with ``chunksize``).
-            schema: Optional explicit ``{column: FieldType}``; inferred from the
-                first chunk's dtypes when omitted.
-            chunksize: Rows per chunk for a single DataFrame or a CSV source.
+            source: A DataFrame / chunk iterable / CSV path (``dataframe``/``csv``),
+                record batches (``records``), or a reader source for other formats.
+            format: Source format (default ``"dataframe"``).
+            schema: Optional explicit ``{column: FieldType}``; inferred from dtypes.
+            chunksize: Rows per chunk for a DataFrame/CSV source.
             progress: Optional hook fired per queued chunk with a ``Progress``.
             checkpoint: Optional resumable-run checkpoint (object or path).
             on_error: ``"raise"`` (default) or ``"collect"``.
+            key: Natural-key source column(s) for idempotency; ``None`` disables it.
+            key_field: Target column storing the derived key hash.
+            on_conflict: ``"skip"`` (default) or ``"upsert"``.
+            enforce_unique: Mark the key column unique (guards a create race).
+            dry_run: Plan the create/update/skip counts without writing.
 
         Returns:
             ImportResult: The deferred streaming import driver.
         """
-        from office365.runtime.converters.dataframe import dataframe_chunks, records_from_dataframe
-        from office365.runtime.imports import ImportResult
+        from office365.runtime.converters.dataframe import records_from_dataframe
         from office365.sharepoint.fields.name import internal_field_name
 
-        chunks, total = dataframe_chunks(source, chunksize)
-
-        def _prepare(first_chunk) -> None:
+        def _prepare(first_chunk: object) -> None:
             if schema is not None:
                 self.ensure_fields(schema)
             else:
-                self.ensure_fields_from_dataframe(first_chunk)
-            self.context.execute_query()
+                self.fields.from_dataframe(first_chunk)
 
-        return ImportResult(
-            self.context,
-            self.items,
-            chunks,
-            to_records=lambda chunk: records_from_dataframe(chunk, key_fn=internal_field_name),
-            prepare=_prepare,
-            total=total,
-            progress=progress,
+        def _to_records(chunk: object) -> list[dict]:
+            return records_from_dataframe(chunk, key_fn=internal_field_name)
+
+        to_records = _to_records if format in ("dataframe", "csv") else None
+
+        return self.items.import_from(
+            source,
+            format=format,
+            chunksize=chunksize,
+            key=key,
+            key_field=key_field,
+            on_conflict=on_conflict,
+            enforce_unique=enforce_unique,
             checkpoint=checkpoint,
             on_error=on_error,
+            progress=progress,
+            prepare=_prepare,
+            to_records=to_records,
+            dry_run=dry_run,
         )
+
+    def import_dataframe(self, source, **opts) -> "ImportResult":
+        """Stream a DataFrame / chunked CSV into this list (see :meth:`import_from`)."""
+        return self.import_from(source, format="dataframe", **opts)
+
+    def import_records(self, batches, **opts) -> "ImportResult":
+        """Stream record batches into this list's items (see :meth:`import_from`)."""
+        return self.import_from(batches, format="records", **opts)
+
+    def from_dataframe(
+        self,
+        df,
+        schema: "Dict[str, FieldType] | None" = None,
+        progress: "ProgressCallback | None" = None,
+    ) -> Self:
+        """Import a DataFrame into this list **deferred** (queue-all).
+
+        Provisions the columns (from the dtypes, or ``schema``) and queues an item
+        create per row; run with ``execute_query()``. For large frames use the
+        streaming :meth:`import_dataframe` (bounded memory + idempotency).
+        """
+        if schema is not None:
+            self.ensure_fields(schema)
+        else:
+            self.fields.from_dataframe(df)
+        self.items.from_dataframe(df, progress=progress)
+        return self
+
+    def export_to(self, target, *, format: str = "csv", **opts) -> Self:  # noqa: A002
+        """Export this list's items to ``target`` in ``format`` (deferred).
+
+        The record exporter (CSV/NDJSON/JSON/Excel); for the ``.zip`` package
+        export use :meth:`export`. Run with ``execute_query()``.
+        """
+        self.items.get_all().export_to(target, format=format, **opts)
+        return self
+
+    def to_dataframe(self) -> "DataFrameResult":
+        """Export this list's items to a pandas DataFrame (deferred result)."""
+        return self.items.get_all().to_dataframe()
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:
         """The recommended way to add a list item is to send a POST request to the ListItemCollection resource endpoint,
@@ -1300,7 +1358,7 @@ class List(SecurableObject):
         """Get list items"""
         return self.properties.get(
             "Items",
-            ListItemCollection(self.context, ResourcePath("items", self.resource_path)),
+            ListItemCollection(self.context, ResourcePath("items", self.resource_path), parent=self),
         )
 
     @odata(name="RootFolder")

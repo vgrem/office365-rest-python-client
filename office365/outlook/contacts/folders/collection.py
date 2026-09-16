@@ -1,7 +1,5 @@
 from office365.delta_collection import DeltaCollection
 from office365.outlook.contacts.folders.folder import ContactFolder
-from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.exceptions import DuplicatedObjectException
 
 
 class ContactFolderCollection(DeltaCollection[ContactFolder]):
@@ -19,18 +17,10 @@ class ContactFolderCollection(DeltaCollection[ContactFolder]):
         return super().add(**kwargs)
 
     def ensure(self, display_name: str) -> ContactFolder:
-        """Gets existing group by name or creates a new one (idempotent)."""
-        return_type = self.add(display_name)
+        """Gets an existing folder by name or creates it (idempotent)."""
+        from office365.runtime.queries.get_or_create import create_or_get
 
-        def _on_name_exists(error: ClientRequestException):
-            if not isinstance(error, DuplicatedObjectException):
-                raise error
-            self.get_by_name(display_name).after_execute(
-                lambda existing: return_type.copy_from(existing), execute_first=True
-            )
-
-        return_type.on_error(_on_name_exists)
-        return return_type
+        return create_or_get(create=lambda: self.add(display_name), find=lambda: self.get_by_name(display_name))
 
     def get_by_name(self, display_name: str) -> ContactFolder:
         """Returns the group with the specified name."""

@@ -11,7 +11,6 @@ from typing import cast
 import pytest
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
-from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.converters.csv_reader import coerce_records, read_csv_records
 from office365.runtime.converters.csv_writer import write_csv
@@ -26,6 +25,7 @@ from office365.runtime.converters.excel import read_excel, write_excel
 from office365.runtime.converters.ndjson import read_ndjson, write_ndjson
 from office365.runtime.operations import query_progress_hook
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.record_collection import RecordCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.collection import field_type_from_kind
 from office365.sharepoint.fields.type import FieldType
@@ -115,7 +115,7 @@ class TestImportPipeline(unittest.TestCase):
         self.assertNotIn("id", users[0].properties)
 
     def test_round_trip_write_then_read(self):
-        col = ClientObjectCollection(cast(ClientRuntimeContext, None), User, None)
+        col = RecordCollection(cast(ClientRuntimeContext, None), User, None)
         item = col.create_typed_object(
             {
                 "userPrincipalName": "jdoe@contoso.com",
@@ -180,8 +180,8 @@ def test_typed_entity_skips_unknown_columns():
 openpyxl = pytest.importorskip("openpyxl")
 
 
-def pipeline__collection(properties: list[dict], context=None) -> ClientObjectCollection:
-    col = ClientObjectCollection(context or cast(ClientRuntimeContext, None), User, None)
+def pipeline__collection(properties: list[dict], context=None) -> RecordCollection:
+    col = RecordCollection(context or cast(ClientRuntimeContext, None), User, None)
     for props in properties:
         col.add_child(col.create_typed_object(props))
     return col
@@ -189,7 +189,7 @@ def pipeline__collection(properties: list[dict], context=None) -> ClientObjectCo
 
 def test_from_records_strips_non_importable():
     client = GraphClient()
-    col = ClientObjectCollection(client, User, None)
+    col = RecordCollection(client, User, None)
     col.from_records([{"userPrincipalName": "jdoe@x.com", "id": "42", "@odata.type": "user"}])
     item = col[0]
     assert item.get_property("userPrincipalName") == "jdoe@x.com"
@@ -222,7 +222,7 @@ def test_from_json_file_queues_creates(tmp_path):
     path = tmp_path / "data.json"
     path.write_text(jsonlib.dumps([{"userPrincipalName": "jdoe@x.com", "id": "42", "noSuchColumn": "x"}]))
     client = GraphClient()
-    col = ClientObjectCollection(client, User, None)
+    col = RecordCollection(client, User, None)
     col.from_json_file(open(path))  # noqa: SIM115
     assert len(col) == 1
     item = col[0]
@@ -314,7 +314,7 @@ def test_ensure_property_cached_queues_deferred_noop():
 
 def test_get_all_accepts_progress():
     client = GraphClient()
-    col = ClientObjectCollection(client, User, None)
+    col = RecordCollection(client, User, None)
     events = []
     col.get_all(progress=lambda p: events.append(p))
     assert len(client._queries) >= 1  # the first page query is queued
@@ -363,7 +363,7 @@ def test_flat_round_trip():
     target = DataFrameResult(client)
     write_dataframe(col, target)
 
-    imported = ClientObjectCollection(client, User, None)
+    imported = RecordCollection(client, User, None)
     imported.from_dataframe(target.value)
     assert len(imported) == 1
     item = imported[0]

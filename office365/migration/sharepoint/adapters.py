@@ -144,9 +144,13 @@ class SharePointListSource:
         return columns
 
     def _project(self, loaded, progress: MigrationProgress) -> list[MigrationItem]:
+        from office365.runtime.converters.records import iter_records
+
+        # Reuse the shared record projection (raw values, no JSON coercion) so the
+        # migration payload matches the data pipeline's.
+        records = iter_records(loaded, raw=True)
         result: list[MigrationItem] = []
-        for item in loaded:
-            record = {k: v for k, v in item.properties.items() if not str(k).startswith("__")}
+        for item, record in zip(loaded, records):
             self._records[str(item.id)] = record
             result.append(
                 MigrationItem(
@@ -170,19 +174,38 @@ class SharePointListSource:
 
 
 class SharePointListTarget:
-    """Imports record payloads into a SharePoint list via ``from_records``."""
+    """Imports record payloads into a SharePoint list.
 
-    def __init__(self, target_list: "SPList") -> None:
+    Pass ``key`` (one or more natural-key columns) to make the target idempotent:
+    a hash of those columns is stored in ``key_field`` and each payload is created
+    or (``on_conflict="upsert"``) updated, so re-runs never duplicate. Without a
+    key, records are appended and idempotency relies on the checkpoint/manifest.
+    """
+
+    def __init__(
+        self,
+        target_list: "SPList",
+        key: str | list[str] | None = None,
+        key_field: str = "MigrationKey",
+        on_conflict: str = "skip",
+    ) -> None:
         self._list = target_list
+        self._key_columns = [key] if isinstance(key, str) else (list(key) if key else [])
+        self._key_field = key_field
+        self._on_conflict = on_conflict
+        self._target = None
+        self._existing: dict = {}
 
     def label(self) -> str:
         return f"list:{self._list.title}"
 
     def exists(self, item: MigrationItem) -> bool:
-        return False  # records are appended; idempotency via manifest/checkpoint
+        # Keyed dedup happens in _queue (the key is derived from the payload, which
+        # exists() doesn't receive); without a key, records are appended.
+        return False
 
     def write(self, item: MigrationItem, payload: object) -> None:
-        self._list.items.from_records([cast(dict, payload)])
+        self._queue([cast(dict, payload)])
 
     def write_many(
         self,
@@ -199,10 +222,33 @@ class SharePointListTarget:
         Returns:
             No failures (a batch failure raises; there are no partial successes).
         """
-        for payload in payloads:
-            self._list.items.from_records([cast(dict, payload)])
+        self._queue([cast(dict, payload) for payload in payloads])
         self._flush(len(payloads), concurrency)
         return []
+
+    def _queue(self, records: list[dict]) -> None:
+        if not self._key_columns:
+            for record in records:
+                self._list.items.from_records([record])
+            return
+        from office365.runtime.converters.upsert import keyed_queue
+        from office365.sharepoint.fields.name import internal_field_name
+
+        target = self._target
+        if target is None:
+            target = self._list.items.upsert_target(key_field=self._key_field)
+            target.ensure_key_field()
+            self._list.context.execute_query()
+            self._existing.update(target.load_keys())
+            self._target = target
+        key_columns = [internal_field_name(c) for c in self._key_columns]
+        keyed_queue(
+            target,
+            records,
+            key_columns=key_columns,
+            existing=self._existing,
+            on_conflict=self._on_conflict,
+        )
 
     def list_paths(self) -> list[str]:
         return [str(i.id) for i in self._list.items.get().execute_query()]

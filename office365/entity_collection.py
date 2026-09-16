@@ -4,16 +4,16 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union, cast
 
 from office365.entity import Entity
 from office365.runtime.client_object import ClientObjectT
-from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.record_collection import RecordCollection
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
 
-class EntityCollection(ClientObjectCollection[ClientObjectT]):
+class EntityCollection(RecordCollection[ClientObjectT]):
     """A collection container which represents a named collections of entities"""
 
     def __init__(

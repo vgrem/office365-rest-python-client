@@ -3,16 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Type, cast
 
 from office365.runtime.client_object import ClientObjectT
-from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.entity import EntityPath
+from office365.runtime.record_collection import RecordCollection
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
 
 
-class EntityCollection(ClientObjectCollection[ClientObjectT]):
+class EntityCollection(RecordCollection[ClientObjectT]):
     """A type-safe collection of SharePoint entities.
 
     Provides strongly-typed access to SharePoint entity collections with support for:

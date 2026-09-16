@@ -33,7 +33,18 @@ from datetime import datetime, timezone
 from itertools import islice
 from os import PathLike
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Iterator, Optional, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Iterable,
+    Iterator,
+    Optional,
+    Protocol,
+    Union,
+    cast,
+    runtime_checkable,
+)
 
 from typing_extensions import Self
 
@@ -41,10 +52,22 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import OperationStats
 
 if TYPE_CHECKING:
-    from office365.runtime.client_object_collection import ClientObjectCollection
     from office365.runtime.operations import ProgressCallback
 
 ON_ERROR_MODES = ("raise", "collect")
+
+
+@runtime_checkable
+class RecordSink(Protocol):
+    """Minimal target contract for :class:`ImportResult` (a queueable collection)."""
+
+    def from_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> Any:
+        """Queue a create per record."""
+        ...
+
+    def clear(self) -> Any:
+        """Discard queued/loaded entities (keeps memory bounded)."""
+        ...
 
 
 @dataclass
@@ -134,20 +157,28 @@ class ImportResult(ClientResult[ImportStats]):
         on_error: ``"raise"`` (default) aborts on the first failed chunk;
             ``"collect"`` records the failure (``ImportStats.errors`` +
             ``checkpoint.failures``), skips the chunk, and continues.
+        queue: Optional conflict-resolution hook ``queue(records) -> (queued, skipped)``
+            that queues the chunk's creates/updates and reports how many records
+            were queued and how many were skipped (already present). Defaults to
+            ``collection.from_records(records)`` (all created, none skipped).
+        dry_run: When True, compute the outcome (and the keyed create/update/skip
+            plan) without writing anything — a plan preview.
     """
 
     def __init__(
         self,
         context,
-        collection: "ClientObjectCollection",
+        collection: "RecordSink",
         chunks: Iterable[Any],
         *,
         to_records: Callable[[Any], list[dict]],
         prepare: Optional[Callable[[Any], None]] = None,
+        queue: Optional[Callable[[list[dict]], tuple[int, int]]] = None,
         total: Optional[int] = None,
         progress: Optional["ProgressCallback"] = None,
         checkpoint: Union["ImportCheckpoint", str, PathLike, None] = None,
         on_error: str = "raise",
+        dry_run: bool = False,
     ) -> None:
         super().__init__(context, ImportStats())
         if on_error not in ON_ERROR_MODES:
@@ -156,9 +187,11 @@ class ImportResult(ClientResult[ImportStats]):
         self._chunks = iter(chunks)
         self._to_records = to_records
         self._prepare = prepare
+        self._queue_fn = queue or self._default_queue
         self._total = total
         self._progress = progress
         self._on_error = on_error
+        self._dry_run = dry_run
         self._started_at: Optional[float] = None
         self._checkpoint_path, self._checkpoint = self._resolve_checkpoint(checkpoint)
         self._progress_base = self._checkpoint.cursor  # records committed before this run
@@ -189,7 +222,7 @@ class ImportResult(ClientResult[ImportStats]):
         )
         return self
 
-    def __iter__(self) -> Iterator["ClientObjectCollection"]:
+    def __iter__(self) -> Iterator["RecordSink"]:
         """Yield the target collection per chunk; the caller executes each chunk.
 
         The caller is responsible for execution (and its errors); checkpoint
@@ -197,9 +230,10 @@ class ImportResult(ClientResult[ImportStats]):
         """
         self._started_at = time.monotonic()
         for _raw, records in self._iter_records():
-            self._queue(records)
+            queued, _skipped = self._queue(records)
             yield self._collection
-            self._commit(records)
+            self.value.success += queued
+            self._advance(records)
             self._collection.clear()
         self._finish()
 
@@ -209,18 +243,23 @@ class ImportResult(ClientResult[ImportStats]):
         """Drive the chunk loop: skip committed records, queue, execute, persist."""
         self._started_at = time.monotonic()
         for _raw, records in self._iter_records():
-            self._queue(records)
+            queued, _skipped = self._queue(records)
+            if self._dry_run:
+                self.value.success += queued
+                self._advance(records)
+                self._collection.clear()
+                continue
             try:
                 execute()
             except Exception as ex:  # noqa: BLE001 — policy decides whether to abort
-                self._record_failure(records, ex)
+                self._record_failure(queued, ex)
                 self._collection.clear()
                 if self._on_error != "collect":
                     self._save_checkpoint()  # cursor unchanged — resume retries this chunk
                     raise
                 self._advance(records)  # collect: skip the failed chunk, keep going
             else:
-                self.value.success += len(records)
+                self.value.success += queued
                 self._advance(records)
                 self._collection.clear()
             self._save_checkpoint()
@@ -254,28 +293,33 @@ class ImportResult(ClientResult[ImportStats]):
 
     # ── Bookkeeping ──────────────────────────────────────────────
 
-    def _queue(self, records: list[dict]) -> None:
+    def _default_queue(self, records: list[dict]) -> tuple[int, int]:
+        """Queue every record as a create (no conflict resolution)."""
+        if not self._dry_run:
+            self._collection.from_records(records)
+        return len(records), 0
+
+    def _queue(self, records: list[dict]) -> tuple[int, int]:
+        """Queue a chunk via the conflict-resolution hook; returns (queued, skipped)."""
         from office365.runtime.operations import Progress
 
-        self._collection.from_records(records)
+        queued, skipped = self._queue_fn(records)
         self.value.total += len(records)
+        self.value.skipped += skipped
         if callable(self._progress):
             done = self._progress_base + self.value.total  # overall, across resumes
             self._progress(Progress(done=done, total=self._total, stage="importing"))
-
-    def _commit(self, records: list[dict]) -> None:
-        self.value.success += len(records)
-        self._advance(records)
+        return queued, skipped
 
     def _advance(self, records: list[dict]) -> None:
         self.value.chunks += 1
         self._checkpoint.cursor += len(records)
         self._checkpoint.chunks += 1
 
-    def _record_failure(self, records: list[dict], error: Exception) -> None:
-        self.value.errors += len(records)
-        self._checkpoint.errors += len(records)
-        self._checkpoint.failures.append({"records": len(records), "error": str(error)})
+    def _record_failure(self, count: int, error: Exception) -> None:
+        self.value.errors += count
+        self._checkpoint.errors += count
+        self._checkpoint.failures.append({"records": count, "error": str(error)})
 
     def _finish(self) -> None:
         if self._started_at is not None:

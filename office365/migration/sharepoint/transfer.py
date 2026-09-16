@@ -68,7 +68,8 @@ def _transfer_files_parallel(
 
     parents = {dest.rsplit("/", 1)[0] for dest, _ in files if "/" in dest}
     if parents:
-        target_folder.ensure_folders(parents).execute_query()
+        target_folder.ensure_folders(parents)
+        target_folder.execute_query()
 
     failures: list[Failure] = []
     context_factory = context_factory or (lambda: target_folder.context.clone(target_folder.context.base_url))

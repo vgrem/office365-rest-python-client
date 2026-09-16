@@ -2,7 +2,7 @@
 
 Loads a CSV (default: S&P 500 daily prices, ~1.5M rows), creates the list with
 typed columns if missing (fields inferred from the DataFrame dtypes), and imports
-rows via ``List.from_dataframe`` — a deferred streaming driver. Fields are
+rows via ``List.import_dataframe`` — a deferred streaming driver. Fields are
 provisioned once, chunks are executed and discarded (bounded memory), and the
 progress hook fires per chunk.
 
@@ -57,7 +57,7 @@ def main():
     # Creates the list (if missing), provisions the columns once, and imports
     # every chunk — all in one deferred chain.
     lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
-    stats = lst.from_dataframe(df, chunksize=args.chunk, progress=progress_bar("Importing")).execute_query().value
+    stats = lst.import_dataframe(df, chunksize=args.chunk, progress=progress_bar("Importing")).execute_query().value
     print(f"\n{stats.summary()} into '{lst.title}'")
 
 

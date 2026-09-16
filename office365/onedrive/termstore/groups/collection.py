@@ -1,8 +1,6 @@
 from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.groups.group import Group
-from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.exceptions import DuplicatedObjectException
 
 
 class GroupCollection(EntityCollection[Group]):
@@ -34,12 +32,6 @@ class GroupCollection(EntityCollection[Group]):
 
     def ensure(self, name: str) -> Group:
         """Gets existing group by name or creates a new one (idempotent)."""
-        return_type = self.add(name)
+        from office365.runtime.queries.get_or_create import create_or_get
 
-        def _on_error(error: ClientRequestException):
-            if not isinstance(error, DuplicatedObjectException):
-                raise error
-            self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
-
-        return_type.on_error(_on_error)
-        return return_type
+        return create_or_get(create=lambda: self.add(name), find=lambda: self.get_by_name(name))

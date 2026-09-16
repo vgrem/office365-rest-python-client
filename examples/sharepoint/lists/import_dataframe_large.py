@@ -1,7 +1,7 @@
 """Stream a large CSV into a SharePoint list with concurrent batches.
 
 Reads the CSV **in memory-bounded chunks** (``pd.read_csv(..., chunksize=)``) and
-hands the chunk iterator to ``List.from_dataframe``. The driver provisions the
+hands the chunk iterator to ``List.import_dataframe``. The driver provisions the
 typed columns once from the first chunk, then queues and flushes each chunk
 through server-side OData batches — ``concurrency`` runs those batches in
 parallel, each throttled sub-request retried honoring ``Retry-After``. Queued
@@ -11,6 +11,11 @@ size.
 For long-running jobs, ``--checkpoint`` persists the committed cursor after each
 chunk: re-run the same command to resume where it stopped. ``--on-error collect``
 records and skips a failing chunk instead of aborting.
+
+The import is **idempotent**: ``--key Name,date`` stores a hash of those columns
+in a ``MigrationKey`` field and, on re-run, existing rows are updated
+(``--on-conflict upsert``, default) or skipped (``--on-conflict skip``) instead
+of duplicated — no checkpoint required.
 
 Default source: S&P 500 daily prices (~1.5M rows). ``--rows 40000`` (default)
 shows the fast path on a 40k slice; ``--rows 0`` imports the whole file.
@@ -72,8 +77,13 @@ def main():
     p.add_argument("--checkpoint", default=None, help="checkpoint path (default: <list-title>.checkpoint.json)")
     p.add_argument("--no-checkpoint", action="store_true", help="disable checkpointing/resume")
     p.add_argument("--on-error", choices=("raise", "collect"), default="raise", help="failed-chunk policy")
+    p.add_argument("--key", default="Name,date", help="natural-key column(s) for idempotency ('' disables)")
+    p.add_argument("--on-conflict", choices=("skip", "upsert"), default="upsert", help="existing-key policy")
+    p.add_argument("--enforce-unique", action="store_true", help="make the key column unique on the list")
+    p.add_argument("--dry-run", action="store_true", help="plan only (no writes)")
     p.add_argument("--no-progress", action="store_true", help="do not show tqdm progress")
     args = p.parse_args()
+    key = [c.strip() for c in args.key.split(",") if c.strip()] or None
 
     checkpoint = None if args.no_checkpoint else (args.checkpoint or f"{args.list_title}.checkpoint.json")
     ctx = ClientContext(team_site_url).with_username_and_password(
@@ -93,11 +103,15 @@ def main():
     )
     try:
         stats = (
-            lst.from_dataframe(
+            lst.import_dataframe(
                 chunks,
                 progress=progress_bar(args.no_progress),
                 checkpoint=checkpoint,
                 on_error=args.on_error,
+                key=key,
+                on_conflict=args.on_conflict,
+                enforce_unique=args.enforce_unique,
+                dry_run=args.dry_run,
             )
             .execute_batch(items_per_batch=args.items_per_batch, concurrency=args.concurrency)
             .value

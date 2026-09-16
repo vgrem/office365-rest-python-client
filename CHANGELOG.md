@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   concurrent), or iterating the driver. `ClientObjectCollection.import_records()`
   streams record batches; `List.from_dataframe()` streams a DataFrame / CSV
   source and provisions the columns once.
+- **Idempotent list imports (skip / upsert):** `List.from_dataframe(..., key=...,
+  key_field="MigrationKey", on_conflict="skip"|"upsert")` derives a SHA-256 key
+  from the given natural-key column(s), stores it in a dedicated field, loads the
+  existing keys once, and skips or updates already-present rows — so a re-run
+  never duplicates. Backed by `ListItemCollection.load_keys`/`queue_keyed`/
+  `record_key` and a conflict-resolution `queue` hook on `ImportResult`
+  (`ImportStats.skipped`).
 - **Resumable imports:** `ImportResult` accepts a `checkpoint`
   (`ImportCheckpoint` or path) and persists the committed cursor after each
   chunk (atomically), so an interrupted long-running run resumes by skipping the
@@ -28,6 +35,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   between them).
 
 ### Changed
+- **Architecture:** the data-interchange surface (pandas/CSV/JSON/NDJSON/Excel
+  import/export) moved off the core `ClientObjectCollection` onto a new
+  `RecordCollection` base (inherited by every typed `EntityCollection`). Formats
+  are resolved through `runtime.converters.registry`; unified `export_to(...)` /
+  `import_from(...)` sit alongside the existing `to_*`/`from_*` conveniences.
+  Keyed skip/upsert is a pluggable `UpsertTarget` (`runtime.converters.upsert`)
+  implemented for list items by `ListItemUpsertTarget`; the migration toolkit's
+  `SharePointListTarget` reuses it.
+- `import_from`/`import_records` gained `enforce_unique=True` (mark the key column
+  unique) and `dry_run=True` (plan the create/update/skip counts without writing).
+- `List` gained record facades over its items: `import_from`/`import_dataframe`/
+  `import_records` (streaming), `export_to`/`to_dataframe` (record export). The
+  naming is now consistent everywhere: `from_*` is deferred (queue-all),
+  `import_*` is the streaming `ImportResult`. `List.from_dataframe` is now
+  **deferred** (it was the streaming entry); use `List.import_dataframe` for the
+  streaming path. `List.export` remains the `.zip` **package** export.
+- `SharePointListSource` now reuses the shared record projection
+  (`to_records(raw=True)`, no JSON coercion).
+- **Idempotent metadata:** all client-side `ensure_*` (fields, lists, content
+  types, terms, contact folders) share new
+  `runtime.queries.get_or_create.get_or_create`/`create_or_get` primitives, and
+  accept `on_conflict="skip"|"update"` to reconcile an existing definition.
+- `List.ensure_field`/`ensure_fields` and `FieldCollection.from_dataframe`
+  now return the ensured **entity/entities** (`Field` / `list[Field]`);
+  `Folder.ensure_folders` returns `list[Folder]`. `List.ensure_fields_from_dataframe`
+  was removed (use `List.fields.from_dataframe`).
 - **Breaking:** `List.from_dataframe()` returns an `ImportResult` driver instead
   of the `List`; `progress` is now keyword-only and the whole frame is no longer
   queued — execution happens on the chosen terminal.

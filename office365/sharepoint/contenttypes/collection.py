@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Dict, Optional, cast
 
-from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.exceptions import DuplicatedObjectException
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -42,17 +40,40 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             self,
         )
 
-    def ensure(self, name: str, description: str | None = None, group: str | None = None) -> ContentType:
-        """Ensure a content type with the given name exists (idempotent)."""
+    def ensure(
+        self,
+        name: str,
+        description: str | None = None,
+        group: str | None = None,
+        *,
+        on_conflict: str = "skip",
+    ) -> ContentType:
+        """Ensure a content type with the given name exists (idempotent).
+
+        With ``on_conflict="update"`` the existing content type's description and
+        group are reconciled.
+        """
+        from office365.runtime.queries.get_or_create import create_or_get
+
         info = ContentTypeCreationInformation(name, description, group)
-        return_type = self.add(info)
 
-        def _on_error(error: ClientRequestException):
-            if not isinstance(error, DuplicatedObjectException):
-                raise error
-            self.get_by_name(name).after_execute(lambda existing: return_type.copy_from(existing), execute_first=True)
+        def _reconcile(content_type: ContentType) -> None:
+            changed = False
+            if description is not None and content_type.properties.get("Description") != description:
+                content_type.set_property("Description", description)
+                changed = True
+            if group is not None and content_type.properties.get("Group") != group:
+                content_type.set_property("Group", group)
+                changed = True
+            if changed:
+                content_type.update()
 
-        return return_type.on_error(_on_error)
+        return create_or_get(
+            create=lambda: self.add(info),
+            find=lambda: self.get_by_name(name),
+            on_conflict=on_conflict,
+            reconcile=_reconcile,
+        )
 
     def add(self, content_type_info: ContentTypeCreationInformation) -> ContentType:
         """Adds a new content type to the collection and returns a reference to the added SP.ContentType.

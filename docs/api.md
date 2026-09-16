@@ -132,12 +132,15 @@ with open("users.csv", "w", newline="") as f:
 
 ### DataFrame import / bulk load
 
-Every collection exposes the same deferred adapters: `to_dataframe()` /
-`from_dataframe()` (plus `to_records`/`from_records`, CSV, NDJSON, Excel,
-JSON) over one shared projection.
+Every collection exposes the same adapters over one shared projection: deferred
+`to_dataframe()`/`from_dataframe()` (plus `to_records`/`from_records`, CSV,
+NDJSON, Excel, JSON) and streaming `import_from()`/`import_records()`.
 
-`List.from_dataframe()` returns a deferred, **streaming** import driver
-(`ImportResult`): it provisions the typed columns once (inferred from the
+The naming is consistent: **`from_*` is deferred** (queue-all, run with
+`execute_query()`); **`import_*` returns a streaming `ImportResult`** (bounded,
+resumable, idempotent).
+
+`List.import_dataframe()` provisions the typed columns once (inferred from the
 dtypes, or from an explicit `schema`), then queues, executes, and discards each
 chunk — so memory stays bounded no matter the row count. Pick the execution
 terminal — the driver itself carries no execution knobs:
@@ -147,15 +150,15 @@ import pandas as pd
 
 lst = ctx.web.lists.ensure_list("Housing").execute_query()
 
-lst.from_dataframe(df).execute_query()                          # small / sequential
-lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)) \
-   .execute_batch(items_per_batch=100, concurrency=5)           # large / batched
+lst.import_dataframe(df).execute_query()                          # sequential
+lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000)) \
+   .execute_batch(items_per_batch=100, concurrency=5)             # batched
 ```
 
 For full control, iterate the driver and drive execution yourself:
 
 ```python
-for _ in lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
+for _ in lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
     ctx.execute_batch(items_per_batch=100, concurrency=5)
 ```
 
@@ -169,9 +172,9 @@ offset). `on_error="collect"` records a failing chunk (in `ImportStats.errors`
 and the checkpoint's `failures`) and continues instead of aborting:
 
 ```python
-lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
-                   checkpoint="housing.run.json",
-                   on_error="collect") \
+lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
+                     checkpoint="housing.run.json",
+                     on_error="collect") \
    .execute_batch(items_per_batch=100, concurrency=5)
 ```
 
@@ -179,6 +182,77 @@ The generic entry point is `collection.import_records(batches)` for any
 `ClientObjectCollection`. See `examples/sharepoint/lists/import_dataframe.py`
 and `import_dataframe_large.py`, and the `examples/entraid` DataFrame export for
 the Graph side.
+
+#### Idempotent imports (skip / upsert)
+
+Pass a natural `key` (one or more columns) to make the import **duplicate-proof**:
+a SHA-256 hash of those columns is stored in `key_field` (created if missing),
+the existing keys are loaded once, and a re-run either skips already-present
+rows (`on_conflict="skip"`) or updates them (`on_conflict="upsert"`):
+
+```python
+lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
+                     key=["region", "date"],         # natural key -> MigrationKey hash
+                     on_conflict="upsert") \
+   .execute_batch(items_per_batch=100, concurrency=5)
+```
+
+This works alongside `checkpoint` (resume) — the checkpoint skips committed
+chunks for speed, the key makes the import idempotent even on a fresh run. The
+existing keys are loaded once per run (key values + `Id` only, paged).
+
+Pass `enforce_unique=True` to mark the key column unique on the list (guards
+against a create race), and `dry_run=True` to preview the create/update/skip plan
+without writing anything.
+
+The import/export surface lives on `RecordCollection` (the base of every typed
+`EntityCollection`), so the same API works on any collection. `List` mirrors it as
+a facade: `List.import_from`/`import_dataframe`/`import_records` (streaming),
+`List.export_to`/`to_dataframe` (record export), and `List.export` (a `.zip`
+**package** export — per-item JSON + optional content — distinct from the record
+export):
+
+```python
+collection.export_to(f, format="csv").execute_query()        # unified record export
+collection.import_from(df, key=["id"], on_conflict="upsert") # unified streaming import
+collection.import_records(batches, checkpoint="run.json")    # stream record batches
+
+lst.from_dataframe(df).execute_query()                       # deferred (queue-all)
+lst.export_to(f, format="csv").execute_query()               # list -> records
+lst.export(zip_file, include_content=True).execute_query()   # list -> .zip package
+```
+
+The format registry (`office365.runtime.converters.registry`) maps a format name
+to its reader/writer, so adding a format is a registration — the named
+`to_csv`/`from_dataframe` conveniences are thin wrappers over it.
+
+### Idempotency
+
+Two idempotent layers, one model — a re-run never duplicates:
+
+- **Metadata (`ensure_*`)** — get-or-create a resource (field, list, content type,
+  term, folder, user …), deferred; run with `execute_query()`. Pass
+  `on_conflict="update"` to **reconcile** an existing definition (the metadata
+  analogue of upsert):
+
+  ```python
+  lst.ensure_field("Status", FieldType.Text).execute_query()                 # create if missing
+  lst.ensure_fields({"Region": FieldType.Text, "Amount": FieldType.Number})   # -> list[Field]
+  lst.ensure_field("Status", FieldType.Choice, on_conflict="update")          # reconcile
+  ```
+
+  All client-side `ensure_*` share the `office365.runtime.queries.get_or_create`
+  primitives (`get_or_create`/`create_or_get`), so error classification and the
+  deferred queueing behave the same everywhere. (Some `ensure_*` — e.g.
+  `ensure_site_pages_library`, `ensure_user` — are server-side operations and are
+  already idempotent.)
+
+- **Data (`import_from(key=…, on_conflict=…)`)** — get-or-create/update records
+  by a natural key (see *Idempotent imports* above).
+
+Distinct from both: `ClientObject.ensure_property`/`ensure_properties` is a
+*client-side lazy load* (fetch a property if not already loaded), not a
+server-side get-or-create.
 
 ## Learn more
 

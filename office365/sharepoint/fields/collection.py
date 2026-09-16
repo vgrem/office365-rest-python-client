@@ -2,10 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 
-from typing_extensions import Self
-
-from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.exceptions import ObjectNotFoundException
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -61,18 +57,17 @@ class FieldCollection(EntityCollection[Field]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Field, resource_path, parent)
 
-    def from_dataframe(self, df, progress=None) -> Self:
+    def from_dataframe(  # type: ignore[override]
+        self, df, progress=None, *, on_conflict: str = "skip"
+    ) -> list[Field]:
         """Define a field per DataFrame column, inferring the field type.
 
-        The schema counterpart of ``ClientObjectCollection.from_dataframe``
-        (which imports rows): here each column becomes a field definition.
-        Column names are sanitized into field internal names and the
-        ``FieldType`` is inferred from the pandas dtype (Boolean/DateTime/
-        Number/Text). Each field is ensured idempotently (looked up first,
-        created when missing). Deferred — run the lookups/creates with
-        ``execute_query()``:
-
-            >>> lst.fields.from_dataframe(df).execute_query()
+        The schema counterpart of ``RecordCollection.from_dataframe`` (which
+        imports rows): here each column becomes a field definition. Column names
+        are sanitized into field internal names and the ``FieldType`` is inferred
+        from the pandas dtype (Boolean/DateTime/Number/Text). Each field is
+        ensured idempotently (looked up first, created when missing). Deferred —
+        run the lookups/creates with ``execute_query()``.
 
         A column whose title collides with a built-in field (e.g. ``Name`` ->
         ``FileLeafRef``) is suffixed with ``_`` and a warning is emitted, since
@@ -82,9 +77,11 @@ class FieldCollection(EntityCollection[Field]):
 
         Args:
             df: A pandas DataFrame whose columns become the field definitions.
+            progress: Reserved (kept for signature parity).
+            on_conflict: ``"skip"`` (default) or ``"update"``.
 
         Returns:
-            Self: The field collection, for method chaining.
+            list[Field]: The ensured fields.
         """
         import warnings
 
@@ -92,6 +89,7 @@ class FieldCollection(EntityCollection[Field]):
         from office365.sharepoint.fields.name import internal_field_name, is_reserved_field_title
 
         pd = require_pandas()
+        fields: list[Field] = []
         for column in df.columns:
             if is_reserved_field_title(str(column)):
                 warnings.warn(
@@ -104,28 +102,33 @@ class FieldCollection(EntityCollection[Field]):
                 Title=internal_field_name(str(column)),
                 FieldTypeKind=field_type,
             )
-            self.ensure(info)
-        return self
+            fields.append(self.ensure(info, on_conflict=on_conflict))
+        return fields
 
-    def ensure(self, parameters: FieldCreationInformation) -> Field:
-        from office365.runtime.queries.deferred import DeferredOperationQuery
+    def ensure(self, parameters: FieldCreationInformation, *, on_conflict: str = "skip") -> Field:
+        """Ensure the field exists (get-or-create); ``on_conflict="update"`` reconciles it."""
+        from office365.runtime.queries.get_or_create import get_or_create
 
         return_type = Field(self.context)
-        barrier = DeferredOperationQuery(self.context, return_type=return_type)
 
-        def _on_success(existing):
-            return_type.copy_from(existing)
-            barrier.resolve()
+        def _reconcile(field: Field) -> None:
+            changed = False
+            if parameters.FieldTypeKind is not None and field.field_type_kind != parameters.FieldTypeKind:
+                field.set_property("FieldTypeKind", parameters.FieldTypeKind)
+                changed = True
+            if parameters.Description is not None and field.properties.get("Description") != parameters.Description:
+                field.set_property("Description", parameters.Description)
+                changed = True
+            if changed:
+                field.update()
 
-        def _on_error(error: ClientRequestException):
-            if not isinstance(error, ObjectNotFoundException):
-                raise error
-
-            barrier.defer(self._build_add_field_query(parameters, return_type))
-
-        self.get_by_title(parameters.Title).get().after_execute(_on_success).on_error(_on_error)
-        self.context.add_query(barrier)
-        return return_type
+        return get_or_create(
+            find=lambda: self.get_by_title(parameters.Title).get(),
+            create_query=lambda: self._build_add_field_query(parameters, return_type),
+            return_type=return_type,
+            on_conflict=on_conflict,
+            reconcile=_reconcile,
+        )
 
     def add_calculated(self, title: str, formula: str, description: Optional[str] = None) -> FieldCalculated:
         """Creates a Calculated field

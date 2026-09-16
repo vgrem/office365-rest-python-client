@@ -9,14 +9,15 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.listitems.listitem import ListItem
 
 if TYPE_CHECKING:
+    from office365.runtime.converters.upsert import UpsertTarget
     from office365.runtime.operations import ProgressCallback
 
 
 class ListItemCollection(EntityCollection[ListItem]):
     """List Item collection"""
 
-    def __init__(self, context, resource_path=None):
-        super().__init__(context, ListItem, resource_path)
+    def __init__(self, context, resource_path=None, parent=None):
+        super().__init__(context, ListItem, resource_path, parent)
 
     def from_records(self, records, progress: "ProgressCallback | None" = None) -> Self:
         """Queue an item create per record.
@@ -24,34 +25,30 @@ class ListItemCollection(EntityCollection[ListItem]):
         List item columns are defined per list at runtime, not on the ``ListItem``
         class, so every record key is forwarded to the server (no unknown-column
         filtering). Deferred — run the creates with ``execute_query()``.
-
-        Args:
-            records: Plain dict records to import.
-            progress: Optional hook invoked per queued create as it completes
-              during ``execute_query()``.
-
-        Returns:
-            Self: The item collection, for method chaining.
         """
         from office365.runtime.converters.csv_reader import coerce_records
 
         return self._import_records(coerce_records(self._item_type, records, allow_unknown=True), progress=progress)
 
-    def get_by_id(self, item_id: int) -> ListItem:
-        """Returns the list item with the specified list item identifier.
+    def upsert_target(self, *, key_field: str = "MigrationKey", enforce_unique: bool = False) -> "UpsertTarget":
+        """The keyed skip/upsert target for this list (see ``import_from(key=...)``)."""
+        from office365.sharepoint.listitems.upsert import ListItemUpsertTarget
 
-        Args:
-            item_id (int): The list item identifier.
-        """
+        return ListItemUpsertTarget(self, key_field=key_field, enforce_unique=enforce_unique)
+
+    def _key_column(self, column: str) -> str:
+        """List-item record keys are field internal names (``Name`` -> ``Name_``)."""
+        from office365.sharepoint.fields.name import internal_field_name
+
+        return internal_field_name(column)
+
+    def get_by_id(self, item_id: int) -> ListItem:
+        """Returns the list item with the specified list item identifier."""
         return ListItem(self.context, ServiceOperationPath("GetById", [item_id], self.resource_path))
 
     def get_by_string_id(self, s_id: str) -> ListItem:
         """Returns the list item with either the specified list item identifier or the specified identifier
         for an instance of an external content type.
-
-        Args:
-            s_id (str): Specifies the list item identifier, or if the list is an external list, specifies the identifier
-                for an instance of an external content type as specified in[MS-ECTPWPS] section 3.1.4.1.2.1.
         """
         return ListItem(
             self.context,

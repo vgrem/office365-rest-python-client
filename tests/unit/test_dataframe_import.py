@@ -93,6 +93,34 @@ def test_execute_batch_passes_execution_config_per_chunk():
     assert collection.clears == 3  # noqa: PLR2004
 
 
+def test_queue_hook_reports_queued_and_skipped():
+    ctx = _FakeContext()
+    collection = _FakeCollection()
+
+    def queue(records):
+        return len(records) - 1, 1  # pretend one record per chunk was skipped
+
+    driver = _driver(ctx, collection, _batches(2, 2), queue=queue)
+    driver.execute_query()
+
+    assert driver.value.total == 4  # noqa: PLR2004
+    assert driver.value.success == 2  # noqa: PLR2004
+    assert driver.value.skipped == 2  # noqa: PLR2004
+
+
+def test_dry_run_plans_without_queueing_or_executing():
+    ctx = _FakeContext()
+    collection = _FakeCollection()
+    driver = _driver(ctx, collection, _batches(2, 2), dry_run=True)
+
+    driver.execute_query()
+
+    assert ctx.query_calls == 0  # nothing executed
+    assert collection.queued == []  # nothing queued
+    assert driver.value.total == 4  # noqa: PLR2004 — plan counted
+    assert driver.value.success == 4  # noqa: PLR2004
+
+
 def test_prepare_called_once_with_the_first_chunk():
     ctx = _FakeContext()
     collection = _FakeCollection()
@@ -109,7 +137,7 @@ def test_to_records_is_applied():
     collection = _FakeCollection()
     driver = ImportResult(
         ctx,
-        collection,
+        cast(Any, collection),
         [[{"n": 1}, {"n": 2}]],
         to_records=lambda batch: [{"value": r["n"]} for r in batch],
     )
@@ -277,22 +305,22 @@ def test_dataframe_chunks_accepts_a_pandas_chunk_reader():
     assert [len(c) for c in chunks] == [1, 1, 1]
 
 
-def test_list_from_dataframe_returns_import_result():
+def test_list_import_dataframe_returns_import_result():
     from office365.sharepoint.lists.list import List
 
     ctx = _FakeContext()
     lst = List(cast(Any, ctx))
-    driver = lst.from_dataframe(pd.DataFrame({"Name": ["a"], "Value": [1]}))
+    driver = lst.import_dataframe(pd.DataFrame({"Name": ["a"], "Value": [1]}))
 
     assert isinstance(driver, ImportResult)
 
 
 def test_collection_import_records_returns_import_result():
     from office365.runtime.client_object import ClientObject
-    from office365.runtime.client_object_collection import ClientObjectCollection
+    from office365.runtime.record_collection import RecordCollection
 
     ctx = _FakeContext()
-    collection = ClientObjectCollection(cast(Any, ctx), ClientObject)
+    collection = RecordCollection(cast(Any, ctx), ClientObject)
 
     driver = collection.import_records([[{"a": 1}]])
 
