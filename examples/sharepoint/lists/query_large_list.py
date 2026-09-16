@@ -12,7 +12,7 @@ from office365.sharepoint.listitems.caml.query import CamlQuery
 from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
-def build_custom_query(field: str, value: str, page_size: int = 1000) -> CamlQuery:
+def build_custom_query(field: str, value: str, page_size: int = 5000) -> CamlQuery:
     """Build a paged CAML query filtering list items by a text field."""
     qry = CamlQuery()
     qry.ViewXml = f"""
@@ -38,7 +38,7 @@ def main():
     # that column as "Name_" (see List.from_dataframe).
     p.add_argument("--field", default="Name_", help="field to filter on")
     p.add_argument("--value", default="AAPL", help="value to match")
-    p.add_argument("--page-size", type=int, default=1000, help="items per page")
+    p.add_argument("--page-size", type=int, default=5000, help="items per page")
     args = p.parse_args()
 
     ctx = ClientContext(team_site_url).with_client_certificate(
