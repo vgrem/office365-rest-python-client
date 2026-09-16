@@ -19,10 +19,10 @@ def build_custom_query(field: str, value: str, page_size: int = 5000) -> CamlQue
     <View Scope='RecursiveAll'>
        <Query>
            <Where>
-              <Eq>
+              <Neq>
                  <FieldRef Name='{field}'/>
                  <Value Type='Text'>{value}</Value>
-              </Eq>
+              </Neq>
            </Where>
        </Query>
        <RowLimit Paged='TRUE'>{page_size}</RowLimit>
