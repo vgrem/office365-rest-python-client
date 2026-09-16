@@ -1,5 +1,8 @@
 from typing import Optional
 
+from typing_extensions import Self
+
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection
 from office365.sharepoint.entity import Entity
 
@@ -33,3 +36,13 @@ class AgentGroup(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.AgentGroup"
+
+    def delete_by_name(self, name: str) -> Self:
+        """DeleteByName operation.
+
+        Args:
+            name (str): Name parameter
+        """
+        qry = ServiceOperationQuery(self, "DeleteByName", None, {"Name": name}, None, None)
+        self.context.add_query(qry)
+        return self

@@ -1,7 +1,11 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.migrationcenter.storagesettings import MigrationStorageSettings
 from office365.sharepoint.migrationcenter.taskschedulerinformation import TaskSchedulerInformation
 from office365.sharepoint.migrationcenter.tasksettings import MigrationTaskSettings
 
@@ -77,3 +81,33 @@ class MigrationCenterStorage(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationCenterStorage"
+
+    def create(self, config: MigrationStorageSettings) -> Self:
+        """Create operation.
+
+        Args:
+            config (MigrationStorageSettings): config parameter
+        """
+        qry = ServiceOperationQuery(self, "Create", None, {"config": config}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def file(self, folder_name: str, file_name: str, file: bytes, overwrite: bool) -> Self:
+        """File operation.
+
+        Args:
+            folder_name (str): folderName parameter
+            file_name (str): fileName parameter
+            file (bytes): file parameter
+            overwrite (bool): overwrite parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "File",
+            None,
+            {"folderName": folder_name, "fileName": file_name, "file": file, "overwrite": overwrite},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

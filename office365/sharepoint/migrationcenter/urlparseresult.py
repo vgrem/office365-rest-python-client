@@ -1,7 +1,10 @@
 from typing import Optional
 from uuid import UUID
 
+from typing_extensions import Self
+
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.migrationcenter.listinformation import SPListInformation
 
@@ -105,3 +108,77 @@ class UrlParseResult(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Common.UrlParseResult"
+
+    def set_display_url(self, display_url: str) -> Self:
+        """SetDisplayUrl operation.
+
+        Args:
+            display_url (str): displayUrl parameter
+        """
+        qry = ServiceOperationQuery(self, "SetDisplayUrl", None, {"displayUrl": display_url}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_sp_list_information(self, sp_list_information_list: ClientValueCollection[SPListInformation]) -> Self:
+        """SetSPListInformation operation.
+
+        Args:
+            sp_list_information_list (ClientValueCollection[SPListInformation]): spListInformationList parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "SetSPListInformation", None, {"spListInformationList": sp_list_information_list}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_sp_list_information_single(self, sp_list_information: SPListInformation) -> Self:
+        """SetSPListInformationSingle operation.
+
+        Args:
+            sp_list_information (SPListInformation): spListInformation parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "SetSPListInformationSingle", None, {"spListInformation": sp_list_information}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def update_site_provision_information(
+        self,
+        sp_list_information: SPListInformation,
+        uri: str,
+        original_url: str,
+        error_code: str,
+        message: str,
+        free_site_storage_bytes: int,
+        is_current_user_site_admin: bool,
+    ) -> Self:
+        """UpdateSiteProvisionInformation operation.
+
+        Args:
+            sp_list_information (SPListInformation): spListInformation parameter
+            uri (str): uri parameter
+            original_url (str): originalUrl parameter
+            error_code (str): errorCode parameter
+            message (str): message parameter
+            free_site_storage_bytes (int): freeSiteStorageBytes parameter
+            is_current_user_site_admin (bool): isCurrentUserSiteAdmin parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateSiteProvisionInformation",
+            None,
+            {
+                "spListInformation": sp_list_information,
+                "uri": uri,
+                "originalUrl": original_url,
+                "errorCode": error_code,
+                "message": message,
+                "freeSiteStorageBytes": free_site_storage_bytes,
+                "isCurrentUserSiteAdmin": is_current_user_site_admin,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
