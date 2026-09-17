@@ -13,6 +13,7 @@ Keyed imports (skip/upsert) are opt-in: a subclass exposes an
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from os import PathLike
 from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Union
 
@@ -27,6 +28,23 @@ if TYPE_CHECKING:
     from office365.runtime.converters.upsert import UpsertTarget
     from office365.runtime.imports import CheckpointStore, ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
+
+
+@dataclass
+class VerificationResult:
+    """Outcome of a key reconciliation (:meth:`RecordCollection.verify_keys`)."""
+
+    checked: int = 0
+    missing: list[str] = field(default_factory=list)
+
+    @property
+    def ok(self) -> bool:
+        """Whether every checked key is present on the target."""
+        return not self.missing
+
+    def summary(self) -> str:
+        status = "OK" if self.ok else "MISMATCH"
+        return f"{status} | checked: {self.checked}, missing: {len(self.missing)}"
 
 
 class RecordCollection(ClientObjectCollection[ClientObjectT]):
@@ -263,6 +281,21 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             dry_run=dry_run,
             dead_letter=dead_letter,
         )
+
+    # ── Verification ─────────────────────────────────────────────
+
+    def verify_keys(self, keys: Iterable[str], *, key_field: str = "MigrationKey") -> "VerificationResult":
+        """Reconcile an import: assert every key hash exists in the target.
+
+        Uses the same keyed lookup as upsert (loads existing keys once), so it
+        verifies that an idempotent import actually landed every record.
+        """
+        target = self.upsert_target(key_field=key_field)
+        if target is None:
+            raise ValueError("verify_keys requires an upsert-capable collection")
+        existing = target.load_keys()
+        keys = list(keys)
+        return VerificationResult(checked=len(keys), missing=[key for key in keys if key not in existing])
 
     # ── Extension hooks ──────────────────────────────────────────
 

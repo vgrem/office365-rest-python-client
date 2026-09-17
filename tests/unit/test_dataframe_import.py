@@ -423,3 +423,53 @@ def test_collection_clear_discards_items():
     collection.clear()
 
     assert len(collection) == 0
+
+
+class _KeyedTarget:
+    def __init__(self, keys: list[str]) -> None:
+        self._keys = keys
+
+    def load_keys(self):
+        return {key: index for index, key in enumerate(self._keys)}
+
+
+class _KeyedCollection(_FakeCollection):
+    def __init__(self, keys: list[str]) -> None:
+        super().__init__()
+        self._keys = keys
+
+    def upsert_target(self, *, key_field: str = "MigrationKey", enforce_unique: bool = False):
+        return _KeyedTarget(self._keys)
+
+
+class _NoTargetCollection(_FakeCollection):
+    def upsert_target(self, *, key_field: str = "MigrationKey", enforce_unique: bool = False):
+        return None
+
+
+def test_verify_keys_reports_missing():
+    from office365.runtime.record_collection import RecordCollection, VerificationResult
+
+    result = RecordCollection.verify_keys(_KeyedCollection(["a", "b"]), ["a", "b", "c"])
+
+    assert isinstance(result, VerificationResult)
+    assert result.checked == 3  # noqa: PLR2004
+    assert result.missing == ["c"]
+    assert not result.ok
+    assert result.summary() == "MISMATCH | checked: 3, missing: 1"
+
+
+def test_verify_keys_ok_when_all_present():
+    from office365.runtime.record_collection import RecordCollection
+
+    result = RecordCollection.verify_keys(_KeyedCollection(["a", "b"]), ["a", "b"])
+
+    assert result.ok
+    assert result.summary() == "OK | checked: 2, missing: 0"
+
+
+def test_verify_keys_requires_upsert_target():
+    from office365.runtime.record_collection import RecordCollection
+
+    with pytest.raises(ValueError, match="upsert-capable"):
+        RecordCollection.verify_keys(_NoTargetCollection(), ["a"])
