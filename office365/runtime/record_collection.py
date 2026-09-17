@@ -162,6 +162,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         on_conflict: str = "skip",
         enforce_unique: bool = False,
         dry_run: bool = False,
+        dead_letter: "str | PathLike | None" = None,
     ) -> "ImportResult":
         """Stream record batches into this collection (bounded memory).
 
@@ -180,6 +181,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             on_conflict=on_conflict,
             enforce_unique=enforce_unique,
             dry_run=dry_run,
+            dead_letter=dead_letter,
         )
 
     def import_from(
@@ -200,6 +202,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         to_records: "Callable[[Any], list[dict]] | None" = None,
         total: Optional[int] = None,
         dry_run: bool = False,
+        dead_letter: "str | PathLike | None" = None,
     ) -> "ImportResult":
         """Stream a source into this collection, memory-bounded.
 
@@ -258,6 +261,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             checkpoint=checkpoint,
             on_error=on_error,
             dry_run=dry_run,
+            dead_letter=dead_letter,
         )
 
     # ── Extension hooks ──────────────────────────────────────────

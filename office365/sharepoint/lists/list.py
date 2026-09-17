@@ -740,6 +740,7 @@ class List(SecurableObject):
         enforce_unique: bool = False,
         dry_run: bool = False,
         on_schema_change: str = "evolve",
+        dead_letter: "str | None" = None,
     ) -> "ImportResult":
         """Stream a source into this list's items, memory-bounded.
 
@@ -824,6 +825,7 @@ class List(SecurableObject):
             before_chunk=_ensure_new_fields,
             to_records=to_records,
             dry_run=dry_run,
+            dead_letter=dead_letter,
         )
 
     def import_dataframe(self, source, **opts) -> "ImportResult":

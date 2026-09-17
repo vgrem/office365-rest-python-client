@@ -214,6 +214,9 @@ class ImportResult(ClientResult[ImportStats]):
             ``collection.from_records(records)`` (all created, none skipped).
         dry_run: When True, compute the outcome (and the keyed create/update/skip
             plan) without writing anything — a plan preview.
+        dead_letter: Optional JSONL path; each collected chunk failure appends
+            ``{"error": ..., "records": [...]}`` for remediation (used with
+            ``on_error="collect"``).
     """
 
     def __init__(
@@ -231,6 +234,7 @@ class ImportResult(ClientResult[ImportStats]):
         checkpoint: Union["ImportCheckpoint", "CheckpointStore", str, PathLike, None] = None,
         on_error: str = "raise",
         dry_run: bool = False,
+        dead_letter: Union[str, PathLike, None] = None,
     ) -> None:
         super().__init__(context, ImportStats())
         if on_error not in ON_ERROR_MODES:
@@ -245,6 +249,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._progress = progress
         self._on_error = on_error
         self._dry_run = dry_run
+        self._dead_letter = Path(dead_letter) if dead_letter is not None else None
         self._started_at: Optional[float] = None
         self._store = self._resolve_store(checkpoint)
         self._checkpoint = self._store.load()
@@ -311,7 +316,7 @@ class ImportResult(ClientResult[ImportStats]):
             try:
                 execute()
             except Exception as ex:  # noqa: BLE001 — policy decides whether to abort
-                self._record_failure(queued, ex)
+                self._record_failure(queued, records, ex)
                 self._collection.clear()
                 if self._on_error != "collect":
                     self._save_checkpoint()  # cursor unchanged — resume retries this chunk
@@ -375,10 +380,14 @@ class ImportResult(ClientResult[ImportStats]):
         self._checkpoint.cursor += len(records)
         self._checkpoint.chunks += 1
 
-    def _record_failure(self, count: int, error: Exception) -> None:
+    def _record_failure(self, count: int, records: list[dict], error: Exception) -> None:
         self.value.errors += count
         self._checkpoint.errors += count
         self._checkpoint.failures.append({"records": count, "error": str(error)})
+        if self._dead_letter is not None:
+            self._dead_letter.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._dead_letter, "a", encoding="utf-8") as f:
+                f.write(json.dumps({"error": str(error), "records": records}, default=str) + "\n")
 
     def _finish(self) -> None:
         if self._started_at is not None:

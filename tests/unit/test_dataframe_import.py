@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any, cast
 
 import pytest
@@ -315,6 +316,21 @@ def test_on_error_collect_records_and_continues():
     assert len(checkpoint.failures) == 1
     assert checkpoint.failures[0]["records"] == 2  # noqa: PLR2004
     assert checkpoint.cursor == 6  # noqa: PLR2004 — failed chunk is skipped, not retried
+
+
+def test_dead_letter_captures_failed_chunk(tmp_path):
+    path = tmp_path / "dl.jsonl"
+    ctx = _FlakyContext(fail_on=2)
+    collection = _FakeCollection()
+    driver = _driver(ctx, collection, _batches(2, 2, 2), on_error="collect", dead_letter=str(path))
+
+    driver.execute_query()
+
+    lines = path.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 1
+    entry = json.loads(lines[0])
+    assert entry["records"] == [{"n": 2}, {"n": 3}]
+    assert entry["error"] == "boom"
 
 
 def test_on_error_raise_aborts():
