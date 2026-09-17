@@ -108,6 +108,32 @@ def test_queue_hook_reports_queued_and_skipped():
     assert driver.value.skipped == 2  # noqa: PLR2004
 
 
+def test_before_chunk_runs_per_chunk_before_queue():
+    ctx = _FakeContext()
+    collection = _FakeCollection()
+    calls: list[str] = []
+
+    def before(_raw):
+        calls.append("before")
+
+    def queue(records):
+        calls.append("queue")
+        return len(records), 0
+
+    driver = _driver(ctx, collection, _batches(1, 1), before_chunk=before, queue=queue)
+    driver.execute_query()
+
+    assert calls == ["before", "queue", "before", "queue"]
+
+
+def test_import_from_rejects_unknown_schema_change():
+    from office365.sharepoint.lists.list import List
+
+    lst = List(cast(Any, _FakeContext()))
+    with pytest.raises(ValueError, match="on_schema_change"):
+        lst.import_from([], on_schema_change="nope")
+
+
 def test_dry_run_plans_without_queueing_or_executing():
     ctx = _FakeContext()
     collection = _FakeCollection()

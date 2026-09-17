@@ -59,6 +59,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **Import schema evolution:** `List.import_from(..., on_schema_change="evolve"|
+  "fail")` provisions columns that first appear in a later chunk (default
+  ``evolve``) or rejects them (``fail``); backed by a per-chunk ``before_chunk``
+  hook on `ImportResult` that runs before the chunk is queued.
 - **Incremental migration watermark:** `MigrationRunner` now uses the persisted
   `Checkpoint.source_watermark` — with `MigrationOptions.incremental` it skips
   items at/below the watermark and advances it to the highest migrated source

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import IO, TYPE_CHECKING, AnyStr, Callable, Dict, Optional, Union, cast
+from typing import IO, TYPE_CHECKING, Any, AnyStr, Callable, Dict, Optional, Union, cast
 
 from typing_extensions import Self
 
@@ -739,6 +739,7 @@ class List(SecurableObject):
         on_conflict: str = "skip",
         enforce_unique: bool = False,
         dry_run: bool = False,
+        on_schema_change: str = "evolve",
     ) -> "ImportResult":
         """Stream a source into this list's items, memory-bounded.
 
@@ -749,11 +750,13 @@ class List(SecurableObject):
 
             >>> lst.import_from(pd.read_csv(url, chunksize=2000)).execute_batch(concurrency=5)
 
-        Fields are provisioned once (from the first chunk, or ``schema``) for the
-        ``dataframe``/``csv`` formats. Column names are sanitized into SharePoint
-        field internal names; NaN cells are skipped. ``checkpoint`` resumes an
-        interrupted run; ``key`` makes it idempotent (skip/upsert);
-        ``enforce_unique``/``dry_run`` are supported.
+        Fields are provisioned from the first chunk (or ``schema``) for the
+        ``dataframe``/``csv`` formats; columns that first appear in a later chunk
+        are added too (``on_schema_change="evolve"``, the default) or rejected
+        (``"fail"``). Column names are sanitized into SharePoint field internal
+        names; NaN cells are skipped. ``checkpoint`` resumes an interrupted run;
+        ``key`` makes it idempotent (skip/upsert); ``enforce_unique``/``dry_run``
+        are supported.
 
         Args:
             source: A DataFrame / chunk iterable / CSV path (``dataframe``/``csv``),
@@ -769,6 +772,7 @@ class List(SecurableObject):
             on_conflict: ``"skip"`` (default) or ``"upsert"``.
             enforce_unique: Mark the key column unique (guards a create race).
             dry_run: Plan the create/update/skip counts without writing.
+            on_schema_change: ``"evolve"`` (default) or ``"fail"``.
 
         Returns:
             ImportResult: The deferred streaming import driver.
@@ -776,13 +780,31 @@ class List(SecurableObject):
         from office365.runtime.converters.dataframe import records_from_dataframe
         from office365.sharepoint.fields.name import internal_field_name
 
-        def _prepare(first_chunk: object) -> None:
+        if on_schema_change not in ("evolve", "fail"):
+            raise ValueError(f"on_schema_change must be 'evolve' or 'fail', got {on_schema_change!r}")
+        provisioned: set[str] = set()
+
+        def _ensure_new_fields(chunk: Any) -> None:
+            if not hasattr(chunk, "columns"):  # only DataFrame/CSV chunks carry a schema
+                return
+            new = [c for c in chunk.columns if internal_field_name(str(c)) not in provisioned]
+            if not new:
+                return
+            if on_schema_change == "fail" and provisioned:
+                raise ValueError(f"source schema changed: new column(s) {new}")
+            self.fields.from_dataframe(chunk[new])
+            provisioned.update(internal_field_name(str(c)) for c in new)
+            self.context.execute_query()
+
+        def _prepare(first_chunk: Any) -> None:
             if schema is not None:
                 self.ensure_fields(schema)
+                names = schema.keys() if isinstance(schema, dict) else schema
+                provisioned.update(internal_field_name(str(k)) for k in names)
             else:
-                self.fields.from_dataframe(first_chunk)
+                _ensure_new_fields(first_chunk)
 
-        def _to_records(chunk: object) -> list[dict]:
+        def _to_records(chunk: Any) -> list[dict]:
             return records_from_dataframe(chunk, key_fn=internal_field_name)
 
         to_records = _to_records if format in ("dataframe", "csv") else None
@@ -799,6 +821,7 @@ class List(SecurableObject):
             on_error=on_error,
             progress=progress,
             prepare=_prepare,
+            before_chunk=_ensure_new_fields,
             to_records=to_records,
             dry_run=dry_run,
         )

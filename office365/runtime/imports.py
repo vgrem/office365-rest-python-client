@@ -224,6 +224,7 @@ class ImportResult(ClientResult[ImportStats]):
         *,
         to_records: Callable[[Any], list[dict]],
         prepare: Optional[Callable[[Any], None]] = None,
+        before_chunk: Optional[Callable[[Any], None]] = None,
         queue: Optional[Callable[[list[dict]], tuple[int, int]]] = None,
         total: Optional[int] = None,
         progress: Optional["ProgressCallback"] = None,
@@ -238,6 +239,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._chunks = iter(chunks)
         self._to_records = to_records
         self._prepare = prepare
+        self._before_chunk = before_chunk
         self._queue_fn = queue or self._default_queue
         self._total = total
         self._progress = progress
@@ -282,7 +284,9 @@ class ImportResult(ClientResult[ImportStats]):
         advancement assumes each yielded chunk was committed successfully.
         """
         self._started_at = time.monotonic()
-        for _raw, records in self._iter_records():
+        for raw, records in self._iter_records():
+            if callable(self._before_chunk):
+                self._before_chunk(raw)
             queued, _skipped = self._queue(records)
             yield self._collection
             self.value.success += queued
@@ -295,7 +299,9 @@ class ImportResult(ClientResult[ImportStats]):
     def _run(self, execute: Callable[[], Any]) -> None:
         """Drive the chunk loop: skip committed records, queue, execute, persist."""
         self._started_at = time.monotonic()
-        for _raw, records in self._iter_records():
+        for raw, records in self._iter_records():
+            if callable(self._before_chunk):
+                self._before_chunk(raw)
             queued, _skipped = self._queue(records)
             if self._dry_run:
                 self.value.success += queued
