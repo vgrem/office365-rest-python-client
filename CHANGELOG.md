@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `OperationStats` — a shared counter base for bulk operations — with
   `ImportStats` and `MigrationStats` as specializations (no lossy conversion
   between them).
+- **Live import progress:** the `progress` hook now fires immediately (with the
+  resumed offset, so a bar appears with its total) and then per committed chunk
+  *and per completed batch* during `execute_batch`, instead of only once per
+  queued chunk. `run_parallel` reports progress on the calling thread as tasks
+  complete (the completed result in `Progress.items`), and `execute_batch`'s
+  `success_callback` now fires per batch in sequential mode too (it previously
+  never fired there). `List.import_from(..., total=...)` lets callers supply the
+  known total so the progress percentage/ETA is meaningful.
 
 ### Changed
 - **Architecture:** the data-interchange surface (pandas/CSV/JSON/NDJSON/Excel

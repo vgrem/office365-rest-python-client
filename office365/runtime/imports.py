@@ -199,7 +199,9 @@ class ImportResult(ClientResult[ImportStats]):
         prepare: Optional once-only setup called with the first chunk (e.g.
             schema/field provisioning); it may execute. Skipped when resuming.
         total: Total items when known upfront (drives the progress hook).
-        progress: Optional ``ProgressCallback`` fired per queued chunk.
+        progress: Optional ``ProgressCallback`` fired immediately (with the
+            resumed offset), after each committed chunk, and per completed batch
+            during ``execute_batch``; ``done`` is the overall committed count.
         checkpoint: Persistence for the run state: a path
             (:class:`FileCheckpointStore`), an :class:`ImportCheckpoint` or
             ``None`` (:class:`MemoryCheckpointStore`), or any
@@ -254,6 +256,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._store = self._resolve_store(checkpoint)
         self._checkpoint = self._store.load()
         self._progress_base = self._checkpoint.cursor  # records committed before this run
+        self._done = self._progress_base  # overall committed count reported to ``progress``
         self.value.resumed_from = self._progress_base
 
     # ── Terminals ────────────────────────────────────────────────
@@ -270,14 +273,24 @@ class ImportResult(ClientResult[ImportStats]):
         concurrency: int = 1,
         success_callback: Optional[Callable[[Any], None]] = None,
     ) -> Self:
-        """Import via server-side OData batches (optionally concurrent)."""
+        """Import via server-side OData batches (optionally concurrent).
+
+        Progress is reported **per completed batch** (not just per chunk), so a
+        long chunk advances the ``progress`` hook live as sub-batches land.
+        """
+
+        def _on_batch(return_types: Any) -> None:
+            self._report(self._done + (len(return_types) if return_types is not None else 0))
+            if callable(success_callback):
+                success_callback(return_types)
+
         execute_batch = cast(Any, self._context).execute_batch
         self._run(
             lambda: execute_batch(
                 items_per_batch=items_per_batch,
                 max_batch_bytes=max_batch_bytes,
                 concurrency=concurrency,
-                success_callback=success_callback,
+                success_callback=_on_batch,
             )
         )
         return self
@@ -289,6 +302,7 @@ class ImportResult(ClientResult[ImportStats]):
         advancement assumes each yielded chunk was committed successfully.
         """
         self._started_at = time.monotonic()
+        self._emit(self._done)
         for raw, records in self._iter_records():
             if callable(self._before_chunk):
                 self._before_chunk(raw)
@@ -297,6 +311,7 @@ class ImportResult(ClientResult[ImportStats]):
             self.value.success += queued
             self._advance(records)
             self._collection.clear()
+            self._report(self._progress_base + self.value.success)
         self._finish()
 
     # ── Core ─────────────────────────────────────────────────────
@@ -304,6 +319,7 @@ class ImportResult(ClientResult[ImportStats]):
     def _run(self, execute: Callable[[], Any]) -> None:
         """Drive the chunk loop: skip committed records, queue, execute, persist."""
         self._started_at = time.monotonic()
+        self._emit(self._done)
         for raw, records in self._iter_records():
             if callable(self._before_chunk):
                 self._before_chunk(raw)
@@ -312,6 +328,7 @@ class ImportResult(ClientResult[ImportStats]):
                 self.value.success += queued
                 self._advance(records)
                 self._collection.clear()
+                self._report(self._progress_base + self.value.success)
                 continue
             try:
                 execute()
@@ -326,6 +343,7 @@ class ImportResult(ClientResult[ImportStats]):
                 self.value.success += queued
                 self._advance(records)
                 self._collection.clear()
+                self._report(self._progress_base + self.value.success)
             self._save_checkpoint()
         self._finish()
 
@@ -365,15 +383,30 @@ class ImportResult(ClientResult[ImportStats]):
 
     def _queue(self, records: list[dict]) -> tuple[int, int]:
         """Queue a chunk via the conflict-resolution hook; returns (queued, skipped)."""
-        from office365.runtime.operations import Progress
-
         queued, skipped = self._queue_fn(records)
         self.value.total += len(records)
         self.value.skipped += skipped
-        if callable(self._progress):
-            done = self._progress_base + self.value.total  # overall, across resumes
-            self._progress(Progress(done=done, total=self._total, stage="importing"))
         return queued, skipped
+
+    def _emit(self, done: int) -> None:
+        """Fire the ``progress`` hook with an overall committed-count snapshot."""
+        if callable(self._progress):
+            from office365.runtime.operations import Progress
+
+            self._progress(Progress(done=done, total=self._total, stage="importing"))
+
+    def _report(self, done: int) -> None:
+        """Emit progress for a new committed count (monotonic, de-duplicated).
+
+        Fired after each committed chunk and per batch during
+        :meth:`execute_batch`; the initial tick is emitted separately so the bar
+        appears with its total immediately.
+        """
+        done = max(done, self._done)
+        if done == self._done:
+            return
+        self._done = done
+        self._emit(done)
 
     def _advance(self, records: list[dict]) -> None:
         self.value.chunks += 1

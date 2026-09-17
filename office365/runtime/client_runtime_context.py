@@ -462,24 +462,39 @@ class ClientRuntimeContext(ABC):
         """Execute batch units concurrently on a thread pool.
 
         Reuses the generic :func:`~office365.runtime.parallel.run_parallel`
-        primitive; ``success_callback`` is invoked per batch in **input order**
-        (deterministic). On the first failure the exception is re-raised.
+        primitive; ``success_callback`` is invoked **live, as each batch
+        completes** (on the calling thread), so callers can report progress.
+        After the pool drains, the first failure is re-raised.
 
         Args:
             batches: Batch units to execute
             concurrency: Maximum number of concurrent batch requests
-            success_callback: Called with each batch's return types
+            success_callback: Called with each successfully completed batch's
+                return types, in completion order
         """
         from office365.runtime.parallel import run_parallel
 
-        results = run_parallel(
+        errors: list[BaseException] = []
+
+        def _on_progress(snapshot: Any) -> None:
+            if not callable(success_callback):
+                return
+            for return_types in snapshot.items or []:
+                if return_types is not None:
+                    success_callback(return_types)
+
+        def _on_error(_task: Any, error: BaseException) -> None:
+            errors.append(error)
+
+        run_parallel(
             lambda _ctx, batch_qry: self._execute_batch(batch_qry),
             batches,
             concurrency=concurrency,
+            progress=_on_progress,
+            on_error=_on_error,
         )
-        if callable(success_callback):
-            for return_types in results:
-                success_callback(return_types)
+        if errors:
+            raise errors[0]
 
     def _execute_batch(self, batch_qry: "BatchQuery") -> List[Any]:
         """Execute a single batch unit (implemented by concrete contexts)."""

@@ -43,8 +43,9 @@ def run_parallel(
           given it is bound to every produced context.
         limiter: Optional shared :class:`RateLimiter` for fleet pacing; when
           ``context_factory`` is given one is created automatically.
-        progress: Optional hook fired per completed task with a ``Progress``
-          snapshot (``done``/``total``).
+        progress: Optional hook fired (on the calling thread) per completed task
+          with a ``Progress`` snapshot (``done``/``total`` and ``items=[result]``
+          for that task), so callers get live, ordered reporting.
         on_error: Optional ``(task, error) -> fallback`` handler; when absent a
           task failure re-raises from the pool.
 
@@ -60,8 +61,6 @@ def run_parallel(
         limiter = RateLimiter()
     results: List[Any] = [None] * len(tasks)
     local = threading.local()
-    lock = threading.Lock()
-    done = {"count": 0}
 
     def _context() -> Optional["ClientRuntimeContext"]:
         ctx = getattr(local, "context", None)
@@ -80,17 +79,16 @@ def run_parallel(
                 results[index] = on_error(task, e)
             else:
                 raise
-        finally:
-            with lock:
-                done["count"] += 1
-                n = done["count"]
-        if callable(progress):
-            from office365.runtime.operations import Progress
-
-            progress(Progress(done=n, total=len(tasks), stage="parallel"))
 
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
-        futures = [executor.submit(_run, index, task) for index, task in enumerate(tasks)]
-        for future in as_completed(futures):
+        future_to_index = {executor.submit(_run, index, task): index for index, task in enumerate(tasks)}
+        completed = 0
+        for future in as_completed(future_to_index):
+            index = future_to_index[future]
             future.result()
+            completed += 1
+            if callable(progress):
+                from office365.runtime.operations import Progress
+
+                progress(Progress(done=completed, total=len(tasks), stage="parallel", items=[results[index]]))
     return results

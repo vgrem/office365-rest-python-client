@@ -733,6 +733,7 @@ class List(SecurableObject):
         schema: "Dict[str, FieldType] | None" = None,
         chunksize: int = 2000,
         progress: "ProgressCallback | None" = None,
+        total: "int | None" = None,
         checkpoint: "ImportCheckpoint | CheckpointStore | str | None" = None,
         on_error: str = "raise",
         key: "str | list[str] | None" = None,
@@ -767,7 +768,8 @@ class List(SecurableObject):
             format: Source format (default ``"dataframe"``).
             schema: Optional explicit ``{column: FieldType}``; inferred from dtypes.
             chunksize: Rows per chunk for a DataFrame/CSV source.
-            progress: Optional hook fired per queued chunk with a ``Progress``.
+            progress: Optional hook fired live (initial, per chunk, per batch).
+            total: Total rows when known upfront (drives the progress percentage).
             checkpoint: Optional resumable-run checkpoint (object or path).
             on_error: ``"raise"`` (default) or ``"collect"``.
             key: Natural-key source column(s) for idempotency; ``None`` disables it.
@@ -824,6 +826,7 @@ class List(SecurableObject):
             source,
             format=format,
             chunksize=chunksize,
+            total=total,
             key=key,
             key_field=key_field,
             on_conflict=on_conflict,

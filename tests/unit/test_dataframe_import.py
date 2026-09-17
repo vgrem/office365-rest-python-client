@@ -182,7 +182,7 @@ def test_progress_fires_per_chunk_with_total():
 
     driver.execute_query()
 
-    assert [p.done for p in seen] == [2, 5]
+    assert [p.done for p in seen] == [0, 2, 5]  # immediate tick, then per committed chunk
     assert all(p.total == 5 for p in seen)  # noqa: PLR2004
 
 
@@ -279,7 +279,7 @@ def test_resume_progress_includes_committed_offset(tmp_path):
     driver = _driver(_FakeContext(), _FakeCollection(), _batches(2, 2, 2), checkpoint=str(path), progress=seen.append)
     driver.execute_query()
 
-    assert [p.done for p in seen] == [6]  # 4 committed + 2 processed this run
+    assert [p.done for p in seen] == [4, 6]  # immediate resume offset, then 4 committed + 2 this run
 
 
 def test_checkpoint_save_is_atomic(tmp_path):
@@ -316,6 +316,34 @@ def test_on_error_collect_records_and_continues():
     assert len(checkpoint.failures) == 1
     assert checkpoint.failures[0]["records"] == 2  # noqa: PLR2004
     assert checkpoint.cursor == 6  # noqa: PLR2004 — failed chunk is skipped, not retried
+
+
+def test_progress_starts_immediately_and_advances_per_chunk():
+    seen: list[Any] = []
+    driver = _driver(_FakeContext(), _FakeCollection(), _batches(2, 2), progress=seen.append, total=4)
+
+    driver.execute_query()
+
+    assert [p.done for p in seen] == [0, 2, 4]
+    assert all(p.total == 4 for p in seen)  # noqa: PLR2004
+
+
+def test_execute_batch_reports_progress_per_batch_and_forwards_callback():
+    class _BatchingContext(_FakeContext):
+        def execute_batch(self, items_per_batch=100, max_batch_bytes=None, concurrency=1, success_callback=None):
+            for _ in range(2):  # two sub-batches of two items each
+                if callable(success_callback):
+                    success_callback([1, 2])
+            return self
+
+    seen: list[Any] = []
+    forwarded: list[Any] = []
+    driver = _driver(_BatchingContext(), _FakeCollection(), _batches(4), progress=seen.append, total=4)
+
+    driver.execute_batch(items_per_batch=2, success_callback=forwarded.append)
+
+    assert [p.done for p in seen] == [0, 2, 4]
+    assert len(forwarded) == 2  # noqa: PLR2004
 
 
 def test_dead_letter_captures_failed_chunk(tmp_path):

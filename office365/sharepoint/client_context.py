@@ -284,7 +284,7 @@ class ClientContext(ClientRuntimeContext):
         Throttled sub-requests (HTTP 429/503) are retried individually, honoring
         ``Retry-After`` — only the failed sub-requests are re-sent, so successful
         writes aren't re-applied. ``success_callback`` runs on the caller thread
-        in completion order (not submission order).
+        as each batch completes (completion order when concurrent).
 
         Args:
             items_per_batch (int): Maximum to be selected for bulk operation
@@ -304,8 +304,8 @@ class ClientContext(ClientRuntimeContext):
             batch_request.beforeExecute += request.ensure_form_digest
             for qry in batches:
                 self._run_batch(batch_request, qry)
-                if callable(success_callback) and qry.return_type is not None:
-                    success_callback(qry.return_type)
+                if callable(success_callback):
+                    success_callback(qry.return_types)
             return self
 
         self._execute_batches_in_parallel(batches, concurrency, success_callback)

@@ -35,7 +35,7 @@ def main():
     p.add_argument("--chunk", type=int, default=2000, help="rows per memory slice")
     p.add_argument("--concurrency", type=int, default=5, help="parallel batch requests")
     p.add_argument("--checkpoint", default="stocks.checkpoint.json", help="'' disables resume")
-    p.add_argument("--progress", action="store_true", help="show a tqdm progress bar")
+    p.add_argument("--progress", action="store_true", help="show a live tqdm progress bar")
     args = p.parse_args()
 
     ctx = ClientContext(team_site_url).with_username_and_password(
@@ -44,22 +44,45 @@ def main():
     lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
     chunks = pd.read_csv(CSV_URL, chunksize=args.chunk, nrows=args.rows or None)
 
+    bar = None
     progress = None
     if args.progress:
         from tqdm import tqdm
 
-        bar = tqdm()
+        resumed = 0
+        if args.checkpoint:
+            from office365.runtime.imports import FileCheckpointStore
+
+            resumed = FileCheckpointStore(args.checkpoint).load().cursor
+        bar = tqdm(
+            total=args.rows or None,
+            initial=resumed,
+            unit="row",
+            unit_scale=True,
+            desc="Importing",
+            dynamic_ncols=True,
+        )
         progress = lambda p: bar.update(p.done - bar.n)  # noqa: E731
 
-    driver = lst.import_dataframe(chunks, checkpoint=args.checkpoint or None, key=["Name", "date"], progress=progress)
+    driver = lst.import_dataframe(
+        chunks,
+        checkpoint=args.checkpoint or None,
+        key=["Name", "date"],
+        progress=progress,
+        total=args.rows or None,
+    )
     if driver.resumed_from:
         print(f"Resuming from {driver.resumed_from:,} committed row(s)")
 
     try:
         stats = driver.execute_batch(concurrency=args.concurrency).value
     except KeyboardInterrupt:
+        if bar is not None:
+            bar.close()
         print(f"Interrupted at {driver.checkpoint.cursor:,} row(s) — re-run to resume")
         raise SystemExit(130) from None
+    if bar is not None:
+        bar.close()
 
     print(f"{stats.summary()} into '{lst.title}'")
 
