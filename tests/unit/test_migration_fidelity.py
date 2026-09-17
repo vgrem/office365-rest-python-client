@@ -50,3 +50,87 @@ def test_filesystem_source_captures_timestamps(tmp_path):
 
     assert items[0].modified
     assert items[0].created
+
+
+def test_watermark_skips_stale_and_advances():
+    from office365.migration.checkpoint import Checkpoint
+    from office365.migration.runner import _Watermark
+
+    checkpoint = Checkpoint.create()
+    watermark = _Watermark(checkpoint)
+    assert watermark.value is None
+
+    old = MigrationItem("s", "d1", modified="2020-01-01T00:00:00")
+    new = MigrationItem("s", "d2", modified="2021-01-01T00:00:00")
+
+    assert not watermark.is_stale(old)
+    watermark.advance(old)
+    assert checkpoint.source_watermark == "2020-01-01T00:00:00"
+    assert watermark.is_stale(old)  # at the watermark -> already migrated
+    assert not watermark.is_stale(new)
+
+    watermark.advance(new)
+    assert checkpoint.source_watermark == "2021-01-01T00:00:00"
+
+
+class _Source:
+    def __init__(self, items: list[MigrationItem]) -> None:
+        self._items = items
+
+    def list_items(self, progress=None):
+        return list(self._items)
+
+    def read(self, item):
+        return b"data"
+
+    def checksum(self, item):
+        return ""
+
+    def close(self):
+        pass
+
+
+class _Target:
+    def __init__(self) -> None:
+        self.written: list[str] = []
+
+    def exists(self, item):
+        return False
+
+    def write(self, item, payload):
+        self.written.append(item.dest_path)
+
+    def list_paths(self):
+        return list(self.written)
+
+    def checksum(self, item):
+        return ""
+
+    def close(self):
+        pass
+
+
+def test_incremental_run_uses_watermark():
+    from office365.migration.checkpoint import Checkpoint
+    from office365.migration.runner import MigrationRunner
+
+    source = _Source([MigrationItem("s", "a", modified="2020-01-01T00:00:00")])
+    target = _Target()
+    runner = MigrationRunner()
+
+    first = Checkpoint.create()
+    runner.run(source, target, source.list_items(), MigrationOptions(incremental=True), first)
+    assert target.written == ["a"]
+    assert first.source_watermark == "2020-01-01T00:00:00"
+
+    # a fresh checkpoint carrying the watermark skips the unchanged item
+    second = Checkpoint.create()
+    second.source_watermark = first.source_watermark
+    runner.run(source, target, source.list_items(), MigrationOptions(incremental=True), second)
+    assert target.written == ["a"]  # nothing re-written
+
+    # a newer item is migrated and advances the watermark
+    source._items.append(MigrationItem("s", "b", modified="2021-01-01T00:00:00"))
+    runner.run(source, target, source.list_items(), MigrationOptions(incremental=True), second)
+    assert target.written == ["a", "b"]
+    assert second.source_watermark == "2021-01-01T00:00:00"

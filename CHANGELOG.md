@@ -59,6 +59,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **Incremental migration watermark:** `MigrationRunner` now uses the persisted
+  `Checkpoint.source_watermark` — with `MigrationOptions.incremental` it skips
+  items at/below the watermark and advances it to the highest migrated source
+  `modified` (filesystem, SharePoint library and list sources populate it), so a
+  resumed incremental run only re-scans new/changed items.
 - Removed `office365/migration/_util.py`; its helpers moved to their domains:
   `emit_progress` → `runtime.operations`, `iso`/`iso_or_none`/`utc_now_iso` →
   `runtime.converters.scalars`, `record_to_json` → `runtime.converters.json_file`.

@@ -92,7 +92,7 @@ class MigrationStats(OperationStats):
 @dataclass
 class MigrationOptions:
     conflict_resolution: ConflictResolution = ConflictResolution.SKIP
-    incremental: bool = False  # skip items whose target is at least as new as the source
+    incremental: bool = False  # skip items at/below the persisted watermark (and target-newer ones)
     # Fidelity flags. NOT implemented client-side: REST cannot reliably set
     # Created/Modified or copy version history/ACLs — those need the server-side
     # Migration API (``MigrationServerJob``). Defaults are False so they are honest

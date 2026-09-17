@@ -52,6 +52,32 @@ def _assert_fidelity_supported(options: MigrationOptions) -> None:
         )
 
 
+class _Watermark:
+    """Incremental watermark — the highest source ``modified`` migrated so far.
+
+    Persisted in ``Checkpoint.source_watermark``: a resumed incremental run skips
+    every item at or below it, so only new/changed items are re-scanned.
+    """
+
+    def __init__(self, checkpoint: Checkpoint) -> None:
+        self._checkpoint = checkpoint
+        self._value = checkpoint.source_watermark
+
+    @property
+    def value(self) -> str | None:
+        return self._value
+
+    def is_stale(self, item: MigrationItem) -> bool:
+        """Whether the item is at or below the watermark (already migrated)."""
+        return self._value is not None and item.modified is not None and item.modified <= self._value
+
+    def advance(self, item: MigrationItem) -> None:
+        """Raise the watermark to the item's ``modified`` when it is newer."""
+        if item.modified is not None and (self._value is None or item.modified > self._value):
+            self._value = item.modified
+            self._checkpoint.source_watermark = item.modified
+
+
 class MigrationRunner:
     """Executes migration items between a source and a target adapter."""
 
@@ -67,16 +93,19 @@ class MigrationRunner:
         stop_event: Callable[[], bool] | None = None,
     ) -> MigrationStats:
         _assert_fidelity_supported(options)
+        watermark = _Watermark(checkpoint) if options.incremental else None
         parallel = (
             options.concurrency > 1
             and hasattr(target, "write_many")
             and options.conflict_resolution != ConflictResolution.RENAME
         )
         if parallel:
-            stats = self._run_parallel(source, target, items, options, checkpoint, checkpoint_path, progress, stop_event)
+            stats = self._run_parallel(
+                source, target, items, options, checkpoint, checkpoint_path, progress, stop_event, watermark
+            )
         else:
             stats = self._run_sequential(
-                source, target, items, options, checkpoint, checkpoint_path, progress, stop_event
+                source, target, items, options, checkpoint, checkpoint_path, progress, stop_event, watermark
             )
         _call_optional(target, "commit", options)
 
@@ -98,6 +127,7 @@ class MigrationRunner:
         checkpoint_path: str | Path | None,
         progress: Callable[["Progress"], None] | None,
         stop_event: Callable[[], bool] | None,
+        watermark: _Watermark | None = None,
     ) -> MigrationStats:
         items = list(items)
         stats = MigrationStats(total=len(items))
@@ -110,12 +140,19 @@ class MigrationRunner:
             if callable(stop_event) and stop_event():
                 checkpoint.phase = MigrationPhase.PAUSED
                 break
+            if watermark is not None and watermark.is_stale(item):
+                checkpoint.record(item, ItemStatus.SKIPPED)
+                stats.skipped += 1
+                self._report_progress(progress, stats, item)
+                continue
             checkpoint.record(item, ItemStatus.IN_PROGRESS)
             try:
                 if self._migrate(source, target, item, options):
                     checkpoint.record(item, ItemStatus.DONE)
                     stats.success += 1
                     stats.bytes_transferred += item.size_bytes
+                    if watermark is not None:
+                        watermark.advance(item)
                 else:
                     checkpoint.record(item, ItemStatus.SKIPPED)
                     stats.skipped += 1
@@ -139,6 +176,7 @@ class MigrationRunner:
         checkpoint_path: str | Path | None,
         progress: Callable[["Progress"], None] | None,
         stop_event: Callable[[], bool] | None,
+        watermark: _Watermark | None = None,
     ) -> MigrationStats:
         items = list(items)
         stats = MigrationStats(total=len(items))
@@ -160,6 +198,8 @@ class MigrationRunner:
                     checkpoint.record(item, ItemStatus.DONE)
                     stats.success += 1
                     stats.bytes_transferred += item.size_bytes
+                    if watermark is not None:
+                        watermark.advance(item)
                 self._report_progress(progress, stats, item)
             chunk.clear()
             if checkpoint_path is not None:
@@ -174,6 +214,11 @@ class MigrationRunner:
             if callable(stop_event) and stop_event():
                 checkpoint.phase = MigrationPhase.PAUSED
                 break
+            if watermark is not None and watermark.is_stale(item):
+                checkpoint.record(item, ItemStatus.SKIPPED)
+                stats.skipped += 1
+                self._report_progress(progress, stats, item)
+                continue
             checkpoint.record(item, ItemStatus.IN_PROGRESS)
             if options.incremental and _target_up_to_date(source, target, item):
                 checkpoint.record(item, ItemStatus.SKIPPED)
