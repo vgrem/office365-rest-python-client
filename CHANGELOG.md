@@ -57,7 +57,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `MigrationOptions.preserve_timestamps` now defaults to `False` (it was `True`
   but never implemented). `preserve_timestamps`/`preserve_permissions`/
   `preserve_versions` are documented as not implemented client-side — they need
-  the server-side Migration API (`MigrationServerJob`).
+  the server-side Migration API (`MigrationServerJob`) — and now raise
+  `NotImplementedError` when enabled instead of silently no-op'ing.
+- `MigrationItem` carries `created` and the reliable system `author_id`/`editor_id`
+  (in addition to `modified`); the filesystem, SharePoint library and SharePoint
+  list sources populate them, and the item report exports them. Incremental
+  migration now has source timestamps for SharePoint libraries, and
+  `SharePointLibraryTarget.modified()` supports the target-side comparison.
 - **Idempotent metadata:** all client-side `ensure_*` (fields, lists, content
   types, terms, contact folders) share new
   `runtime.queries.get_or_create.get_or_create`/`create_or_get` primitives, and

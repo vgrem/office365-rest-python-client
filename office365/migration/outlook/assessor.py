@@ -9,12 +9,12 @@ dispatches to the registered scans. Reuses the shared :class:`AssessmentReport`
 
 from __future__ import annotations
 
-from office365.migration._util import coerce_int
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.runner import ScanRunner
 from office365.migration.outlook.registry import outlook_scan_pairs
 from office365.migration.outlook.scanner import MailFolderData, OutlookOptions
+from office365.runtime.converters.scalars import parse_int
 
 # Graph mailFolder properties the walker selects
 _FOLDER_COLUMNS = ["displayName", "totalItemCount", "unreadItemCount", "childFolderCount"]
@@ -45,9 +45,9 @@ class MailboxAssessor:
                 path = f"{parent_path}/{name}" if parent_path else name
                 folder_data = MailFolderData(
                     path=path,
-                    item_count=coerce_int(folder.total_item_count),
-                    unread_count=coerce_int(folder.unread_item_count),
-                    child_count=coerce_int(folder.child_folder_count),
+                    item_count=parse_int(folder.total_item_count),
+                    unread_count=parse_int(folder.unread_item_count),
+                    child_count=parse_int(folder.child_folder_count),
                 )
                 self.folder_count += 1
                 self.message_count += folder_data.item_count or 0

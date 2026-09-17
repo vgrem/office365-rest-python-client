@@ -317,7 +317,7 @@ def test_list_source_taxonomy_failure_falls_back_to_safe_select():
 
     def load(select):
         selects.append(select)
-        if select is None:
+        if select is None or "*" in select:
             raise _TaxonomyError()
         return [_Item(1, {k: "" for k in select})]
 
@@ -343,7 +343,7 @@ def test_list_source_denied_cascades_to_id_title_only():
 
     def load(select):
         selects.append(select)
-        if select is None:
+        if select is None or "*" in select:
             raise _TaxonomyError()
         if len(select) > 2:  # noqa: PLR2004 — the visible-column read is denied too
             raise PermissionError("denied")

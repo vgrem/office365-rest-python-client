@@ -43,14 +43,6 @@ def write_csv_json(dir_: str | Path, stem: str, records: list[dict], columns: li
     return [csv_path, json_path]
 
 
-def coerce_int(value) -> int | None:
-    """Best-effort ``int`` conversion (``None`` for unset/invalid values)."""
-    try:
-        return int(value) if value is not None else None
-    except (TypeError, ValueError):
-        return None
-
-
 def utc_now_iso() -> str:
     """Current UTC time as an ISO-8601 string (second precision)."""
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -61,6 +53,17 @@ def iso(value) -> str:
     if value is None:
         return ""
     return value.isoformat(timespec="seconds")
+
+
+def iso_or_none(value) -> str | None:
+    """ISO-8601 string for a datetime, or ``None`` when unset/absent.
+
+    Treats ``datetime.min`` (the "not loaded" sentinel used by some SharePoint
+    properties) as unset.
+    """
+    if value is None or value == datetime.min:
+        return None
+    return value.isoformat(timespec="seconds") if hasattr(value, "isoformat") else (str(value) or None)
 
 
 def record_to_json(payload: object) -> str:

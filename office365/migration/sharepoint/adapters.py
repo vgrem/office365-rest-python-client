@@ -15,10 +15,12 @@ import io
 from collections.abc import Callable
 from typing import TYPE_CHECKING, cast
 
-from office365.migration._util import emit_progress, record_to_json
+from office365.migration._util import emit_progress, iso_or_none, record_to_json
 from office365.migration.adapters import MigrationProgress
 from office365.migration.base import MigrationItem
 from office365.migration.sharepoint.transfer import Failure
+from office365.runtime.converters.scalars import parse_int
+from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 
 if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
@@ -27,33 +29,8 @@ if TYPE_CHECKING:
 
 _TAXONOMY_FIELD_TYPES = {"TaxonomyFieldType", "TaxonomyFieldTypeMulti"}
 
-# Read-only bookkeeping columns that add no content and can require extra
-# permissions to project; never part of the fallback select.
-_SYSTEM_INTERNAL_NAMES = {
-    "ContentTypeId",
-    "ContentType",
-    "Created",
-    "Modified",
-    "Author",
-    "Editor",
-    "FileRef",
-    "FileDirRef",
-    "FileLeafRef",
-    "File_x0020_Type",
-    "FSObjType",
-    "ID",
-    "GUID",
-    "UniqueId",
-    "PermMask",
-    "MetaInfo",
-    "owshiddenversion",
-    "AppAuthor",
-    "AppEditor",
-    "VirusStatus",
-    "ScopeId",
-    "InstanceID",
-    "Order",
-}
+# Always-projected system metadata (reliable author/editor identity).
+_METADATA_SELECT = ["AuthorId", "EditorId"]
 
 
 def is_taxonomy_validation(exc: Exception) -> bool:
@@ -117,9 +94,10 @@ class SharePointListSource:
 
     def _load_items(self, select: list[str] | None):
         items = self._list.items
-        if select:
-            items = items.select(select)
-        return items.get_all().execute_query()
+        # A full read projects ``*`` plus the system metadata so author/editor ids
+        # are captured reliably; an explicit/safe projection is honored as-is.
+        columns = ["*", *_METADATA_SELECT] if select is None else select
+        return items.select(columns).get_all().execute_query()
 
     def _safe_select(self) -> list[str]:
         """Fallback projection: visible, non-system columns minus Managed Metadata.
@@ -138,7 +116,7 @@ class SharePointListSource:
                 continue
             if internal_name.startswith("_") or getattr(field, "hidden", False):
                 continue  # hidden/system metadata — not safe to project
-            if internal_name in _SYSTEM_INTERNAL_NAMES:
+            if internal_name in SYSTEM_FIELD_NAMES:
                 continue
             columns.append(internal_name)
         return columns
@@ -157,6 +135,10 @@ class SharePointListSource:
                     source_path=f"{self._list.title}/{item.id}",
                     dest_path=str(item.id),
                     item_type="record",
+                    modified=iso_or_none(record.get("Modified")),
+                    created=iso_or_none(record.get("Created")),
+                    author_id=parse_int(record.get("AuthorId")),
+                    editor_id=parse_int(record.get("EditorId")),
                 )
             )
             emit_progress(progress, done=len(result), stage="planning", items=[item])
@@ -327,6 +309,10 @@ class SharePointLibrarySource:
                     dest_path=rel,
                     size_bytes=file.length or 0,
                     item_type="file",
+                    modified=iso_or_none(file.time_last_modified),
+                    created=iso_or_none(file.time_created),
+                    author_id=parse_int(file.author.id),
+                    editor_id=parse_int(file.modified_by.id),
                 )
             )
             emit_progress(progress, done=len(result), stage="planning", items=[file])
@@ -418,6 +404,11 @@ class SharePointLibraryTarget:
         buffer = io.BytesIO()
         file.download(buffer).execute_query()
         return hashlib.md5(buffer.getvalue()).hexdigest()
+
+    def modified(self, item: MigrationItem) -> str:
+        """Last-modified of the target file (for incremental migration)."""
+        file = self._folder.context.web.get_file_by_server_relative_url(self._url(item)).get().execute_query()
+        return iso_or_none(file.time_last_modified) or ""
 
     def commit(self, options=None) -> None:
         pass

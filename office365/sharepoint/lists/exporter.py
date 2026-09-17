@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import IO, TYPE_CHECKING, Callable, Optional, Union
 
 from office365.runtime.client_result import ClientResult
+from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.files.system_object_type import FileSystemObjectType
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.listitems.listitem import ListItem
@@ -72,9 +73,9 @@ class ListExporter:
                     [
                         "*",
                         "Id",
-                        "FileRef",
-                        "FileDirRef",
-                        "FileLeafRef",
+                        SPBuiltInFieldName.FileRef,
+                        SPBuiltInFieldName.FileDirRef,
+                        SPBuiltInFieldName.FileLeafRef,
                         "FileSystemObjectType",
                     ]
                 )

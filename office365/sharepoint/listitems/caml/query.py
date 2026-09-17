@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from office365.runtime.client_value import ClientValue
+from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.listitems.collection_position import (
     ListItemCollectionPosition,
 )
@@ -51,13 +52,17 @@ class CamlQuery(ClientValue):
     @staticmethod
     def create_all_folders_query() -> CamlQuery:
         """Constructs a query to return folder objects"""
-        qry_text = '<Where><Eq><FieldRef Name="FSObjType" /><Value Type="Integer">1</Value></Eq></Where>'
+        qry_text = (
+            f'<Where><Eq><FieldRef Name="{SPBuiltInFieldName.FSObjType}" /><Value Type="Integer">1</Value></Eq></Where>'
+        )
         return CamlQuery.parse(qry_text, ViewScope.DefaultValue)
 
     @staticmethod
     def create_all_files_query() -> CamlQuery:
         """Constructs a query to return file objects"""
-        qry_text = '<Where><Eq><FieldRef Name="FSObjType" /><Value Type="Integer">0</Value></Eq></Where>'
+        qry_text = (
+            f'<Where><Eq><FieldRef Name="{SPBuiltInFieldName.FSObjType}" /><Value Type="Integer">0</Value></Eq></Where>'
+        )
         return CamlQuery.parse(qry_text, ViewScope.DefaultValue)
 
     def __repr__(self):

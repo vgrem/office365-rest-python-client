@@ -8,6 +8,7 @@ from typing import Any, Generic, TypeVar
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
+from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 
 PayloadT = TypeVar("PayloadT")
 RecordT = TypeVar("RecordT")
@@ -45,43 +46,7 @@ class AssessmentOptions:
     )
     disabled_scans: set[str] = field(default_factory=lambda: {"permissions"})
     include_site_admins: bool = False
-    system_field_names: set[str] = field(
-        default_factory=lambda: {
-            "ContentTypeId",
-            "ContentType",
-            "ID",
-            "Created",
-            "Modified",
-            "Author",
-            "Editor",
-            "ComplianceAssetId",
-            "FileLeafRef",
-            "FileDirRef",
-            "FileRef",
-            "File_x0020_Type",
-            "File_x0020_Size",
-            "UniqueId",
-            "Version",
-            "owshiddenversion",
-            "Attachments",
-            "FSObjType",
-            "MetaInfo",
-            "Order",
-            "ScopeId",
-            "PermMask",
-            "EffectivePermMask",
-            "InstanceID",
-            "WorkflowVersion",
-            "_ModerationStatus",
-            "_ModerationComments",
-            "_CopySource",
-            "_HasCopyDestinations",
-            "_CheckinComment",
-            "_ColorHex",
-            "_ColorTag",
-            "_Emoji",
-        }
-    )
+    system_field_names: set[str] = field(default_factory=lambda: set(SYSTEM_FIELD_NAMES))
 
 
 class BaseScanner(Generic[RecordT]):

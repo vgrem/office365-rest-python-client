@@ -79,6 +79,10 @@ def build_report(job: "MigrationJob") -> MigrationReport:
             "status": item.status.value,
             "error": item.error or "",
             "error_code": item.error_code or "",
+            "modified": item.modified or "",
+            "created": item.created or "",
+            "author_id": item.author_id,
+            "editor_id": item.editor_id,
         }
         for item in job.manifest.items
     ]

@@ -18,7 +18,7 @@ from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.csv_writer import write_csv
 from office365.runtime.converters.records import iter_records
-from office365.runtime.converters.scalars import parse_datetime
+from office365.runtime.converters.scalars import parse_datetime, parse_int
 from office365.runtime.converters.value import _add_type_metadata, declared_type, deserialize_value, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
@@ -157,6 +157,12 @@ class TestClientResultCoercion(unittest.TestCase):
         result = ClientResult(cast(ClientRuntimeContext, None), "default")
         result.set_property("__value", "hello")
         self.assertEqual(result.value, "hello")
+
+    def test_parse_int(self):
+        self.assertEqual(parse_int("42"), 42)
+        self.assertEqual(parse_int(7), 7)
+        self.assertIsNone(parse_int(None))
+        self.assertIsNone(parse_int("abc"))
 
 
 def _collection(properties: list[dict]) -> ClientObjectCollection:

@@ -53,6 +53,14 @@ def parse_bool(value: Any) -> Any:
     return value
 
 
+def parse_int(value: Any) -> Optional[int]:
+    """Convert a value to an int, returning ``None`` when absent/invalid."""
+    try:
+        return int(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 def try_int(value: Any) -> Any:
     """Convert a value to an int, falling back to the raw value on failure."""
     try:

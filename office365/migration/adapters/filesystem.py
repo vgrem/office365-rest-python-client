@@ -41,6 +41,7 @@ class FileSystemSource:
                 dest_path=str(path.relative_to(self._root)).replace("\\", "/"),
                 size_bytes=stat.st_size,
                 modified=iso(datetime.fromtimestamp(stat.st_mtime, timezone.utc)),
+                created=iso(datetime.fromtimestamp(stat.st_ctime, timezone.utc)),
             )
             items.append(item)
             emit_progress(progress, done=len(items), stage="planning", items=[item])

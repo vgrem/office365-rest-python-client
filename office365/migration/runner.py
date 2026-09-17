@@ -33,6 +33,25 @@ if TYPE_CHECKING:
     from office365.runtime.operations import Progress
 
 
+_FIDELITY_FLAGS = ("preserve_timestamps", "preserve_permissions", "preserve_versions")
+
+
+def _assert_fidelity_supported(options: MigrationOptions) -> None:
+    """Reject fidelity flags the client-side runner cannot honor.
+
+    REST cannot reliably restore ``Created``/``Modified``, version history, or
+    ACLs — those need the server-side Migration API (``MigrationServerJob``).
+    Failing fast is better than silently migrating without the requested fidelity.
+    """
+    enabled = [flag for flag in _FIDELITY_FLAGS if getattr(options, flag, False)]
+    if enabled:
+        raise NotImplementedError(
+            f"{', '.join(enabled)} is not supported by the client-side runner: REST cannot "
+            "reliably restore Created/Modified, version history, or ACLs. Use the server-side "
+            "Migration API (MigrationServerJob) or set these options to False."
+        )
+
+
 class MigrationRunner:
     """Executes migration items between a source and a target adapter."""
 
@@ -47,6 +66,7 @@ class MigrationRunner:
         progress: Callable[["Progress"], None] | None = None,
         stop_event: Callable[[], bool] | None = None,
     ) -> MigrationStats:
+        _assert_fidelity_supported(options)
         parallel = (
             options.concurrency > 1
             and hasattr(target, "write_many")

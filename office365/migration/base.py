@@ -71,6 +71,9 @@ class MigrationItem:
     error: str | None = None  # failure message (SPMT "Message")
     error_code: str | None = None  # failure category/code (e.g. exception type name)
     modified: str | None = None  # source last-modified (ISO-8601), for incremental
+    created: str | None = None  # source created (ISO-8601)
+    author_id: int | None = None  # source author user id (system ``AuthorId``)
+    editor_id: int | None = None  # source last-modified-by user id (system ``EditorId``)
 
 
 @dataclass

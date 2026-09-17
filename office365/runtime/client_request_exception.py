@@ -5,6 +5,8 @@ from typing import Optional
 
 from requests import RequestException, Response
 
+from office365.runtime.converters.scalars import parse_int
+
 _HEADER_REQUEST_IDS = ("request-id", "client-request-id", "SPRequestGuid")
 
 
@@ -127,20 +129,12 @@ class ClientRequestException(RequestException):
     @property
     def duration_ms(self) -> Optional[int]:
         """SharePoint server-side processing time (``SPRequestDuration``), ms."""
-        return _to_int((getattr(self.response, "headers", None) or {}).get("SPRequestDuration"))
+        return parse_int((getattr(self.response, "headers", None) or {}).get("SPRequestDuration"))
 
     @property
     def health_score(self) -> Optional[int]:
         """SharePoint server health score (``X-SharePointHealthScore``)."""
-        return _to_int((getattr(self.response, "headers", None) or {}).get("X-SharePointHealthScore"))
-
-
-def _to_int(value: object) -> Optional[int]:
-    """Parse a header value into an int, returning None when absent/invalid."""
-    try:
-        return int(value)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return None
+        return parse_int((getattr(self.response, "headers", None) or {}).get("X-SharePointHealthScore"))
 
 
 # Error types consulted by ``from_response`` (most specific first). The generic

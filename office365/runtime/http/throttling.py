@@ -28,9 +28,11 @@ import threading
 import time
 from contextlib import contextmanager
 from dataclasses import astuple, dataclass
-from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional
+from typing import TYPE_CHECKING, Callable, Iterator, Optional
 
 from requests import Response
+
+from office365.runtime.converters.scalars import parse_int
 
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
@@ -68,11 +70,11 @@ def parse_throttling(response: Response) -> Optional[ThrottleLimits]:
         ThrottleLimits, or None when no tracked headers are present.
     """
     limits = ThrottleLimits(
-        limit=_to_int(response.headers.get("RateLimit-Limit")),
-        remaining=_to_int(response.headers.get("RateLimit-Remaining")),
-        reset=_to_int(response.headers.get("RateLimit-Reset")),
-        retry_after=_to_int(response.headers.get("Retry-After")),
-        health_score=_to_int(response.headers.get("X-SharePointHealthScore")),
+        limit=parse_int(response.headers.get("RateLimit-Limit")),
+        remaining=parse_int(response.headers.get("RateLimit-Remaining")),
+        reset=parse_int(response.headers.get("RateLimit-Reset")),
+        retry_after=parse_int(response.headers.get("Retry-After")),
+        health_score=parse_int(response.headers.get("X-SharePointHealthScore")),
     )
     if any(value is not None for value in astuple(limits)):
         return limits
@@ -131,14 +133,6 @@ def throttle_guard(
         yield
     finally:
         handler -= hook
-
-
-def _to_int(value: Any) -> Optional[int]:
-    """Parse a header value into an int, returning None when absent/invalid."""
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
 
 
 @dataclass(frozen=True)

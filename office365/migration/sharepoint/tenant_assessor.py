@@ -18,7 +18,7 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from office365.migration._util import coerce_int, emit_progress
+from office365.migration._util import emit_progress
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.runner import ScanRunner
@@ -26,6 +26,7 @@ from office365.migration.assessment.scanners import AssessmentOptions
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 from office365.runtime.client_result import ClientResult
+from office365.runtime.converters.scalars import parse_int
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -77,7 +78,7 @@ class MigrationTenantAssessor(Entity):
                     site_url=site.url,
                     owner=site.owner_login_name,
                     storage_bytes=int(storage) if storage is not None else None,
-                    web_count=coerce_int(site.webs_count) or 0,
+                    web_count=parse_int(site.webs_count) or 0,
                     last_modified=_clean_modified(site.last_content_modified_date),
                     lock_state=site.lock_state,
                     report_impacted_only=True,
