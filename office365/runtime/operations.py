@@ -49,6 +49,19 @@ class Progress(Generic[T_co]):
 ProgressCallback = Callable[[Progress[Any]], None]
 
 
+def emit_progress(
+    progress: Optional[ProgressCallback],
+    *,
+    done: int,
+    total: Optional[int] = None,
+    stage: str = "",
+    items: Optional[Sequence[Any]] = None,
+) -> None:
+    """Invoke a progress hook (if any) with a :class:`Progress` snapshot."""
+    if callable(progress):
+        progress(Progress(done=done, total=total, stage=stage, items=items))
+
+
 @dataclass
 class OperationStats:
     """Common counters shared by bulk operations (imports, migrations).

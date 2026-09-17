@@ -77,6 +77,29 @@ def try_float(value: Any) -> Any:
         return value
 
 
+def utc_now_iso() -> str:
+    """Current UTC time as an ISO-8601 string (second precision)."""
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def iso(value: Any) -> str:
+    """ISO-8601 string for a datetime (second precision); ``""`` for ``None``."""
+    if value is None:
+        return ""
+    return value.isoformat(timespec="seconds")
+
+
+def iso_or_none(value: Any) -> Optional[str]:
+    """ISO-8601 string for a datetime, or ``None`` when unset/absent.
+
+    Treats ``datetime.min`` (the "not loaded" sentinel used by some SharePoint
+    properties) as unset.
+    """
+    if value is None or value == datetime.min:
+        return None
+    return value.isoformat(timespec="seconds") if hasattr(value, "isoformat") else (str(value) or None)
+
+
 def _normalize_datetime_string(value: str) -> str:
     """Truncate or pad fractional seconds to exactly 6 digits for %f compatibility."""
     if "." not in value:

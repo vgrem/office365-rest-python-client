@@ -12,9 +12,11 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from office365.migration._util import emit_progress, iso, record_to_json
 from office365.migration.adapters import MigrationProgress
 from office365.migration.base import MigrationItem
+from office365.runtime.converters.json_file import record_to_json
+from office365.runtime.converters.scalars import iso
+from office365.runtime.operations import emit_progress
 
 
 class FileSystemSource:

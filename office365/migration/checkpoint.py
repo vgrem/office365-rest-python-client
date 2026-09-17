@@ -14,8 +14,8 @@ import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from office365.migration._util import utc_now_iso
 from office365.migration.base import ItemStatus, MigrationItem, MigrationPhase
+from office365.runtime.converters.scalars import utc_now_iso
 
 
 @dataclass

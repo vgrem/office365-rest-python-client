@@ -12,8 +12,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from office365.migration._util import write_csv_json
 from office365.migration.assessment.report import AssessmentReport
+from office365.migration.report_io import write_formats
 
 _COLUMNS = ["severity", "category", "location", "message", "suggestion"]
 
@@ -28,7 +28,7 @@ def export_assessment(report: AssessmentReport, output_dir: str | Path) -> list[
     Returns:
         List of written file paths.
     """
-    written = write_csv_json(output_dir, "AssessmentReport", report.to_records(), _COLUMNS)
+    written = write_formats(report.to_records(), output_dir, "AssessmentReport", columns=_COLUMNS)
     written += export_scan_reports(report, output_dir)
     return written
 
@@ -42,10 +42,10 @@ def export_scan_reports(report: AssessmentReport, output_dir: str | Path) -> lis
     for scan in report.scan_reports.values():
         if not scan.records:
             continue
-        written += write_csv_json(
+        written += write_formats(
+            scan.to_records(),
             os.path.join(output_dir, "ScannerReports"),
             f"{scan.name}-detail",
-            scan.to_records(),
-            list(scan.columns),
+            columns=list(scan.columns),
         )
     return written

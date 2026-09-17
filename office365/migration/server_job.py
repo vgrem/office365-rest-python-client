@@ -17,7 +17,7 @@ import uuid
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from office365.migration._util import emit_progress
+from office365.runtime.operations import emit_progress
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress

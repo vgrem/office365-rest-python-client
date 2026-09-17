@@ -15,11 +15,12 @@ import io
 from collections.abc import Callable
 from typing import TYPE_CHECKING, cast
 
-from office365.migration._util import emit_progress, iso_or_none, record_to_json
 from office365.migration.adapters import MigrationProgress
 from office365.migration.base import MigrationItem
 from office365.migration.sharepoint.transfer import Failure
-from office365.runtime.converters.scalars import parse_int
+from office365.runtime.converters.json_file import record_to_json
+from office365.runtime.converters.scalars import iso_or_none, parse_int
+from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 
 if TYPE_CHECKING:

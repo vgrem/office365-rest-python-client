@@ -59,6 +59,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- Removed `office365/migration/_util.py`; its helpers moved to their domains:
+  `emit_progress` → `runtime.operations`, `iso`/`iso_or_none`/`utc_now_iso` →
+  `runtime.converters.scalars`, `record_to_json` → `runtime.converters.json_file`.
+  Report writing is now **per-format** (`migration.report_io.write_dataset`/
+  `write_formats`) instead of the CSV+JSON-coupled `write_csv_json`.
 - `MigrationItem` carries `created` and the reliable system `author_id`/`editor_id`
   (in addition to `modified`); the filesystem, SharePoint library and SharePoint
   list sources populate them, and the item report exports them. Incremental

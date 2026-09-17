@@ -17,7 +17,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterable
 
-from office365.migration._util import emit_progress
 from office365.migration.adapters import DataTarget, resolve_dest
 from office365.migration.base import (
     ConflictResolution,
@@ -28,6 +27,7 @@ from office365.migration.base import (
     MigrationStats,
 )
 from office365.migration.checkpoint import Checkpoint
+from office365.runtime.operations import emit_progress
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress

@@ -5,10 +5,10 @@ from __future__ import annotations
 import datetime
 
 import pytest
-from office365.migration._util import iso_or_none
 from office365.migration.adapters.filesystem import FileSystemSource
 from office365.migration.base import MigrationItem, MigrationOptions, item_from_dict, item_to_dict
 from office365.migration.runner import _assert_fidelity_supported
+from office365.runtime.converters.scalars import iso_or_none
 
 
 def test_iso_or_none():
