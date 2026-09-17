@@ -165,11 +165,11 @@ for _ in lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
 `concurrency>1` runs batches in parallel with per-sub-request throttling retries
 (honoring `Retry-After`).
 
-For **long-running** jobs, pass a `checkpoint` (path or `ImportCheckpoint`): the
-committed cursor is persisted atomically after each chunk, so an interrupted run
-resumes by skipping the already-committed chunks (progress continues from that
-offset). `on_error="collect"` records a failing chunk (in `ImportStats.errors`
-and the checkpoint's `failures`) and continues instead of aborting:
+For **long-running** jobs, pass a `checkpoint`: the committed cursor is persisted
+atomically after each chunk, so an interrupted run resumes by skipping the
+already-committed chunks (progress continues from that offset). `on_error="collect"`
+records a failing chunk (in `ImportStats.errors` and the checkpoint's `failures`)
+and continues instead of aborting:
 
 ```python
 lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
@@ -177,6 +177,12 @@ lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
                      on_error="collect") \
    .execute_batch(items_per_batch=100, concurrency=5)
 ```
+
+`checkpoint` accepts a path (`FileCheckpointStore`), an `ImportCheckpoint` or
+`None` (`MemoryCheckpointStore`), or any `CheckpointStore` — pluggable
+persistence, MSAL-cache style. The driver exposes `ImportResult.resumed_from`
+(rows already committed) and `ImportResult.checkpoint` (live cursor), and
+`ImportStats.resumed_from` / `stats.summary()` report the resumed offset.
 
 The generic entry point is `collection.import_records(batches)` for any
 `ClientObjectCollection`. See `examples/sharepoint/lists/import_dataframe.py`

@@ -82,9 +82,14 @@ class ImportStats(OperationStats):
 
     chunks: int = 0
     duration: float = 0.0
+    resumed_from: int = 0  # records already committed by a previous run
 
     def summary(self) -> str:
-        return f"Imported {self.success:,}/{self.total:,} item(s) in {self.chunks} chunk(s) over {self.duration:.1f}s"
+        resumed = f" (resumed at {self.resumed_from:,})" if self.resumed_from else ""
+        return (
+            f"Imported {self.success:,}/{self.total:,} item(s) "
+            f"in {self.chunks} chunk(s) over {self.duration:.1f}s{resumed}"
+        )
 
 
 @dataclass
@@ -139,6 +144,49 @@ class ImportCheckpoint:
         )
 
 
+@runtime_checkable
+class CheckpointStore(Protocol):
+    """Persistence for :class:`ImportCheckpoint` — pluggable, MSAL-cache style."""
+
+    def load(self) -> ImportCheckpoint:
+        """Return the persisted checkpoint (a fresh one when none exists)."""
+        ...
+
+    def save(self, checkpoint: ImportCheckpoint) -> None:
+        """Persist the checkpoint."""
+        ...
+
+
+class MemoryCheckpointStore:
+    """In-memory checkpoint store (the default when no path is given)."""
+
+    def __init__(self, checkpoint: Optional[ImportCheckpoint] = None) -> None:
+        self._checkpoint = checkpoint or ImportCheckpoint()
+
+    def load(self) -> ImportCheckpoint:
+        return self._checkpoint
+
+    def save(self, checkpoint: ImportCheckpoint) -> None:
+        self._checkpoint = checkpoint
+
+
+class FileCheckpointStore:
+    """JSON-file checkpoint store (atomic write-then-rename)."""
+
+    def __init__(self, path: Union[str, PathLike]) -> None:
+        self._path = Path(path)
+
+    @property
+    def path(self) -> Path:
+        return self._path
+
+    def load(self) -> ImportCheckpoint:
+        return ImportCheckpoint.load(self._path) if self._path.exists() else ImportCheckpoint()
+
+    def save(self, checkpoint: ImportCheckpoint) -> None:
+        checkpoint.save(self._path)
+
+
 class ImportResult(ClientResult[ImportStats]):
     """Deferred, source-agnostic streaming import driver.
 
@@ -152,8 +200,11 @@ class ImportResult(ClientResult[ImportStats]):
             schema/field provisioning); it may execute. Skipped when resuming.
         total: Total items when known upfront (drives the progress hook).
         progress: Optional ``ProgressCallback`` fired per queued chunk.
-        checkpoint: An :class:`ImportCheckpoint` or a path to persist/resume
-            from. A path is loaded when it exists and written after each chunk.
+        checkpoint: Persistence for the run state: a path
+            (:class:`FileCheckpointStore`), an :class:`ImportCheckpoint` or
+            ``None`` (:class:`MemoryCheckpointStore`), or any
+            :class:`CheckpointStore`. Loaded at construction, written after each
+            chunk. ``ImportResult.resumed_from`` reports the loaded offset.
         on_error: ``"raise"`` (default) aborts on the first failed chunk;
             ``"collect"`` records the failure (``ImportStats.errors`` +
             ``checkpoint.failures``), skips the chunk, and continues.
@@ -176,7 +227,7 @@ class ImportResult(ClientResult[ImportStats]):
         queue: Optional[Callable[[list[dict]], tuple[int, int]]] = None,
         total: Optional[int] = None,
         progress: Optional["ProgressCallback"] = None,
-        checkpoint: Union["ImportCheckpoint", str, PathLike, None] = None,
+        checkpoint: Union["ImportCheckpoint", "CheckpointStore", str, PathLike, None] = None,
         on_error: str = "raise",
         dry_run: bool = False,
     ) -> None:
@@ -193,8 +244,10 @@ class ImportResult(ClientResult[ImportStats]):
         self._on_error = on_error
         self._dry_run = dry_run
         self._started_at: Optional[float] = None
-        self._checkpoint_path, self._checkpoint = self._resolve_checkpoint(checkpoint)
+        self._store = self._resolve_store(checkpoint)
+        self._checkpoint = self._store.load()
         self._progress_base = self._checkpoint.cursor  # records committed before this run
+        self.value.resumed_from = self._progress_base
 
     # ── Terminals ────────────────────────────────────────────────
 
@@ -325,16 +378,29 @@ class ImportResult(ClientResult[ImportStats]):
         if self._started_at is not None:
             self.value.duration = time.monotonic() - self._started_at
 
-    def _resolve_checkpoint(
-        self, checkpoint: Union["ImportCheckpoint", str, PathLike, None]
-    ) -> tuple[Optional[Path], ImportCheckpoint]:
+    @staticmethod
+    def _resolve_store(
+        checkpoint: Union["ImportCheckpoint", "CheckpointStore", str, PathLike, None],
+    ) -> "CheckpointStore":
         if checkpoint is None:
-            return None, ImportCheckpoint()
+            return MemoryCheckpointStore()
         if isinstance(checkpoint, ImportCheckpoint):
-            return None, checkpoint
-        path = Path(checkpoint)
-        return path, (ImportCheckpoint.load(path) if path.exists() else ImportCheckpoint())
+            return MemoryCheckpointStore(checkpoint)
+        if isinstance(checkpoint, CheckpointStore):
+            return checkpoint
+        return FileCheckpointStore(checkpoint)
 
     def _save_checkpoint(self) -> None:
-        if self._checkpoint_path is not None:
-            self._checkpoint.save(self._checkpoint_path)
+        self._store.save(self._checkpoint)
+
+    # ── State ────────────────────────────────────────────────────
+
+    @property
+    def checkpoint(self) -> ImportCheckpoint:
+        """The live run state (cursor/errors/failures), updated after each chunk."""
+        return self._checkpoint
+
+    @property
+    def resumed_from(self) -> int:
+        """Records already committed by a previous run (``0`` when fresh)."""
+        return self._progress_base

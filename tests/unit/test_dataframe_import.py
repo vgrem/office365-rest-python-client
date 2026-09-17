@@ -213,6 +213,37 @@ def test_resume_skips_committed_records(tmp_path):
     assert driver.value.success == 2  # noqa: PLR2004
 
 
+def test_resume_accessors_and_summary(tmp_path):
+    path = tmp_path / "ckpt.json"
+    _driver(_FakeContext(), _FakeCollection(), _batches(2, 2), checkpoint=str(path)).execute_query()
+
+    driver = _driver(_FakeContext(), _FakeCollection(), _batches(2, 2, 2), checkpoint=str(path))
+    assert driver.resumed_from == 4  # noqa: PLR2004
+    assert driver.value.resumed_from == 4  # noqa: PLR2004
+    assert driver.checkpoint.cursor == 4  # noqa: PLR2004
+
+    driver.execute_query()
+
+    assert driver.checkpoint.cursor == 6  # noqa: PLR2004
+    assert "resumed at 4" in driver.value.summary()
+
+
+def test_custom_checkpoint_store(tmp_path):
+    from office365.runtime.imports import FileCheckpointStore, MemoryCheckpointStore
+
+    store = MemoryCheckpointStore(ImportCheckpoint(cursor=2, chunks=1))
+    driver = _driver(_FakeContext(), _FakeCollection(), _batches(2, 2), checkpoint=store)
+    assert driver.resumed_from == 2  # noqa: PLR2004
+
+    driver.execute_query()
+    assert store.load().cursor == 4  # noqa: PLR2004
+
+    file_store = FileCheckpointStore(tmp_path / "c.json")
+    assert file_store.load().cursor == 0
+    file_store.save(ImportCheckpoint(cursor=7))
+    assert file_store.load().cursor == 7  # noqa: PLR2004
+
+
 def test_resume_progress_includes_committed_offset(tmp_path):
     path = tmp_path / "ckpt.json"
     _driver(_FakeContext(), _FakeCollection(), _batches(2, 2), checkpoint=str(path)).execute_query()

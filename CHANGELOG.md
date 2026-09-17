@@ -14,20 +14,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   concurrent), or iterating the driver. `ClientObjectCollection.import_records()`
   streams record batches; `List.from_dataframe()` streams a DataFrame / CSV
   source and provisions the columns once.
-- **Idempotent list imports (skip / upsert):** `List.from_dataframe(..., key=...,
+- **Idempotent list imports (skip / upsert):** `List.import_dataframe(..., key=...,
   key_field="MigrationKey", on_conflict="skip"|"upsert")` derives a SHA-256 key
   from the given natural-key column(s), stores it in a dedicated field, loads the
   existing keys once, and skips or updates already-present rows — so a re-run
-  never duplicates. Backed by `ListItemCollection.load_keys`/`queue_keyed`/
-  `record_key` and a conflict-resolution `queue` hook on `ImportResult`
-  (`ImportStats.skipped`).
-- **Resumable imports:** `ImportResult` accepts a `checkpoint`
-  (`ImportCheckpoint` or path) and persists the committed cursor after each
-  chunk (atomically), so an interrupted long-running run resumes by skipping the
-  already-committed chunks; progress continues from the committed offset.
+  never duplicates. Backed by `runtime.converters.upsert.keyed_queue` +
+  `ListItemUpsertTarget` and a conflict-resolution `queue` hook on `ImportResult`
+  (`ImportStats.skipped`); `enforce_unique=True` and `dry_run=True` are supported.
+- **Resumable imports:** `ImportResult` accepts a `checkpoint` — a path
+  (`FileCheckpointStore`), an `ImportCheckpoint`/`None` (`MemoryCheckpointStore`),
+  or any `CheckpointStore` — and persists the committed cursor after each chunk
+  (atomically), so an interrupted long-running run resumes by skipping the
+  already-committed chunks. `ImportResult.resumed_from`/`.checkpoint` and
+  `ImportStats.resumed_from` (in `summary()`) expose the resumed offset.
   `on_error="collect"` records a failing chunk (`ImportStats.errors` +
   `checkpoint.failures`) and continues instead of aborting.
-- `List.ensure_fields_from_dataframe()` — deferred, idempotent column provisioning.
 - `ClientObjectCollection.clear()` and a `concurrency` argument on
   `Entity.execute_batch()`.
 - `OperationStats` — a shared counter base for bulk operations — with
@@ -53,6 +54,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   streaming path. `List.export` remains the `.zip` **package** export.
 - `SharePointListSource` now reuses the shared record projection
   (`to_records(raw=True)`, no JSON coercion).
+- `MigrationOptions.preserve_timestamps` now defaults to `False` (it was `True`
+  but never implemented). `preserve_timestamps`/`preserve_permissions`/
+  `preserve_versions` are documented as not implemented client-side — they need
+  the server-side Migration API (`MigrationServerJob`).
 - **Idempotent metadata:** all client-side `ensure_*` (fields, lists, content
   types, terms, contact folders) share new
   `runtime.queries.get_or_create.get_or_create`/`create_or_get` primitives, and

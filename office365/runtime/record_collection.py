@@ -25,7 +25,7 @@ from office365.runtime.converters import registry
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
     from office365.runtime.converters.upsert import UpsertTarget
-    from office365.runtime.imports import ImportCheckpoint, ImportResult
+    from office365.runtime.imports import CheckpointStore, ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
 
 
@@ -155,7 +155,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         batches: "Iterable[List[dict]]",
         *,
         progress: "ProgressCallback | None" = None,
-        checkpoint: "ImportCheckpoint | str | PathLike | None" = None,
+        checkpoint: "ImportCheckpoint | CheckpointStore | str | PathLike | None" = None,
         on_error: str = "raise",
         key: "str | list[str] | None" = None,
         key_field: str = "MigrationKey",
@@ -192,7 +192,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         key_field: str = "MigrationKey",
         on_conflict: str = "skip",
         enforce_unique: bool = False,
-        checkpoint: "ImportCheckpoint | str | PathLike | None" = None,
+        checkpoint: "ImportCheckpoint | CheckpointStore | str | PathLike | None" = None,
         on_error: str = "raise",
         progress: "ProgressCallback | None" = None,
         prepare: "Callable[[Any], None] | None" = None,

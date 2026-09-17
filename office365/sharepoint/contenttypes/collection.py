@@ -59,10 +59,10 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
         def _reconcile(content_type: ContentType) -> None:
             changed = False
-            if description is not None and content_type.properties.get("Description") != description:
+            if description is not None and content_type.description != description:
                 content_type.set_property("Description", description)
                 changed = True
-            if group is not None and content_type.properties.get("Group") != group:
+            if group is not None and content_type.group != group:
                 content_type.set_property("Group", group)
                 changed = True
             if changed:

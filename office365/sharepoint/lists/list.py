@@ -75,7 +75,7 @@ from office365.sharepoint.webhooks.subscription_collection import SubscriptionCo
 
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
-    from office365.runtime.imports import ImportCheckpoint, ImportResult
+    from office365.runtime.imports import CheckpointStore, ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
@@ -732,7 +732,7 @@ class List(SecurableObject):
         schema: "Dict[str, FieldType] | None" = None,
         chunksize: int = 2000,
         progress: "ProgressCallback | None" = None,
-        checkpoint: "ImportCheckpoint | str | None" = None,
+        checkpoint: "ImportCheckpoint | CheckpointStore | str | None" = None,
         on_error: str = "raise",
         key: "str | list[str] | None" = None,
         key_field: str = "MigrationKey",
