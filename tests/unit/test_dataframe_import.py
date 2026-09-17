@@ -447,6 +447,41 @@ class _NoTargetCollection(_FakeCollection):
         return None
 
 
+def test_apply_mapping_renames_record_keys():
+    from office365.runtime.record_collection import _apply_mapping
+
+    mapped = _apply_mapping(lambda chunk: [dict(r) for r in chunk], {"old": "new"})
+
+    assert mapped([{"old": 1, "keep": 2}]) == [{"new": 1, "keep": 2}]
+
+
+def test_import_from_applies_column_mapping():
+    from office365.runtime.client_object import ClientObject
+    from office365.runtime.record_collection import RecordCollection
+
+    class _RecordFake(RecordCollection):
+        def __init__(self, context):
+            super().__init__(context, ClientObject)
+            self.queued = []
+
+        def from_records(self, records, progress=None):
+            self.queued.extend(records)
+            return self
+
+    collection = _RecordFake(cast(Any, _FakeContext()))
+    result = RecordCollection.import_from(
+        collection,
+        _batches(1),
+        format="records",
+        to_records=lambda b: b,
+        mapping={"n": "value"},
+    )
+
+    result.execute_query()
+
+    assert collection.queued == [{"value": 0}]
+
+
 def test_verify_keys_reports_missing():
     from office365.runtime.record_collection import RecordCollection, VerificationResult
 

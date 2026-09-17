@@ -742,6 +742,7 @@ class List(SecurableObject):
         dry_run: bool = False,
         on_schema_change: str = "evolve",
         dead_letter: "str | None" = None,
+        mapping: "Dict[str, str] | None" = None,
     ) -> "ImportResult":
         """Stream a source into this list's items, memory-bounded.
 
@@ -775,6 +776,8 @@ class List(SecurableObject):
             enforce_unique: Mark the key column unique (guards a create race).
             dry_run: Plan the create/update/skip counts without writing.
             on_schema_change: ``"evolve"`` (default) or ``"fail"``.
+            mapping: Optional ``{source_column: target_name}`` rename map.
+            dead_letter: Optional JSONL path for collected chunk failures.
 
         Returns:
             ImportResult: The deferred streaming import driver.
@@ -786,7 +789,13 @@ class List(SecurableObject):
             raise ValueError(f"on_schema_change must be 'evolve' or 'fail', got {on_schema_change!r}")
         provisioned: set[str] = set()
 
+        def _mapped(chunk: Any) -> Any:
+            if mapping and hasattr(chunk, "rename"):
+                return chunk.rename(columns=mapping)
+            return chunk
+
         def _ensure_new_fields(chunk: Any) -> None:
+            chunk = _mapped(chunk)
             if not hasattr(chunk, "columns"):  # only DataFrame/CSV chunks carry a schema
                 return
             new = [c for c in chunk.columns if internal_field_name(str(c)) not in provisioned]
@@ -807,7 +816,7 @@ class List(SecurableObject):
                 _ensure_new_fields(first_chunk)
 
         def _to_records(chunk: Any) -> list[dict]:
-            return records_from_dataframe(chunk, key_fn=internal_field_name)
+            return records_from_dataframe(_mapped(chunk), key_fn=internal_field_name)
 
         to_records = _to_records if format in ("dataframe", "csv") else None
 
@@ -827,6 +836,7 @@ class List(SecurableObject):
             to_records=to_records,
             dry_run=dry_run,
             dead_letter=dead_letter,
+            mapping=mapping if to_records is None else None,
         )
 
     def import_dataframe(self, source, **opts) -> "ImportResult":

@@ -47,6 +47,15 @@ class VerificationResult:
         return f"{status} | checked: {self.checked}, missing: {len(self.missing)}"
 
 
+def _apply_mapping(convert: Callable[[Any], list[dict]], mapping: Dict[str, str]) -> Callable[[Any], list[dict]]:
+    """Wrap a chunk converter to rename record keys (``source -> target``)."""
+
+    def mapped(chunk: Any) -> list[dict]:
+        return [{mapping.get(k, k): v for k, v in record.items()} for record in convert(chunk)]
+
+    return mapped
+
+
 class RecordCollection(ClientObjectCollection[ClientObjectT]):
     """A collection with record import/export capabilities."""
 
@@ -221,18 +230,22 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         total: Optional[int] = None,
         dry_run: bool = False,
         dead_letter: "str | PathLike | None" = None,
+        mapping: "Dict[str, str] | None" = None,
     ) -> "ImportResult":
         """Stream a source into this collection, memory-bounded.
 
         ``source`` is chunked (``dataframe``/``csv``: a DataFrame, chunk iterable,
         or CSV path/URL/file; ``records``: an iterable of record batches; others:
         read whole). ``key`` enables idempotent skip/upsert via :meth:`upsert_target`.
+        ``mapping`` renames source columns/keys to target names before queuing.
         """
         from office365.runtime.imports import ImportResult
 
         chunks, convert, inferred_total = self._resolve_source(source, format, chunksize, to_records)
         if total is None:
             total = inferred_total
+        if mapping:
+            convert = _apply_mapping(convert, mapping)
 
         raw_key_columns = [key] if isinstance(key, str) else (list(key) if key else [])
         key_columns = [self._key_column(c) for c in raw_key_columns]

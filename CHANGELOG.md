@@ -59,6 +59,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **Column mapping:** `import_from(..., mapping={"SourceCol": "TargetField"})`
+  renames source columns/keys before queuing (list imports rename before
+  field-name sanitization), so differently-named sources land in the right columns.
 - **Import verification:** `RecordCollection.verify_keys(keys)` reconciles a keyed
   import against the target (returns a `VerificationResult` with `ok`/`missing`);
   `List.verify_dataframe(df, key=...)` derives the keys from a DataFrame.
