@@ -75,6 +75,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **Migration-parity vocabulary:** `ImportResult.run(...)` aliases
+  `execute_batch`, and `ImportResult.verify(source, key=...)` reconciles a
+  source's natural keys against the target (delegating to the collection). The
+  pipeline and the migration toolkit now share one `VerificationReport`
+  (`runtime.verification`); `RecordCollection.verify` / `List.verify` generalize
+  `verify_keys` / `verify_dataframe`.
 - **More formats + path/IO parity:** the pipeline now supports `tsv`, `parquet`,
   `orc` and `feather` (optional `[parquet]` extra) alongside CSV/JSON/NDJSON/
   Excel/DataFrame, plus `from_sql`/`to_sql` (`[sql]`) and `from_duckdb`/

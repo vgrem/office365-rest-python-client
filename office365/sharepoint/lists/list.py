@@ -934,22 +934,28 @@ class List(SecurableObject):
         self.items.queue_records(records, progress=progress)
         return self
 
-    def verify_dataframe(
+    def verify(
         self,
-        df,
+        source,
         *,
         key: "str | list[str]",
+        format: str = "dataframe",  # noqa: A002
         key_field: str = "MigrationKey",
     ) -> "VerificationResult":
-        """Reconcile: assert every row of ``df`` landed on this list (by key hash)."""
+        """Reconcile a source's natural keys against this list (bounded).
+
+        Streams the source, hashes each row's natural key and checks it against the
+        list's existing keys. ``format`` is ``"dataframe"`` (default), ``"csv"`` or
+        any registered format.
+        """
         from office365.runtime.converters.dataframe import records_from_dataframe
-        from office365.runtime.converters.upsert import record_key
         from office365.sharepoint.fields.name import internal_field_name
 
-        raw = [key] if isinstance(key, str) else list(key)
-        key_columns = [internal_field_name(c) for c in raw]
-        keys = [record_key(r, key_columns) for r in records_from_dataframe(df, key_fn=internal_field_name)]
-        return self.items.verify_keys(keys, key_field=key_field)
+        def _to_records(chunk):
+            return records_from_dataframe(chunk, key_fn=internal_field_name)
+
+        to_records = _to_records if format in ("dataframe", "csv") else None
+        return self.items.verify(source, key=key, format=format, key_field=key_field, to_records=to_records)
 
     def export_to(self, target, *, format: str = "csv", **opts) -> Self:  # noqa: A002
         """Export this list's items to ``target`` in ``format`` (deferred).

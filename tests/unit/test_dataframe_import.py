@@ -519,9 +519,11 @@ def test_verify_keys_reports_missing():
 
     assert isinstance(result, VerificationResult)
     assert result.checked == 3  # noqa: PLR2004
+    assert result.source_count == 3  # noqa: PLR2004
+    assert result.target_count == 2  # noqa: PLR2004
     assert result.missing == ["c"]
     assert not result.ok
-    assert result.summary() == "MISMATCH | checked: 3, missing: 1"
+    assert "MISMATCH" in result.summary()
 
 
 def test_verify_keys_ok_when_all_present():
@@ -530,7 +532,8 @@ def test_verify_keys_ok_when_all_present():
     result = RecordCollection.verify_keys(cast(Any, _KeyedCollection(["a", "b"])), ["a", "b"])
 
     assert result.ok
-    assert result.summary() == "OK | checked: 2, missing: 0"
+    assert result.source_count == 2  # noqa: PLR2004
+    assert result.summary().startswith("OK")
 
 
 def test_verify_keys_requires_upsert_target():
@@ -538,6 +541,49 @@ def test_verify_keys_requires_upsert_target():
 
     with pytest.raises(ValueError, match="upsert-capable"):
         RecordCollection.verify_keys(cast(Any, _NoTargetCollection()), ["a"])
+
+
+def test_import_result_run_is_the_batch_terminal():
+    ctx = _FakeContext()
+    driver = _driver(ctx, _FakeCollection(), _batches(2, 2))
+
+    driver.run(items_per_batch=2, concurrency=3)
+
+    assert len(ctx.batch_calls) == 2  # noqa: PLR2004 — one batch call per chunk
+    assert all(call == {"items_per_batch": 2, "concurrency": 3} for call in ctx.batch_calls)
+
+
+def test_collection_verify_reconciles_source_keys():
+    from office365.runtime.converters.upsert import record_key
+    from office365.runtime.record_collection import RecordCollection
+
+    existing = {record_key({"id": 1}, ["id"]): 11}
+    collection = _ImportCollection(existing=existing)
+
+    report = RecordCollection.verify(collection, [[{"id": 1}, {"id": 2}]], key=["id"], format="records")
+
+    assert report.source_count == 2  # noqa: PLR2004
+    assert report.target_count == 1
+    assert report.missing == [record_key({"id": 2}, ["id"])]
+    assert not report.ok
+
+
+def test_import_result_verify_delegates_to_collection():
+    from office365.runtime.converters.upsert import record_key
+    from office365.runtime.imports import ImportResult
+
+    existing = {record_key({"id": 1}, ["id"]): 11}
+    collection = _ImportCollection(existing=existing)
+    driver = ImportResult(
+        cast(Any, collection.context),
+        collection,
+        [[{"id": 1}, {"id": 2}]],
+        to_records=lambda batch: batch,
+    )
+
+    report = driver.verify([[{"id": 1}, {"id": 2}]], key=["id"], format="records")
+
+    assert report.missing == [record_key({"id": 2}, ["id"])]
 
 
 class _ImportTarget:

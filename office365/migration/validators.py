@@ -7,29 +7,12 @@ reports any missing, extra, or mismatched items.
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field
 
 from office365.migration.adapters import DataSource, DataTarget
 from office365.migration.manifest import Manifest
+from office365.runtime.verification import VerificationReport
 
-
-@dataclass
-class VerificationReport:
-    source_count: int = 0
-    target_count: int = 0
-    checked: int = 0
-    mismatches: list[str] = field(default_factory=list)
-
-    @property
-    def ok(self) -> bool:
-        return self.source_count == self.target_count and not self.mismatches
-
-    def summary(self) -> str:
-        status = "OK" if self.ok else "MISMATCH"
-        return (
-            f"{status} | source: {self.source_count}, target: {self.target_count}, "
-            f"checksums checked: {self.checked}, issues: {len(self.mismatches)}"
-        )
+__all__ = ["VerificationReport", "verify"]
 
 
 def verify(

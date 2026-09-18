@@ -14,7 +14,6 @@ Keyed imports (skip/upsert) are opt-in: a subclass exposes an
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from os import PathLike
 from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Union
 
@@ -23,6 +22,7 @@ from typing_extensions import Self
 from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters import registry
+from office365.runtime.verification import VerificationReport
 
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
@@ -31,21 +31,8 @@ if TYPE_CHECKING:
     from office365.runtime.operations import ProgressCallback
 
 
-@dataclass
-class VerificationResult:
-    """Outcome of a key reconciliation (:meth:`RecordCollection.verify_keys`)."""
-
-    checked: int = 0
-    missing: list[str] = field(default_factory=list)
-
-    @property
-    def ok(self) -> bool:
-        """Whether every checked key is present on the target."""
-        return not self.missing
-
-    def summary(self) -> str:
-        status = "OK" if self.ok else "MISMATCH"
-        return f"{status} | checked: {self.checked}, missing: {len(self.missing)}"
+# The pipeline and the migration toolkit share one reconciliation report type.
+VerificationResult = VerificationReport
 
 
 def _apply_mapping(convert: Callable[[Any], list[dict]], mapping: Dict[str, str]) -> Callable[[Any], list[dict]]:
@@ -347,7 +334,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
     # ── Verification ─────────────────────────────────────────────
 
-    def verify_keys(self, keys: Iterable[str], *, key_field: str = "MigrationKey") -> "VerificationResult":
+    def verify_keys(self, keys: Iterable[str], *, key_field: str = "MigrationKey") -> VerificationReport:
         """Reconcile an import: assert every key hash exists in the target.
 
         Uses the same keyed lookup as upsert (loads existing keys once), so it
@@ -358,7 +345,45 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             raise ValueError("verify_keys requires an upsert-capable collection")
         existing = target.load_keys()
         keys = list(keys)
-        return VerificationResult(checked=len(keys), missing=[key for key in keys if key not in existing])
+        missing = [key for key in keys if key not in existing]
+        return VerificationReport(
+            source_count=len(keys), target_count=len(keys) - len(missing), checked=len(keys), missing=missing
+        )
+
+    def verify(
+        self,
+        source: Any,
+        *,
+        key: "str | list[str]",
+        format: str = "dataframe",  # noqa: A002
+        key_field: str = "MigrationKey",
+        to_records: "Callable[[Any], list[dict]] | None" = None,
+    ) -> VerificationReport:
+        """Reconcile a source's natural keys against this collection (bounded).
+
+        Streams the source, hashes each record's natural key and checks it against
+        the target's existing keys — the pipeline counterpart of the migration
+        toolkit's ``verify``. Use ``List.verify(df, key=...)`` for a list.
+        """
+        from office365.runtime.converters.upsert import record_key
+
+        raw = [key] if isinstance(key, str) else list(key)
+        key_columns = [self._key_column(c) for c in raw]
+        target = self.upsert_target(key_field=key_field)
+        if target is None:
+            raise ValueError("verify requires an upsert-capable collection")
+        existing = target.load_keys()
+        chunks, convert, _ = self._resolve_source(source, format, 2000, to_records)
+        checked = 0
+        missing: list[str] = []
+        for chunk in chunks:
+            for record in convert(chunk):
+                checked += 1
+                if record_key(record, key_columns) not in existing:
+                    missing.append(record_key(record, key_columns))
+        return VerificationReport(
+            source_count=checked, target_count=checked - len(missing), checked=checked, missing=missing
+        )
 
     # ── Extension hooks ──────────────────────────────────────────
 

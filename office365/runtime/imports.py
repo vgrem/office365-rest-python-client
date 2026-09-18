@@ -54,6 +54,7 @@ from office365.runtime.operations import OperationStats
 
 if TYPE_CHECKING:
     from office365.runtime.operations import ProgressCallback
+    from office365.runtime.verification import VerificationReport
 
 ON_ERROR_MODES = ("raise", "collect")
 
@@ -310,6 +311,42 @@ class ImportResult(ClientResult[ImportStats]):
             )
         )
         return self
+
+    def run(
+        self,
+        items_per_batch: int = 100,
+        max_batch_bytes: Optional[int] = None,
+        concurrency: int = 1,
+        success_callback: Optional[Callable[[Any], None]] = None,
+    ) -> Self:
+        """Alias of :meth:`execute_batch` (migration-parity vocabulary)."""
+        return self.execute_batch(
+            items_per_batch=items_per_batch,
+            max_batch_bytes=max_batch_bytes,
+            concurrency=concurrency,
+            success_callback=success_callback,
+        )
+
+    def verify(
+        self,
+        source: Any,
+        *,
+        key: "str | list[str]",
+        format: str = "dataframe",  # noqa: A002
+        key_field: str = "MigrationKey",
+        to_records: Optional[Callable[[Any], list[dict]]] = None,
+    ) -> "VerificationReport":
+        """Reconcile ``source`` against the target (delegates to the collection).
+
+        Mirrors ``MigrationJob.verify()``: run the import, then verify the source's
+        natural keys are present on the target.
+        """
+        verify = getattr(self._collection, "verify", None)
+        if not callable(verify):
+            raise TypeError("the import target does not support verification")
+        return cast(
+            "VerificationReport", verify(source, key=key, format=format, key_field=key_field, to_records=to_records)
+        )
 
     def __iter__(self) -> Iterator["RecordSink"]:
         """Yield the target collection per chunk; the caller executes each chunk.
