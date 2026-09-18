@@ -12,7 +12,8 @@ already present — on a fresh run **and** when resuming. **Resumable** — the
 committed cursor is checkpointed after each chunk, so an interrupted run
 continues where it stopped; changing ``--chunk`` invalidates the checkpoint and
 triggers a full re-scan (the key keeps it duplicate-free). Use
-``--reset-checkpoint`` to start over.
+``--reset-checkpoint`` to start over — the checkpoint is also ignored
+automatically when the target list is empty (a deleted/recreated list).
 
     python from_dataframe_large.py --rows 40000 --concurrency 5
 
@@ -26,12 +27,19 @@ from __future__ import annotations
 
 import argparse
 import time
+from pathlib import Path
 
 from office365.runtime.operations import Progress
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
 CSV_URL = "https://raw.githubusercontent.com/plotly/datasets/master/all_stocks_5yr.csv"
+
+
+def _is_empty(lst) -> bool:
+    """Whether the target list has no items (a fresh or recreated list)."""
+    lst.ensure_property("ItemCount").execute_query()
+    return (lst.item_count or 0) == 0
 
 
 class _Progress:
@@ -84,15 +92,22 @@ def main():
     p.add_argument("--no-progress", action="store_true", help="disable the live progress bar")
     args = p.parse_args()
 
-    if args.checkpoint and args.reset_checkpoint:
-        from pathlib import Path
-
-        Path(args.checkpoint).unlink(missing_ok=True)
+    ckpt_path = Path(args.checkpoint) if args.checkpoint else None
+    if ckpt_path is not None and args.reset_checkpoint:
+        ckpt_path.unlink(missing_ok=True)
 
     ctx = ClientContext(team_site_url).with_username_and_password(
         tenant=tenant, client_id=client_id, username=username, password=password
     )
     lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
+
+    # A checkpoint only makes sense while its target still holds the committed
+    # rows. If the list is empty (e.g. it was deleted and recreated), the cursor
+    # is stale — ignore it and start from scratch.
+    if ckpt_path is not None and ckpt_path.exists() and _is_empty(lst):
+        print(f"Target list is empty; ignoring the stale checkpoint ({args.checkpoint})")
+        ckpt_path.unlink()
+
     chunks = pd.read_csv(CSV_URL, chunksize=args.chunk, nrows=args.rows or None)
 
     resumed = 0
@@ -100,6 +115,10 @@ def main():
         from office365.runtime.imports import FileCheckpointStore
 
         resumed = FileCheckpointStore(args.checkpoint).load().cursor
+    if resumed and args.rows and resumed >= args.rows:
+        print(
+            f"Nothing to do: checkpoint is already at {resumed:,}/{args.rows:,} rows (use --reset-checkpoint to re-scan)"
+        )
     reporter = None if args.no_progress else _Progress(args.rows or None, resumed)
 
     driver = lst.from_dataframe(
