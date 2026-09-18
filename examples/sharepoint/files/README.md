@@ -184,6 +184,15 @@ For libraries with required check-out or content approval:
 | Delete / recycle versions | [`versions/delete.py`](./versions/delete.py) | Keep N / delete all; retry + timeout for large files |
 | Restore a version | [`restore_version.py`](./restore_version.py) | Roll back |
 
+## DataFrames
+
+Read/write a file's **content** as a pandas DataFrame (CSV/XLSX/JSON/Parquet);
+file metadata stays as plain properties (`file.name`, `file.length`, ...).
+
+| What | File | Notes |
+|------|------|-------|
+| Write a DataFrame to a library file | [`write_dataframe.py`](./write_dataframe.py) | CSV (UTF-8 BOM) or XLSX; symmetric read via `Folder.read_dataframe` / `File.read_dataframe` |
+
 ## Audit & Compliance
 
 | What | File | Notes |

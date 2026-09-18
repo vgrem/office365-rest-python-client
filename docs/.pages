@@ -3,6 +3,7 @@ nav:
   - index.md
   - installation.md
   - getting-started.md
+  - data-pipeline.md
   - auth
   - products
   - api.md

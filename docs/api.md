@@ -226,13 +226,21 @@ optional content — distinct from the record export):
 
 ```python
 collection.export_to(f, format="csv").execute_query()        # unified record export
+collection.export_to("out.csv", page_size=2000).execute_query()  # streamed (bounded)
 collection.from_dataframe(df, key=["id"], on_conflict="upsert")  # unified streaming import
 collection.from_records(batches, checkpoint="run.json")      # stream record batches
 
 lst.queue_dataframe(df).execute_query()                      # deferred (queue-all)
 lst.export_to(f, format="csv").execute_query()               # list -> records
 lst.export(zip_file, include_content=True).execute_query()   # list -> .zip package
+
+result = lst.from_dataframe(df, key=["id"])
+result.run(concurrency=5)                                    # == execute_batch
+report = result.verify(df, key=["id"])                       # counts + missing keys
 ```
+
+See the [data pipeline guide](data-pipeline.md) for the full model, formats,
+idempotency, typed columns, the file bridge and verification.
 
 The format registry (`office365.runtime.converters.registry`) maps a format name
 to its reader/writer, so adding a format is a registration — the named
