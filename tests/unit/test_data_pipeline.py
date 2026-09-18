@@ -216,7 +216,7 @@ def test_json_file_round_trip():
     assert read_json(io.StringIO(buf.getvalue())) == records
 
 
-def test_from_json_file_queues_creates(tmp_path):
+def test_from_json_queues_creates(tmp_path):
     import json as jsonlib
 
     path = tmp_path / "data.json"
