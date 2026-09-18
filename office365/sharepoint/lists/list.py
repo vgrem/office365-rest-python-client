@@ -862,6 +862,34 @@ class List(SecurableObject):
         """Stream record batches into this list's items (see :meth:`import_from`)."""
         return self.import_from(batches, format="records", **opts)
 
+    def import_from_file(
+        self,
+        server_relative_url: str,
+        *,
+        format: str = "csv",  # noqa: A002
+        chunksize: int = 2000,
+        **opts,
+    ) -> "ImportResult":
+        """Stream a SharePoint-hosted file (CSV/XLSX) into this list's items.
+
+        Downloads the file from this site (honoring auth) and streams it through
+        :meth:`import_from` — bounded memory, resumable and idempotent with
+        ``key=...``. ``format`` is ``"csv"`` (default) or ``"xlsx"``/``"excel"``.
+
+            >>> lst.import_from_file("Shared Documents/stocks.csv", key=["Name", "date"]) \\
+            ...    .execute_batch(concurrency=5)
+        """
+        import io
+
+        file = self.context.web.get_file_by_server_relative_url(server_relative_url)
+        content = file.read()
+        if format in ("xlsx", "excel"):
+            from office365.runtime.converters.dataframe import require_pandas
+
+            df = require_pandas().read_excel(io.BytesIO(content))
+            return self.import_from(df, format="dataframe", chunksize=chunksize, **opts)
+        return self.import_from(io.BytesIO(content), format="csv", chunksize=chunksize, **opts)
+
     def from_dataframe(
         self,
         df,

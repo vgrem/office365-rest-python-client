@@ -443,6 +443,39 @@ class Folder(Entity):
             folder = self.ensure_folder("/".join(parts[:-1]))
         return folder.files.upload_content(content, parts[-1], chunk_size, progress)
 
+    def upload_dataframe(
+        self,
+        relative_path: str,
+        df,
+        *,
+        format: str = "csv",  # noqa: A002
+        index: bool = False,
+        **opts,
+    ) -> File:
+        """Serialize a pandas DataFrame and upload it as a file (CSV or XLSX).
+
+        The DataFrame counterpart of :meth:`upload_file`. CSV is written UTF-8
+        with a BOM (``utf-8-sig``) so Excel opens it with the columns intact;
+        ``format="xlsx"`` writes a worksheet (requires the ``[excel]`` extra).
+        The returned :class:`File` is deferred — the caller executes it.
+
+        Args:
+            relative_path: File name or path relative to this folder.
+            df: A pandas DataFrame.
+            format: ``"csv"`` (default) or ``"xlsx"``/``"excel"``.
+            index: Whether to write the DataFrame index (default False).
+            opts: Extra kwargs forwarded to ``DataFrame.to_csv``/``to_excel``.
+        """
+        import io
+
+        if format in ("xlsx", "excel"):
+            buffer = io.BytesIO()
+            df.to_excel(buffer, index=index, **opts)
+            content = buffer.getvalue()
+        else:
+            content = df.to_csv(index=index, **opts).encode("utf-8-sig")
+        return self.upload_file(relative_path, content)
+
     def update_document_sharing_info(
         self,
         user_role_assignments: List[UserRoleAssignment],

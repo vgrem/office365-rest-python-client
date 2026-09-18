@@ -67,6 +67,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **DataFrame ⇄ SharePoint file bridge:** `Folder.upload_dataframe("stocks.csv",
+  df)` serializes a DataFrame and uploads it (UTF-8-BOM CSV so Excel keeps the
+  columns, or XLSX), and `List.import_from_file("Shared Documents/stocks.csv",
+  key=...)` downloads a SharePoint-hosted CSV/XLSX and streams it into the list
+  (bounded, resumable, idempotent).
 - **Typed field mapping on import:** `List.import_from(..., schema={column:
   FieldType})` now also **coerces values** into the payload shape SharePoint
   expects — MultiChoice (`"; "`-separated or a list), Lookup/MultiLookup,
