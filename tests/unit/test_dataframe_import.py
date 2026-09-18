@@ -7,9 +7,11 @@ from typing import Any, cast
 
 import pytest
 from office365.migration.base import MigrationStats
+from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.dataframe import dataframe_chunks
 from office365.runtime.imports import ImportCheckpoint, ImportResult, ImportStats
 from office365.runtime.operations import OperationStats, Progress
+from office365.runtime.record_collection import RecordCollection
 
 pd = pytest.importorskip("pandas")
 
@@ -513,7 +515,7 @@ def test_import_from_applies_column_mapping():
 def test_verify_keys_reports_missing():
     from office365.runtime.record_collection import RecordCollection, VerificationResult
 
-    result = RecordCollection.verify_keys(_KeyedCollection(["a", "b"]), ["a", "b", "c"])
+    result = RecordCollection.verify_keys(cast(Any, _KeyedCollection(["a", "b"])), ["a", "b", "c"])
 
     assert isinstance(result, VerificationResult)
     assert result.checked == 3  # noqa: PLR2004
@@ -525,7 +527,7 @@ def test_verify_keys_reports_missing():
 def test_verify_keys_ok_when_all_present():
     from office365.runtime.record_collection import RecordCollection
 
-    result = RecordCollection.verify_keys(_KeyedCollection(["a", "b"]), ["a", "b"])
+    result = RecordCollection.verify_keys(cast(Any, _KeyedCollection(["a", "b"])), ["a", "b"])
 
     assert result.ok
     assert result.summary() == "OK | checked: 2, missing: 0"
@@ -535,4 +537,110 @@ def test_verify_keys_requires_upsert_target():
     from office365.runtime.record_collection import RecordCollection
 
     with pytest.raises(ValueError, match="upsert-capable"):
-        RecordCollection.verify_keys(_NoTargetCollection(), ["a"])
+        RecordCollection.verify_keys(cast(Any, _NoTargetCollection()), ["a"])
+
+
+class _ImportTarget:
+    """Fake keyed target recording the key-load/ensure calls."""
+
+    def __init__(self, collection: "_ImportCollection", key_field: str) -> None:
+        self._collection = collection
+        self._key_field = key_field
+
+    @property
+    def key_field(self) -> str:
+        return self._key_field
+
+    def ensure_key_field(self) -> None:
+        self._collection.ensured += 1
+
+    def load_keys(self):
+        self._collection.load_calls += 1
+        return dict(self._collection.existing)
+
+    def create_records(self, records: list[dict]) -> None:
+        self._collection.created.extend(records)
+
+    def update_record(self, item_id, record: dict) -> None:
+        self._collection.updated.append((item_id, record))
+
+
+class _ImportCollection(RecordCollection):
+    """Fake record collection driving the real ``RecordCollection.import_from``."""
+
+    def __init__(self, existing: dict | None = None) -> None:
+        super().__init__(cast(Any, _FakeContext()), ClientObject)
+        self.existing = dict(existing or {})
+        self.created: list[dict] = []
+        self.updated: list = []
+        self.load_calls = 0
+        self.ensured = 0
+
+    def from_records(self, records, progress=None):
+        self.created.extend(records)
+        return self
+
+    def upsert_target(self, *, key_field: str = "MigrationKey", enforce_unique: bool = False):
+        return _ImportTarget(self, key_field)
+
+
+def test_resume_loads_existing_keys_and_skips_duplicates():
+    from office365.runtime.converters.upsert import record_key
+    from office365.runtime.imports import ImportCheckpoint
+    from office365.runtime.record_collection import RecordCollection
+
+    existing = {record_key({"id": 1}, ["id"]): 11}
+    collection = _ImportCollection(existing=existing)
+    checkpoint = ImportCheckpoint(cursor=1, chunks=1)  # skip the first batch
+
+    driver = RecordCollection.import_from(
+        collection,
+        [[{"id": 0}], [{"id": 1}], [{"id": 2}]],
+        format="records",
+        key=["id"],
+        checkpoint=checkpoint,
+    )
+    driver.execute_query()
+
+    assert collection.load_calls == 1  # keys are loaded on a resumed run too
+    assert collection.ensured == 1
+    assert [record["id"] for record in collection.created] == [2]  # id=1 skipped by key
+    assert collection.created[0]["MigrationKey"] == record_key({"id": 2}, ["id"])
+
+
+def test_checkpoint_signature_mismatch_rescans_from_start():
+    from office365.runtime.imports import ImportCheckpoint
+    from office365.runtime.record_collection import RecordCollection
+
+    checkpoint = ImportCheckpoint(cursor=1, chunks=1, signature={"format": "records", "chunk_size": 2000})
+    collection = _ImportCollection()
+
+    with pytest.warns(UserWarning, match="signature changed"):
+        driver = RecordCollection.import_from(
+            collection,
+            [[{"id": 0}], [{"id": 1}]],
+            format="records",
+            chunksize=1000,  # differs from the stored signature
+            key=["id"],
+            checkpoint=checkpoint,
+        )
+
+    assert driver.resumed_from == 0  # chunk skip discarded
+    driver.execute_query()
+    assert [record["id"] for record in collection.created] == [0, 1]  # re-scanned
+
+
+def test_migration_key_is_appended_to_created_records():
+    from office365.runtime.converters.upsert import record_key
+    from office365.runtime.record_collection import RecordCollection
+
+    collection = _ImportCollection()
+    driver = RecordCollection.import_from(
+        collection,
+        [[{"id": 7}]],
+        format="records",
+        key=["id"],
+    )
+    driver.execute_query()
+
+    assert collection.created[0]["MigrationKey"] == record_key({"id": 7}, ["id"])

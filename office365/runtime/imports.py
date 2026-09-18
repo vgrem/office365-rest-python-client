@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import time
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from itertools import islice
@@ -99,12 +100,19 @@ class ImportCheckpoint:
     ``cursor`` is the number of records committed so far (always a chunk
     boundary); a resumed run skips exactly that many leading records. ``failures``
     holds chunk-level errors collected under ``on_error="collect"``.
+
+    ``signature`` fingerprints the source (format, chunk size, key columns/key
+    field). When a resumed run's signature differs, the chunk-based skip is
+    discarded and the source is re-scanned from the start — the keyed skip then
+    keeps the import idempotent. This guards against a changed ``chunksize`` or
+    key definition silently skipping/duplicating records.
     """
 
     cursor: int = 0
     chunks: int = 0
     errors: int = 0
     failures: list[dict] = field(default_factory=list)
+    signature: dict = field(default_factory=dict)
     updated_at: str = ""
 
     def save(self, path: Union[str, PathLike]) -> None:
@@ -123,6 +131,7 @@ class ImportCheckpoint:
                     "chunks": self.chunks,
                     "errors": self.errors,
                     "failures": self.failures,
+                    "signature": self.signature,
                     "updated_at": self.updated_at,
                 },
                 f,
@@ -140,6 +149,7 @@ class ImportCheckpoint:
             chunks=int(data.get("chunks", 0)),
             errors=int(data.get("errors", 0)),
             failures=list(data.get("failures", [])),
+            signature=dict(data.get("signature", {})),
             updated_at=data.get("updated_at", ""),
         )
 
@@ -219,6 +229,10 @@ class ImportResult(ClientResult[ImportStats]):
         dead_letter: Optional JSONL path; each collected chunk failure appends
             ``{"error": ..., "records": [...]}`` for remediation (used with
             ``on_error="collect"``).
+        signature: Optional source fingerprint (format, chunk size, key columns)
+            persisted in the checkpoint. When a resumed run's signature differs,
+            the chunk-based skip is discarded and the source is re-scanned from
+            the start (the keyed skip keeps it idempotent).
     """
 
     def __init__(
@@ -237,6 +251,7 @@ class ImportResult(ClientResult[ImportStats]):
         on_error: str = "raise",
         dry_run: bool = False,
         dead_letter: Union[str, PathLike, None] = None,
+        signature: Optional[dict] = None,
     ) -> None:
         super().__init__(context, ImportStats())
         if on_error not in ON_ERROR_MODES:
@@ -255,6 +270,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._started_at: Optional[float] = None
         self._store = self._resolve_store(checkpoint)
         self._checkpoint = self._store.load()
+        self._apply_signature(signature)
         self._progress_base = self._checkpoint.cursor  # records committed before this run
         self._done = self._progress_base  # overall committed count reported to ``progress``
         self.value.resumed_from = self._progress_base
@@ -425,6 +441,21 @@ class ImportResult(ClientResult[ImportStats]):
     def _finish(self) -> None:
         if self._started_at is not None:
             self.value.duration = time.monotonic() - self._started_at
+
+    def _apply_signature(self, signature: Optional[dict]) -> None:
+        """Persist the source signature; discard the chunk skip when it changed."""
+        if not signature:
+            return
+        stored = self._checkpoint.signature
+        if stored and stored != signature:
+            warnings.warn(
+                "Import checkpoint signature changed (source format/chunk size/key); "
+                "re-scanning from the start (keys keep the import idempotent).",
+                stacklevel=3,
+            )
+            self._checkpoint.cursor = 0
+            self._checkpoint.chunks = 0
+        self._checkpoint.signature = signature
 
     @staticmethod
     def _resolve_store(

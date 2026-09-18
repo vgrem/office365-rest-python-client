@@ -253,15 +253,27 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         if key_columns and target is None:
             raise ValueError("key= requires an upsert-capable collection (override upsert_target())")
         existing: Dict[str, Any] = {}
+        keys_loaded = False
 
         def _prepare(first_chunk: Any) -> None:
             if callable(prepare):
                 prepare(first_chunk)
-            if target is not None:
-                target.ensure_key_field()
+
+        def _ensure_keys() -> None:
+            """Ensure the key column and load existing keys (once, on every run).
+
+            Loading is lazy (on the first queued chunk) rather than part of the
+            fresh-run-only ``prepare`` so a **resumed** run still skips records
+            that are already present — the key load is what makes a replayed or
+            overlapping chunk idempotent, not just a fresh run.
+            """
+            nonlocal keys_loaded
+            if target is None or keys_loaded:
+                return
+            target.ensure_key_field()
             self.context.execute_query()
-            if target is not None:
-                existing.update(target.load_keys())
+            existing.update(target.load_keys())
+            keys_loaded = True
 
         def _queue(records: list[dict]) -> tuple[int, int]:
             if target is None:
@@ -270,6 +282,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
                 return len(records), 0
             from office365.runtime.converters.upsert import keyed_queue
 
+            _ensure_keys()
             return keyed_queue(
                 target,
                 records,
@@ -293,6 +306,12 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             on_error=on_error,
             dry_run=dry_run,
             dead_letter=dead_letter,
+            signature={
+                "format": format,
+                "chunk_size": chunksize,
+                "key": list(key_columns),
+                "key_field": key_field,
+            },
         )
 
     # ── Verification ─────────────────────────────────────────────

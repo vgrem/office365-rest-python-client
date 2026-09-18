@@ -110,6 +110,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **Idempotent imports now load existing keys on every run**, not only on a fresh
+  one. A resumed run previously skipped the key load (it lived in the fresh-only
+  `prepare` hook), so a replayed or overlapping chunk (a crash between the server
+  commit and the checkpoint write, or a changed `--chunk`) could duplicate rows.
+  The key column is ensured and the existing keys are loaded lazily before the
+  first queued chunk — fresh or resumed — so `key=...` imports are idempotent on
+  every run. `ImportCheckpoint` also records a source signature (format, chunk
+  size, key columns); on a mismatch the chunk-based skip is discarded and the
+  source is re-scanned (the keyed skip keeps it duplicate-free).
 - DataFrame import no longer silently drops a column whose title collides with a
   built-in SharePoint field (e.g. `Name` resolves to `FileLeafRef`): the column
   is imported with a `_` suffix and a warning is emitted.

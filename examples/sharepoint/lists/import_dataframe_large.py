@@ -7,9 +7,12 @@ and queued items are discarded after every chunk — so memory stays flat no mat
 the file size.
 
 **Idempotent** — ``key=["Name", "date"]`` hashes the natural key into a
-``MigrationKey`` column, so a re-run updates/skips existing rows instead of
-duplicating them. **Resumable** — the committed cursor is checkpointed after each
-chunk, so an interrupted run continues where it stopped.
+``MigrationKey`` column (created automatically), so a re-run skips rows that are
+already present — on a fresh run **and** when resuming. **Resumable** — the
+committed cursor is checkpointed after each chunk, so an interrupted run
+continues where it stopped; changing ``--chunk`` invalidates the checkpoint and
+triggers a full re-scan (the key keeps it duplicate-free). Use
+``--reset-checkpoint`` to start over.
 
     python import_dataframe_large.py --rows 40000 --concurrency 5
 
@@ -77,8 +80,14 @@ def main():
     p.add_argument("--chunk", type=int, default=2000, help="rows per memory slice")
     p.add_argument("--concurrency", type=int, default=5, help="parallel batch requests")
     p.add_argument("--checkpoint", default="stocks.checkpoint.json", help="'' disables resume")
+    p.add_argument("--reset-checkpoint", action="store_true", help="delete the checkpoint and start fresh")
     p.add_argument("--no-progress", action="store_true", help="disable the live progress bar")
     args = p.parse_args()
+
+    if args.checkpoint and args.reset_checkpoint:
+        from pathlib import Path
+
+        Path(args.checkpoint).unlink(missing_ok=True)
 
     ctx = ClientContext(team_site_url).with_username_and_password(
         tenant=tenant, client_id=client_id, username=username, password=password

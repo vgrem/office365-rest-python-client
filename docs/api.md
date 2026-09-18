@@ -204,8 +204,12 @@ lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
 ```
 
 This works alongside `checkpoint` (resume) — the checkpoint skips committed
-chunks for speed, the key makes the import idempotent even on a fresh run. The
-existing keys are loaded once per run (key values + `Id` only, paged).
+chunks for speed, and the key makes the import idempotent on a fresh run, on a
+resumed run, and when a chunk is replayed. The existing keys are loaded once per
+run (fresh **or** resumed; key values + `Id` only, paged). The checkpoint stores
+a source signature (format, chunk size, key columns): if it changes between runs
+(e.g. a different `chunksize`), the chunk skip is discarded and the source is
+re-scanned — the key keeps it duplicate-free.
 
 Pass `enforce_unique=True` to mark the key column unique on the list (guards
 against a create race), and `dry_run=True` to preview the create/update/skip plan
