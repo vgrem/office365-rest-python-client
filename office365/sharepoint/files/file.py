@@ -49,6 +49,7 @@ from office365.sharepoint.webparts.limited_manager import LimitedWebPartManager
 from office365.sharepoint.webparts.personalization_scope import PersonalizationScope
 
 if TYPE_CHECKING:
+    from office365.runtime.converters.dataframe import DataFrameResult
     from office365.sharepoint.client_context import ClientContext
 
 
@@ -144,6 +145,37 @@ class File(AbstractFile):
         qry = FunctionQuery(self, "$value", return_type=return_type, return_raw_content=True)
         self.context.add_query(qry)
         return return_type
+
+    def read_dataframe(self, *, format: str = "csv", **opts) -> "DataFrameResult":  # noqa: A002
+        """Read this file's **content** into a pandas DataFrame (deferred result).
+
+        Parses the file content (CSV/XLSX/JSON/Parquet) — it does **not** export
+        the file's metadata; those are plain properties (``file.name``,
+        ``file.length``, ``file.time_last_modified``, ...). Run with
+        ``execute_query()`` and read ``.value``:
+
+            >>> df = file.read_dataframe().execute_query().value
+        """
+        from office365.runtime.converters.dataframe import DataFrameResult, dataframe_from_bytes
+
+        result = DataFrameResult(self.context)
+
+        def _convert(return_type: ClientResult[bytes]) -> None:
+            result.set_property("__value", dataframe_from_bytes(return_type.value, format, **opts))
+
+        self.get_content().after_execute(_convert)
+        return result
+
+    def write_dataframe(self, df, *, format: str = "csv", index: bool = False, **opts) -> Self:  # noqa: A002
+        """Write a pandas DataFrame to this file's **content** (deferred).
+
+        Serializes the frame (CSV is UTF-8 with a BOM) and queues a
+        ``SaveBinaryStream``; run with ``execute_query()``. This replaces the
+        file content, not its metadata.
+        """
+        from office365.runtime.converters.dataframe import dataframe_to_bytes
+
+        return self.save_binary_stream(dataframe_to_bytes(df, format, index, **opts))
 
     def get_exists(self) -> ClientResult[bool]:
         result = ClientResult(self.context, bool())

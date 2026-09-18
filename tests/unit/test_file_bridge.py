@@ -1,7 +1,9 @@
 """Unit tests for the DataFrame <-> SharePoint file bridge.
 
-- ``Folder.upload_dataframe`` serializes a DataFrame and uploads it.
-- ``List.import_from_file`` downloads a SharePoint-hosted file and streams it.
+- ``Folder.write_dataframe`` serializes a DataFrame and writes it as a file.
+- ``File.write_dataframe`` serializes a DataFrame into a file's content.
+- ``List.from_file`` downloads a SharePoint-hosted file and streams it.
+- ``dataframe_to_bytes``/``dataframe_from_bytes`` are the content codecs.
 """
 
 from __future__ import annotations
@@ -9,6 +11,8 @@ from __future__ import annotations
 import io
 
 import pytest
+from office365.runtime.converters.dataframe import dataframe_from_bytes, dataframe_to_bytes
+from office365.sharepoint.files.file import File
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
 
@@ -23,10 +27,10 @@ class _CaptureFolder(Folder):
         self.captured = (relative_path, content)
 
 
-def test_upload_dataframe_csv_writes_utf8_sig_bytes():
+def test_write_dataframe_csv_writes_utf8_sig_bytes():
     folder = _CaptureFolder()
 
-    folder.upload_dataframe("data.csv", pd.DataFrame({"a": [1, 2]}))
+    folder.write_dataframe("data.csv", pd.DataFrame({"a": [1, 2]}))
 
     path, content = folder.captured
     assert path == "data.csv"
@@ -35,14 +39,41 @@ def test_upload_dataframe_csv_writes_utf8_sig_bytes():
     assert b"a" in content and b"1" in content
 
 
-def test_upload_dataframe_xlsx_serializes_workbook():
+def test_write_dataframe_xlsx_serializes_workbook():
     pytest.importorskip("openpyxl")
     folder = _CaptureFolder()
 
-    folder.upload_dataframe("data.xlsx", pd.DataFrame({"a": [1]}), format="xlsx")
+    folder.write_dataframe("data.xlsx", pd.DataFrame({"a": [1]}), format="xlsx")
 
     _, content = folder.captured
     assert content.startswith(b"PK")  # xlsx is a zip archive
+
+
+class _CaptureFile(File):
+    def __init__(self) -> None:
+        self.saved = None
+
+    def save_binary_stream(self, stream):
+        self.saved = stream
+        return self
+
+
+def test_file_write_dataframe_serializes_csv_content():
+    file = _CaptureFile()
+
+    file.write_dataframe(pd.DataFrame({"a": [1, 2]}))
+
+    assert file.saved.startswith(b"\xef\xbb\xbf")
+    assert b"1" in file.saved
+
+
+def test_dataframe_bytes_round_trip_csv():
+    df = pd.DataFrame({"a": [1, 2], "b": ["x", "y"]})
+
+    back = dataframe_from_bytes(dataframe_to_bytes(df))
+
+    assert list(back["a"]) == [1, 2]
+    assert list(back["b"]) == ["x", "y"]
 
 
 class _FakeFile:

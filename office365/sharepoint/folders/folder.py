@@ -32,6 +32,7 @@ from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
 from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
 
 if TYPE_CHECKING:
+    from office365.runtime.converters.dataframe import DataFrameResult
     from office365.sharepoint.files.collection import FileCollection
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.collection import FolderCollection
@@ -443,7 +444,7 @@ class Folder(Entity):
             folder = self.ensure_folder("/".join(parts[:-1]))
         return folder.files.upload_content(content, parts[-1], chunk_size, progress)
 
-    def upload_dataframe(
+    def write_dataframe(
         self,
         relative_path: str,
         df,
@@ -452,29 +453,36 @@ class Folder(Entity):
         index: bool = False,
         **opts,
     ) -> File:
-        """Serialize a pandas DataFrame and upload it as a file (CSV or XLSX).
+        """Serialize a pandas DataFrame and write it as a file (CSV/XLSX/...).
 
-        The DataFrame counterpart of :meth:`upload_file`. CSV is written UTF-8
-        with a BOM (``utf-8-sig``) so Excel opens it with the columns intact;
+        The DataFrame counterpart of :meth:`upload_file` — it writes the frame's
+        **content**, not metadata. CSV is written UTF-8 with a BOM
+        (``utf-8-sig``) so Excel opens it with the columns intact;
         ``format="xlsx"`` writes a worksheet (requires the ``[excel]`` extra).
         The returned :class:`File` is deferred — the caller executes it.
 
         Args:
             relative_path: File name or path relative to this folder.
             df: A pandas DataFrame.
-            format: ``"csv"`` (default) or ``"xlsx"``/``"excel"``.
+            format: ``"csv"`` (default), ``"xlsx"``/``"excel"``, ``"json"``, ...
             index: Whether to write the DataFrame index (default False).
-            opts: Extra kwargs forwarded to ``DataFrame.to_csv``/``to_excel``.
+            opts: Extra kwargs forwarded to the pandas writer.
         """
-        import io
+        from office365.runtime.converters.dataframe import dataframe_to_bytes
 
-        if format in ("xlsx", "excel"):
-            buffer = io.BytesIO()
-            df.to_excel(buffer, index=index, **opts)
-            content = buffer.getvalue()
-        else:
-            content = df.to_csv(index=index, **opts).encode("utf-8-sig")
-        return self.upload_file(relative_path, content)
+        return self.upload_file(relative_path, dataframe_to_bytes(df, format, index, **opts))
+
+    def read_dataframe(self, relative_path: str, *, format: str = "csv", **opts) -> "DataFrameResult":  # noqa: A002
+        """Read a file in this folder's **content** into a DataFrame (deferred result).
+
+        Parses the file content (CSV/XLSX/JSON/Parquet) — not metadata. Run with
+        ``execute_query()`` and read ``.value``:
+
+            >>> df = folder.read_dataframe("stocks.csv").execute_query().value
+        """
+        url = f"{self.server_relative_url}/{relative_path}".replace("//", "/")
+        file = self.context.web.get_file_by_server_relative_url(url)
+        return file.read_dataframe(format=format, **opts)
 
     def update_document_sharing_info(
         self,

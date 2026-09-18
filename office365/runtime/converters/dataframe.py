@@ -76,6 +76,43 @@ def read_dataframe(df) -> List[Dict[str, Any]]:
     return records_from_dataframe(df)
 
 
+def dataframe_to_bytes(df, format: str = "csv", index: bool = False, **opts: Any) -> bytes:  # noqa: A002
+    """Serialize a DataFrame to file bytes (``csv``/``xlsx``/``json``/``parquet``).
+
+    CSV is written UTF-8 with a BOM (``utf-8-sig``) so Excel keeps the columns.
+    """
+    import io
+
+    if format in ("xlsx", "excel"):
+        buffer = io.BytesIO()
+        df.to_excel(buffer, index=index, **opts)
+        return buffer.getvalue()
+    if format == "json":
+        return df.to_json(**opts).encode("utf-8")
+    if format in ("parquet", "orc", "feather"):
+        buffer = io.BytesIO()
+        writer = {"parquet": df.to_parquet, "orc": df.to_orc, "feather": df.to_feather}[format]
+        writer(buffer, **opts)
+        return buffer.getvalue()
+    return df.to_csv(index=index, **opts).encode("utf-8-sig")
+
+
+def dataframe_from_bytes(content: bytes, format: str = "csv", **opts: Any) -> "pd.DataFrame":  # noqa: A002
+    """Parse in-memory file bytes into a DataFrame (``csv``/``xlsx``/``json``/``parquet``)."""
+    import io
+
+    pd = require_pandas()
+    buffer = io.BytesIO(content)
+    if format in ("xlsx", "excel"):
+        return pd.read_excel(buffer, **opts)
+    if format == "json":
+        return pd.read_json(buffer, **opts)
+    if format in ("parquet", "orc", "feather"):
+        reader = {"parquet": pd.read_parquet, "orc": pd.read_orc, "feather": pd.read_feather}[format]
+        return reader(buffer, **opts)
+    return pd.read_csv(buffer, **opts)
+
+
 def series_kind(pd, series) -> str:
     """Categorize a pandas column dtype into a generic kind.
 
