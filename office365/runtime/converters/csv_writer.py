@@ -56,5 +56,11 @@ def write_records(records: list[dict], file: IO[str], columns: Optional[List[str
         columns = list(dict.fromkeys(key for record in records for key in record))
     writer = csv.writer(file, delimiter=delimiter)
     writer.writerow(columns)
+    write_rows(records, file, columns, delimiter)
+
+
+def write_rows(records: list[dict], file: IO[str], columns: list[str], delimiter: str = ",") -> None:
+    """Write data rows only (no header) — used by the paged/streaming exporter."""
+    writer = csv.writer(file, delimiter=delimiter)
     for record in records:
         writer.writerow([_cell(record.get(key)) for key in columns])

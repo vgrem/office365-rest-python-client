@@ -49,16 +49,43 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
     # ── Export ───────────────────────────────────────────────────
 
-    def export_to(self, target: Any, *, format: str = "csv", **opts: Any) -> Self:  # noqa: A002
+    def export_to(self, target: Any, *, format: str = "csv", page_size: Optional[int] = None, **opts: Any) -> Self:  # noqa: A002
         """Deferred export of the loaded items to ``target`` in ``format``.
 
         The writer is resolved from the format registry, so formats are pluggable.
-        Run it with ``execute_query()``:
+        Pass ``page_size`` to **stream** an appendable format (CSV/TSV/NDJSON/JSON)
+        page by page — bounded memory for large collections:
 
             >>> client.users.get_all().export_to(f, format="csv").execute_query()
+            >>> lst.items.export_to("out.csv", page_size=2000).execute_query()
         """
+        if page_size:
+            return self._export_paged(target, format, page_size, opts)
         writer = registry.writer_for(format)
         return self.after_execute(lambda _: writer(self, target, **opts))
+
+    def _export_paged(self, target: Any, format: str, page_size: int, opts: Dict[str, Any]) -> Self:  # noqa: A002
+        """Page through the collection and append records (bounded memory)."""
+        from office365.runtime.converters import streamers
+        from office365.runtime.converters.records import records_from_items
+
+        factory = streamers.streamer_for(format)
+        if factory is None:  # not appendable — write the whole collection at once
+            writer = registry.writer_for(format)
+            return self.after_execute(lambda _: writer(self, target, **opts))
+
+        stream = factory(target, **opts)
+        state = {"start": 0}
+
+        def _on_page(col: ClientObjectCollection) -> None:
+            items = list(col)[state["start"] :]
+            state["start"] = len(col)
+            stream.write(records_from_items(items, col.query_options.select, col.query_options.expand))
+            if not col.has_next:
+                stream.close()
+
+        self.get_all(page_size=page_size, page_loaded=_on_page)
+        return self
 
     def to_records(self, raw: bool = False) -> List[Dict[str, Any]]:
         """Project loaded items into plain dict records — the neutral export form.

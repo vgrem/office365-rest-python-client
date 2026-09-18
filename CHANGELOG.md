@@ -75,6 +75,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **Streaming export + row-level dead-letter:** `export_to(..., page_size=...)`
+  streams appendable formats (CSV/TSV/NDJSON/JSON) page by page — bounded memory
+  for large collections. With `on_error="collect"` **and** a `dead_letter`, a
+  chunk is executed record-by-record so each failing row is dead-lettered as
+  `{"row": ..., "error": ..., "record": {...}}`.
 - **Migration-parity vocabulary:** `ImportResult.run(...)` aliases
   `execute_batch`, and `ImportResult.verify(source, key=...)` reconciles a
   source's natural keys against the target (delegating to the collection). The

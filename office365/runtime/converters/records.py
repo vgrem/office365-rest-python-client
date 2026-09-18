@@ -36,14 +36,26 @@ def iter_records(collection: "ClientObjectCollection", raw: bool = False) -> Lis
         ValueError: When dotted select fields reference more than one navigation
             property.
     """
-    items = list(collection)
+    return records_from_items(
+        list(collection), collection.query_options.select, collection.query_options.expand, raw=raw
+    )
+
+
+def records_from_items(
+    items: List["ClientObject"],
+    select: List[str],
+    expand: "set[str] | list[str]",
+    raw: bool = False,
+) -> List[Dict[str, Any]]:
+    """Project a list of loaded items into records (the page-level primitive).
+
+    Used by :func:`iter_records` and by the paged (streaming) exporter, so a
+    large collection can be exported page by page without materializing it all.
+    """
     if not items:
         return []
-
-    select = collection.query_options.select
-    if not select:
-        select = sorted({key for item in items for key in item.properties.keys()})
-    expand = set(collection.query_options.expand)
+    select = list(select) if select else sorted({key for item in items for key in item.properties.keys()})
+    expand = set(expand)
     dotted = [field.split("/", 1) for field in select if "/" in field]
     navs = {nav for nav, _ in dotted}
     if len(navs) > 1:

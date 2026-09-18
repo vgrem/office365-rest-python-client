@@ -57,6 +57,41 @@ def test_pyarrow_formats_round_trip(tmp_path, fmt):
     assert [r["displayName"] for r in records] == ["A", "B"]
 
 
+def test_streaming_csv_writer_appends_pages(tmp_path):
+    from office365.runtime.converters.streamers import streamer_for
+
+    path = tmp_path / "out.csv"
+    stream = streamer_for("csv")(str(path))
+    stream.write([{"a": 1, "b": "x"}])
+    stream.write([{"a": 2, "b": "y"}])
+    stream.close()
+
+    assert path.read_text(encoding="utf-8").count("a,b") == 1  # header written once
+    assert [r["a"] for r in registry.reader_for("csv")(str(path))] == ["1", "2"]
+
+
+def test_streaming_json_writer_appends_pages(tmp_path):
+    import json
+
+    from office365.runtime.converters.streamers import streamer_for
+
+    path = tmp_path / "out.json"
+    stream = streamer_for("json")(str(path))
+    stream.write([{"a": 1}])
+    stream.write([{"a": 2}])
+    stream.close()
+
+    assert json.loads(path.read_text(encoding="utf-8")) == [{"a": 1}, {"a": 2}]
+
+
+def test_records_from_items_projects_selected_fields():
+    from office365.runtime.converters.records import records_from_items
+
+    records = records_from_items(list(_collection(RECORDS)), ["displayName"], [])
+
+    assert records == [{"displayName": "A"}, {"displayName": "B"}]
+
+
 def test_duckdb_streaming_and_write():
     duckdb = pytest.importorskip("duckdb")
     from office365.runtime.converters.sql import duckdb_chunks, write_duckdb

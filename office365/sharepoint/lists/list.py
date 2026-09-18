@@ -957,13 +957,17 @@ class List(SecurableObject):
         to_records = _to_records if format in ("dataframe", "csv") else None
         return self.items.verify(source, key=key, format=format, key_field=key_field, to_records=to_records)
 
-    def export_to(self, target, *, format: str = "csv", **opts) -> Self:  # noqa: A002
+    def export_to(self, target, *, format: str = "csv", page_size=None, **opts) -> Self:  # noqa: A002
         """Export this list's items to ``target`` in ``format`` (deferred).
 
-        The record exporter (CSV/NDJSON/JSON/Excel); for the ``.zip`` package
-        export use :meth:`export`. Run with ``execute_query()``.
+        The record exporter (CSV/NDJSON/JSON/Excel); pass ``page_size`` to stream
+        an appendable format page by page (bounded memory). For the ``.zip``
+        package export use :meth:`export`. Run with ``execute_query()``.
         """
-        self.items.get_all().export_to(target, format=format, **opts)
+        if page_size:
+            self.items.export_to(target, format=format, page_size=page_size, **opts)
+        else:
+            self.items.get_all().export_to(target, format=format, **opts)
         return self
 
     def to_dataframe(self) -> "DataFrameResult":

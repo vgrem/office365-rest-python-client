@@ -348,7 +348,7 @@ def test_execute_batch_reports_progress_per_batch_and_forwards_callback():
     assert len(forwarded) == 2  # noqa: PLR2004
 
 
-def test_dead_letter_captures_failed_chunk(tmp_path):
+def test_dead_letter_isolates_the_failed_record(tmp_path):
     path = tmp_path / "dl.jsonl"
     ctx = _FlakyContext(fail_on=2)
     collection = _FakeCollection()
@@ -357,9 +357,10 @@ def test_dead_letter_captures_failed_chunk(tmp_path):
     driver.execute_query()
 
     lines = path.read_text(encoding="utf-8").strip().splitlines()
-    assert len(lines) == 1
+    assert len(lines) == 1  # only the failing row is dead-lettered
     entry = json.loads(lines[0])
-    assert entry["records"] == [{"n": 2}, {"n": 3}]
+    assert entry["row"] == 1
+    assert entry["record"] == {"n": 1}
     assert entry["error"] == "boom"
 
 

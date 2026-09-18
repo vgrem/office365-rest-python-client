@@ -227,9 +227,11 @@ class ImportResult(ClientResult[ImportStats]):
             ``collection.queue_records(records)`` (all created, none skipped).
         dry_run: When True, compute the outcome (and the keyed create/update/skip
             plan) without writing anything — a plan preview.
-        dead_letter: Optional JSONL path; each collected chunk failure appends
-            ``{"error": ..., "records": [...]}`` for remediation (used with
-            ``on_error="collect"``).
+        dead_letter: Optional JSONL path for failed records (used with
+            ``on_error="collect"``). When set, a chunk is executed
+            record-by-record so each failing row is appended as
+            ``{"row": ..., "error": ..., "record": {...}}``; without it a failed
+            chunk is recorded whole (``{"error": ..., "records": [...]}``).
         signature: Optional source fingerprint (format, chunk size, key columns)
             persisted in the checkpoint. When a resumed run's signature differs,
             the chunk-based skip is discarded and the source is re-scanned from
@@ -370,35 +372,68 @@ class ImportResult(ClientResult[ImportStats]):
     # ── Core ─────────────────────────────────────────────────────
 
     def _run(self, execute: Callable[[], Any]) -> None:
-        """Drive the chunk loop: skip committed records, queue, execute, persist."""
+        """Drive the chunk loop: skip committed records, queue, execute, persist.
+
+        With ``on_error="collect"`` **and** a ``dead_letter``, each chunk is
+        executed record-by-record so a failure is isolated to the exact row
+        (slower, but the dead-letter is row-level). Otherwise the chunk is
+        executed as one unit.
+        """
         self._started_at = time.monotonic()
         self._emit(self._done)
+        isolate = self._on_error == "collect" and self._dead_letter is not None
         for raw, records in self._iter_records():
             if callable(self._before_chunk):
                 self._before_chunk(raw)
-            queued, _skipped = self._queue(records)
+            if isolate and not self._dry_run:
+                self._run_per_record(records, execute)
+            else:
+                self._run_chunk(records, execute)
+            self._save_checkpoint()
+        self._finish()
+
+    def _run_chunk(self, records: list[dict], execute: Callable[[], Any]) -> None:
+        """Queue and execute one chunk as a unit (the default path)."""
+        queued, _skipped = self._queue(records)
+        if self._dry_run:
+            self.value.success += queued
+            self._advance(records)
+            self._collection.clear()
+            self._report(self._progress_base + self.value.success)
+            return
+        try:
+            execute()
+        except Exception as ex:  # noqa: BLE001 — policy decides whether to abort
+            self._record_failure(queued, records, ex)
+            self._collection.clear()
+            if self._on_error != "collect":
+                self._save_checkpoint()  # cursor unchanged — resume retries this chunk
+                raise
+            self._advance(records)  # collect: skip the failed chunk, keep going
+        else:
+            self.value.success += queued
+            self._advance(records)
+            self._collection.clear()
+            self._report(self._progress_base + self.value.success)
+
+    def _run_per_record(self, records: list[dict], execute: Callable[[], Any]) -> None:
+        """Queue/execute one record at a time, dead-lettering each failing row."""
+        start = self._checkpoint.cursor
+        for index, record in enumerate(records):
+            queued, _skipped = self._queue([record])
             if self._dry_run:
                 self.value.success += queued
-                self._advance(records)
-                self._collection.clear()
-                self._report(self._progress_base + self.value.success)
                 continue
             try:
                 execute()
-            except Exception as ex:  # noqa: BLE001 — policy decides whether to abort
-                self._record_failure(queued, records, ex)
-                self._collection.clear()
-                if self._on_error != "collect":
-                    self._save_checkpoint()  # cursor unchanged — resume retries this chunk
-                    raise
-                self._advance(records)  # collect: skip the failed chunk, keep going
+            except Exception as ex:  # noqa: BLE001 — collect: record the row, keep going
+                self._record_row_failure(start + index, record, ex)
             else:
                 self.value.success += queued
-                self._advance(records)
+            finally:
                 self._collection.clear()
-                self._report(self._progress_base + self.value.success)
-            self._save_checkpoint()
-        self._finish()
+        self._advance(records)
+        self._report(self._progress_base + self.value.success)
 
     def _iter_records(self) -> Iterator[tuple[Any, list[dict]]]:
         """Yield ``(raw_chunk, records)``, skipping already-committed chunks.
@@ -467,13 +502,26 @@ class ImportResult(ClientResult[ImportStats]):
         self._checkpoint.chunks += 1
 
     def _record_failure(self, count: int, records: list[dict], error: Exception) -> None:
+        """Record a whole-chunk failure (the non-isolated path)."""
         self.value.errors += count
         self._checkpoint.errors += count
         self._checkpoint.failures.append({"records": count, "error": str(error)})
         if self._dead_letter is not None:
-            self._dead_letter.parent.mkdir(parents=True, exist_ok=True)
-            with open(self._dead_letter, "a", encoding="utf-8") as f:
-                f.write(json.dumps({"error": str(error), "records": records}, default=str) + "\n")
+            self._append_dead_letter({"error": str(error), "records": records})
+
+    def _record_row_failure(self, row: int, record: dict, error: Exception) -> None:
+        """Record a single failed record (the isolated per-record path)."""
+        self.value.errors += 1
+        self._checkpoint.errors += 1
+        self._checkpoint.failures.append({"row": row, "error": str(error)})
+        self._append_dead_letter({"row": row, "error": str(error), "record": record})
+
+    def _append_dead_letter(self, entry: dict) -> None:
+        if self._dead_letter is None:
+            return
+        self._dead_letter.parent.mkdir(parents=True, exist_ok=True)
+        with open(self._dead_letter, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, default=str) + "\n")
 
     def _finish(self) -> None:
         if self._started_at is not None:
