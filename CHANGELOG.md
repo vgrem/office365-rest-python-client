@@ -75,6 +75,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `preserve_versions` are documented as not implemented client-side — they need
   the server-side Migration API (`MigrationServerJob`) — and now raise
   `NotImplementedError` when enabled instead of silently no-op'ing.
+- **More formats + path/IO parity:** the pipeline now supports `tsv`, `parquet`,
+  `orc` and `feather` (optional `[parquet]` extra) alongside CSV/JSON/NDJSON/
+  Excel/DataFrame, plus `from_sql`/`to_sql` (`[sql]`) and `from_duckdb`/
+  `to_duckdb` (`[duckdb]`) for bounded-memory DB streaming. Every reader/writer
+  accepts a path, a `PathLike` **or** an open file object (pandas parity); the
+  JSON-array file format is registered as `json` (`json_file` alias kept).
 - **DataFrame ⇄ SharePoint file bridge:** `Folder.write_dataframe("stocks.csv",
   df)` / `File.write_dataframe(df)` serialize a DataFrame into a file's
   **content** (UTF-8-BOM CSV so Excel keeps the columns, XLSX, JSON, ...), and

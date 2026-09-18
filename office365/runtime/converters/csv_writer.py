@@ -22,7 +22,7 @@ def _cell(value: Any) -> str:
     return str(value)
 
 
-def write_csv(collection: ClientObjectCollection, file: IO[str]) -> None:
+def write_csv(collection: ClientObjectCollection, file: IO[str], delimiter: str = ",") -> None:
     """Write collection items to CSV using the shared record projection.
 
     The projection (``records.iter_records``) mirrors the previous behaviour:
@@ -38,10 +38,10 @@ def write_csv(collection: ClientObjectCollection, file: IO[str]) -> None:
         ...     .to_csv(f) \\
         ...     .execute_query()
     """
-    write_records(iter_records(collection), file)
+    write_records(iter_records(collection), file, delimiter=delimiter)
 
 
-def write_records(records: list[dict], file: IO[str], columns: Optional[List[str]] = None) -> None:
+def write_records(records: list[dict], file: IO[str], columns: Optional[List[str]] = None, delimiter: str = ",") -> None:
     """Write a list of dict records to CSV.
 
     Args:
@@ -54,7 +54,7 @@ def write_records(records: list[dict], file: IO[str], columns: Optional[List[str
         return
     if columns is None:
         columns = list(dict.fromkeys(key for record in records for key in record))
-    writer = csv.writer(file)
+    writer = csv.writer(file, delimiter=delimiter)
     writer.writerow(columns)
     for record in records:
         writer.writerow([_cell(record.get(key)) for key in columns])

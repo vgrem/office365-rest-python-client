@@ -236,7 +236,12 @@ lst.export(zip_file, include_content=True).execute_query()   # list -> .zip pack
 
 The format registry (`office365.runtime.converters.registry`) maps a format name
 to its reader/writer, so adding a format is a registration — the named
-`to_csv`/`from_dataframe` conveniences are thin wrappers over it.
+`to_csv`/`from_dataframe` conveniences are thin wrappers over it. Built-in
+formats: `csv`, `tsv`, `json`, `ndjson`, `excel`, `parquet`, `orc`, `feather`,
+`dataframe`; databases stream through `from_sql`/`from_duckdb` (and `to_sql`/
+`to_duckdb`). Optional dependencies are extras: `[pandas]`, `[excel]`,
+`[parquet]`, `[sql]`, `[duckdb]`. Readers and writers accept a path, a
+`PathLike` or an open file object.
 
 ### Idempotency
 

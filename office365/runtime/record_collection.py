@@ -103,6 +103,32 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         """
         return self.export_to(target, format="excel")
 
+    def to_parquet(self, target: Any) -> Self:
+        """Export loaded items to Parquet (deferred; requires the ``[parquet]`` extra)."""
+        return self.export_to(target, format="parquet")
+
+    def to_orc(self, target: Any) -> Self:
+        """Export loaded items to ORC (deferred; requires the ``[parquet]`` extra)."""
+        return self.export_to(target, format="orc")
+
+    def to_feather(self, target: Any) -> Self:
+        """Export loaded items to Feather (deferred; requires the ``[parquet]`` extra)."""
+        return self.export_to(target, format="feather")
+
+    def to_sql(self, target: Any, *, table: str, **opts: Any) -> Self:
+        """Write loaded items to a SQL table (deferred; requires the ``[sql]`` extra)."""
+        from office365.runtime.converters.records import iter_records
+        from office365.runtime.converters.sql import write_sql
+
+        return self.after_execute(lambda _: write_sql(iter_records(self), target, table=table, **opts))
+
+    def to_duckdb(self, target: Any, *, table: str, **opts: Any) -> Self:
+        """Write loaded items to a DuckDB table (deferred; requires the ``[duckdb]`` extra)."""
+        from office365.runtime.converters.records import iter_records
+        from office365.runtime.converters.sql import write_duckdb
+
+        return self.after_execute(lambda _: write_duckdb(iter_records(self), target, table=table, **opts))
+
     def to_dataframe(self) -> "DataFrameResult":
         """Build a pandas DataFrame from the loaded items (deferred result).
 
@@ -286,6 +312,38 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
     def from_excel(self, source: Any, **opts: Any) -> "ImportResult":
         """Stream an Excel (.xlsx) worksheet into this collection."""
         return self.from_records(source, format="excel", **opts)
+
+    def from_parquet(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream a Parquet file into this collection (requires the ``[parquet]`` extra)."""
+        return self.from_records(source, format="parquet", **opts)
+
+    def from_orc(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream an ORC file into this collection (requires the ``[parquet]`` extra)."""
+        return self.from_records(source, format="orc", **opts)
+
+    def from_feather(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream a Feather file into this collection (requires the ``[parquet]`` extra)."""
+        return self.from_records(source, format="feather", **opts)
+
+    def from_sql(self, source: Any, *, query: str, chunksize: int = 2000, **opts: Any) -> "ImportResult":
+        """Stream a SQL query result into this collection (requires the ``[sql]`` extra).
+
+        ``source`` is a SQLAlchemy ``Engine``/``Connection`` or a connection URL
+        string; rows are fetched in ``chunksize`` batches (bounded memory).
+        """
+        from office365.runtime.converters.sql import sql_chunks
+
+        return self.from_records(sql_chunks(source, query, chunksize), format="records", **opts)
+
+    def from_duckdb(self, source: Any, *, query: str, chunksize: int = 2000, **opts: Any) -> "ImportResult":
+        """Stream a DuckDB query result into this collection (requires the ``[duckdb]`` extra).
+
+        ``source`` is a DuckDB connection or a database path; rows are fetched in
+        ``chunksize`` batches (bounded memory).
+        """
+        from office365.runtime.converters.sql import duckdb_chunks
+
+        return self.from_records(duckdb_chunks(source, query, chunksize), format="records", **opts)
 
     # ── Verification ─────────────────────────────────────────────
 

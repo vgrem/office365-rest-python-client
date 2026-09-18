@@ -870,6 +870,18 @@ class List(SecurableObject):
         """Stream an Excel (.xlsx) worksheet into this list (see :meth:`from_records`)."""
         return self.from_records(source, format="excel", **opts)
 
+    def from_parquet(self, source, **opts) -> "ImportResult":
+        """Stream a Parquet file into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="parquet", **opts)
+
+    def from_orc(self, source, **opts) -> "ImportResult":
+        """Stream an ORC file into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="orc", **opts)
+
+    def from_feather(self, source, **opts) -> "ImportResult":
+        """Stream a Feather file into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="feather", **opts)
+
     def from_file(
         self,
         server_relative_url: str,
@@ -951,6 +963,18 @@ class List(SecurableObject):
     def to_dataframe(self) -> "DataFrameResult":
         """Export this list's items to a pandas DataFrame (deferred result)."""
         return self.items.get_all().to_dataframe()
+
+    def to_parquet(self, target) -> Self:
+        """Export this list's items to Parquet (deferred; requires the ``[parquet]`` extra)."""
+        return self.export_to(target, format="parquet")
+
+    def to_orc(self, target) -> Self:
+        """Export this list's items to ORC (deferred; requires the ``[parquet]`` extra)."""
+        return self.export_to(target, format="orc")
+
+    def to_feather(self, target) -> Self:
+        """Export this list's items to Feather (deferred; requires the ``[parquet]`` extra)."""
+        return self.export_to(target, format="feather")
 
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:
         """The recommended way to add a list item is to send a POST request to the ListItemCollection resource endpoint,
