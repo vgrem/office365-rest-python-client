@@ -73,16 +73,16 @@ class _CaptureList(List):
         self._context = _FakeContext(content)
         self.import_args = None
 
-    def import_from(self, source, **opts):
+    def from_records(self, source, **opts):
         self.import_args = (source, opts)
         return "driver"
 
 
-def test_import_from_file_downloads_and_streams_csv():
+def test_from_file_downloads_and_streams_csv():
     csv = b"Name,date\nAAPL,2020-01-01\n"
     lst = _CaptureList(csv)
 
-    result = lst.import_from_file("Shared Documents/stocks.csv", key=["Name", "date"])
+    result = lst.from_file("Shared Documents/stocks.csv", key=["Name", "date"])
 
     assert result == "driver"
     assert lst.context.web.url == "Shared Documents/stocks.csv"
@@ -93,13 +93,13 @@ def test_import_from_file_downloads_and_streams_csv():
     assert opts["key"] == ["Name", "date"]
 
 
-def test_import_from_file_reads_xlsx_into_dataframe():
+def test_from_file_reads_xlsx_into_dataframe():
     pytest.importorskip("openpyxl")
     buffer = io.BytesIO()
     pd.DataFrame({"a": [1]}).to_excel(buffer, index=False)
     lst = _CaptureList(buffer.getvalue())
 
-    lst.import_from_file("Shared Documents/stocks.xlsx", format="xlsx")
+    lst.from_file("Shared Documents/stocks.xlsx", format="xlsx")
 
     source, opts = lst.import_args
     assert isinstance(source, pd.DataFrame)

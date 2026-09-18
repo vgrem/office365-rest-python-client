@@ -116,6 +116,7 @@ def _write_dataframe(collection: "ClientObjectCollection", target: Any, **opts: 
 
 register("csv", reader=_read_csv, writer=_write_csv)
 register("ndjson", reader=_read_ndjson, writer=_write_ndjson)
-register("json_file", reader=_read_json_file, writer=_write_json_file)
+register("json", reader=_read_json_file, writer=_write_json_file)
+register("json_file", reader=_read_json_file, writer=_write_json_file)  # deprecated alias
 register("excel", reader=_read_excel, writer=_write_excel)
 register("dataframe", reader=_read_dataframe, writer=_write_dataframe)

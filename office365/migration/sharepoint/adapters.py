@@ -212,7 +212,7 @@ class SharePointListTarget:
     def _queue(self, records: list[dict]) -> None:
         if not self._key_columns:
             for record in records:
-                self._list.items.from_records([record])
+                self._list.items.queue_records([record])
             return
         from office365.runtime.converters.upsert import keyed_queue
         from office365.sharepoint.fields.name import internal_field_name

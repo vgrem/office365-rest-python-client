@@ -19,7 +19,7 @@ class ListItemCollection(EntityCollection[ListItem]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, ListItem, resource_path, parent)
 
-    def from_records(self, records, progress: "ProgressCallback | None" = None) -> Self:
+    def queue_records(self, records, progress: "ProgressCallback | None" = None) -> Self:
         """Queue an item create per record.
 
         List item columns are defined per list at runtime, not on the ``ListItem``
@@ -31,7 +31,7 @@ class ListItemCollection(EntityCollection[ListItem]):
         return self._import_records(coerce_records(self._item_type, records, allow_unknown=True), progress=progress)
 
     def upsert_target(self, *, key_field: str = "MigrationKey", enforce_unique: bool = False) -> "UpsertTarget":
-        """The keyed skip/upsert target for this list (see ``import_from(key=...)``)."""
+        """The keyed skip/upsert target for this list (see ``from_records(key=...)``)."""
         from office365.sharepoint.listitems.upsert import ListItemUpsertTarget
 
         return ListItemUpsertTarget(self, key_field=key_field, enforce_unique=enforce_unique)

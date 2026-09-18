@@ -81,7 +81,7 @@ def main():
     target = ctx.web.lists.ensure_list(args.target_list).execute_query()
     target.ensure_fields(args.select.split(",")).execute_query()
     write_hook = None if args.no_progress else progress_bar(f"Loading into {args.target_list}")
-    target.items.from_records(cleaned, progress=write_hook).execute_query()
+    target.items.queue_records(cleaned, progress=write_hook).execute_query()
     print(f"Loaded {len(cleaned)} records into '{target.title}'")
 
 

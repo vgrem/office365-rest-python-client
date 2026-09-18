@@ -2,10 +2,11 @@
 
 Keeps the data-interchange concern (pandas/CSV/JSON/NDJSON/Excel) out of the core
 :class:`~office365.runtime.client_object_collection.ClientObjectCollection`, and
-exposes both named conveniences (``to_csv``/``from_dataframe`` …) and unified
-``export_to``/``import_from`` entry points backed by a format registry. Streaming,
-resumable, idempotent imports return an
-:class:`~office365.runtime.imports.ImportResult` driver.
+exposes named conveniences (``to_csv``/``from_dataframe``/``queue_dataframe`` …)
+and unified ``export_to``/``from_records`` entry points backed by a format
+registry. ``from_*`` is the **streaming** entry (returns an
+:class:`~office365.runtime.imports.ImportResult` driver — bounded, resumable,
+idempotent); ``queue_*`` is the deferred queue-all entry.
 
 Keyed imports (skip/upsert) are opt-in: a subclass exposes an
 :class:`~office365.runtime.converters.upsert.UpsertTarget` via :meth:`upsert_target`.
@@ -94,20 +95,13 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         """Export loaded items as NDJSON — one record per line (deferred)."""
         return self.export_to(file, format="ndjson")
 
-    def to_json_file(self, file: IO[str]) -> Self:
-        """Export loaded items as a JSON array file (deferred).
-
-        This is the file format; :meth:`to_json` is OData *payload* serialization.
-        """
-        return self.export_to(file, format="json_file")
-
-    def to_excel(self, path: Union[str, PathLike]) -> Self:
+    def to_excel(self, target: Union[str, PathLike]) -> Self:
         """Export loaded items to an Excel (.xlsx) worksheet (deferred).
 
         Requires the optional dependency (``pip install
         office365-rest-python-client[excel]``).
         """
-        return self.export_to(path, format="excel")
+        return self.export_to(target, format="excel")
 
     def to_dataframe(self) -> "DataFrameResult":
         """Build a pandas DataFrame from the loaded items (deferred result).
@@ -122,43 +116,23 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         self.after_execute(lambda _: write_dataframe(self, result))
         return result
 
-    # ── Import (deferred, queue-all) ─────────────────────────────
+    # ── Import: deferred (queue-all) ─────────────────────────────
 
-    def from_records(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
-        """Import plain dict records by queueing a create per record (deferred).
+    def queue_records(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
+        """Queue a create per record (deferred, run with ``execute_query()``).
 
-        The neutral import counterpart of :meth:`to_records`; every ``from_*``
-        adapter routes through here. Records are normalized to the item type and
-        each becomes an entity queued for creation, run on ``execute_query()``.
+        The neutral queue-all counterpart of :meth:`to_records`. Records are
+        normalized to the item type and each becomes an entity queued for
+        creation. Use the streaming :meth:`from_records` for large or
+        resumable/idempotent imports (bounded memory).
         """
         from office365.runtime.converters.csv_reader import coerce_records
 
         return self._import_records(coerce_records(self._item_type, records), progress=progress)
 
-    def from_json(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
-        """Import JSON records (``to_records``/``to_json`` output) — deferred."""
-        return self.from_records(records, progress=progress)
-
-    def from_csv(self, file: IO[str], delimiter: str = ",", progress: "ProgressCallback | None" = None) -> Self:
-        """Import CSV rows by queueing a create per row (deferred)."""
-        records = registry.reader_for("csv")(file, delimiter=delimiter)
-        return self.from_records(records, progress=progress)
-
-    def from_ndjson(self, file: IO[str], progress: "ProgressCallback | None" = None) -> Self:
-        """Import NDJSON (JSON Lines) by queueing a create per line (deferred)."""
-        return self.from_records(registry.reader_for("ndjson")(file), progress=progress)
-
-    def from_json_file(self, file: IO[str], progress: "ProgressCallback | None" = None) -> Self:
-        """Import a JSON array file by queueing a create per record (deferred)."""
-        return self.from_records(registry.reader_for("json_file")(file), progress=progress)
-
-    def from_excel(self, path: Union[str, PathLike], progress: "ProgressCallback | None" = None) -> Self:
-        """Import an Excel (.xlsx) worksheet by queueing a create per row (deferred)."""
-        return self.from_records(registry.reader_for("excel")(path), progress=progress)
-
-    def from_dataframe(self, df, progress: "ProgressCallback | None" = None) -> Self:
-        """Import a pandas DataFrame by queueing a create per row (deferred)."""
-        return self.from_records(registry.reader_for("dataframe")(df), progress=progress)
+    def queue_dataframe(self, df, progress: "ProgressCallback | None" = None) -> Self:
+        """Queue a create per DataFrame row (deferred, run with ``execute_query()``)."""
+        return self.queue_records(registry.reader_for("dataframe")(df), progress=progress)
 
     def _import_records(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
         """Queue a create per record, appending the pending entities to this collection."""
@@ -175,47 +149,13 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
                 self.context.after_execute(hook)
         return self
 
-    # ── Import (streaming, bounded, resumable, idempotent) ───────
+    # ── Import: streaming (bounded, resumable, idempotent) ───────
 
-    def import_records(
-        self,
-        batches: "Iterable[List[dict]]",
-        *,
-        progress: "ProgressCallback | None" = None,
-        checkpoint: "ImportCheckpoint | CheckpointStore | str | PathLike | None" = None,
-        on_error: str = "raise",
-        key: "str | list[str] | None" = None,
-        key_field: str = "MigrationKey",
-        on_conflict: str = "skip",
-        enforce_unique: bool = False,
-        dry_run: bool = False,
-        dead_letter: "str | PathLike | None" = None,
-    ) -> "ImportResult":
-        """Stream record batches into this collection (bounded memory).
-
-        Returns an :class:`~office365.runtime.imports.ImportResult`; choose the
-        terminal (``execute_query``/``execute_batch``) or iterate it. Pass ``key``
-        for idempotent skip/upsert.
-        """
-        return self.import_from(
-            batches,
-            format="records",
-            progress=progress,
-            checkpoint=checkpoint,
-            on_error=on_error,
-            key=key,
-            key_field=key_field,
-            on_conflict=on_conflict,
-            enforce_unique=enforce_unique,
-            dry_run=dry_run,
-            dead_letter=dead_letter,
-        )
-
-    def import_from(
+    def from_records(
         self,
         source: Any,
         *,
-        format: str = "dataframe",  # noqa: A002
+        format: str = "records",  # noqa: A002
         chunksize: int = 2000,
         key: "str | list[str] | None" = None,
         key_field: str = "MigrationKey",
@@ -233,14 +173,16 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         mapping: "Dict[str, str] | None" = None,
         coerce: "Dict[str, Callable[[Any], Any]] | None" = None,
     ) -> "ImportResult":
-        """Stream a source into this collection, memory-bounded.
+        """Stream a source into this collection, memory-bounded (the streaming entry).
 
-        ``source`` is chunked (``dataframe``/``csv``: a DataFrame, chunk iterable,
-        or CSV path/URL/file; ``records``: an iterable of record batches; others:
-        read whole). ``key`` enables idempotent skip/upsert via :meth:`upsert_target`.
-        ``mapping`` renames source columns/keys to target names before queuing.
-        ``coerce`` maps a (post-mapping) record key to a value converter, applied
-        to every queued record — used for typed destination fields.
+        ``source`` is chunked by ``format``: ``dataframe``/``csv`` (a DataFrame,
+        chunk iterable, or CSV path/URL/file), ``records`` (an iterable of record
+        batches), or any registered format (read whole). Returns an
+        :class:`~office365.runtime.imports.ImportResult`; choose the terminal
+        (``execute_query``/``execute_batch``) or iterate it. ``key`` enables
+        idempotent skip/upsert via :meth:`upsert_target`; ``mapping`` renames
+        source columns/keys; ``coerce`` maps a record key to a value converter
+        (used for typed destination fields).
         """
         from office365.runtime.imports import ImportResult
 
@@ -289,7 +231,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
                 ]
             if target is None:
                 if not dry_run:
-                    self.from_records(records)
+                    self.queue_records(records)
                 return len(records), 0
             from office365.runtime.converters.upsert import keyed_queue
 
@@ -324,6 +266,26 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
                 "key_field": key_field,
             },
         )
+
+    def from_dataframe(self, df, **opts: Any) -> "ImportResult":
+        """Stream a pandas DataFrame (or chunked CSV) into this collection."""
+        return self.from_records(df, format="dataframe", **opts)
+
+    def from_csv(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream a CSV source (path/URL/file or chunk iterable) into this collection."""
+        return self.from_records(source, format="csv", **opts)
+
+    def from_json(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream a JSON-array file into this collection."""
+        return self.from_records(source, format="json", **opts)
+
+    def from_ndjson(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream an NDJSON (JSON Lines) source into this collection."""
+        return self.from_records(source, format="ndjson", **opts)
+
+    def from_excel(self, source: Any, **opts: Any) -> "ImportResult":
+        """Stream an Excel (.xlsx) worksheet into this collection."""
+        return self.from_records(source, format="excel", **opts)
 
     # ── Verification ─────────────────────────────────────────────
 

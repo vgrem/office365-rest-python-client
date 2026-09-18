@@ -2,11 +2,11 @@
 
 Maps plain source values (CSV/DataFrame cells) to the payload shapes SharePoint
 expects for typed fields, driven by an explicit ``schema={column: FieldType}``.
-``List.import_from(..., schema=...)`` applies this, so typed columns (choice,
-lookup, user, URL, geolocation, ...) can be populated without hand-building
-payloads:
+``List.from_records(..., schema=...)`` (and the streaming conveniences) applies
+this, so typed columns (choice, lookup, user, URL, geolocation, ...) can be
+populated without hand-building payloads:
 
-    lst.import_from(df, schema={"Status": FieldType.Choice, "Tags": FieldType.MultiChoice})
+    lst.from_dataframe(df, schema={"Status": FieldType.Choice, "Tags": FieldType.MultiChoice})
 
 Values already in the expected shape (a ``ClientValue``) pass through unchanged.
 ``None`` values and unknown/``None`` field types are left as-is, so this is safe

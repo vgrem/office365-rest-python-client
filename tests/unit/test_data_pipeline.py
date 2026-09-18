@@ -87,7 +87,7 @@ class TestCsvRecords(unittest.TestCase):
 class TestImportPipeline(unittest.TestCase):
     def test_from_csv_queues_creates(self):
         client = _graph_client()
-        users = client.users.from_csv(io.StringIO(CSV_TEXT))
+        users = next(iter(client.users.from_csv(io.StringIO(CSV_TEXT))))
         self.assertEqual(len(users), 1)
         self.assertEqual(len(client._queries), 1)
         user = users[0]
@@ -98,7 +98,7 @@ class TestImportPipeline(unittest.TestCase):
 
     def test_from_json_queues_creates(self):
         client = _graph_client()
-        users = client.users.from_json(
+        users = client.users.queue_records(
             [
                 {
                     "userPrincipalName": "jdoe@contoso.com",
@@ -137,7 +137,7 @@ class TestImportPipeline(unittest.TestCase):
         write_csv(col, out)
 
         client = _graph_client()
-        users = client.users.from_csv(io.StringIO(out.getvalue()))
+        users = next(iter(client.users.from_csv(io.StringIO(out.getvalue()))))
         user = users[0]
         self.assertIs(user.get_property("accountEnabled"), True)
         self.assertEqual(user.get_property("createdDateTime"), datetime(2025, 1, 15, 12, 34, 56, tzinfo=timezone.utc))
@@ -157,7 +157,7 @@ def test_list_item_keeps_unknown_columns_when_allowed():
 def test_list_item_collection_from_records_keeps_custom_columns():
     ctx = ClientContext(test_site_url)
     col = ListItemCollection(ctx)
-    col.from_records([{"Title": "row", "CustomColumn": 42}])
+    col.queue_records([{"Title": "row", "CustomColumn": 42}])
 
     assert len(col) == 1
     assert col[0].get_property("CustomColumn") == 42  # noqa: PLR2004
@@ -190,7 +190,7 @@ def pipeline__collection(properties: list[dict], context=None) -> RecordCollecti
 def test_from_records_strips_non_importable():
     client = GraphClient()
     col = RecordCollection(client, User, None)
-    col.from_records([{"userPrincipalName": "jdoe@x.com", "id": "42", "@odata.type": "user"}])
+    col.queue_records([{"userPrincipalName": "jdoe@x.com", "id": "42", "@odata.type": "user"}])
     item = col[0]
     assert item.get_property("userPrincipalName") == "jdoe@x.com"
     assert "id" not in item.properties
@@ -223,9 +223,9 @@ def test_from_json_file_queues_creates(tmp_path):
     path.write_text(jsonlib.dumps([{"userPrincipalName": "jdoe@x.com", "id": "42", "noSuchColumn": "x"}]))
     client = GraphClient()
     col = RecordCollection(client, User, None)
-    col.from_json_file(open(path))  # noqa: SIM115
-    assert len(col) == 1
-    item = col[0]
+    loaded = next(iter(col.from_json(open(path))))  # noqa: SIM115
+    assert len(loaded) == 1
+    item = loaded[0]
     assert item.get_property("userPrincipalName") == "jdoe@x.com"
     assert "id" not in item.properties
     assert "noSuchColumn" not in item.properties
@@ -364,7 +364,7 @@ def test_flat_round_trip():
     write_dataframe(col, target)
 
     imported = RecordCollection(client, User, None)
-    imported.from_dataframe(target.value)
+    imported.queue_dataframe(target.value)
     assert len(imported) == 1
     item = imported[0]
     assert item.get_property("userPrincipalName") == "jdoe@contoso.com"

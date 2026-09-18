@@ -44,6 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   known total so the progress percentage/ETA is meaningful.
 
 ### Changed
+- **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry
+  (returns `ImportResult`) and `queue_*` (`queue_records`/`queue_dataframe`) is
+  the deferred queue-all path. Removed `import_from`/`import_records`/
+  `import_dataframe`/`import_from_file` (use `from_records`/`from_dataframe`/
+  `from_file`) and `to_json_file`/`from_json_file` (use `export_to(..., format=
+  "json")`/`from_json`). `FieldCollection.from_dataframe` →
+  `ensure_from_dataframe`; the JSON-array file format is registered as `json`
+  (`json_file` kept as an alias).
 - **Architecture:** the data-interchange surface (pandas/CSV/JSON/NDJSON/Excel
   import/export) moved off the core `ClientObjectCollection` onto a new
   `RecordCollection` base (inherited by every typed `EntityCollection`). Formats

@@ -58,7 +58,7 @@ def main():
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
     records = build_records(args.path)
 
-    client.me.contacts.from_records(records, progress=progress_bar("Importing contacts"))
+    client.me.contacts.queue_records(records, progress=progress_bar("Importing contacts"))
     client.execute_batch(100)
     print(f"Imported {len(records)} contacts")
 

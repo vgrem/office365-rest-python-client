@@ -62,7 +62,7 @@ ON_ERROR_MODES = ("raise", "collect")
 class RecordSink(Protocol):
     """Minimal target contract for :class:`ImportResult` (a queueable collection)."""
 
-    def from_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> Any:
+    def queue_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> Any:
         """Queue a create per record."""
         ...
 
@@ -223,7 +223,7 @@ class ImportResult(ClientResult[ImportStats]):
         queue: Optional conflict-resolution hook ``queue(records) -> (queued, skipped)``
             that queues the chunk's creates/updates and reports how many records
             were queued and how many were skipped (already present). Defaults to
-            ``collection.from_records(records)`` (all created, none skipped).
+            ``collection.queue_records(records)`` (all created, none skipped).
         dry_run: When True, compute the outcome (and the keyed create/update/skip
             plan) without writing anything — a plan preview.
         dead_letter: Optional JSONL path; each collected chunk failure appends
@@ -394,7 +394,7 @@ class ImportResult(ClientResult[ImportStats]):
     def _default_queue(self, records: list[dict]) -> tuple[int, int]:
         """Queue every record as a create (no conflict resolution)."""
         if not self._dry_run:
-            self._collection.from_records(records)
+            self._collection.queue_records(records)
         return len(records), 0
 
     def _queue(self, records: list[dict]) -> tuple[int, int]:

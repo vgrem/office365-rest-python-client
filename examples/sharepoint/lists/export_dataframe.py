@@ -1,11 +1,11 @@
 """Export a SharePoint list back into a pandas DataFrame.
 
-Reads a list (default: the Stocks_5yr list created by ``import_dataframe.py``)
+Reads a list (default: the Stocks_5yr list created by ``from_dataframe.py``)
 and materializes it into a DataFrame via the deferred ``to_dataframe()`` —
 ``.execute_query().value`` holds the result.
 
 The symmetric counterpart (importing a DataFrame into a list) is
-``import_dataframe.py``.
+``from_dataframe.py``.
 
 Requires: pip install office365-rest-python-client[pandas]
 """

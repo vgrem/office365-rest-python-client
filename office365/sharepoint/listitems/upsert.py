@@ -62,7 +62,7 @@ class ListItemUpsertTarget:
         return keys
 
     def create_records(self, records: list[dict]) -> None:
-        self._collection.from_records(records)
+        self._collection.queue_records(records)
 
     def update_record(self, item_id: Any, record: dict) -> None:
         item = ListItem(

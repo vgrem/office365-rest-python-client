@@ -1,10 +1,10 @@
 """Import a CSV/XLSX stored in a SharePoint library into a list.
 
-``List.import_from_file`` downloads the file from the current site (honoring auth)
+``List.from_file`` downloads the file from the current site (honoring auth)
 and streams it into the list — bounded memory, resumable, and idempotent with
 ``--key`` (a ``MigrationKey`` column is created and each row is skipped/upserted).
 
-    python import_from_file.py --file-url "Shared Documents/stocks.csv" --key Name date
+    python from_file.py --file-url "Shared Documents/stocks.csv" --key Name date
 
 Requires: pip install office365-rest-python-client[pandas]
 """
@@ -32,7 +32,7 @@ def main():
     )
     lst = ctx.web.lists.ensure_list(args.list_title).execute_query()
 
-    driver = lst.import_from_file(
+    driver = lst.from_file(
         args.file_url,
         format=args.format,
         chunksize=args.chunk,

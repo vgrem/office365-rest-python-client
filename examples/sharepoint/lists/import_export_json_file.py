@@ -1,8 +1,8 @@
 """Round-trip a list through a JSON file (export -> import).
 
-Exports a source list to a single JSON array file via ``to_json_file`` — the
-collection's stdlib-only file format — then imports it back into a second list
-with ``from_json_file``. A zero-dependency backup / migration workflow.
+Exports a source list to a single JSON array file via ``export_to(..., format="json")``
+— the collection's stdlib-only file format — then imports it back into a second
+list with ``from_json``. A zero-dependency backup / migration workflow.
 
 Unlike NDJSON (one JSON object per line), the file is one JSON array, so it can
 be pretty-printed, diffed, or version-controlled as a unit.
@@ -52,7 +52,7 @@ def main():
 
     # -- Step 1: export list items -> JSON array file --
     source = ctx.web.lists.get_by_title(args.source_list)
-    source.items.get_all().select(args.select.split(",")).to_json_file(path).execute_query()
+    source.items.get_all().select(args.select.split(",")).export_to(path, format="json").execute_query()
     print(f"Exported {args.source_list} -> {path} ({os.path.getsize(path)} bytes)")
 
     # -- Step 2: import JSON array file -> new list --
@@ -60,7 +60,7 @@ def main():
     target.ensure_fields(args.select.split(",")).execute_query()
     hook = None if args.no_progress else progress_bar(f"Importing into {args.target_list}")
     with open(path, "r", encoding="utf-8") as f:
-        target.items.from_json_file(f, progress=hook).execute_query()
+        target.items.from_json(f, progress=hook).execute_query()
     print(f"Imported {args.source_list} items into '{target.title}'")
 
 

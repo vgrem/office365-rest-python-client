@@ -1,6 +1,6 @@
 """Stream a large CSV into a SharePoint list — memory-bounded, resumable, idempotent.
 
-The chunk iterator goes to ``List.import_dataframe``: the typed columns are
+The chunk iterator goes to ``List.from_dataframe``: the typed columns are
 provisioned once, each chunk is flushed through server-side OData batches
 (``--concurrency`` parallel, per-sub-request retries honoring ``Retry-After``),
 and queued items are discarded after every chunk — so memory stays flat no matter
@@ -14,7 +14,7 @@ continues where it stopped; changing ``--chunk`` invalidates the checkpoint and
 triggers a full re-scan (the key keeps it duplicate-free). Use
 ``--reset-checkpoint`` to start over.
 
-    python import_dataframe_large.py --rows 40000 --concurrency 5
+    python from_dataframe_large.py --rows 40000 --concurrency 5
 
 A live progress bar is shown by default (``--no-progress`` disables it; tqdm is
 used when installed, otherwise a plain per-second counter).
@@ -102,7 +102,7 @@ def main():
         resumed = FileCheckpointStore(args.checkpoint).load().cursor
     reporter = None if args.no_progress else _Progress(args.rows or None, resumed)
 
-    driver = lst.import_dataframe(
+    driver = lst.from_dataframe(
         chunks,
         checkpoint=args.checkpoint or None,
         key=["Name", "date"],

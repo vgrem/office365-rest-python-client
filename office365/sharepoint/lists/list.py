@@ -725,11 +725,11 @@ class List(SecurableObject):
         spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
         return [self.ensure_field(name, field_type, on_conflict=on_conflict) for name, field_type in spec]
 
-    def import_from(
+    def from_records(
         self,
         source,
         *,
-        format: str = "dataframe",  # noqa: A002
+        format: str = "records",  # noqa: A002
         schema: "Dict[str, FieldType] | None" = None,
         chunksize: int = 2000,
         progress: "ProgressCallback | None" = None,
@@ -745,30 +745,26 @@ class List(SecurableObject):
         dead_letter: "str | None" = None,
         mapping: "Dict[str, str] | None" = None,
     ) -> "ImportResult":
-        """Stream a source into this list's items, memory-bounded.
+        """Stream a source into this list's items, memory-bounded (streaming entry).
 
-        The **streaming** entry point: returns an
-        :class:`~office365.runtime.imports.ImportResult`; run it with
-        ``execute_query()`` (sequential) or ``execute_batch(...)``
-        (batched/concurrent):
+        Returns an :class:`~office365.runtime.imports.ImportResult`; run it with
+        ``execute_query()`` (sequential) or ``execute_batch(...)`` (batched):
 
-            >>> lst.import_from(pd.read_csv(url, chunksize=2000)).execute_batch(concurrency=5)
+            >>> lst.from_dataframe(pd.read_csv(url, chunksize=2000)).execute_batch(concurrency=5)
 
         Fields are provisioned from the first chunk (or ``schema``) for the
         ``dataframe``/``csv`` formats; columns that first appear in a later chunk
-        are added too (``on_schema_change="evolve"``, the default) or rejected
-        (``"fail"``). Column names are sanitized into SharePoint field internal
-        names; NaN cells are skipped. ``checkpoint`` resumes an interrupted run;
-        ``key`` makes it idempotent (skip/upsert); ``enforce_unique``/``dry_run``
-        are supported.
+        are added (``on_schema_change="evolve"``, the default) or rejected
+        (``"fail"``). Column names are sanitized into field internal names; NaN
+        cells are skipped. ``checkpoint`` resumes; ``key`` makes it idempotent.
 
         Args:
             source: A DataFrame / chunk iterable / CSV path (``dataframe``/``csv``),
                 record batches (``records``), or a reader source for other formats.
-            format: Source format (default ``"dataframe"``).
+            format: Source format (default ``"records"``).
             schema: Optional explicit ``{column: FieldType}``; inferred from dtypes.
-                A ``FieldType`` also drives typed value coercion on import
-                (multi-choice, lookup, user, URL, geolocation, ...).
+                A ``FieldType`` also drives typed value coercion (multi-choice,
+                lookup, user, URL, geolocation, ...).
             chunksize: Rows per chunk for a DataFrame/CSV source.
             progress: Optional hook fired live (initial, per chunk, per batch).
             total: Total rows when known upfront (drives the progress percentage).
@@ -816,7 +812,7 @@ class List(SecurableObject):
                 return
             if on_schema_change == "fail" and provisioned:
                 raise ValueError(f"source schema changed: new column(s) {new}")
-            self.fields.from_dataframe(chunk[new])
+            self.fields.ensure_from_dataframe(chunk[new])
             provisioned.update(internal_field_name(str(c)) for c in new)
             self.context.execute_query()
 
@@ -833,7 +829,7 @@ class List(SecurableObject):
 
         to_records = _to_records if format in ("dataframe", "csv") else None
 
-        return self.items.import_from(
+        return self.items.from_records(
             source,
             format=format,
             chunksize=chunksize,
@@ -854,15 +850,27 @@ class List(SecurableObject):
             coerce=coercions,
         )
 
-    def import_dataframe(self, source, **opts) -> "ImportResult":
-        """Stream a DataFrame / chunked CSV into this list (see :meth:`import_from`)."""
-        return self.import_from(source, format="dataframe", **opts)
+    def from_dataframe(self, source, **opts) -> "ImportResult":
+        """Stream a DataFrame / chunked CSV into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="dataframe", **opts)
 
-    def import_records(self, batches, **opts) -> "ImportResult":
-        """Stream record batches into this list's items (see :meth:`import_from`)."""
-        return self.import_from(batches, format="records", **opts)
+    def from_csv(self, source, **opts) -> "ImportResult":
+        """Stream a CSV source into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="csv", **opts)
 
-    def import_from_file(
+    def from_json(self, source, **opts) -> "ImportResult":
+        """Stream a JSON-array file into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="json", **opts)
+
+    def from_ndjson(self, source, **opts) -> "ImportResult":
+        """Stream an NDJSON source into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="ndjson", **opts)
+
+    def from_excel(self, source, **opts) -> "ImportResult":
+        """Stream an Excel (.xlsx) worksheet into this list (see :meth:`from_records`)."""
+        return self.from_records(source, format="excel", **opts)
+
+    def from_file(
         self,
         server_relative_url: str,
         *,
@@ -873,10 +881,10 @@ class List(SecurableObject):
         """Stream a SharePoint-hosted file (CSV/XLSX) into this list's items.
 
         Downloads the file from this site (honoring auth) and streams it through
-        :meth:`import_from` — bounded memory, resumable and idempotent with
+        :meth:`from_records` — bounded memory, resumable and idempotent with
         ``key=...``. ``format`` is ``"csv"`` (default) or ``"xlsx"``/``"excel"``.
 
-            >>> lst.import_from_file("Shared Documents/stocks.csv", key=["Name", "date"]) \\
+            >>> lst.from_file("Shared Documents/stocks.csv", key=["Name", "date"]) \\
             ...    .execute_batch(concurrency=5)
         """
         import io
@@ -887,26 +895,31 @@ class List(SecurableObject):
             from office365.runtime.converters.dataframe import require_pandas
 
             df = require_pandas().read_excel(io.BytesIO(content))
-            return self.import_from(df, format="dataframe", chunksize=chunksize, **opts)
-        return self.import_from(io.BytesIO(content), format="csv", chunksize=chunksize, **opts)
+            return self.from_dataframe(df, chunksize=chunksize, **opts)
+        return self.from_csv(io.BytesIO(content), chunksize=chunksize, **opts)
 
-    def from_dataframe(
+    def queue_dataframe(
         self,
         df,
         schema: "Dict[str, FieldType] | None" = None,
         progress: "ProgressCallback | None" = None,
     ) -> Self:
-        """Import a DataFrame into this list **deferred** (queue-all).
+        """Queue a DataFrame into this list **deferred** (queue-all).
 
         Provisions the columns (from the dtypes, or ``schema``) and queues an item
         create per row; run with ``execute_query()``. For large frames use the
-        streaming :meth:`import_dataframe` (bounded memory + idempotency).
+        streaming :meth:`from_dataframe` (bounded memory + idempotency).
         """
         if schema is not None:
             self.ensure_fields(schema)
         else:
-            self.fields.from_dataframe(df)
-        self.items.from_dataframe(df, progress=progress)
+            self.fields.ensure_from_dataframe(df)
+        self.items.queue_dataframe(df, progress=progress)
+        return self
+
+    def queue_records(self, records, progress: "ProgressCallback | None" = None) -> Self:
+        """Queue record dicts into this list's items (deferred)."""
+        self.items.queue_records(records, progress=progress)
         return self
 
     def verify_dataframe(

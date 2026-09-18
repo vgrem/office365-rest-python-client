@@ -48,7 +48,7 @@ client.me.send_mail(
 | **Send a message** | [`messages/send.py`](./messages/send.py) | Simplest send — recipient, subject, body |
 | **Send with large attachment** | [`messages/send_with_large_attachment.py`](./messages/send_with_large_attachment.py) | Upload session pattern required for files >3 MB |
 | **Export messages to CSV** | [`messages/export_folder_csv.py`](./messages/export_folder_csv.py) | Audit or backup — dump folder contents with subject, sender, date, size |
-| **Export messages to JSON** | [`messages/export_json.py`](./messages/export_json.py) | Data pipeline — backup/interchange via `to_json_file` |
+| **Export messages to JSON** | [`messages/export_json.py`](./messages/export_json.py) | Data pipeline — backup/interchange via `export_to(..., format="json")` |
 | **Export attachments** | [`messages/export_attachments.py`](./messages/export_attachments.py) | Backup — download every attachment from a folder |
 | **Find large messages** | [`messages/large_messages.py`](./messages/large_messages.py) | Storage management — find oversized messages by size threshold |
 | **Clean up old messages** | [`messages/cleanup_old.py`](./messages/cleanup_old.py) | Retention — dry-run then delete messages older than X days |

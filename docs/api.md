@@ -132,15 +132,17 @@ with open("users.csv", "w", newline="") as f:
 
 ### DataFrame import / bulk load
 
-Every collection exposes the same adapters over one shared projection: deferred
-`to_dataframe()`/`from_dataframe()` (plus `to_records`/`from_records`, CSV,
-NDJSON, Excel, JSON) and streaming `import_from()`/`import_records()`.
+Every collection exposes the same adapters over one shared projection: export via
+`to_records()`/`to_dataframe()`/`to_csv()`/`to_ndjson()`/`to_excel()` (or the
+generic `export_to(..., format=...)`, e.g. `format="json"`), and import via the
+**streaming** `from_*` family (`from_records`, `from_dataframe`, `from_csv`,
+`from_json`, `from_ndjson`, `from_excel`, …).
 
-The naming is consistent: **`from_*` is deferred** (queue-all, run with
-`execute_query()`); **`import_*` returns a streaming `ImportResult`** (bounded,
-resumable, idempotent).
+The naming is consistent: **`from_*` returns a streaming `ImportResult`** (bounded,
+resumable, idempotent); **`queue_*`** (`queue_records`/`queue_dataframe`) is the
+deferred queue-all path (run with `execute_query()`).
 
-`List.import_dataframe()` provisions the typed columns once (inferred from the
+`List.from_dataframe()` provisions the typed columns once (inferred from the
 dtypes, or from an explicit `schema`), then queues, executes, and discards each
 chunk — so memory stays bounded no matter the row count. Pick the execution
 terminal — the driver itself carries no execution knobs:
@@ -150,15 +152,15 @@ import pandas as pd
 
 lst = ctx.web.lists.ensure_list("Housing").execute_query()
 
-lst.import_dataframe(df).execute_query()                          # sequential
-lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000)) \
+lst.from_dataframe(df).execute_query()                            # sequential
+lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)) \
    .execute_batch(items_per_batch=100, concurrency=5)             # batched
 ```
 
 For full control, iterate the driver and drive execution yourself:
 
 ```python
-for _ in lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
+for _ in lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)):
     ctx.execute_batch(items_per_batch=100, concurrency=5)
 ```
 
@@ -172,9 +174,9 @@ records a failing chunk (in `ImportStats.errors` and the checkpoint's `failures`
 and continues instead of aborting:
 
 ```python
-lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
-                     checkpoint="housing.run.json",
-                     on_error="collect") \
+lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
+                   checkpoint="housing.run.json",
+                   on_error="collect") \
    .execute_batch(items_per_batch=100, concurrency=5)
 ```
 
@@ -184,9 +186,9 @@ persistence, MSAL-cache style. The driver exposes `ImportResult.resumed_from`
 (rows already committed) and `ImportResult.checkpoint` (live cursor), and
 `ImportStats.resumed_from` / `stats.summary()` report the resumed offset.
 
-The generic entry point is `collection.import_records(batches)` for any
-`ClientObjectCollection`. See `examples/sharepoint/lists/import_dataframe.py`
-and `import_dataframe_large.py`, and the `examples/entraid` DataFrame export for
+The generic entry point is `collection.from_records(batches)` for any
+`ClientObjectCollection`. See `examples/sharepoint/lists/from_dataframe.py`
+and `from_dataframe_large.py`, and the `examples/entraid` DataFrame export for
 the Graph side.
 
 #### Idempotent imports (skip / upsert)
@@ -197,9 +199,9 @@ the existing keys are loaded once, and a re-run either skips already-present
 rows (`on_conflict="skip"`) or updates them (`on_conflict="upsert"`):
 
 ```python
-lst.import_dataframe(pd.read_csv("housing.csv", chunksize=2000),
-                     key=["region", "date"],         # natural key -> MigrationKey hash
-                     on_conflict="upsert") \
+lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
+                   key=["region", "date"],           # natural key -> MigrationKey hash
+                   on_conflict="upsert") \
    .execute_batch(items_per_batch=100, concurrency=5)
 ```
 
@@ -217,17 +219,17 @@ without writing anything.
 
 The import/export surface lives on `RecordCollection` (the base of every typed
 `EntityCollection`), so the same API works on any collection. `List` mirrors it as
-a facade: `List.import_from`/`import_dataframe`/`import_records` (streaming),
-`List.export_to`/`to_dataframe` (record export), and `List.export` (a `.zip`
-**package** export — per-item JSON + optional content — distinct from the record
-export):
+a facade: `List.from_dataframe`/`from_records`/`from_file` (streaming),
+`List.queue_dataframe`/`queue_records` (deferred), `List.export_to`/`to_dataframe`
+(record export), and `List.export` (a `.zip` **package** export — per-item JSON +
+optional content — distinct from the record export):
 
 ```python
 collection.export_to(f, format="csv").execute_query()        # unified record export
-collection.import_from(df, key=["id"], on_conflict="upsert") # unified streaming import
-collection.import_records(batches, checkpoint="run.json")    # stream record batches
+collection.from_dataframe(df, key=["id"], on_conflict="upsert")  # unified streaming import
+collection.from_records(batches, checkpoint="run.json")      # stream record batches
 
-lst.from_dataframe(df).execute_query()                       # deferred (queue-all)
+lst.queue_dataframe(df).execute_query()                      # deferred (queue-all)
 lst.export_to(f, format="csv").execute_query()               # list -> records
 lst.export(zip_file, include_content=True).execute_query()   # list -> .zip package
 ```
@@ -257,7 +259,7 @@ Two idempotent layers, one model — a re-run never duplicates:
   `ensure_site_pages_library`, `ensure_user` — are server-side operations and are
   already idempotent.)
 
-- **Data (`import_from(key=…, on_conflict=…)`)** — get-or-create/update records
+- **Data (`from_records(key=…, on_conflict=…)`)** — get-or-create/update records
   by a natural key (see *Idempotent imports* above).
 
 Distinct from both: `ClientObject.ensure_property`/`ensure_properties` is a

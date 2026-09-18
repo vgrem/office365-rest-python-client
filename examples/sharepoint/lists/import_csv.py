@@ -1,9 +1,8 @@
 """Import a CSV file into a SharePoint list in bulk.
 
-Parses a local CSV and imports every row via the deferred ``from_csv`` on the
-list's items — one item-create is queued per row and runs on ``execute_query()``.
-The progress hook fires per imported row (the total is known, so the bar is
-determinate).
+Parses a local CSV (stdlib) and queues every row via ``queue_records`` — one
+item-create is queued per row and runs on ``execute_query()``. The progress hook
+fires per imported row (the total is known, so the bar is determinate).
 
 The symmetric counterpart (reading a list back into CSV) is ``export_records.py``.
 
@@ -16,6 +15,7 @@ import os
 import tempfile
 
 from faker import Faker
+from office365.runtime.converters.csv_reader import read_csv_records
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
@@ -82,7 +82,7 @@ def main():
         if header:
             lst.ensure_fields(header).execute_query()
         hook = None if args.no_progress else progress_bar(f"Importing {os.path.basename(path)}")
-        lst.items.from_csv(f, progress=hook).execute_query()
+        lst.queue_records(read_csv_records(f), progress=hook).execute_query()
 
     print(f"Imported CSV into '{lst.title}'")
 

@@ -21,7 +21,7 @@ class _FakeCollection:
         self.queued: list[dict] = []
         self.clears = 0
 
-    def from_records(self, records, progress=None):
+    def queue_records(self, records, progress=None):
         self.queued.extend(records)
         return self
 
@@ -129,12 +129,12 @@ def test_before_chunk_runs_per_chunk_before_queue():
     assert calls == ["before", "queue", "before", "queue"]
 
 
-def test_import_from_rejects_unknown_schema_change():
+def test_from_records_rejects_unknown_schema_change():
     from office365.sharepoint.lists.list import List
 
     lst = List(cast(Any, _FakeContext()))
     with pytest.raises(ValueError, match="on_schema_change"):
-        lst.import_from([], on_schema_change="nope")
+        lst.from_records([], on_schema_change="nope")
 
 
 def test_dry_run_plans_without_queueing_or_executing():
@@ -408,24 +408,24 @@ def test_dataframe_chunks_accepts_a_pandas_chunk_reader():
     assert [len(c) for c in chunks] == [1, 1, 1]
 
 
-def test_list_import_dataframe_returns_import_result():
+def test_list_from_dataframe_returns_import_result():
     from office365.sharepoint.lists.list import List
 
     ctx = _FakeContext()
     lst = List(cast(Any, ctx))
-    driver = lst.import_dataframe(pd.DataFrame({"Name": ["a"], "Value": [1]}))
+    driver = lst.from_dataframe(pd.DataFrame({"Name": ["a"], "Value": [1]}))
 
     assert isinstance(driver, ImportResult)
 
 
-def test_collection_import_records_returns_import_result():
+def test_collection_from_records_returns_import_result():
     from office365.runtime.client_object import ClientObject
     from office365.runtime.record_collection import RecordCollection
 
     ctx = _FakeContext()
     collection = RecordCollection(cast(Any, ctx), ClientObject)
 
-    driver = collection.import_records([[{"a": 1}]])
+    driver = collection.from_records([[{"a": 1}]])
 
     assert isinstance(driver, ImportResult)
 
@@ -485,7 +485,7 @@ def test_apply_mapping_renames_record_keys():
     assert mapped([{"old": 1, "keep": 2}]) == [{"new": 1, "keep": 2}]
 
 
-def test_import_from_applies_column_mapping():
+def test_from_records_applies_column_mapping():
     from office365.runtime.client_object import ClientObject
     from office365.runtime.record_collection import RecordCollection
 
@@ -494,12 +494,12 @@ def test_import_from_applies_column_mapping():
             super().__init__(context, ClientObject)
             self.queued = []
 
-        def from_records(self, records, progress=None):
+        def queue_records(self, records, progress=None):
             self.queued.extend(records)
             return self
 
     collection = _RecordFake(cast(Any, _FakeContext()))
-    result = RecordCollection.import_from(
+    result = RecordCollection.from_records(
         collection,
         _batches(1),
         format="records",
@@ -566,7 +566,7 @@ class _ImportTarget:
 
 
 class _ImportCollection(RecordCollection):
-    """Fake record collection driving the real ``RecordCollection.import_from``."""
+    """Fake record collection driving the real ``RecordCollection.from_records``."""
 
     def __init__(self, existing: dict | None = None) -> None:
         super().__init__(cast(Any, _FakeContext()), ClientObject)
@@ -576,7 +576,7 @@ class _ImportCollection(RecordCollection):
         self.load_calls = 0
         self.ensured = 0
 
-    def from_records(self, records, progress=None):
+    def queue_records(self, records, progress=None):
         self.created.extend(records)
         return self
 
@@ -593,7 +593,7 @@ def test_resume_loads_existing_keys_and_skips_duplicates():
     collection = _ImportCollection(existing=existing)
     checkpoint = ImportCheckpoint(cursor=1, chunks=1)  # skip the first batch
 
-    driver = RecordCollection.import_from(
+    driver = RecordCollection.from_records(
         collection,
         [[{"id": 0}], [{"id": 1}], [{"id": 2}]],
         format="records",
@@ -616,7 +616,7 @@ def test_checkpoint_signature_mismatch_rescans_from_start():
     collection = _ImportCollection()
 
     with pytest.warns(UserWarning, match="signature changed"):
-        driver = RecordCollection.import_from(
+        driver = RecordCollection.from_records(
             collection,
             [[{"id": 0}], [{"id": 1}]],
             format="records",
@@ -635,7 +635,7 @@ def test_migration_key_is_appended_to_created_records():
     from office365.runtime.record_collection import RecordCollection
 
     collection = _ImportCollection()
-    driver = RecordCollection.import_from(
+    driver = RecordCollection.from_records(
         collection,
         [[{"id": 7}]],
         format="records",
@@ -646,11 +646,11 @@ def test_migration_key_is_appended_to_created_records():
     assert collection.created[0]["MigrationKey"] == record_key({"id": 7}, ["id"])
 
 
-def test_import_from_applies_coerce_converters():
+def test_from_records_applies_coerce_converters():
     from office365.runtime.record_collection import RecordCollection
 
     collection = _ImportCollection()
-    driver = RecordCollection.import_from(
+    driver = RecordCollection.from_records(
         collection,
         [[{"n": 2}]],
         format="records",

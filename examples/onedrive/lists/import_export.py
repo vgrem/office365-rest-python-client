@@ -40,7 +40,7 @@ def main():
     print(f"List: '{lib.display_name}'")
 
     # -- Step 2: bulk import from JSON (queued in one execute) --
-    lib.items.from_json(records).execute_query()
+    lib.items.queue_records(records).execute_query()
     print(f"  ✓ Imported {len(records)} items from JSON")
 
     # -- Step 3: export back to CSV --

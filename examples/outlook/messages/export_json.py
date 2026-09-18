@@ -1,6 +1,6 @@
 """
 Export messages from a folder to a JSON file via the data pipeline
-(``to_json_file``).
+(``export_to(..., format="json")``).
 
 A backup / interchange format — one JSON array of records that can be
 version-controlled or re-imported elsewhere.
@@ -28,7 +28,7 @@ def main():
     messages = client.me.mail_folders[args.folder].messages.get_all().select(COLUMNS)
 
     with open(args.output, "w", encoding="utf-8") as f:
-        messages.to_json_file(f).execute_query()
+        messages.export_to(f, format="json").execute_query()
 
     print(f"Exported messages to {args.output}")
 

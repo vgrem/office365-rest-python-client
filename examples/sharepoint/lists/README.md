@@ -76,8 +76,8 @@ graph TD
 
 | Operation | File | Required role | Notes |
 |---|---|---|---|
-| Import DataFrame | [`import_dataframe.py`](./import_dataframe.py) | Member on list | Columns provisioned from dtypes |
-| Import large DataFrame (fast) | [`import_dataframe_large.py`](./import_dataframe_large.py) | Member on list | Chunked memory slices + `execute_batch` concurrency |
+| Import DataFrame | [`from_dataframe.py`](./from_dataframe.py) | Member on list | Columns provisioned from dtypes |
+| Import large DataFrame (fast) | [`from_dataframe_large.py`](./from_dataframe_large.py) | Member on list | Chunked memory slices + `execute_batch` concurrency |
 | Export list to DataFrame | [`export_dataframe.py`](./export_dataframe.py) | Read access | `to_dataframe()` |
 
 Requires `pip install office365-rest-python-client[pandas]`.

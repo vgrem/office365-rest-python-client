@@ -57,9 +57,7 @@ class FieldCollection(EntityCollection[Field]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Field, resource_path, parent)
 
-    def from_dataframe(  # type: ignore[override]
-        self, df, progress=None, *, on_conflict: str = "skip"
-    ) -> list[Field]:
+    def ensure_from_dataframe(self, df, progress=None, *, on_conflict: str = "skip") -> list[Field]:
         """Define a field per DataFrame column, inferring the field type.
 
         The schema counterpart of ``RecordCollection.from_dataframe`` (which
