@@ -767,6 +767,8 @@ class List(SecurableObject):
                 record batches (``records``), or a reader source for other formats.
             format: Source format (default ``"dataframe"``).
             schema: Optional explicit ``{column: FieldType}``; inferred from dtypes.
+                A ``FieldType`` also drives typed value coercion on import
+                (multi-choice, lookup, user, URL, geolocation, ...).
             chunksize: Rows per chunk for a DataFrame/CSV source.
             progress: Optional hook fired live (initial, per chunk, per batch).
             total: Total rows when known upfront (drives the progress percentage).
@@ -784,12 +786,21 @@ class List(SecurableObject):
         Returns:
             ImportResult: The deferred streaming import driver.
         """
+        from functools import partial
+
         from office365.runtime.converters.dataframe import records_from_dataframe
+        from office365.sharepoint.fields.coercion import coerce_field_value
         from office365.sharepoint.fields.name import internal_field_name
 
         if on_schema_change not in ("evolve", "fail"):
             raise ValueError(f"on_schema_change must be 'evolve' or 'fail', got {on_schema_change!r}")
         provisioned: set[str] = set()
+        coercions: "Dict[str, Any] | None" = None
+        if isinstance(schema, dict):
+            coercions = {
+                internal_field_name(str(column)): partial(coerce_field_value, field_type)
+                for column, field_type in schema.items()
+            }
 
         def _mapped(chunk: Any) -> Any:
             if mapping and hasattr(chunk, "rename"):
@@ -840,6 +851,7 @@ class List(SecurableObject):
             dry_run=dry_run,
             dead_letter=dead_letter,
             mapping=mapping if to_records is None else None,
+            coerce=coercions,
         )
 
     def import_dataframe(self, source, **opts) -> "ImportResult":

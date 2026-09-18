@@ -231,6 +231,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         dry_run: bool = False,
         dead_letter: "str | PathLike | None" = None,
         mapping: "Dict[str, str] | None" = None,
+        coerce: "Dict[str, Callable[[Any], Any]] | None" = None,
     ) -> "ImportResult":
         """Stream a source into this collection, memory-bounded.
 
@@ -238,6 +239,8 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         or CSV path/URL/file; ``records``: an iterable of record batches; others:
         read whole). ``key`` enables idempotent skip/upsert via :meth:`upsert_target`.
         ``mapping`` renames source columns/keys to target names before queuing.
+        ``coerce`` maps a (post-mapping) record key to a value converter, applied
+        to every queued record — used for typed destination fields.
         """
         from office365.runtime.imports import ImportResult
 
@@ -276,6 +279,14 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             keys_loaded = True
 
         def _queue(records: list[dict]) -> tuple[int, int]:
+            if coerce:
+                records = [
+                    {
+                        key: (coerce[key](value) if key in coerce and value is not None else value)
+                        for key, value in record.items()
+                    }
+                    for record in records
+                ]
             if target is None:
                 if not dry_run:
                     self.from_records(records)

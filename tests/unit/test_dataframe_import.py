@@ -644,3 +644,18 @@ def test_migration_key_is_appended_to_created_records():
     driver.execute_query()
 
     assert collection.created[0]["MigrationKey"] == record_key({"id": 7}, ["id"])
+
+
+def test_import_from_applies_coerce_converters():
+    from office365.runtime.record_collection import RecordCollection
+
+    collection = _ImportCollection()
+    driver = RecordCollection.import_from(
+        collection,
+        [[{"n": 2}]],
+        format="records",
+        coerce={"n": lambda value: value * 2},
+    )
+    driver.execute_query()
+
+    assert collection.created == [{"n": 4}]
