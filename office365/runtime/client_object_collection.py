@@ -180,12 +180,14 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """Iterate through all items, automatically handling paged results."""
         yield from self._data
 
-        # Handle server-side paging
+        # Handle server-side paging: follow __next, yielding each new page only
+        # (a local position, so it stays correct regardless of _current_pos).
         if self._paged_mode:
+            position = len(self._data)
             while self.has_next:
                 self._get_next().execute_query()
-                next_items = self._data[self._current_pos :]
-                yield from next_items
+                yield from self._data[position:]
+                position = len(self._data)
 
     def __len__(self) -> int:
         """Get the current number of loaded items in the collection."""
