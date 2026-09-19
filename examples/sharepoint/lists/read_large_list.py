@@ -1,8 +1,15 @@
 """
-Read all items from a large list using a CAML query filtered by a field.
+Read all items from a large list using a paged CAML query.
 
-Filters ``Contacts_Large`` by ``WorkCountry == 'England'`` and reads every
-matching row with server-driven paging (page size = RowLimit).
+Filters ``Contacts_Large`` by ``WorkCountry == 'Norway'`` and reads every matching
+row with server-driven paging (``get_items(query, page_size=...)`` follows the
+``__next`` link when iterating).
+
+Note: filtering/sorting on a **non-indexed** column (like ``WorkCountry``) can be
+throttled by the 5,000-item list view threshold. If you hit
+``SPQueryThrottledException``, index the column first:
+
+    target_list.ensure_indexed("WorkCountry").execute_query()
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
@@ -52,7 +59,7 @@ def main():
     )
     target_list = ctx.web.lists.get_by_title(args.list_title)
 
-    items = target_list.get_items(build_custom_query(args.page_size)).execute_query()
+    items = target_list.get_items(build_custom_query(args.page_size), page_size=args.page_size).execute_query()
 
     for item in items:
         title = item.properties.get("Title", "?")

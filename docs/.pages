@@ -4,6 +4,7 @@ nav:
   - installation.md
   - getting-started.md
   - data-pipeline.md
+  - large-lists.md
   - auth
   - products
   - api.md
