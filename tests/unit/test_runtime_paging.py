@@ -12,6 +12,7 @@ from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.listitems.caml.query import CamlQuery
 from requests import Response
 from tests import test_site_url
 from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
@@ -142,6 +143,29 @@ class TestLargeCollectionPaging(unittest.TestCase):
         items = ctx.web.lists.get_by_title("X").get_items(page_size=2).execute_query()
 
         self.assertEqual([i.properties.get("Id") for i in items], [1, 2, 3, 4])
+
+    def test_get_items_warns_on_unpaged_sorted_query(self):
+        ctx = ClientContext(test_site_url)
+        ctx.pending_request().beforeExecute.clear()
+        lst = ctx.web.lists.get_by_title("X")
+        query = CamlQuery()
+        query.ViewXml = "<View><Query><OrderBy><FieldRef Name='date'/></OrderBy></Query></View>"
+
+        with self.assertWarns(UserWarning):
+            lst.get_items(query)
+
+    def test_get_items_no_warning_when_paged(self):
+        import warnings
+
+        ctx = ClientContext(test_site_url)
+        ctx.pending_request().beforeExecute.clear()
+        lst = ctx.web.lists.get_by_title("X")
+        query = CamlQuery()
+        query.ViewXml = "<View><Query><Where><Eq><FieldRef Name='ID'/></Eq></Where></Query></View>"
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            lst.get_items(query, page_size=2000)
 
 
 class TestSPOffsetPaging(unittest.TestCase):
