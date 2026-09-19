@@ -4,23 +4,20 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.checkin_type import CheckinType
 from office365.sharepoint.webparts.definitions.definition import WebPartDefinition
 
-from tests import test_client_credentials, test_site_url
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestWebPart(SPTestCase):
     """Test SharePoint web part features."""
 
-    client: ClassVar[Optional[ClientContext]] = None
     target_web_part: ClassVar[Optional[WebPartDefinition]] = None
 
     @classmethod
     def setUpClass(cls):
-        cls.client = ClientContext(test_site_url).with_credentials(test_client_credentials)  # type: ignore[assignment]
+        super().setUpClass()
         page_url = "/SitePages/Home.aspx"
         cls.file = cls.client.web.get_file_by_server_relative_url(page_url)
         cls.file.checkout().execute_query()
