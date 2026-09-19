@@ -21,11 +21,13 @@ from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url,
 
 
 def build_custom_query(page_size: int = 10000) -> CamlQuery:
-    """Build a CAML query filtered on a non-indexed column (breaks the threshold).
+    """Build a CAML query that breaks the list view threshold (#427).
 
-    Note there is **no** ``Paged='TRUE'`` here: with paging SharePoint caps the
-    page at the 5,000-item threshold and returns it without erroring. Without
-    paging (and a ``RowLimit`` above the threshold) the request is rejected.
+    SharePoint Online silently **trims** a non-indexed ``<Where>`` to the 5,000
+    item threshold, so a plain filter just returns 5,000 rows. Sorting on a
+    **non-indexed** column (``OrderBy``) forces a full sort that cannot be
+    trimmed, which is what makes SharePoint reject the request (HTTP 500 /
+    ``SPException -2147467259 "Cannot complete this action. Please try again."``).
     """
     qry = CamlQuery()
     qry.ViewXml = f"""
@@ -37,6 +39,9 @@ def build_custom_query(page_size: int = 10000) -> CamlQuery:
                  <Value Type='Text'>__none__</Value>
               </Neq>
            </Where>
+           <OrderBy>
+              <FieldRef Name='date' Ascending='TRUE'/>
+           </OrderBy>
        </Query>
        <RowLimit>{page_size}</RowLimit>
     </View>
