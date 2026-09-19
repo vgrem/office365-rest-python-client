@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions & usage help
+    url: https://github.com/vgrem/office365-rest-python-client/discussions
+    about: Ask questions and share ideas in Discussions.
+  - name: Documentation
+    url: https://vgrem.github.io/office365-rest-python-client/
+    about: Guides, API reference and 100+ runnable examples.

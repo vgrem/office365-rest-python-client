@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest a new capability or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! This project is maintained by volunteers —
+        we triage requests as time allows.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What are you trying to do, and what's missing or awkward today?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like the API to look like? A short snippet helps.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Service area
+      options:
+        - SharePoint
+        - Microsoft Graph
+        - OneDrive
+        - Outlook
+        - Teams
+        - Entra ID
+        - Data pipeline / migration
+        - Other
+    validations:
+      required: false

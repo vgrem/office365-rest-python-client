@@ -1,26 +1,32 @@
 # Welcome Contributors! 🎉
 
-Thank you for your interest in contributing to the Office365-REST-Python-Client library. This project provides a comprehensive Python client for Microsoft 365 and Microsoft Graph APIs.
+Thank you for your interest in contributing to the `office365-rest-python-client` library. This project provides a comprehensive Python client for Microsoft 365 and Microsoft Graph APIs.
+
+> **No Microsoft 365 tenant is needed to contribute code.** `uv run pytest --offline -q`
+> runs the unit suite offline — it's exactly what CI runs. Use it to validate your
+> change; maintainers run the credentialed end-to-end suite.
 
 ## Table of Contents
 
-1. Getting Started
-2. Development Environment Setup
-3. Code Style and Quality Standards
-4. Testing Guidelines
-5. Submitting Changes
-6. Issue Reporting
-7. Documentation
-8. Community Guidelines
+1. [Getting Started](#getting-started)
+2. [Development Environment Setup](#development-environment-setup)
+3. [Code Style and Quality Standards](#code-style-and-quality-standards)
+4. [Testing Guidelines](#testing-guidelines)
+5. [Finding Something to Work On](#finding-something-to-work-on)
+6. [Submitting Changes](#submitting-changes)
+7. [Issue Reporting](#issue-reporting)
+8. [Documentation](#documentation)
+9. [Community Guidelines](#community-guidelines)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.6+
+- Python 3.8+ (CI runs 3.8, 3.10 and 3.13)
 - Git
-- A Microsoft 365 tenant for testing (recommended)
-- Basic understanding of REST APIs and Microsoft Graph/SharePoint APIs
+- [uv](https://docs.astral.sh/uv/) for dependency management
+- A Microsoft 365 tenant is **recommended but not required** — most contributions
+  can be validated with the offline unit suite
 
 ### Fork and Clone
 
@@ -28,19 +34,21 @@ Thank you for your interest in contributing to the Office365-REST-Python-Client 
 2. Clone your fork locally:
 
 ```bash
-git clone https://github.com/your-username/Office365-REST-Python-Client.git
-cd Office365-REST-Python-Client
+git clone https://github.com/your-username/office365-rest-python-client.git
+cd office365-rest-python-client
 ```
 
 ## Development Environment Setup
 
-Activate the Virtual Environment and install dependencies:
+Install dependencies (including all optional extras used by the tests):
 
 ```bash
 uv sync --all-extras
 ```
 
 ### Pre-commit hooks (recommended)
+
+The hooks run `pyproject-fmt`, `uv lock`, `ruff`, `pyright` and `pytest`:
 
 ```bash
 uv tool install prek
@@ -51,39 +59,45 @@ prek run --all-files
 
 The project uses the following tools (mirroring CI):
 
-- Black (formatting)
-- Ruff (linting and import sorting)
-- Pylint (static analysis)
+- [Ruff](https://docs.astral.sh/ruff/) — linting, import sorting and formatting
+- [Pyright](https://microsoft.github.io/pyright/) — static type checking
 
-Line length: 121 characters (configured in `pyproject.toml`).
+Line length is 121 characters (configured in `pyproject.toml`).
 
-Run locally before pushing:
+Run the same checks locally before pushing:
 
 ```bash
-prek
+uv run ruff check --fix .
+uv run ruff format .
+uv run pyright
 ```
 
 ## Testing Guidelines
 
-Most tests are end-to-end and require actual Microsoft 365 credentials.
+### Offline unit tests (no tenant required)
 
-### Test Configuration
+```bash
+uv run pytest --offline -q
+```
 
-1. Create a `.env` file in the project root:
+This runs `tests/unit` fully offline and is what CI runs on Python 3.8, 3.10 and 3.13.
+It is the fastest way to validate a change, and where new tests should go.
 
-   ```bash
-   export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
-   ```
+### End-to-end tests (maintainers / optional)
 
-2. Source the environment file:
+The `tests/` suites outside `tests/unit` are end-to-end and need real Microsoft 365
+credentials. If you have a tenant, you can run them with a `.env` file in the project
+root:
 
-   ```bash
-   . .env
-   ```
+```bash
+export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
+. .env
+uv run pytest tests/sharepoint/
+```
 
-Note: The order of values is significant because tests parse by index.
+The order of values is significant because the tests parse by index.
 
-### Required Tenant Permissions
+#### Required tenant permissions
 
 For comprehensive testing, your test tenant should have these admin roles:
 
@@ -93,23 +107,22 @@ For comprehensive testing, your test tenant should have these admin roles:
 - SharePoint admin
 - Teams service admin
 
-### Running Tests
+#### Forks and CI
 
-```bash
-pytest
-# or
-pytest -v
-# or a specific suite
-pytest tests/sharepoint/
-```
+- Forked pull requests do not receive repository secrets, so the credentialed
+  tests are skipped automatically; formatting, linting, type checking and the
+  offline unit suite still run.
+- Maintainers run the full E2E suite on branches with secrets before merging.
 
-CI note: Full E2E tests in CI rely on repository secrets and may not run on forks. Please run tests locally; maintainers trigger full CI runs as needed.
+## Finding Something to Work On
 
-### Forks and CI
-
-- Forked pull requests do not receive repository secrets. The CI pipeline will run formatting and linting, and it will skip `pytest` automatically if secrets are unavailable.
-- To validate your changes, run tests locally using your own tenant credentials as described above.
-- Maintainers will run the full E2E test suite on branches with access to secrets before merging.
+- Browse issues labeled [`good first issue`](https://github.com/vgrem/office365-rest-python-client/labels/good%20first%20issue)
+  (small, well-scoped) and [`help wanted`](https://github.com/vgrem/office365-rest-python-client/labels/help%20wanted).
+- Add or improve tests under `tests/unit` — a failing test with a clear reproduction
+  is one of the most valuable contributions.
+- Improve the examples under `examples/` or the docs.
+- Not sure where to start? Ask in
+  [Discussions](https://github.com/vgrem/office365-rest-python-client/discussions).
 
 ## Submitting Changes
 
@@ -122,17 +135,17 @@ CI note: Full E2E tests in CI rely on repository secrets and may not run on fork
    ```
 
 2. Make your changes with clear, focused commits
-3. Ensure all tests pass and quality checks are satisfied
+3. Ensure the offline checks pass (`ruff`, `pyright`, `pytest --offline`)
 
 ### Pull Request Process
 
-1. CI Checks must pass:
-   - Ruff linting
-   - Black formatting
-   - Pylint analysis
-   - Pytest execution
+1. CI checks must pass:
+   - Ruff linting and formatting
+   - Pyright
+   - Offline unit tests (`pytest --offline`)
+   - Documentation build (`mkdocs build --strict`) when docs/examples change
 2. Await maintainer review
-3. Update documentation where applicable
+3. Update documentation and examples where applicable
 
 ### Commit Guidelines
 
@@ -145,14 +158,14 @@ CI note: Full E2E tests in CI rely on repository secrets and may not run on fork
 Before filing an issue:
 
 1. Search existing issues
-2. Check documentation and examples
+2. Check the documentation and examples
 3. Test with the latest version
 
 Include in your report:
 
 - Environment: Python version, OS, library version
 - Reproduction: minimal code example
-- Expected vs Actual behavior
+- Expected vs actual behavior
 - Authentication method used
 - Targeted service area (SharePoint, Graph, etc.)
 
@@ -160,7 +173,9 @@ Include in your report:
 
 ### API Coverage
 
-The library supports multiple Microsoft 365 APIs, including SharePoint REST, Microsoft Graph, OneDrive, Outlook, Teams, OneNote, and Planner. See `examples/` for usage.
+The library supports multiple Microsoft 365 APIs, including SharePoint REST,
+Microsoft Graph, OneDrive, Outlook, Teams, OneNote, and Planner. See `examples/`
+for usage.
 
 ### Building the docs
 
@@ -179,8 +194,17 @@ every push to `master` via `.github/workflows/pages.yml`.
 
 ## Community Guidelines
 
-This project is maintained by the community. Be respectful and constructive in all interactions.
+This project is maintained by volunteers. Contributions are welcome but never
+required, and there is no service-level agreement — issues and pull requests are
+triaged as time allows.
+
+Sponsorship is entirely optional; the library stays free and MIT-licensed. It is
+appreciated and never affects whether an issue is fixed. See the Support section
+of the [README](README.md) if you'd like to help fund maintenance.
+
+Be respectful and constructive in all interactions.
 
 ### License
 
-MIT License. By contributing, you agree that your contributions are licensed under these terms.
+MIT License. By contributing, you agree that your contributions are licensed under
+these terms.

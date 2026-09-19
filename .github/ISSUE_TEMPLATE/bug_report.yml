@@ -1,0 +1,79 @@
+name: Bug report
+description: Report something that isn't working as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this! This project is maintained by
+        volunteers — we triage issues as time allows. A minimal, reproducible
+        example helps a lot.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including the full traceback if any.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The smallest code snippet that reproduces the issue.
+      render: python
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Library version
+      placeholder: "e.g. 3.1.0 (pip show office365-rest-python-client)"
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.11.5"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "e.g. Ubuntu 24.04 / Windows 11 / macOS 15"
+    validations:
+      required: false
+  - type: dropdown
+    id: auth
+    attributes:
+      label: Authentication method
+      options:
+        - Client certificate
+        - Client secret
+        - Username & password (ROPC)
+        - Interactive / device code
+        - Other / not sure
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Service area
+      options:
+        - SharePoint
+        - Microsoft Graph
+        - OneDrive
+        - Outlook
+        - Teams
+        - Entra ID
+        - Other
+    validations:
+      required: false

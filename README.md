@@ -15,9 +15,10 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 
 ## Support
 
-`office365-rest-python-client` is free and maintained in the open. Sponsorship funds security updates, new API coverage, documentation, and releases. See the [roadmap](ROADMAP.md) for what's funded.
+`office365-rest-python-client` is free and maintained in the open. Sponsorship is **entirely optional** — the library stays free and MIT-licensed, and it never affects whether an issue is fixed. It funds security updates, new API coverage, documentation, and releases. See the [roadmap](ROADMAP.md) for what's funded.
 
 - [**GitHub Sponsors**](https://github.com/sponsors/vgrem) — recurring monthly support
+- [**Ko-fi**](https://ko-fi.com/vgrem) — one-off tip (0% platform fee; PayPal & card accepted)
 - [**PayPal**](https://paypal.me/ossvgrem) — one-off donation
 - **Using this in production?** The [Organization tier](https://github.com/sponsors/vgrem) adds priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/discussions) for paid support, custom feature work, or help migrating from 2.6.2 → 3.0.0.
 
@@ -400,7 +401,7 @@ pip install office365-rest-python-client[pandas]   # to_dataframe() on collectio
 
 ## Contributing
 
-PRs welcome. See [issues](https://github.com/vgrem/office365-rest-python-client/issues) for things to work on.
+PRs welcome! Start with [CONTRIBUTING.md](CONTRIBUTING.md) — you can validate changes with the **offline** unit suite (`uv run pytest --offline -q`), no Microsoft 365 tenant required. Look for [`good first issue`](https://github.com/vgrem/office365-rest-python-client/labels/good%20first%20issue) or [`help wanted`](https://github.com/vgrem/office365-rest-python-client/labels/help%20wanted).
 
 ## Links
 

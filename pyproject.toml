@@ -73,6 +73,7 @@ optional-dependencies.notebooks = [
   "nbformat",
   "jinja2",
 ]
+urls.funding = "https://ko-fi.com/vgrem"
 urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 
 [dependency-groups]
