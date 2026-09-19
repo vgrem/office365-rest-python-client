@@ -31,6 +31,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.exceptions import SPQueryThrottledException
 from requests import Response
 from tests import test_site_url
 
@@ -165,6 +166,33 @@ class TestFromResponse(unittest.TestCase):
         }
         exc = ClientRequestException.from_response(_make_error_response(body))
         self.assertNotIsInstance(exc, DuplicatedObjectException)
+
+    def test_list_view_threshold_maps_to_throttled(self):
+        body = {
+            "error": {
+                "code": "-2147024860, Microsoft.SharePoint.SPQueryThrottledException",
+                "message": {
+                    "lang": "en-US",
+                    "value": "The attempted operation is prohibited because it exceeds the list view threshold.",
+                },
+            }
+        }
+        exc = ClientRequestException.from_response(_make_error_response(body))
+        self.assertIsInstance(exc, SPQueryThrottledException)
+        self.assertIn("list view threshold", str(exc).lower())
+
+    def test_throttled_localized_message_matches_by_code(self):
+        body = {
+            "error": {
+                "code": "-2147024860, Microsoft.SharePoint.SPQueryThrottledException",
+                "message": (
+                    "La operación que se intentó realizar está prohibida porque supera el umbral de vista de lista."
+                ),
+            }
+        }
+        exc = ClientRequestException.from_response(_make_error_response(body))
+        self.assertIsInstance(exc, SPQueryThrottledException)
+        self.assertIn("get_all", str(exc))  # actionable guidance is appended
 
 
 class TestDiagnostics(unittest.TestCase):
