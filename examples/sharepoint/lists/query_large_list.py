@@ -23,7 +23,7 @@ ID_FIELD = "ID"  # the built-in, always-indexed identifier column
 PREVIEW_ROWS = 5  # how many rows to print as a preview
 
 
-def build_query(field: str | None = None, value: str | None = None, page_size: int = 2000) -> CamlQuery:
+def build_query(field: str | None = None, value: str | None = None, page_size: int = 5000) -> CamlQuery:
     """Build a paged CAML query.
 
     With no ``field``/``value`` it filters on ``ID > 0`` — the broadest query that
@@ -49,7 +49,7 @@ def build_query(field: str | None = None, value: str | None = None, page_size: i
 def main():
     parser = argparse.ArgumentParser(description="Query a large SharePoint list with a broad CAML query")
     parser.add_argument("--list-title", default="Stocks_5yr_Large", help="list title")
-    parser.add_argument("--page-size", type=int, default=2000, help="items per page (RowLimit)")
+    parser.add_argument("--page-size", type=int, default=10000, help="items per page (RowLimit)")
     parser.add_argument("--limit", type=int, default=0, help="stop after N items (0 = all)")
     parser.add_argument("--field", help="optional field to filter on (e.g. Name_)")
     parser.add_argument("--value", help="optional value to match")

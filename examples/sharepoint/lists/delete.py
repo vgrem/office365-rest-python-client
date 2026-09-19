@@ -10,16 +10,16 @@ from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url,
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Delete a SharePoint list by title")
-    parser.add_argument("title", help="Title of the list to delete")
-    args = parser.parse_args()
+    p = argparse.ArgumentParser(description="Delete a SharePoint list by title")
+    p.add_argument("--list-title", default="Stocks_5yr_Large")
+    args = p.parse_args()
 
     ctx = ClientContext(team_site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    list_to_del = ctx.web.lists.get_by_title(args.title)
+    list_to_del = ctx.web.lists.get_by_title(args.list_title)
     list_to_del.delete_object().execute_query()
-    print(f"List '{args.title}' has been deleted")
+    print(f"List '{args.list_title}' has been deleted")
 
 
 if __name__ == "__main__":
