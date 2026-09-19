@@ -32,7 +32,7 @@ Sponsorship is entirely optional — the library stays free and MIT-licensed, an
 never affects whether an issue is fixed.
 
 - **Individuals:** [GitHub Sponsors](https://github.com/sponsors/vgrem), [Ko-fi](https://ko-fi.com/vgrem), or [PayPal](https://paypal.me/ossvgrem).
-- **Companies:** Open Collective (invoicing), or a custom paid support / feature engagement
+- **Companies:** invoiced sponsorship or a custom paid support / feature engagement
   — see the Support section of the README.
 - **Contributing:** bug reports, PRs, and example scripts are all appreciated.
 
