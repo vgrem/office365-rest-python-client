@@ -7734,6 +7734,7 @@
             <Member Name="created" Value="0"/>
             <Member Name="updated" Value="1"/>
             <Member Name="deleted" Value="2"/>
+            <Member Name="unknownFutureValue" Value="3"/>
          </EnumType>
          <EnumType Name="mediaDirection">
             <Member Name="inactive" Value="0"/>
@@ -15115,6 +15116,9 @@
             <Property Name="notificationUrl" Type="Edm.String" Nullable="false"/>
             <Property Name="notificationUrlAppId" Type="Edm.String"/>
             <Property Name="resource" Type="Edm.String" Nullable="false"/>
+            <Property Name="vapidPublicKey" Type="Edm.String"/>
+            <Property Name="webPushEncryptionP256dhPublicKey" Type="Edm.String"/>
+            <Property Name="webPushEncryptionSecret" Type="Edm.String"/>
          </EntityType>
          <EntityType Name="thumbnailSet" BaseType="graph.entity" OpenType="true">
             <Property Name="large" Type="graph.thumbnail"/>
@@ -29611,6 +29615,10 @@
          <Action Name="reauthorize" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.subscription"/>
          </Action>
+         <Function Name="getVapidPublicKey" IsBound="true">
+            <Parameter Name="bindingParameter" Type="Collection(graph.subscription)"/>
+            <ReturnType Type="Edm.String" Unicode="false"/>
+         </Function>
          <Action Name="completeMigration" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.channel"/>
          </Action>

@@ -16,8 +16,7 @@ class SyncTranslator(Entity):
 
     def __init__(self, context, target_language: str):
         super().__init__(
-            context,
-            ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language}),
+            context, ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language})
         )
 
     def translate(self, input_file: str, output_file: str) -> ClientResult[TranslationItemInfo]:
@@ -44,3 +43,17 @@ class SyncTranslator(Entity):
     @property
     def entity_type_name(self) -> str:
         return "SP.Translation.SyncTranslator"
+
+    def translate_stream(self, input_file: bytes, file_extension: str) -> ClientResult[bytes]:
+        """TranslateStream operation.
+
+        Args:
+            input_file (bytes): inputFile parameter
+            file_extension (str): fileExtension parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = ServiceOperationQuery(
+            self, "TranslateStream", None, {"inputFile": input_file, "fileExtension": file_extension}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type

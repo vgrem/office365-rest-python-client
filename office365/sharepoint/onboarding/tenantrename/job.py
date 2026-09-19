@@ -1,6 +1,11 @@
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
+from office365.runtime.client_result import ClientResult
+from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 
@@ -79,3 +84,16 @@ class TenantRenameJob(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.Onboarding.RestService.TenantRename.TenantRenameJob"
+
+    def cancel(self) -> Self:
+        """Cancel operation."""
+        qry = ServiceOperationQuery(self, "Cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def get_warning_messages(self) -> ClientResult[StringCollection]:
+        """GetWarningMessages operation."""
+        return_type = ClientResult(self.context, StringCollection())
+        qry = FunctionQuery(self, "GetWarningMessages", [], return_type)
+        self.context.add_query(qry)
+        return return_type

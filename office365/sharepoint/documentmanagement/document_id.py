@@ -73,3 +73,15 @@ class DocumentId(Entity):
     @property
     def entity_type_id(self):
         return "fb7276a2-cd36-448b-8a60-a589205f5a8f"
+
+    def reset_doc_id_by_server_relative_path(self, decoded_url: str) -> Self:
+        """ResetDocIdByServerRelativePath operation.
+
+        Args:
+            decoded_url (str): DecodedUrl parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "ResetDocIdByServerRelativePath", None, {"DecodedUrl": decoded_url}, None, None
+        )
+        self.context.add_query(qry)
+        return self
