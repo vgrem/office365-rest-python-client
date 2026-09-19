@@ -21,7 +21,12 @@ from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url,
 
 
 def build_custom_query(page_size: int = 10000) -> CamlQuery:
-    """Build a CAML query filtered on a non-indexed column (breaks the threshold)."""
+    """Build a CAML query filtered on a non-indexed column (breaks the threshold).
+
+    Note there is **no** ``Paged='TRUE'`` here: with paging SharePoint caps the
+    page at the 5,000-item threshold and returns it without erroring. Without
+    paging (and a ``RowLimit`` above the threshold) the request is rejected.
+    """
     qry = CamlQuery()
     qry.ViewXml = f"""
     <View Scope='RecursiveAll'>
@@ -33,7 +38,7 @@ def build_custom_query(page_size: int = 10000) -> CamlQuery:
               </Neq>
            </Where>
        </Query>
-       <RowLimit Paged='TRUE'>{page_size}</RowLimit>
+       <RowLimit>{page_size}</RowLimit>
     </View>
     """
     return qry
