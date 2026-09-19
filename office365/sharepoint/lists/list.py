@@ -667,14 +667,24 @@ class List(SecurableObject):
     #    """Clears the broken taxonomy values"""
     #    raise NotImplementedError("validate_broken_taxonomy_values")
 
-    def get_items(self, caml_query: Optional[CamlQuery] = None) -> ListItemCollection:
-        """Returns a collection of items from the list based on the specified query."""
+    def get_items(self, caml_query: Optional[CamlQuery] = None, page_size: Optional[int] = None) -> ListItemCollection:
+        """Returns a collection of items from the list based on the specified query.
+
+        Pass ``page_size`` to page the results (follows the server ``__next`` link
+        when iterating), so a query over more than the 5,000-item list view
+        threshold can be read in full:
+
+            >>> for item in list.get_items(query, page_size=2000).execute_query():
+            ...     ...
+        """
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
         return_type = ListItemCollection(self.context, self.items.resource_path)
         payload = {"query": caml_query}
         qry = ServiceOperationQuery(self, "GetItems", None, payload, None, return_type)
         self.context.add_query(qry)
+        if page_size:
+            return_type.paged(page_size)
         return return_type
 
     def ensure_field(

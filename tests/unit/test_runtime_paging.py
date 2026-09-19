@@ -105,6 +105,45 @@ class _CaptureTransport(_ScriptedTransport):
         return super().execute(request)
 
 
+def _file_page(names: list[str]) -> dict:
+    return {"d": {"results": [{"Name": n, "ServerRelativeUrl": f"/Shared Documents/{n}"} for n in names]}}
+
+
+def _caml_items_page(ids: list[int], next_url: str | None = None) -> dict:
+    page: dict = {"results": [{"Id": i, "Title": f"Item {i}"} for i in ids]}
+    if next_url:
+        page["__next"] = next_url
+    return {"d": page}
+
+
+class TestLargeCollectionPaging(unittest.TestCase):
+    """Folder.get_files and List.get_items page instead of throttling on large collections."""
+
+    def _context(self, payloads: list) -> tuple[ClientContext, _CaptureTransport]:
+        ctx = ClientContext(test_site_url)
+        transport = _CaptureTransport(payloads)
+        ctx.pending_request().beforeExecute.clear()
+        ctx.pending_request().transport = transport
+        return ctx, transport
+
+    def test_folder_get_files_pages(self):
+        ctx, transport = self._context([_file_page(["a.txt", "b.txt"]), _file_page(["c.txt", "d.txt"]), _file_page([])])
+        folder = ctx.web.get_folder_by_server_relative_url("/Shared Documents/big")
+
+        files = folder.get_files(page_size=2).execute_query()
+
+        self.assertEqual([f.properties.get("Name") for f in files], ["a.txt", "b.txt", "c.txt", "d.txt"])
+        self.assertEqual(transport.calls, 3)  # noqa: PLR2004
+
+    def test_list_get_items_pages_with_page_size(self):
+        next_url = "https://contoso.sharepoint.com/_api/web/lists/GetByTitle('X')/GetItems?$skiptoken=abc"
+        ctx, _ = self._context([_caml_items_page([1, 2], next_url), _caml_items_page([3, 4]), _caml_items_page([])])
+
+        items = ctx.web.lists.get_by_title("X").get_items(page_size=2).execute_query()
+
+        self.assertEqual([i.properties.get("Id") for i in items], [1, 2, 3, 4])
+
+
 class TestSPOffsetPaging(unittest.TestCase):
     """When a SharePoint endpoint returns no __next link, paged(page_size) falls back to $skip."""
 

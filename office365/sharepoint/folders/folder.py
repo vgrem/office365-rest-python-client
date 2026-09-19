@@ -197,14 +197,17 @@ class Folder(Entity):
         self,
         recursive: bool = False,
         progress: Optional[Callable[[Progress[File]], None]] = None,
+        page_size: int = 2000,
     ) -> FileCollection:
-        """Retrieves files
+        """Retrieves files (paged, so it works on folders with >5,000 items).
 
         Args:
             recursive (bool): Determines whether to enumerate folders recursively
-            progress: Optional hook invoked per scanned folder with a
+            progress: Optional hook invoked per scanned page with a
               ``Progress[File]`` snapshot (``done`` = files discovered so far;
-              ``items`` = the files found in the folder just scanned).
+              ``items`` = the files found in the page just scanned).
+            page_size (int): Items per page (kept below the 5,000-item list view
+              threshold so large folders are read without being throttled).
 
         The fluent ``.select([...])`` / ``.expand([...])`` applied to the returned
         collection is honored on every per-folder file load.
@@ -217,21 +220,35 @@ class Folder(Entity):
         return_type = FileCollection(self.context, resource_path, self)
 
         def _get_files(parent: Folder) -> None:
-            def _on_files_loaded(col) -> None:
-                for file in col:
-                    return_type.add_child(file)
-                if callable(progress):
-                    progress(Progress(done=len(return_type), stage="scanning", items=list(col)))
-                if recursive:
-                    subfolders = parent.folders
-                    subfolders.get().after_execute(lambda _: [_get_files(folder) for folder in subfolders])
-
             files = parent.files
             return_type.query_options.apply_to(files)
             if return_type.query_options.select:
                 fields = sorted({"Id", "Name", "ServerRelativeUrl"} | set(return_type.query_options.select))
                 files.select(fields)
-            files.get().after_execute(_on_files_loaded)
+            seen = {"count": 0}
+
+            def _on_files_page(col: FileCollection) -> None:
+                new_files = list(col)[seen["count"] :]
+                seen["count"] = len(col)
+                for file in new_files:
+                    return_type.add_child(file)
+                if callable(progress):
+                    progress(Progress(done=len(return_type), stage="scanning", items=new_files))
+                if recursive and not col.has_next:
+                    _scan_subfolders(parent)
+
+            files.get_all(page_size, page_loaded=_on_files_page)
+
+        def _scan_subfolders(parent: Folder) -> None:
+            subfolders = parent.folders
+            seen = {"count": 0}
+
+            def _on_folders_page(col: "FolderCollection") -> None:
+                for folder in list(col)[seen["count"] :]:
+                    _get_files(folder)
+                seen["count"] = len(col)
+
+            subfolders.get_all(page_size, page_loaded=_on_folders_page)
 
         placeholder = DeferredOperationQuery(self.context)
         self.context.add_query(placeholder).after_execute(lambda _: _get_files(self))
