@@ -61,6 +61,22 @@ lst.items.filter("ID gt 0").get_all(page_size=2000).execute_query()
 - List settings → **Indexed columns** (add indexes there, or with `ensure_indexed`).
 - If `List.get_items` warns *"not paged"*, pass `page_size=`.
 
+## Uploading into a very large library
+
+`Folder.upload_file(...)` — and the first step of `FileCollection.create_upload_session`
+— use the `Files/add` endpoint, which SharePoint implements with an internal
+query. On a library above the threshold this can return `SPQueryThrottledException`
+**even though you are only writing**, and there is no SharePoint REST upload
+endpoint that avoids it. Workarounds:
+
+- upload via **Microsoft Graph** (`DriveItem` upload session — see
+  `examples/onedrive/files/upload_large.py`);
+- upload into a subfolder whose item count is under the threshold; or
+- reduce the library size (move/archive old items).
+
+The library surfaces this as `SPQueryThrottledException` with guidance so it is
+clear the cause is the threshold, not the upload itself.
+
 ## Notes
 
 - Lists allow roughly 20 indexed columns; indexed text columns are limited to 255
