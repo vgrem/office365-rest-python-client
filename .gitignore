@@ -17,3 +17,6 @@ tests/selfsigncert.pem
 
 # Generator run checkpoints
 generator/.checkpoints/
+
+# Example run checkpoints (data-pipeline resume state)
+*.checkpoint.json
