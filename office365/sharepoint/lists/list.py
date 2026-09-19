@@ -735,6 +735,23 @@ class List(SecurableObject):
         spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
         return [self.ensure_field(name, field_type, on_conflict=on_conflict) for name, field_type in spec]
 
+    def ensure_indexed(
+        self,
+        name: str,
+        field_type: FieldType = FieldType.Text,
+        *,
+        on_conflict: str = "skip",
+    ) -> Field:
+        """Ensure a column exists and is indexed (idempotent, deferred).
+
+        Indexing the columns used in a CAML/``$filter``/``$orderby`` lets queries
+        filter and sort past the 5,000-item list view threshold. Run with
+        ``execute_query()``:
+
+            >>> lst.ensure_indexed("Status").execute_query()
+        """
+        return self.ensure_field(name, field_type, on_conflict=on_conflict).ensure_indexed()
+
     def from_records(
         self,
         source,
