@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -37,7 +38,14 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
     - LINQ-style query operations (filter, order, skip, top)
     - Type-safe object creation and manipulation
     - Event-based loading notifications
+
+    Subclasses backed by a SharePoint list view (list items, files, folders) set
+    ``_list_view_threshold`` so a single-shot load that reaches the threshold warns
+    instead of silently returning a truncated page.
     """
+
+    _list_view_threshold: int | None = None
+    _truncation_hint: str = "page it with get_all(page_size=2000)"
 
     def __init__(
         self,
@@ -66,6 +74,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self._page_headers: dict[str, str] | None = None
         self._server_paged: bool = False
         self._next_page: Callable[[], Any] | None = None
+        self._truncation_warned: bool = False
         self._parent = parent
 
     def clear_state(self) -> Self:
@@ -152,7 +161,26 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """
         client_object._parent_collection = self
         self._data.append(client_object)
+        self._maybe_warn_truncated()
         return self
+
+    def _maybe_warn_truncated(self) -> None:
+        """Warn once when a single-shot load fills the SharePoint list view threshold.
+
+        A non-paged collection that returns the threshold number of rows may have
+        been silently trimmed by SharePoint, so point the caller at the paged API.
+        """
+        threshold = self._list_view_threshold
+        if threshold is None or self._truncation_warned or self._paged_mode:
+            return
+        if len(self._data) >= threshold:
+            self._truncation_warned = True
+            warnings.warn(
+                f"This collection returned {len(self._data):,} items in a single request and may be "
+                f"truncated at the SharePoint list view threshold ({threshold:,}); {self._truncation_hint}.",
+                UserWarning,
+                stacklevel=3,
+            )
 
     def remove_child(self, client_object: ClientObjectT) -> Self:
         """

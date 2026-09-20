@@ -17,6 +17,7 @@ from office365.sharepoint.files.creation_information import FileCreationInformat
 from office365.sharepoint.files.file import File
 from office365.sharepoint.files.publish.status import FileStatus
 from office365.sharepoint.pages.template_file_type import TemplateFileType
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
@@ -46,6 +47,9 @@ def _stream_size(stream: IO) -> int:
 
 class FileCollection(EntityCollection[File]):
     """Represents a collection of File resources."""
+
+    _list_view_threshold = LIST_VIEW_THRESHOLD
+    _truncation_hint = "page it with Folder.get_files(page_size=2000) or files.get_all(page_size=2000)"
 
     def __init__(
         self,

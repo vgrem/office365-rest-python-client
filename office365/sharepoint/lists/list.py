@@ -67,6 +67,7 @@ from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.object_sharing_settings import ObjectSharingSettings
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 from office365.sharepoint.translation.user_resource import UserResource
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
@@ -669,22 +670,77 @@ class List(SecurableObject):
     #    """Clears the broken taxonomy values"""
     #    raise NotImplementedError("validate_broken_taxonomy_values")
 
+    def index_candidates(self, caml_query: CamlQuery) -> list[str]:
+        """The columns a CAML query filters/sorts on that are worth indexing (``ID`` excluded).
+
+        A starting point for :meth:`ensure_indexed` — indexing is explicit and the
+        build runs in the background. Shorthand for ``caml_query.index_candidates``.
+        """
+        return caml_query.index_candidates
+
+    def check_query(self, caml_query: CamlQuery, *, item_count: Optional[int] = None) -> None:
+        """Pre-flight a CAML query against the SharePoint list view threshold.
+
+        Loads the list's item count (unless ``item_count`` is given) and the
+        ``Indexed`` status of the columns the query filters/sorts on, and raises
+        :class:`~office365.sharepoint.exceptions.SPQueryThrottledException` — with
+        the exact columns to index — when the query would be throttled, instead of
+        letting the server return an opaque 500. Performs 1-2 requests.
+
+        Args:
+            caml_query: The query to check.
+            item_count: The list size, when already known (avoids a request).
+        """
+        from office365.sharepoint.exceptions import SPQueryThrottledException
+
+        if item_count is None:
+            self.ensure_property("ItemCount").execute_query()
+            item_count = self.item_count or 0
+        if item_count <= LIST_VIEW_THRESHOLD:
+            return
+        candidates = set(caml_query.index_candidates)
+        if not candidates:
+            return
+
+        fields = self.fields
+        fields.select(["InternalName", "Title", "Indexed"]).get().execute_query()
+        not_indexed = sorted(
+            str(f.internal_name or f.title or "")
+            for f in fields
+            if (f.internal_name in candidates or f.title in candidates) and f.indexed is not True
+        )
+        if not_indexed:
+            names = ", ".join(repr(name) for name in not_indexed)
+            raise SPQueryThrottledException(
+                f"This CAML query filters/sorts on non-indexed column(s) {names} and the list has "
+                f"{item_count:,} items (over the {LIST_VIEW_THRESHOLD:,}-item list view threshold), so it "
+                f"would be throttled. Index them first, e.g. "
+                f"lst.ensure_indexed({not_indexed[0]!r}).execute_query(), or filter on ID (always indexed)."
+            )
+
     def get_items(
         self,
         caml_query: Optional[CamlQuery] = None,
         page_size: Optional[int] = None,
+        check: bool = False,
     ) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query.
 
-        Pass ``page_size`` to page the results (follows the server ``__next`` link
-        when iterating), so a query over more than the 5,000-item list view
-        threshold can be read in full:
+        Pass ``page_size`` to page the results (continues from the last item via
+        ``ListItemCollectionPosition``), so a query over more than the 5,000-item
+        list view threshold can be read in full:
 
             >>> for item in list.get_items(query, page_size=2000).execute_query():
             ...     ...
+
+        Pass ``check=True`` to pre-flight the query with :meth:`check_query` first
+        (raises actionable guidance instead of an opaque server 500). It performs
+        1-2 requests immediately, so it is off by default.
         """
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
+        if check:
+            self.check_query(caml_query)
         if page_size is None:
             warn_if_unpaged(caml_query, item_count=self.item_count)
         return_type = ListItemCollection(self.context, self.items.resource_path)

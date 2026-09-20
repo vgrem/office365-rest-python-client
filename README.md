@@ -181,6 +181,28 @@ items = ctx.web.lists.get_by_title("Projects")\
     .get_all().execute_query()
 ```
 
+#### Large lists & folders
+
+The 5,000-item list view threshold is handled by paging; single-shot loads warn
+when they hit it, and CAML queries can be pre-flighted:
+
+```python
+# a folder with >5,000 files (recursive=True to descend)
+folder = ctx.web.get_folder_by_server_relative_url("/Shared Documents")
+files = folder.get_files(page_size=2000).execute_query()
+
+# paged CAML — continues from the last item (ListItemCollectionPosition)
+for item in lst.get_items(query, page_size=2000).execute_query():
+    ...
+
+# index the columns a query filters/sorts on (explicit, never implicit)
+lst.ensure_indexed("Status").execute_query()
+lst.index_candidates(query)            # -> ['Status']  (what to index)
+lst.check_query(query)                 # actionable guidance before the server call
+```
+
+See [Large lists and folders](docs/large-lists.md).
+
 [All list examples](examples/sharepoint/lists/)
 
 ### Files & Folders

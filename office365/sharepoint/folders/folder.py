@@ -646,7 +646,12 @@ class Folder(Entity):
 
     @property
     def files(self) -> FileCollection:
-        """Specifies the collection of files contained in the list folder."""
+        """Specifies the collection of files contained in the list folder.
+
+        A single-shot load (``ctx.load(folder, ["Files"])`` / ``.get()``) is trimmed
+        at the 5,000-item list view threshold; use :meth:`get_files` (paged) for
+        folders that may exceed it.
+        """
         from office365.sharepoint.files.collection import FileCollection
 
         return self.properties.get(
@@ -655,7 +660,12 @@ class Folder(Entity):
 
     @property
     def folders(self) -> FolderCollection:
-        """Specifies the collection of list folders contained within the list folder."""
+        """Specifies the collection of list folders contained within the list folder.
+
+        A single-shot load (``ctx.load(folder, ["Folders"])`` / ``.get()``) is
+        trimmed at the 5,000-item list view threshold; use ``folders.get_all(
+        page_size=2000)`` for folders that may exceed it.
+        """
         from office365.sharepoint.folders.collection import FolderCollection
 
         return self.properties.get(

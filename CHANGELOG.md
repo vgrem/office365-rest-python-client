@@ -97,6 +97,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `Field.ensure_indexed()` index an existing column via `enableIndex` (the real
   fix for #427); and `List.get_items` warns on unpaged filter/sort queries. New
   `docs/large-lists.md` guide (including the large-library upload caveat, #726).
+- **Large-list UX:** list-view-backed collections (`ListItemCollection`,
+  `FileCollection`, `FolderCollection`) now **warn once** when an unpaged load
+  reaches the 5,000-item threshold (they may have been silently trimmed) and point
+  at the paged API — covering the `ctx.load(folder, ["Files"])` path from
+  #930/#936. `CamlQuery.index_candidates` / `List.index_candidates(query)` name the
+  columns a query should index (propose, never mutate). `List.check_query(query)`
+  (and `List.get_items(query, ..., check=True)`) pre-flights a query and raises
+  actionable guidance naming the columns to index instead of the opaque server
+  500 (opt-in; performs 1–2 requests).
 - **Migration-parity vocabulary:** `ImportResult.run(...)` aliases
   `execute_batch`, and `ImportResult.verify(source, key=...)` reconciles a
   source's natural keys against the target (delegating to the collection). The
@@ -169,6 +178,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **`$skip` paging no longer collides with a server `$skiptoken`.** Once the
+  server drives paging (`__next`/`@odata.nextLink`), the client-side `$skip`
+  fallback is disabled, fixing `The $skip and $skiptoken cannot be specified at
+  the same time` on the final page of a paged collection (e.g.
+  `items.order_by("ID").get_all(page_size=2000)`).
 - **Idempotent imports now load existing keys on every run**, not only on a fresh
   one. A resumed run previously skipped the key load (it lived in the fresh-only
   `prepare` hook), so a replayed or overlapping chunk (a crash between the server

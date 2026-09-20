@@ -12,14 +12,12 @@ import warnings
 from typing import Optional
 
 from office365.sharepoint.listitems.caml.query import CamlQuery
-
-LIST_VIEW_THRESHOLD = 5000  # SharePoint's default list view threshold
-_ALWAYS_INDEXED = frozenset({"ID"})  # ID is indexed by SharePoint
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 
 
 def indexing_candidates(query: CamlQuery) -> set[str]:
     """Field names referenced by the query that are worth indexing (``ID`` excluded)."""
-    return {name for name in query.field_refs if name not in _ALWAYS_INDEXED}
+    return set(query.index_candidates)
 
 
 def threshold_warnings(

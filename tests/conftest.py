@@ -24,5 +24,6 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
         return
     skip_mrk = pytest.mark.skip(reason="--offline exclude all Graph tests")
     for item in items:
-        if issubclass(item.cls, (GraphDelegatedTestCase, SPTestCase)):  # type: ignore[attr-defined]
+        cls = getattr(item, "cls", None)
+        if cls is not None and issubclass(cls, (GraphDelegatedTestCase, SPTestCase)):
             item.add_marker(skip_mrk)

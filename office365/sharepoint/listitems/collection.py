@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 
 if TYPE_CHECKING:
     from office365.runtime.converters.upsert import UpsertTarget
@@ -15,6 +16,9 @@ if TYPE_CHECKING:
 
 class ListItemCollection(EntityCollection[ListItem]):
     """List Item collection"""
+
+    _list_view_threshold = LIST_VIEW_THRESHOLD
+    _truncation_hint = "page it with List.get_items(query, page_size=2000) or items.get_all(page_size=2000)"
 
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, ListItem, resource_path, parent)

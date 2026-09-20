@@ -120,6 +120,15 @@ class CamlQuery(ClientValue):
             return self._expr.field_refs
         return {match.group(1) for match in _FIELD_REF_RE.finditer(self.ViewXml or "")}
 
+    @property
+    def index_candidates(self) -> list[str]:
+        """Fields the query filters/sorts on that are worth indexing (``ID`` excluded).
+
+        Feed these to :meth:`~office365.sharepoint.lists.list.List.ensure_indexed`
+        so a large-list query on them is not throttled by the list view threshold.
+        """
+        return sorted(self.field_refs - {"ID"})
+
     def __repr__(self):
         return self.ViewXml or ""
 

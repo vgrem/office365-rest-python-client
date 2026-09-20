@@ -10,11 +10,15 @@ from office365.sharepoint.folders.coloring_information import (
 )
 from office365.sharepoint.folders.colors import FolderColors
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 
 class FolderCollection(EntityCollection[Folder]):
     """Represents a collection of Folder resources."""
+
+    _list_view_threshold = LIST_VIEW_THRESHOLD
+    _truncation_hint = "page it with folders.get_all(page_size=2000)"
 
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Folder, resource_path, parent)
