@@ -21,6 +21,7 @@ from office365.migration import (
     OutlookOptions,
 )
 from office365.migration.assessment.containers import ScanContainer
+from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners import ScanTarget
 from office365.migration.sharepoint.adapters import SharePointListSource
@@ -31,7 +32,7 @@ from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests._scripted_transport import ScriptedTransport
 
 _GB = 1024**3
-_ISOLATED = AssessmentOptions(disabled_scans={"permissions", "fields", "paths", "files"})
+_ISOLATED = AssessmentOptions(disabled_scans={"permissions", "fields", "lookups", "largeLists", "paths", "files"})
 
 
 # ── Web-scope payloads / helpers ─────────────────────────────────────────────
@@ -411,3 +412,55 @@ def test_mailbox_walker_reports_nested_counts_and_flags_large_folder():
     assert rows["Inbox/Projects"]["ItemCount"] == 5  # noqa: PLR2004
     flags = [i for i in report.issues if i.category == "mail"]
     assert len(flags) == 1 and "Archive" in flags[0].location
+
+
+# ── Limit-driven scanners (SPMT risk codes) ──────────────────────────────────
+
+
+def test_large_list_scanner_grades_by_threshold():
+    from office365.migration.sharepoint.scanners.large_lists import LargeListScanner
+
+    scanner = LargeListScanner(AssessmentOptions())
+    for count, severity, code in (
+        (100, None, ""),
+        (6000, "info", "LIST_VIEW_EXCEED_LIMIT"),
+        (25_000, "warning", "ITEM_COUNT_EXCEED_INDEX_LIMIT"),
+        (30_000_001, "blocker", "ITEM_COUNT_EXCEED_LIMIT"),
+    ):
+        report = AssessmentReport.new()
+        entity = SimpleNamespace(item_count=count, title="L")
+        scanner.run(ScanTarget(ScanContainer.LIST, entity, "web/lists/L"), report)
+        if severity is None:
+            assert not report.issues
+        else:
+            assert len(report.issues) == 1
+            assert report.issues[0].severity == severity
+            assert report.issues[0].risk_code == code
+
+
+def test_lookup_column_scanner_flags_too_many_lookups():
+    from office365.migration.sharepoint.scanners.lookup import LookupColumnScanner
+
+    fields = [SimpleNamespace(properties={"InternalName": f"L{i}", "TypeAsString": "Lookup"}) for i in range(9)]
+    report = AssessmentReport.new()
+    LookupColumnScanner(AssessmentOptions()).run(ScanTarget(ScanContainer.FIELDS, fields, "web/lists/L"), report)
+    assert len(report.issues) == 1
+    assert report.issues[0].risk_code == "LIST_VIEW_LOOKUP_EXCEED_LIMIT"
+
+
+def test_permission_scanner_uses_unique_scope_limits():
+    from office365.migration.sharepoint.scanners.permissions import PermissionScanner
+
+    items = [SimpleNamespace(properties={"HasUniqueRoleAssignments": True}) for _ in range(6000)]
+    report = AssessmentReport.new()
+    PermissionScanner(AssessmentOptions()).run(ScanTarget(ScanContainer.ITEMS, items, "web/lists/L"), report)
+    assert len(report.issues) == 1
+    assert report.issues[0].severity == "warning"
+    assert report.issues[0].risk_code == "UNIQUE_PERMISSION_EXCEED_LIMIT"
+
+
+def test_report_groups_by_risk_code():
+    report = AssessmentReport.new()
+    report.issues.append(AssessmentIssue("warning", "list", "x", "m", risk_code="LIST_VIEW_EXCEED_LIMIT"))
+    assert report.by_risk_code == {"LIST_VIEW_EXCEED_LIMIT": 1}
+    assert report.to_records()[0]["risk_code"] == "LIST_VIEW_EXCEED_LIMIT"

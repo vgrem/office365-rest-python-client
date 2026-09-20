@@ -172,6 +172,17 @@ class AssessmentReport(ClientValue):
                 "location": issue.location,
                 "message": issue.message,
                 "suggestion": issue.suggestion,
+                "risk_code": issue.risk_code,
             }
             for issue in self.issues
         ]
+
+    @property
+    def by_risk_code(self) -> dict[str, int]:
+        """Issue counts per SPMT risk code (issues without a code are excluded)."""
+        self._ensure_finalized()
+        counts: dict[str, int] = {}
+        for issue in self.issues:
+            if issue.risk_code:
+                counts[issue.risk_code] = counts.get(issue.risk_code, 0) + 1
+        return counts

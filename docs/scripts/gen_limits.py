@@ -30,6 +30,23 @@ warn_if_exceeds(Limits.LIST_VIEW, item_count, context="list 'Orders'")
 ```
 """
 
+_ASSESSMENT = """## Migration assessment
+
+The pre-migration assessment (`MigrationAssessor` / `MigrationTenantAssessor`)
+reports several of these limits as [SPMT scan-assessment risk codes](https://learn.microsoft.com/en-us/sharepointmigration/spmt-scan-risk-codes):
+
+| SPMT risk code | Limit | Scanner |
+| --- | --- | --- |
+| `LIST_VIEW_EXCEED_LIMIT` | list view threshold | `LargeListScanner` |
+| `ITEM_COUNT_EXCEED_INDEX_LIMIT` | index add/remove threshold | `LargeListScanner` |
+| `ITEM_COUNT_EXCEED_LIMIT` | max items per list/library | `LargeListScanner` |
+| `LIST_VIEW_LOOKUP_EXCEED_LIMIT` | list view lookup threshold | `LookupColumnScanner` |
+| `UNIQUE_PERMISSION_EXCEED_LIMIT` | unique security scopes | `PermissionScanner` |
+
+Each `AssessmentIssue` carries the `risk_code`, and `report.by_risk_code` groups
+the issues by code.
+"""
+
 
 def _emit(path: str, content: str) -> None:
     with mkdocs_gen_files.open(path, "w") as f:
@@ -41,4 +58,4 @@ for _limit in Limits.catalog():
     _name = f"[{_limit.name}]({_limit.doc})" if _limit.doc else _limit.name
     _rows.append(f"| {_name} | {_limit} | {_limit.kind.value} | {_limit.scope} | {_limit.note} |")
 
-_emit("limits.md", "\n".join([_HEADER, *_rows, ""]))
+_emit("limits.md", "\n".join([_HEADER, *_rows, "", _ASSESSMENT]))

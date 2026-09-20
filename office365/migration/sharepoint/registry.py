@@ -12,13 +12,17 @@ from office365.migration.assessment.registry import ScanDefinition, scan_pairs
 from office365.migration.assessment.scanners.base import AssessmentOptions, BaseScanner
 from office365.migration.sharepoint.scanners.fields import FieldScanner
 from office365.migration.sharepoint.scanners.files import FileScanner
+from office365.migration.sharepoint.scanners.large_lists import LargeListScanner
 from office365.migration.sharepoint.scanners.large_sites import LargeSitesScanner
 from office365.migration.sharepoint.scanners.locked_sites import SiteLockedScanner
+from office365.migration.sharepoint.scanners.lookup import LookupColumnScanner
 from office365.migration.sharepoint.scanners.paths import PathScanner
 from office365.migration.sharepoint.scanners.permissions import PermissionScanner
 
 SHAREPOINT_SCANS: list[ScanDefinition] = [
     ScanDefinition(name="fields", scanner=FieldScanner, container=ScanContainer.FIELDS),
+    ScanDefinition(name="lookups", scanner=LookupColumnScanner, container=ScanContainer.FIELDS),
+    ScanDefinition(name="largeLists", scanner=LargeListScanner, container=ScanContainer.LIST),
     ScanDefinition(name="paths", scanner=PathScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="files", scanner=FileScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="permissions", scanner=PermissionScanner, container=ScanContainer.ITEMS),

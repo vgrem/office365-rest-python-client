@@ -104,7 +104,8 @@ class MigrationAssessor(Entity):
         report = runner.report
 
         needs_site = bool(runner.scanners(ScanContainer.SITE))
-        needs_list_metadata = needs_site  # item counts / last-modified for the summary
+        # item counts / last-modified feed the SITE summary and the LIST-container scans
+        needs_list_metadata = needs_site or bool(runner.scanners(ScanContainer.LIST))
         summary = SiteScanSummary()
 
         def _flag_failure(location: str, error: Exception) -> None:
@@ -247,16 +248,19 @@ class MigrationAssessor(Entity):
         has_fields = bool(runner.scanners(ScanContainer.FIELDS))
         has_items = bool(runner.scanners(ScanContainer.ITEMS, "default"))
         has_unique_items = bool(runner.scanners(ScanContainer.ITEMS, "unique"))
+        has_list = bool(runner.scanners(ScanContainer.LIST))
 
         def _progress(lst) -> None:
             completed["count"] += 1
             emit_progress(progress, done=completed["count"], total=total, stage="assessing", items=[lst])
 
         for lst in lists:
+            location = f"{prefix}/lists/{lst.title}"
+            if has_list:
+                runner.dispatch(ScanContainer.LIST, lst, location)
             if lst.hidden:
                 _progress(lst)
                 continue
-            location = f"{prefix}/lists/{lst.title}"
             pending = {"count": 0}
 
             def _scan_done(lst=lst, pending=pending) -> None:

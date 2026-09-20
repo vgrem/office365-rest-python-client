@@ -14,11 +14,24 @@ class PermissionScanner(BaseScanner):
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         unique = sum(1 for i in target.entity if i.properties.get("HasUniqueRoleAssignments", False))
-        if unique > 0:
+        if unique > self.options.unique_scopes:
+            self.flag(
+                report,
+                "blocker",
+                target.location,
+                f"{unique} items have unique permissions — exceeds the "
+                f"{self.options.unique_scopes:,} supported limit for a list",
+                "Reduce the number of uniquely-permitted items before migrating",
+                risk_code="UNIQUE_PERMISSION_EXCEED_LIMIT",
+            )
+        elif unique > 0:
+            over_recommended = unique > self.options.recommended_unique_scopes
+            extra = f" (over the recommended {self.options.recommended_unique_scopes:,})" if over_recommended else ""
             self.flag(
                 report,
                 "warning",
                 target.location,
-                f"{unique} items have unique permissions",
+                f"{unique} items have unique permissions{extra}",
                 "Set preserve_permissions=True in MigrationOptions (slower migration)",
+                risk_code="UNIQUE_PERMISSION_EXCEED_LIMIT",
             )

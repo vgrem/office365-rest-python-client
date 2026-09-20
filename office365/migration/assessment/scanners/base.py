@@ -9,6 +9,7 @@ from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
+from office365.sharepoint.thresholds import Limits
 
 PayloadT = TypeVar("PayloadT")
 RecordT = TypeVar("RecordT")
@@ -35,11 +36,17 @@ class AssessmentOptions:
     listed here does not run and its data is not collected.
     """
 
-    max_path_length: int = 400
-    max_name_length: int = 128
+    max_path_length: int = Limits.FILE_PATH_LENGTH.value
+    max_name_length: int = Limits.FILE_NAME_LENGTH.value
     invalid_chars: set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
-    large_file_bytes: int = 15 * 1024 * 1024 * 1024  # 15GB file-size limit
-    large_site_threshold_gb: float = 500.0  # sites over 500GB migrate slower
+    large_file_bytes: int = Limits.MIGRATION_FILE_SIZE.value
+    list_view_threshold: int = Limits.LIST_VIEW.value
+    index_threshold: int = Limits.INDEX_ADD_REMOVE.value
+    max_list_items: int = Limits.MAX_LIST_ITEMS.value
+    lookup_joins: int = Limits.LOOKUP_JOINS.value
+    unique_scopes: int = Limits.UNIQUE_SCOPES.value
+    recommended_unique_scopes: int = Limits.UNIQUE_SCOPES_RECOMMENDED.value
+    large_site_threshold_gb: float = 500.0  # SMAT heuristic (sites over 500GB migrate slower), not a service limit
     strip_field_attrs: set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
     approval_workflow_fields: set[str] = field(
         default_factory=lambda: {"_ApprovalStatus", "_ApprovalRespondedBy", "_ApprovalAssignedTo"}
@@ -89,8 +96,9 @@ class BaseScanner(Generic[RecordT]):
         location: str,
         message: str,
         suggestion: str = "",
+        risk_code: str = "",
     ) -> None:
-        report.issues.append(AssessmentIssue(severity, self.category, location, message, suggestion))
+        report.issues.append(AssessmentIssue(severity, self.category, location, message, suggestion, risk_code))
 
     def run(self, target: ScanTarget[Any], report: AssessmentReport) -> None:
         """Inspect a loaded container payload (target.entity) and flag / record."""
