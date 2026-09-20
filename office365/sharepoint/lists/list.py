@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import warnings
 from datetime import datetime
 from typing import IO, TYPE_CHECKING, Any, AnyStr, Callable, Dict, Optional, Union, cast
@@ -85,6 +86,7 @@ if TYPE_CHECKING:
 
 
 LIST_VIEW_THRESHOLD = 5000  # SharePoint's default list view threshold
+_FIELD_REF_RE = re.compile(r"<FieldRef\s+Name=['\"]([^'\"]+)['\"]", re.IGNORECASE)
 
 
 class List(SecurableObject):
@@ -683,6 +685,8 @@ class List(SecurableObject):
         """
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
+        if getattr(self.context, "auto_index", False):
+            self._ensure_query_indexes(caml_query)
         if page_size is None:
             self._warn_if_unpaged(caml_query)
         return_type = ListItemCollection(self.context, self.items.resource_path)
@@ -692,6 +696,19 @@ class List(SecurableObject):
         if page_size:
             return_type.paged(page_size)
         return return_type
+
+    def _ensure_query_indexes(self, caml_query: CamlQuery) -> None:
+        """Queue index creation for the query's filter/sort columns (opt-in auto-index).
+
+        Enabled via :meth:`~office365.sharepoint.client_context.ClientContext.with_auto_index`.
+        The index operations are queued before the ``GetItems`` query, so they run
+        first (``ID`` is always indexed and skipped).
+        """
+        view_xml = getattr(caml_query, "ViewXml", None) or ""
+        names = {match.group(1) for match in _FIELD_REF_RE.finditer(view_xml)}
+        names.discard("ID")
+        for name in names:
+            self.ensure_indexed(name)
 
     def _warn_if_unpaged(self, caml_query: CamlQuery) -> None:
         """Warn when an unpaged CAML query may exceed the list view threshold.

@@ -85,8 +85,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   pages (so >5,000-item folders work — refs #930/#936/#462);
   `List.get_items(query, page_size=...)` pages CAML results;
   `List.ensure_indexed(name)` / `Field.ensure_indexed()` index a column (the real
-  fix for #427); and `List.get_items` warns on unpaged filter/sort queries. New
-  `docs/large-lists.md` guide (including the large-library upload caveat, #726).
+  fix for #427); `ctx.with_auto_index()` (opt-in) makes `List.get_items` index the
+  query's filter/sort columns automatically; and `List.get_items` warns on unpaged
+  filter/sort queries. New `docs/large-lists.md` guide (including the large-library
+  upload caveat, #726).
 - **Migration-parity vocabulary:** `ImportResult.run(...)` aliases
   `execute_batch`, and `ImportResult.verify(source, key=...)` reconciles a
   source's natural keys against the target (delegating to the collection). The

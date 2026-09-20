@@ -55,6 +55,21 @@ change and is **never done implicitly** — call `ensure_indexed` yourself.
 lst.items.filter("ID gt 0").get_all(page_size=2000).execute_query()
 ```
 
+## Opt-in: let the library index for you
+
+If you'd rather not reason about indexes, enable auto-indexing on the context:
+
+```python
+ctx.with_auto_index()
+
+for item in lst.get_items(query, page_size=2000).execute_query():
+    ...
+```
+
+`List.get_items` then ensures an index on the columns used in the query's
+`<Where>`/`<OrderBy>` **before** running it, so the query succeeds. This is
+**off by default** because it changes the list schema — enable it explicitly.
+
 ## Diagnosing
 
 - `lst.ensure_property("ItemCount").execute_query()` then `lst.item_count`.
