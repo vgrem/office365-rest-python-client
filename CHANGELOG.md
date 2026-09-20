@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Typed CAML query builder:** `Caml` / `CamlQuery.builder()` construct `ViewXml`
+  from composable Python expressions instead of raw CAML strings — fluent
+  comparisons (`Caml.text("Status").eq("Active")`), field-typed helpers
+  (`Caml.lookup("Category").id().in_([2, 3])`), value nodes (`Caml.now`), logical
+  joins (`.and_()/.or_()/.not_()`, `&`/`|`/`~`, variadic `Caml.and_/or_`) that
+  always render **binary-nested** CAML, plus
+  `where/order_by/group_by/row_limit/scope/view_fields`. Raw `ViewXml`/`parse`
+  remain supported. New modules under `office365/sharepoint/listitems/caml/`
+  (`values`, `fields`, `expressions`, `builder`); removed the unused `types` stubs.
 - `ImportResult` — a deferred, source-agnostic streaming import driver. Chunks
   are queued, executed, and discarded (bounded memory), and the caller picks the
   terminal: `execute_query()` (sequential), `execute_batch(...)` (server-side,

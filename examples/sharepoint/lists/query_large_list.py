@@ -1,12 +1,16 @@
-"""Query a large list with a CAML query (reproduces the list view threshold error).
+"""Query a large list with a typed CAML query (reproduces the list view threshold error).
 
-The query filters on a **non-indexed** column (``Name_``) and matches almost every
-item. On a list larger than the 5,000-item list view threshold SharePoint rejects
-it with HTTP 500 / ``SPException -2147467259 "Cannot complete this action. Please
-try again."`` — the error reported in issue #427.
+The query is built with the fluent :class:`~office365.sharepoint.listitems.caml.builder.QueryBuilder`
+instead of a raw ``ViewXml`` string. It filters on a **non-indexed** column
+(``Name_``) and sorts on another (``date``); on a list larger than the 5,000-item
+list view threshold SharePoint rejects it with HTTP 500 /
+``SPException -2147467259 "Cannot complete this action. Please try again."`` —
+the error reported in issue #427.
 
-To fix it, filter on an indexed column (``ID`` is always indexed, e.g. ``ID > 0``)
-or add an index to the column you filter on (List settings -> Indexed columns).
+To fix it, filter/sort on an indexed column (``ID`` is always indexed, e.g.
+``ID > 0``) or add an index to the column you filter on:
+
+    target_list.ensure_indexed("date").execute_query()
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
@@ -16,7 +20,8 @@ from __future__ import annotations
 import argparse
 
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.listitems.caml.query import CamlQuery
+from office365.sharepoint.listitems.caml import Caml, CamlQuery
+from office365.sharepoint.views.scope import ViewScope
 from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
 
@@ -29,24 +34,14 @@ def build_custom_query(page_size: int = 10000) -> CamlQuery:
     trimmed, which is what makes SharePoint reject the request (HTTP 500 /
     ``SPException -2147467259 "Cannot complete this action. Please try again."``).
     """
-    qry = CamlQuery()
-    qry.ViewXml = f"""
-    <View Scope='RecursiveAll'>
-       <Query>
-           <Where>
-              <Neq>
-                 <FieldRef Name='Name_'/>
-                 <Value Type='Text'>__none__</Value>
-              </Neq>
-           </Where>
-           <OrderBy>
-              <FieldRef Name='date' Ascending='TRUE'/>
-           </OrderBy>
-       </Query>
-       <RowLimit>{page_size}</RowLimit>
-    </View>
-    """
-    return qry
+    return (
+        CamlQuery.builder()
+        .where(Caml.text("Name_").neq("__none__"))
+        .order_by("date")
+        .row_limit(page_size, paged=False)
+        .scope(ViewScope.RecursiveAll)
+        .build()
+    )
 
 
 def main():

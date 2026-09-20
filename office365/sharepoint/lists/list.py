@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import os
-import re
-import warnings
 from datetime import datetime
 from typing import IO, TYPE_CHECKING, Any, AnyStr, Callable, Dict, Optional, Union, cast
 
@@ -39,6 +37,7 @@ from office365.sharepoint.flows.connector_result import ConnectorResult
 from office365.sharepoint.flows.synchronization_result import FlowSynchronizationResult
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.forms.collection import FormCollection
+from office365.sharepoint.listitems.caml.guard import indexing_candidates, warn_if_unpaged
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.listitems.creation_information import (
@@ -83,10 +82,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.documentmanagement.document_set import DocumentSet
     from office365.sharepoint.webs.web import Web
-
-
-LIST_VIEW_THRESHOLD = 5000  # SharePoint's default list view threshold
-_FIELD_REF_RE = re.compile(r"<FieldRef\s+Name=['\"]([^'\"]+)['\"]", re.IGNORECASE)
 
 
 class List(SecurableObject):
@@ -696,9 +691,10 @@ class List(SecurableObject):
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
         if auto_index:
-            self._ensure_query_indexes(caml_query)
+            for name in indexing_candidates(caml_query):
+                self.ensure_indexed(name)
         if page_size is None:
-            self._warn_if_unpaged(caml_query)
+            warn_if_unpaged(caml_query, item_count=self.item_count)
         return_type = ListItemCollection(self.context, self.items.resource_path)
         payload = {"query": caml_query}
         qry = ServiceOperationQuery(self, "GetItems", None, payload, None, return_type)
@@ -706,42 +702,6 @@ class List(SecurableObject):
         if page_size:
             return_type.paged(page_size)
         return return_type
-
-    def _ensure_query_indexes(self, caml_query: CamlQuery) -> None:
-        """Queue index creation for the query's filter/sort columns (opt-in auto-index).
-
-        Used by :meth:`get_items` when ``auto_index=True``. The index operations are
-        queued before the ``GetItems`` query, so they run first (``ID`` is always
-        indexed and skipped).
-        """
-        view_xml = getattr(caml_query, "ViewXml", None) or ""
-        names = {match.group(1) for match in _FIELD_REF_RE.finditer(view_xml)}
-        names.discard("ID")
-        for name in names:
-            self.ensure_indexed(name)
-
-    def _warn_if_unpaged(self, caml_query: CamlQuery) -> None:
-        """Warn when an unpaged CAML query may exceed the list view threshold.
-
-        Metadata-free (uses ``ItemCount`` only when already loaded) and skipped
-        when the list is known to be small, so it stays quiet on ordinary queries.
-        """
-        view_xml = getattr(caml_query, "ViewXml", None) or ""
-        if "Paged='TRUE'" in view_xml or 'Paged="TRUE"' in view_xml:
-            return
-        item_count = self.item_count
-        if item_count is not None and item_count <= LIST_VIEW_THRESHOLD:
-            return
-        has_filter_or_sort = "<OrderBy" in view_xml or "<Where" in view_xml
-        if not has_filter_or_sort and item_count is None:
-            return
-        warnings.warn(
-            "This CAML query is not paged and may exceed the SharePoint list view "
-            f"threshold ({LIST_VIEW_THRESHOLD:,} items). Pass page_size=2000 to get_items(), "
-            "or add RowLimit Paged='TRUE' and iterate; index the filtered/sorted columns with "
-            "ensure_indexed(...) to avoid throttling.",
-            stacklevel=3,
-        )
 
     def ensure_field(
         self,
