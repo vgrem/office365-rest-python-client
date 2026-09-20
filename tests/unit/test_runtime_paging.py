@@ -100,9 +100,11 @@ class _CaptureTransport(_ScriptedTransport):
     def __init__(self, payloads):
         super().__init__(payloads)
         self.urls: list[str] = []
+        self.bodies: list = []
 
     def execute(self, request):
         self.urls.append(request.url)
+        self.bodies.append(request.data)
         return super().execute(request)
 
 
@@ -137,12 +139,13 @@ class TestLargeCollectionPaging(unittest.TestCase):
         self.assertEqual(transport.calls, 3)  # noqa: PLR2004
 
     def test_list_get_items_pages_with_page_size(self):
-        next_url = "https://contoso.sharepoint.com/_api/web/lists/GetByTitle('X')/GetItems?$skiptoken=abc"
-        ctx, _ = self._context([_caml_items_page([1, 2], next_url), _caml_items_page([3, 4]), _caml_items_page([])])
+        ctx, transport = self._context([_caml_items_page([1, 2]), _caml_items_page([3, 4]), _caml_items_page([])])
 
         items = ctx.web.lists.get_by_title("X").get_items(page_size=2).execute_query()
 
         self.assertEqual([i.properties.get("Id") for i in items], [1, 2, 3, 4])
+        # the next GetItems call continues from the last item via its position
+        self.assertIn("Paged=TRUE&p_ID=2", jsonlib.dumps(transport.bodies[1]))
 
     def test_get_items_warns_on_unpaged_sorted_query(self):
         ctx = ClientContext(test_site_url)
@@ -154,20 +157,7 @@ class TestLargeCollectionPaging(unittest.TestCase):
         with self.assertWarns(UserWarning):
             lst.get_items(query)
 
-    def test_get_items_auto_index_queues_indexes(self):
-        ctx = ClientContext(test_site_url)
-        ctx.pending_request().beforeExecute.clear()
-        lst = ctx.web.lists.get_by_title("X")
-        query = CamlQuery()
-        query.ViewXml = "<View><Query><OrderBy><FieldRef Name='date'/></OrderBy></Query></View>"
-
-        before = len(ctx._queries)
-        lst.get_items(query, page_size=2000, auto_index=True)
-
-        # ensure-field + index update + GetItems are queued (>= 3)
-        self.assertGreaterEqual(len(ctx._queries) - before, 3)  # noqa: PLR2004
-
-    def test_get_items_without_auto_index_only_queues_get_items(self):
+    def test_get_items_only_queues_get_items(self):
         ctx = ClientContext(test_site_url)
         ctx.pending_request().beforeExecute.clear()
         lst = ctx.web.lists.get_by_title("X")

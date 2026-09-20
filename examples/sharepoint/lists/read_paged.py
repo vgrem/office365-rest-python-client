@@ -15,7 +15,7 @@ def print_progress(items: ListItemCollection) -> None:
 ctx = ClientContext(team_site_url).with_client_certificate(
     tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
 )
-large_list = ctx.web.lists.get_by_title("Contacts_Large")
+large_list = ctx.web.lists.get_by_title("Stocks_5yr_Large")
 paged_items = large_list.items.paged(1000, page_loaded=print_progress).get().execute_query()
 for _, _ in enumerate(paged_items):
     pass

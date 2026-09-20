@@ -29,7 +29,7 @@ items = lst.items.get_all(page_size=2000).execute_query()
 # a folder's files — pages automatically, so >5,000-item folders work
 files = folder.get_files(page_size=2000).execute_query()
 
-# CAML query — iterating follows the server __next link
+# CAML query — iterating continues from the last item (ListItemCollectionPosition)
 for item in lst.get_items(query, page_size=2000).execute_query():
     ...
 ```
@@ -40,7 +40,8 @@ for item in lst.get_items(query, page_size=2000).execute_query():
 
 ## Fix 2 — index the filtered/sorted column
 
-Indexing a column lets queries filter and sort past the threshold:
+Indexing a column lets queries filter and sort past the threshold. The column
+must already exist:
 
 ```python
 lst.ensure_indexed("Status").execute_query()
@@ -54,19 +55,6 @@ change and is **never done implicitly** — call `ensure_indexed` yourself.
 ```python
 lst.items.filter("ID gt 0").get_all(page_size=2000).execute_query()
 ```
-
-## Opt-in: let the library index for you
-
-If you'd rather not reason about indexes, pass `auto_index=True`:
-
-```python
-for item in lst.get_items(query, page_size=2000, auto_index=True).execute_query():
-    ...
-```
-
-`List.get_items` then ensures an index on the columns used in the query's
-`<Where>`/`<OrderBy>` **before** running it, so the query succeeds. This is
-**off by default** because it changes the list schema — opt in explicitly.
 
 ## Diagnosing
 
@@ -96,5 +84,5 @@ clear the cause is the threshold, not the upload itself.
   characters — `ensure_indexed` surfaces the server error if the limit is hit.
 - Sorting on a non-indexed column is the most reliable trigger: SharePoint can
   trim a plain filter to 5,000, but it cannot trim a full sort.
-- Run `examples/sharepoint/lists/query_large_list.py --reproduce` to see the error,
-  and `examples/sharepoint/files/list_large_folder.py` for the paged alternative.
+- See `examples/sharepoint/lists/query_large_list.py` (index + paged CAML) and
+  `examples/sharepoint/files/list_large_folder.py` (paged folder files).

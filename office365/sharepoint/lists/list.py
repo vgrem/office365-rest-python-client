@@ -37,9 +37,10 @@ from office365.sharepoint.flows.connector_result import ConnectorResult
 from office365.sharepoint.flows.synchronization_result import FlowSynchronizationResult
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.forms.collection import FormCollection
-from office365.sharepoint.listitems.caml.guard import indexing_candidates, warn_if_unpaged
+from office365.sharepoint.listitems.caml.guard import warn_if_unpaged
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.collection import ListItemCollection
+from office365.sharepoint.listitems.collection_position import ListItemCollectionPosition
 from office365.sharepoint.listitems.creation_information import (
     ListItemCreationInformation,
 )
@@ -672,7 +673,6 @@ class List(SecurableObject):
         self,
         caml_query: Optional[CamlQuery] = None,
         page_size: Optional[int] = None,
-        auto_index: bool = False,
     ) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query.
 
@@ -682,17 +682,9 @@ class List(SecurableObject):
 
             >>> for item in list.get_items(query, page_size=2000).execute_query():
             ...     ...
-
-        Pass ``auto_index=True`` to index the columns referenced by the query's
-        ``<Where>``/``<OrderBy>`` before running it, so a non-indexed filter/sort
-        over a large list succeeds instead of being throttled. Indexing changes the
-        list schema, so it is opt-in (``False`` by default).
         """
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
-        if auto_index:
-            for name in indexing_candidates(caml_query):
-                self.ensure_indexed(name)
         if page_size is None:
             warn_if_unpaged(caml_query, item_count=self.item_count)
         return_type = ListItemCollection(self.context, self.items.resource_path)
@@ -701,6 +693,24 @@ class List(SecurableObject):
         self.context.add_query(qry)
         if page_size:
             return_type.paged(page_size)
+
+            def _next_page() -> None:
+                # CAML paging: continue from the last item via its collection position,
+                # carrying the sort columns (then ID) so the next page starts where
+                # the previous one stopped.
+                last = return_type[-1]
+                parts = ["Paged=TRUE"]
+                parts.extend(
+                    f"p_{name}={last.properties.get(name)}"
+                    for name in caml_query.order_by_fields
+                    if name.upper() != "ID"
+                )
+                parts.append(f"p_ID={last.id}")
+                caml_query.ListItemCollectionPosition = ListItemCollectionPosition(PagingInfo="&".join(parts))
+                next_qry = ServiceOperationQuery(self, "GetItems", None, {"query": caml_query}, None, return_type)
+                self.context.add_query(next_qry)
+
+            return_type._next_page = _next_page
         return return_type
 
     def ensure_field(
@@ -751,22 +761,16 @@ class List(SecurableObject):
         spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
         return [self.ensure_field(name, field_type, on_conflict=on_conflict) for name, field_type in spec]
 
-    def ensure_indexed(
-        self,
-        name: str,
-        field_type: FieldType = FieldType.Text,
-        *,
-        on_conflict: str = "skip",
-    ) -> Field:
-        """Ensure a column exists and is indexed (idempotent, deferred).
+    def ensure_indexed(self, name: str) -> Field:
+        """Enable the index on an existing column (idempotent, deferred).
 
         Indexing the columns used in a CAML/``$filter``/``$orderby`` lets queries
-        filter and sort past the 5,000-item list view threshold. Run with
-        ``execute_query()``:
+        filter and sort past the 5,000-item list view threshold. The column must
+        already exist. Run with ``execute_query()``:
 
             >>> lst.ensure_indexed("Status").execute_query()
         """
-        return self.ensure_field(name, field_type, on_conflict=on_conflict).ensure_indexed()
+        return self.fields.get_by_internal_name_or_title(name).ensure_indexed()
 
     def from_records(
         self,

@@ -1,16 +1,12 @@
-"""Query a large list with a typed CAML query (reproduces the list view threshold error).
+"""Query a large list that returns more than the 5,000-item list view threshold.
 
-The query is built with the fluent :class:`~office365.sharepoint.listitems.caml.builder.QueryBuilder`
-instead of a raw ``ViewXml`` string. It filters on a **non-indexed** column
-(``Name_``) and sorts on another (``date``); on a list larger than the 5,000-item
-list view threshold SharePoint rejects it with HTTP 500 /
-``SPException -2147467259 "Cannot complete this action. Please try again."`` —
-the error reported in issue #427.
+Sorts by ``ID`` (always indexed, so the sort never trips the threshold) and pages
+through every item with a typed CAML query built by the fluent builder. Pass
+``--since`` to add a date filter; filtering on a non-indexed column needs an index,
+which ``ensure_indexed`` enables (SharePoint then builds it in the background).
 
-To fix it, filter/sort on an indexed column (``ID`` is always indexed, e.g.
-``ID > 0``) or add an index to the column you filter on:
-
-    target_list.ensure_indexed("date").execute_query()
+    python query_large_list.py --list-title Stocks_5yr_Large
+    python query_large_list.py --list-title Stocks_5yr_Large --since 2013-01-01
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
@@ -24,30 +20,22 @@ from office365.sharepoint.listitems.caml import Caml, CamlQuery
 from office365.sharepoint.views.scope import ViewScope
 from tests.settings import cert_path, cert_thumbprint, client_id, team_site_url, tenant
 
+PREVIEW_ROWS = 5
 
-def build_custom_query(page_size: int = 10000) -> CamlQuery:
-    """Build a CAML query that breaks the list view threshold (#427).
 
-    SharePoint Online silently **trims** a non-indexed ``<Where>`` to the 5,000
-    item threshold, so a plain filter just returns 5,000 rows. Sorting on a
-    **non-indexed** column (``OrderBy``) forces a full sort that cannot be
-    trimmed, which is what makes SharePoint reject the request (HTTP 500 /
-    ``SPException -2147467259 "Cannot complete this action. Please try again."``).
-    """
-    return (
-        CamlQuery.builder()
-        .where(Caml.text("Name_").neq("__none__"))
-        .order_by("date")
-        .row_limit(page_size, paged=False)
-        .scope(ViewScope.RecursiveAll)
-        .build()
-    )
+def build_query(since: str | None, page_size: int) -> CamlQuery:
+    """A typed, paged CAML query sorted by ``ID`` (optionally filtered by ``since``)."""
+    builder = CamlQuery.builder().order_by("ID").row_limit(page_size, paged=True).scope(ViewScope.RecursiveAll)
+    if since:
+        builder.where(Caml.text("date").geq(since))
+    return builder.build()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Query a large SharePoint list with a CAML query")
+    parser = argparse.ArgumentParser(description="Query a large SharePoint list")
     parser.add_argument("--list-title", default="Stocks_5yr_Large", help="list title")
-    parser.add_argument("--page-size", type=int, default=10000, help="items per page (RowLimit)")
+    parser.add_argument("--since", default=None, help="only rows on/after this date (default: all)")
+    parser.add_argument("--page-size", type=int, default=2000, help="items per page (keep <= 5000)")
     args = parser.parse_args()
 
     ctx = ClientContext(team_site_url).with_client_certificate(
@@ -55,9 +43,21 @@ def main():
     )
     target_list = ctx.web.lists.get_by_title(args.list_title)
 
-    items = target_list.get_items(build_custom_query(args.page_size)).execute_query()
-    print(f"Total items count: {len(items)}")
+    target_list.ensure_property("ItemCount").execute_query()
+    print(f"List '{args.list_title}' has {target_list.item_count:,} item(s)")
+
+    if args.since:
+        # Index the filtered column so the filter is not throttled (idempotent).
+        target_list.ensure_indexed("date").execute_query()
+
+    # Page through every match (iterating continues from the last item's position).
+    items = target_list.get_items(build_query(args.since, args.page_size), page_size=args.page_size).execute_query()
+    scope = f" since {args.since}" if args.since else ""
+    count = sum(1 for _ in items)
+    print(f"Read {count} item(s){scope}")
     for index, item in enumerate(items):
+        if index >= PREVIEW_ROWS:
+            break
         print(f"{index}: {item.properties.get('Name_')} {item.properties.get('date')}")
 
 

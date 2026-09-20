@@ -285,9 +285,15 @@ class Field(Entity):
         Indexing a column lets queries filter/sort on it past the 5,000-item list
         view threshold. Run with ``execute_query()``.
         """
-        if self.indexed is not True:
-            self.set_property("Indexed", True)
-            self.update()
+
+        def _enable(_=None) -> None:
+            if self.indexed is not True:
+                self.enable_index()
+
+        if self.indexed is None:
+            self.ensure_property("Indexed").after_execute(_enable)
+        else:
+            _enable()
         return self
 
     @property

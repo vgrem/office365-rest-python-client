@@ -98,6 +98,18 @@ class CamlQuery(ClientValue):
         return "Paged='TRUE'" in xml or 'Paged="TRUE"' in xml
 
     @property
+    def order_by_fields(self) -> list[str]:
+        """The field names in ``<OrderBy>``, in order (empty when unsorted).
+
+        Used to build the ``ListItemCollectionPosition`` paging token so a
+        multi-page CAML query continues where the previous page stopped.
+        """
+        if self._expr is not None:
+            return [ref.name for ref in self._expr._order_by]
+        match = re.search(r"<OrderBy>(.*?)</OrderBy>", self.ViewXml or "", re.DOTALL | re.IGNORECASE)
+        return _FIELD_REF_RE.findall(match.group(1)) if match else []
+
+    @property
     def field_refs(self) -> set[str]:
         """The field names referenced by the query.
 

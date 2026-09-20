@@ -7,15 +7,15 @@ from office365.sharepoint.fields.field import Field
 from tests import test_site_url
 
 
-def test_field_ensure_indexed_queues_update():
+def test_field_ensure_indexed_queues_enable():
     ctx = ClientContext(test_site_url)
     field = Field(ctx)
     field.set_property("Indexed", False)
 
     field.ensure_indexed()
 
-    assert field.properties["Indexed"] is True
-    assert len(ctx._queries) == 1  # an update was queued
+    assert len(ctx._queries) == 1  # enableIndex was queued
+    assert field.properties["Indexed"] is False  # only the server flips it
 
 
 def test_field_ensure_indexed_is_idempotent():
@@ -25,4 +25,13 @@ def test_field_ensure_indexed_is_idempotent():
 
     field.ensure_indexed()
 
-    assert len(ctx._queries) == 0  # already indexed -> no update
+    assert len(ctx._queries) == 0  # already indexed -> no call
+
+
+def test_list_ensure_indexed_does_not_create_field():
+    ctx = ClientContext(test_site_url)
+    lst = ctx.web.lists.get_by_title("X")
+
+    lst.ensure_indexed("Status")
+
+    assert len(ctx._queries) == 1  # only enableIndex, no create-field

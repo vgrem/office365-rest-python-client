@@ -64,6 +64,8 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self._current_pos: int | None = None
         self._next_request_url: str | None = None
         self._page_headers: dict[str, str] | None = None
+        self._server_paged: bool = False
+        self._next_page: Callable[[], Any] | None = None
         self._parent = parent
 
     def clear_state(self) -> Self:
@@ -78,6 +80,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """
         if not self._paged_mode:
             self._data = []
+            self._server_paged = False
         self._next_request_url = None
         self._page_headers = None
         self._current_pos = len(self._data)
@@ -128,6 +131,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         if name == "__nextLinkUrl":
             if isinstance(value, str):
                 self._next_request_url = value
+                self._server_paged = True
             else:
                 raise ValueError(f"Invalid value for __nextLinkUrl: expected a string {value}")
         else:
@@ -353,6 +357,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """
         if not self._paged_mode or not self._page_size or self._next_request_url is not None:
             return False
+        if self._server_paged:
+            # The server drives paging (``__next``/``$skiptoken``); a ``$skip``
+            # fallback would conflict with the token on the final page.
+            return False
         from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 
         json_format = getattr(self.context.pending_request(), "json_format", None)
@@ -362,6 +370,11 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
     def _get_next(self) -> Self:
         """Submit a request to retrieve next collection of items"""
+
+        if self._next_page is not None:
+            # Custom loader (e.g. CAML paging via ListItemCollectionPosition).
+            self._next_page()
+            return self
 
         _PAGE_EXCLUDED_HEADERS = ("authorization", "content-length")
 
@@ -443,6 +456,9 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         or when a SharePoint collection loaded a full explicit page and the next
         one can still be fetched via ``$skip``.
         """
+        if self._next_page is not None:
+            # Custom loader (e.g. CAML): more pages while the last one was full.
+            return self._paged_mode and self._page_size is not None and len(self.current_page) == self._page_size
         return self._next_request_url is not None or self._can_offset_next()
 
     @property
