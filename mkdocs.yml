@@ -48,6 +48,7 @@ plugins:
   - gen-files:
       scripts:
         - docs/scripts/gen_examples.py
+        - docs/scripts/gen_limits.py
   - awesome-pages
   - mkdocstrings:
       default_handler: python

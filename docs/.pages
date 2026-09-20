@@ -5,6 +5,7 @@ nav:
   - getting-started.md
   - data-pipeline.md
   - large-lists.md
+  - limits.md
   - auth
   - products
   - api.md
