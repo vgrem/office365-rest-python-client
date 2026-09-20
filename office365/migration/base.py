@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, fields
 from enum import Enum
 
+from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.operations import OperationStats
 
 
@@ -102,7 +103,7 @@ class MigrationOptions:
     preserve_versions: bool = False
     include_patterns: list[str] = field(default_factory=list)
     exclude_patterns: list[str] = field(default_factory=list)
-    batch_size: int = 100
+    batch_size: int = DEFAULT_BATCH_SIZE
     concurrency: int = 1  # parallel workers for bulk file upload / batched writes
 
 

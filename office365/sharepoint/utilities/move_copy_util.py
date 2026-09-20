@@ -9,13 +9,14 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.thresholds import Limits
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.folder import Folder
 
-_DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024  # simple-upload threshold / upload-session chunk
+_DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload threshold / upload-session chunk
 
 UploadSource = Union[
     str,

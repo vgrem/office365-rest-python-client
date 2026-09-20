@@ -50,6 +50,7 @@ from typing import (
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
+from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.operations import OperationStats
 
 if TYPE_CHECKING:
@@ -287,7 +288,7 @@ class ImportResult(ClientResult[ImportStats]):
 
     def execute_batch(
         self,
-        items_per_batch: int = 100,
+        items_per_batch: int = DEFAULT_BATCH_SIZE,
         max_batch_bytes: Optional[int] = None,
         concurrency: int = 1,
         success_callback: Optional[Callable[[Any], None]] = None,
@@ -316,7 +317,7 @@ class ImportResult(ClientResult[ImportStats]):
 
     def run(
         self,
-        items_per_batch: int = 100,
+        items_per_batch: int = DEFAULT_BATCH_SIZE,
         max_batch_bytes: Optional[int] = None,
         concurrency: int = 1,
         success_callback: Optional[Callable[[Any], None]] = None,

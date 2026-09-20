@@ -19,6 +19,8 @@ scan/return more items than it, and trims some single-shot collection loads to i
 from __future__ import annotations
 
 from office365.runtime.limits import (
+    DEFAULT_BATCH_SIZE,
+    SAFE_PAGE_SIZE,
     Limit,
     LimitExceededError,
     LimitKind,
@@ -229,7 +231,7 @@ class Limits:
     # --- Batching -----------------------------------------------------------
     BATCH_ITEMS = Limit(
         "items per bulk/batch operation",
-        100,
+        DEFAULT_BATCH_SIZE,
         _BOUNDARY,
         "items",
         "batch",
@@ -490,7 +492,3 @@ class Limits:
 # The list-view threshold is the one callers reference most often; keep a module
 # constant for backward compatibility and ergonomics.
 LIST_VIEW_THRESHOLD = Limits.LIST_VIEW.value
-
-#: Recommended page size — below the list-view threshold, so paged reads and
-#: imports stay under it by default.
-SAFE_PAGE_SIZE = 2000

@@ -13,6 +13,7 @@ from office365.runtime.client_request_exception import (
     ErrorPayload,
     register_error_type,
 )
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE
 
 
 class SecurityValidationException(ClientRequestException):
@@ -44,8 +45,8 @@ class SPQueryThrottledException(ClientRequestException):
     _MARKERS = ("list view threshold", "umbral de vista de lista")
 
     GUIDANCE = (
-        "This exceeds the SharePoint list view threshold (5,000 items by default). "
-        "To fix it, either: (1) page through the data with get_all(page_size<=5000) "
+        f"This exceeds the SharePoint list view threshold ({LIST_VIEW_THRESHOLD:,} items by default). "
+        f"To fix it, either: (1) page through the data with get_all(page_size<={SAFE_PAGE_SIZE}) "
         "(for list items) or Folder.get_files() / List.get_items(query, page_size=...); "
         "(2) filter/sort on an indexed column - add one with List.ensure_indexed('Column'); "
         "or (3) filter on ID (always indexed)."

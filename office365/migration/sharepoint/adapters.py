@@ -20,6 +20,7 @@ from office365.migration.base import MigrationItem
 from office365.migration.sharepoint.transfer import Failure
 from office365.runtime.converters.json_file import record_to_json
 from office365.runtime.converters.scalars import iso_or_none, parse_int
+from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 
@@ -241,7 +242,7 @@ class SharePointListTarget:
 
     def commit(self, options=None) -> None:
         """Flush any remaining queued record writes through an OData batch."""
-        batch_size = getattr(options, "batch_size", None) or 100
+        batch_size = getattr(options, "batch_size", None) or DEFAULT_BATCH_SIZE
         concurrency = getattr(options, "concurrency", None) or 1
         self._flush(batch_size, concurrency)
 

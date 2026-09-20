@@ -25,6 +25,13 @@ R = TypeVar("R")
 
 _ON_EXCEED = ("warn", "raise")
 
+#: A conservative default page/chunk size that stays below SharePoint's 5,000-item
+#: list view threshold, so paged reads and imports are safe by default.
+SAFE_PAGE_SIZE = 2000
+
+#: Default number of items per OData batch (also SharePoint's bulk-operation limit).
+DEFAULT_BATCH_SIZE = 100
+
 
 class LimitKind(Enum):
     """How strictly a limit is enforced (per Microsoft's definitions)."""

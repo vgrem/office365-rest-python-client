@@ -22,6 +22,7 @@ from typing_extensions import Self
 from office365.runtime.client_object import ClientObjectT
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters import registry
+from office365.runtime.limits import SAFE_PAGE_SIZE
 from office365.runtime.verification import VerificationReport
 
 if TYPE_CHECKING:
@@ -196,7 +197,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         source: Any,
         *,
         format: str = "records",  # noqa: A002
-        chunksize: int = 2000,
+        chunksize: int = SAFE_PAGE_SIZE,
         key: "str | list[str] | None" = None,
         key_field: str = "MigrationKey",
         on_conflict: str = "skip",
@@ -400,7 +401,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         if target is None:
             raise ValueError("verify requires an upsert-capable collection")
         existing = target.load_keys()
-        chunks, convert, _ = self._resolve_source(source, format, 2000, to_records)
+        chunks, convert, _ = self._resolve_source(source, format, SAFE_PAGE_SIZE, to_records)
         checked = 0
         missing: list[str] = []
         for chunk in chunks:

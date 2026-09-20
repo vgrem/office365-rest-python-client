@@ -12,7 +12,7 @@ import warnings
 from typing import Optional
 
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE
 
 
 def indexing_candidates(query: CamlQuery) -> set[str]:
@@ -47,7 +47,7 @@ def threshold_warnings(
     )
     return [
         f"This CAML query is not paged and may exceed the SharePoint list view threshold "
-        f"({threshold:,} items){fields}. Pass page_size=2000 to get_items(), add "
+        f"({threshold:,} items){fields}. Pass page_size={SAFE_PAGE_SIZE} to get_items(), add "
         f"RowLimit Paged='TRUE' and iterate, or {hint} to avoid throttling."
     ]
 

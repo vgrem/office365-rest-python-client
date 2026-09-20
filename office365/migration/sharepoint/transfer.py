@@ -21,11 +21,12 @@ from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Tuple
 
 from office365.runtime.parallel import run_parallel
+from office365.sharepoint.thresholds import Limits
 
 if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
 
-_DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024
+_DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value
 
 # runtime-evaluated alias (typing form: the ``|``/``tuple[...]`` operators need 3.9+)
 Failure = Tuple[str, str]  # (dest_path, error)

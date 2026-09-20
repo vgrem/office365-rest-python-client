@@ -36,6 +36,7 @@ from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.hubsites.collection import (
     HubSiteCollection,
 )
+from office365.sharepoint.thresholds import Limits, bounded
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,
     PeoplePickerWebServiceInterface,
@@ -269,9 +270,10 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(credentials)
         return self
 
+    @bounded("items_per_batch", Limits.BATCH_ITEMS)
     def execute_batch(
         self,
-        items_per_batch: int = 100,
+        items_per_batch: int = Limits.BATCH_ITEMS.value,
         success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
         concurrency: int = 1,
         max_batch_bytes: Optional[int] = None,

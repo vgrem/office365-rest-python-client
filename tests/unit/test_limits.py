@@ -15,7 +15,9 @@ from office365.runtime.limits import (
     hint,
     warn_if_exceeds,
 )
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE, Limits
+from tests import test_site_url
 
 LIST_VIEW = Limits.LIST_VIEW
 
@@ -97,6 +99,12 @@ def test_bounded_clamps_and_handles_positional_args():
 
     assert get_items(None, 6000) == LIST_VIEW.value
     assert get_items(None, 100) == 100  # noqa: PLR2004
+
+
+def test_list_get_items_warns_when_page_size_over_threshold():
+    lst = ClientContext(test_site_url).web.lists.get_by_title("X")
+    with pytest.warns(UserWarning, match="list view threshold"):
+        lst.get_items(page_size=LIST_VIEW_THRESHOLD + 1)
 
 
 def test_bounded_raise_mode_and_validation():

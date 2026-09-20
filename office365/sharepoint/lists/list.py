@@ -67,7 +67,7 @@ from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.object_sharing_settings import ObjectSharingSettings
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE, Limits, bounded
 from office365.sharepoint.translation.user_resource import UserResource
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
@@ -718,6 +718,7 @@ class List(SecurableObject):
                 f"lst.ensure_indexed({not_indexed[0]!r}).execute_query(), or filter on ID (always indexed)."
             )
 
+    @bounded("page_size", Limits.LIST_VIEW)
     def get_items(
         self,
         caml_query: Optional[CamlQuery] = None,
@@ -834,7 +835,7 @@ class List(SecurableObject):
         *,
         format: str = "records",  # noqa: A002
         schema: "Dict[str, FieldType] | None" = None,
-        chunksize: int = 2000,
+        chunksize: int = SAFE_PAGE_SIZE,
         progress: "ProgressCallback | None" = None,
         total: "int | None" = None,
         checkpoint: "ImportCheckpoint | CheckpointStore | str | None" = None,
@@ -990,7 +991,7 @@ class List(SecurableObject):
         server_relative_url: str,
         *,
         format: str = "csv",  # noqa: A002
-        chunksize: int = 2000,
+        chunksize: int = SAFE_PAGE_SIZE,
         **opts,
     ) -> "ImportResult":
         """Stream a SharePoint-hosted file (CSV/XLSX) into this list's items.

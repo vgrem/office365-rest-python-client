@@ -27,6 +27,7 @@ from office365.sharepoint.sharing.object_sharing_information import ObjectSharin
 from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
 from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
+from office365.sharepoint.thresholds import SAFE_PAGE_SIZE, Limits, bounded
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
 from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
@@ -37,7 +38,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.collection import FolderCollection
 
-_DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024  # simple-upload threshold / upload-session chunk
+_DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload threshold / upload-session chunk
 
 
 class Folder(Entity):
@@ -193,11 +194,12 @@ class Folder(Entity):
         self.context.add_query(placeholder).after_execute(lambda _: _get_folders(self))
         return return_type
 
+    @bounded("page_size", Limits.LIST_VIEW)
     def get_files(
         self,
         recursive: bool = False,
         progress: Optional[Callable[[Progress[File]], None]] = None,
-        page_size: int = 2000,
+        page_size: int = SAFE_PAGE_SIZE,
     ) -> FileCollection:
         """Retrieves files (paged, so it works on folders with >5,000 items).
 
