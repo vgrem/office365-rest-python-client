@@ -155,14 +155,14 @@ class TestLargeCollectionPaging(unittest.TestCase):
             lst.get_items(query)
 
     def test_get_items_auto_index_queues_indexes(self):
-        ctx = ClientContext(test_site_url).with_auto_index()
+        ctx = ClientContext(test_site_url)
         ctx.pending_request().beforeExecute.clear()
         lst = ctx.web.lists.get_by_title("X")
         query = CamlQuery()
         query.ViewXml = "<View><Query><OrderBy><FieldRef Name='date'/></OrderBy></Query></View>"
 
         before = len(ctx._queries)
-        lst.get_items(query, page_size=2000)
+        lst.get_items(query, page_size=2000, auto_index=True)
 
         # ensure-field + index update + GetItems are queued (>= 3)
         self.assertGreaterEqual(len(ctx._queries) - before, 3)  # noqa: PLR2004

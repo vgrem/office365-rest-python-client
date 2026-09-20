@@ -673,7 +673,12 @@ class List(SecurableObject):
     #    """Clears the broken taxonomy values"""
     #    raise NotImplementedError("validate_broken_taxonomy_values")
 
-    def get_items(self, caml_query: Optional[CamlQuery] = None, page_size: Optional[int] = None) -> ListItemCollection:
+    def get_items(
+        self,
+        caml_query: Optional[CamlQuery] = None,
+        page_size: Optional[int] = None,
+        auto_index: bool = False,
+    ) -> ListItemCollection:
         """Returns a collection of items from the list based on the specified query.
 
         Pass ``page_size`` to page the results (follows the server ``__next`` link
@@ -682,10 +687,15 @@ class List(SecurableObject):
 
             >>> for item in list.get_items(query, page_size=2000).execute_query():
             ...     ...
+
+        Pass ``auto_index=True`` to index the columns referenced by the query's
+        ``<Where>``/``<OrderBy>`` before running it, so a non-indexed filter/sort
+        over a large list succeeds instead of being throttled. Indexing changes the
+        list schema, so it is opt-in (``False`` by default).
         """
         if not caml_query:
             caml_query = CamlQuery.create_all_items_query()
-        if getattr(self.context, "auto_index", False):
+        if auto_index:
             self._ensure_query_indexes(caml_query)
         if page_size is None:
             self._warn_if_unpaged(caml_query)
@@ -700,9 +710,9 @@ class List(SecurableObject):
     def _ensure_query_indexes(self, caml_query: CamlQuery) -> None:
         """Queue index creation for the query's filter/sort columns (opt-in auto-index).
 
-        Enabled via :meth:`~office365.sharepoint.client_context.ClientContext.with_auto_index`.
-        The index operations are queued before the ``GetItems`` query, so they run
-        first (``ID`` is always indexed and skipped).
+        Used by :meth:`get_items` when ``auto_index=True``. The index operations are
+        queued before the ``GetItems`` query, so they run first (``ID`` is always
+        indexed and skipped).
         """
         view_xml = getattr(caml_query, "ViewXml", None) or ""
         names = {match.group(1) for match in _FIELD_REF_RE.finditer(view_xml)}

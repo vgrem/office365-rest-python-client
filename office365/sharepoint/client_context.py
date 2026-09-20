@@ -79,27 +79,6 @@ class ClientContext(ClientRuntimeContext):
         self._allow_ntlm: bool = allow_ntlm
         self._browser_mode: bool = browser_mode
         self._authority: Optional[str] = authority
-        self._auto_index: bool = False
-
-    @property
-    def auto_index(self) -> bool:
-        """Whether CAML queries auto-index their filter/sort columns (opt-in)."""
-        return self._auto_index
-
-    def with_auto_index(self, enabled: bool = True) -> Self:
-        """Enable auto-indexing of CAML filter/sort columns (opt-in, default off).
-
-        When enabled, :meth:`~office365.sharepoint.lists.list.List.get_items` ensures
-        an index on the columns referenced by the query's ``<Where>``/``<OrderBy>``
-        before running it, so queries over the 5,000-item list view threshold
-        succeed instead of being throttled. Indexing changes the list schema, so
-        it is **off by default** — enable it explicitly:
-
-            >>> ctx.with_auto_index()
-            >>> lst.get_items(query, page_size=2000).execute_query()
-        """
-        self._auto_index = enabled
-        return self
 
     @staticmethod
     def from_url(full_url: str) -> ClientContext:
