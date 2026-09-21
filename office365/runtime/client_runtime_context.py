@@ -12,7 +12,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.limits import Limit, LimitDecl, collect_limit_meta
+from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
@@ -29,10 +29,12 @@ class ClientRuntimeContext(ABC):
     """
 
     _limit_meta: dict[str, Tuple[LimitDecl, ...]] = {}
+    _class_limit_decls: Tuple[LimitDecl, ...] = ()
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
         cls._limit_meta = collect_limit_meta(cls)
+        cls._class_limit_decls = collect_class_limits(cls)
 
     def __init__(self) -> None:
         self._queries: deque[ClientQuery] = deque()
@@ -41,8 +43,10 @@ class ClientRuntimeContext(ABC):
 
     @classmethod
     def declared_limits(cls) -> Tuple[Limit, ...]:
-        """The limits declared on this class's methods/properties (``@limit``)."""
-        return tuple(decl.limit for decls in cls._limit_meta.values() for decl in decls)
+        """The limits declared on this class and its methods/properties (``@limit``)."""
+        class_limits = tuple(decl.limit for decl in cls._class_limit_decls)
+        member_limits = tuple(decl.limit for decls in cls._limit_meta.values() for decl in decls)
+        return (*class_limits, *member_limits)
 
     @property
     def service_root_url(self) -> str:

@@ -197,19 +197,22 @@ def limit(
     on_exceed: str = "warn",
     clamp: bool = False,
 ) -> Callable[[Any], Any]:
-    """Declare service limits on a method or property (and optionally enforce one).
+    """Declare service limits on a class, method or property (and optionally enforce one).
 
     Metadata-only by default (like ``@odata`` / ``@require_permission``): the
-    declared :class:`Limit` values are stamped on the callable and appended to its
-    docstring, then collected into ``ClientObject._limit_meta``. Pass ``arg`` to
-    also enforce that argument against the (single) limit — warn by default,
-    ``on_exceed="raise"`` to raise, or ``clamp=True`` to lower it.
+    declared :class:`Limit` values are stamped on the target and appended to its
+    docstring, then collected into ``_limit_meta`` / ``_class_limit_decls``.
+    Pass ``arg`` to also enforce that argument against the (single) limit — warn
+    by default, ``on_exceed="raise"`` to raise, or ``clamp=True`` to lower it
+    (methods only).
 
     Usage::
 
-        @limit(Limits.FILE_UPLOAD)                                    # document
-        @limit(Limits.LIST_VIEW, arg="page_size")                     # document + warn
+        @limit(Limits.FILE_UPLOAD)  # document
+        @limit(Limits.LIST_VIEW, arg="page_size")  # document + warn
         @limit(Limits.BATCH_ITEMS, arg="items_per_batch", on_exceed="raise")
+        @limit(*IDENTITY_QUOTAS)  # on a class
+        class DirectoryObject(Entity): ...
 
     Args:
         *limits: The :class:`Limit` values to declare.
@@ -228,6 +231,14 @@ def limit(
     )
 
     def decorator(func: Any) -> Any:
+        if isinstance(func, type):
+            if arg is not None:
+                raise ValueError("arg= cannot be used on a class")
+            _stamp(func, decls)
+            # ``__init_subclass__`` ran before this decorator (members already
+            # collected); merge the class-level declaration so subclasses inherit.
+            func._class_limit_decls = collect_class_limits(func)
+            return func
         if isinstance(func, property):
             if arg is not None:
                 raise ValueError("arg= cannot be used on a property (properties take no arguments)")
@@ -294,6 +305,19 @@ def collect_limit_meta(cls: type) -> dict[str, Tuple[LimitDecl, ...]]:
         if decls is not None:
             meta[attr_name] = decls
     return meta
+
+
+def collect_class_limits(cls: type) -> Tuple[LimitDecl, ...]:
+    """The class-level ``@limit`` declarations of ``cls``.
+
+    Accumulates up the hierarchy: the base class's declarations plus the class's
+    own (a subclass is subject to both).
+    """
+    inherited = getattr(cls, "_class_limit_decls", ())
+    own = cls.__dict__.get(_LIMIT_MARKER)
+    if own is None:
+        return inherited
+    return (*inherited, *own)
 
 
 def limits_of(target: Any) -> Tuple[LimitDecl, ...]:

@@ -205,3 +205,41 @@ def test_bounded_back_compat_alias():
 
     with pytest.warns(UserWarning):
         assert get_items(page_size=6000) == 6000  # noqa: PLR2004
+
+
+# ── @limit on a class (model-bound quotas) ───────────────────────────────────
+
+
+def test_limit_decorator_on_class_and_inheritance():
+    @limit(Limits.LIST_VIEW, Limits.FILE_UPLOAD)
+    class _Base(ClientObject):
+        pass
+
+    class _Child(_Base):
+        pass
+
+    assert Limits.LIST_VIEW in _Base.declared_limits()
+    assert Limits.FILE_UPLOAD in _Base.declared_limits()
+    assert Limits.LIST_VIEW in _Child.declared_limits()  # inherited
+
+
+def test_limit_on_class_merges_with_base():
+    @limit(Limits.LIST_VIEW)
+    class _Base(ClientObject):
+        pass
+
+    @limit(Limits.FILE_UPLOAD)
+    class _Child(_Base):
+        pass
+
+    declared = _Child.declared_limits()
+    assert Limits.LIST_VIEW in declared
+    assert Limits.FILE_UPLOAD in declared
+
+
+def test_limit_rejects_arg_on_class():
+    with pytest.raises(ValueError, match="class"):
+
+        @limit(Limits.LIST_VIEW, arg="page_size")
+        class _Bad(ClientObject):
+            pass
