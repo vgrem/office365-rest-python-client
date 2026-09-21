@@ -8,10 +8,15 @@ jitter (so a fleet of clients doesn't retry in lock-step).
 from __future__ import annotations
 
 import random
+from functools import wraps
 from time import sleep
 from typing import Any, Callable, Optional, Tuple, Type
 
+from typing_extensions import ParamSpec
+
 from office365.runtime.client_request_exception import ClientRequestException
+
+_P = ParamSpec("_P")
 
 TRANSIENT_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 
@@ -85,38 +90,18 @@ def backoff_delay(attempt: int, base: int, max_delay: Optional[int] = None, jitt
     return delay
 
 
-def retry(
+def _run_with_retry(
     func: Callable[[], Any],
-    max_retry: int = 5,
-    timeout_secs: int = 5,
-    max_delay: Optional[int] = None,
-    jitter: bool = True,
-    exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
-    is_retriable: Callable[[Exception], bool] = is_transient_error,
-    on_failure: Optional[Callable[[int, Exception], Optional[int]]] = None,
-    on_success: Optional[Callable[[Any], None]] = None,
+    *,
+    max_retry: int,
+    timeout_secs: int,
+    max_delay: Optional[int],
+    jitter: bool,
+    exceptions: Tuple[Type[Exception], ...],
+    is_retriable: Callable[[Exception], bool],
+    on_failure: Optional[Callable[[int, Exception], Optional[int]]],
+    on_success: Optional[Callable[[Any], None]],
 ) -> Any:
-    """Run ``func``, retrying transient failures with exponential backoff.
-
-    Permanent failures re-raise immediately; the last exception is re-raised
-    once retries are exhausted.
-
-    The delay between attempts is exponential with jitter (``backoff_delay``);
-    when ``on_failure`` returns a delay (e.g. the server's ``Retry-After`` via
-    :func:`retry_after_delay`) that value overrides the backoff.
-
-    Args:
-        func: Callable to execute
-        max_retry: Maximum number of retry attempts
-        timeout_secs: Base delay for exponential backoff (seconds)
-        max_delay: Optional cap on the exponential delay (seconds)
-        jitter: Whether to randomize the delay (default True)
-        exceptions: Exception types that are candidates for retry
-        is_retriable: Classifier deciding whether a caught exception is retried
-        on_failure: Called after each failed attempt with ``(attempt, ex)``;
-            may return a retry delay (seconds) to override the backoff
-        on_success: Called with ``func()`` result on success
-    """
     last_ex: Exception | None = None
     for attempt in range(1, max_retry + 1):
         try:
@@ -135,3 +120,65 @@ def retry(
             sleep(delay)
     assert last_ex is not None
     raise last_ex
+
+
+def retry(
+    func: Optional[Callable[[], Any]] = None,
+    max_retry: int = 5,
+    timeout_secs: int = 5,
+    max_delay: Optional[int] = None,
+    jitter: bool = True,
+    exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+    is_retriable: Callable[[Exception], bool] = is_transient_error,
+    on_failure: Optional[Callable[[int, Exception], Optional[int]]] = None,
+    on_success: Optional[Callable[[Any], None]] = None,
+) -> Any:
+    """Run ``func`` with retries — or, called without ``func``, return a decorator.
+
+    Permanent failures re-raise immediately; the last exception is re-raised
+    once retries are exhausted. The delay between attempts is exponential with
+    jitter (:func:`backoff_delay`); when ``on_failure`` returns a delay (e.g.
+    the server's ``Retry-After`` via :func:`retry_after_delay`) that value
+    overrides the backoff.
+
+    Two forms::
+
+        retry(do_request, max_retry=3)  # run now (existing behaviour)
+
+
+        @retry(max_retry=3)  # decorate a callable
+        def do_request(): ...
+
+    Args:
+        func: Callable to execute. Omit to get a decorator.
+        max_retry: Maximum number of retry attempts
+        timeout_secs: Base delay for exponential backoff (seconds)
+        max_delay: Optional cap for the exponential delay (seconds)
+        jitter: Whether to randomize the delay (default True)
+        exceptions: Exception types that are candidates for retry
+        is_retriable: Classifier deciding whether a caught exception is retried
+        on_failure: Called after each failed attempt with ``(attempt, ex)``;
+            may return a retry delay (seconds) to override the backoff
+        on_success: Called with ``func()`` result on success
+    """
+    options = {
+        "max_retry": max_retry,
+        "timeout_secs": timeout_secs,
+        "max_delay": max_delay,
+        "jitter": jitter,
+        "exceptions": exceptions,
+        "is_retriable": is_retriable,
+        "on_failure": on_failure,
+        "on_success": on_success,
+    }
+    if func is None:
+
+        def decorator(fn: Callable[_P, Any]) -> Callable[_P, Any]:
+            @wraps(fn)
+            def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> Any:
+                return _run_with_retry(lambda: fn(*args, **kwargs), **options)  # type: ignore[arg-type]
+
+            return wrapper
+
+        return decorator
+    return _run_with_retry(func, **options)  # type: ignore[arg-type]

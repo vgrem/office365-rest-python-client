@@ -65,6 +65,7 @@ from office365.outlook.calendar.rooms.list import RoomList
 from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
 from office365.runtime.client_runtime_context import ClientRuntimeContext
+from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
@@ -351,6 +352,30 @@ class GraphClient(ClientRuntimeContext):
             timeout=timeout,
             session=session,
         )
+        return self
+
+    def with_throttle_priority(self, priority: str = "normal") -> Self:
+        """Send ``x-ms-throttle-priority`` on every request (Graph throttling).
+
+        Per Microsoft Graph, low-priority requests are throttled first and
+        high-priority ones last; the header doesn't change the limits. Use
+        ``"high"`` only for requests initiated by a user (where throttling causes
+        user-visible failures) and ``"low"`` for background work.
+
+        Args:
+            priority: ``"low"``, ``"normal"`` (default) or ``"high"``.
+
+        Raises:
+            ValueError: When ``priority`` isn't one of the accepted values.
+        """
+        value = priority.lower()
+        if value not in ("low", "normal", "high"):
+            raise ValueError("priority must be one of 'low', 'normal', 'high'")
+
+        def _set_header(request: RequestOptions) -> None:
+            request.set_header("x-ms-throttle-priority", value)
+
+        self.pending_request().before_execute(_set_header, once=False)
         return self
 
     def execute_batch(

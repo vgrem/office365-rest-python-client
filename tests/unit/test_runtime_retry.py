@@ -7,6 +7,7 @@ import time
 import unittest
 from unittest import mock
 
+import pytest
 import requests
 from office365.graph_client import GraphClient
 from office365.runtime.auth.authentication_context import AuthenticationContext
@@ -265,7 +266,7 @@ def test_parse_throttling_full():
             }
         )
     )
-    assert limits == ThrottleLimits(limit=600, remaining=540, reset=23, retry_after=5, health_score=90)
+    assert limits == ThrottleLimits(limit=600, remaining=540, reset=23, retry_after=5, health_score=90, status=200)
 
 
 def test_parse_throttling_absent_headers():
@@ -279,7 +280,7 @@ def test_parse_throttling_non_sharepoint_response():
 
 def test_parse_throttling_malformed_values():
     limits = parse_throttling(throttling__response({"RateLimit-Remaining": "abc", "RateLimit-Reset": "30"}))
-    assert limits == ThrottleLimits(remaining=None, reset=30)
+    assert limits == ThrottleLimits(remaining=None, reset=30, status=200)
     assert limits is not None
     assert limits.remaining is None
 
@@ -287,7 +288,7 @@ def test_parse_throttling_malformed_values():
 def test_parse_throttling_health_score_only():
     # SharePoint sends X-SharePointHealthScore on every response, even without RateLimit-*
     limits = parse_throttling(throttling__response({"X-SharePointHealthScore": "2"}))
-    assert limits == ThrottleLimits(health_score=2)
+    assert limits == ThrottleLimits(health_score=2, status=200)
 
 
 def test_rate_limit_hook_fires_on_throttling_headers():
@@ -721,3 +722,80 @@ class TestThreadSafety(unittest.TestCase):
 
         self.assertEqual(len(clone._queries), 3)
         self.assertTrue(clone.has_pending_request)
+
+
+# ── Graph throttling signals + priority ──────────────────────────────────────
+
+
+def test_parse_throttling_graph_headers():
+    limits = parse_throttling(
+        throttling__response(
+            {
+                "Retry-After": "10",
+                "x-ms-throttle-limit-percentage": "1.2",
+                "x-ms-resource-unit": "3",
+                "x-ms-throttle-scope": "Tenant_Application/ReadWrite/app/tenant",
+                "x-ms-throttle-information": "WriteLimitExceeded",
+            }
+        )
+    )
+    assert limits is not None
+    assert limits.retry_after == 10  # noqa: PLR2004
+    assert limits.limit_percentage == 1.2  # noqa: PLR2004
+    assert limits.resource_unit == 3  # noqa: PLR2004
+    assert limits.scope == "Tenant_Application/ReadWrite/app/tenant"
+    assert limits.reason == "WriteLimitExceeded"
+
+
+def test_parse_throttling_graph_is_auto_detected():
+    limits = parse_throttling(throttling__response({"x-ms-resource-unit": "1"}))
+    assert limits is not None
+    assert limits.resource_unit == 1
+
+
+def test_pace_reacts_to_graph_limit_percentage():
+    now = 1000.0
+    assert pace(PaceState(), ThrottleLimits(limit_percentage=1.2), now=now).next_available_at > now
+    # below the threshold -> no pacing
+    assert pace(PaceState(), ThrottleLimits(limit_percentage=0.5), now=now) == PaceState()
+
+
+def test_with_throttle_priority_sets_request_header():
+    client = GraphClient()
+    client.pending_request().beforeExecute.clear()
+    client.with_throttle_priority("high")
+    request = RequestOptions(url="https://graph.microsoft.com/v1.0/me")
+
+    client.pending_request().beforeExecute(request)
+
+    assert request.headers.get("x-ms-throttle-priority") == "high"
+
+
+def test_with_throttle_priority_rejects_bad_value():
+    with pytest.raises(ValueError, match="priority"):
+        GraphClient().with_throttle_priority("urgent")
+
+
+def test_retry_decorator_retries_and_forwards_args():
+    calls = {"n": 0}
+
+    @retry(max_retry=3, timeout_secs=0, jitter=False)
+    def flaky(value):
+        calls["n"] += 1
+        if calls["n"] < 2:  # noqa: PLR2004
+            raise ClientRequestException("429")
+        return value
+
+    with mock.patch("office365.runtime.retry.sleep"):
+        assert flaky("ok") == "ok"
+    assert calls["n"] == 2  # noqa: PLR2004
+
+
+def test_retry_decorator_reraises_permanent():
+    @retry(max_retry=3, timeout_secs=0)
+    def boom():
+        raise ClientRequestException("permanent", response=_make_error_response(400))
+
+    with mock.patch("office365.runtime.retry.sleep"):
+        with pytest.raises(ClientRequestException):
+            boom()

@@ -107,11 +107,43 @@ single `$batch`).
 
 ### Throttling & retries
 
-`execute_query_retry()` retries when Microsoft 365 throttles your request:
+Microsoft 365 throttles with **HTTP 429** + a `Retry-After` header; Graph also
+reports `x-ms-throttle-limit-percentage`, `x-ms-resource-unit`,
+`x-ms-throttle-scope` and `x-ms-throttle-information`. The library honors
+`Retry-After` and otherwise falls back to exponential backoff with jitter:
 
 ```python
-result = client.users.top(10).get().execute_query_retry()
+result = client.users.top(10).get().execute_query_retry()   # per query
+client.execute_batch(concurrency=5)                         # retries throttled sub-requests
 ```
+
+Retry any callable with the same policy — call it, or decorate one:
+
+```python
+from office365.runtime.retry import retry
+
+@retry(max_retry=5, timeout_secs=2)
+def do_request():
+    ...
+```
+
+Pace a fleet proactively — the shared rate limiter reads the throttle signals
+(`Retry-After`, Graph's `x-ms-throttle-limit-percentage`, SharePoint's health
+score) on every response and gates the group *before* it hits 429:
+
+```python
+client.with_rate_limit()          # or .with_rate_limiter(shared_limiter)
+```
+
+Mark background work as low priority so it's throttled before user-visible calls
+(Graph doesn't change the limits — low is throttled first, high last):
+
+```python
+client.with_throttle_priority("low")     # low | normal | high
+```
+
+See [Microsoft Graph throttling guidance](https://learn.microsoft.com/en-us/graph/throttling)
+and [service-specific limits](https://learn.microsoft.com/en-us/graph/throttling-limits).
 
 ## Power features
 
