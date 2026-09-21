@@ -49,6 +49,7 @@ from office365.directory.users.collection import UserCollection
 from office365.directory.users.user import User
 from office365.education.root import EducationRoot
 from office365.entity_collection import EntityCollection
+from office365.graph_limits import GraphLimits
 from office365.graph_request import GraphRequest
 from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.management.app_management import DeviceAppManagement
@@ -66,6 +67,7 @@ from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.limits import limit
 from office365.runtime.odata.v4.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
@@ -463,6 +465,7 @@ class GraphClient(ClientRuntimeContext):
         """A container for apps from the Microsoft Teams app catalog."""
         return AppCatalogs(self, ResourcePath("appCatalogs"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def me(self) -> User:
         """The Me endpoint is provided as a shortcut for specifying the current user"""
@@ -483,16 +486,19 @@ class GraphClient(ClientRuntimeContext):
         """Get one drives"""
         return DriveCollection(self, ResourcePath("drives"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def users(self) -> UserCollection:
         """Users container"""
         return UserCollection(self, ResourcePath("users"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def domains(self) -> EntityCollection[Domain]:
         """Alias to domains"""
         return EntityCollection(self, Domain, ResourcePath("domains"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def groups(self) -> GroupCollection:
         """Get groups"""
@@ -508,6 +514,7 @@ class GraphClient(ClientRuntimeContext):
         """"""
         return CopilotRoot(self, ResourcePath("copilot"))
 
+    @limit(GraphLimits.IDENTITY_PROTECTION)
     @property
     def identity_protection(self) -> IdentityProtectionRoot:
         """Identity Protection alias"""
@@ -523,6 +530,7 @@ class GraphClient(ClientRuntimeContext):
         """Shares container"""
         return SharesCollection(self, ResourcePath("shares"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def directory_objects(self) -> DirectoryObjectCollection:
         """Directory Objects container"""
@@ -553,6 +561,7 @@ class GraphClient(ClientRuntimeContext):
         """Get the list of organizational contacts for this organization."""
         return DeltaCollection(self, OrgContact, ResourcePath("contacts"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def directory(self) -> Directory:
         """Represents a deleted item in the directory"""
@@ -560,11 +569,13 @@ class GraphClient(ClientRuntimeContext):
             self._directory = Directory(self, ResourcePath("directory"))
         return self._directory
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def directory_roles(self) -> DirectoryRoleCollection:
         """Represents a directory roles in the directory"""
         return DirectoryRoleCollection(self, ResourcePath("directoryRoles"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def directory_role_templates(self) -> DirectoryRoleTemplateCollection:
         """Represents a directory role templates in the directory"""
@@ -597,6 +608,7 @@ class GraphClient(ClientRuntimeContext):
             ResourcePath("authenticationMethodConfigurations"),
         )
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def applications(self) -> ApplicationCollection:
         """Get the list of applications in this organization."""
@@ -613,16 +625,19 @@ class GraphClient(ClientRuntimeContext):
             ResourcePath("certificateBasedAuthConfiguration"),
         )
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def service_principals(self) -> ServicePrincipalCollection:
         """Retrieve a list of servicePrincipal objects."""
         return ServicePrincipalCollection(self, ResourcePath("servicePrincipals"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def organization(self) -> EntityCollection[Organization]:
         """"""
         return EntityCollection(self, Organization, ResourcePath("organization"))
 
+    @limit(GraphLimits.IDENTITY)
     @property
     def subscribed_skus(self) -> EntityCollection[SubscribedSku]:
         """Get the list of commercial subscriptions that an organization has acquired"""

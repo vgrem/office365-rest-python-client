@@ -12,6 +12,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.limits import Limit, LimitDecl, collect_limit_meta
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
@@ -27,10 +28,21 @@ class ClientRuntimeContext(ABC):
     Provides core functionality for executing queries and managing request lifecycle.
     """
 
+    _limit_meta: dict[str, Tuple[LimitDecl, ...]] = {}
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._limit_meta = collect_limit_meta(cls)
+
     def __init__(self) -> None:
         self._queries: deque[ClientQuery] = deque()
         self._current_query = None
         self._pending_request: ClientRequest | None = None
+
+    @classmethod
+    def declared_limits(cls) -> Tuple[Limit, ...]:
+        """The limits declared on this class's methods/properties (``@limit``)."""
+        return tuple(decl.limit for decls in cls._limit_meta.values() for decl in decls)
 
     @property
     def service_root_url(self) -> str:
