@@ -5,6 +5,7 @@ from __future__ import annotations
 import warnings
 
 import pytest
+from office365.runtime.client_object import ClientObject
 from office365.runtime.limits import (
     Limit,
     LimitExceededError,
@@ -13,6 +14,9 @@ from office365.runtime.limits import (
     ensure_within,
     exceeds,
     hint,
+    limit,
+    limits_of,
+    verify_limits,
     warn_if_exceeds,
 )
 from office365.sharepoint.client_context import ClientContext
@@ -25,13 +29,13 @@ LIST_VIEW = Limits.LIST_VIEW
 def test_catalog_is_populated_and_well_formed():
     catalog = Limits.catalog()
     assert len(catalog) >= 30  # noqa: PLR2004
-    names = [limit.name for limit in catalog]
+    names = [entry.name for entry in catalog]
     assert len(names) == len(set(names))  # unique names
-    for limit in catalog:
-        assert isinstance(limit, Limit)
-        assert isinstance(limit.kind, LimitKind)
-        assert limit.value > 0
-        assert limit.unit
+    for entry in catalog:
+        assert isinstance(entry, Limit)
+        assert isinstance(entry.kind, LimitKind)
+        assert entry.value > 0
+        assert entry.unit
 
 
 def test_list_view_threshold_constant_matches_catalog():
@@ -116,3 +120,88 @@ def test_bounded_raise_mode_and_validation():
         get_items(page_size=6000)
     with pytest.raises(ValueError, match="on_exceed"):
         bounded("page_size", LIST_VIEW, on_exceed="nope")
+
+
+# ── @limit metadata (bound to methods/properties) ────────────────────────────
+
+
+def test_limit_decorator_stamps_metadata_and_doc():
+    @limit(Limits.FILE_UPLOAD)
+    def upload(content):
+        """Upload a file."""
+        return content
+
+    decls = limits_of(upload)
+    assert len(decls) == 1
+    assert decls[0].limit is Limits.FILE_UPLOAD
+    assert decls[0].arg is None
+    assert "Limits:" in upload.__doc__
+    assert "file upload" in upload.__doc__
+
+
+def test_limit_decorator_enforces_arg():
+    @limit(Limits.LIST_VIEW, arg="page_size")
+    def get_items(page_size=None):
+        return page_size
+
+    with pytest.warns(UserWarning, match="list view threshold"):
+        assert get_items(page_size=6000) == 6000  # noqa: PLR2004
+    assert get_items(page_size=10) == 10  # noqa: PLR2004
+    assert get_items() is None
+
+
+def test_limit_decorator_raise_and_clamp():
+    @limit(Limits.LIST_VIEW, arg="page_size", on_exceed="raise")
+    def strict(page_size=None):
+        return page_size
+
+    with pytest.raises(LimitExceededError):
+        strict(page_size=6000)
+
+    @limit(Limits.LIST_VIEW, arg="page_size", clamp=True)
+    def clamped(page_size=None):
+        return page_size
+
+    assert clamped(page_size=6000) == Limits.LIST_VIEW.value
+
+
+def test_limit_decorator_on_property_and_class_meta():
+    class _Entity(ClientObject):
+        @limit(Limits.FILE_UPLOAD)
+        @property
+        def upload(self):
+            return None
+
+        @limit(Limits.LIST_VIEW, arg="page_size")
+        def get_items(self, page_size=None):
+            return page_size
+
+    assert "upload" in _Entity._limit_meta
+    assert "get_items" in _Entity._limit_meta
+    assert Limits.FILE_UPLOAD in _Entity.declared_limits()
+    assert Limits.LIST_VIEW in _Entity.declared_limits()
+
+
+def test_limit_requires_single_limit_for_arg():
+    with pytest.raises(ValueError, match="exactly one"):
+        limit(Limits.LIST_VIEW, Limits.FILE_UPLOAD, arg="page_size")
+
+
+def test_verify_limits_reports_violations():
+    @limit(Limits.LIST_VIEW, arg="page_size")
+    def get_items(page_size=None):
+        return page_size
+
+    assert verify_limits(get_items, page_size=10).ok
+    report = verify_limits(get_items, page_size=6000)
+    assert not report.ok
+    assert "list view threshold" in str(report)
+
+
+def test_bounded_back_compat_alias():
+    @bounded("page_size", Limits.LIST_VIEW)
+    def get_items(page_size=None):
+        return page_size
+
+    with pytest.warns(UserWarning):
+        assert get_items(page_size=6000) == 6000  # noqa: PLR2004

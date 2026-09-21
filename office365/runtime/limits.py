@@ -1,22 +1,29 @@
-"""Product-agnostic service limits and guardrails.
+"""Product-agnostic service limits, metadata and guardrails.
 
-A :class:`Limit` describes one service limit (value, kind, unit, scope, docs).
-The helpers here let call sites *guard-rail* against it — warn, clamp, or raise —
-and :func:`bounded` decorates a numeric argument with the same check.
+A :class:`Limit` describes one service limit — a static threshold *or* a rate
+quota — with its value, kind, unit, scope and docs. Limits are declared on the
+model with the :func:`limit` decorator (mirroring ``@odata`` / ``@require_permission``):
+the declaration is stamped on the callable, appended to its docstring, and
+collected into ``ClientObject._limit_meta``. ``arg=`` also *enforces* a numeric
+argument (warn by default, ``raise`` or ``clamp``).
 
-Product packages (e.g. ``office365.sharepoint.thresholds``) declare the concrete
-limits; this module only owns the mechanics so the runtime and every product can
-share them.
+The helpers :func:`exceeds` / :func:`warn_if_exceeds` / :func:`ensure_within`
+apply a limit imperatively at a call site; :func:`limits_of` / :func:`verify_limits`
+inspect what a method/class declares.
+
+Product packages (e.g. ``office365.sharepoint.thresholds``,
+``office365.graph_limits``) declare the concrete values; this module only owns
+the mechanics so the runtime and every product share them.
 """
 
 from __future__ import annotations
 
 import inspect
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, Tuple, TypeVar
 
 from typing_extensions import ParamSpec
 
@@ -24,6 +31,7 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 _ON_EXCEED = ("warn", "raise")
+_LIMIT_MARKER = "__limit_decls__"
 
 #: A conservative default page/chunk size that stays below SharePoint's 5,000-item
 #: list view threshold, so paged reads and imports are safe by default.
@@ -51,16 +59,19 @@ def _human_bytes(value: int) -> str:
 
 @dataclass(frozen=True)
 class Limit:
-    """A single service limit.
+    """A single service limit — a static threshold or a rate quota.
 
     Args:
         name: Human-readable name (e.g. ``"list view threshold"``).
         value: The numeric limit.
         kind: :class:`LimitKind` — boundary / threshold / supported.
-        unit: What is counted (``items``, ``bytes``, ``chars``, ``columns``, ...).
-        scope: The object it applies to (``list``, ``folder``, ``site``, ...).
+        unit: What is counted (``items``, ``bytes``, ``requests``, ...).
+        scope: The object it applies to (``list``, ``file``, ``app+tenant``, ...).
         note: Extra guidance surfaced in warnings.
         doc: Link to the authoritative documentation.
+        window_seconds: The rate window in seconds (``None`` for a static
+            threshold; ``0`` for a concurrency limit).
+        request_type: ``""`` (n/a) | ``read`` | ``write`` | ``any``.
     """
 
     name: str
@@ -70,8 +81,13 @@ class Limit:
     scope: str = ""
     note: str = ""
     doc: str = ""
+    window_seconds: Optional[int] = None
+    request_type: str = ""
 
     def __str__(self) -> str:
+        if self.window_seconds is not None:
+            window = f" / {self.window_seconds:,}s" if self.window_seconds else ""
+            return f"{self.value:,} {self.unit}{window}".strip()
         if self.unit == "bytes":
             return _human_bytes(self.value)
         return f"{self.value:,} {self.unit}".strip()
@@ -79,6 +95,11 @@ class Limit:
     def exceeds(self, value: int) -> bool:
         """Whether ``value`` is over this limit."""
         return value > self.value
+
+    @property
+    def is_rate(self) -> bool:
+        """Whether this is a rate quota (has a window)."""
+        return self.window_seconds is not None
 
 
 class LimitExceededError(ValueError):
@@ -100,7 +121,7 @@ def hint(limit: Limit, *, context: str = "", value: Optional[int] = None) -> str
     """An actionable message for a limit, optionally naming the offending value."""
     where = f" for {context}" if context else ""
     if value is None:
-        text = f"SharePoint limit '{limit.name}'{where} is {limit}"
+        text = f"limit '{limit.name}'{where} is {limit}"
     else:
         text = f"{_format_value(limit, value)}{where} exceeds the limit '{limit.name}' ({limit})"
     if limit.note:
@@ -146,6 +167,108 @@ def ensure_within(
         raise LimitExceededError(limit, value, context=context)
 
 
+@dataclass(frozen=True)
+class LimitDecl:
+    """One declared limit — a :class:`Limit`, optionally bound to an argument.
+
+    ``arg`` names the numeric argument the limit is enforced against (``None``
+    for a documentation-only declaration); ``on_exceed`` / ``clamp`` decide the
+    enforcement behaviour.
+    """
+
+    limit: Limit
+    arg: Optional[str] = None
+    on_exceed: str = "warn"
+    clamp: bool = False
+
+
+def _append_doc(target: Callable[..., Any], decls: Tuple[LimitDecl, ...]) -> None:
+    lines: list[str] = []
+    for decl in decls:
+        bound = f" (<= {decl.limit})" if decl.arg else ""
+        lines.append(f"      {decl.limit.name}: {decl.limit}{bound}")
+    if lines:
+        target.__doc__ = (target.__doc__ or "") + "\n    Limits:\n" + "\n".join(lines)
+
+
+def limit(
+    *limits: Limit,
+    arg: Optional[str] = None,
+    on_exceed: str = "warn",
+    clamp: bool = False,
+) -> Callable[[Any], Any]:
+    """Declare service limits on a method or property (and optionally enforce one).
+
+    Metadata-only by default (like ``@odata`` / ``@require_permission``): the
+    declared :class:`Limit` values are stamped on the callable and appended to its
+    docstring, then collected into ``ClientObject._limit_meta``. Pass ``arg`` to
+    also enforce that argument against the (single) limit — warn by default,
+    ``on_exceed="raise"`` to raise, or ``clamp=True`` to lower it.
+
+    Usage::
+
+        @limit(Limits.FILE_UPLOAD)                                    # document
+        @limit(Limits.LIST_VIEW, arg="page_size")                     # document + warn
+        @limit(Limits.BATCH_ITEMS, arg="items_per_batch", on_exceed="raise")
+
+    Args:
+        *limits: The :class:`Limit` values to declare.
+        arg: Argument name to enforce (requires exactly one limit).
+        on_exceed: ``"warn"`` (default) or ``"raise"``.
+        clamp: Lower the argument to the limit instead of warning/raising.
+    """
+    if arg is not None and len(limits) != 1:
+        raise ValueError("arg= requires exactly one limit")
+    if on_exceed not in _ON_EXCEED:
+        raise ValueError(f"on_exceed must be one of {_ON_EXCEED}, got {on_exceed!r}")
+
+    decls = tuple(
+        LimitDecl(limit=item, arg=arg if index == 0 else None, on_exceed=on_exceed, clamp=clamp)
+        for index, item in enumerate(limits)
+    )
+
+    def decorator(func: Any) -> Any:
+        if isinstance(func, property):
+            if arg is not None:
+                raise ValueError("arg= cannot be used on a property (properties take no arguments)")
+            _stamp(func.fget, decls)
+            return func
+
+        _stamp(func, decls)
+        if arg is None:
+            return func
+
+        arg_name: str = arg
+        signature = inspect.signature(func)
+        enforced = decls[0]
+
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            bound = signature.bind_partial(*args, **kwargs)
+            value: Any = bound.arguments.get(arg_name)
+            if value is None or not enforced.limit.exceeds(value):
+                return func(*args, **kwargs)
+            if enforced.clamp:
+                bound.arguments[arg_name] = enforced.limit.value
+                return func(*bound.args, **bound.kwargs)
+            if enforced.on_exceed == "raise":
+                raise LimitExceededError(enforced.limit, value, context=func.__qualname__)
+            warn_if_exceeds(enforced.limit, value, context=func.__qualname__, stacklevel=2)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def _stamp(target: Any, decls: Tuple[LimitDecl, ...]) -> None:
+    setattr(target, _LIMIT_MARKER, decls)
+    _append_doc(target, decls)
+
+
+_limit = limit  # module alias (the ``bounded`` param name shadows ``limit`` below)
+
+
 def bounded(
     arg: str,
     limit: Limit,
@@ -153,38 +276,88 @@ def bounded(
     on_exceed: str = "warn",
     clamp: bool = False,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    """Guard a numeric argument against ``limit`` (warn by default).
+    """Back-compat: ``@bounded(arg, limit)`` is ``@limit(limit, arg=arg)``."""
+    return _limit(limit, arg=arg, on_exceed=on_exceed, clamp=clamp)
 
-    A ``None`` argument always passes. With ``clamp=True`` the argument is
-    lowered to the limit; otherwise ``on_exceed`` decides between a warning
-    (default) and :class:`LimitExceededError`.
+
+def collect_limit_meta(cls: type) -> dict[str, Tuple[LimitDecl, ...]]:
+    """Collect ``@limit`` declarations from a class's methods/properties.
+
+    Called from ``__init_subclass__`` (``ClientObject`` / ``ClientRuntimeContext``)
+    so a class carries its own limits — keyed by attribute/method name, inheriting
+    the base class's entries.
+    """
+    meta: dict[str, Tuple[LimitDecl, ...]] = dict(getattr(cls, "_limit_meta", {}))
+    for attr_name, attr in cls.__dict__.items():
+        target = attr.fget if isinstance(attr, property) else attr
+        decls = getattr(target, _LIMIT_MARKER, None)
+        if decls is not None:
+            meta[attr_name] = decls
+    return meta
+
+
+def limits_of(target: Any) -> Tuple[LimitDecl, ...]:
+    """The limits declared on a method/property, or a class's collected limits.
 
     Args:
-        arg: Name of the numeric argument (positional or keyword).
-        limit: The :class:`Limit` to enforce.
-        on_exceed: ``"warn"`` (default) or ``"raise"``.
-        clamp: Lower the argument to the limit instead of warning/raising.
+        target: A callable (reads ``__limit_decls__``), a ``property``, or a
+            class (reads ``_limit_meta``).
     """
-    if on_exceed not in _ON_EXCEED:
-        raise ValueError(f"on_exceed must be one of {_ON_EXCEED}, got {on_exceed!r}")
+    if isinstance(target, type):
+        meta = getattr(target, "_limit_meta", {})
+        return tuple(decl for decls in meta.values() for decl in decls)
+    if isinstance(target, property):
+        target = target.fget
+    return tuple(getattr(target, _LIMIT_MARKER, ()))
 
-    def decorator(func: Callable[P, R]) -> Callable[P, R]:
-        signature = inspect.signature(func)
 
-        @wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            bound = signature.bind_partial(*args, **kwargs)
-            value: Any = bound.arguments.get(arg)
-            if value is None or not limit.exceeds(value):
-                return func(*args, **kwargs)
-            if clamp:
-                bound.arguments[arg] = limit.value
-                return func(*bound.args, **bound.kwargs)
-            if on_exceed == "raise":
-                raise LimitExceededError(limit, value, context=func.__qualname__)
-            warn_if_exceeds(limit, value, context=func.__qualname__, stacklevel=2)
-            return func(*args, **kwargs)
+@dataclass
+class LimitReport:
+    """Diagnostic result of inspecting the limits declared on a target.
 
-        return wrapper
+    ``violations`` holds the ``(decl, value)`` pairs whose supplied value is over
+    the limit. This never raises and never touches the network.
+    """
 
-    return decorator
+    target: str
+    decls: Tuple[LimitDecl, ...] = ()
+    violations: Tuple[Tuple[LimitDecl, int], ...] = field(default_factory=tuple)
+
+    @property
+    def limits(self) -> Tuple[Limit, ...]:
+        return tuple(decl.limit for decl in self.decls)
+
+    @property
+    def ok(self) -> bool:
+        """Whether all supplied values are within their limits."""
+        return not self.violations
+
+    def __str__(self) -> str:
+        head = f"{self.target}: {len(self.decls)} limit(s)"
+        if self.violations:
+            over = ", ".join(f"{decl.limit.name}={value:,}" for decl, value in self.violations)
+            return f"{head}; over: {over}"
+        return head
+
+
+def verify_limits(target: Any, **values: int) -> LimitReport:
+    """Inspect the limits declared on a method/property/class (diagnostic-only).
+
+    Keyword ``values`` are checked against the arg-bound declarations
+    (``@limit(..., arg=...)``); other limits are reported for reference.
+
+    Args:
+        target: A callable, ``property``, or class.
+        **values: Argument name -> value to check.
+
+    Returns:
+        A :class:`LimitReport`.
+    """
+    name = getattr(target, "__qualname__", None) or getattr(target, "__name__", str(target))
+    decls = limits_of(target)
+    violations = tuple(
+        (decl, values[decl.arg])
+        for decl in decls
+        if decl.arg is not None and decl.arg in values and decl.limit.exceeds(values[decl.arg])
+    )
+    return LimitReport(target=name, decls=decls, violations=violations)
