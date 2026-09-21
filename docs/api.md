@@ -142,8 +142,8 @@ Mark background work as low priority so it's throttled before user-visible calls
 client.with_throttle_priority("low")     # low | normal | high
 ```
 
-See [Microsoft Graph throttling guidance](https://learn.microsoft.com/en-us/graph/throttling)
-and [service-specific limits](https://learn.microsoft.com/en-us/graph/throttling-limits).
+See [Throttling](throttling.md) for the signals, the service-limit reference
+(`office365.graph_limits.GraphLimits`) and the best practices.
 
 ## Power features
 

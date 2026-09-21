@@ -49,6 +49,7 @@ plugins:
       scripts:
         - docs/scripts/gen_examples.py
         - docs/scripts/gen_limits.py
+        - docs/scripts/gen_throttling.py
   - awesome-pages
   - mkdocstrings:
       default_handler: python
