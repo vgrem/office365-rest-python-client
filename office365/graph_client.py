@@ -359,6 +359,7 @@ class GraphClient(ClientRuntimeContext):
         success_callback: Optional[Callable[[List[Any]], None]] = None,
         concurrency: int = 1,
         max_batch_bytes: Optional[int] = None,
+        sequential: bool = False,
     ) -> Self:
         """
         Execute batched requests
@@ -371,21 +372,39 @@ class GraphClient(ClientRuntimeContext):
         writes aren't re-applied. ``success_callback`` runs on the caller thread
         in completion order (not submission order).
 
+        Pass ``sequential=True`` to chain the sub-requests with ``dependsOn`` so
+        Graph runs them in order (a failed dependency yields HTTP 424). Use it
+        only for **ordering-dependent side effects** — read-after-write on the
+        same resource, delete-then-create, parent/child ordering — not for
+        independent requests (Graph's default parallel mode is faster). A batch
+        can't reference another sub-request's response, so it doesn't enable
+        create-then-use-id flows. Implies ``concurrency=1`` because Graph only
+        sequences within a single ``$batch``.
+
         Args:
             items_per_batch: Maximum items per batch (default: 20)
             success_callback: Optional callback for successful requests
             concurrency: Maximum number of concurrent batch requests (default 1)
             max_batch_bytes: Maximum estimated batch payload size (default ~3 MB)
+            sequential: Chain sub-requests with ``dependsOn`` (Graph v4 only).
+
+        Raises:
+            ValueError: When ``sequential`` is combined with ``concurrency > 1``.
         """
+        if sequential and concurrency > 1:
+            raise ValueError("sequential=True requires concurrency=1 (Graph sequences within a batch only)")
         max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
         batches = self._split_batches(items_per_batch, max_bytes)
+        if sequential:
+            for batch in batches:
+                batch.sequential = True
         if concurrency <= 1:
             batch_request = ODataV4BatchRequest("", V4JsonFormat())
             batch_request.beforeExecute += self.pending_request().authenticate_request
             for qry in batches:
                 batch_request.execute_query_with_retry(qry)
-                if callable(success_callback) and qry.return_type is not None:
-                    success_callback(qry.return_type)
+                if callable(success_callback) and qry.return_types:
+                    success_callback(qry.return_types)
             return self
 
         self.pending_request()

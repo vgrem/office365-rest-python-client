@@ -90,6 +90,21 @@ ctx.execute_batch(items_per_batch=100)      # one $batch request
 ctx.execute_batch(concurrency=5)            # 5 batches in flight, retries on 429
 ```
 
+Graph batches run their sub-requests **in parallel** by default. When order
+matters — read-after-write on the same resource, delete-then-create, parent/child
+ordering — pass `sequential=True` to chain them with Graph's
+[`dependsOn`](https://learn.microsoft.com/en-us/graph/json-batching#sequencing-requests-with-the-dependson-property):
+
+```python
+graph.execute_batch(sequential=True)   # ordered; a failed dependency yields 424
+```
+
+Use it only for ordering-dependent side effects (parallel is faster for
+independent requests). A batch can't reference another sub-request's response,
+so `sequential` doesn't enable create-then-use-id flows — those need two
+round-trips. `sequential=True` implies `concurrency=1` (Graph sequences within a
+single `$batch`).
+
 ### Throttling & retries
 
 `execute_query_retry()` retries when Microsoft 365 throttles your request:

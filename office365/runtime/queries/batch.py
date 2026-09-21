@@ -27,19 +27,36 @@ def create_boundary(prefix: str, compact: bool = False) -> str:
 class BatchQuery(ClientQuery[Any], Generic[ReturnT]):
     """Client query collection for batch requests."""
 
-    def __init__(self, context: ClientRuntimeContext, queries: list[ClientQuery[Any]] | None = None) -> None:
+    def __init__(
+        self,
+        context: ClientRuntimeContext,
+        queries: list[ClientQuery[Any]] | None = None,
+        sequential: bool = False,
+    ) -> None:
         """
         Initialize a batch query collection.
 
         Args:
             context: Client runtime context
             queries: List of queries to include in the batch (optional)
+            sequential: Whether sub-requests are chained with ``dependsOn`` so the
+                server runs them in order (Graph v4 only; ignored by v3).
         """
         super().__init__(context)
         self._current_boundary = create_boundary("batch_")
         if queries is None:
             queries = []
         self._queries: list[ClientQuery[Any]] = queries
+        self._sequential = sequential
+
+    @property
+    def sequential(self) -> bool:
+        """Whether sub-requests are chained with ``dependsOn`` (Graph v4 only)."""
+        return self._sequential
+
+    @sequential.setter
+    def sequential(self, value: bool) -> None:
+        self._sequential = value
 
     def add(self, query: ClientQuery[Any]) -> Self:
         """Add a query to the batch.

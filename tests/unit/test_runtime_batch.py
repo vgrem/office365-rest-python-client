@@ -9,7 +9,9 @@ import unittest
 from typing import cast
 from unittest import mock
 
+import pytest
 from office365.graph_client import GraphClient
+from office365.runtime.client_object import ClientObject
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.odata.batch_util import (
     WHOLE_BATCH_REJECT_CODES,
@@ -21,8 +23,10 @@ from office365.runtime.odata.v3.batch_request import ODataBatchV3Request
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.batch_request import ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.batch import BatchQuery
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.transport.base import BaseTransport
 from office365.runtime.transport.requests_transport import RequestsTransport
 from office365.runtime.transport.throttled_transport import ThrottledTransport
@@ -274,3 +278,99 @@ def test_whole_batch_reject_marker_carries_queries_and_cause():
     assert len(reject.queries) == 1
     assert reject.__cause__ is cause
     assert 413 in WHOLE_BATCH_REJECT_CODES  # noqa: PLR2004
+
+
+# ── Graph dependsOn sequencing (v4) ──────────────────────────────────────────
+
+
+def _payload_requests(transport: _FakeTransport, call: int = 0) -> list[dict]:
+    return cast(list, transport.request_payloads[call]["requests"])
+
+
+def test_sequential_emits_depends_on_chain():
+    client = GraphClient()
+    transport = _FakeTransport([_envelope([200, 200, 200])])
+    req = ODataV4BatchRequest("", V4JsonFormat())
+    req.transport = transport
+    batch = _make_batch(client, 3)
+    batch.sequential = True
+
+    req.execute_query_with_retry(batch, max_retry=1)
+
+    requests = _payload_requests(transport)
+    assert "dependsOn" not in requests[0]
+    assert requests[1]["dependsOn"] == ["0"]
+    assert requests[2]["dependsOn"] == ["1"]
+
+
+def test_parallel_batch_has_no_depends_on():
+    client = GraphClient()
+    transport = _FakeTransport([_envelope([200, 200])])
+    req = ODataV4BatchRequest("", V4JsonFormat())
+    req.transport = transport
+
+    req.execute_query_with_retry(_make_batch(client, 2), max_retry=1)
+
+    assert all("dependsOn" not in item for item in _payload_requests(transport))
+
+
+def test_response_id_maps_to_submission_order():
+    client = GraphClient()
+    client.pending_request().beforeExecute.clear()  # no auth handler during offline payload build
+    obj = ClientObject(client, ResourcePath("me"))
+    read = ReadEntityQuery(obj, ["displayName"])
+    write = ClientQuery(client)
+    batch = BatchQuery(client, [read, write])
+    assert batch.ordered_queries == [write, read]  # re-groups (non-GET first)
+
+    payload = ODataV4BatchRequest("", V4JsonFormat())._prepare_payload(batch)
+    assert [item["id"] for item in payload["requests"]] == ["0", "1"]
+
+    response = Response()
+    response._content = jsonlib.dumps(_envelope([200, 200])).encode("utf-8")
+    mapped = [qry for qry, _ in ODataV4BatchRequest._extract_response(response, batch)]
+    assert mapped == [read, write]
+
+
+def test_sequential_survives_retry():
+    client = GraphClient()
+    transport = _FakeTransport([_envelope([200, 429], retry_after=1), _envelope([200])])
+    req = ODataV4BatchRequest("", V4JsonFormat())
+    req.transport = transport
+    batch = _make_batch(client, 2)
+    batch.sequential = True
+
+    with mock.patch("office365.runtime.retry.sleep"):
+        req.execute_query_with_retry(batch, max_retry=3, base_delay=1, jitter=False)
+
+    assert _payload_requests(transport, 0)[1]["dependsOn"] == ["0"]
+    retry_requests = _payload_requests(transport, 1)
+    assert len(retry_requests) == 1
+    assert "dependsOn" not in retry_requests[0]  # subset of one -> no dependency
+
+
+def test_execute_batch_rejects_sequential_with_concurrency():
+    with pytest.raises(ValueError, match="concurrency=1"):
+        GraphClient().execute_batch(sequential=True, concurrency=2)
+
+
+def test_execute_batch_success_callback_receives_return_types():
+    client = GraphClient()
+    request = client.pending_request()
+    request.beforeExecute.clear()
+    request.authenticate_request = lambda _request: None
+    obj = ClientObject(client, ResourcePath("me"))
+    client.add_query(ReadEntityQuery(obj, ["displayName"]))
+    client.add_query(ClientQuery(client))
+    received: list = []
+    transport = _FakeTransport([_envelope([200, 200])])
+
+    def _factory(*args, **kwargs):
+        batch_request = ODataV4BatchRequest(*args, **kwargs)
+        batch_request.transport = transport
+        return batch_request
+
+    with mock.patch("office365.graph_client.ODataV4BatchRequest", side_effect=_factory):
+        client.execute_batch(success_callback=received.append)
+
+    assert received == [[obj]]

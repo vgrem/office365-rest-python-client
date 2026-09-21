@@ -105,7 +105,7 @@ class ODataV4BatchRequest(ODataRequest):
                 self.afterExecute(response)
                 return
             state["retry_after"] = retry_after or None
-            state["pending"] = BatchQuery(query.context, [qry for qry, _ in failures])
+            state["pending"] = BatchQuery(query.context, [qry for qry, _ in failures], sequential=query.sequential)
             raise ClientRequestException.from_response(failures[0][1])
 
         try:
@@ -136,7 +136,9 @@ class ODataV4BatchRequest(ODataRequest):
             raise ClientRequestException(message, response=reject.response) from reject
         mid = len(queries) // 2  # noqa: PLR2004
         for half in (queries[:mid], queries[mid:]):
-            self.execute_query_with_retry(BatchQuery(query.context, half), max_retry, base_delay, jitter)
+            self.execute_query_with_retry(
+                BatchQuery(query.context, half, sequential=query.sequential), max_retry, base_delay, jitter
+            )
 
     @staticmethod
     def _extract_response(response: Response, query: BatchQuery) -> Iterator[Tuple[ClientQuery, Response]]:
@@ -156,11 +158,19 @@ class ODataV4BatchRequest(ODataRequest):
             resp.headers = CaseInsensitiveDict(json_resp["headers"])
             resp._content = json.dumps(json_resp["body"]).encode("utf-8")
             qry_id = int(json_resp["id"])
-            qry = query.ordered_queries[qry_id]
+            # Ids are assigned in submission order (see ``_prepare_payload``), so
+            # map back with the same list — ``ordered_queries`` re-groups (non-GET
+            # first) and would attribute mixed batches to the wrong queries.
+            qry = query.queries[qry_id]
             yield qry, resp
 
     def _prepare_payload(self, query: BatchQuery) -> Dict[str, Any]:
         """Prepares the batch request payload.
+
+        With ``query.sequential`` the sub-requests are chained with ``dependsOn``
+        so Graph runs them in order (a failed dependency yields ``424``). Ids are
+        assigned in submission order — the same order :meth:`_extract_response`
+        maps responses back with.
 
         Args:
             query: The BatchQuery containing individual queries
@@ -168,10 +178,13 @@ class ODataV4BatchRequest(ODataRequest):
         Returns:
             Dictionary containing the JSON batch request structure
         """
-        requests_json = []
+        requests_json: list[dict] = []
+        previous_id: Optional[str] = None
         for qry in query.queries:
             qry_id = str(len(requests_json))
-            requests_json.append(self._normalize_request(qry, qry_id))
+            depends_on = [previous_id] if (query.sequential and previous_id is not None) else None
+            requests_json.append(self._normalize_request(qry, qry_id, depends_on))
+            previous_id = qry_id
 
         return {"requests": requests_json}
 
