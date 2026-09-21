@@ -37,6 +37,14 @@ class TestGraphPathBuilding(unittest.TestCase):
         path = self.client.sites.root.drive.items[item_id].children.resource_path
         self.assertEqual(f"/sites/root/drive/items/{item_id}/children", str(path))
 
+    def test_resolve_drive_children_path(self):
+        """Setting a segment on ``root.children`` canonicalizes to /me/drive/items/{id}."""
+        path = self.client.me.drive.root.children.resource_path
+        assert path is not None
+        item_id = uuid.uuid4().hex
+        path.set_segment(item_id)
+        self.assertEqual(f"/me/drive/items/{item_id}", str(path))
+
     def test_resolve_term_children_path(self):
         group_id = uuid.uuid4().hex
         set_id = uuid.uuid4().hex

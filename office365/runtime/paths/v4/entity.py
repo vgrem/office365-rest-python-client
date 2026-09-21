@@ -28,8 +28,8 @@ class EntityPath(ResourcePath):
         from office365.onedrive.internal.paths.children import ChildrenPath
         from office365.teams.internal.paths.joined_teams import JoinedTeamsPath
 
-        if self._collection is not None:
-            self._parent = self._collection
+        if self.collection is not None:
+            self._parent = self.collection
         elif isinstance(self.parent, ChildrenPath):
             self._parent = self.parent.collection
         elif isinstance(self.parent, JoinedTeamsPath):

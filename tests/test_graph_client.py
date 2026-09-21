@@ -43,4 +43,6 @@ class TestGraphClient(GraphDelegatedTestCase):
 
     def test_16_resolve_entity_type_name(self):
         name = self.client.me.joined_teams.entity_type_name
-        self.assertEqual("Collection(microsoft.graph.team)", name)
+        # The library uses PascalCase Graph type names consistently
+        # (microsoft.graph.User / Group / Team).
+        self.assertEqual("Collection(microsoft.graph.Team)", name)
