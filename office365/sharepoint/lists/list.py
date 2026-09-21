@@ -67,7 +67,7 @@ from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.object_sharing_settings import ObjectSharingSettings
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE, Limits, bounded
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE, Limits, limit
 from office365.sharepoint.translation.user_resource import UserResource
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
@@ -718,7 +718,7 @@ class List(SecurableObject):
                 f"lst.ensure_indexed({not_indexed[0]!r}).execute_query(), or filter on ID (always indexed)."
             )
 
-    @bounded("page_size", Limits.LIST_VIEW)
+    @limit(Limits.LIST_VIEW, arg="page_size")
     def get_items(
         self,
         caml_query: Optional[CamlQuery] = None,

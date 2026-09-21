@@ -27,7 +27,7 @@ from office365.sharepoint.sharing.object_sharing_information import ObjectSharin
 from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
 from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
-from office365.sharepoint.thresholds import SAFE_PAGE_SIZE, Limits, bounded
+from office365.sharepoint.thresholds import SAFE_PAGE_SIZE, Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
 from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
@@ -194,7 +194,7 @@ class Folder(Entity):
         self.context.add_query(placeholder).after_execute(lambda _: _get_folders(self))
         return return_type
 
-    @bounded("page_size", Limits.LIST_VIEW)
+    @limit(Limits.LIST_VIEW, arg="page_size")
     def get_files(
         self,
         recursive: bool = False,

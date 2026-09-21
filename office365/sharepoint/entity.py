@@ -12,7 +12,7 @@ from office365.runtime.http.url import get_absolute_url
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
-from office365.sharepoint.thresholds import Limits, bounded
+from office365.sharepoint.thresholds import Limits, limit
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -36,7 +36,7 @@ class Entity(ClientObject):
         self.context.execute_query_with_incremental_retry(max_retry, max_delay=max_delay, jitter=jitter)
         return self
 
-    @bounded("items_per_batch", Limits.BATCH_ITEMS)
+    @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
     def execute_batch(
         self,
         items_per_batch: int = Limits.BATCH_ITEMS.value,

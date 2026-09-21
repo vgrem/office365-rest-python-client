@@ -17,7 +17,7 @@ from office365.sharepoint.files.creation_information import FileCreationInformat
 from office365.sharepoint.files.file import File
 from office365.sharepoint.files.publish.status import FileStatus
 from office365.sharepoint.pages.template_file_type import TemplateFileType
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits, ensure_within
+from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits, ensure_within, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
@@ -86,6 +86,7 @@ class FileCollection(EntityCollection[File]):
             content = path_or_file.read()
             return self.add(name, content, True)
 
+    @limit(Limits.FILE_UPLOAD)
     def upload_content(
         self,
         content: bytes,
