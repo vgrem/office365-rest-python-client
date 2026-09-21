@@ -57,3 +57,32 @@ class TenantCrawlVersionsInfoProvider(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Administration.TenantCrawlVersionsInfoProvider"
+
+    def enable_crawl_versions(self, site_id: str) -> ClientResult[bool]:
+        """EnableCrawlVersions operation.
+
+        Args:
+            site_id (UUID): siteId parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "EnableCrawlVersions", None, {"siteId": site_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def enable_crawl_versions_for_tenant(self) -> ClientResult[bool]:
+        """EnableCrawlVersionsForTenant operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "EnableCrawlVersionsForTenant", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_site_crawl_version_status(self, site_id: str) -> ClientResult[dict]:
+        """GetSiteCrawlVersionStatus operation.
+
+        Args:
+            site_id (UUID): siteId parameter
+        """
+        return_type = ClientResult(self.context, dict())
+        qry = ServiceOperationQuery(self, "GetSiteCrawlVersionStatus", None, {"siteId": site_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

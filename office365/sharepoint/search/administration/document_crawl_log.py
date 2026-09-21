@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
@@ -28,13 +29,7 @@ class DocumentCrawlLog(Entity):
         context.add_query(qry)
         return return_type
 
-    def get_crawled_urls(
-        self,
-        get_count_only=False,
-        max_rows=None,
-        query_string=None,
-        content_source_id=None,
-    ):
+    def get_crawled_urls(self, get_count_only=False, max_rows=None, query_string=None, content_source_id=None):
         """Retrieves information about all the contents that were crawled.
 
         Args:
@@ -70,3 +65,25 @@ class DocumentCrawlLog(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
+
+    def get_unsuccesful_crawled_urls_for_ediscovery(
+        self, display_url: str, start_date_time: datetime, end_date_time: datetime
+    ) -> ClientResult[SimpleDataTable]:
+        """GetUnsuccesfulCrawledUrlsForEdiscovery operation.
+
+        Args:
+            display_url (str): displayUrl parameter
+            start_date_time (datetime): startDateTime parameter
+            end_date_time (datetime): endDateTime parameter
+        """
+        return_type = ClientResult(self.context, SimpleDataTable())
+        qry = ServiceOperationQuery(
+            self,
+            "GetUnsuccesfulCrawledUrlsForEdiscovery",
+            None,
+            {"displayUrl": display_url, "startDateTime": start_date_time, "endDateTime": end_date_time},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
