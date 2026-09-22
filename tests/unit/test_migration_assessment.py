@@ -464,3 +464,29 @@ def test_report_groups_by_risk_code():
     report.issues.append(AssessmentIssue("warning", "list", "x", "m", risk_code="LIST_VIEW_EXCEED_LIMIT"))
     assert report.by_risk_code == {"LIST_VIEW_EXCEED_LIMIT": 1}
     assert report.to_records()[0]["risk_code"] == "LIST_VIEW_EXCEED_LIMIT"
+
+
+# ── Limits integration ───────────────────────────────────────────────────────
+
+
+def test_assessment_options_seed_limit_mapping():
+    from office365.sharepoint.thresholds import Limits
+
+    options = AssessmentOptions()
+    assert options.limit("list_view_threshold") is Limits.LIST_VIEW
+    assert options.limit("max_list_items") is Limits.MAX_LIST_ITEMS
+    assert options.limit("unique_scopes") is Limits.UNIQUE_SCOPES
+
+
+def test_scanner_issue_carries_the_limit():
+    from office365.migration.sharepoint.scanners.large_lists import LargeListScanner
+    from office365.sharepoint.thresholds import Limits
+
+    report = AssessmentReport.new()
+    entity = SimpleNamespace(item_count=6000, title="L")
+    LargeListScanner(AssessmentOptions()).run(ScanTarget(ScanContainer.LIST, entity, "web/lists/L"), report)
+
+    issue = report.issues[0]
+    assert issue.limit is Limits.LIST_VIEW
+    assert issue.risk_code == "LIST_VIEW_EXCEED_LIMIT"
+    assert "list view threshold" in issue.message

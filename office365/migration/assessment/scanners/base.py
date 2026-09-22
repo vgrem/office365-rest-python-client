@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
+from office365.runtime.limits import Limit
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.thresholds import Limits
 
@@ -54,6 +55,27 @@ class AssessmentOptions:
     disabled_scans: set[str] = field(default_factory=lambda: {"permissions"})
     include_site_admins: bool = False
     system_field_names: set[str] = field(default_factory=lambda: set(SYSTEM_FIELD_NAMES))
+    #: Maps each threshold field to its source :class:`Limit` (seeded from the
+    #: product catalog) so findings can reference the authoritative limit.
+    limits: dict[str, Limit] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not self.limits:
+            self.limits = {
+                "max_path_length": Limits.FILE_PATH_LENGTH,
+                "max_name_length": Limits.FILE_NAME_LENGTH,
+                "large_file_bytes": Limits.MIGRATION_FILE_SIZE,
+                "list_view_threshold": Limits.LIST_VIEW,
+                "index_threshold": Limits.INDEX_ADD_REMOVE,
+                "max_list_items": Limits.MAX_LIST_ITEMS,
+                "lookup_joins": Limits.LOOKUP_JOINS,
+                "unique_scopes": Limits.UNIQUE_SCOPES,
+                "recommended_unique_scopes": Limits.UNIQUE_SCOPES_RECOMMENDED,
+            }
+
+    def limit(self, name: str) -> Limit:
+        """The source :class:`Limit` for a threshold field (a placeholder when unset)."""
+        return self.limits.get(name) or Limit(name, int(getattr(self, name, 0) or 0))
 
 
 class BaseScanner(Generic[RecordT]):
@@ -97,8 +119,9 @@ class BaseScanner(Generic[RecordT]):
         message: str,
         suggestion: str = "",
         risk_code: str = "",
+        limit: Optional[Limit] = None,
     ) -> None:
-        report.issues.append(AssessmentIssue(severity, self.category, location, message, suggestion, risk_code))
+        report.issues.append(AssessmentIssue(severity, self.category, location, message, suggestion, risk_code, limit))
 
     def run(self, target: ScanTarget[Any], report: AssessmentReport) -> None:
         """Inspect a loaded container payload (target.entity) and flag / record."""

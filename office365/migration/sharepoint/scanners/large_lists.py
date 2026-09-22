@@ -13,6 +13,24 @@ from __future__ import annotations
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
+from office365.runtime.limits import hint
+
+#: (threshold field, severity, SPMT risk code, remediation) — checked in order.
+_CHECKS = (
+    ("max_list_items", "blocker", "ITEM_COUNT_EXCEED_LIMIT", "Split or archive the list before migrating"),
+    (
+        "index_threshold",
+        "warning",
+        "ITEM_COUNT_EXCEED_INDEX_LIMIT",
+        "Migrate without adding indexes, or split the list",
+    ),
+    (
+        "list_view_threshold",
+        "info",
+        "LIST_VIEW_EXCEED_LIMIT",
+        "Index the filtered/sorted columns or use the modern experience",
+    ),
+)
 
 
 class LargeListScanner(BaseScanner):
@@ -25,33 +43,16 @@ class LargeListScanner(BaseScanner):
         count = lst.item_count or 0
         location = target.location or (lst.title or "list")
 
-        if count > self.options.max_list_items:
-            self.flag(
-                report,
-                "blocker",
-                location,
-                f"Item count {count:,} exceeds the {self.options.max_list_items:,}-item per-list maximum — "
-                "migration fails",
-                "Split or archive the list before migrating",
-                risk_code="ITEM_COUNT_EXCEED_LIMIT",
-            )
-        elif count > self.options.index_threshold:
-            self.flag(
-                report,
-                "warning",
-                location,
-                f"Item count {count:,} exceeds the {self.options.index_threshold:,}-item index threshold — "
-                "a column index can't be added to this list",
-                "Migrate without adding indexes, or split the list",
-                risk_code="ITEM_COUNT_EXCEED_INDEX_LIMIT",
-            )
-        elif count > self.options.list_view_threshold:
-            self.flag(
-                report,
-                "info",
-                location,
-                f"Item count {count:,} exceeds the {self.options.list_view_threshold:,}-item list view threshold — "
-                "classic views may throttle",
-                "Index the filtered/sorted columns or use the modern experience",
-                risk_code="LIST_VIEW_EXCEED_LIMIT",
-            )
+        for field, severity, risk_code, suggestion in _CHECKS:
+            limit = self.options.limit(field)
+            if count > limit.value:
+                self.flag(
+                    report,
+                    severity,
+                    location,
+                    hint(limit, value=count, context="list"),
+                    suggestion,
+                    risk_code=risk_code,
+                    limit=limit,
+                )
+                break

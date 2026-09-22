@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Optional
+
+from office365.runtime.limits import Limit
 
 
 @dataclass
@@ -10,7 +13,8 @@ class AssessmentIssue:
     location: str  # list/folder/field path
     message: str
     suggestion: str = ""
-    risk_code: str = ""  # SPMT scan-assessment code (see RISK_CODES), when applicable
+    risk_code: str = ""  # product-specific scan-assessment code (SPMT), when applicable
+    limit: Optional[Limit] = None  # the authoritative (product-agnostic) limit, when applicable
 
 
 #: SPMT scan-assessment risk codes the library can emit (a subset — the ones tied

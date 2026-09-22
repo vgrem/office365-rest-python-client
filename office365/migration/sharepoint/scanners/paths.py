@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
+from office365.runtime.limits import hint
 
 
 class PathScanner(BaseScanner):
@@ -12,26 +13,30 @@ class PathScanner(BaseScanner):
     category = "path"
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
+        path_limit = self.options.limit("max_path_length")
+        name_limit = self.options.limit("max_name_length")
         for item in target.entity:
             path = item.properties.get("FileRef", "")
             name = item.properties.get("FileLeafRef", "")
 
-            if len(path) > self.options.max_path_length:
+            if len(path) > path_limit.value:
                 self.flag(
                     report,
                     "blocker",
                     path,
-                    f"Path length {len(path)} exceeds SharePoint limit of {self.options.max_path_length}",
+                    hint(path_limit, value=len(path), context="path"),
                     "Shorten folder names or restructure hierarchy",
+                    limit=path_limit,
                 )
 
-            if len(name) > self.options.max_name_length:
+            if len(name) > name_limit.value:
                 self.flag(
                     report,
                     "blocker",
                     path,
-                    f"File name length {len(name)} exceeds limit of {self.options.max_name_length}",
+                    hint(name_limit, value=len(name), context="file name"),
                     "Rename file before migration",
+                    limit=name_limit,
                 )
 
             bad = [c for c in name if c in self.options.invalid_chars]
