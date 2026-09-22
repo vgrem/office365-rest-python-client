@@ -9,8 +9,6 @@ from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.runtime.limits import Limit
-from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
-from office365.sharepoint.thresholds import Limits
 
 PayloadT = TypeVar("PayloadT")
 RecordT = TypeVar("RecordT")
@@ -31,51 +29,43 @@ class ScanTarget(Generic[PayloadT]):
 
 @dataclass
 class AssessmentOptions:
-    """Configurable limits/heuristics used by the scanners (no hardcoded magic).
+    """Product-agnostic scanner options.
 
+    Product packages subclass this to seed the thresholds and the ``limits``
+    mapping from their catalog (e.g. ``SharePointAssessmentOptions``).
     ``disabled_scans`` mirrors SMAT's ScanDef.json ``Enabled`` flag: a scan
     listed here does not run and its data is not collected.
     """
 
-    max_path_length: int = Limits.FILE_PATH_LENGTH.value
-    max_name_length: int = Limits.FILE_NAME_LENGTH.value
-    invalid_chars: set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
-    large_file_bytes: int = Limits.MIGRATION_FILE_SIZE.value
-    list_view_threshold: int = Limits.LIST_VIEW.value
-    index_threshold: int = Limits.INDEX_ADD_REMOVE.value
-    max_list_items: int = Limits.MAX_LIST_ITEMS.value
-    lookup_joins: int = Limits.LOOKUP_JOINS.value
-    unique_scopes: int = Limits.UNIQUE_SCOPES.value
-    recommended_unique_scopes: int = Limits.UNIQUE_SCOPES_RECOMMENDED.value
-    large_site_threshold_gb: float = 500.0  # SMAT heuristic (sites over 500GB migrate slower), not a service limit
-    strip_field_attrs: set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
-    approval_workflow_fields: set[str] = field(
-        default_factory=lambda: {"_ApprovalStatus", "_ApprovalRespondedBy", "_ApprovalAssignedTo"}
-    )
+    max_path_length: Optional[int] = None
+    max_name_length: Optional[int] = None
+    invalid_chars: set[str] = field(default_factory=set)
+    large_file_bytes: Optional[int] = None
+    list_view_threshold: Optional[int] = None
+    index_threshold: Optional[int] = None
+    max_list_items: Optional[int] = None
+    lookup_joins: Optional[int] = None
+    unique_scopes: Optional[int] = None
+    recommended_unique_scopes: Optional[int] = None
+    large_site_threshold_gb: Optional[float] = None
+    strip_field_attrs: set[str] = field(default_factory=set)
+    approval_workflow_fields: set[str] = field(default_factory=set)
     disabled_scans: set[str] = field(default_factory=lambda: {"permissions"})
     include_site_admins: bool = False
-    system_field_names: set[str] = field(default_factory=lambda: set(SYSTEM_FIELD_NAMES))
-    #: Maps each threshold field to its source :class:`Limit` (seeded from the
-    #: product catalog) so findings can reference the authoritative limit.
+    system_field_names: set[str] = field(default_factory=set)
+    #: Maps each threshold field to its source :class:`Limit` (seeded by the
+    #: product) so findings can reference the authoritative limit.
     limits: dict[str, Limit] = field(default_factory=dict)
 
-    def __post_init__(self) -> None:
-        if not self.limits:
-            self.limits = {
-                "max_path_length": Limits.FILE_PATH_LENGTH,
-                "max_name_length": Limits.FILE_NAME_LENGTH,
-                "large_file_bytes": Limits.MIGRATION_FILE_SIZE,
-                "list_view_threshold": Limits.LIST_VIEW,
-                "index_threshold": Limits.INDEX_ADD_REMOVE,
-                "max_list_items": Limits.MAX_LIST_ITEMS,
-                "lookup_joins": Limits.LOOKUP_JOINS,
-                "unique_scopes": Limits.UNIQUE_SCOPES,
-                "recommended_unique_scopes": Limits.UNIQUE_SCOPES_RECOMMENDED,
-            }
-
     def limit(self, name: str) -> Limit:
-        """The source :class:`Limit` for a threshold field (a placeholder when unset)."""
-        return self.limits.get(name) or Limit(name, int(getattr(self, name, 0) or 0))
+        """The source :class:`Limit` for a threshold field (from ``limits``)."""
+        limit = self.limits.get(name)
+        if limit is None:
+            value = getattr(self, name, None)
+            if value is None:
+                raise ValueError(f"no limit or value configured for {name!r}")
+            limit = Limit(name, int(value))
+        return limit
 
 
 class BaseScanner(Generic[RecordT]):

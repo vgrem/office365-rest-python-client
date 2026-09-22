@@ -11,6 +11,7 @@ from office365.migration.sharepoint.adapters import (
     SharePointListTarget,
 )
 from office365.migration.sharepoint.assessor import MigrationAssessor
+from office365.migration.sharepoint.options import SharePointAssessmentOptions
 from office365.migration.sharepoint.registry import (
     SHAREPOINT_SCANS,
     get_scan,
@@ -42,6 +43,7 @@ __all__ = [
     "PermissionScanner",
     "SHAREPOINT_SCANS",
     "ScanTarget",
+    "SharePointAssessmentOptions",
     "SharePointLibrarySource",
     "SharePointLibraryTarget",
     "SharePointListSource",

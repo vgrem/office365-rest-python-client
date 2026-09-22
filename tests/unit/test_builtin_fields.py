@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from office365.migration.assessment.scanners import AssessmentOptions
+from office365.migration.sharepoint import SharePointAssessmentOptions
 from office365.sharepoint.fields.builtin_field_id import SPBuiltInFieldId
 from office365.sharepoint.fields.builtin_field_name import (
     EXTRA_SYSTEM_FIELD_NAMES,
@@ -26,7 +26,7 @@ def test_system_field_names_include_extras():
 
 
 def test_assessment_options_default_from_canonical_set():
-    assert AssessmentOptions().system_field_names == set(SYSTEM_FIELD_NAMES)
+    assert SharePointAssessmentOptions().system_field_names == set(SYSTEM_FIELD_NAMES)
 
 
 def test_builtin_field_id_guids():

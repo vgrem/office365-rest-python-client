@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List as SPList
 
 from office365.migration import (
-    AssessmentOptions,
     MailboxAssessor,
     MigrationAssessor,
     MigrationTenantAssessor,
@@ -24,6 +23,7 @@ from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners import ScanTarget
+from office365.migration.sharepoint import SharePointAssessmentOptions
 from office365.migration.sharepoint.adapters import SharePointListSource
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners import FieldScanner, LargeSitesScanner
@@ -32,7 +32,9 @@ from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests._scripted_transport import ScriptedTransport
 
 _GB = 1024**3
-_ISOLATED = AssessmentOptions(disabled_scans={"permissions", "fields", "lookups", "largeLists", "paths", "files"})
+_ISOLATED = SharePointAssessmentOptions(
+    disabled_scans={"permissions", "fields", "lookups", "largeLists", "paths", "files"}
+)
 
 
 # ── Web-scope payloads / helpers ─────────────────────────────────────────────
@@ -71,11 +73,11 @@ def _web(url: str) -> dict:
     return {"__metadata": {"type": "SP.Web"}, "Url": url}
 
 
-def _run_web(payloads: list, options: AssessmentOptions | None = None) -> AssessmentReport:
+def _run_web(payloads: list, options: SharePointAssessmentOptions | None = None) -> AssessmentReport:
     ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
     ctx.pending_request().beforeExecute.clear()
     ctx.pending_request().transport = ScriptedTransport(payloads)
-    return MigrationAssessor(ctx.web, options or AssessmentOptions()).assess().execute_query().value
+    return MigrationAssessor(ctx.web, options or SharePointAssessmentOptions()).assess().execute_query().value
 
 
 def test_inaccessible_list_is_skipped_not_fatal():
@@ -210,7 +212,7 @@ def test_field_scanner_ignores_system_fields_flags_user_fields():
         {"InternalName": "ID", "SchemaXml": '<Field Type="Counter" ReadOnly="TRUE" SourceID="x"/>'},
         {"InternalName": "MyField", "SchemaXml": '<Field Type="Text" ReadOnly="TRUE" SourceID="x" ColName="x"/>'},
     ]
-    FieldScanner().run(
+    FieldScanner(SharePointAssessmentOptions()).run(
         ScanTarget(ScanContainer.FIELDS, [SimpleNamespace(properties=f) for f in fields], "lists/L"),
         report,
     )
@@ -220,12 +222,11 @@ def test_field_scanner_ignores_system_fields_flags_user_fields():
 
 
 def test_registry_gates_scans_and_disabling_drops_site_query():
-    names = {d.name for d, _ in sharepoint_scan_pairs(AssessmentOptions())}
+    names = {d.name for d, _ in sharepoint_scan_pairs(SharePointAssessmentOptions())}
     assert {"fields", "paths", "LargeSites"} <= names and "permissions" not in names
 
-    containers = {
-        d.name: d.container for d, _ in sharepoint_scan_pairs(AssessmentOptions()) if d.name in ("fields", "LargeSites")
-    }
+    options = SharePointAssessmentOptions()
+    containers = {d.name: d.container for d, _ in sharepoint_scan_pairs(options) if d.name in ("fields", "LargeSites")}
     assert containers["fields"] is ScanContainer.FIELDS
     assert containers["LargeSites"] is ScanContainer.SITE
 
@@ -233,7 +234,7 @@ def test_registry_gates_scans_and_disabling_drops_site_query():
     ctx.pending_request().beforeExecute.clear()
     transport = ScriptedTransport([{"d": {"results": []}}, {"d": {"results": []}}])
     ctx.pending_request().transport = transport
-    options = AssessmentOptions(disabled_scans={"permissions", "fields", "paths", "files", "LargeSites"})
+    options = SharePointAssessmentOptions(disabled_scans={"permissions", "fields", "paths", "files", "LargeSites"})
     report = MigrationAssessor(ctx.web, options).assess().execute_query().value
     assert transport.calls == 2  # noqa: PLR2004 — no site-collection query issued
     assert report.scan_reports == {}
@@ -420,7 +421,7 @@ def test_mailbox_walker_reports_nested_counts_and_flags_large_folder():
 def test_large_list_scanner_grades_by_threshold():
     from office365.migration.sharepoint.scanners.large_lists import LargeListScanner
 
-    scanner = LargeListScanner(AssessmentOptions())
+    scanner = LargeListScanner(SharePointAssessmentOptions())
     for count, severity, code in (
         (100, None, ""),
         (6000, "info", "LIST_VIEW_EXCEED_LIMIT"),
@@ -443,7 +444,8 @@ def test_lookup_column_scanner_flags_too_many_lookups():
 
     fields = [SimpleNamespace(properties={"InternalName": f"L{i}", "TypeAsString": "Lookup"}) for i in range(9)]
     report = AssessmentReport.new()
-    LookupColumnScanner(AssessmentOptions()).run(ScanTarget(ScanContainer.FIELDS, fields, "web/lists/L"), report)
+    options = SharePointAssessmentOptions()
+    LookupColumnScanner(options).run(ScanTarget(ScanContainer.FIELDS, fields, "web/lists/L"), report)
     assert len(report.issues) == 1
     assert report.issues[0].risk_code == "LIST_VIEW_LOOKUP_EXCEED_LIMIT"
 
@@ -453,7 +455,7 @@ def test_permission_scanner_uses_unique_scope_limits():
 
     items = [SimpleNamespace(properties={"HasUniqueRoleAssignments": True}) for _ in range(6000)]
     report = AssessmentReport.new()
-    PermissionScanner(AssessmentOptions()).run(ScanTarget(ScanContainer.ITEMS, items, "web/lists/L"), report)
+    PermissionScanner(SharePointAssessmentOptions()).run(ScanTarget(ScanContainer.ITEMS, items, "web/lists/L"), report)
     assert len(report.issues) == 1
     assert report.issues[0].severity == "warning"
     assert report.issues[0].risk_code == "UNIQUE_PERMISSION_EXCEED_LIMIT"
@@ -472,7 +474,7 @@ def test_report_groups_by_risk_code():
 def test_assessment_options_seed_limit_mapping():
     from office365.sharepoint.thresholds import Limits
 
-    options = AssessmentOptions()
+    options = SharePointAssessmentOptions()
     assert options.limit("list_view_threshold") is Limits.LIST_VIEW
     assert options.limit("max_list_items") is Limits.MAX_LIST_ITEMS
     assert options.limit("unique_scopes") is Limits.UNIQUE_SCOPES
@@ -484,7 +486,7 @@ def test_scanner_issue_carries_the_limit():
 
     report = AssessmentReport.new()
     entity = SimpleNamespace(item_count=6000, title="L")
-    LargeListScanner(AssessmentOptions()).run(ScanTarget(ScanContainer.LIST, entity, "web/lists/L"), report)
+    LargeListScanner(SharePointAssessmentOptions()).run(ScanTarget(ScanContainer.LIST, entity, "web/lists/L"), report)
 
     issue = report.issues[0]
     assert issue.limit is Limits.LIST_VIEW

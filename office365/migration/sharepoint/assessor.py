@@ -28,6 +28,7 @@ from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.runner import ScanRunner
 from office365.migration.assessment.scanners import AssessmentOptions
 from office365.migration.sharepoint.adapters import is_taxonomy_validation
+from office365.migration.sharepoint.options import SharePointAssessmentOptions
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 from office365.runtime.client_result import ClientResult
@@ -56,7 +57,7 @@ class MigrationAssessor(Entity):
     def __init__(self, web: "Web", options: AssessmentOptions | None = None) -> None:
         super().__init__(web.context)
         self._web = web
-        self._options = options or AssessmentOptions()
+        self._options = options or SharePointAssessmentOptions()
 
     # ── Configuration ────────────────────────────────────────────
 

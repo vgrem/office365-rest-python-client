@@ -22,6 +22,7 @@ from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.runner import ScanRunner
 from office365.migration.assessment.scanners import AssessmentOptions
+from office365.migration.sharepoint.options import SharePointAssessmentOptions
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 from office365.runtime.client_result import ClientResult
@@ -49,7 +50,7 @@ class MigrationTenantAssessor(Entity):
     def __init__(self, tenant: "Tenant", options: AssessmentOptions | None = None) -> None:
         super().__init__(tenant.context)
         self._tenant = tenant
-        self._options = options or AssessmentOptions()
+        self._options = options or SharePointAssessmentOptions()
 
     def assess(
         self,

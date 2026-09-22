@@ -90,7 +90,8 @@ class LargeSitesScanner(BaseScanner[LargeSitesRecord]):
         size_gb = (summary.storage_bytes or 0) / (1024**3) if summary.storage_bytes else None
         size_mb = round((summary.storage_bytes or 0) / (1024**2), 1) if summary.storage_bytes else None
         locked = summary.lock_state in {"NoAccess", "Locked"}
-        over = size_gb is not None and size_gb > self.options.large_site_threshold_gb
+        threshold = self.options.large_site_threshold_gb
+        over = size_gb is not None and threshold is not None and size_gb > threshold
 
         if summary.report_impacted_only and (locked or not over):
             return
@@ -109,12 +110,12 @@ class LargeSitesScanner(BaseScanner[LargeSitesRecord]):
         row.TotalItemCount = summary.item_count
         self.records.append(row)
 
-        if over and not summary.report_impacted_only:
+        if over and not summary.report_impacted_only and threshold is not None and size_gb is not None:
             self.flag(
                 report,
                 "warning",
                 summary.site_url or "site",
-                f"Site size {size_gb:.1f}GB exceeds the {self.options.large_site_threshold_gb:g}GB guidance — "
+                f"Site size {size_gb:.1f}GB exceeds the {threshold:g}GB guidance — "
                 "migration takes longer to schedule and run",
                 "Split the site collection, archive old content, or store large binaries externally",
             )
