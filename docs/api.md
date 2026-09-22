@@ -142,8 +142,38 @@ Mark background work as low priority so it's throttled before user-visible calls
 client.with_throttle_priority("low")     # low | normal | high
 ```
 
-See [Throttling](throttling.md) for the signals, the service-limit reference
-(`office365.graph_limits.GraphLimits`) and the best practices.
+See [Throttling](throttling.md) for the signals, the quota reference and the
+best practices.
+
+### Limits
+
+Service limits are first-class: declare them on the model with `@limit`, enforce
+them at a call site, and discover them from any resource or tool.
+
+```python
+from office365.limits import catalog, limit, limits_of, verify_limits
+from office365.sharepoint.thresholds import Limits
+
+@limit(Limits.LIST_VIEW, arg="page_size")   # declare + enforce (warn by default)
+def get_items(page_size=None): ...
+
+lst.get_items(page_size=6000)                # warns; the limit is discoverable
+lst.declared_limits()                        # the limits declared on the class
+verify_limits(lst.get_items, page_size=6000).ok   # False
+catalog("sharepoint")                        # every registered SharePoint limit
+```
+
+- **Mechanics** — `office365.limits` re-exports `Limit` (a static threshold *or*
+  a rate quota), the `@limit` decorator, and the guardrails (`exceeds` /
+  `warn_if_exceeds` / `ensure_within` / `hint`).
+- **Catalogs** — `sharepoint.thresholds.Limits`; Graph quotas are declared on the
+  resource classes (`DirectoryObject`, `CallRecord`, …).
+- **Registry** — products register their catalogs (`register_catalog`); `@limit`
+  on a class registers it; `catalog(product)` aggregates them.
+- **Migration** — assessment findings carry the authoritative `Limit`
+  (`AssessmentIssue.limit`) alongside the product-specific `risk_code`.
+
+See [Service limits](limits.md) for the SharePoint catalog.
 
 ## Power features
 
