@@ -2,16 +2,19 @@
 
 The SharePoint Migration API runs large migrations server-side: content is
 packaged and uploaded to Azure Storage, then an *ingestion job* ingests it. This
-wrapper submits such a job (``Site.create_migration_ingestion_job``) and polls
-its status with a ``Progress`` hook.
+wrapper submits such a job and polls its status with a ``Progress`` hook.
 
-The status source is abstracted (``status_fn``) so callers can poll whichever
-endpoint reports the job — e.g. the Azure report queue, or the
-Graph ``SharePointMigrationJob`` progress events.
+Status can be read two ways:
+
+- ``GetMigrationJobProgress`` — the recommended API; use :meth:`status_fn` as the
+  ``monitor`` status source (or :meth:`progress` directly);
+- a caller-supplied ``status_fn`` — e.g. an Azure queue or the Graph
+  ``SharePointMigrationJobProgressEvent`` stream.
 """
 
 from __future__ import annotations
 
+import json
 import time
 import uuid
 from collections.abc import Callable
@@ -21,6 +24,40 @@ from office365.runtime.operations import emit_progress
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
+
+__all__ = ["MigrationServerJob", "parse_progress_events"]
+
+_TERMINAL = ("succeeded", "completed", "failed", "cancelled")
+
+# Migration API progress events -> monitor statuses (JobEnd resolved separately).
+_EVENT_STATUS = {
+    "JobQueued": "queued",
+    "JobStart": "processing",
+    "JobProgress": "processing",
+    "JobError": "processing",
+}
+
+
+def parse_progress_events(events: list[dict]) -> tuple[str, int, int | None]:
+    """Reduce accumulated Migration API progress events to ``(status, done, total)``.
+
+    Pass the events accumulated across polls (they are append-only), so the status
+    stays monotonic even when a poll returns no new events.
+    """
+    status = "queued"
+    done = 0
+    total: int | None = None
+    for event in events:
+        kind = event.get("Event")
+        if kind == "JobEnd":
+            status = "failed" if int(event.get("TotalErrors") or 0) else "succeeded"
+        elif kind in _EVENT_STATUS:
+            status = _EVENT_STATUS[kind]
+        if event.get("ObjectsProcessed") is not None:
+            done = int(event["ObjectsProcessed"])
+        if event.get("TotalExpectedSPObjects") is not None:
+            total = int(event["TotalExpectedSPObjects"])
+    return status, done, total
 
 
 class MigrationServerJob:
@@ -34,16 +71,16 @@ class MigrationServerJob:
         g_web_id,
         azure_container_source_uri: str,
         azure_container_manifest_uri: str,
-        azure_queue_report_uri: str,
+        azure_queue_report_uri: str | None = None,
         ingestion_task_key: str | None = None,
     ) -> str:
-        """Submit an ingestion job and return its job id.
+        """Submit an ingestion job for the staged package and return its job id.
 
         Args:
             g_web_id: Identifier of the destination web.
-            azure_container_source_uri: Azure container URI holding the data.
-            azure_container_manifest_uri: Azure container URI holding the manifest.
-            azure_queue_report_uri: Azure queue URI receiving progress reports.
+            azure_container_source_uri: Content container URI (with SAS token).
+            azure_container_manifest_uri: Manifest container URI (with SAS token).
+            azure_queue_report_uri: Optional Azure queue URI receiving progress reports.
             ingestion_task_key: Optional task key (a UUID is generated when omitted).
         """
         result = self._site.create_migration_ingestion_job(
@@ -55,10 +92,59 @@ class MigrationServerJob:
         )
         return result.execute_query().value
 
+    def submit_encrypted(
+        self,
+        g_web_id,
+        azure_container_source_uri: str,
+        azure_container_manifest_uri: str,
+        aes256_cbc_key: bytes,
+        azure_queue_report_uri: str | None = None,
+    ) -> str:
+        """Submit an ingestion job for an AES-256-CBC encrypted package.
+
+        Required for SharePoint-provided containers; use the ``EncryptionKey`` from
+        ``Site.provision_migration_containers``.
+        """
+        result = self._site.create_migration_job_encrypted(
+            g_web_id=g_web_id,
+            azure_container_source_uri=azure_container_source_uri,
+            azure_container_manifest_uri=azure_container_manifest_uri,
+            aes256_cbc_key=aes256_cbc_key,
+            azure_queue_report_uri=azure_queue_report_uri,
+        )
+        return result.execute_query().value
+
+    def progress(self, job_id: str, next_token: str = "0") -> tuple[list[dict], str]:
+        """Fetch a page of progress events and the next paging token.
+
+        Args:
+            job_id: The migration job id.
+            next_token: Paging token; use ``"0"`` for the initial request.
+
+        Returns:
+            ``(events, next_token)`` — events are decoded from the JSON log strings.
+        """
+        result = self._site.get_migration_job_progress(job_id, next_token).execute_query()
+        value = result.value
+        events = [json.loads(line) for line in (value.Logs or [])]
+        return events, value.NextToken or next_token
+
+    def status_fn(self) -> Callable[[str], tuple[str, int, int | None]]:
+        """A ``monitor`` status function backed by ``GetMigrationJobProgress``."""
+        state: dict = {"token": "0", "events": []}
+
+        def _status(job_id: str) -> tuple[str, int, int | None]:
+            events, token = self.progress(job_id, state["token"])
+            state["token"] = token
+            state["events"].extend(events)
+            return parse_progress_events(state["events"])
+
+        return _status
+
     def monitor(
         self,
         job_id: str,
-        status_fn: Callable[[str], tuple[str, int, int | None]],
+        status_fn: Callable[[str], tuple[str, int, int | None]] | None = None,
         interval: float = 5,
         timeout: float = 1800,
         progress: Callable[["Progress"], None] | None = None,
@@ -68,7 +154,7 @@ class MigrationServerJob:
         Args:
             job_id: The migration job id.
             status_fn: Callable returning ``(status, done, total)`` for a job id.
-              ``done``/``total`` feed the ``Progress`` hook (total may be None).
+              Defaults to a ``GetMigrationJobProgress``-backed reader.
             interval: Seconds between polls.
             timeout: Maximum seconds to wait before raising ``TimeoutError``.
             progress: Optional hook fired per poll with a ``Progress`` snapshot.
@@ -79,11 +165,12 @@ class MigrationServerJob:
         Raises:
             TimeoutError: When the job doesn't finish within ``timeout`` seconds.
         """
+        status_fn = status_fn or self.status_fn()
         elapsed = 0.0
         while elapsed < timeout:
             status, done, total = status_fn(job_id)
             emit_progress(progress, done=done, total=total, stage="migrating")
-            if status.lower() in ("succeeded", "completed", "failed", "cancelled"):
+            if status.lower() in _TERMINAL:
                 return status
             time.sleep(interval)
             elapsed += interval

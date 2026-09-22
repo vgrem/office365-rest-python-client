@@ -33,23 +33,46 @@ if TYPE_CHECKING:
     from office365.runtime.operations import Progress
 
 
-_FIDELITY_FLAGS = ("preserve_timestamps", "preserve_permissions", "preserve_versions")
+def _assert_fidelity_supported(options: MigrationOptions, source, target: DataTarget) -> None:
+    """Reject fidelity flags the adapter pair cannot honor.
 
-
-def _assert_fidelity_supported(options: MigrationOptions) -> None:
-    """Reject fidelity flags the client-side runner cannot honor.
-
-    REST cannot reliably restore ``Created``/``Modified``, version history, or
-    ACLs — those need the server-side Migration API (``MigrationServerJob``).
-    Failing fast is better than silently migrating without the requested fidelity.
+    ``preserve_versions`` always needs the server-side Migration API (REST can't
+    restore version history). ``preserve_timestamps`` / ``preserve_permissions``
+    are applied client-side on a best-effort basis, but only when the adapters
+    expose the matching optional hooks — failing fast beats silently migrating
+    without the requested fidelity.
     """
-    enabled = [flag for flag in _FIDELITY_FLAGS if getattr(options, flag, False)]
-    if enabled:
+    if options.preserve_versions:
         raise NotImplementedError(
-            f"{', '.join(enabled)} is not supported by the client-side runner: REST cannot "
-            "reliably restore Created/Modified, version history, or ACLs. Use the server-side "
-            "Migration API (MigrationServerJob) or set these options to False."
+            "preserve_versions is not supported by the client-side runner: REST cannot restore "
+            "version history. Use the server-side Migration API (MigrationServerJob) or set "
+            "preserve_versions to False."
         )
+    if options.preserve_timestamps and not callable(getattr(target, "apply_timestamps", None)):
+        raise NotImplementedError(
+            "preserve_timestamps is not supported by this target: it does not implement apply_timestamps(item)."
+        )
+    if options.preserve_permissions and not (
+        callable(getattr(source, "read_permissions", None)) and callable(getattr(target, "apply_permissions", None))
+    ):
+        raise NotImplementedError(
+            "preserve_permissions is not supported by this adapter pair: it needs "
+            "source.read_permissions(item) and target.apply_permissions(item, permissions)."
+        )
+
+
+def _apply_fidelity(source, target: DataTarget, item: MigrationItem, options: MigrationOptions) -> None:
+    """Best-effort fidelity after a successful write (timestamps / ACLs).
+
+    Failures propagate (and are captured per-item by the caller) so a requested
+    fidelity that couldn't be applied is visible and the item stays resumable.
+    """
+    if options.preserve_timestamps:
+        _call_optional(target, "apply_timestamps", item)
+    if options.preserve_permissions:
+        permissions = source.read_permissions(item)
+        if permissions:
+            _call_optional(target, "apply_permissions", item, permissions)
 
 
 class _Watermark:
@@ -92,7 +115,7 @@ class MigrationRunner:
         progress: Callable[["Progress"], None] | None = None,
         stop_event: Callable[[], bool] | None = None,
     ) -> MigrationStats:
-        _assert_fidelity_supported(options)
+        _assert_fidelity_supported(options, source, target)
         watermark = _Watermark(checkpoint) if options.incremental else None
         parallel = (
             options.concurrency > 1
@@ -195,11 +218,19 @@ class MigrationRunner:
                     checkpoint.record(item, ItemStatus.FAILED)
                     stats.errors += 1
                 else:
-                    checkpoint.record(item, ItemStatus.DONE)
-                    stats.success += 1
-                    stats.bytes_transferred += item.size_bytes
-                    if watermark is not None:
-                        watermark.advance(item)
+                    try:
+                        _apply_fidelity(source, target, item, options)
+                    except Exception as e:  # noqa: BLE001 — per-item errors are captured, not fatal
+                        item.error = str(e)
+                        item.error_code = type(e).__name__
+                        checkpoint.record(item, ItemStatus.FAILED)
+                        stats.errors += 1
+                    else:
+                        checkpoint.record(item, ItemStatus.DONE)
+                        stats.success += 1
+                        stats.bytes_transferred += item.size_bytes
+                        if watermark is not None:
+                            watermark.advance(item)
                 self._report_progress(progress, stats, item)
             chunk.clear()
             if checkpoint_path is not None:
@@ -252,6 +283,7 @@ class MigrationRunner:
         item.dest_path = dest
         payload = source.read(item)
         target.write(item, payload)
+        _apply_fidelity(source, target, item, options)
         return True
 
 

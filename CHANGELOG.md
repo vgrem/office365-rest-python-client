@@ -51,6 +51,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `success_callback` now fires per batch in sequential mode too (it previously
   never fired there). `List.import_from(..., total=...)` lets callers supply the
   known total so the progress percentage/ETA is meaningful.
+- **Best-effort migration fidelity:** the migration runner now applies
+  `preserve_timestamps` / `preserve_permissions` client-side when the adapters
+  support it, via new optional hooks `DataSource.read_permissions(item)` /
+  `DataTarget.apply_timestamps(item)` / `DataTarget.apply_permissions(item,
+  permissions)` (with `PermissionEntry`). The SharePoint library adapters restore
+  `Created`/`Modified` through `ValidateUpdateListItem` and recreate the source
+  role assignments (same-tenant).
+- **Migration guide:** `docs/migration.md` documents the adapter/job model,
+  fidelity tiers, and the server-side ingestion path.
+- **Server-side migration (full fidelity):** new `Site` methods
+  `provision_migration_containers`, `provision_migration_queue`,
+  `create_migration_job_encrypted`, and `get_migration_job_progress`.
+  `MigrationServerJob` gained `submit_encrypted`, `progress`, and a
+  `GetMigrationJobProgress`-backed `status_fn` (`monitor` now defaults to it);
+  `parse_progress_events` reduces the event log to `(status, done, total)`.
+- **Migration API package layer** (`office365.migration.package`): models and
+  serialization for `Manifest.xml` / `ExportSettings.xml` / `SystemData.xml` /
+  `UserGroupMap.xml`, a `PackageBuilder` (deterministic GUIDs, folders, files,
+  versions), `FileSystemStaging`, and optional `BlobStaging` (new `[azure]` extra:
+  `azure-storage-blob`; `AzureBlobStaging` kept as an alias). `create_staging(...)`
+  selects a backend from the container URL — the seam for a future S3 / Azure
+  Files staging. `SharePointPackageTarget` ties it together as a `DataTarget` — it
+  builds the package, stages the blobs, and submits an ingestion job (the
+  constructor accepts `staging=` alone, so a package can be built and staged
+  without Azure). Covers the **document-library subset**; the generated XML
+  follows the documented format but is **not yet verified against a live tenant**.
+- **Storage & vendor-neutrality docs:** `docs/migration.md` now covers which legs
+  need Azure (only the server-side SharePoint ingest leg, and containers can be
+  SharePoint-provided — no Azure account), the `Staging` seam, and a step-by-step
+  example.
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry
@@ -80,10 +110,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `SharePointListSource` now reuses the shared record projection
   (`to_records(raw=True)`, no JSON coercion).
 - `MigrationOptions.preserve_timestamps` now defaults to `False` (it was `True`
-  but never implemented). `preserve_timestamps`/`preserve_permissions`/
-  `preserve_versions` are documented as not implemented client-side — they need
-  the server-side Migration API (`MigrationServerJob`) — and now raise
-  `NotImplementedError` when enabled instead of silently no-op'ing.
+  but never implemented). `preserve_timestamps`/`preserve_permissions` are
+  applied client-side on a best-effort basis (see above); `preserve_versions`
+  still needs the server-side Migration API (`MigrationServerJob`). Enabling a
+  flag the adapter pair can't honor raises `NotImplementedError` instead of
+  silently no-op'ing.
+- `Site.create_migration_ingestion_job` — `azure_queue_report_uri` and
+  `ingestion_task_key` are now optional (the API treats the queue as optional).
 - **Streaming export + row-level dead-letter:** `export_to(..., page_size=...)`
   streams appendable formats (CSV/TSV/NDJSON/JSON) page by page — bounded memory
   for large collections. With `on_error="collect"` **and** a `dead_letter`, a

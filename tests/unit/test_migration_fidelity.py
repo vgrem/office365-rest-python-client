@@ -6,7 +6,13 @@ import datetime
 
 import pytest
 from office365.migration.adapters.filesystem import FileSystemSource
-from office365.migration.base import MigrationItem, MigrationOptions, item_from_dict, item_to_dict
+from office365.migration.base import (
+    MigrationItem,
+    MigrationOptions,
+    PermissionEntry,
+    item_from_dict,
+    item_to_dict,
+)
 from office365.migration.runner import _assert_fidelity_supported
 from office365.runtime.converters.scalars import iso_or_none
 
@@ -35,12 +41,54 @@ def test_migration_item_metadata_round_trips():
     assert restored.editor_id == 2  # noqa: PLR2004
 
 
-def test_fidelity_flags_raise_instead_of_silently_noop():
-    for flag in ("preserve_timestamps", "preserve_permissions", "preserve_versions"):
-        with pytest.raises(NotImplementedError, match=flag):
-            _assert_fidelity_supported(MigrationOptions(**{flag: True}))
+def test_preserve_versions_always_needs_the_server_side_api():
+    with pytest.raises(NotImplementedError, match="preserve_versions"):
+        _assert_fidelity_supported(MigrationOptions(preserve_versions=True), _Source([]), _Target())
 
-    _assert_fidelity_supported(MigrationOptions())  # defaults are honest no-ops
+
+def test_fidelity_flags_require_adapter_support():
+    source, target = _Source([]), _Target()
+    with pytest.raises(NotImplementedError, match="preserve_timestamps"):
+        _assert_fidelity_supported(MigrationOptions(preserve_timestamps=True), source, target)
+    with pytest.raises(NotImplementedError, match="preserve_permissions"):
+        _assert_fidelity_supported(MigrationOptions(preserve_permissions=True), source, target)
+
+    _assert_fidelity_supported(MigrationOptions(), source, target)  # defaults are honest no-ops
+
+
+def test_fidelity_flags_pass_when_adapters_support_them():
+    source, target = _FidelitySource([]), _FidelityTarget()
+    _assert_fidelity_supported(MigrationOptions(preserve_timestamps=True, preserve_permissions=True), source, target)
+
+
+def test_runner_applies_fidelity_hooks_after_write():
+    from office365.migration.checkpoint import Checkpoint
+    from office365.migration.runner import MigrationRunner
+
+    item = MigrationItem("s", "a", created="2020-01-01T00:00:00+00:00", modified="2021-01-01T00:00:00+00:00")
+    source, target = _FidelitySource([item]), _FidelityTarget()
+
+    MigrationRunner().run(
+        source,
+        target,
+        source.list_items(),
+        MigrationOptions(preserve_timestamps=True, preserve_permissions=True),
+        Checkpoint.create(),
+    )
+
+    assert target.written == ["a"]
+    assert target.timestamps == ["a"]
+    assert target.permissions[0][0] == "a"
+    assert target.permissions[0][1][0].principal_name == "user@contoso.com"
+
+
+def test_sp_timestamp_normalizes_offsets_for_sharepoint():
+    from office365.migration.sharepoint.adapters import _sp_timestamp
+
+    assert _sp_timestamp(None) is None
+    assert _sp_timestamp("") is None
+    assert _sp_timestamp("2021-01-01T00:00:00+00:00") == "2021-01-01T00:00:00Z"
+    assert _sp_timestamp("2021-01-01T00:00:00") == "2021-01-01T00:00:00Z"
 
 
 def test_filesystem_source_captures_timestamps(tmp_path):
@@ -108,6 +156,24 @@ class _Target:
 
     def close(self):
         pass
+
+
+class _FidelitySource(_Source):
+    def read_permissions(self, item):
+        return [PermissionEntry(principal_name="user@contoso.com", roles=["Read"])]
+
+
+class _FidelityTarget(_Target):
+    def __init__(self) -> None:
+        super().__init__()
+        self.timestamps: list[str] = []
+        self.permissions: list = []
+
+    def apply_timestamps(self, item):
+        self.timestamps.append(item.dest_path)
+
+    def apply_permissions(self, item, permissions):
+        self.permissions.append((item.dest_path, permissions))
 
 
 def test_incremental_run_uses_watermark():

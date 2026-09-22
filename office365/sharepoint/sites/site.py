@@ -17,6 +17,7 @@ from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.changes.token import ChangeToken
 from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
+from office365.sharepoint.documents.encryptionoption import EncryptionOption
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition_collection import (
@@ -39,6 +40,13 @@ from office365.sharepoint.sites.html_field_security_setting import (
     HTMLFieldSecuritySetting,
 )
 from office365.sharepoint.sites.migration.job_status import SPMigrationJobStatus
+from office365.sharepoint.sites.migration.jobprogress import MigrationJobProgress
+from office365.sharepoint.sites.provisionedmigrationcontainersinfo import (
+    ProvisionedMigrationContainersInfo,
+)
+from office365.sharepoint.sites.provisionedmigrationqueueinfo import (
+    ProvisionedMigrationQueueInfo,
+)
 from office365.sharepoint.sites.upgrade_info import UpgradeInfo
 from office365.sharepoint.sites.usage_info import UsageInfo
 from office365.sharepoint.sites.version_policy_manager import SiteVersionPolicyManager
@@ -107,8 +115,8 @@ class Site(Entity):
         g_web_id: Union[str, UUID],
         azure_container_source_uri: str,
         azure_container_manifest_uri: str,
-        azure_queue_report_uri: str,
-        ingestion_task_key: str,
+        azure_queue_report_uri: str | None = None,
+        ingestion_task_key: str | None = None,
     ) -> ClientResult[str]:
         """Creates a migration ingestion job for content migration via Azure storage.
 
@@ -116,8 +124,8 @@ class Site(Entity):
             g_web_id: Web identifier.
             azure_container_source_uri: Azure container source URI.
             azure_container_manifest_uri: Azure container manifest URI.
-            azure_queue_report_uri: Azure queue report URI.
-            ingestion_task_key: Ingestion task key.
+            azure_queue_report_uri: Optional Azure queue report URI.
+            ingestion_task_key: Optional ingestion task key.
 
         Returns:
             ClientResult[str]: Migration job ID.
@@ -136,12 +144,22 @@ class Site(Entity):
 
     def create_migration_job(
         self,
-        g_web_id=None,
-        azure_container_source_uri=None,
-        azure_container_manifest_uri=None,
-        azure_queue_report_uri=None,
+        g_web_id: Union[str, UUID] | None = None,
+        azure_container_source_uri: str | None = None,
+        azure_container_manifest_uri: str | None = None,
+        azure_queue_report_uri: str | None = None,
     ) -> ClientResult[str]:
-        """ """
+        """Creates a migration import job for the package in the source container.
+
+        Args:
+            g_web_id: Identifier of the destination web.
+            azure_container_source_uri: Content container URI (with SAS token).
+            azure_container_manifest_uri: Manifest container URI (with SAS token).
+            azure_queue_report_uri: Optional Azure queue URI receiving progress events.
+
+        Returns:
+            ClientResult[str]: Migration job ID.
+        """
         return_type = ClientResult(self.context, str())
         payload = {
             "gWebId": g_web_id,
@@ -150,6 +168,86 @@ class Site(Entity):
             "azureQueueReportUri": azure_queue_report_uri,
         }
         qry = ServiceOperationQuery(self, "CreateMigrationJob", None, payload, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def create_migration_job_encrypted(
+        self,
+        g_web_id: Union[str, UUID],
+        azure_container_source_uri: str,
+        azure_container_manifest_uri: str,
+        aes256_cbc_key: bytes,
+        azure_queue_report_uri: str | None = None,
+    ) -> ClientResult[str]:
+        """Creates a migration import job for an AES-256-CBC encrypted package.
+
+        Required for SharePoint-provided containers (which are encrypted at rest);
+        use the ``EncryptionKey`` returned by :meth:`provision_migration_containers`.
+
+        Args:
+            g_web_id: Identifier of the destination web.
+            azure_container_source_uri: Content container URI (with SAS token).
+            azure_container_manifest_uri: Manifest container URI (with SAS token).
+            aes256_cbc_key: AES256CBC encryption key.
+            azure_queue_report_uri: Optional Azure queue URI receiving progress events.
+
+        Returns:
+            ClientResult[str]: Migration job ID.
+        """
+        return_type = ClientResult(self.context, str())
+        payload = {
+            "options": EncryptionOption(AES256CBCKey=aes256_cbc_key),
+            "gWebId": g_web_id,
+            "azureContainerSourceUri": azure_container_source_uri,
+            "azureContainerManifestUri": azure_container_manifest_uri,
+            "azureQueueReportUri": azure_queue_report_uri,
+        }
+        qry = ServiceOperationQuery(self, "CreateMigrationJobEncrypted", None, payload, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_migration_job_progress(
+        self,
+        job_id: str,
+        next_token: str = "0",
+    ) -> ClientResult[MigrationJobProgress]:
+        """Retrieves a page of migration job progress events.
+
+        Args:
+            job_id: Migration job ID (returned by ``create_migration_job``).
+            next_token: Paging token; use ``"0"`` for the initial request.
+
+        Returns:
+            ClientResult[MigrationJobProgress]: The event logs and the next token.
+        """
+        return_type = ClientResult(self.context, MigrationJobProgress())
+        qry = ServiceOperationQuery(
+            self,
+            "GetMigrationJobProgress",
+            {"jobId": job_id, "nextToken": next_token},
+            None,
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def provision_migration_containers(self) -> ClientResult[ProvisionedMigrationContainersInfo]:
+        """Provisions SharePoint-provided Azure containers for migration content and manifest.
+
+        The returned URIs embed SAS tokens; the containers are encrypted at rest, so
+        submit jobs with :meth:`create_migration_job_encrypted` and the returned
+        ``EncryptionKey``.
+        """
+        return_type = ClientResult(self.context, ProvisionedMigrationContainersInfo())
+        qry = ServiceOperationQuery(self, "ProvisionMigrationContainers", None, None, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def provision_migration_queue(self) -> ClientResult[ProvisionedMigrationQueueInfo]:
+        """Provisions a SharePoint-provided Azure queue for migration job progress."""
+        return_type = ClientResult(self.context, ProvisionedMigrationQueueInfo())
+        qry = ServiceOperationQuery(self, "ProvisionMigrationQueue", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 

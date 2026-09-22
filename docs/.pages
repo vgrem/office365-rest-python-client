@@ -4,6 +4,7 @@ nav:
   - installation.md
   - getting-started.md
   - data-pipeline.md
+  - migration.md
   - large-lists.md
   - limits.md
   - throttling.md

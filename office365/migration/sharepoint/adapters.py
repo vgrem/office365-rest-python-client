@@ -13,13 +13,14 @@ from __future__ import annotations
 import hashlib
 import io
 from collections.abc import Callable
+from datetime import timezone
 from typing import TYPE_CHECKING, cast
 
 from office365.migration.adapters import MigrationProgress
-from office365.migration.base import MigrationItem
+from office365.migration.base import MigrationItem, PermissionEntry
 from office365.migration.sharepoint.transfer import Failure
 from office365.runtime.converters.json_file import record_to_json
-from office365.runtime.converters.scalars import iso_or_none, parse_int
+from office365.runtime.converters.scalars import iso_or_none, parse_datetime, parse_int
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
@@ -28,11 +29,28 @@ if TYPE_CHECKING:
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.folder import Folder
     from office365.sharepoint.lists.list import List as SPList
+    from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 
 _TAXONOMY_FIELD_TYPES = {"TaxonomyFieldType", "TaxonomyFieldTypeMulti"}
 
 # Always-projected system metadata (reliable author/editor identity).
 _METADATA_SELECT = ["AuthorId", "EditorId"]
+
+
+def _sp_timestamp(value: str | None) -> str | None:
+    """Normalize an ISO-8601 timestamp to the ``...Z`` UTC form SharePoint expects.
+
+    ``ValidateUpdateListItem`` (``datesInUTC=True``) rejects the ``+00:00`` offset
+    form the migration items carry, so convert to a naive UTC ``Z`` string.
+    """
+    if not value:
+        return None
+    parsed = parse_datetime(value)
+    if parsed is None:
+        return value
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+    return parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def is_taxonomy_validation(exc: Exception) -> bool:
@@ -341,6 +359,32 @@ class SharePointLibrarySource:
             return hashlib.md5(b"").hexdigest()
         return hashlib.md5(self.read(item)).hexdigest()
 
+    def read_permissions(self, item: MigrationItem) -> list[PermissionEntry]:
+        """Read the item's role assignments (for best-effort ACL preservation).
+
+        Returns one :class:`PermissionEntry` per principal (user or group), keyed
+        by login name; empty for items with no unique assignments.
+        """
+        securable = self._securable(item)
+        if securable is None:
+            return []
+        assignments = securable.role_assignments.expand(["Member", "RoleDefinitionBindings"]).get().execute_query()
+        result: list[PermissionEntry] = []
+        for assignment in assignments:
+            member = assignment.member
+            name = member.login_name or member.user_principal_name
+            if not name:
+                continue
+            roles = [r.name for r in assignment.role_definition_bindings if r.name]
+            result.append(PermissionEntry(principal_name=name, roles=roles))
+        return result
+
+    def _securable(self, item: MigrationItem):
+        if item.item_type == "folder":
+            return self._folder.context.web.get_folder_by_server_relative_path(item.source_path).list_item_all_fields
+        file = self._files.get(item.dest_path)
+        return file.listItemAllFields if file is not None else None
+
     def close(self) -> None:
         pass
 
@@ -355,6 +399,7 @@ class SharePointLibraryTarget:
     def __init__(self, library_folder: "Folder", concurrency: int = 1) -> None:
         self._folder = library_folder
         self._concurrency = concurrency
+        self._role_definitions: dict[str, RoleDefinition] | None = None
 
     def label(self) -> str:
         return f"library:{self._folder.server_relative_url}"
@@ -411,6 +456,62 @@ class SharePointLibraryTarget:
         """Last-modified of the target file (for incremental migration)."""
         file = self._folder.context.web.get_file_by_server_relative_url(self._url(item)).get().execute_query()
         return iso_or_none(file.time_last_modified) or ""
+
+    def apply_timestamps(self, item: MigrationItem) -> None:
+        """Best-effort: restore ``Created``/``Modified`` on the written item.
+
+        Uses ``ValidateUpdateListItem`` (the same mechanism as
+        ``ListItem.system_update``), which is the only REST path that can set these
+        system fields. ``preserve_versions`` still needs the server-side API.
+        """
+        form_values: dict[str, str] = {}
+        created = _sp_timestamp(item.created)
+        modified = _sp_timestamp(item.modified)
+        if created:
+            form_values["Created"] = created
+        if modified:
+            form_values["Modified"] = modified
+        if not form_values:
+            return
+        securable = self._securable(item)
+        if securable is None:
+            return
+        securable.validate_update_list_item(
+            form_values,
+            dates_in_utc=True,
+            new_document_update=item.item_type != "folder",
+        ).execute_query()
+
+    def apply_permissions(self, item: MigrationItem, permissions: list[PermissionEntry]) -> None:
+        """Best-effort: break inheritance and recreate the source role assignments.
+
+        Principals are resolved by login name on the target; roles that don't exist
+        there are skipped. This is a same-tenant copy — cross-tenant identity
+        mapping is out of scope.
+        """
+        securable = self._securable(item)
+        if securable is None:
+            return
+        securable.break_role_inheritance(copy_role_assignments=False, clear_sub_scopes=False)
+        for entry in permissions:
+            for role_name in entry.roles:
+                role = self._role_definition(role_name)
+                if role is not None:
+                    securable.add_role_assignment(entry.principal_name, role)
+        securable.context.execute_query()
+
+    def _securable(self, item: MigrationItem):
+        url = self._url(item).rstrip("/")
+        if item.item_type == "folder":
+            return self._folder.context.web.get_folder_by_server_relative_path(url).list_item_all_fields
+        return self._folder.context.web.get_file_by_server_relative_url(url).listItemAllFields
+
+    def _role_definition(self, name: str) -> "RoleDefinition | None":
+        """Resolve (and cache) a target role definition by name."""
+        if self._role_definitions is None:
+            loaded = self._folder.context.web.role_definitions.get().execute_query()
+            self._role_definitions = {rd.name: rd for rd in loaded if rd.name}
+        return self._role_definitions.get(name)
 
     def commit(self, options=None) -> None:
         pass

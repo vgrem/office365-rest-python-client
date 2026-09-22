@@ -78,6 +78,19 @@ class MigrationItem:
 
 
 @dataclass
+class PermissionEntry:
+    """A single principal → role-names grant, used for best-effort ACL preservation.
+
+    Produced by :meth:`DataSource.read_permissions` and consumed by
+    :meth:`DataTarget.apply_permissions`; role names are the target's role
+    definition names (e.g. ``"Read"``, ``"Edit"``, ``"Full Control"``).
+    """
+
+    principal_name: str
+    roles: list[str] = field(default_factory=list)
+
+
+@dataclass
 class MigrationStats(OperationStats):
     bytes_transferred: int = 0
 
@@ -94,10 +107,13 @@ class MigrationStats(OperationStats):
 class MigrationOptions:
     conflict_resolution: ConflictResolution = ConflictResolution.SKIP
     incremental: bool = False  # skip items at/below the persisted watermark (and target-newer ones)
-    # Fidelity flags. NOT implemented client-side: REST cannot reliably set
-    # Created/Modified or copy version history/ACLs — those need the server-side
-    # Migration API (``MigrationServerJob``). Defaults are False so they are honest
-    # no-ops rather than silently doing nothing.
+    # Fidelity flags. ``preserve_timestamps`` and ``preserve_permissions`` are
+    # applied client-side on a best-effort basis when the adapters support it
+    # (see ``DataSource.read_permissions`` / ``DataTarget.apply_timestamps`` /
+    # ``DataTarget.apply_permissions``); REST cannot restore version history, so
+    # ``preserve_versions`` requires the server-side Migration API
+    # (``MigrationServerJob``). Defaults are False so they are honest no-ops
+    # rather than silently doing nothing.
     preserve_timestamps: bool = False
     preserve_permissions: bool = False
     preserve_versions: bool = False

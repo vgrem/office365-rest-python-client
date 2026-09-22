@@ -46,6 +46,9 @@ dependencies = [
   # On Python versions >= 3.11, typing_extensions re-exports these names
   # from the standard library typing module.
 ]
+optional-dependencies.azure = [
+  "azure-storage-blob>=12.19",
+]
 optional-dependencies.examples = [
   "faker",
 ]

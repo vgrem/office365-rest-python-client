@@ -22,7 +22,12 @@ MigrationProgress = Optional[Callable[["Progress"], None]]
 
 
 class DataSource(ABC):
-    """Reads migration items from a source."""
+    """Reads migration items from a source.
+
+    Optional hook (not declared here so ``hasattr`` reflects real support):
+    ``read_permissions(item) -> list[PermissionEntry]`` — the item's ACLs, used
+    for best-effort ``preserve_permissions``. Absent when the source has none.
+    """
 
     @abstractmethod
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
@@ -38,7 +43,12 @@ class DataSource(ABC):
 
 
 class DataTarget(ABC):
-    """Writes migration items to a target."""
+    """Writes migration items to a target.
+
+    Optional hooks (not declared here so ``hasattr`` reflects real support),
+    used for best-effort fidelity after a write:
+    ``apply_timestamps(item)`` and ``apply_permissions(item, permissions)``.
+    """
 
     @abstractmethod
     def exists(self, item: MigrationItem) -> bool:
