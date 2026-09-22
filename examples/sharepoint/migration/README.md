@@ -103,6 +103,7 @@ Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Ch
 | Export a SharePoint list to local JSON records | [`migrate/export_list.py`](./migrate/export_list.py) | Read access |
 | Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate/migrate_library.py`](./migrate/migrate_library.py) | Read/Write access |
 | Migrate local files into a library via a migration session (parallel) | [`migrate/migrate_session.py`](./migrate/migrate_session.py) | Write access |
+| Migrate a local tree into a library **server-side** (full fidelity: versions, ACLs) | [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py) | Write access (app-only) |
 
 ```python
 from office365.migration import MigrationJob
@@ -181,6 +182,45 @@ print(session.status())
 
 A single migration needs no session — `MigrationJob(source, target, options)`
 with `plan()`/`run()`/`verify()` is the primary entry point.
+
+### Server-side migration (full fidelity)
+
+The adapters above copy bytes over REST; to preserve **version history and ACLs**,
+package the content and let SharePoint ingest it server-side. It all runs against
+SharePoint-owned Azure containers — **no Azure account is required**.
+
+```python
+from office365.migration import MigrationJob
+from office365.migration.adapters.filesystem import FileSystemSource
+from office365.migration.sharepoint.package_target import SharePointPackageTarget
+
+# 1. Authenticate (app-only) and resolve the target web
+ctx = ClientContext(site_url).with_client_certificate(tenant, client_id, thumbprint, cert_path)
+web = ctx.web.get().execute_query()
+
+# 2. Provision SharePoint-owned containers (SAS URIs + encryption key)
+containers = ctx.site.provision_migration_containers().execute_query().value
+
+# 3. Migrate: items -> manifest XML -> staged blobs -> submitted ingestion job
+target = SharePointPackageTarget(
+    ctx.site,
+    web.id,
+    content_uri=containers.DataContainerUri,
+    manifest_uri=containers.MetadataContainerUri,
+    encryption_key=containers.EncryptionKey,
+    list_url="/Shared Documents",
+)
+job = MigrationJob(FileSystemSource("src"), target)
+job.plan()
+job.run()  # stages the package and submits the job
+print(target.job_id)
+
+# 4. Monitor until terminal (GetMigrationJobProgress)
+target.monitor()
+```
+
+See [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py)
+for the full, runnable flow.
 
 ---
 
