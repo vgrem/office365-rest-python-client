@@ -27,11 +27,13 @@ from office365.runtime.limits import (
     LimitKind,
     LimitReport,
     bounded,
+    catalog,
     ensure_within,
     exceeds,
     hint,
     limit,
     limits_of,
+    register_catalog,
     verify_limits,
     warn_if_exceeds,
 )
@@ -46,11 +48,13 @@ __all__ = [
     "LimitReport",
     "Limits",
     "bounded",
+    "catalog",
     "ensure_within",
     "exceeds",
     "hint",
     "limit",
     "limits_of",
+    "register_catalog",
     "verify_limits",
     "warn_if_exceeds",
 ]
@@ -502,3 +506,6 @@ class Limits:
 # The list-view threshold is the one callers reference most often; keep a module
 # constant for backward compatibility and ergonomics.
 LIST_VIEW_THRESHOLD = Limits.LIST_VIEW.value
+
+# Register this product's vocabulary with the limits registry (``office365.limits``).
+register_catalog(Limits, product="sharepoint")

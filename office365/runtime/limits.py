@@ -23,7 +23,7 @@ import warnings
 from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Optional, Tuple, TypeVar, overload
+from typing import Any, Callable, Iterable, Optional, Protocol, Tuple, TypeVar, overload, runtime_checkable
 
 from typing_extensions import ParamSpec
 
@@ -257,6 +257,7 @@ def limit(
             # ``__init_subclass__`` ran before this decorator (members already
             # collected); merge the class-level declaration so subclasses inherit.
             func._class_limit_decls = collect_class_limits(func)
+            register_catalog(func)
             return func
         if isinstance(func, property):
             if arg is not None:
@@ -324,6 +325,54 @@ def collect_limit_meta(cls: type) -> dict[str, Tuple[LimitDecl, ...]]:
         if decls is not None:
             meta[attr_name] = decls
     return meta
+
+
+@runtime_checkable
+class LimitCatalog(Protocol):
+    """A source of :class:`Limit` values — anything with a ``catalog()`` method."""
+
+    def catalog(self) -> Iterable[Limit]: ...
+
+
+#: Registered limit sources, keyed by product (``"model"`` for ``@limit`` classes).
+_SOURCES: dict[str, list[Any]] = {}
+
+
+def _limits_from(source: Any) -> list[Limit]:
+    catalog_fn = getattr(source, "catalog", None)
+    if catalog_fn is not None:
+        return list(catalog_fn())
+    declared = getattr(source, "declared_limits", None)
+    if declared is not None:
+        return list(declared())
+    raise TypeError(f"{source!r} is not a Limit catalog (needs catalog() or declared_limits())")
+
+
+def register_catalog(*sources: Any, product: str = "model") -> None:
+    """Register limit sources — catalogs (``catalog()``) or classes (``declared_limits()``).
+
+    Products register their own catalogs at import time (e.g.
+    ``register_catalog(Limits, product="sharepoint")``); ``@limit`` on a class
+    registers that class under ``product="model"``.
+    """
+    bucket = _SOURCES.setdefault(product, [])
+    for source in sources:
+        if source not in bucket:
+            bucket.append(source)
+
+
+def catalog(product: Optional[str] = None) -> list[Limit]:
+    """All registered limits (optionally for one product), de-duplicated by identity."""
+    products = [product] if product is not None else list(_SOURCES)
+    seen: set[int] = set()
+    result: list[Limit] = []
+    for name in products:
+        for source in _SOURCES.get(name, ()):
+            for item in _limits_from(source):
+                if id(item) not in seen:
+                    seen.add(id(item))
+                    result.append(item)
+    return result
 
 
 def collect_class_limits(cls: type) -> Tuple[LimitDecl, ...]:
