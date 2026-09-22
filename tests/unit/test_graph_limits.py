@@ -1,46 +1,40 @@
-"""Unit tests for the Microsoft Graph throttling-limit catalog."""
+"""Unit tests for model-bound Microsoft Graph throttling quotas."""
 
 from __future__ import annotations
 
-from office365.graph_limits import GraphLimits
+from office365.communications.callrecords.call_record import CallRecord
+from office365.communications.calls.call import Call
+from office365.directory.domains.domain import Domain
+from office365.directory.licenses.subscribed_sku import SubscribedSku
+from office365.directory.objects.object import DirectoryObject
+from office365.directory.users.user import User
+from office365.onedrive.workbooks.workbook import Workbook
 from office365.runtime.limits import Limit
 
 
-def test_catalog_is_populated_and_well_formed():
-    catalog = GraphLimits.catalog()
-    assert len(catalog) >= 20  # noqa: PLR2004
-    for entry in catalog:
-        assert isinstance(entry, Limit)
-        assert entry.name
-        assert entry.value >= 0
-        assert entry.window_seconds is not None  # rate quotas
-        assert entry.scope in {"app", "tenant", "app+tenant", "resource", "user"}
-        assert entry.request_type in {"any", "read", "write"}
-        assert entry.unit in {"requests", "resource_units", "concurrent"}
-        assert entry.doc
+def test_identity_quotas_declared_on_directory_object():
+    limits = DirectoryObject.declared_limits()
+    assert limits, "DirectoryObject should declare the identity quotas"
+    assert all(isinstance(limit, Limit) for limit in limits)
+    assert {limit.name for limit in limits} == {"identity"}
+    assert any(limit.unit == "resource_units" and limit.is_rate for limit in limits)
 
 
-def test_global_limit():
-    assert GraphLimits.GLOBAL.value == 130_000  # noqa: PLR2004
-    assert GraphLimits.GLOBAL.window_seconds == 10  # noqa: PLR2004
-    assert GraphLimits.GLOBAL.scope == "app"
-    assert GraphLimits.GLOBAL.is_rate
+def test_subclass_inherits_identity_quotas():
+    assert set(DirectoryObject.declared_limits()) <= set(User.declared_limits())
 
 
-def test_str_formats_rate_and_concurrency():
-    assert str(GraphLimits.GLOBAL) == "130,000 requests / 10s"
-    assert str(GraphLimits.BOOKINGS) == "4 concurrent"
+def test_identity_on_subscribed_sku_and_domain():
+    assert any(limit.name == "identity" for limit in SubscribedSku.declared_limits())
+    assert any(limit.name == "identity" for limit in Domain.declared_limits())
 
 
-def test_identity_uses_resource_units():
-    assert GraphLimits.IDENTITY_APP.unit == "resource_units"
-    assert GraphLimits.IDENTITY_WRITE.request_type == "write"
+def test_call_records_quotas_on_call_record():
+    limits = CallRecord.declared_limits()
+    assert any(limit.name == "call records" and limit.scope == "resource" for limit in limits)
+    assert any(limit.name == "call records" and limit.scope == "app+tenant" for limit in limits)
 
 
-def test_graph_client_binds_identity_quotas():
-    from office365.graph_client import GraphClient
-
-    assert "users" in GraphClient._limit_meta
-    assert "groups" in GraphClient._limit_meta
-    assert "applications" in GraphClient._limit_meta
-    assert GraphLimits.IDENTITY in GraphClient.declared_limits()
+def test_excel_and_cloud_communications_quotas():
+    assert any(limit.name == "excel" for limit in Workbook.declared_limits())
+    assert any(limit.name == "cloud communications" for limit in Call.declared_limits())

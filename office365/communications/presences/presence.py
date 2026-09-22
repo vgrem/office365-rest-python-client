@@ -6,13 +6,16 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.communications.presences.status_message import PresenceStatusMessage
+from office365.communications.quotas import PRESENCE_QUOTAS
 from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.item_body import ItemBody
+from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.duration import Duration
 
 
+@limit(*PRESENCE_QUOTAS)
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 

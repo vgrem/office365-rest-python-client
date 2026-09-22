@@ -2,12 +2,15 @@ from typing import Optional
 
 from office365.directory.licenses.service_plan_info import ServicePlanInfo
 from office365.directory.licenses.units_detail import LicenseUnitsDetail
+from office365.directory.quotas import IDENTITY_QUOTAS
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*IDENTITY_QUOTAS)
 class SubscribedSku(Entity):
     """Contains information about a service SKU that a company is subscribed to."""
 

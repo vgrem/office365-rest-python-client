@@ -1,13 +1,16 @@
 from typing import Optional
 
+from office365.communications.quotas import VIRTUAL_EVENT_QUOTAS
 from office365.communications.virtualevents.presenter import VirtualEventPresenter
 from office365.communications.virtualevents.session import VirtualEventSession
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 
 
+@limit(*VIRTUAL_EVENT_QUOTAS)
 class VirtualEvent(Entity):
     """Represents an abstract base type for a virtual event.
     Base type of virtualEventTownhall and virtualEventWebinar."""

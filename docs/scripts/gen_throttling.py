@@ -1,24 +1,33 @@
-"""Generate the throttling guide + limits table (mkdocs-gen-files plugin).
+"""Generate the throttling guide + quotas table (mkdocs-gen-files plugin).
 
-The table mirrors :meth:`office365.graph_limits.GraphLimits.catalog`, so the docs
-can't drift from the code, and adds a **Bound at** column scanned from the
-``@limit`` decorators. mkdocs-gen-files executes this module with ``runpy``, so
-emission happens at module level.
+The table is derived from the **model** — the ``@limit`` declarations on the
+Graph resource classes — so it can't drift from the code. mkdocs-gen-files
+executes this module with ``runpy``, so emission happens at module level.
 """
 
 from __future__ import annotations
 
-import pathlib
-import sys
+import mkdocs_gen_files
+from office365.communications.callrecords.call_record import CallRecord
+from office365.communications.calls.call import Call
+from office365.communications.presences.presence import Presence
+from office365.communications.virtualevents.virtual_event import VirtualEvent
+from office365.directory.domains.domain import Domain
+from office365.directory.licenses.subscribed_sku import SubscribedSku
+from office365.directory.objects.object import DirectoryObject
+from office365.onedrive.workbooks.workbook import Workbook
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-
-import mkdocs_gen_files  # noqa: E402
-from _limit_bindings import scan_bindings  # noqa: E402
-from office365.graph_limits import GraphLimits  # noqa: E402
-from office365.runtime.limits import Limit  # noqa: E402
-
-_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+#: The Graph resource classes that declare throttling quotas (``@limit``).
+_QUOTA_CLASSES = (
+    DirectoryObject,
+    SubscribedSku,
+    Domain,
+    CallRecord,
+    Workbook,
+    Call,
+    Presence,
+    VirtualEvent,
+)
 
 _HEADER = """# Throttling
 
@@ -30,8 +39,9 @@ exponential backoff with jitter) and can pace a whole fleet proactively.
 Unlike SharePoint's static [service limits](limits.md), Graph throttling is
 **dynamic** — evaluated per scope (per app, per tenant, per app + tenant, per
 resource) and per request type — so the library reacts to the signals rather
-than enforcing a fixed budget. The quotas below are reference-only; the model
-declares them with `@limit(GraphLimits.X)` (see the **Bound at** column).
+than enforcing a fixed budget. The quotas below are declared on the Graph
+resource classes with `@limit(...)` (reference-only) and shown in the **Bound
+at** column.
 
 ## Signals
 
@@ -66,11 +76,11 @@ and SharePoint's health score. See
 - Don't retry immediately — honor `Retry-After` (the fastest recovery).
 - For bulk extraction, use **Microsoft Graph Data Connect** (not throttled).
 
-## Service limits (reference)
+## Quotas (reference)
 
 The numbers below are the tested limits Graph enforces; the first one reached
-triggers throttling. They're reference-only — see
-`office365.graph_limits.GraphLimits`.
+triggers throttling. They're declared on the model (`@limit`) — see the
+**Bound at** column.
 
 """
 
@@ -80,25 +90,21 @@ def _emit(path: str, content: str) -> None:
         f.write(content)
 
 
-_bindings = scan_bindings(_REPO_ROOT / "office365")
-_bound: dict[int, list[str]] = {}
-for _attr, _obj in vars(GraphLimits).items():
-    if isinstance(_obj, Limit) and _bindings.get(_attr):
-        _bound.setdefault(id(_obj), []).extend(_bindings[_attr])
-
-
-def _bound_at(limit: Limit) -> str:
-    return ", ".join(sorted(set(_bound.get(id(limit), [])))) or "—"
-
+# Collect each distinct quota and the classes that declare it (dedup by identity).
+_quotas: dict[int, tuple[object, list[str]]] = {}
+for _cls in _QUOTA_CLASSES:
+    for _limit in _cls.declared_limits():
+        _entry = _quotas.setdefault(id(_limit), (_limit, []))
+        _entry[1].append(_cls.__name__)
 
 _rows = [
-    "| Service | Limit | Scope | Type | Bound at | Notes |",
-    "| --- | --- | --- | --- | --- | --- |",
+    "| Service | Limit | Scope | Type | Bound at |",
+    "| --- | --- | --- | --- | --- |",
 ]
-for _limit in sorted(GraphLimits.catalog(), key=lambda item: (item.name, -item.value)):
+for _limit, _classes in sorted(_quotas.values(), key=lambda item: (item[0].name, -item[0].value)):  # type: ignore[attr-defined]
     _rows.append(
-        f"| {_limit.name} | {_limit} | {_limit.scope} | {_limit.request_type or 'any'} "
-        f"| {_bound_at(_limit)} | {_limit.note} |"
+        f"| {_limit.name} | {_limit} | {_limit.scope} | {_limit.request_type or 'any'} "  # type: ignore[attr-defined]
+        f"| {', '.join(_classes)} |"
     )
 
 _emit("throttling.md", "\n".join([_HEADER, *_rows, ""]))

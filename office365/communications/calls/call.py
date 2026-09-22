@@ -15,14 +15,17 @@ from office365.communications.operations.cancel_media_processing import CancelMe
 from office365.communications.operations.comms import CommsOperation
 from office365.communications.operations.unmute_participant import UnmuteParticipantOperation
 from office365.communications.operations.update_recording_status import UpdateRecordingStatusOperation
+from office365.communications.quotas import CALL_QUOTAS
 from office365.communications.result_info import ResultInfo
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
+@limit(*CALL_QUOTAS)
 class Call(Entity):
     """
     The call resource is created when there is an incoming call for the application or the application creates a

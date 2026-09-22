@@ -23,12 +23,13 @@ import warnings
 from dataclasses import dataclass, field
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Optional, Tuple, TypeVar
+from typing import Any, Callable, Optional, Tuple, TypeVar, overload
 
 from typing_extensions import ParamSpec
 
 P = ParamSpec("P")
 R = TypeVar("R")
+T = TypeVar("T")
 
 _ON_EXCEED = ("warn", "raise")
 _LIMIT_MARKER = "__limit_decls__"
@@ -191,12 +192,30 @@ def _append_doc(target: Callable[..., Any], decls: Tuple[LimitDecl, ...]) -> Non
         target.__doc__ = (target.__doc__ or "") + "\n    Limits:\n" + "\n".join(lines)
 
 
+@overload
+def limit(
+    *limits: Limit,
+    arg: None = ...,
+    on_exceed: str = ...,
+    clamp: bool = ...,
+) -> Callable[[T], T]: ...
+
+
+@overload
+def limit(
+    *limits: Limit,
+    arg: str,
+    on_exceed: str = ...,
+    clamp: bool = ...,
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+
+
 def limit(
     *limits: Limit,
     arg: Optional[str] = None,
     on_exceed: str = "warn",
     clamp: bool = False,
-) -> Callable[[Any], Any]:
+) -> Any:
     """Declare service limits on a class, method or property (and optionally enforce one).
 
     Metadata-only by default (like ``@odata`` / ``@require_permission``): the

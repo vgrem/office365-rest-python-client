@@ -4,13 +4,16 @@ from datetime import datetime
 
 from typing_extensions import Self
 
+from office365.directory.quotas import IDENTITY_QUOTAS
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
+from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*IDENTITY_QUOTAS)
 class DirectoryObject(Entity):
     """Represents an Azure Active Directory object. The directoryObject type is the base type for many other
     directory entity types."""

@@ -2,14 +2,17 @@ from office365.directory.domains.dns_record import DomainDnsRecord
 from office365.directory.domains.state import DomainState
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.permissions.require_permission import require_permission
+from office365.directory.quotas import IDENTITY_QUOTAS
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*IDENTITY_QUOTAS)
 class Domain(Entity):
     """
     Represents a domain associated with the tenant.
