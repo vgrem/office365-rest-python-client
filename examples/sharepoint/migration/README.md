@@ -104,6 +104,7 @@ Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Ch
 | Export/import a document library ↔ local files (`--import`, `--concurrency`) | [`migrate/migrate_library.py`](./migrate/migrate_library.py) | Read/Write access |
 | Migrate local files into a library via a migration session (parallel) | [`migrate/migrate_session.py`](./migrate/migrate_session.py) | Write access |
 | Migrate a local tree into a library **server-side** (full fidelity: versions, ACLs) | [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py) | Write access (app-only) |
+| Build a Migration API package **offline** (inspect the manifest; no tenant) | [`migrate/package_library.py`](./migrate/package_library.py) | none (local) |
 
 ```python
 from office365.migration import MigrationJob
@@ -185,42 +186,72 @@ with `plan()`/`run()`/`verify()` is the primary entry point.
 
 ### Server-side migration (full fidelity)
 
-The adapters above copy bytes over REST; to preserve **version history and ACLs**,
-package the content and let SharePoint ingest it server-side. It all runs against
-SharePoint-owned Azure containers — **no Azure account is required**.
+The adapters above copy bytes over REST. To also preserve **version history and
+ACLs**, the content is packaged and ingested by SharePoint **server-side** (the
+Migration API). Azure Blob Storage is only the courier, and the containers are
+**SharePoint-owned** — no Azure account is required.
+
+```
+local folder ──▶ package (manifest XML + blobs) ──▶ Azure containers ──▶ library
+```
+
+Two examples, two different jobs — you normally run **only the first**:
+
+| Example | What it does | Needs a tenant? |
+|---|---|---|
+| [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py) | the **real migration** (all five steps below) | yes |
+| [`migrate/package_library.py`](./migrate/package_library.py) | **optional**: builds the same package **offline** so you can inspect the manifest XML — **not** a prerequisite | no |
+
+#### The real migration — five steps
 
 ```python
 from office365.migration import MigrationJob
 from office365.migration.adapters.filesystem import FileSystemSource
 from office365.migration.sharepoint.package_target import SharePointPackageTarget
 
-# 1. Authenticate (app-only) and resolve the target web
-ctx = ClientContext(site_url).with_client_certificate(tenant, client_id, thumbprint, cert_path)
+# 1. Authenticate (app-only)
+ctx = ClientContext(site_url).with_client_certificate(tenant, client_id, cert_thumbprint, cert_path)
+
+# 2. Resolve the target web
 web = ctx.web.get().execute_query()
 
-# 2. Provision SharePoint-owned containers (SAS URIs + encryption key)
+# 3. Provision SharePoint-owned containers (SAS URIs + encryption key)
 containers = ctx.site.provision_migration_containers().execute_query().value
 
-# 3. Migrate: items -> manifest XML -> staged blobs -> submitted ingestion job
+# 4. Package + submit: files -> manifest XML -> staged blobs -> ingestion job
 target = SharePointPackageTarget(
     ctx.site,
     web.id,
     content_uri=containers.DataContainerUri,
     manifest_uri=containers.MetadataContainerUri,
     encryption_key=containers.EncryptionKey,
-    list_url="/Shared Documents",
+    list_url="/Documents",
 )
-job = MigrationJob(FileSystemSource("src"), target)
+job = MigrationJob(FileSystemSource("../../../data"), target)  # examples/data
 job.plan()
 job.run()  # stages the package and submits the job
 print(target.job_id)
 
-# 4. Monitor until terminal (GetMigrationJobProgress)
+# 5. Monitor until terminal (GetMigrationJobProgress)
 target.monitor()
 ```
 
-See [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py)
-for the full, runnable flow.
+```bash
+cd examples/sharepoint/migration/migrate
+python migrate_library_serverside.py                  # defaults to examples/data
+```
+
+#### See the package first (optional, no tenant)
+
+```bash
+cd examples/sharepoint/migration/migrate
+python package_library.py                             # writes $TMPDIR/spo-package/
+# open $TMPDIR/spo-package/manifest/Manifest.xml
+```
+
+The migration above builds this package internally — `package_library.py` just
+lets you look at the payload (manifest XML + content blobs) without SharePoint or
+Azure. It is a learning/debugging aid, not a step you must run first.
 
 ---
 
