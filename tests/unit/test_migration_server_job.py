@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from office365.migration.server_job import MigrationServerJob, parse_progress_events
+from office365.migration.server_job import MigrationServerJob, job_errors, parse_progress_events
 
 
 class _Result:
@@ -109,3 +109,25 @@ def test_status_fn_accumulates_pages():
 def test_monitor_returns_when_terminal():
     pages = [([json.dumps({"Event": "JobEnd", "TotalErrors": "0"})], "1")]
     assert MigrationServerJob(_Site(pages)).monitor("job-1", interval=0, timeout=5) == "succeeded"
+
+
+def test_job_errors_filters_job_error_events():
+    events = [
+        {"Event": "JobStart"},
+        {"Event": "JobError", "Message": "boom", "ErrorType": "SPException"},
+        {"Event": "JobEnd", "TotalErrors": "1"},
+    ]
+    assert [e["Message"] for e in job_errors(events)] == ["boom"]
+
+
+def test_all_events_pages_until_the_token_stops():
+    pages = [
+        ([json.dumps({"Event": "JobStart"})], "1"),
+        ([json.dumps({"Event": "JobError", "Message": "boom"})], "1"),
+    ]
+    assert [e["Event"] for e in MigrationServerJob(_Site(pages)).all_events("job-1")] == ["JobStart", "JobError"]
+
+
+def test_errors_returns_job_error_events():
+    pages = [([json.dumps({"Event": "JobError", "Message": "boom"})], "1")]
+    assert [e["Message"] for e in MigrationServerJob(_Site(pages)).errors("job-1")] == ["boom"]

@@ -69,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Migration API package layer** (`office365.migration.package`): models and
   serialization for `Manifest.xml` / `ExportSettings.xml` / `SystemData.xml` /
   `UserGroupMap.xml`, a `PackageBuilder` (deterministic GUIDs, folders, files,
-  versions), `FileSystemStaging`, and optional `BlobStaging` (new `[azure]` extra:
+  versions; indented XML), `FileSystemStaging`, and optional `BlobStaging` (new `[azure]` extra:
   `azure-storage-blob`; `AzureBlobStaging` kept as an alias). `create_staging(...)`
   selects a backend from the container URL — the seam for a future S3 / Azure
   Files staging. `SharePointPackageTarget` ties it together as a `DataTarget` — it
@@ -81,6 +81,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   need Azure (only the server-side SharePoint ingest leg, and containers can be
   SharePoint-provided — no Azure account), the `Staging` seam, and a step-by-step
   example.
+- **Encrypted migration staging:** `BlobStaging` / `create_staging` accept an
+  `encryption_key`; every content and manifest blob is then AES-256-CBC encrypted
+  (unique random IV, stored as the base64 `IV` blob property) — required for
+  SharePoint-provided containers. `SharePointPackageTarget` forwards its
+  `encryption_key` to the default staging, and the `[azure]` extra now also pulls
+  in `cryptography`.
+- **Migration examples:** `migrate_library_serverside.py` is a five-step,
+  zero-argument server-side migration (defaults to the repo sample data), and a
+  new tenant-free `package_library.py` builds the same package offline so the
+  manifest XML can be inspected. The migration README now explains the pipeline,
+  which example to run, and in what order.
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry
@@ -211,6 +222,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **`SharePointPackageTarget` no longer emits an empty `ExportSettings` `SiteUrl`.**
+  It fell back to an unloaded `site.url` (`None` → `""`), so the API rejected the
+  job with `There is an error in XML document (2, 62)` /
+  `Invalid URI: The URI is empty.` The target now resolves the site URL (loading
+  `Url` when needed) or raises a clear error, and accepts a `source_type`.
+- **`Manifest.xml` now matches the shape the service accepts.** It emitted a
+  `SPWeb` object (rejected — the service's `SPObjectType` excludes it) and a
+  `<List>` element. Following the working `MigrationApiDemo` sample it now emits
+  the library **root `SPFolder`**, the **`SPDocumentLibrary`**, an `SPFolder` per
+  subfolder, and an `SPFile` per file — with `FileValue` = the content blob name
+  (so the manifest points at the staged blobs) and `ListItemIntId`. Also fixed
+  `UserGroupMap.xml` → **`UserGroup.xml`** (the name the API downloads) and the
+  `ViewFormsList` namespace (`…viewformlist…`, not `…viewformslist…`).
+- **Migration packages now emit the manifest files the API fetches.** The
+  ingestion service downloads `Requirements.xml` / `RootObjectMap.xml` /
+  `LookupListMap.xml` / `ViewFormsList.xml` by name, and a missing one fails the
+  job (`Unable to download Requirements.xml … (404)`) even though the docs call
+  them optional. `PackageBuilder` emits all four (childless roots, plus a `List`
+  entry in `RootObjectMap.xml`). Failed jobs are now diagnosable:
+  `MigrationServerJob.all_events` / `errors`, `SharePointPackageTarget.events` /
+  `errors` / `diagnose` (which fetches and AES-decrypts the API's import log via
+  `BlobStaging.read_manifest_blob`).
+- **`CreateMigrationJobEncrypted` sends the AES key as base64 text.**
+  `provision_migration_containers()` returns the key already base64-encoded, and
+  the REST payload wants that base64 string — so `create_migration_job_encrypted`
+  now passes a `str` key through (base64-encoding raw `bytes`) instead of decoding
+  it. Decoding produced raw bytes that the payload serializer tried to UTF-8-decode
+  (`UnicodeDecodeError`).
 - **`$skip` paging no longer collides with a server `$skiptoken`.** Once the
   server drives paging (`__next`/`@odata.nextLink`), the client-side `$skip`
   fallback is disabled, fixing `The $skip and $skiptoken cannot be specified at

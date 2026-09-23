@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+import base64
 import importlib.util
 import xml.etree.ElementTree as ET
 
 import pytest
 from office365.migration.package import (
     EXPORT_SETTINGS_NS,
+    LOOKUP_LIST_MAP_NS,
     MANIFEST_NS,
+    REQUIREMENTS_NS,
+    ROOT_OBJECT_MAP_NS,
     SYSTEM_DATA_NS,
     USER_GROUP_MAP_NS,
+    VIEW_FORMS_LIST_NS,
     AzureBlobStaging,
     BlobStaging,
     FileSystemStaging,
@@ -43,13 +48,13 @@ def test_manifest_renders_spobjects_with_file_and_versions():
 
     assert root.tag == _q(MANIFEST_NS, "SPObjects")
     objects = _children(root, MANIFEST_NS, "SPObject")
-    assert [o.get("ObjectType") for o in objects] == ["Web", "List", "Folder", "File"]
+    assert [o.get("ObjectType") for o in objects] == ["SPFolder", "SPDocumentLibrary", "SPFolder", "SPFile"]
 
     file_object = objects[-1]
     file_element = _children(file_object, MANIFEST_NS, "File")[0]
-    assert file_element.get("Name") == "q1.docx"
-    assert file_element.get("Url").endswith("/Reports/q1.docx")
-    assert file_element.get("FileSize") == "2"
+    assert file_element.get("Name") == "Reports/q1.docx"
+    assert file_element.get("Url").endswith("Documents/Reports/q1.docx")
+    assert file_element.get("FileValue") == file_object.get("Id")  # the content blob name
     assert file_element.get("Version") == "2.0"
     assert file_element.get("TimeCreated") == "2020-01-01T00:00:00"
     assert file_object.get("ParentId") == objects[-2].get("Id")  # the Reports folder
@@ -73,9 +78,9 @@ def test_builder_creates_missing_parent_folders():
     root = ET.fromstring(builder.build().manifest)
     objects = _children(root, MANIFEST_NS, "SPObject")
 
-    assert [o.get("ObjectType") for o in objects] == ["Web", "List", "Folder", "Folder", "File"]
-    folders = [_children(o, MANIFEST_NS, "Folder")[0] for o in objects if o.get("ObjectType") == "Folder"]
-    assert [f.get("Name") for f in folders] == ["a", "b"]
+    assert [o.get("ObjectType") for o in objects] == ["SPFolder", "SPDocumentLibrary", "SPFolder", "SPFolder", "SPFile"]
+    folders = [_children(o, MANIFEST_NS, "Folder")[0] for o in objects if o.get("ObjectType") == "SPFolder"]
+    assert [f.get("Name") for f in folders] == ["Documents", "a", "a/b"]  # the library root, then a and a/b
 
 
 def test_content_blobs_are_named_after_the_file_guid():
@@ -94,12 +99,33 @@ def test_package_blobs_and_save(tmp_path):
     file_id = builder.add_file("a.txt", b"hi")
     package = builder.build()
 
-    assert set(package.blobs()) == {"Manifest.xml", "ExportSettings.xml", "SystemData.xml", "UserGroupMap.xml"}
+    assert set(package.blobs()) == {
+        "Manifest.xml",
+        "ExportSettings.xml",
+        "SystemData.xml",
+        "UserGroup.xml",
+        "Requirements.xml",
+        "RootObjectMap.xml",
+        "LookupListMap.xml",
+        "ViewFormsList.xml",
+    }
 
     written = package.save(tmp_path)
     assert (tmp_path / "manifest" / "Manifest.xml").exists()
     assert (tmp_path / "content" / file_id).read_bytes() == b"hi"  # blobs are GUID-named
     assert len(written) == len(package.blobs()) + len(package.content)
+
+
+def test_optional_manifest_documents_are_emitted():
+    package = PackageBuilder("https://contoso.sharepoint.com/sites/x", list_title="Documents").build()
+
+    assert ET.fromstring(package.requirements).tag == _q(REQUIREMENTS_NS, "Requirements")
+    assert ET.fromstring(package.lookup_list_map).tag == _q(LOOKUP_LIST_MAP_NS, "LookupLists")
+    assert ET.fromstring(package.view_forms_list).tag == _q(VIEW_FORMS_LIST_NS, "ViewFormsList")
+
+    root = ET.fromstring(package.root_object_map)
+    assert root.tag == _q(ROOT_OBJECT_MAP_NS, "RootObjects")
+    assert _children(root, ROOT_OBJECT_MAP_NS, "RootObject")[0].get("Type") == "List"
 
 
 def test_export_settings_carries_source_type_and_list_object():
@@ -210,3 +236,67 @@ def test_create_staging_selects_blob_staging_for_azure_hosts():
 def test_create_staging_rejects_unknown_hosts():
     with pytest.raises(ValueError, match="unsupported staging container host"):
         create_staging("https://bucket.s3.amazonaws.com/content", "https://bucket.s3.amazonaws.com/manifest")
+
+
+class _FakeBlob:
+    def __init__(self) -> None:
+        self.data = None
+        self.metadata = None
+
+    def upload_blob(self, data, overwrite=False, metadata=None):
+        self.data = data
+        self.metadata = metadata
+
+
+def test_create_staging_forwards_the_encryption_key():
+    staging = create_staging(
+        "https://acct.blob.core.windows.net/content?sig=x",
+        "https://acct.blob.core.windows.net/manifest?sig=y",
+        encryption_key=base64.b64encode(bytes(range(32))).decode("ascii"),
+    )
+    assert isinstance(staging, BlobStaging)
+    assert staging._key == bytes(range(32))  # noqa: SLF001
+
+
+def test_blob_staging_encrypts_blobs_with_an_iv_property():
+    from office365.migration.package.crypto import decrypt, normalize_key
+
+    key = base64.b64encode(bytes(range(32))).decode("ascii")
+    staging = BlobStaging("https://a/content?sig=x", "https://a/manifest?sig=y", encryption_key=key)
+    blob = _FakeBlob()
+
+    staging._upload(blob, b"hello world")  # noqa: SLF001
+
+    assert blob.data != b"hello world"
+    assert decrypt(blob.data, normalize_key(key), blob.metadata["IV"]) == b"hello world"
+
+
+class _BlobProps:
+    def __init__(self, metadata):
+        self.metadata = metadata
+
+
+class _PropsBlob:
+    def __init__(self, metadata):
+        self._metadata = metadata
+
+    def get_blob_properties(self):
+        return _BlobProps(self._metadata)
+
+
+def test_blob_iv_reads_case_insensitively():
+    from office365.migration.package.staging import _blob_iv
+
+    assert _blob_iv(_PropsBlob({"iv": "abc"})) == "abc"
+    assert _blob_iv(_PropsBlob({"IV": "xyz"})) == "xyz"
+    assert _blob_iv(_PropsBlob({})) is None
+
+
+def test_blob_staging_uploads_plaintext_without_a_key():
+    staging = BlobStaging("https://a/content?sig=x", "https://a/manifest?sig=y")
+    blob = _FakeBlob()
+
+    staging._upload(blob, b"hello world")  # noqa: SLF001
+
+    assert blob.data == b"hello world"
+    assert blob.metadata is None

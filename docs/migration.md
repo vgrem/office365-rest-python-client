@@ -87,7 +87,7 @@ Adapters opt in by implementing optional hooks:
 
 For version history and true ACL fidelity, content is packaged and ingested
 server-side. The package layer builds the Migration API manifest XML
-(`Manifest.xml` / `ExportSettings.xml` / `SystemData.xml` / `UserGroupMap.xml`)
+(`Manifest.xml` / `ExportSettings.xml` / `SystemData.xml` / `UserGroup.xml`)
 from a document library's files and folders:
 
 ```python
@@ -113,6 +113,11 @@ target.monitor()   # polls GetMigrationJobProgress
 
 `MigrationServerJob` can also be driven directly (`submit` / `submit_encrypted` /
 `progress` / `status_fn` / `monitor`).
+
+With `encryption_key` set, the staging AES-256-CBC encrypts every content and
+manifest blob (unique random IV, stored as the base64 `IV` blob property) — which
+SharePoint-provided containers require. For your own (BYO) containers, omit it and
+use `Site.create_migration_job` instead of the encrypted variant.
 
 The builder covers the **document-library subset** — webs, lists, folders, files,
 and file versions. The generated XML follows the documented format but is **not

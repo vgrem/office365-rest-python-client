@@ -4,7 +4,7 @@ The SharePoint Migration API (``CreateMigrationJob`` /
 ``CreateMigrationJobEncrypted``) ingests content described by a set of XML
 manifest files. This module models the **document-library subset** — webs, lists,
 folders, files, and file versions — plus the small, fully-specified
-``ExportSettings.xml`` / ``SystemData.xml`` / ``UserGroupMap.xml``.
+``ExportSettings.xml`` / ``SystemData.xml`` / ``UserGroup.xml``.
 
 The full ``DeploymentManifest`` schema has 100+ elements (content types, views,
 web parts, list items, taxonomy, ...); only what a document-library migration
@@ -25,6 +25,10 @@ MANIFEST_NS = "urn:deployment-manifest-schema"
 SYSTEM_DATA_NS = "urn:deployment-systemdata-schema"
 EXPORT_SETTINGS_NS = "urn:deployment-exportsettings-schema"
 USER_GROUP_MAP_NS = "urn:deployment-usergroupmap-schema"
+REQUIREMENTS_NS = "urn:deployment-requirements-schema"
+ROOT_OBJECT_MAP_NS = "urn:deployment-rootobjectmap-schema"
+LOOKUP_LIST_MAP_NS = "urn:deployment-lookuplistmap-schema"
+VIEW_FORMS_LIST_NS = "urn:deployment-viewformlist-schema"
 
 # ``ExportSettings/@SourceType`` accepted values.
 SOURCE_TYPES = (
@@ -45,19 +49,26 @@ SOURCE_TYPES = (
 
 __all__ = [
     "EXPORT_SETTINGS_NS",
+    "LOOKUP_LIST_MAP_NS",
     "MANIFEST_NS",
+    "REQUIREMENTS_NS",
+    "ROOT_OBJECT_MAP_NS",
     "SOURCE_TYPES",
     "SYSTEM_DATA_NS",
     "USER_GROUP_MAP_NS",
+    "VIEW_FORMS_LIST_NS",
     "DeploymentObject",
     "ExportSettings",
     "Group",
     "Manifest",
     "ManifestObject",
+    "RootObject",
+    "RootObjectMap",
     "SystemData",
     "SystemObject",
     "User",
     "UserGroupMap",
+    "empty_document",
 ]
 
 
@@ -80,10 +91,31 @@ def _set(element: ET.Element, attributes: dict) -> None:
             element.set(name, _str(value))
 
 
+def _indent(element: ET.Element, level: int = 0) -> None:
+    """Indent element content (``ET.indent`` is Python 3.9+; this library supports 3.8)."""
+    prefix = "\n" + "  " * level
+    children = list(element)
+    if children:
+        if not (element.text or "").strip():
+            element.text = prefix + "  "
+        for child in children:
+            _indent(child, level + 1)
+        if not (children[-1].tail or "").strip():
+            children[-1].tail = prefix
+    if level and not (element.tail or "").strip():
+        element.tail = prefix
+
+
 def _serialize(root: ET.Element, ns: str) -> bytes:
     """Serialize a document with ``ns`` as the default namespace + XML declaration."""
     ET.register_namespace("", ns)
+    _indent(root)
     return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+
+
+def empty_document(ns: str, root: str) -> bytes:
+    """A document with a childless root element (the API fetches these files by name)."""
+    return _serialize(ET.Element(_q(ns, root)), ns)
 
 
 @dataclass
@@ -95,12 +127,13 @@ class ManifestObject:
     """
 
     id: str
-    object_type: str  # Web | List | Folder | File
-    element: str  # child element name (Web/List/Folder/File)
+    object_type: str  # SPFolder | SPDocumentLibrary | SPFile | ...
+    element: str  # child element name (Folder/DocumentLibrary/File/...)
     attributes: dict = field(default_factory=dict)
     parent_id: str | None = None
     parent_web_id: str | None = None
     parent_web_url: str | None = None
+    url: str | None = None
     versions: list[dict] = field(default_factory=list)
 
 
@@ -126,6 +159,7 @@ class Manifest:
                     "ParentId": obj.parent_id,
                     "ParentWebId": obj.parent_web_id,
                     "ParentWebUrl": obj.parent_web_url,
+                    "Url": obj.url,
                 },
             )
             element = ET.SubElement(sp, _q(MANIFEST_NS, obj.element))
@@ -135,6 +169,41 @@ class Manifest:
                 for version in obj.versions:
                     _set(ET.SubElement(versions, _q(MANIFEST_NS, "File")), version)
         return _serialize(root, MANIFEST_NS)
+
+
+@dataclass
+class RootObject:
+    """A ``<RootObject>`` mapping in ``RootObjectMap.xml``."""
+
+    id: str
+    type: str  # Site | Web | Folder | List | ListItem | File
+    parent_id: str | None = None
+    web_url: str | None = None
+    url: str | None = None
+    is_dependency: bool = False
+
+
+@dataclass
+class RootObjectMap:
+    """The ``RootObjectMap.xml`` document — dependent-object placement."""
+
+    objects: list[RootObject] = field(default_factory=list)
+
+    def to_xml(self) -> bytes:
+        root = ET.Element(_q(ROOT_OBJECT_MAP_NS, "RootObjects"))
+        for obj in self.objects:
+            _set(
+                ET.SubElement(root, _q(ROOT_OBJECT_MAP_NS, "RootObject")),
+                {
+                    "Id": obj.id,
+                    "Type": obj.type,
+                    "ParentId": obj.parent_id,
+                    "WebUrl": obj.web_url,
+                    "Url": obj.url,
+                    "IsDependency": obj.is_dependency,
+                },
+            )
+        return _serialize(root, ROOT_OBJECT_MAP_NS)
 
 
 @dataclass
@@ -228,7 +297,7 @@ class SystemData:
 
 @dataclass
 class User:
-    """A ``<User>`` entry in ``UserGroupMap.xml``.
+    """A ``<User>`` entry in ``UserGroup.xml``.
 
     ``login`` must be a UPN-based login name (``i:0#.f|membership|user@contoso.com``)
     — non-UPN emails cause unexpected behavior in SharePoint Online.
@@ -247,7 +316,7 @@ class User:
 
 @dataclass
 class Group:
-    """A ``<Group>`` entry in ``UserGroupMap.xml``."""
+    """A ``<Group>`` entry in ``UserGroup.xml``."""
 
     id: int
     name: str
@@ -260,7 +329,7 @@ class Group:
 
 @dataclass
 class UserGroupMap:
-    """The required ``UserGroupMap.xml`` document (entries are optional)."""
+    """The required ``UserGroup.xml`` document (entries are optional)."""
 
     users: list[User] = field(default_factory=list)
     groups: list[Group] = field(default_factory=list)

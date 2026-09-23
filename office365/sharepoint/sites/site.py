@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional, Union
 from uuid import UUID
@@ -17,7 +18,6 @@ from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.changes.token import ChangeToken
 from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
-from office365.sharepoint.documents.encryptionoption import EncryptionOption
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition_collection import (
@@ -64,6 +64,15 @@ from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
+
+
+def _aes_key_base64(value: str | bytes) -> str:
+    """Normalize an AES256CBC key to the base64 text the REST payload expects.
+
+    ``provision_migration_containers`` returns it already base64-encoded (the
+    ``bytes`` annotation is a C# ``byte[]`` artifact); raw bytes are encoded here.
+    """
+    return base64.b64encode(value).decode("ascii") if isinstance(value, bytes) else value
 
 
 class Site(Entity):
@@ -176,19 +185,20 @@ class Site(Entity):
         g_web_id: Union[str, UUID],
         azure_container_source_uri: str,
         azure_container_manifest_uri: str,
-        aes256_cbc_key: bytes,
+        aes256_cbc_key: str | bytes,
         azure_queue_report_uri: str | None = None,
     ) -> ClientResult[str]:
         """Creates a migration import job for an AES-256-CBC encrypted package.
 
         Required for SharePoint-provided containers (which are encrypted at rest);
-        use the ``EncryptionKey`` returned by :meth:`provision_migration_containers`.
+        use the ``EncryptionKey`` returned by :meth:`provision_migration_containers`
+        (a base64 string, which is decoded to bytes here).
 
         Args:
             g_web_id: Identifier of the destination web.
             azure_container_source_uri: Content container URI (with SAS token).
             azure_container_manifest_uri: Manifest container URI (with SAS token).
-            aes256_cbc_key: AES256CBC encryption key.
+            aes256_cbc_key: AES256CBC encryption key (raw bytes or base64 string).
             azure_queue_report_uri: Optional Azure queue URI receiving progress events.
 
         Returns:
@@ -196,7 +206,7 @@ class Site(Entity):
         """
         return_type = ClientResult(self.context, str())
         payload = {
-            "options": EncryptionOption(AES256CBCKey=aes256_cbc_key),
+            "options": {"AES256CBCKey": _aes_key_base64(aes256_cbc_key)},
             "gWebId": g_web_id,
             "azureContainerSourceUri": azure_container_source_uri,
             "azureContainerManifestUri": azure_container_manifest_uri,

@@ -48,6 +48,7 @@ dependencies = [
 ]
 optional-dependencies.azure = [
   "azure-storage-blob>=12.19",
+  "cryptography>=42",
 ]
 optional-dependencies.examples = [
   "faker",

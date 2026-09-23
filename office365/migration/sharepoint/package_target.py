@@ -24,6 +24,17 @@ if TYPE_CHECKING:
 __all__ = ["SharePointPackageTarget"]
 
 
+def _resolve_site_url(site, site_url: str | None) -> str:
+    """The target site URL for ``ExportSettings.xml`` (the API rejects an empty URI)."""
+    resolved = site_url or getattr(site, "url", None)
+    if not resolved and hasattr(site, "ensure_property"):
+        site.ensure_property("Url").execute_query()
+        resolved = site.url
+    if not resolved:
+        raise ValueError("site_url is required — ExportSettings.xml needs the target site URL")
+    return resolved
+
+
 class SharePointPackageTarget:
     """A ``DataTarget`` that builds a package and submits a server-side ingestion job."""
 
@@ -38,6 +49,9 @@ class SharePointPackageTarget:
         list_title: str = "Documents",
         list_url: str | None = None,
         web_url: str = "/",
+        root_folder_id: str | None = None,
+        root_folder_parent_id: str | None = None,
+        source_type: str = "SharePointOnline",
         azure_queue_report_uri: str | None = None,
         encryption_key: bytes | None = None,
         staging=None,
@@ -52,14 +66,17 @@ class SharePointPackageTarget:
         if staging is None:
             if not (content_uri and manifest_uri):
                 raise ValueError("content_uri and manifest_uri are required unless staging is provided")
-            staging = create_staging(content_uri, manifest_uri)
+            staging = create_staging(content_uri, manifest_uri, encryption_key=encryption_key)
         self._staging = staging
         self._builder = PackageBuilder(
-            site_url or getattr(site, "url", None) or "",
+            _resolve_site_url(site, site_url),
             web_id=web_id,
             web_url=web_url,
             list_title=list_title,
             list_url=list_url,
+            root_folder_id=root_folder_id,
+            root_folder_parent_id=root_folder_parent_id,
+            source_type=source_type,
         )
         self.job_id: str | None = None
         self._package: "Package | None" = None
@@ -135,6 +152,58 @@ class SharePointPackageTarget:
         if self.job_id is None:
             raise ValueError("no job submitted yet — call commit() first")
         return MigrationServerJob(self._site).monitor(self.job_id, interval=interval, timeout=timeout, progress=progress)
+
+    @property
+    def staging(self):
+        """The staging strategy (``FileSystemStaging`` / ``BlobStaging``)."""
+        return self._staging
+
+    def events(self) -> list[dict]:
+        """All progress events for the submitted job (call after :meth:`monitor`)."""
+        if self.job_id is None:
+            return []
+        return MigrationServerJob(self._site).all_events(self.job_id)
+
+    def errors(self) -> list[dict]:
+        """The ``JobError`` events for the submitted job (call after :meth:`monitor`)."""
+        if self.job_id is None:
+            return []
+        return MigrationServerJob(self._site).errors(self.job_id)
+
+    def diagnose(self) -> list[str]:
+        """Human-readable reasons the submitted job failed (errors, events, API log).
+
+        The progress events omit the detail; the API writes it to a log in the
+        manifest container (named by the ``JobLogFileCreate`` event), which this
+        fetches — the container grants ``Read``.
+        """
+        if self.job_id is None:
+            return []
+        events = self.events()
+        lines = [f"! {e.get('ErrorType', 'error')}: {e.get('Message', '')}".rstrip() for e in self.errors()]
+        if not lines:
+            lines = [f"· {e.get('Event')}: {e.get('Message', '')}".rstrip() for e in events]
+        lines.extend(self._read_logs(events))
+        return lines
+
+    def _read_logs(self, events: list[dict]) -> list[str]:
+        reader = getattr(self._staging, "read_manifest_blob", None)
+        if not callable(reader):
+            return []
+        names = [event.get("FileName") for event in events if event.get("FileName")]
+        if not names and self.job_id:
+            names = [f"Import-{self.job_id}-1.log"]
+        lines: list[str] = []
+        for name in names:
+            try:
+                data = reader(name)
+                text = data.decode("utf-8", "replace") if isinstance(data, bytes) else str(data)
+            except Exception as exc:  # noqa: BLE001 — diagnostics are best-effort
+                lines.append(f"(log {name} unavailable: {exc})")
+            else:
+                lines.append(f"--- {name} ---")
+                lines.append(text[:4000])
+        return lines
 
     def close(self) -> None:
         pass

@@ -25,7 +25,7 @@ from office365.runtime.operations import emit_progress
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
 
-__all__ = ["MigrationServerJob", "parse_progress_events"]
+__all__ = ["MigrationServerJob", "job_errors", "parse_progress_events"]
 
 _TERMINAL = ("succeeded", "completed", "failed", "cancelled")
 
@@ -58,6 +58,11 @@ def parse_progress_events(events: list[dict]) -> tuple[str, int, int | None]:
         if event.get("TotalExpectedSPObjects") is not None:
             total = int(event["TotalExpectedSPObjects"])
     return status, done, total
+
+
+def job_errors(events: list[dict]) -> list[dict]:
+    """The ``JobError`` events from a progress log (each carries ``Message``/``ErrorType``/``Url``)."""
+    return [event for event in events if event.get("Event") == "JobError"]
 
 
 class MigrationServerJob:
@@ -97,13 +102,13 @@ class MigrationServerJob:
         g_web_id,
         azure_container_source_uri: str,
         azure_container_manifest_uri: str,
-        aes256_cbc_key: bytes,
+        aes256_cbc_key: str | bytes,
         azure_queue_report_uri: str | None = None,
     ) -> str:
         """Submit an ingestion job for an AES-256-CBC encrypted package.
 
         Required for SharePoint-provided containers; use the ``EncryptionKey`` from
-        ``Site.provision_migration_containers``.
+        ``Site.provision_migration_containers`` (a base64 string, passed through).
         """
         result = self._site.create_migration_job_encrypted(
             g_web_id=g_web_id,
@@ -128,6 +133,26 @@ class MigrationServerJob:
         value = result.value
         events = [json.loads(line) for line in (value.Logs or [])]
         return events, value.NextToken or next_token
+
+    def all_events(self, job_id: str) -> list[dict]:
+        """All progress events for a job (paged until the token stops advancing).
+
+        For a completed job the API is idempotent per token, so this collects the
+        full lifecycle — including any ``JobError`` entries.
+        """
+        events: list[dict] = []
+        token = "0"
+        for _ in range(100):  # bound: a page with no new events ends the loop
+            page, next_token = self.progress(job_id, token)
+            events.extend(page)
+            if not page or next_token == token:
+                break
+            token = next_token
+        return events
+
+    def errors(self, job_id: str) -> list[dict]:
+        """The ``JobError`` events for a job (message, type, url)."""
+        return job_errors(self.all_events(job_id))
 
     def status_fn(self) -> Callable[[str], tuple[str, int, int | None]]:
         """A ``monitor`` status function backed by ``GetMigrationJobProgress``."""

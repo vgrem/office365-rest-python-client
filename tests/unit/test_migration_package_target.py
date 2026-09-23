@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import xml.etree.ElementTree as ET
 
 import pytest
@@ -18,6 +19,12 @@ class _Result:
         return self
 
 
+class _Progress:
+    def __init__(self, logs, next_token):
+        self.Logs = logs
+        self.NextToken = next_token
+
+
 class _Site:
     url = "https://contoso.sharepoint.com/sites/x"
 
@@ -31,6 +38,11 @@ class _Site:
     def create_migration_job_encrypted(self, **kwargs):
         self.calls.append(("encrypted", kwargs))
         return _Result("job-2")
+
+    def get_migration_job_progress(self, job_id, next_token):
+        self.calls.append(("progress", job_id, next_token))
+        logs = [json.dumps({"Event": "JobEnd", "TotalErrors": "0"})]
+        return _Result(_Progress(logs, next_token))
 
 
 def _target(tmp_path, site=None, **kwargs):
@@ -51,7 +63,7 @@ def test_write_accumulates_files_and_folders(tmp_path):
 
     package = target.build()
     root = ET.fromstring(package.manifest)
-    assert [o.get("ObjectType") for o in root] == ["Web", "List", "Folder", "File"]
+    assert [o.get("ObjectType") for o in root] == ["SPFolder", "SPDocumentLibrary", "SPFolder", "SPFile"]
     assert len(package.content) == 1
 
 
@@ -86,9 +98,31 @@ def test_commit_uses_encrypted_submit_with_a_key(tmp_path):
     assert kwargs["aes256_cbc_key"] == b"secret"
 
 
+def test_events_and_errors_read_the_progress_log(tmp_path):
+    target = _target(tmp_path)
+    target.job_id = "job-1"
+
+    assert [event["Event"] for event in target.events()] == ["JobEnd"]
+    assert target.errors() == []
+
+
+def test_diagnose_falls_back_to_events_without_a_log(tmp_path):
+    target = _target(tmp_path)  # FileSystemStaging has no manifest log
+    target.job_id = "job-1"
+
+    assert target.diagnose() == ["· JobEnd:"]
+
+
 def test_target_requires_uris_or_staging():
     with pytest.raises(ValueError, match="required unless staging"):
         SharePointPackageTarget(_Site(), "web-id")
+
+
+def test_target_requires_a_site_url(tmp_path):
+    site = _Site()
+    site.url = None
+    with pytest.raises(ValueError, match="site_url is required"):
+        SharePointPackageTarget(site, "web-id", staging=FileSystemStaging(tmp_path))
 
 
 def test_target_stages_to_disk_without_azure(tmp_path):
