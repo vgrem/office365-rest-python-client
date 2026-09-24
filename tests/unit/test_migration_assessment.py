@@ -33,7 +33,7 @@ from tests._scripted_transport import ScriptedTransport
 
 _GB = 1024**3
 _ISOLATED = SharePointAssessmentOptions(
-    disabled_scans={"permissions", "fields", "lookups", "largeLists", "paths", "files"}
+    disabled_scans={"permissions", "fields", "lookups", "largeLists", "paths", "files", "FileVersions"}
 )
 
 
@@ -234,7 +234,9 @@ def test_registry_gates_scans_and_disabling_drops_site_query():
     ctx.pending_request().beforeExecute.clear()
     transport = ScriptedTransport([{"d": {"results": []}}, {"d": {"results": []}}])
     ctx.pending_request().transport = transport
-    options = SharePointAssessmentOptions(disabled_scans={"permissions", "fields", "paths", "files", "LargeSites"})
+    options = SharePointAssessmentOptions(
+        disabled_scans={"permissions", "fields", "paths", "files", "FileVersions", "LargeSites"}
+    )
     report = MigrationAssessor(ctx.web, options).assess().execute_query().value
     assert transport.calls == 2  # noqa: PLR2004 — no site-collection query issued
     assert report.scan_reports == {}
@@ -437,6 +439,30 @@ def test_large_list_scanner_grades_by_threshold():
             assert len(report.issues) == 1
             assert report.issues[0].severity == severity
             assert report.issues[0].risk_code == code
+
+
+def test_file_versions_scanner_reports_versioned_files():
+    from office365.migration.sharepoint.scanners.file_versions import FileVersionsScanner
+
+    class _File:
+        def __init__(self, major, minor):
+            self.major_version = major
+            self.minor_version = minor
+
+    items = [
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/current.txt"}, file=_File(1, 0)),
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/history.txt"}, file=_File(3, 1)),
+    ]
+    report = AssessmentReport.new()
+    scanner = FileVersionsScanner(SharePointAssessmentOptions())
+    scanner.run(ScanTarget(ScanContainer.ITEMS, items, "https://x/sites/x/lists/Docs"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.File == "/sites/x/Docs/history.txt"
+    assert row.VersionCount == 4  # noqa: PLR2004 — 3 major + 1 minor
+    assert row.SiteURL == "https://x/sites/x"
+    assert row.ScanID == report.scan_id
 
 
 def test_lookup_column_scanner_flags_too_many_lookups():

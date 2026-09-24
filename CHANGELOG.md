@@ -101,6 +101,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   resolver builds the adapters from a task descriptor — client-side REST by
   default, or the server-side Migration API with `use_migration_api=True`.
   `MigrationOptions` gained `created_after`/`modified_after` date filters.
+- **`FileVersions` scan** — the SMAT "File Versions" detail report: records each
+  file that carries version history (via its `MajorVersion`/`MinorVersion`), with
+  the SMAT columns (`VersionCount`, `File`, `ScanID`, …).
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry

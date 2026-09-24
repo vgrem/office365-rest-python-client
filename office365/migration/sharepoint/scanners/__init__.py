@@ -6,6 +6,7 @@ from office365.migration.assessment.scanners.base import (
     ScanTarget,
 )
 from office365.migration.sharepoint.scanners.fields import FieldScanner
+from office365.migration.sharepoint.scanners.file_versions import FileVersionsRecord, FileVersionsScanner
 from office365.migration.sharepoint.scanners.files import FileScanner
 from office365.migration.sharepoint.scanners.large_sites import LargeSitesScanner
 from office365.migration.sharepoint.scanners.locked_sites import SiteLockedScanner
@@ -18,6 +19,8 @@ __all__ = [
     "BaseScanner",
     "FieldScanner",
     "FileScanner",
+    "FileVersionsRecord",
+    "FileVersionsScanner",
     "LargeSitesScanner",
     "PathScanner",
     "PermissionScanner",
