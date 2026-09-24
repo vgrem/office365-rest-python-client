@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import Any, Tuple
 
 from requests import Response
 from typing_extensions import Self
@@ -35,6 +35,11 @@ class BaseTransport(ABC):
     @property
     def timeout(self) -> int | Tuple[int, int] | None:
         """Transport-level request timeout in seconds."""
+        return None
+
+    @property
+    def auth(self) -> Any | None:
+        """Transport-level authentication handler, e.g. ``session.auth``."""
         return None
 
     def close(self) -> None:  # noqa: B027

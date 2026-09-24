@@ -71,7 +71,14 @@ class SharePointRequest(ODataRequest):
 
     def _authenticate_request(self, request: RequestOptions) -> None:
         """Authenticate the request, resolving the auth context lazily so it can be
-        swapped via :meth:`reuse`."""
+        swapped via :meth:`reuse`.
+
+        A transport carrying its own handler (``session.auth``, e.g. ``HttpNtlmAuth``)
+        signs the request itself. Such a session counts as credentials when no
+        provider is configured on the auth context.
+        """
+        if not self._auth_context.is_configured and self._transport.auth is not None:
+            return
         self._auth_context.authenticate_request(request)
 
     def set_base_url(self, url: str) -> Self:
@@ -114,7 +121,7 @@ class SharePointRequest(ODataRequest):
         def _attempt() -> ContextWebInformation:
             client = ODataRequest(self._base_url, JsonLightFormat())
             client._transport = self._transport
-            client.beforeExecute += self._auth_context.authenticate_request
+            client.beforeExecute += self._authenticate_request
             request = RequestOptions(f"{self.service_root_url}/contextInfo")
             request.method = HttpMethod.Post
             response = client.execute_request_direct(request)

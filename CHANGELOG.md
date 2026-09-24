@@ -222,6 +222,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **A custom session carrying its own auth handler now counts as credentials (refs #1045).**
+  `with_transport(session=...)` advertises `session.auth` for NTLM/SSPI, but every
+  SharePoint request still went through `AuthenticationContext.authenticate_request`,
+  which raised `ValueError: Authentication credentials are missing or invalid` when no
+  provider was configured. The request, the form digest fetch and the batch paths now
+  skip the auth context when the transport carries a handler and nothing is configured;
+  a configured provider still wins, and a session without `auth` still raises.
 - **On-prem NTLM auth works again (refs #1045).** `ClientContext(url, allow_ntlm=True)`
   was ignored twice over: `with_user_credentials` raised unconditionally instead of
   delegating to `AuthenticationContext.with_credentials` (which already routes to
