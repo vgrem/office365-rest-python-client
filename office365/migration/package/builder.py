@@ -369,7 +369,7 @@ class PackageBuilder:
         *,
         object_id: str,
         object_url: str,
-        object_type: str,
+        object_type: str = "2",
         role_def_web_id: str,
         role_def_web_url: str,
         assignments: list[tuple[str, int]],
@@ -379,7 +379,10 @@ class PackageBuilder:
         """Register an ACL scope — ``(role_id, principal_id)`` grants on an object.
 
         Args:
-            object_id/object_url/object_type: the secured object (file/folder).
+            object_id/object_url: the secured object (a file/folder GUID + URL).
+            object_type: the secured-object kind — a numeric enum the service parses
+              (``0`` web, ``1`` list, ``2`` item/file; live-validated: ``2`` breaks
+              inheritance for a file).
             role_def_web_id/role_def_web_url: the web whose role definitions apply.
             assignments: ``(RoleId, PrincipalId)`` pairs (principal ids from ``UserGroup.xml``).
             scope_id: the scope the assignment applies to (defaults to ``object_id``).

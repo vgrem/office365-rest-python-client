@@ -238,6 +238,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `<User>` must carry `SystemId` (the service schema requires it although the docs
   call it optional), and `DeploymentRoles` must **not** be emitted (the target's
   role definitions already exist — *"Updates to system roles is not allowed"*).
+- **`PackageBuilder.add_role_assignment` now defaults `object_type="2"`.** The
+  service parses `RoleAssignment/@ObjectType` as a numeric enum (`0` web, `1`
+  list, `2` item/file); `2` was live-validated to break inheritance on a file.
+  Note: the grant itself (`Assignment` role→principal) and `Author`/`ModifiedBy`
+  still don't land — the target user's `SystemId` (SID) isn't exposed by the SPO
+  REST API, so the principal can't be resolved yet (parked).
 - **On-prem NTLM auth works again (refs #1045).** `ClientContext(url, allow_ntlm=True)`
   was ignored twice over: `with_user_credentials` raised unconditionally instead of
   delegating to `AuthenticationContext.with_credentials` (which already routes to
