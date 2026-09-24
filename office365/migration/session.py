@@ -1,24 +1,41 @@
-"""Migration session — coordinate a batch of migrations.
+"""Migration session — the SPMT-shaped facade over a batch of migrations.
 
-A session runs one or more :class:`MigrationJob` together. Each job is one
-source → target migration; add it explicitly and start the whole batch::
+Mirrors the ``Microsoft.SharePoint.MigrationTool.PowerShell`` cmdlets:
 
-    session = MigrationSession()
-    job = session.add_task(FileSystemSource("src"), SharePointLibraryTarget(folder))
-    session.start()
-    print(session.status())
-    session.stop()
-    session.unregister()
+| cmdlet | method |
+|---|---|
+| ``Register-SPMTMigration`` | :meth:`MigrationSession.register` |
+| ``Get-SPMTMigration`` | :meth:`MigrationSession.get` |
+| ``Add-SPMTTask`` | :meth:`MigrationSession.add_task` |
+| ``Remove-SPMTTask`` | :meth:`MigrationSession.remove_task` |
+| ``Show-SPMTMigration`` | :meth:`MigrationSession.show` |
+| ``Start-SPMTMigration`` | :meth:`MigrationSession.start` |
+| ``Stop-SPMTMigration`` | :meth:`MigrationSession.stop` |
+| ``Unregister-SPMTMigration`` | :meth:`MigrationSession.unregister` |
+
+A task pairs a source and a target adapter — either supplied directly, or
+declared as a :class:`~office365.migration.tasks.MigrationTask` (resolved against
+the registered ``ClientContext``).
 """
 
 from __future__ import annotations
 
+import itertools
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
 from office365.migration.base import MigrationOptions, MigrationPhase
 from office365.migration.job import MigrationJob
 
+if TYPE_CHECKING:
+    from office365.migration.settings import MigrationSettings
+    from office365.migration.tasks import MigrationTask
+
+__all__ = ["MigrationSession", "SessionTask"]
+
 
 def _job_status(job: MigrationJob) -> dict:
-    """Project a job's state — the status form of a session."""
+    """Project a job's state — the status form of a session task."""
     return {
         "source": job.source_label,
         "target": job.target_label,
@@ -33,34 +50,72 @@ def _job_status(job: MigrationJob) -> dict:
     }
 
 
+@dataclass
+class SessionTask:
+    """A registered task: an id, its descriptor (when declared), and its job."""
+
+    id: str
+    job: MigrationJob
+    descriptor: "MigrationTask | None" = None
+
+    def status(self) -> dict:
+        data = _job_status(self.job)
+        data["id"] = self.id
+        if self.descriptor is not None:
+            data["descriptor"] = self.descriptor.label()
+        return data
+
+
 class MigrationSession:
-    """A batch of :class:`MigrationJob` tasks, run together.
+    """A batch of migration tasks, driven like the SPMT PowerShell cmdlets."""
 
-    Tasks are added explicitly with their own source/target (``options`` falls
-    back to the session's defaults when omitted)::
-
-        session = MigrationSession()
-        job = session.add_task(FileSystemSource("src"), SharePointLibraryTarget(folder))
-        session.start()
-    """
-
-    def __init__(self, options: MigrationOptions | None = None) -> None:
+    def __init__(self, options: MigrationOptions | None = None, context=None, settings=None) -> None:
         self._options = options
-        self._jobs: list[MigrationJob] = []
+        self._context = context
+        self._settings = settings
+        self._tasks: list[SessionTask] = []
+        self._ids = itertools.count(1)
 
-    @property
-    def jobs(self) -> list[MigrationJob]:
-        return self._jobs
+    # ── Cmdlets ──────────────────────────────────────────────────
+
+    def register(self, settings: "MigrationSettings | None" = None, context=None) -> "MigrationSession":
+        """Register the session — its settings and the target ``ClientContext``."""
+        if settings is not None:
+            self._settings = settings
+        if context is not None:
+            self._context = context
+        return self
+
+    def get(self) -> "MigrationSession":
+        """The registered session (``Get-SPMTMigration``)."""
+        return self
 
     def add_task(
         self,
-        source,
-        target,
+        source=None,
+        target=None,
+        *,
+        task: "MigrationTask | None" = None,
         options: MigrationOptions | None = None,
         manifest_path=None,
         checkpoint_path=None,
+        **descriptor,
     ) -> MigrationJob:
-        """Add a migration task (a source → target :class:`MigrationJob`) to the session."""
+        """Add a task — adapters directly, a ``MigrationTask``, or task kwargs.
+
+        Descriptor kwargs (``file_share_source`` / ``target_site_url`` /
+        ``target_list`` …) are resolved against the registered context.
+        """
+        if task is None and descriptor:
+            from office365.migration.tasks import MigrationTask
+
+            task = MigrationTask(**descriptor)
+        if task is not None:
+            if self._context is None:
+                raise ValueError("register a ClientContext first (session.register(context=ctx))")
+            from office365.migration.sharepoint.resolvers import resolve_task
+
+            source, target = resolve_task(task, self._context, self._settings)
         job = MigrationJob(
             source,
             target,
@@ -68,38 +123,66 @@ class MigrationSession:
             manifest_path=manifest_path,
             checkpoint_path=checkpoint_path,
         )
-        self._jobs.append(job)
+        self._tasks.append(SessionTask(str(next(self._ids)), job, task))
         return job
+
+    def remove_task(self, task) -> None:
+        """Remove a task by its ``MigrationJob``, ``SessionTask`` or id."""
+        for entry in list(self._tasks):
+            if task in (entry, entry.job, entry.id):
+                self._tasks.remove(entry)
+                return
+        raise KeyError(task)
+
+    def show(self) -> list[dict]:
+        """The per-task status (``Show-SPMTMigration``)."""
+        return [entry.status() for entry in self._tasks]
 
     def start(self, progress=None) -> list[dict]:
         """Start the migration: plan + run every registered task."""
         statuses: list[dict] = []
-        for job in self._jobs:
-            if job.phase in (MigrationPhase.COMPLETED, MigrationPhase.COMPLETED_WITH_ERRORS, MigrationPhase.CANCELLED):
-                statuses.append(_job_status(job))
+        for entry in self._tasks:
+            job = entry.job
+            if job.phase in (
+                MigrationPhase.COMPLETED,
+                MigrationPhase.COMPLETED_WITH_ERRORS,
+                MigrationPhase.CANCELLED,
+            ):
+                statuses.append(entry.status())
                 continue
             job.plan(progress)
             job.run(progress)
-            statuses.append(_job_status(job))
+            statuses.append(entry.status())
         return statuses
+
+    def stop(self) -> None:
+        """Cancel the session (``Stop-SPMTMigration``); tasks stay resumable."""
+        for entry in self._tasks:
+            entry.job.cancel()
+
+    def pause(self) -> None:
+        """Request a clean stop at the next batch boundary (resumable)."""
+        for entry in self._tasks:
+            entry.job.pause()
+
+    def unregister(self) -> None:
+        """Drop all tasks and release the session (``Unregister-SPMTMigration``)."""
+        self._tasks.clear()
+
+    # ── State ────────────────────────────────────────────────────
+
+    @property
+    def tasks(self) -> list[SessionTask]:
+        return self._tasks
+
+    @property
+    def jobs(self) -> list[MigrationJob]:
+        return [entry.job for entry in self._tasks]
+
+    def status(self) -> list[dict]:
+        """The per-task status (alias of :meth:`show`)."""
+        return self.show()
 
     def verify(self, spot_checks: int = 20):
         """Reconcile source vs target for every task after migration."""
-        return [job.verify(spot_checks) for job in self._jobs]
-
-    def status(self) -> list[dict]:
-        """Get the current per-task status."""
-        return [_job_status(job) for job in self._jobs]
-
-    def stop(self) -> None:
-        """Request a clean stop at the next batch boundary."""
-        for job in self._jobs:
-            job.pause()
-
-    def remove_task(self, job: MigrationJob) -> None:
-        """Remove a task (job) from the session."""
-        self._jobs.remove(job)
-
-    def unregister(self) -> None:
-        """Drop all tasks and release the session."""
-        self._jobs.clear()
+        return [entry.job.verify(spot_checks) for entry in self._tasks]

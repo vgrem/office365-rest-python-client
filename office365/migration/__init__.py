@@ -44,7 +44,9 @@ from office365.migration.manifest import Manifest
 from office365.migration.report import MigrationReport, build_report, export_reports
 from office365.migration.runner import MigrationRunner
 from office365.migration.server_job import MigrationServerJob
-from office365.migration.session import MigrationSession
+from office365.migration.session import MigrationSession, SessionTask
+from office365.migration.settings import MigrationSettings
+from office365.migration.tasks import MigrationTask
 from office365.migration.validators import VerificationReport, verify
 
 if TYPE_CHECKING:
@@ -91,10 +93,13 @@ __all__ = [
     "MigrationRunner",
     "MigrationServerJob",
     "MigrationSession",
+    "MigrationSettings",
     "MigrationStats",
+    "MigrationTask",
     "ScanContainer",
     "ScanDefinition",
     "ScanReport",
+    "SessionTask",
     "VerificationReport",
     "build_report",
     "export_reports",

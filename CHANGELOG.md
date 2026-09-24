@@ -92,6 +92,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   new tenant-free `package_library.py` builds the same package offline so the
   manifest XML can be inspected. The migration README now explains the pipeline,
   which example to run, and in what order.
+- **SPMT-style migration sessions:** `MigrationSession` now mirrors the
+  `Microsoft.SharePoint.MigrationTool.PowerShell` cmdlets — `register` / `get` /
+  `add_task` / `remove_task` / `show` / `start` / `stop` (cancel) / `unregister`,
+  with task ids. New `MigrationSettings` (the `Register-SPMTMigration` surface,
+  mapped to `MigrationOptions` via `to_options()`) and `MigrationTask`
+  (`FileShare`/`SharePoint` descriptors + the SPMT JSON task format). A SharePoint
+  resolver builds the adapters from a task descriptor — client-side REST by
+  default, or the server-side Migration API with `use_migration_api=True`.
+  `MigrationOptions` gained `created_after`/`modified_after` date filters.
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry

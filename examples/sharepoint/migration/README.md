@@ -105,6 +105,7 @@ Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Ch
 | Migrate local files into a library via a migration session (parallel) | [`migrate/migrate_session.py`](./migrate/migrate_session.py) | Write access |
 | Migrate a local tree into a library **server-side** (full fidelity: versions, ACLs) | [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py) | Write access (app-only) |
 | Build a Migration API package **offline** (inspect the manifest; no tenant) | [`migrate/package_library.py`](./migrate/package_library.py) | none (local) |
+| Run an **SPMT-style session** (register → add task → start → show → unregister) | [`migrate/migrate_spmt.py`](./migrate/migrate_spmt.py) | Write access |
 
 ```python
 from office365.migration import MigrationJob
