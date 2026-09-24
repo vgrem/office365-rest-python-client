@@ -211,20 +211,18 @@ class ClientContext(ClientRuntimeContext):
         return self
 
     def with_user_credentials(self, username: str, password: str) -> Self:
-        """Initializes a client to acquire a token via user credentials.
+        """Initializes a client to acquire a token via user credentials (NTLM).
+
+        Only for **on-premises** SharePoint — construct the context with
+        ``ClientContext(url, allow_ntlm=True)``. For SharePoint Online this raises:
+        the legacy SAML/ACS flow is retired, use :meth:`with_username_and_password`.
 
         Args:
-            username (str): Typically, a UPN in the form of an email address
-            password (str): The password Note: This method uses the legacy SAML/ACS auth flow which Microsoft has
-                retired for SharePoint Online. Use with_username_and_password instead.
-                For on-premises SharePoint, use allow_ntlm=True.
+            username (str): A UPN, or ``DOMAIN\\user`` for NTLM
+            password (str): The password
         """
-        raise RuntimeError(
-            "with_user_credentials uses the legacy SAML/ACS auth flow which "
-            "Microsoft has retired for SharePoint Online. "
-            "Use with_username_and_password(tenant, client_id, username, password) instead. "
-            "For on-premises SharePoint, use allow_ntlm=True."
-        )
+        self.authentication_context.with_credentials(UserCredential(username, password))
+        return self
 
     def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
         """Initializes a client to acquire a token via Username and password authentication flow.
@@ -338,6 +336,8 @@ class ClientContext(ClientRuntimeContext):
             self._pending_request = SharePointRequest(
                 base_url=self._base_url,
                 environment=self._environment,
+                allow_ntlm=self._allow_ntlm,
+                browser_mode=self._browser_mode,
                 authority=self._authority,
             )
         return self._pending_request  # type: ignore[return-value]

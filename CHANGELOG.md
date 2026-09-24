@@ -222,6 +222,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **On-prem NTLM auth works again (refs #1045).** `ClientContext(url, allow_ntlm=True)`
+  was ignored twice over: `with_user_credentials` raised unconditionally instead of
+  delegating to `AuthenticationContext.with_credentials` (which already routes to
+  `NtlmProvider` when `allow_ntlm` is set), and `pending_request()` never forwarded
+  `allow_ntlm`/`browser_mode` to the request. `with_user_credentials` now delegates,
+  the flags are forwarded, and the retired-SAML guard still fires for SharePoint
+  Online (`allow_ntlm=False`).
 - **`SharePointPackageTarget` no longer emits an empty `ExportSettings` `SiteUrl`.**
   It fell back to an unloaded `site.url` (`None` → `""`), so the API rejected the
   job with `There is an error in XML document (2, 62)` /
