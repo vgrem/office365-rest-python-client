@@ -41,6 +41,7 @@ class AssessmentOptions:
     max_name_length: Optional[int] = None
     invalid_chars: set[str] = field(default_factory=set)
     large_file_bytes: Optional[int] = None
+    large_excel_bytes: Optional[int] = None
     list_view_threshold: Optional[int] = None
     index_threshold: Optional[int] = None
     max_list_items: Optional[int] = None

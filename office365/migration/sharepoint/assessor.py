@@ -284,8 +284,17 @@ class MigrationAssessor(Entity):
             if has_items:
                 pending["count"] += 1
                 lst.items.select(
-                    ["FileRef", "FileLeafRef", "File/Length", "File/MajorVersion", "File/MinorVersion"]
-                ).expand(["File"]).get().on_error(_fail).after_execute(
+                    [
+                        "FileRef",
+                        "FileLeafRef",
+                        "File/Length",
+                        "File/MajorVersion",
+                        "File/MinorVersion",
+                        "File/CheckOutType",
+                        "File/TimeCreated",
+                        "File/TimeLastModified",
+                    ]
+                ).expand(["File", "File/ModifiedBy", "File/CheckedOutByUser"]).get().on_error(_fail).after_execute(
                     lambda col, lst=lst, loc=location, done=_scan_done: (
                         self._scan_items(runner, col, loc),
                         done(lst),

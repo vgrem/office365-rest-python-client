@@ -10,9 +10,12 @@ from __future__ import annotations
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.registry import ScanDefinition, scan_pairs
 from office365.migration.assessment.scanners.base import AssessmentOptions, BaseScanner
+from office365.migration.sharepoint.scanners.browser_file_handling import BrowserFileHandlingScanner
+from office365.migration.sharepoint.scanners.checked_out_files import CheckedOutFilesScanner
 from office365.migration.sharepoint.scanners.fields import FieldScanner
 from office365.migration.sharepoint.scanners.file_versions import FileVersionsScanner
 from office365.migration.sharepoint.scanners.files import FileScanner
+from office365.migration.sharepoint.scanners.large_excel_files import LargeExcelFilesScanner
 from office365.migration.sharepoint.scanners.large_lists import LargeListScanner
 from office365.migration.sharepoint.scanners.large_sites import LargeSitesScanner
 from office365.migration.sharepoint.scanners.locked_sites import SiteLockedScanner
@@ -27,6 +30,9 @@ SHAREPOINT_SCANS: list[ScanDefinition] = [
     ScanDefinition(name="paths", scanner=PathScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="files", scanner=FileScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="FileVersions", scanner=FileVersionsScanner, container=ScanContainer.ITEMS),
+    ScanDefinition(name="CheckedOutFiles", scanner=CheckedOutFilesScanner, container=ScanContainer.ITEMS),
+    ScanDefinition(name="LargeExcelFiles", scanner=LargeExcelFilesScanner, container=ScanContainer.ITEMS),
+    ScanDefinition(name="BrowserFileHandling", scanner=BrowserFileHandlingScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="permissions", scanner=PermissionScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="LargeSites", scanner=LargeSitesScanner, container=ScanContainer.SITE),
     ScanDefinition(

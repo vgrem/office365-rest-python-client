@@ -91,7 +91,7 @@ and `None` renders as `n/a`.
 
 Implemented | SMAT roadmap scans (planned)
 --- | ---
-Large Sites, Locked Sites, File Versions | Large Lists, Large List Views, Large Excel Files, Checked-out files, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
+Large Sites, Locked Sites, File Versions, Large Excel Files, Checked-out files, Browser file handling | Large Lists, Large List Views, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
 
 ---
 

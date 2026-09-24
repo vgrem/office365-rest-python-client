@@ -104,6 +104,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **`FileVersions` scan** — the SMAT "File Versions" detail report: records each
   file that carries version history (via its `MajorVersion`/`MinorVersion`), with
   the SMAT columns (`VersionCount`, `File`, `ScanID`, …).
+- **SMAT report scans:** `CheckedOutFiles` (checked-out files + a per-list
+  warning), `LargeExcelFiles` (Excel workbooks over the browser-open limit), and
+  `BrowserFileHandling` (`.htm`/`.html` files affected by Strict handling) — typed
+  detail reports sharing a `SiteScanRecord` base (the SMAT site-column prefix).
+  New `Limits.LARGE_EXCEL_FILE` (10 MB) backs the Excel threshold; `AssessmentOptions`
+  gained `large_excel_bytes`. The assessor's item load now also selects
+  `File/CheckOutType`/`File/TimeCreated`/`File/TimeLastModified` and expands
+  `File/ModifiedBy`/`File/CheckedOutByUser`.
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry

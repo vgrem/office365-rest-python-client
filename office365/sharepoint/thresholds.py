@@ -241,6 +241,15 @@ class Limits:
         "the FileLeafRef name; the migration path scanner flags longer names",
         f"{_DOC_SERVER}#list-and-library-limits",
     )
+    LARGE_EXCEL_FILE = Limit(
+        "Excel workbook opened in the browser",
+        10 * _MB,
+        _THRESHOLD,
+        "bytes",
+        "file",
+        "larger Excel files prompt to open in the Excel client instead of the browser",
+        _DOC_ONLINE,
+    )
 
     # --- Batching -----------------------------------------------------------
     BATCH_ITEMS = Limit(

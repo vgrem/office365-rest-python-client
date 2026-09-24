@@ -8,39 +8,22 @@ scan lists each file that has more than its current version, using the file's
 ``VersionCount`` is ``major + minor`` — the current version level, a close
 approximation of version-history depth for major-only versioning. Site-level SMAT
 columns that only exist on-premises (``ContentDB*``, usage-logging) are ``None``
-and exported as ``n/a`` (see the ``LargeSites`` scan for the convention).
+and exported as ``n/a``.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
+from office365.migration.sharepoint.scanners.smat import SiteScanRecord, site_url
 
 
 @dataclass
-class FileVersionsRecord:
-    """One row of the SMAT ``FileVersions-detail`` report.
+class FileVersionsRecord(SiteScanRecord):
+    """One row of the SMAT ``FileVersions-detail`` report."""
 
-    Field names mirror the SMAT column headers; ``None`` is exported as ``n/a``.
-    """
-
-    SiteId: str | None = None
-    SiteURL: str | None = None
-    SiteOwner: str | None = None
-    SiteAdmins: str | None = None
-    SiteSizeInMB: float | None = None
-    NumOfWebs: int | None = None
-    ContentDBName: str | None = None
-    ContentDBServerName: str | None = None
-    ContentDBSizeInMB: str | None = None
-    LastContentModifiedDate: datetime | None = None
-    TotalItemCount: int | None = None
-    Hits: int | None = None
-    DistinctUsers: str | None = None
-    DaysOfUsageData: str | None = None
     VersionCount: int | None = None
     File: str | None = None
     ScanID: str | None = None
@@ -54,7 +37,7 @@ class FileVersionsScanner(BaseScanner[FileVersionsRecord]):
     record_type = FileVersionsRecord
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
-        site_url = target.location.rsplit("/lists/", 1)[0] if "/lists/" in (target.location or "") else None
+        location = site_url(target.location)
         for item in target.entity:
             file = getattr(item, "file", None)
             if file is None:
@@ -65,7 +48,7 @@ class FileVersionsScanner(BaseScanner[FileVersionsRecord]):
                 continue  # only the current version — no history
             self.records.append(
                 FileVersionsRecord(
-                    SiteURL=site_url,
+                    SiteURL=location,
                     VersionCount=major + minor,
                     File=item.properties.get("FileRef", ""),
                     ScanID=report.scan_id or None,
