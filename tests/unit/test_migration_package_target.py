@@ -63,7 +63,13 @@ def test_write_accumulates_files_and_folders(tmp_path):
 
     package = target.build()
     root = ET.fromstring(package.manifest)
-    assert [o.get("ObjectType") for o in root] == ["SPFolder", "SPDocumentLibrary", "SPFolder", "SPFile"]
+    assert [o.get("ObjectType") for o in root] == [
+        "SPFolder",
+        "SPDocumentLibrary",
+        "SPFolder",
+        "SPFile",
+        "SPListItem",
+    ]
     assert len(package.content) == 1
 
 

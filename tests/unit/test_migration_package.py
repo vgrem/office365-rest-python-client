@@ -22,6 +22,7 @@ from office365.migration.package import (
     Group,
     Package,
     PackageBuilder,
+    SharedWithEvent,
     UserGroupMap,
     create_staging,
 )
@@ -48,16 +49,22 @@ def test_manifest_renders_spobjects_with_file_and_versions():
 
     assert root.tag == _q(MANIFEST_NS, "SPObjects")
     objects = _children(root, MANIFEST_NS, "SPObject")
-    assert [o.get("ObjectType") for o in objects] == ["SPFolder", "SPDocumentLibrary", "SPFolder", "SPFile"]
+    assert [o.get("ObjectType") for o in objects] == [
+        "SPFolder",
+        "SPDocumentLibrary",
+        "SPFolder",
+        "SPFile",
+        "SPListItem",
+    ]
 
-    file_object = objects[-1]
+    file_object = objects[-2]
     file_element = _children(file_object, MANIFEST_NS, "File")[0]
     assert file_element.get("Name") == "Reports/q1.docx"
     assert file_element.get("Url").endswith("Documents/Reports/q1.docx")
     assert file_element.get("FileValue") == file_object.get("Id")  # the content blob name
     assert file_element.get("Version") == "2.0"
     assert file_element.get("TimeCreated") == "2020-01-01T00:00:00"
-    assert file_object.get("ParentId") == objects[-2].get("Id")  # the Reports folder
+    assert file_object.get("ParentId") == objects[-3].get("Id")  # the Reports folder
 
     version_rows = _children(_children(file_element, MANIFEST_NS, "Versions")[0], MANIFEST_NS, "File")
     assert [v.get("Version") for v in version_rows] == ["1.0"]
@@ -78,7 +85,14 @@ def test_builder_creates_missing_parent_folders():
     root = ET.fromstring(builder.build().manifest)
     objects = _children(root, MANIFEST_NS, "SPObject")
 
-    assert [o.get("ObjectType") for o in objects] == ["SPFolder", "SPDocumentLibrary", "SPFolder", "SPFolder", "SPFile"]
+    assert [o.get("ObjectType") for o in objects] == [
+        "SPFolder",
+        "SPDocumentLibrary",
+        "SPFolder",
+        "SPFolder",
+        "SPFile",
+        "SPListItem",
+    ]
     folders = [_children(o, MANIFEST_NS, "Folder")[0] for o in objects if o.get("ObjectType") == "SPFolder"]
     assert [f.get("Name") for f in folders] == ["Documents", "a", "a/b"]  # the library root, then a and a/b
 
@@ -126,6 +140,51 @@ def test_optional_manifest_documents_are_emitted():
     root = ET.fromstring(package.root_object_map)
     assert root.tag == _q(ROOT_OBJECT_MAP_NS, "RootObjects")
     assert _children(root, ROOT_OBJECT_MAP_NS, "RootObject")[0].get("Type") == "List"
+
+
+def test_builder_emits_role_assignments_and_user_system_id():
+    builder = PackageBuilder("https://contoso.sharepoint.com/sites/x", list_title="Documents")
+    uid = builder.add_user("i:0#.f|membership|jane@contoso.com", name="Jane")
+    file_id = builder.add_file("a.txt", b"hi")
+    builder.add_role_assignment(
+        object_id=file_id,
+        object_url="Documents/a.txt",
+        object_type="1",
+        role_def_web_id="web-1",
+        role_def_web_url="/",
+        assignments=[("1073741827", uid)],
+    )
+    package = builder.build()
+
+    root = ET.fromstring(package.manifest)
+    objects = {o.get("ObjectType"): o for o in _children(root, MANIFEST_NS, "SPObject")}
+    assignments = _children(objects["DeploymentRoleAssignments"], MANIFEST_NS, "RoleAssignments")[0]
+    role_assignment = _children(assignments, MANIFEST_NS, "RoleAssignment")[0]
+    assert role_assignment.get("ObjectId") == file_id
+    assert _children(role_assignment, MANIFEST_NS, "Assignment")[0].get("PrincipalId") == "1"
+
+    # the service schema requires SystemId on every <User>
+    user = _children(ET.fromstring(package.user_group_map), USER_GROUP_MAP_NS, "Users")[0][0]
+    assert user.get("Login") == "i:0#.f|membership|jane@contoso.com"
+    assert user.get("SystemId") == ""
+
+
+def test_builder_emits_shared_with_events():
+    builder = PackageBuilder("https://contoso.sharepoint.com/sites/x")
+    builder.add_list_item(
+        "Documents/a.txt",
+        shared_with=[
+            SharedWithEvent(shared_time="2024-01-01T00:00:00Z", sharing_initiator_id=1, shared_by_id=1, members=[2])
+        ],
+    )
+    root = ET.fromstring(builder.build().manifest)
+    item = next(o for o in _children(root, MANIFEST_NS, "SPObject") if o.get("ObjectType") == "SPListItem")
+
+    events = _children(_children(item, MANIFEST_NS, "ListItem")[0], MANIFEST_NS, "SharedWithEvents")[0]
+    event = _children(events, MANIFEST_NS, "SharedWithEvent")[0]
+    assert event.get("SharedById") == "1"
+    members = _children(_children(event, MANIFEST_NS, "SharedWithMembers")[0], MANIFEST_NS, "SharedWithMember")
+    assert [m.get("SharedWithId") for m in members] == ["2"]
 
 
 def test_export_settings_carries_source_type_and_list_object():

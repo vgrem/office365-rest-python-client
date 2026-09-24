@@ -222,6 +222,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **Server-side file imports need a matching `SPListItem` (live-validated).** The
+  Migration API **silently skips** an `SPFile` unless the package also contains
+  the file's `SPListItem` (with a `<Fields>` member) — `PackageBuilder.add_file`
+  now emits it, and `add_list_item` reuses it for sharing metadata. Also: every
+  `<User>` must carry `SystemId` (the service schema requires it although the docs
+  call it optional), and `DeploymentRoles` must **not** be emitted (the target's
+  role definitions already exist — *"Updates to system roles is not allowed"*).
 - **On-prem NTLM auth works again (refs #1045).** `ClientContext(url, allow_ntlm=True)`
   was ignored twice over: `with_user_credentials` raised unconditionally instead of
   delegating to `AuthenticationContext.with_credentials` (which already routes to
