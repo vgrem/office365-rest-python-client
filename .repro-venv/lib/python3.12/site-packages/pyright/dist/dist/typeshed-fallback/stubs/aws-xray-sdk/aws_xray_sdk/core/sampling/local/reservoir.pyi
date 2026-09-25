@@ -1,6 +1,0 @@
-class Reservoir:
-    traces_per_sec: int
-    used_this_sec: int
-    this_sec: int
-    def __init__(self, traces_per_sec: int = 0) -> None: ...
-    def take(self) -> bool: ...

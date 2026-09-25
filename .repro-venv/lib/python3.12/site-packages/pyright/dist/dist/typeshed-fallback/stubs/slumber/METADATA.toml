@@ -1,3 +1,0 @@
-version = "0.7.*"
-upstream-repository = "https://github.com/samgiles/slumber"
-dependencies = ["requests>=2.34.0"]

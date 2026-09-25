@@ -1,3 +1,0 @@
-from ..core import OrthodoxCalendar
-
-class Greece(OrthodoxCalendar): ...

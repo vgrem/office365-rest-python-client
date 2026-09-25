@@ -1,2 +1,0 @@
-alphabet: str
-size: int

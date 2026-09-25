@@ -1,3 +1,0 @@
-from .fragment import FragmentFD
-
-class MhtmlFD(FragmentFD): ...

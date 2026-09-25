@@ -1,9 +1,0 @@
-from _typeshed import Incomplete
-
-from braintree.exchange_rate_quote_input import ExchangeRateQuoteInput
-
-class ExchangeRateQuoteRequest:
-    quotes: list[ExchangeRateQuoteInput]
-    def __init__(self) -> None: ...
-    def add_exchange_rate_quote_input(self, attributes) -> ExchangeRateQuoteInput: ...
-    def to_graphql_variables(self) -> dict[str, Incomplete]: ...

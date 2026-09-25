@@ -1,3 +1,0 @@
-import ast
-
-def get_sim112(node: ast.Expr) -> list[tuple[int, int, str]]: ...

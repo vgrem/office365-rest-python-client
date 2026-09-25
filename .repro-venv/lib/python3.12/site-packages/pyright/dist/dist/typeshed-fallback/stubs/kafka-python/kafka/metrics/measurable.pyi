@@ -1,9 +1,0 @@
-import abc
-
-class AbstractMeasurable(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def measure(self, config, now): ...
-
-class AnonMeasurable(AbstractMeasurable):
-    def __init__(self, measure_fn) -> None: ...
-    def measure(self, config, now): ...

@@ -1,3 +1,0 @@
-from ..core import IslamicCalendar
-
-class Qatar(IslamicCalendar): ...

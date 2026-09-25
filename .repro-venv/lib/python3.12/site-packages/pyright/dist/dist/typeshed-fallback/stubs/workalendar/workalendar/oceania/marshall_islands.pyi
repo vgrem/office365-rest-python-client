@@ -1,3 +1,0 @@
-from ..core import WesternCalendar
-
-class MarshallIslands(WesternCalendar): ...

@@ -1,9 +1,0 @@
-from braintree.attribute_getter import AttributeGetter
-
-class BankAccountInstantVerificationJwt(AttributeGetter):
-    def __init__(self, jwt) -> None: ...
-
-    @property
-    def jwt(self): ...
-    @jwt.setter
-    def jwt(self, value) -> None: ...

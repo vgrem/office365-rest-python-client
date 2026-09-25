@@ -1,1 +1,0 @@
-MAX_LEVEL: int

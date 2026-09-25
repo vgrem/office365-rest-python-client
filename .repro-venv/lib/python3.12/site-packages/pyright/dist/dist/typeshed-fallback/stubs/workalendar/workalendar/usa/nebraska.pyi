@@ -1,3 +1,0 @@
-from .core import UnitedStates
-
-class Nebraska(UnitedStates): ...

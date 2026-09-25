@@ -1,3 +1,0 @@
-class WebhookTesting:
-    @staticmethod
-    def sample_notification(kind: str, id: str, source_merchant_id: str | None = None) -> dict[str, str | bytes]: ...

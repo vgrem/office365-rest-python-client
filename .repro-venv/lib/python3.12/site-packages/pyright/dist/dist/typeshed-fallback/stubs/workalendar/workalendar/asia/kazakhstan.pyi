@@ -1,3 +1,0 @@
-from ..core import IslamicCalendar, OrthodoxCalendar
-
-class Kazakhstan(OrthodoxCalendar, IslamicCalendar): ...

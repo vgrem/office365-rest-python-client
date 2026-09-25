@@ -1,6 +1,0 @@
-version = "~=4.26.0"
-upstream-repository = "https://github.com/python-jsonschema/jsonschema"
-dependencies = ["referencing"]
-
-[tool.stubtest]
-extras = ["format"]

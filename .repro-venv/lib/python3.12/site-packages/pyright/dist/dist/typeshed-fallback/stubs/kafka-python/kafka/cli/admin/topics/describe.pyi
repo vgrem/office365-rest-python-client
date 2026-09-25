@@ -1,3 +1,0 @@
-class DescribeTopics:
-    @classmethod
-    def add_subparser(cls, subparsers): ...

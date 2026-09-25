@@ -1,6 +1,0 @@
-from collections.abc import Iterable
-
-def lookup_mux_register(
-    gpio_pin: int, pin_defs: Iterable[tuple[int, str, str, int, int, str, str, str | None, int | None, int]]
-) -> int: ...
-def main() -> None: ...

@@ -1,6 +1,0 @@
-from typing import Final
-
-PYNAMODB4: Final[bool]
-
-def patch() -> None: ...
-def pynamodb_meta_processor(wrapped, instance, args, kwargs, return_value, exception, subsegment, stack) -> None: ...

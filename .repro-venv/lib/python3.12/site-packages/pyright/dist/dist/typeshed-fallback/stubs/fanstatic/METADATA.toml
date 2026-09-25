@@ -1,3 +1,0 @@
-version = "1.7.*"
-upstream-repository = "https://github.com/zopefoundation/fanstatic"
-dependencies = ["types-setuptools", "types-WebOb"]

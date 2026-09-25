@@ -1,3 +1,0 @@
-version = "1.5.1"
-upstream-repository = "https://github.com/Kozea/tinycss2"
-dependencies = ["types-webencodings"]

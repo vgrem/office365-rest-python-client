@@ -1,6 +1,0 @@
-import ast
-
-from flake8_simplify.utils import Assign
-
-def get_sim904(node: ast.Assign) -> list[tuple[int, int, str]]: ...
-def get_sim909(node: Assign) -> list[tuple[int, int, str]]: ...

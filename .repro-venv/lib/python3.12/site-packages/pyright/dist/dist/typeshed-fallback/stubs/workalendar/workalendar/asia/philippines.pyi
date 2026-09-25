@@ -1,3 +1,0 @@
-from ..core import ChineseNewYearCalendar, IslamicMixin, WesternMixin
-
-class Philippines(WesternMixin, IslamicMixin, ChineseNewYearCalendar): ...

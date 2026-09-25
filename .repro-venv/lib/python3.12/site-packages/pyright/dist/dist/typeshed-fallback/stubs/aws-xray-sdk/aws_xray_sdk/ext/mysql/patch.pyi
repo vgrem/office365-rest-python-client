@@ -1,6 +1,0 @@
-from typing import Final
-
-MYSQL_ATTR: Final[dict[str, str]]
-
-def patch() -> None: ...
-def sanitize_db_ver(raw: tuple[str]) -> str: ...

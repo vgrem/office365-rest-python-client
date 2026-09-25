@@ -1,3 +1,0 @@
-from .ast import Node
-
-def parse_component_value_list(css: str, skip_comments: bool = False) -> list[Node]: ...

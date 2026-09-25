@@ -1,3 +1,0 @@
-import ast
-
-def get_sim120(node: ast.ClassDef) -> list[tuple[int, int, str]]: ...

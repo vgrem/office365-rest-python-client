@@ -1,6 +1,0 @@
-from _typeshed import Incomplete
-
-SASL_MECHANISMS: Incomplete
-
-def register_sasl_mechanism(name, klass, overwrite: bool = False) -> None: ...
-def get_sasl_mechanism(name): ...

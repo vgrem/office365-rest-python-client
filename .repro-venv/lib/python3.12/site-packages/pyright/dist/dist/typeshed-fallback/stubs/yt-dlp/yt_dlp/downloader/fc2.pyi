@@ -1,3 +1,0 @@
-from .common import FileDownloader
-
-class FC2LiveFD(FileDownloader): ...
