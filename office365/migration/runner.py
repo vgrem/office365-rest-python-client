@@ -205,6 +205,11 @@ class MigrationRunner:
         stats = MigrationStats(total=len(items))
         chunk: list[MigrationItem] = []
 
+        def _skip(item: MigrationItem) -> None:
+            checkpoint.record(item, ItemStatus.SKIPPED)
+            stats.skipped += 1
+            self._report_progress(progress, stats, item)
+
         def _flush() -> None:
             if not chunk:
                 return
@@ -245,16 +250,12 @@ class MigrationRunner:
             if callable(stop_event) and stop_event():
                 checkpoint.phase = MigrationPhase.PAUSED
                 break
-            if watermark is not None and watermark.is_stale(item):
-                checkpoint.record(item, ItemStatus.SKIPPED)
-                stats.skipped += 1
-                self._report_progress(progress, stats, item)
+            if (watermark is not None and watermark.is_stale(item)) or _outside_window(item, options):
+                _skip(item)
                 continue
             checkpoint.record(item, ItemStatus.IN_PROGRESS)
             if options.incremental and _target_up_to_date(source, target, item):
-                checkpoint.record(item, ItemStatus.SKIPPED)
-                stats.skipped += 1
-                self._report_progress(progress, stats, item)
+                _skip(item)
                 continue
             if options.conflict_resolution == ConflictResolution.SKIP and target.exists(item):
                 checkpoint.record(item, ItemStatus.SKIPPED)
@@ -274,7 +275,9 @@ class MigrationRunner:
 
     @staticmethod
     def _migrate(source, target: DataTarget, item: MigrationItem, options: MigrationOptions) -> bool:
-        """Move one item; returns ``False`` when skipped (conflict/incremental)."""
+        """Move one item; returns ``False`` when skipped (conflict/incremental/window)."""
+        if _outside_window(item, options):
+            return False
         if options.incremental and _target_up_to_date(source, target, item):
             return False
         if options.conflict_resolution == ConflictResolution.SKIP and target.exists(item):
@@ -285,6 +288,13 @@ class MigrationRunner:
         target.write(item, payload)
         _apply_fidelity(source, target, item, options)
         return True
+
+
+def _outside_window(item: MigrationItem, options: MigrationOptions) -> bool:
+    """Whether the item is outside the ``created_after``/``modified_after`` window (skip it)."""
+    if options.modified_after and item.modified is not None and item.modified <= options.modified_after:
+        return True
+    return bool(options.created_after and item.created is not None and item.created <= options.created_after)
 
 
 def _target_up_to_date(source, target: DataTarget, item: MigrationItem) -> bool:

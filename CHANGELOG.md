@@ -92,6 +92,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   new tenant-free `package_library.py` builds the same package offline so the
   manifest XML can be inspected. The migration README now explains the pipeline,
   which example to run, and in what order.
+- **SPMT-style migration sessions:** `MigrationSession` now mirrors the
+  `Microsoft.SharePoint.MigrationTool.PowerShell` cmdlets — `register` / `get` /
+  `add_task` / `remove_task` / `show` / `start` / `stop` (cancel) / `unregister`,
+  with task ids. New `MigrationSettings` (the `Register-SPMTMigration` surface,
+  mapped to `MigrationOptions` via `to_options()`) and `MigrationTask`
+  (`FileShare`/`SharePoint` descriptors + the SPMT JSON task format). A SharePoint
+  resolver builds the adapters from a task descriptor — client-side REST by
+  default, or the server-side Migration API with `use_migration_api=True`.
+  `MigrationOptions` gained `created_after`/`modified_after` date filters.
+- **`FileVersions` scan** — the SMAT "File Versions" detail report: records each
+  file that carries version history (via its `MajorVersion`/`MinorVersion`), with
+  the SMAT columns (`VersionCount`, `File`, `ScanID`, …).
+- **SMAT report scans:** `CheckedOutFiles` (checked-out files + a per-list
+  warning), `LargeExcelFiles` (Excel workbooks over the browser-open limit), and
+  `BrowserFileHandling` (`.htm`/`.html` files affected by Strict handling) — typed
+  detail reports sharing a `SiteScanRecord` base (the SMAT site-column prefix).
+  New `Limits.LARGE_EXCEL_FILE` (10 MB) backs the Excel threshold; `AssessmentOptions`
+  gained `large_excel_bytes`. The assessor's item load now also selects
+  `File/CheckOutType`/`File/TimeCreated`/`File/TimeLastModified` and expands
+  `File/ModifiedBy`/`File/CheckedOutByUser`.
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry
@@ -229,6 +249,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   provider was configured. The request, the form digest fetch and the batch paths now
   skip the auth context when the transport carries a handler and nothing is configured;
   a configured provider still wins, and a session without `auth` still raises.
+- **Server-side file imports need a matching `SPListItem` (live-validated).** The
+  Migration API **silently skips** an `SPFile` unless the package also contains
+  the file's `SPListItem` (with a `<Fields>` member) — `PackageBuilder.add_file`
+  now emits it, and `add_list_item` reuses it for sharing metadata. Also: every
+  `<User>` must carry `SystemId` (the service schema requires it although the docs
+  call it optional), and `DeploymentRoles` must **not** be emitted (the target's
+  role definitions already exist — *"Updates to system roles is not allowed"*).
+- **`PackageBuilder.add_role_assignment` now defaults `object_type="2"`.** The
+  service parses `RoleAssignment/@ObjectType` as a numeric enum (`0` web, `1`
+  list, `2` item/file); `2` was live-validated to break inheritance on a file.
+  Note: the grant itself (`Assignment` role→principal) and `Author`/`ModifiedBy`
+  still don't land — the target user's `SystemId` (SID) isn't exposed by the SPO
+  REST API, so the principal can't be resolved yet (parked).
 - **On-prem NTLM auth works again (refs #1045).** `ClientContext(url, allow_ntlm=True)`
   was ignored twice over: `with_user_credentials` raised unconditionally instead of
   delegating to `AuthenticationContext.with_credentials` (which already routes to

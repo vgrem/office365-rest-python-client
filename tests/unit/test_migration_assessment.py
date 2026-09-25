@@ -7,6 +7,7 @@ SharePoint/Outlook adapters degrade gracefully).
 
 from __future__ import annotations
 
+from datetime import datetime
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
@@ -33,7 +34,18 @@ from tests._scripted_transport import ScriptedTransport
 
 _GB = 1024**3
 _ISOLATED = SharePointAssessmentOptions(
-    disabled_scans={"permissions", "fields", "lookups", "largeLists", "paths", "files"}
+    disabled_scans={
+        "permissions",
+        "fields",
+        "lookups",
+        "largeLists",
+        "paths",
+        "files",
+        "FileVersions",
+        "CheckedOutFiles",
+        "LargeExcelFiles",
+        "BrowserFileHandling",
+    }
 )
 
 
@@ -234,7 +246,19 @@ def test_registry_gates_scans_and_disabling_drops_site_query():
     ctx.pending_request().beforeExecute.clear()
     transport = ScriptedTransport([{"d": {"results": []}}, {"d": {"results": []}}])
     ctx.pending_request().transport = transport
-    options = SharePointAssessmentOptions(disabled_scans={"permissions", "fields", "paths", "files", "LargeSites"})
+    options = SharePointAssessmentOptions(
+        disabled_scans={
+            "permissions",
+            "fields",
+            "paths",
+            "files",
+            "FileVersions",
+            "CheckedOutFiles",
+            "LargeExcelFiles",
+            "BrowserFileHandling",
+            "LargeSites",
+        }
+    )
     report = MigrationAssessor(ctx.web, options).assess().execute_query().value
     assert transport.calls == 2  # noqa: PLR2004 — no site-collection query issued
     assert report.scan_reports == {}
@@ -437,6 +461,103 @@ def test_large_list_scanner_grades_by_threshold():
             assert len(report.issues) == 1
             assert report.issues[0].severity == severity
             assert report.issues[0].risk_code == code
+
+
+def test_file_versions_scanner_reports_versioned_files():
+    from office365.migration.sharepoint.scanners.file_versions import FileVersionsScanner
+
+    class _File:
+        def __init__(self, major, minor):
+            self.major_version = major
+            self.minor_version = minor
+
+    items = [
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/current.txt"}, file=_File(1, 0)),
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/history.txt"}, file=_File(3, 1)),
+    ]
+    report = AssessmentReport.new()
+    scanner = FileVersionsScanner(SharePointAssessmentOptions())
+    scanner.run(ScanTarget(ScanContainer.ITEMS, items, "https://x/sites/x/lists/Docs"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.File == "/sites/x/Docs/history.txt"
+    assert row.VersionCount == 4  # noqa: PLR2004 — 3 major + 1 minor
+    assert row.SiteURL == "https://x/sites/x"
+    assert row.ScanID == report.scan_id
+
+
+def test_checked_out_files_scanner_reports_and_warns():
+    from office365.migration.sharepoint.scanners.checked_out_files import CheckedOutFilesScanner
+
+    class _File:
+        def __init__(self, check_out_type, user=None):
+            self.check_out_type = check_out_type
+            self.checked_out_by_user = user
+
+    user = SimpleNamespace(login_name="i:0#.f|membership|jane@contoso.com", title="Jane")
+    items = [
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/free.txt"}, file=_File(0)),
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/locked.txt"}, file=_File(1, user)),
+    ]
+    report = AssessmentReport.new()
+    scanner = CheckedOutFilesScanner(SharePointAssessmentOptions())
+    scanner.run(ScanTarget(ScanContainer.ITEMS, items, "https://x/sites/x/lists/Docs"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.File == "/sites/x/Docs/locked.txt"
+    assert row.CheckedOutUser == "i:0#.f|membership|jane@contoso.com"
+    assert row.SiteURL == "https://x/sites/x"
+    assert row.ScanID == report.scan_id
+    assert any(i.severity == "warning" and "checked-out" in i.message for i in report.issues)
+
+
+def test_large_excel_files_scanner_filters_by_size():
+    from office365.migration.sharepoint.scanners.large_excel_files import LargeExcelFilesScanner
+
+    class _File:
+        def __init__(self, length):
+            self.length = length
+
+    mb = 1024 * 1024
+    items = [
+        SimpleNamespace(properties={"FileLeafRef": "a.xlsx", "FileRef": "/sites/x/Docs/a.xlsx"}, file=_File(2 * mb)),
+        SimpleNamespace(properties={"FileLeafRef": "b.xlsm", "FileRef": "/sites/x/Docs/b.xlsm"}, file=_File(12 * mb)),
+        SimpleNamespace(properties={"FileLeafRef": "c.docx", "FileRef": "/sites/x/Docs/c.docx"}, file=_File(20 * mb)),
+    ]
+    report = AssessmentReport.new()
+    scanner = LargeExcelFilesScanner(SharePointAssessmentOptions())
+    scanner.run(ScanTarget(ScanContainer.ITEMS, items, "https://x/sites/x/lists/Docs"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.File == "/sites/x/Docs/b.xlsm"
+    assert row.FileSizeinMB == 12.0  # noqa: PLR2004
+
+
+def test_browser_file_handling_scanner_reports_html():
+    from office365.migration.sharepoint.scanners.browser_file_handling import BrowserFileHandlingScanner
+
+    class _File:
+        def __init__(self):
+            self.time_created = datetime(2020, 1, 1)
+            self.time_last_modified = datetime(2021, 1, 1)
+            self.modified_by = SimpleNamespace(login_name="i:0#.f|membership|jane@contoso.com", title="Jane")
+
+    items = [
+        SimpleNamespace(properties={"FileLeafRef": "page.html", "FileRef": "/sites/x/Docs/page.html"}, file=_File()),
+        SimpleNamespace(properties={"FileLeafRef": "doc.docx", "FileRef": "/sites/x/Docs/doc.docx"}, file=_File()),
+    ]
+    report = AssessmentReport.new()
+    scanner = BrowserFileHandlingScanner(SharePointAssessmentOptions())
+    scanner.run(ScanTarget(ScanContainer.ITEMS, items, "https://x/sites/x/lists/Docs"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.File == "/sites/x/Docs/page.html"
+    assert row.ModifiedBy == "i:0#.f|membership|jane@contoso.com"
+    assert row.TimeCreated == datetime(2020, 1, 1)
 
 
 def test_lookup_column_scanner_flags_too_many_lookups():

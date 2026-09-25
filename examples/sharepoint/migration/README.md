@@ -91,7 +91,7 @@ and `None` renders as `n/a`.
 
 Implemented | SMAT roadmap scans (planned)
 --- | ---
-Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Checked-out files, File Versions, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
+Large Sites, Locked Sites, File Versions, Large Excel Files, Checked-out files, Browser file handling | Large Lists, Large List Views, Long OneDrive URLs, Unsupported Site Templates, Workflow Associations (2010/2013), ... (see the [SMAT scan reports roadmap](https://learn.microsoft.com/en-us/sharepointmigration/sharepoint-migration-assessment-toolscan-reports-roadmap))
 
 ---
 
@@ -105,6 +105,7 @@ Large Sites, Locked Sites | Large Lists, Large List Views, Large Excel Files, Ch
 | Migrate local files into a library via a migration session (parallel) | [`migrate/migrate_session.py`](./migrate/migrate_session.py) | Write access |
 | Migrate a local tree into a library **server-side** (full fidelity: versions, ACLs) | [`migrate/migrate_library_serverside.py`](./migrate/migrate_library_serverside.py) | Write access (app-only) |
 | Build a Migration API package **offline** (inspect the manifest; no tenant) | [`migrate/package_library.py`](./migrate/package_library.py) | none (local) |
+| Run an **SPMT-style session** (register → add task → start → show → unregister) | [`migrate/migrate_spmt.py`](./migrate/migrate_spmt.py) | Write access |
 
 ```python
 from office365.migration import MigrationJob

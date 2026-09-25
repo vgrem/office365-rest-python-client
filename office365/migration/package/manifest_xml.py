@@ -57,13 +57,18 @@ __all__ = [
     "SYSTEM_DATA_NS",
     "USER_GROUP_MAP_NS",
     "VIEW_FORMS_LIST_NS",
+    "Assignment",
     "DeploymentObject",
     "ExportSettings",
     "Group",
     "Manifest",
+    "ManifestElement",
     "ManifestObject",
+    "Role",
+    "RoleAssignment",
     "RootObject",
     "RootObjectMap",
+    "SharedWithEvent",
     "SystemData",
     "SystemObject",
     "User",
@@ -119,22 +124,42 @@ def empty_document(ns: str, root: str) -> bytes:
 
 
 @dataclass
+class ManifestElement:
+    """A nested element inside an ``<SPObject>`` payload element.
+
+    Generic recursion (name + attributes + children) covers ``<Versions>``,
+    ``<Roles>``, ``<RoleAssignments>``, ``<SharedWithEvents>``, etc.
+    """
+
+    name: str
+    attributes: dict = field(default_factory=dict)
+    children: list["ManifestElement"] = field(default_factory=list)
+
+    def to_etree(self, ns: str = MANIFEST_NS) -> ET.Element:
+        element = ET.Element(_q(ns, self.name))
+        _set(element, self.attributes)
+        for child in self.children:
+            element.append(child.to_etree(ns))
+        return element
+
+
+@dataclass
 class ManifestObject:
     """A single ``<SPObject>`` entry in ``Manifest.xml``.
 
-    ``attributes`` are rendered on the child element (``element``); ``versions``
-    are rendered as a nested ``<Versions><File .../></Versions>`` block.
+    ``attributes`` are rendered on the child element (``element``); ``children``
+    render nested blocks (file versions, roles, role assignments, sharing).
     """
 
     id: str
-    object_type: str  # SPFolder | SPDocumentLibrary | SPFile | ...
-    element: str  # child element name (Folder/DocumentLibrary/File/...)
+    object_type: str  # SPFolder | SPDocumentLibrary | SPFile | ListItem | ...
+    element: str  # child element name (Folder/DocumentLibrary/File/ListItem/...)
     attributes: dict = field(default_factory=dict)
+    children: list[ManifestElement] = field(default_factory=list)
     parent_id: str | None = None
     parent_web_id: str | None = None
     parent_web_url: str | None = None
     url: str | None = None
-    versions: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -164,11 +189,106 @@ class Manifest:
             )
             element = ET.SubElement(sp, _q(MANIFEST_NS, obj.element))
             _set(element, obj.attributes)
-            if obj.versions:
-                versions = ET.SubElement(element, _q(MANIFEST_NS, "Versions"))
-                for version in obj.versions:
-                    _set(ET.SubElement(versions, _q(MANIFEST_NS, "File")), version)
+            for child in obj.children:
+                element.append(child.to_etree(MANIFEST_NS))
         return _serialize(root, MANIFEST_NS)
+
+
+@dataclass
+class Role:
+    """A ``<Role>`` (permission level) inside a ``DeploymentRoles`` object."""
+
+    id: str  # RoleId
+    title: str
+    perm_mask: str
+    hidden: bool = False
+    description: str | None = None
+    role_order: str | None = None
+    type: str | None = None
+
+    def to_element(self) -> ManifestElement:
+        return ManifestElement(
+            "Role",
+            {
+                "RoleId": self.id,
+                "Title": self.title,
+                "Description": self.description,
+                "PermMask": self.perm_mask,
+                "Hidden": self.hidden,
+                "RoleOrder": self.role_order,
+                "Type": self.type,
+            },
+        )
+
+
+@dataclass
+class Assignment:
+    """An ``<Assignment>`` — a role granted to a principal (a ``UserGroup`` id)."""
+
+    role_id: str
+    principal_id: int
+
+    def to_element(self) -> ManifestElement:
+        return ManifestElement("Assignment", {"RoleId": self.role_id, "PrincipalId": self.principal_id})
+
+
+@dataclass
+class RoleAssignment:
+    """A ``<RoleAssignment>`` (an ACL scope) inside a ``DeploymentRoleAssignments`` object.
+
+    ``object_id``/``object_url``/``object_type`` identify the secured object (a
+    file/folder GUID), ``scope_id`` the scope it applies to; ``assignments`` map
+    roles to principals from ``UserGroup.xml``.
+    """
+
+    object_id: str
+    object_url: str
+    object_type: str
+    role_def_web_id: str
+    role_def_web_url: str
+    scope_id: str
+    assignments: list[Assignment] = field(default_factory=list)
+    anonymous_perm_mask: str = "0"
+
+    def to_element(self) -> ManifestElement:
+        return ManifestElement(
+            "RoleAssignment",
+            {
+                "ScopeId": self.scope_id,
+                "RoleDefWebId": self.role_def_web_id,
+                "RoleDefWebUrl": self.role_def_web_url,
+                "ObjectId": self.object_id,
+                "ObjectType": self.object_type,
+                "ObjectUrl": self.object_url,
+                "AnonymousPermMask": self.anonymous_perm_mask,
+            },
+            children=[assignment.to_element() for assignment in self.assignments],
+        )
+
+
+@dataclass
+class SharedWithEvent:
+    """A ``<SharedWithEvent>`` — a "Shared with Me" occurrence on a list item."""
+
+    shared_time: str
+    sharing_initiator_id: int
+    shared_by_id: int
+    members: list[int] = field(default_factory=list)
+
+    def to_element(self) -> ManifestElement:
+        members = ManifestElement(
+            "SharedWithMembers",
+            children=[ManifestElement("SharedWithMember", {"SharedWithId": member}) for member in self.members],
+        )
+        return ManifestElement(
+            "SharedWithEvent",
+            {
+                "SharedTime": self.shared_time,
+                "SharingInitiatorId": self.sharing_initiator_id,
+                "SharedById": self.shared_by_id,
+            },
+            children=[members],
+        )
 
 
 @dataclass
@@ -351,9 +471,9 @@ class UserGroupMap:
                     "Email": user.email,
                     "IsDomainGroup": user.is_domain_group,
                     "IsSiteAdmin": user.is_site_admin,
-                    "SystemId": user.system_id,
+                    # the service schema requires the attribute even when unknown
+                    "SystemId": user.system_id or "",
                     "IsDeleted": user.is_deleted,
-                    "Flags": user.flags,
                 },
             )
         groups = ET.SubElement(root, _q(USER_GROUP_MAP_NS, "Groups"))

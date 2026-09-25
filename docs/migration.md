@@ -55,6 +55,43 @@ watermark.
 | `SharePointListSource` / `SharePointListTarget` | both | list items as records |
 | `TeamsArchiveSource` / `TeamsArchiveTarget` | both | Teams archives |
 
+## SPMT-style sessions
+
+`MigrationSession` mirrors the
+[SPMT PowerShell cmdlets](https://learn.microsoft.com/en-us/powershell/module/microsoft.sharepoint.migrationtool.powershell/)
+— register a session, add tasks, start, show, stop:
+
+| cmdlet | method |
+|---|---|
+| `Register-SPMTMigration` | `session.register(settings=..., context=...)` |
+| `Add-SPMTTask` | `session.add_task(file_share_source=..., target_site_url=..., target_list=...)` |
+| `Show-SPMTMigration` | `session.show()` |
+| `Start-SPMTMigration` | `session.start()` |
+| `Stop-SPMTMigration` | `session.stop()` |
+| `Unregister-SPMTMigration` | `session.unregister()` |
+
+```python
+from office365.migration import MigrationSession, MigrationSettings
+
+session = MigrationSession().register(
+    context=ctx,                                    # a SharePoint ClientContext
+    settings=MigrationSettings(use_migration_api=True),   # server-side Migration API
+)
+session.add_task(
+    file_share_source="C:/src",
+    target_site_url="https://contoso.sharepoint.com/sites/team",
+    target_list="Documents",
+)
+session.start()
+print(session.show())
+session.unregister()
+```
+
+`MigrationSettings` mirrors `Register-SPMTMigration` (permissions, versions,
+filters, user mapping, Azure storage…); the subset the core enforces is mapped by
+`to_options()`. Tasks can also be declared as `MigrationTask` objects or parsed
+from the SPMT JSON task format (`MigrationTask.from_json(...)`).
+
 ## Fidelity
 
 | Flag | Client-side runner | Server-side Migration API |

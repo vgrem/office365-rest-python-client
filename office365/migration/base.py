@@ -119,6 +119,9 @@ class MigrationOptions:
     preserve_versions: bool = False
     include_patterns: list[str] = field(default_factory=list)
     exclude_patterns: list[str] = field(default_factory=list)
+    # Date window (ISO-8601): skip items created/modified at or before these
+    created_after: str | None = None
+    modified_after: str | None = None
     batch_size: int = DEFAULT_BATCH_SIZE
     concurrency: int = 1  # parallel workers for bulk file upload / batched writes
 
