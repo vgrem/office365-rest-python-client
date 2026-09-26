@@ -1,5 +1,6 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
@@ -33,3 +34,14 @@ class LogExport(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.SPLogger.LogExport"
+
+    def get_partitions(self, log_type: str) -> ClientResult[StringCollection]:
+        """GetPartitions operation.
+
+        Args:
+            log_type (str): logType parameter
+        """
+        return_type = ClientResult(self.context, StringCollection())
+        qry = FunctionQuery(self, "GetPartitions", [log_type], return_type)
+        self.context.add_query(qry)
+        return return_type

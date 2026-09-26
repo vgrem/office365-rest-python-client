@@ -5,9 +5,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
-from office365.sharepoint.tenant.administration.internal.aad.permission_grant import (
-    SPO3rdPartyAADPermissionGrantCollection,
-)
+from office365.sharepoint.tenant.administration.internal.aad.collection import SPO3rdPartyAADPermissionGrantCollection
 from office365.sharepoint.tenant.administration.internal.appservice.permission_grant import (
     SPOWebAppServicePrincipalPermissionGrant,
 )

@@ -3905,6 +3905,7 @@
             <Member Name="itemMajorVersionLimit" Value="4"/>
             <Member Name="maxStoragePerContainerInBytes" Value="5"/>
             <Member Name="unknownFutureValue" Value="6"/>
+            <Member Name="isOfficeRestricted" Value="7"/>
          </EnumType>
          <EnumType Name="imageTaggingChoice">
             <Member Name="disabled" Value="0"/>
@@ -6113,6 +6114,19 @@
             <Member Name="approver" Value="3"/>
             <Member Name="unknownFutureValue" Value="4"/>
          </EnumType>
+         <EnumType Name="customCalloutExtensionType">
+            <Member Name="preApproval" Value="0"/>
+            <Member Name="postApproval" Value="1"/>
+            <Member Name="grant" Value="2"/>
+            <Member Name="revoke" Value="3"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
+         <EnumType Name="customExtensionResourceType">
+            <Member Name="entraRoles" Value="1"/>
+            <Member Name="azureResources" Value="2"/>
+            <Member Name="entraGroups" Value="3"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
          <EnumType Name="eligibilityScheduleFilterByCurrentUserOptions">
             <Member Name="principal" Value="1"/>
             <Member Name="unknownFutureValue" Value="2"/>
@@ -6126,6 +6140,11 @@
             <Member Name="createdBy" Value="2"/>
             <Member Name="approver" Value="3"/>
             <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
+         <EnumType Name="evaluationOutcome">
+            <Member Name="approved" Value="0"/>
+            <Member Name="denied" Value="1"/>
+            <Member Name="unknownFutureValue" Value="2"/>
          </EnumType>
          <EnumType Name="privilegedAccessGroupAssignmentType">
             <Member Name="assigned" Value="1"/>
@@ -9161,6 +9180,7 @@
             <NavigationProperty Name="agreements" Type="Collection(graph.agreement)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="privilegedAccessRoot" BaseType="graph.entity">
+            <NavigationProperty Name="customExtensions" Type="Collection(graph.roleManagementCustomCalloutExtension)" ContainsTarget="true"/>
             <NavigationProperty Name="group" Type="graph.privilegedAccessGroup" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="user" BaseType="graph.directoryObject" OpenType="true">
@@ -15998,6 +16018,7 @@
          <ComplexType Name="fileStorageContainerTypeRegistrationSettings">
             <Property Name="isDiscoverabilityEnabled" Type="Edm.Boolean"/>
             <Property Name="isItemVersioningEnabled" Type="Edm.Boolean"/>
+            <Property Name="isOfficeRestricted" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="isSearchEnabled" Type="Edm.Boolean"/>
             <Property Name="isSharingRestricted" Type="Edm.Boolean"/>
             <Property Name="itemMajorVersionLimit" Type="Edm.Int64"/>
@@ -16009,6 +16030,7 @@
             <Property Name="consumingTenantOverridables" Type="graph.fileStorageContainerTypeSettingsOverride"/>
             <Property Name="isDiscoverabilityEnabled" Type="Edm.Boolean"/>
             <Property Name="isItemVersioningEnabled" Type="Edm.Boolean"/>
+            <Property Name="isOfficeRestricted" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="isSearchEnabled" Type="Edm.Boolean"/>
             <Property Name="isSharingRestricted" Type="Edm.Boolean"/>
             <Property Name="itemMajorVersionLimit" Type="Edm.Int64"/>
@@ -20331,6 +20353,9 @@
             <Property Name="resourceId" Type="Edm.String"/>
             <Property Name="resourceType" Type="graph.m365ResourceType" Nullable="false"/>
          </ComplexType>
+         <EntityType Name="anonymousCalendarSharingFreeBusyDetail" BaseType="graph.m365CapabilityBase"/>
+         <EntityType Name="anonymousCalendarSharingFreeBusyReviewer" BaseType="graph.m365CapabilityBase"/>
+         <EntityType Name="anonymousCalendarSharingFreeBusySimple" BaseType="graph.m365CapabilityBase"/>
          <EntityType Name="crossTenantCalendarAvailabilityBasic" BaseType="graph.m365CapabilityBase"/>
          <EntityType Name="crossTenantCalendarAvailabilityLimitedDetails" BaseType="graph.m365CapabilityBase"/>
          <EntityType Name="crossTenantCalendarSharingFreeBusyDetail" BaseType="graph.m365CapabilityBase"/>
@@ -20895,6 +20920,11 @@
             <Property Name="operations" Type="Collection(graph.unifiedRoleManagementPolicyRuleTargetOperations)"/>
             <NavigationProperty Name="targetObjects" Type="Collection(graph.directoryObject)"/>
          </ComplexType>
+         <EntityType Name="roleManagementCustomCalloutExtension" BaseType="graph.customCalloutExtension">
+            <Property Name="customAttributes" Type="Collection(Edm.String)"/>
+            <Property Name="resourceType" Type="graph.customExtensionResourceType" Nullable="false"/>
+            <Property Name="type" Type="graph.customCalloutExtensionType" Nullable="false"/>
+         </EntityType>
          <EntityType Name="unifiedRoleManagementPolicyRule" BaseType="graph.entity" Abstract="true">
             <Property Name="target" Type="graph.unifiedRoleManagementPolicyRuleTarget"/>
          </EntityType>
@@ -20903,6 +20933,12 @@
          </EntityType>
          <EntityType Name="unifiedRoleManagementPolicyAuthenticationContextRule" BaseType="graph.unifiedRoleManagementPolicyRule">
             <Property Name="claimValue" Type="Edm.String"/>
+            <Property Name="isEnabled" Type="Edm.Boolean"/>
+         </EntityType>
+         <EntityType Name="unifiedRoleManagementPolicyCustomExtensionRule" BaseType="graph.unifiedRoleManagementPolicyRule">
+            <Property Name="customAttributes" Type="Collection(Edm.String)" Nullable="false"/>
+            <Property Name="customExtensionId" Type="Edm.String"/>
+            <Property Name="displayName" Type="Edm.String"/>
             <Property Name="isEnabled" Type="Edm.Boolean"/>
          </EntityType>
          <EntityType Name="unifiedRoleManagementPolicyEnablementRule" BaseType="graph.unifiedRoleManagementPolicyRule">
@@ -29314,6 +29350,22 @@
             <Parameter Name="includePersonalNotebooks" Type="Edm.Boolean" Nullable="false"/>
             <ReturnType Type="Collection(graph.recentNotebook)"/>
          </Function>
+         <Action Name="updateRequest" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.privilegedAccessGroupAssignmentScheduleRequest"/>
+            <Parameter Name="evaluationId" Type="Edm.String" Unicode="false"/>
+            <Parameter Name="evaluationOutcome" Type="graph.evaluationOutcome"/>
+            <Parameter Name="scheduleInfo" Type="graph.requestSchedule"/>
+            <Parameter Name="reason" Type="Edm.String" Unicode="false"/>
+            <ReturnType Type="graph.privilegedAccessGroupAssignmentScheduleRequest"/>
+         </Action>
+         <Action Name="updateRequest" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.unifiedRoleAssignmentScheduleRequest"/>
+            <Parameter Name="evaluationId" Type="Edm.String" Unicode="false"/>
+            <Parameter Name="evaluationOutcome" Type="graph.evaluationOutcome"/>
+            <Parameter Name="scheduleInfo" Type="graph.requestSchedule"/>
+            <Parameter Name="reason" Type="Edm.String" Unicode="false"/>
+            <ReturnType Type="graph.unifiedRoleAssignmentScheduleRequest"/>
+         </Action>
          <Action Name="abort" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.printJob"/>
             <Parameter Name="reason" Type="Edm.String" Unicode="false"/>

@@ -1,17 +1,21 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, time
 from typing import Dict, List, Optional, Union
+from uuid import UUID
 
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
+from office365.sharepoint.administration.custom_fonts_resource import CustomFontsResource
 from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
 from office365.sharepoint.authpolicy.spjitdlppolicydata import SPJitDlpPolicyData
+from office365.sharepoint.brandcenter.orgassetslibraryconfigparam import OrgAssetsLibraryConfigParam
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.principal.users.user import User
@@ -1235,5 +1239,450 @@ class Office365Tenant(Entity):
         return self.properties.get("Workflows2013State", None)
 
     @property
-    def entity_type_name(self):  # type: ignore[override]
+    def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantManagement.Office365Tenant"
+
+    @property
+    def deny_select_sgs_in_odb_list(self) -> StringCollection:
+        """Gets the DenySelectSGsInODBList property"""
+        return self.properties.get("DenySelectSGsInODBList", StringCollection())
+
+    @property
+    def mass_delete_notification_disabled_for_odb(self) -> Optional[bool]:
+        """Gets the MassDeleteNotificationDisabledForODB property"""
+        return self.properties.get("MassDeleteNotificationDisabledForODB", None)
+
+    @property
+    def mass_delete_notification_disabled_for_spo(self) -> Optional[bool]:
+        """Gets the MassDeleteNotificationDisabledForSPO property"""
+        return self.properties.get("MassDeleteNotificationDisabledForSPO", None)
+
+    def add_public_cdn_origin(self, origin: str) -> Self:
+        """AddPublicCdnOrigin operation.
+
+        Args:
+            origin (str): origin parameter
+        """
+        qry = ServiceOperationQuery(self, "AddPublicCdnOrigin", None, {"origin": origin}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def add_sdn_provider(self, identifier: str, license_: str) -> Self:
+        """AddSdnProvider operation.
+
+        Args:
+            identifier (str): identifier parameter
+            license_ (str): license parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "AddSdnProvider", None, {"identifier": identifier, "license": license_}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def add_to_org_assets_lib_and_cdn(
+        self,
+        cdn_type: int,
+        lib_url: ResourcePath,
+        thumbnail_url: ResourcePath,
+        org_asset_type: int,
+        default_origin_added: bool,
+    ) -> Self:
+        """AddToOrgAssetsLibAndCdn operation.
+
+        Args:
+            cdn_type (int): cdnType parameter
+            lib_url (ResourcePath): libUrl parameter
+            thumbnail_url (ResourcePath): thumbnailUrl parameter
+            org_asset_type (int): orgAssetType parameter
+            default_origin_added (bool): defaultOriginAdded parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "AddToOrgAssetsLibAndCdn",
+            None,
+            {
+                "cdnType": cdn_type,
+                "libUrl": lib_url,
+                "thumbnailUrl": thumbnail_url,
+                "orgAssetType": org_asset_type,
+                "defaultOriginAdded": default_origin_added,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def add_to_org_assets_with_config(
+        self,
+        cdn_type: int,
+        lib_url: ResourcePath,
+        thumbnail_url: ResourcePath,
+        org_asset_type: int,
+        default_origin_added: bool,
+        config_param: OrgAssetsLibraryConfigParam,
+    ) -> Self:
+        """AddToOrgAssetsWithConfig operation.
+
+        Args:
+            cdn_type (int): cdnType parameter
+            lib_url (ResourcePath): libUrl parameter
+            thumbnail_url (ResourcePath): thumbnailUrl parameter
+            org_asset_type (int): orgAssetType parameter
+            default_origin_added (bool): defaultOriginAdded parameter
+            config_param (OrgAssetsLibraryConfigParam): configParam parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "AddToOrgAssetsWithConfig",
+            None,
+            {
+                "cdnType": cdn_type,
+                "libUrl": lib_url,
+                "thumbnailUrl": thumbnail_url,
+                "orgAssetType": org_asset_type,
+                "defaultOriginAdded": default_origin_added,
+                "configParam": config_param,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def create_tenant_cdn_default_origins(self, cdn_type: int) -> Self:
+        """CreateTenantCdnDefaultOrigins operation.
+
+        Args:
+            cdn_type (int): cdnType parameter
+        """
+        qry = ServiceOperationQuery(self, "CreateTenantCdnDefaultOrigins", None, {"cdnType": cdn_type}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def delete_import_profile_properties_job(self, job_id: UUID) -> ClientResult[bool]:
+        """DeleteImportProfilePropertiesJob operation.
+
+        Args:
+            job_id (UUID): jobId parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "DeleteImportProfilePropertiesJob", None, {"jobId": job_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_custom_fonts_minor_version(self, lib_url: ResourcePath) -> ClientResult[int]:
+        """GetCustomFontsMinorVersion operation.
+
+        Args:
+            lib_url (ResourcePath): libUrl parameter
+        """
+        return_type = ClientResult(self.context, int())
+        qry = ServiceOperationQuery(self, "GetCustomFontsMinorVersion", None, {"libUrl": lib_url}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_hide_default_themes(self) -> ClientResult[bool]:
+        """GetHideDefaultThemes operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "GetHideDefaultThemes", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_idle_session_sign_out_for_unmanaged_devices(self) -> ClientResult[str]:
+        """GetIdleSessionSignOutForUnmanagedDevices operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetIdleSessionSignOutForUnmanagedDevices", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_tenant_cdn_origins(self, cdn_type: int) -> ClientResult[StringCollection]:
+        """GetTenantCdnOrigins operation.
+
+        Args:
+            cdn_type (int): cdnType parameter
+        """
+        return_type = ClientResult(self.context, StringCollection())
+        qry = ServiceOperationQuery(self, "GetTenantCdnOrigins", None, {"cdnType": cdn_type}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def increment_custom_fonts_minor_version(self, lib_url: ResourcePath) -> Self:
+        """IncrementCustomFontsMinorVersion operation.
+
+        Args:
+            lib_url (ResourcePath): libUrl parameter
+        """
+        qry = ServiceOperationQuery(self, "IncrementCustomFontsMinorVersion", None, {"libUrl": lib_url}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def is_sharing_disabled_for_non_owners_of_site(self, site_url: str) -> ClientResult[bool]:
+        """IsSharingDisabledForNonOwnersOfSite operation.
+
+        Args:
+            site_url (str): siteUrl parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self, "IsSharingDisabledForNonOwnersOfSite", None, {"siteUrl": site_url}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def log_custom_fonts_large_upload(self, num_catalogs: int, num_fonts: int, total_expected_files: int) -> Self:
+        """LogCustomFontsLargeUpload operation.
+
+        Args:
+            num_catalogs (int): numCatalogs parameter
+            num_fonts (int): numFonts parameter
+            total_expected_files (int): totalExpectedFiles parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "LogCustomFontsLargeUpload",
+            None,
+            {"numCatalogs": num_catalogs, "numFonts": num_fonts, "totalExpectedFiles": total_expected_files},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def remove_from_org_assets(self, lib_url: ResourcePath, list_id: UUID) -> Self:
+        """RemoveFromOrgAssets operation.
+
+        Args:
+            lib_url (ResourcePath): libUrl parameter
+            list_id (UUID): listId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "RemoveFromOrgAssets", None, {"libUrl": lib_url, "listId": list_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def remove_from_org_assets_and_cdn(self, remove: bool, cdn_type: int, lib_url: ResourcePath) -> Self:
+        """RemoveFromOrgAssetsAndCdn operation.
+
+        Args:
+            remove (bool): remove parameter
+            cdn_type (int): cdnType parameter
+            lib_url (ResourcePath): libUrl parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "RemoveFromOrgAssetsAndCdn",
+            None,
+            {"remove": remove, "cdnType": cdn_type, "libUrl": lib_url},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def remove_previous_custom_font_upload(self, maj_versions: list[str], lib_url: ResourcePath) -> Self:
+        """RemovePreviousCustomFontUpload operation.
+
+        Args:
+            maj_versions (list[str]): majVersions parameter
+            lib_url (ResourcePath): libUrl parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "RemovePreviousCustomFontUpload",
+            None,
+            {"majVersions": StringCollection(maj_versions), "libUrl": lib_url},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def remove_public_cdn_origin(self, origin_id: str) -> Self:
+        """RemovePublicCdnOrigin operation.
+
+        Args:
+            origin_id (str): originId parameter
+        """
+        qry = ServiceOperationQuery(self, "RemovePublicCdnOrigin", None, {"originId": origin_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def remove_sdn_provider(self) -> Self:
+        """RemoveSdnProvider operation."""
+        qry = ServiceOperationQuery(self, "RemoveSdnProvider", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_block_download_file_type_policy_exclusion_list(self, excluded_block_download_group_ids: list[UUID]) -> Self:
+        """SetBlockDownloadFileTypePolicyExclusionList operation.
+
+        Args:
+            excluded_block_download_group_ids (list[UUID]): excludedBlockDownloadGroupIds parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetBlockDownloadFileTypePolicyExclusionList",
+            None,
+            {"excludedBlockDownloadGroupIds": GuidCollection(excluded_block_download_group_ids)},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_hide_default_themes(self, hide_default_themes: bool) -> ClientResult[bool]:
+        """SetHideDefaultThemes operation.
+
+        Args:
+            hide_default_themes (bool): hideDefaultThemes parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self, "SetHideDefaultThemes", None, {"hideDefaultThemes": hide_default_themes}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def set_idle_session_sign_out_for_unmanaged_devices(
+        self, enabled: bool, warn_after: time, sign_out_after: time
+    ) -> ClientResult[bool]:
+        """SetIdleSessionSignOutForUnmanagedDevices operation.
+
+        Args:
+            enabled (bool): enabled parameter
+            warn_after (time): warnAfter parameter
+            sign_out_after (time): signOutAfter parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self,
+            "SetIdleSessionSignOutForUnmanagedDevices",
+            None,
+            {"enabled": enabled, "warnAfter": warn_after, "signOutAfter": sign_out_after},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def set_jit_dlp_policy_data(
+        self,
+        mark_all_files_as_sensitive_by_default: bool,
+        odb_sensitivity_refresh_window_in_hours: int,
+        execution_mode: int,
+    ) -> Self:
+        """SetJitDlpPolicyData operation.
+
+        Args:
+            mark_all_files_as_sensitive_by_default (bool): markAllFilesAsSensitiveByDefault parameter
+            odb_sensitivity_refresh_window_in_hours (int): odbSensitivityRefreshWindowInHours parameter
+            execution_mode (int): executionMode parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetJitDlpPolicyData",
+            None,
+            {
+                "markAllFilesAsSensitiveByDefault": mark_all_files_as_sensitive_by_default,
+                "odbSensitivityRefreshWindowInHours": odb_sensitivity_refresh_window_in_hours,
+                "executionMode": execution_mode,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_org_assets_lib(self, lib_url: ResourcePath, thumbnail_url: ResourcePath, org_asset_type: int) -> Self:
+        """SetOrgAssetsLib operation.
+
+        Args:
+            lib_url (ResourcePath): libUrl parameter
+            thumbnail_url (ResourcePath): thumbnailUrl parameter
+            org_asset_type (int): orgAssetType parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetOrgAssetsLib",
+            None,
+            {"libUrl": lib_url, "thumbnailUrl": thumbnail_url, "orgAssetType": org_asset_type},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_org_assets_lib_with_config(
+        self,
+        lib_url: ResourcePath,
+        thumbnail_url: ResourcePath,
+        org_asset_type: int,
+        config_param: OrgAssetsLibraryConfigParam,
+    ) -> Self:
+        """SetOrgAssetsLibWithConfig operation.
+
+        Args:
+            lib_url (ResourcePath): libUrl parameter
+            thumbnail_url (ResourcePath): thumbnailUrl parameter
+            org_asset_type (int): orgAssetType parameter
+            config_param (OrgAssetsLibraryConfigParam): configParam parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetOrgAssetsLibWithConfig",
+            None,
+            {
+                "libUrl": lib_url,
+                "thumbnailUrl": thumbnail_url,
+                "orgAssetType": org_asset_type,
+                "configParam": config_param,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def sync_aad_b2_b_management_policy(self) -> Self:
+        """SyncAadB2BManagementPolicy operation."""
+        qry = ServiceOperationQuery(self, "SyncAadB2BManagementPolicy", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
+        """UpdateTenantTheme operation.
+
+        Args:
+            name (str): name parameter
+            theme_json (str): themeJson parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self, "UpdateTenantTheme", None, {"name": name, "themeJson": theme_json}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def upload_custom_fonts_and_catalog_lib(
+        self, custom_font_files: ClientValueCollection[CustomFontsResource], lib_url: ResourcePath
+    ) -> ClientResult[bool]:
+        """UploadCustomFontsAndCatalogLib operation.
+
+        Args:
+            custom_font_files (ClientValueCollection[CustomFontsResource]): customFontFiles parameter
+            lib_url (ResourcePath): libUrl parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self,
+            "UploadCustomFontsAndCatalogLib",
+            None,
+            {"customFontFiles": custom_font_files, "libUrl": lib_url},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

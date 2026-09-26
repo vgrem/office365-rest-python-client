@@ -11,52 +11,61 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import GuidCollection, StringCollection
+from office365.sharepoint.administration.unlicensedodblicenseenforcementwarningcontext import (
+    UnlicensedOdbLicenseEnforcementWarningContext,
+)
 from office365.sharepoint.audit.audit import Audit
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.changes.token import ChangeToken
+from office365.sharepoint.clientsidecomponent.updatecard import UpdateCard
+from office365.sharepoint.compliance.sensitivitylabels.info import SensitivityLabelInfo
 from office365.sharepoint.compliance.store_proxy import SPPolicyStoreProxy
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
+from office365.sharepoint.documents.customizedformspagecollection import CustomizedFormsPageCollection
+from office365.sharepoint.documents.encryptionoption import EncryptionOption
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
-from office365.sharepoint.eventreceivers.definition_collection import (
-    EventReceiverDefinitionCollection,
-)
+from office365.sharepoint.eventreceivers.definition_collection import EventReceiverDefinitionCollection
 from office365.sharepoint.features.collection import FeatureCollection
+from office365.sharepoint.files.versionbatchdeleteparameters import FileVersionBatchDeleteParameters
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
+from office365.sharepoint.onboarding.customerkeyinfo import CustomerKeyInfo
+from office365.sharepoint.onboarding.customerkeystatusinfo import CustomerKeyStatusInfo
+from office365.sharepoint.onboarding.customerkeyvaultinfo import CustomerKeyVaultInfo
 from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
+from office365.sharepoint.principal.groups.group import Group
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.recyclebin.item_collection import RecycleBinItemCollection
-from office365.sharepoint.sites.azure_container_Info import (
-    ProvisionedTemporaryAzureContainerInfo,
-)
+from office365.sharepoint.sites.asyncreadjobinfo import AsyncReadJobInfo
+from office365.sharepoint.sites.asyncreadoptions import AsyncReadOptions
+from office365.sharepoint.sites.autolabellingworkinformation import AutoLabellingWorkInformation
+from office365.sharepoint.sites.azure_container_Info import ProvisionedTemporaryAzureContainerInfo
 from office365.sharepoint.sites.copy_job_progress import CopyJobProgress
 from office365.sharepoint.sites.copy_migration_iInfo import CopyMigrationInfo
+from office365.sharepoint.sites.enqueuejobinformation import EnqueueJobInformation
 from office365.sharepoint.sites.health.summary import SiteHealthSummary
 from office365.sharepoint.sites.home.site import SPHSite
-from office365.sharepoint.sites.html_field_security_setting import (
-    HTMLFieldSecuritySetting,
-)
+from office365.sharepoint.sites.html_field_security_setting import HTMLFieldSecuritySetting
+from office365.sharepoint.sites.migration.copyoptions import CopyMigrationOptions
 from office365.sharepoint.sites.migration.job_status import SPMigrationJobStatus
 from office365.sharepoint.sites.migration.jobprogress import MigrationJobProgress
-from office365.sharepoint.sites.provisionedmigrationcontainersinfo import (
-    ProvisionedMigrationContainersInfo,
-)
-from office365.sharepoint.sites.provisionedmigrationqueueinfo import (
-    ProvisionedMigrationQueueInfo,
-)
+from office365.sharepoint.sites.provisionedmigrationcontainersinfo import ProvisionedMigrationContainersInfo
+from office365.sharepoint.sites.provisionedmigrationqueueinfo import ProvisionedMigrationQueueInfo
+from office365.sharepoint.sites.restrictaccesscontrolupdate import RestrictAccessControlUpdate
+from office365.sharepoint.sites.restrictcontentorgwidepolicyupdate import RestrictContentOrgWidePolicyUpdate
+from office365.sharepoint.sites.script_safe_domain import ScriptSafeDomain
 from office365.sharepoint.sites.upgrade_info import UpgradeInfo
 from office365.sharepoint.sites.usage_info import UsageInfo
 from office365.sharepoint.sites.version_policy_manager import SiteVersionPolicyManager
 from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
-from office365.sharepoint.tenant.administration.hubsites.creation_information import (
-    HubSiteCreationInformation,
-)
-from office365.sharepoint.tenant.administration.sites.administrators_info import (
-    SiteAdministratorsInfo,
-)
+from office365.sharepoint.teams.channel_capabilities import ChannelCapabilities
+from office365.sharepoint.tenant.administration.hubsites.creation_information import HubSiteCreationInformation
+from office365.sharepoint.tenant.administration.sites.administrators_info import SiteAdministratorsInfo
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
 from office365.sharepoint.webs.templates.collection import WebTemplateCollection
@@ -110,11 +119,7 @@ class Site(Entity):
     def create_copy_job(self, export_object_uris, destination_uri, options=None) -> ClientResult[CopyMigrationInfo]:
         """"""
         return_type = ClientResult(self.context, CopyMigrationInfo())
-        payload = {
-            "exportObjectUris": export_object_uris,
-            "destinationUri": destination_uri,
-            "options": options,
-        }
+        payload = {"exportObjectUris": export_object_uris, "destinationUri": destination_uri, "options": options}
         qry = ServiceOperationQuery(self, "CreateCopyJob", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -216,11 +221,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def get_migration_job_progress(
-        self,
-        job_id: str,
-        next_token: str = "0",
-    ) -> ClientResult[MigrationJobProgress]:
+    def get_migration_job_progress(self, job_id: str, next_token: str = "0") -> ClientResult[MigrationJobProgress]:
         """Retrieves a page of migration job progress events.
 
         Args:
@@ -232,12 +233,7 @@ class Site(Entity):
         """
         return_type = ClientResult(self.context, MigrationJobProgress())
         qry = ServiceOperationQuery(
-            self,
-            "GetMigrationJobProgress",
-            {"jobId": job_id, "nextToken": next_token},
-            None,
-            None,
-            return_type,
+            self, "GetMigrationJobProgress", {"jobId": job_id, "nextToken": next_token}, None, None, return_type
         )
         self.context.add_query(qry)
         return return_type
@@ -282,9 +278,11 @@ class Site(Entity):
 
         def _delete_object():
             if self.group_id == "00000000-0000-0000-0000-000000000000":
-                self.context.site_manager.delete(self.id)  # type: ignore[arg-type]
+                assert self.id is not None
+                self.context.site_manager.delete(self.id)
             else:
-                self.context.group_site_manager.delete(self.url)  # type: ignore[arg-type]
+                assert self.url is not None
+                self.context.group_site_manager.delete(self.url)
 
         self.ensure_properties(["Url", "GroupId", "Id"]).after_execute(lambda _: _delete_object())
         return self
@@ -335,10 +333,7 @@ class Site(Entity):
         return_type = ClientResult(self.context, ComplianceTag())
 
         def _loaded(tags: ClientResult[ClientValueCollection[ComplianceTag]]):
-            tag = next(
-                (t for t in tags.value if tag_name.lower() in (t.DisplayName or t.TagName or "").lower()),
-                None,
-            )
+            tag = next((t for t in tags.value if tag_name.lower() in (t.DisplayName or t.TagName or "").lower()), None)
             return_type.set_property("__value", tag)
 
         self.get_available_tags().after_execute(_loaded)
@@ -373,7 +368,8 @@ class Site(Entity):
         return_type = ClientResult(self.context, bytes())
 
         def _get_site_logo():
-            self.context.site_icon_manager.get_site_logo(self.url, return_type=return_type)  # type: ignore[arg-type]
+            assert self.url is not None
+            self.context.site_icon_manager.get_site_logo(self.url, return_type=return_type)
 
         self.ensure_property("Url").after_execute(lambda _: _get_site_logo())
         return return_type
@@ -465,7 +461,8 @@ class Site(Entity):
         return_type = ClientResult(self.context, ClientValueCollection(SiteAdministratorsInfo))
 
         def _get_site_administrators():
-            self.context.tenant.get_site_administrators(self.id, return_type)  # type: ignore[arg-type]
+            assert self.id is not None
+            self.context.tenant.get_site_administrators(self.id, return_type)
 
         self.ensure_property("Id").after_execute(lambda _: _get_site_administrators())
         return return_type
@@ -477,7 +474,6 @@ class Site(Entity):
         """
         params = {"siteId": site_id, "webId": web_id}
         return_type = ClientResult(self.context, SPResPath())
-
         qry = ServiceOperationQuery(self, "GetWebPath", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -494,10 +490,8 @@ class Site(Entity):
         """
         params = {"LCID": lcid, "overrideCompatLevel": override_compat_level}
         return_type = WebTemplateCollection(
-            self.context,
-            ServiceOperationPath("GetWebTemplates", params, self.resource_path),
+            self.context, ServiceOperationPath("GetWebTemplates", params, self.resource_path)
         )
-
         qry = ServiceOperationQuery(self, "GetWebTemplates", params, None, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -521,19 +515,13 @@ class Site(Entity):
             recursive (bool): If "true", child upgradable objects will be inspected; otherwise "false".
         """
         return_type = ClientResult(self.context)
-        payload = {
-            "versionUpgrade": version_upgrade,
-            "recursive": recursive,
-        }
+        payload = {"versionUpgrade": version_upgrade, "recursive": recursive}
         qry = ServiceOperationQuery(self, "NeedsUpgradeByType", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
     def join_hub_site(
-        self,
-        hub_site_id: str,
-        approval_token: Optional[str] = None,
-        approval_correlation_id: Optional[str] = None,
+        self, hub_site_id: str, approval_token: Optional[str] = None, approval_correlation_id: Optional[str] = None
     ) -> Self:
         """Associates a site with an existing hub site.
 
@@ -602,7 +590,8 @@ class Site(Entity):
         return_type = ClientResult(self.context, bool())
 
         def _is_site_deletable():
-            SPPolicyStoreProxy.is_site_deletable(self.context, self.url, return_type)  # type: ignore[arg-type]
+            assert self.url is not None
+            SPPolicyStoreProxy.is_site_deletable(self.context, self.url, return_type)
 
         self.ensure_property("Url").after_execute(lambda _: _is_site_deletable())
         return return_type
@@ -614,10 +603,7 @@ class Site(Entity):
         Args:
             type_catalog (int):
         """
-        return List(
-            self.context,
-            ServiceOperationPath("getCatalog", [int(type_catalog)], self.resource_path),
-        )
+        return List(self.context, ServiceOperationPath("getCatalog", [int(type_catalog)], self.resource_path))
 
     def open_web(self, str_url: str) -> Web:
         """Returns the specified Web site from the site collection.
@@ -643,9 +629,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    def provision_temporary_azure_container(
-        self,
-    ) -> ClientResult[ProvisionedTemporaryAzureContainerInfo]:
+    def provision_temporary_azure_container(self) -> ClientResult[ProvisionedTemporaryAzureContainerInfo]:
         """"""
         return_type = ClientResult(self.context, ProvisionedTemporaryAzureContainerInfo())
         qry = ServiceOperationQuery(self, "ProvisionTemporaryAzureContainer", None, None, None, return_type)
@@ -913,24 +897,21 @@ class Site(Entity):
     def secondary_contact(self) -> User:
         """Gets or sets the secondary contact that is used for the site collection."""
         return self.properties.get(
-            "SecondaryContact",
-            User(self.context, ResourcePath("SecondaryContact", self.resource_path)),
+            "SecondaryContact", User(self.context, ResourcePath("SecondaryContact", self.resource_path))
         )
 
     @property
     def recycle_bin(self) -> RecycleBinItemCollection:
         """Get recycle bin"""
         return self.properties.get(
-            "RecycleBin",
-            RecycleBinItemCollection(self.context, ResourcePath("RecycleBin", self.resource_path)),
+            "RecycleBin", RecycleBinItemCollection(self.context, ResourcePath("RecycleBin", self.resource_path))
         )
 
     @property
     def features(self) -> FeatureCollection:
         """Get features"""
         return self.properties.get(
-            "Features",
-            FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self),
+            "Features", FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self)
         )
 
     @property
@@ -1026,9 +1007,243 @@ class Site(Entity):
         return self.properties.get(
             "VersionPolicyForNewLibrariesTemplate",
             SiteVersionPolicyManager(
-                self.context,
-                ResourcePath("VersionPolicyForNewLibrariesTemplate", self.resource_path),
+                self.context, ResourcePath("VersionPolicyForNewLibrariesTemplate", self.resource_path)
             ),
+        )
+
+    @property
+    def allow_external_embedding_wrapper(self) -> Optional[int]:
+        """Gets the AllowExternalEmbeddingWrapper property"""
+        return self.properties.get("AllowExternalEmbeddingWrapper", None)
+
+    @property
+    def allow_save_declarative_workflow_as_template(self) -> Optional[bool]:
+        """Gets the AllowSaveDeclarativeWorkflowAsTemplate property"""
+        return self.properties.get("AllowSaveDeclarativeWorkflowAsTemplate", None)
+
+    @property
+    def allow_save_publish_declarative_workflow(self) -> Optional[bool]:
+        """Gets the AllowSavePublishDeclarativeWorkflow property"""
+        return self.properties.get("AllowSavePublishDeclarativeWorkflow", None)
+
+    @property
+    def allow_self_service_upgrade(self) -> Optional[bool]:
+        """Gets the AllowSelfServiceUpgrade property"""
+        return self.properties.get("AllowSelfServiceUpgrade", None)
+
+    @property
+    def allow_self_service_upgrade_evaluation(self) -> Optional[bool]:
+        """Gets the AllowSelfServiceUpgradeEvaluation property"""
+        return self.properties.get("AllowSelfServiceUpgradeEvaluation", None)
+
+    @property
+    def audit_log_trimming_retention(self) -> Optional[int]:
+        """Gets the AuditLogTrimmingRetention property"""
+        return self.properties.get("AuditLogTrimmingRetention", None)
+
+    @property
+    def can_sync_hub_site_permissions(self) -> Optional[bool]:
+        """Gets the CanSyncHubSitePermissions property"""
+        return self.properties.get("CanSyncHubSitePermissions", None)
+
+    @property
+    def channel_capabilities(self) -> ChannelCapabilities:
+        """Gets the ChannelCapabilities property"""
+        return self.properties.get("ChannelCapabilities", ChannelCapabilities())
+
+    @property
+    def compliance_attribute(self) -> Optional[str]:
+        """Gets the ComplianceAttribute property"""
+        return self.properties.get("ComplianceAttribute", None)
+
+    @property
+    def customized_forms_pages(self) -> CustomizedFormsPageCollection:
+        """Gets the CustomizedFormsPages property"""
+        return self.properties.get("CustomizedFormsPages", CustomizedFormsPageCollection())
+
+    @property
+    def disable_app_views(self) -> Optional[bool]:
+        """Gets the DisableAppViews property"""
+        return self.properties.get("DisableAppViews", None)
+
+    @property
+    def disable_company_wide_sharing_links(self) -> Optional[bool]:
+        """Gets the DisableCompanyWideSharingLinks property"""
+        return self.properties.get("DisableCompanyWideSharingLinks", None)
+
+    @property
+    def id_(self) -> Optional[UUID]:
+        """Gets the Id property"""
+        return self.properties.get("Id", None)
+
+    @property
+    def sensitivity_label_id(self) -> Optional[str]:
+        """Gets the SensitivityLabelId property"""
+        return self.properties.get("SensitivityLabelId", None)
+
+    @property
+    def sensitivity_label(self) -> Optional[UUID]:
+        """Gets the SensitivityLabel property"""
+        return self.properties.get("SensitivityLabel", None)
+
+    @property
+    def is_personal_site_over_license_quota(self) -> Optional[bool]:
+        """Gets the IsPersonalSiteOverLicenseQuota property"""
+        return self.properties.get("IsPersonalSiteOverLicenseQuota", None)
+
+    @property
+    def is_personal_site_storage_limit_set_on_payg_tenant(self) -> Optional[bool]:
+        """Gets the IsPersonalSiteStorageLimitSetOnPaygTenant property"""
+        return self.properties.get("IsPersonalSiteStorageLimitSetOnPaygTenant", None)
+
+    @property
+    def is_restrict_content_org_wide_search_policy_enforced_on_site(self) -> Optional[bool]:
+        """Gets the IsRestrictContentOrgWideSearchPolicyEnforcedOnSite property"""
+        return self.properties.get("IsRestrictContentOrgWideSearchPolicyEnforcedOnSite", None)
+
+    @property
+    def is_restricted_access_control_policy_enforced_on_site(self) -> Optional[bool]:
+        """Gets the IsRestrictedAccessControlPolicyEnforcedOnSite property"""
+        return self.properties.get("IsRestrictedAccessControlPolicyEnforcedOnSite", None)
+
+    @property
+    def is_restricted_content_discoveryfor_copilot_and_agents_enabled(self) -> Optional[bool]:
+        """Gets the IsRestrictedContentDiscoveryforCopilotAndAgentsEnabled property"""
+        return self.properties.get("IsRestrictedContentDiscoveryforCopilotAndAgentsEnabled", None)
+
+    @property
+    def is_scheduled_for_removal(self) -> Optional[bool]:
+        """Gets the IsScheduledForRemoval property"""
+        return self.properties.get("IsScheduledForRemoval", None)
+
+    @property
+    def is_unlicensed_odb(self) -> Optional[bool]:
+        """Gets the IsUnlicensedOdb property"""
+        return self.properties.get("IsUnlicensedOdb", None)
+
+    @property
+    def media_transcription_disabled(self) -> Optional[bool]:
+        """Gets the MediaTranscriptionDisabled property"""
+        return self.properties.get("MediaTranscriptionDisabled", None)
+
+    @property
+    def needs_b2_b_upgrade(self) -> Optional[bool]:
+        """Gets the NeedsB2BUpgrade property"""
+        return self.properties.get("NeedsB2BUpgrade", None)
+
+    @property
+    def resource_path(self) -> ResourcePath:
+        """Gets the ResourcePath property"""
+        return self.properties.get("ResourcePath", ResourcePath())
+
+    @property
+    def primary_uri(self) -> Optional[str]:
+        """Gets the PrimaryUri property"""
+        return self.properties.get("PrimaryUri", None)
+
+    @property
+    def related_group_id(self) -> Optional[UUID]:
+        """Gets the RelatedGroupId property"""
+        return self.properties.get("RelatedGroupId", None)
+
+    @property
+    def restrict_content_org_wide_search_update(self) -> RestrictContentOrgWidePolicyUpdate:
+        """Gets the RestrictContentOrgWideSearchUpdate property"""
+        return self.properties.get("RestrictContentOrgWideSearchUpdate", RestrictContentOrgWidePolicyUpdate())
+
+    @property
+    def restricted_access_control_groups_delegated_on_site(self) -> RestrictAccessControlUpdate:
+        """Gets the RestrictedAccessControlGroupsDelegatedOnSite property"""
+        return self.properties.get("RestrictedAccessControlGroupsDelegatedOnSite", RestrictAccessControlUpdate())
+
+    @property
+    def restricted_access_control_groups_enforced_on_site(self) -> StringCollection:
+        """Gets the RestrictedAccessControlGroupsEnforcedOnSite property"""
+        return self.properties.get("RestrictedAccessControlGroupsEnforcedOnSite", StringCollection())
+
+    @property
+    def sandboxed_code_activation_capability(self) -> Optional[int]:
+        """Gets the SandboxedCodeActivationCapability property"""
+        return self.properties.get("SandboxedCodeActivationCapability", None)
+
+    @property
+    def scheduled_date_for_removal(self) -> Optional[str]:
+        """Gets the ScheduledDateForRemoval property"""
+        return self.properties.get("ScheduledDateForRemoval", None)
+
+    @property
+    def search_box_in_nav_bar(self) -> Optional[int]:
+        """Gets the SearchBoxInNavBar property"""
+        return self.properties.get("SearchBoxInNavBar", None)
+
+    @property
+    def search_box_placeholder_text(self) -> Optional[str]:
+        """Gets the SearchBoxPlaceholderText property"""
+        return self.properties.get("SearchBoxPlaceholderText", None)
+
+    @property
+    def sensitivity_label_info(self) -> SensitivityLabelInfo:
+        """Gets the SensitivityLabelInfo property"""
+        return self.properties.get("SensitivityLabelInfo", SensitivityLabelInfo())
+
+    @property
+    def share_by_link_enabled(self) -> Optional[bool]:
+        """Gets the ShareByLinkEnabled property"""
+        return self.properties.get("ShareByLinkEnabled", None)
+
+    @property
+    def show_people_picker_suggestions_for_guest_users(self) -> Optional[bool]:
+        """Gets the ShowPeoplePickerSuggestionsForGuestUsers property"""
+        return self.properties.get("ShowPeoplePickerSuggestionsForGuestUsers", None)
+
+    @property
+    def site_policy_enabled(self) -> Optional[bool]:
+        """Gets the SitePolicyEnabled property"""
+        return self.properties.get("SitePolicyEnabled", None)
+
+    @property
+    def social_bar_on_site_pages_disabled(self) -> Optional[bool]:
+        """Gets the SocialBarOnSitePagesDisabled property"""
+        return self.properties.get("SocialBarOnSitePagesDisabled", None)
+
+    @property
+    def thicket_support_disabled(self) -> Optional[bool]:
+        """Gets the ThicketSupportDisabled property"""
+        return self.properties.get("ThicketSupportDisabled", None)
+
+    @property
+    def unified_domain_url(self) -> Optional[str]:
+        """Gets the UnifiedDomainUrl property"""
+        return self.properties.get("UnifiedDomainUrl", None)
+
+    @property
+    def unlicensed_odb_license_enforcement_warning_context(self) -> UnlicensedOdbLicenseEnforcementWarningContext:
+        """Gets the UnlicensedOdbLicenseEnforcementWarningContext property"""
+        return self.properties.get(
+            "UnlicensedOdbLicenseEnforcementWarningContext", UnlicensedOdbLicenseEnforcementWarningContext()
+        )
+
+    @property
+    def usage(self) -> UsageInfo:
+        """Gets the Usage property"""
+        return self.properties.get("Usage", UsageInfo())
+
+    @property
+    def custom_script_safe_domains(self) -> EntityCollection[ScriptSafeDomain]:
+        """Gets the CustomScriptSafeDomains property"""
+        return self.properties.get(
+            "CustomScriptSafeDomains",
+            EntityCollection[ScriptSafeDomain](
+                self.context, ScriptSafeDomain, ResourcePath("CustomScriptSafeDomains", self.resource_path)
+            ),
+        )
+
+    @property
+    def hub_site_synchronizable_visitor_group(self) -> Group:
+        """Gets the HubSiteSynchronizableVisitorGroup property"""
+        return self.properties.get(
+            "HubSiteSynchronizableVisitorGroup",
+            Group(self.context, ResourcePath("HubSiteSynchronizableVisitorGroup", self.resource_path)),
         )
 
     def get_property(self, name, default_value=None):
@@ -1056,3 +1271,596 @@ class Site(Entity):
         else:
             super().set_property(name, value, persist_changes)
         return self
+
+    def create_copy_jobs(
+        self, export_object_uris: list[str], destination_uri: str, options: CopyMigrationOptions
+    ) -> ClientResult[ClientValueCollection[CopyMigrationInfo]]:
+        """CreateCopyJobs operation.
+
+        Args:
+            export_object_uris (list[str]): exportObjectUris parameter
+            destination_uri (str): destinationUri parameter
+            options (CopyMigrationOptions): options parameter
+        """
+        return_type = ClientResult(self.context, ClientValueCollection[CopyMigrationInfo]())
+        qry = ServiceOperationQuery(
+            self,
+            "CreateCopyJobs",
+            None,
+            {
+                "exportObjectUris": StringCollection(export_object_uris),
+                "destinationUri": destination_uri,
+                "options": options,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def create_preview_sp_site(self, upgrade: bool, sendemail: bool) -> Self:
+        """CreatePreviewSPSite operation.
+
+        Args:
+            upgrade (bool): upgrade parameter
+            sendemail (bool): sendemail parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "CreatePreviewSPSite", None, {"upgrade": upgrade, "sendemail": sendemail}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def create_sp_async_read_job(
+        self,
+        url: str,
+        read_options: AsyncReadOptions,
+        encryption_option: EncryptionOption,
+        azure_container_manifest_uri: str,
+        azure_queue_report_uri: str,
+    ) -> ClientResult[AsyncReadJobInfo]:
+        """CreateSPAsyncReadJob operation.
+
+        Args:
+            url (str): url parameter
+            read_options (AsyncReadOptions): readOptions parameter
+            encryption_option (EncryptionOption): encryptionOption parameter
+            azure_container_manifest_uri (str): azureContainerManifestUri parameter
+            azure_queue_report_uri (str): azureQueueReportUri parameter
+        """
+        return_type = ClientResult(self.context, AsyncReadJobInfo())
+        qry = ServiceOperationQuery(
+            self,
+            "CreateSPAsyncReadJob",
+            None,
+            {
+                "url": url,
+                "readOptions": read_options,
+                "encryptionOption": encryption_option,
+                "azureContainerManifestUri": azure_container_manifest_uri,
+                "azureQueueReportUri": azure_queue_report_uri,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def create_sp_async_read_job_with_multi_url(
+        self,
+        urls: list[str],
+        read_options: AsyncReadOptions,
+        encryption_option: EncryptionOption,
+        azure_container_manifest_uri: str,
+        azure_queue_report_uri: str,
+    ) -> ClientResult[AsyncReadJobInfo]:
+        """CreateSPAsyncReadJobWithMultiUrl operation.
+
+        Args:
+            urls (list[str]): urls parameter
+            read_options (AsyncReadOptions): readOptions parameter
+            encryption_option (EncryptionOption): encryptionOption parameter
+            azure_container_manifest_uri (str): azureContainerManifestUri parameter
+            azure_queue_report_uri (str): azureQueueReportUri parameter
+        """
+        return_type = ClientResult(self.context, AsyncReadJobInfo())
+        qry = ServiceOperationQuery(
+            self,
+            "CreateSPAsyncReadJobWithMultiUrl",
+            None,
+            {
+                "urls": StringCollection(urls),
+                "readOptions": read_options,
+                "encryptionOption": encryption_option,
+                "azureContainerManifestUri": azure_container_manifest_uri,
+                "azureQueueReportUri": azure_queue_report_uri,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def delete_migration_job(self, id_: UUID) -> ClientResult[bool]:
+        """DeleteMigrationJob operation.
+
+        Args:
+            id_ (UUID): id parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "DeleteMigrationJob", None, {"id": id_}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def enqueue_apply_sensitivity_label_work(
+        self, work_item_information: AutoLabellingWorkInformation
+    ) -> ClientResult[EnqueueJobInformation]:
+        """EnqueueApplySensitivityLabelWork operation.
+
+        Args:
+            work_item_information (AutoLabellingWorkInformation): workItemInformation parameter
+        """
+        return_type = ClientResult(self.context, EnqueueJobInformation())
+        qry = ServiceOperationQuery(
+            self,
+            "EnqueueApplySensitivityLabelWork",
+            None,
+            {"workItemInformation": work_item_information},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_bring_your_own_key_recovery_key_mode(self) -> ClientResult[int]:
+        """GetBringYourOwnKeyRecoveryKeyMode operation."""
+        return_type = ClientResult(self.context, int())
+        qry = ServiceOperationQuery(self, "GetBringYourOwnKeyRecoveryKeyMode", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_bring_your_own_key_site_status(self) -> ClientResult[CustomerKeyStatusInfo]:
+        """GetBringYourOwnKeySiteStatus operation."""
+        return_type = ClientResult(self.context, CustomerKeyStatusInfo())
+        qry = ServiceOperationQuery(self, "GetBringYourOwnKeySiteStatus", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_bring_your_own_key_tenant_status(self) -> ClientResult[CustomerKeyStatusInfo]:
+        """GetBringYourOwnKeyTenantStatus operation."""
+        return_type = ClientResult(self.context, CustomerKeyStatusInfo())
+        qry = ServiceOperationQuery(self, "GetBringYourOwnKeyTenantStatus", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    @staticmethod
+    def get_ebar_protection_units_exist_by_ids(
+        context: ClientContext, site_subscription_id: UUID, protection_unit_ids: list[UUID]
+    ) -> ClientResult[dict]:
+        """GetEbarProtectionUnitsExistByIds operation.
+
+        Args:
+            site_subscription_id (UUID): siteSubscriptionId parameter
+            protection_unit_ids (list[UUID]): protectionUnitIds parameter
+        """
+        return_type = ClientResult(context, dict())
+        qry = FunctionQuery(
+            Site(context),
+            "GetEbarProtectionUnitsExistByIds",
+            [site_subscription_id, GuidCollection(protection_unit_ids)],
+            return_type,
+        )
+        context.add_query(qry)
+        return return_type
+
+    @staticmethod
+    def get_ebar_restore_session_exists_by_id(
+        context: ClientContext, site_subscription_id: UUID, restore_session_id: UUID
+    ) -> ClientResult[bool]:
+        """GetEbarRestoreSessionExistsById operation.
+
+        Args:
+            site_subscription_id (UUID): siteSubscriptionId parameter
+            restore_session_id (UUID): restoreSessionId parameter
+        """
+        return_type = ClientResult(context, bool())
+        qry = FunctionQuery(
+            Site(context), "GetEbarRestoreSessionExistsById", [site_subscription_id, restore_session_id], return_type
+        )
+        context.add_query(qry)
+        return return_type
+
+    def get_hub_site_join_approval_correlation_id(self) -> ClientResult[str]:
+        """GetHubSiteJoinApprovalCorrelationId operation."""
+        return_type = ClientResult(self.context, str())
+        qry = FunctionQuery(self, "GetHubSiteJoinApprovalCorrelationId", [], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_migration_job_status(self, id_: UUID) -> ClientResult[int]:
+        """GetMigrationJobStatus operation.
+
+        Args:
+            id_ (UUID): id parameter
+        """
+        return_type = ClientResult(self.context, int())
+        qry = ServiceOperationQuery(self, "GetMigrationJobStatus", None, {"id": id_}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_progress_for_delete_file_versions(self) -> ClientResult[str]:
+        """GetProgressForDeleteFileVersions operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetProgressForDeleteFileVersions", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_progress_for_expire_file_versions_by_schedule(self, schedule_file_path: ResourcePath) -> ClientResult[str]:
+        """GetProgressForExpireFileVersionsBySchedule operation.
+
+        Args:
+            schedule_file_path (ResourcePath): scheduleFilePath parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "GetProgressForExpireFileVersionsBySchedule",
+            None,
+            {"scheduleFilePath": schedule_file_path},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_progress_for_file_version_expiration_report(self, report_file_url: str) -> ClientResult[str]:
+        """GetProgressForFileVersionExpirationReport operation.
+
+        Args:
+            report_file_url (str): reportFileUrl parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "GetProgressForFileVersionExpirationReport",
+            None,
+            {"reportFileUrl": report_file_url},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_progress_for_set_version_policy_for_doc_libs(self) -> ClientResult[str]:
+        """GetProgressForSetVersionPolicyForDocLibs operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetProgressForSetVersionPolicyForDocLibs", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    @staticmethod
+    def get_sites_exist_by_site_ids(
+        context: ClientContext, site_subscription_id: UUID, site_ids: list[UUID]
+    ) -> ClientResult[dict]:
+        """GetSitesExistBySiteIds operation.
+
+        Args:
+            site_subscription_id (UUID): siteSubscriptionId parameter
+            site_ids (list[UUID]): siteIds parameter
+        """
+        return_type = ClientResult(context, dict())
+        qry = FunctionQuery(
+            Site(context), "GetSitesExistBySiteIds", [site_subscription_id, GuidCollection(site_ids)], return_type
+        )
+        context.add_query(qry)
+        return return_type
+
+    @staticmethod
+    def get_sites_exist_by_site_urls(
+        context: ClientContext, site_subscription_id: UUID, urls: list[str]
+    ) -> ClientResult[dict]:
+        """GetSitesExistBySiteUrls operation.
+
+        Args:
+            site_subscription_id (UUID): siteSubscriptionId parameter
+            urls (list[str]): urls parameter
+        """
+        return_type = ClientResult(context, dict())
+        qry = FunctionQuery(
+            Site(context), "GetSitesExistBySiteUrls", [site_subscription_id, StringCollection(urls)], return_type
+        )
+        context.add_query(qry)
+        return return_type
+
+    def multi_geo_copy_job(self, job_id: UUID, user_id: int, binary_payload: bytes) -> Self:
+        """MultiGeoCopyJob operation.
+
+        Args:
+            job_id (UUID): jobId parameter
+            user_id (int): userId parameter
+            binary_payload (bytes): binaryPayload parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "MultiGeoCopyJob",
+            None,
+            {"jobId": job_id, "userId": user_id, "binaryPayload": binary_payload},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def needs_upgrade_by_type_from_spo_shell(self, version_upgrade: bool, recursive: bool) -> ClientResult[bool]:
+        """NeedsUpgradeByTypeFromSpoShell operation.
+
+        Args:
+            version_upgrade (bool): versionUpgrade parameter
+            recursive (bool): recursive parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = FunctionQuery(self, "NeedsUpgradeByTypeFromSpoShell", [version_upgrade, recursive], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def onboard_tenant_for_bring_your_own_key(self, key_info: CustomerKeyInfo) -> ClientResult[CustomerKeyStatusInfo]:
+        """OnboardTenantForBringYourOwnKey operation.
+
+        Args:
+            key_info (CustomerKeyInfo): keyInfo parameter
+        """
+        return_type = ClientResult(self.context, CustomerKeyStatusInfo())
+        qry = ServiceOperationQuery(
+            self, "OnboardTenantForBringYourOwnKey", None, {"keyInfo": key_info}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def on_hub_site_join_request_approved(self, joining_site_id: UUID) -> ClientResult[str]:
+        """OnHubSiteJoinRequestApproved operation.
+
+        Args:
+            joining_site_id (UUID): joiningSiteId parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self, "OnHubSiteJoinRequestApproved", None, {"joiningSiteId": joining_site_id}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def on_hub_site_join_request_canceled(self, approval_correlation_id: str) -> Self:
+        """OnHubSiteJoinRequestCanceled operation.
+
+        Args:
+            approval_correlation_id (str): approvalCorrelationId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "OnHubSiteJoinRequestCanceled", None, {"approvalCorrelationId": approval_correlation_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def on_hub_site_join_request_started(self, approval_correlation_id: str) -> Self:
+        """OnHubSiteJoinRequestStarted operation.
+
+        Args:
+            approval_correlation_id (str): approvalCorrelationId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "OnHubSiteJoinRequestStarted", None, {"approvalCorrelationId": approval_correlation_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def recover_tenant_for_bring_your_own_key(self, key_info: CustomerKeyInfo) -> ClientResult[CustomerKeyStatusInfo]:
+        """RecoverTenantForBringYourOwnKey operation.
+
+        Args:
+            key_info (CustomerKeyInfo): keyInfo parameter
+        """
+        return_type = ClientResult(self.context, CustomerKeyStatusInfo())
+        qry = ServiceOperationQuery(
+            self, "RecoverTenantForBringYourOwnKey", None, {"keyInfo": key_info}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def roll_tenant_bring_your_own_key(
+        self, key_type: int, key_vault_info: CustomerKeyVaultInfo
+    ) -> ClientResult[CustomerKeyStatusInfo]:
+        """RollTenantBringYourOwnKey operation.
+
+        Args:
+            key_type (int): keyType parameter
+            key_vault_info (CustomerKeyVaultInfo): keyVaultInfo parameter
+        """
+        return_type = ClientResult(self.context, CustomerKeyStatusInfo())
+        qry = ServiceOperationQuery(
+            self,
+            "RollTenantBringYourOwnKey",
+            None,
+            {"keyType": key_type, "keyVaultInfo": key_vault_info},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def run_upgrade_site_session(self, version_upgrade: bool, queue_only: bool, send_email: bool) -> Self:
+        """RunUpgradeSiteSession operation.
+
+        Args:
+            version_upgrade (bool): versionUpgrade parameter
+            queue_only (bool): queueOnly parameter
+            send_email (bool): sendEmail parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "RunUpgradeSiteSession",
+            None,
+            {"versionUpgrade": version_upgrade, "queueOnly": queue_only, "sendEmail": send_email},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_block_download_policy_for_files(self, block_download_policy_file_type_ids: list[str]) -> Self:
+        """SetBlockDownloadPolicyForFiles operation.
+
+        Args:
+            block_download_policy_file_type_ids (list[str]): blockDownloadPolicyFileTypeIds parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetBlockDownloadPolicyForFiles",
+            None,
+            {"blockDownloadPolicyFileTypeIds": StringCollection(block_download_policy_file_type_ids)},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_is_contributor_owner_enabled_property_for_default_doc_lib(
+        self,
+        property_value: bool,
+        force_doc_lib_activation: bool,
+        delete_if_doc_lib_already_exists: bool,
+        allow_delete_of_contributor_owner_enabled_doc_lib: bool,
+    ) -> ClientResult[bool]:
+        """SetIsContributorOwnerEnabledPropertyForDefaultDocLib operation.
+
+        Args:
+            property_value (bool): propertyValue parameter
+            force_doc_lib_activation (bool): forceDocLibActivation parameter
+            delete_if_doc_lib_already_exists (bool): deleteIfDocLibAlreadyExists parameter
+            allow_delete_of_contributor_owner_enabled_doc_lib (bool): allowDeleteOfContributorOwnerEnabledDocLib param
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(
+            self,
+            "SetIsContributorOwnerEnabledPropertyForDefaultDocLib",
+            None,
+            {
+                "propertyValue": property_value,
+                "forceDocLibActivation": force_doc_lib_activation,
+                "deleteIfDocLibAlreadyExists": delete_if_doc_lib_already_exists,
+                "allowDeleteOfContributorOwnerEnabledDocLib": allow_delete_of_contributor_owner_enabled_doc_lib,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def start_delete_file_versions(self, delete_older_than_days: int) -> Self:
+        """StartDeleteFileVersions operation.
+
+        Args:
+            delete_older_than_days (int): deleteOlderThanDays parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "StartDeleteFileVersions", None, {"deleteOlderThanDays": delete_older_than_days}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def start_delete_file_versions_by_mode(self, batch_delete_parameters: FileVersionBatchDeleteParameters) -> Self:
+        """StartDeleteFileVersionsByMode operation.
+
+        Args:
+            batch_delete_parameters (FileVersionBatchDeleteParameters): batchDeleteParameters parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "StartDeleteFileVersionsByMode", None, {"batchDeleteParameters": batch_delete_parameters}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def start_expire_file_versions_by_schedule(self, schedule_file_path: ResourcePath) -> Self:
+        """StartExpireFileVersionsBySchedule operation.
+
+        Args:
+            schedule_file_path (ResourcePath): scheduleFilePath parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "StartExpireFileVersionsBySchedule", None, {"scheduleFilePath": schedule_file_path}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def start_file_version_expiration_report(self, report_file_url: str) -> Self:
+        """StartFileVersionExpirationReport operation.
+
+        Args:
+            report_file_url (str): reportFileUrl parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "StartFileVersionExpirationReport", None, {"reportFileUrl": report_file_url}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def start_set_version_policy_for_doc_libs(
+        self,
+        enable_auto_trim: bool,
+        major_version_limit: int,
+        major_with_minor_versions_limit: int,
+        expire_after_days: int,
+    ) -> Self:
+        """StartSetVersionPolicyForDocLibs operation.
+
+        Args:
+            enable_auto_trim (bool): enableAutoTrim parameter
+            major_version_limit (int): majorVersionLimit parameter
+            major_with_minor_versions_limit (int): majorWithMinorVersionsLimit parameter
+            expire_after_days (int): expireAfterDays parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "StartSetVersionPolicyForDocLibs",
+            None,
+            {
+                "enableAutoTrim": enable_auto_trim,
+                "majorVersionLimit": major_version_limit,
+                "majorWithMinorVersionsLimit": major_with_minor_versions_limit,
+                "expireAfterDays": expire_after_days,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def update_inactive_site_properties(self, operation: str, execution_id: int) -> ClientResult[UpdateCard]:
+        """UpdateInactiveSiteProperties operation.
+
+        Args:
+            operation (str): operation parameter
+            execution_id (int): executionId parameter
+        """
+        return_type = ClientResult(self.context, UpdateCard())
+        qry = ServiceOperationQuery(
+            self,
+            "UpdateInactiveSiteProperties",
+            None,
+            {"operation": operation, "executionId": execution_id},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def validate_hub_site_join_approval_token(self, joining_site_id: UUID, approval_token: str) -> ClientResult[bool]:
+        """ValidateHubSiteJoinApprovalToken operation.
+
+        Args:
+            joining_site_id (UUID): joiningSiteId parameter
+            approval_token (str): approvalToken parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = FunctionQuery(self, "ValidateHubSiteJoinApprovalToken", [joining_site_id, approval_token], return_type)
+        self.context.add_query(qry)
+        return return_type
