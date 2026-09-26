@@ -44,6 +44,10 @@ class RequestsTransport(BaseTransport):
     def timeout(self) -> int | Tuple[int, int] | None:
         return self._timeout
 
+    @property
+    def auth(self) -> Any | None:
+        return self._session.auth
+
     def execute(self, request: RequestOptions) -> Response:
         kwargs: dict[str, Any] = {"headers": request.headers}
         if request.verify is not None:

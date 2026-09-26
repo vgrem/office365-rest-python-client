@@ -10,7 +10,7 @@ call sites stay free of side effects.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Any, Tuple
 
 from office365.runtime.http.throttling import paced
 from office365.runtime.transport.base import BaseTransport
@@ -58,6 +58,10 @@ class ThrottledTransport(BaseTransport):
     @property
     def timeout(self) -> int | Tuple[int, int] | None:
         return self._inner.timeout
+
+    @property
+    def auth(self) -> Any | None:
+        return self._inner.auth
 
     def close(self) -> None:
         self._inner.close()

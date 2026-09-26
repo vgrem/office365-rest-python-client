@@ -300,7 +300,7 @@ class ClientContext(ClientRuntimeContext):
             batch_request = ODataBatchV3Request(
                 self._base_url, JsonLightFormat(), transport=self.pending_request().transport
             )
-            batch_request.beforeExecute += self.authentication_context.authenticate_request
+            batch_request.beforeExecute += request._authenticate_request
             batch_request.beforeExecute += request.ensure_form_digest
             for qry in batches:
                 self._run_batch(batch_request, qry)
@@ -325,7 +325,7 @@ class ClientContext(ClientRuntimeContext):
         batch_request = ODataBatchV3Request(
             self._base_url, JsonLightFormat(), transport=self.pending_request().transport
         )
-        batch_request.beforeExecute += self.authentication_context.authenticate_request
+        batch_request.beforeExecute += self.pending_request()._authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
         self._run_batch(batch_request, batch_qry)
         return batch_qry.return_types

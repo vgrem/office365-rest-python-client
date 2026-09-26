@@ -20,3 +20,6 @@ generator/.checkpoints/
 
 # Example run checkpoints (data-pipeline resume state)
 *.checkpoint.json
+
+# local virtualenvs
+.repro-venv/

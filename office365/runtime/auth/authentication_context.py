@@ -381,6 +381,11 @@ class AuthenticationContext:
         self._authenticate = provider.authenticate_request
         return self
 
+    @property
+    def is_configured(self) -> bool:
+        """Whether an authentication provider has been set on this context."""
+        return self._authenticate is not None
+
     def authenticate_request(self, request: RequestOptions) -> None:
         """Authenticate the HTTP request
 
