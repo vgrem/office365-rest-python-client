@@ -26,6 +26,9 @@ _RESERVED_METHOD_NAMES = (
     {name for name in dir(ClientObject)} | {name for name in dir(ClientValue)} | {"update", "delete_object", "id"}
 )
 
+# Base model members that generated properties must not shadow (e.g. ``ResourcePath`` -> ``resource_path``).
+_RESERVED_PROPERTY_NAMES = {name for name in dir(ClientObject)} | {name for name in dir(ClientValue)}
+
 
 class TypeBuilder(ast.NodeTransformer):
     """Type builder"""
@@ -59,7 +62,7 @@ class TypeBuilder(ast.NodeTransformer):
         [
             self._properties.append(PropertyBuilder(prop_schema, resolver=self._resolver))
             for name, prop_schema in self._schema.Properties.items()
-            if name not in options.get("ignored_properties", [])
+            if name not in options.get("ignored_properties", []) and to_snake_case(name) not in _RESERVED_PROPERTY_NAMES
         ]
 
         [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]

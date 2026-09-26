@@ -1132,11 +1132,6 @@ class Site(Entity):
         return self.properties.get("NeedsB2BUpgrade", None)
 
     @property
-    def resource_path(self) -> ResourcePath:
-        """Gets the ResourcePath property"""
-        return self.properties.get("ResourcePath", ResourcePath())
-
-    @property
     def primary_uri(self) -> Optional[str]:
         """Gets the PrimaryUri property"""
         return self.properties.get("PrimaryUri", None)
