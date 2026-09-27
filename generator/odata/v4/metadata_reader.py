@@ -1,8 +1,6 @@
 from typing import Dict, Optional
 from xml.etree.ElementTree import Element
 
-from office365.runtime.odata.type import ODataType
-
 from generator.odata.method import MethodInformation
 from generator.odata.model import ODataModel
 from generator.odata.property import PropertyInformation
@@ -30,7 +28,9 @@ class ODataV4Reader(ODataReader):
             binding_param = params[0]
             if binding_param.get("Type") is None:
                 continue
-            binding_type = ODataType.normalize_type_name(binding_param["Type"])
+            binding_type = self._entity_binding_type(binding_param)
+            if binding_type is None:
+                continue  # collection-bound -> hand-written on the <Item>Collection class
             return_node = node.find("xmlns:ReturnType", self.xml_namespaces)
             kind = "action" if node.tag.endswith("Action") else "function"
             self._attach_method(

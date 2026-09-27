@@ -57,6 +57,19 @@ class ODataReader(ABC):
             type_schema.add_method(method)
 
     @staticmethod
+    def _entity_binding_type(parameter: dict) -> Optional[str]:
+        """Resolves the entity type an operation is bound to.
+
+        Operations bound to a collection (``Collection(X)``) apply to the ``XCollection``
+        class in the Python model, which is hand-written, so they are not attached to the
+        item entity and ``None`` is returned.
+        """
+        raw_type = parameter.get("Type")
+        if raw_type is None or ODataType.is_collection_name(raw_type):
+            return None
+        return ODataType.normalize_type_name(raw_type)
+
+    @staticmethod
     def _new_navigation(node: Element) -> PropertyInformation:
         """Creates the common part of a navigation property schema."""
         schema = PropertyInformation()

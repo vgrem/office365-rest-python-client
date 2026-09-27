@@ -32,6 +32,10 @@ _V3_METADATA = """<?xml version="1.0" encoding="utf-8"?>
         <FunctionImport Name="MoveToSecondStage" IsBindable="true">
           <Parameter Name="this" Type="SP.ObjectSharingInformation"/>
         </FunctionImport>
+        <FunctionImport Name="RemoveByLoginName" IsBindable="true">
+          <Parameter Name="this" Type="Collection(SP.ObjectSharingInformation)"/>
+          <Parameter Name="loginName" Type="Edm.String"/>
+        </FunctionImport>
         <FunctionImport
           Name="ObjectSharingInformationSet"
           ReturnType="Collection(SP.ObjectSharingInformation)"
@@ -93,6 +97,9 @@ def test_v3_parses_bound_and_static_function_imports(tmp_path: Path):
     # entity-set accessors are skipped
     assert "ObjectSharingInformationSet" not in schema.Methods
 
+    # collection-bound operations belong to the hand-written <Item>Collection class and are skipped
+    assert "RemoveByLoginName" not in schema.Methods
+
 
 def test_v4_parses_bound_actions_and_functions(tmp_path: Path):
     model = ODataV4Reader(_write(tmp_path, "graph.xml", _V4_METADATA)).read()
@@ -106,9 +113,8 @@ def test_v4_parses_bound_actions_and_functions(tmp_path: Path):
     quarantine = schema.Methods["clearQuarantine"]
     assert quarantine.ReturnTypeFullName == "microsoft.graph.identityGovernance.workflow"
 
-    summary = schema.Methods["summary"]
-    assert summary.Kind == "function"
-    assert [p["Name"] for p in summary.Parameters] == ["startDateTime"]
+    # collection-bound functions belong to the hand-written <Item>Collection class and are skipped
+    assert "summary" not in schema.Methods
 
 
 def _build_static_method_type(tmp_path: Path, generate_methods: str) -> str:

@@ -1,8 +1,6 @@
 from typing import Dict, Optional
 from xml.etree.ElementTree import Element
 
-from office365.runtime.odata.type import ODataType
-
 from generator.odata.method import MethodInformation
 from generator.odata.model import ODataModel
 from generator.odata.property import PropertyInformation
@@ -54,7 +52,9 @@ class ODataV3Reader(ODataReader):
                 binding_param = next((p for p in params if p.get("Name") == "this"), params[0] if params else None)
                 if binding_param is None or binding_param.get("Type") is None:
                     continue
-                binding_type = ODataType.normalize_type_name(binding_param["Type"])
+                binding_type = self._entity_binding_type(binding_param)
+                if binding_type is None:
+                    continue  # collection-bound -> hand-written on the <Item>Collection class
                 method_name = name
                 remaining = [p for p in params if p is not binding_param]
                 is_static = False
