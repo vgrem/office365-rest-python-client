@@ -7,6 +7,8 @@ Test conventions:
   tests that require tenant credentials and are skipped with ``--offline``.
 """
 
+from __future__ import annotations
+
 import pytest
 
 from tests.graph_case import GraphDelegatedTestCase

@@ -9,8 +9,8 @@ SharePoint, the filesystem, and (later) S3 / PostgreSQL / Kafka all plug in here
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Iterable
-from typing import TYPE_CHECKING, Optional
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Callable, Optional
 
 from office365.migration.base import ConflictResolution, MigrationItem
 

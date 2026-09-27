@@ -22,7 +22,7 @@ Thank you for your interest in contributing to the `office365-rest-python-client
 
 ### Prerequisites
 
-- Python 3.8+ (CI runs 3.8, 3.10 and 3.13)
+- Python 3.8+ (CI runs 3.10 and 3.13)
 - Git
 - [uv](https://docs.astral.sh/uv/) for dependency management
 - A Microsoft 365 tenant is **recommended but not required** — most contributions
@@ -80,7 +80,7 @@ uv run pyright
 uv run pytest --offline -q
 ```
 
-This runs `tests/unit` fully offline and is what CI runs on Python 3.8, 3.10 and 3.13.
+This runs `tests/unit` fully offline and is what CI runs on Python 3.10 and 3.13.
 It is the fastest way to validate a change, and where new tests should go.
 
 ### End-to-end tests (maintainers / optional)
