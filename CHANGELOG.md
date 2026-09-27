@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Idempotent file provisioning:** `DriveItem.ensure_file(path, content,
+  on_conflict=...)` — the file counterpart of `ensure_folder`. Missing parent
+  folders are created, then the leaf file is reused when present (`"skip"`, the
+  default, never re-sends `content`) or overwritten in a single request
+  (`"replace"`). Fully deferred on one `execute_query()`, backed by the shared
+  `get_or_create` helper.
 - **Typed CAML query builder:** `Caml` / `CamlQuery.builder()` construct `ViewXml`
   from composable Python expressions instead of raw CAML strings — fluent
   comparisons (`Caml.text("Status").eq("Active")`), field-typed helpers

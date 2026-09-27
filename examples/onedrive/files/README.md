@@ -25,7 +25,7 @@ Most examples authenticate with username/password (`client_id`, `username`,
 ```mermaid
 graph TD
     subgraph "Upload & download"
-        U["upload_download /<br/>upload_large /<br/>download_json"]
+        U["upload_download /<br/>ensure_file /<br/>upload_large /<br/>download_json"]
     end
 
     subgraph "Lifecycle"
@@ -47,8 +47,9 @@ graph TD
 ```
 
 **Which example to use:** upload a file the first time (`upload_download.py`),
-large files via resumable sessions (`upload_large.py`), reading structured data
-back (`download_json.py`), then manage it (`manage.py`), publish versions with
+provision one idempotently (`ensure_file.py`), large files via resumable
+sessions (`upload_large.py`), reading structured data back
+(`download_json.py`), then manage it (`manage.py`), publish versions with
 check-out/check-in (`lifecycle.py`), recover deletions (`recycle_bin.py`),
 share it (`sharing.py`), and keep a local cache in sync (`delta_query.py`).
 
@@ -59,6 +60,7 @@ share it (`sharing.py`), and keep a local cache in sync (`delta_query.py`).
 | Operation | File | Permission | API |
 |---|---|---|---|
 | Upload and download a file (round-trip) | [`upload_download.py`](./upload_download.py) | `Files.ReadWrite` | [put content](https://learn.microsoft.com/en-us/graph/api/driveitem-put-content) |
+| Ensure a file exists (idempotent get-or-upload) | [`ensure_file.py`](./ensure_file.py) | `Files.ReadWrite` | [put content](https://learn.microsoft.com/en-us/graph/api/driveitem-put-content) |
 | Download and read a JSON file | [`download_json.py`](./download_json.py) | `Files.ReadWrite` | [get content](https://learn.microsoft.com/en-us/graph/api/driveitem-get-content) |
 | Upload a large file (resumable session) | [`upload_large.py`](./upload_large.py) | `Files.ReadWrite` | [create upload session](https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession) |
 | Copy, rename, move, versions, delete | [`manage.py`](./manage.py) | `Files.ReadWrite` | [copy](https://learn.microsoft.com/en-us/graph/api/driveitem-copy) |

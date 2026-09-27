@@ -251,3 +251,105 @@ class TestDriveItemEnsureFolder(unittest.TestCase):
         self.assertEqual(len(posts), 3)  # noqa: PLR2004
         self.assertEqual(target.get_property("id"), "c3")
         self.assertEqual(target.get_property("name"), "c")
+
+
+def _file_item(item_id: str, name: str) -> dict:
+    return {"id": item_id, "name": name, "file": {}, "@odata.type": "#microsoft.graph.driveItem"}
+
+
+class driveitemensurefile__CaptureTransport(BaseTransport):
+    def __init__(self, responses: list[tuple[int, dict]]):
+        super().__init__()
+        self._responses = responses
+        self.calls: list[tuple[str, str, object]] = []
+
+    def execute(self, request):
+        status, body = self._responses.pop(0)
+        self.calls.append((str(request.method), request.url, request.data))
+        resp = Response()
+        resp.status_code = status
+        resp.url = request.url
+        resp.headers["Content-Type"] = "application/json"
+        resp._content = json.dumps(body).encode()
+        return resp
+
+
+class TestDriveItemEnsureFile(unittest.TestCase):
+    def _client(self, responses: list[tuple[int, dict]]):
+        client = GraphClient()
+        transport = driveitemensurefile__CaptureTransport(responses)
+        client.pending_request().beforeExecute.clear()
+        client.pending_request().transport = transport
+        return client, transport
+
+    def test_reuses_existing_file(self):
+        client, transport = self._client([(200, _file_item("f1", "f.txt"))])
+
+        target = client.me.drive.root.ensure_file("f.txt", b"hi")
+        client.execute_query()
+
+        self.assertEqual(len(transport.calls), 1)
+        method, url, _ = transport.calls[0]
+        self.assertEqual(method, "GET")
+        self.assertIn(":/f.txt:", url)
+        self.assertEqual(target.get_property("id"), "f1")
+
+    def test_uploads_when_missing(self):
+        client, transport = self._client([(404, _not_found()), (201, _file_item("f2", "f.txt"))])
+
+        target = client.me.drive.root.ensure_file("f.txt", b"hi")
+        client.execute_query()
+
+        self.assertEqual(len(transport.calls), 2)
+        method, url, data = transport.calls[1]
+        self.assertEqual(method, "PUT")
+        self.assertTrue(url.endswith(":/f.txt:/content"))
+        self.assertEqual(data, b"hi")
+        self.assertEqual(target.get_property("id"), "f2")
+
+    def test_replace_overwrites_without_get(self):
+        client, transport = self._client([(200, _file_item("f3", "f.txt"))])
+
+        client.me.drive.root.ensure_file("f.txt", "text", on_conflict="replace")
+        client.execute_query()
+
+        self.assertEqual(len(transport.calls), 1)
+        method, url, data = transport.calls[0]
+        self.assertEqual(method, "PUT")
+        self.assertTrue(url.endswith(":/f.txt:/content"))
+        self.assertEqual(data, b"text")
+
+    def test_uploads_into_nested_folder(self):
+        client, transport = self._client(
+            [
+                (404, _not_found()),  # GET a
+                (201, _item("a1", "a")),  # POST a
+                (200, _item("a1", "a")),  # GET a (reload)
+                (404, _not_found()),  # GET a/b
+                (201, _item("b2", "b")),  # POST b
+                (200, _item("b2", "b")),  # GET a/b (reload)
+                (404, _not_found()),  # GET a/b:/f.txt:
+                (201, _file_item("f4", "f.txt")),  # PUT a/b:/f.txt:/content
+            ]
+        )
+
+        target = client.me.drive.root.ensure_file("a/b/f.txt", b"hi")
+        client.execute_query()
+
+        method, url, data = transport.calls[-1]
+        self.assertEqual(method, "PUT")
+        self.assertTrue(url.endswith("/items/b2:/f.txt:/content"))
+        self.assertEqual(data, b"hi")
+        self.assertEqual(target.get_property("id"), "f4")
+
+    def test_rejects_unknown_conflict_mode(self):
+        client, _ = self._client([])
+
+        with self.assertRaises(ValueError):
+            client.me.drive.root.ensure_file("f.txt", b"hi", on_conflict="update")
+
+    def test_rejects_empty_path(self):
+        client, _ = self._client([])
+
+        with self.assertRaises(ValueError):
+            client.me.drive.root.ensure_file("/", b"hi")

@@ -54,6 +54,7 @@ flowchart LR
 | Scenario | File | Permission |
 |---|---|---|
 | Upload and download a file (round-trip) | [`files/upload_download.py`](./files/upload_download.py) | `Files.ReadWrite` |
+| Ensure a file exists (idempotent get-or-upload) | [`files/ensure_file.py`](./files/ensure_file.py) | `Files.ReadWrite` |
 | Upload a large file (resumable session) | [`files/upload_large.py`](./files/upload_large.py) | `Files.ReadWrite` |
 | Download and read a JSON file | [`files/download_json.py`](./files/download_json.py) | `Files.ReadWrite` |
 | Copy, rename, move, versions, delete | [`files/manage.py`](./files/manage.py) | `Files.ReadWrite` |

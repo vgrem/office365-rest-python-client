@@ -249,17 +249,40 @@ class DriveItem(BaseItem):
         Returns:
             DriveItem: The target folder (existing or newly created).
         """
-        from office365.runtime.exceptions import ObjectNotFoundException
-
-        names = [name for name in url_path.replace("\\", "/").split("/") if name]
+        names = self._split_path(url_path)
         if not names:
             raise ValueError("Path is empty")
         return_type = DriveItem(self.context)
 
+        def _on_resolved(folder: DriveItem) -> None:
+            return_type._resource_path = folder._resource_path
+            return_type.copy_from(folder)
+
+        self._resolve_path(names, _on_resolved)
+        return return_type
+
+    @staticmethod
+    def _split_path(path: str) -> list[str]:
+        """Split a (server-relative) path into non-empty segments."""
+        return [name for name in path.replace("\\", "/").split("/") if name]
+
+    def _resolve_path(self, names: list[str], on_resolved: Callable[[DriveItem], None]) -> None:
+        """Walk and create the folders in ``names``, then call ``on_resolved`` with the resolved folder.
+
+        Reuses an existing folder per level or creates the missing one. The
+        callback receives a query-bound parent entity, so callers can queue
+        further work (e.g. a file upload) that depends on the parent id. With no
+        names the callback runs synchronously against ``self``.
+
+        Args:
+            names (list[str]): Folder names, relative to this item.
+            on_resolved (Callable[[DriveItem], None]): Invoked with the resolved folder.
+        """
+        from office365.runtime.exceptions import ObjectNotFoundException
+
         def _walk(parent: DriveItem, idx: int) -> None:
             if idx == len(names):
-                return_type._resource_path = parent._resource_path
-                return_type.copy_from(parent)
+                on_resolved(parent)
                 return
 
             child = parent.get_by_path(names[idx])
@@ -282,6 +305,59 @@ class DriveItem(BaseItem):
             self.get_by_path(prefix).get().after_execute(lambda resolved: _walk(resolved, idx + 1))
 
         _walk(self, 0)
+
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Ensure a file exists in a drive, uploading its content when missing",
+    )
+    def ensure_file(self, relative_path: str, content: bytes | str = b"", *, on_conflict: str = "skip") -> DriveItem:
+        """Ensure a file exists at the given path, uploading content when needed.
+
+        The file counterpart of :meth:`ensure_folder`: missing parent folders are
+        created (via :meth:`ensure_folder`), then the leaf file is resolved —
+        reusing the existing file or uploading ``content`` when absent. Fully
+        deferred — run the chain with ``execute_query()`` and the returned item
+        addresses the target file:
+
+            >>> file = drive_item.ensure_file("2024/Q1/placeholder.txt").execute_query()
+
+        Args:
+            relative_path (str): File name or path relative to this item, e.g.
+                ``"report.txt"`` or ``"2024/Q1/report.txt"``.
+            content (bytes or str): File content; ``str`` is encoded as UTF-8.
+            on_conflict (str): Behaviour when the file already exists.
+                ``"skip"`` (default) leaves it untouched, so a re-run is a no-op
+                and ``content`` is never sent; ``"replace"`` overwrites it with
+                ``content`` in a single request.
+
+        Returns:
+            DriveItem: The target file (existing or newly uploaded).
+        """
+        from office365.runtime.queries.get_or_create import get_or_create
+
+        if on_conflict not in ("skip", "replace"):
+            raise ValueError(f"on_conflict must be 'skip' or 'replace', got {on_conflict!r}")
+        names = self._split_path(relative_path)
+        if not names:
+            raise ValueError("Path is empty")
+        name = names[-1]
+        data = content.encode("utf-8") if isinstance(content, str) else content
+        return_type = DriveItem(self.context)
+
+        def _on_resolved(parent_item: DriveItem) -> None:
+            return_type._resource_path = parent_item.get_by_path(name)._resource_path
+            if on_conflict == "replace":
+                parent_item.context.add_query(parent_item._build_upload_query(return_type, data))
+                return
+            get_or_create(
+                find=lambda: parent_item.get_by_path(name).get(),
+                create_query=lambda: parent_item._build_upload_query(return_type, data),
+                return_type=return_type,
+                on_conflict="skip",
+            )
+
+        self._resolve_path(names[:-1], _on_resolved)
         return return_type
 
     def create_powerpoint(self, name: str) -> DriveItem:
@@ -464,6 +540,24 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return qry.return_type
 
+    def _build_upload_query(self, item: DriveItem, content: bytes | None) -> ServiceOperationQuery[DriveItem]:
+        """Build (but do not queue) the ``PUT .../content`` query for ``item``.
+
+        Shared by :meth:`upload` and :meth:`ensure_file` — the latter needs a
+        query it can hand to ``get_or_create``'s deferred create slot.
+
+        Args:
+            item (DriveItem): The file that receives the content.
+            content (bytes or None): The binary content to upload.
+        """
+        qry = ServiceOperationQuery(item, "content", None, content, None, item)
+
+        def _modify_query(request: RequestOptions) -> None:
+            request.method = HttpMethod.Put
+
+        qry.before_execute(_modify_query)
+        return qry
+
     @require_permission(
         delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
         application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
@@ -474,13 +568,7 @@ class DriveItem(BaseItem):
 
         return_type = DriveItem(self.context, UrlPath(name, self.resource_path))
         self.children.add_child(return_type)
-
-        qry = ServiceOperationQuery(return_type, "content", None, content, None, return_type)
-
-        def _modify_query(request: RequestOptions) -> None:
-            request.method = HttpMethod.Put
-
-        self.context.add_query(qry).before_execute(_modify_query)
+        self.context.add_query(self._build_upload_query(return_type, content))
         return return_type
 
     def upload_file(self, path_or_file: str | PathLike | IOBase) -> DriveItem:
