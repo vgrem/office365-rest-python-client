@@ -47,12 +47,6 @@ class MicrofeedData(Entity):
         """Gets the Version property"""
         return self.properties.get("Version", None)
 
-    def delete_all(self) -> Self:
-        """DeleteAll operation."""
-        qry = ServiceOperationQuery(self, "DeleteAll", None, {}, None, None)
-        self.context.add_query(qry)
-        return self
-
     def add_attachment(self, name: str, bytes_: bytes) -> Self:
         """AddAttachment operation.
 

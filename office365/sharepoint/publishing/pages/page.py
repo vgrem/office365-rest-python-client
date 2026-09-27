@@ -51,12 +51,6 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
-    def ensure_title_resource(self) -> Self:
-        """"""
-        qry = ServiceOperationQuery(self, "EnsureTitleResource")
-        self.context.add_query(qry)
-        return self
-
     def get_dependency_metadata(self) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(SitePageDependencyMetadata))
@@ -356,117 +350,6 @@ class SitePage(SitePageMetadata):
     def template_scope(self) -> Optional[int]:
         """Gets the TemplateScope property"""
         return self.properties.get("TemplateScope", None)
-
-    def create_app_page(self, web_part_data_as_json: str) -> ClientResult[str]:
-        """CreateAppPage operation.
-
-        Args:
-            web_part_data_as_json (str): webPartDataAsJson parameter
-        """
-        return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self, "CreateAppPage", None, {"webPartDataAsJson": web_part_data_as_json}, None, return_type
-        )
-        self.context.add_query(qry)
-        return return_type
-
-    def get_page_column_state(self, url: str) -> ClientResult[int]:
-        """GetPageColumnState operation.
-
-        Args:
-            url (str): url parameter
-        """
-        return_type = ClientResult(self.context, int())
-        qry = FunctionQuery(self, "GetPageColumnState", [url], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def is_site_page(self, url: str) -> ClientResult[bool]:
-        """IsSitePage operation.
-
-        Args:
-            url (str): url parameter
-        """
-        return_type = ClientResult(self.context, bool())
-        qry = FunctionQuery(self, "IsSitePage", [url], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def set_html_pages_feature(self, enabled: bool) -> Self:
-        """SetHtmlPagesFeature operation.
-
-        Args:
-            enabled (bool): enabled parameter
-        """
-        qry = ServiceOperationQuery(self, "SetHtmlPagesFeature", None, {"enabled": enabled}, None, None)
-        self.context.add_query(qry)
-        return self
-
-    def set_multilingual(self, enabled: bool) -> Self:
-        """SetMultilingual operation.
-
-        Args:
-            enabled (bool): enabled parameter
-        """
-        qry = ServiceOperationQuery(self, "SetMultilingual", None, {"enabled": enabled}, None, None)
-        self.context.add_query(qry)
-        return self
-
-    def set_scheduling(self, enabled: bool) -> Self:
-        """SetScheduling operation.
-
-        Args:
-            enabled (bool): enabled parameter
-        """
-        qry = ServiceOperationQuery(self, "SetScheduling", None, {"enabled": enabled}, None, None)
-        self.context.add_query(qry)
-        return self
-
-    def update_app_page(
-        self, page_id: int, web_part_data_as_json: str, title: str, include_in_navigation: bool
-    ) -> ClientResult[str]:
-        """UpdateAppPage operation.
-
-        Args:
-            page_id (int): pageId parameter
-            web_part_data_as_json (str): webPartDataAsJson parameter
-            title (str): title parameter
-            include_in_navigation (bool): includeInNavigation parameter
-        """
-        return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(
-            self,
-            "UpdateAppPage",
-            None,
-            {
-                "pageId": page_id,
-                "webPartDataAsJson": web_part_data_as_json,
-                "title": title,
-                "includeInNavigation": include_in_navigation,
-            },
-            None,
-            return_type,
-        )
-        self.context.add_query(qry)
-        return return_type
-
-    def update_full_page_app(self, server_relative_url: str, web_part_data_as_json: str) -> Self:
-        """UpdateFullPageApp operation.
-
-        Args:
-            server_relative_url (str): serverRelativeUrl parameter
-            web_part_data_as_json (str): webPartDataAsJson parameter
-        """
-        qry = ServiceOperationQuery(
-            self,
-            "UpdateFullPageApp",
-            None,
-            {"serverRelativeUrl": server_relative_url, "webPartDataAsJson": web_part_data_as_json},
-            None,
-            None,
-        )
-        self.context.add_query(qry)
-        return self
 
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
         """Amplify operation.

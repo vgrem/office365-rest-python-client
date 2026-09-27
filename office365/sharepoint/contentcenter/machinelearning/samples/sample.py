@@ -2,10 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.queries.function import FunctionQuery
-from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 
 
@@ -128,14 +125,3 @@ class SPMachineLearningSample(Entity):
     def unique_id(self) -> Optional[UUID]:
         """Gets the UniqueId property"""
         return self.properties.get("UniqueId", None)
-
-    def get_template_by_model_id(self, model_id: int) -> ClientResult[StringCollection]:
-        """GetTemplateByModelId operation.
-
-        Args:
-            model_id (int): modelID parameter
-        """
-        return_type = ClientResult(self.context, StringCollection())
-        qry = FunctionQuery(self, "GetTemplateByModelId", [model_id], return_type)
-        self.context.add_query(qry)
-        return return_type

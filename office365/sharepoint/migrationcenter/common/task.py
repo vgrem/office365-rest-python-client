@@ -4,19 +4,8 @@ from datetime import datetime, time
 from typing import Optional
 from uuid import UUID
 
-from office365.runtime.client_result import ClientResult
-from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.v3.static import StaticPath
-from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.collections import GuidCollection
-from office365.sharepoint.migrationcenter.batchdeletionresult import BatchDeletionResult
-from office365.sharepoint.migrationcenter.batchupdatepayload import BatchUpdatePayload
-from office365.sharepoint.migrationcenter.batchupdateresult import BatchUpdateResult
-from office365.sharepoint.migrationcenter.common.results.batch_creation import BatchCreationResult
-from office365.sharepoint.migrationcenter.common.task_definition import MigrationTaskDefinition
 from office365.sharepoint.migrationcenter.common.task_entity_data import MigrationTaskEntityData
-from office365.sharepoint.migrationcenter.mmtasksettings import MMTaskSettings
-from office365.sharepoint.migrationcenter.tasksettings import MigrationTaskSettings
 
 
 class MigrationTask(MigrationTaskEntityData):
@@ -212,58 +201,3 @@ class MigrationTask(MigrationTaskEntityData):
     def workflow_id(self) -> Optional[UUID]:
         """Gets the WorkflowId property"""
         return self.properties.get("WorkflowId", None)
-
-    def batch_create(
-        self,
-        task_definitions: ClientValueCollection[MigrationTaskDefinition],
-        task_settings: MigrationTaskSettings,
-        mm_task_settings: MMTaskSettings,
-    ) -> ClientResult[BatchCreationResult]:
-        """BatchCreate operation.
-
-        Args:
-            task_definitions (ClientValueCollection[MigrationTaskDefinition]): taskDefinitions parameter
-            task_settings (MigrationTaskSettings): taskSettings parameter
-            mm_task_settings (MMTaskSettings): mmTaskSettings parameter
-        """
-        return_type = ClientResult(self.context, BatchCreationResult())
-        qry = ServiceOperationQuery(
-            self,
-            "BatchCreate",
-            None,
-            {"taskDefinitions": task_definitions, "taskSettings": task_settings, "mmTaskSettings": mm_task_settings},
-            None,
-            return_type,
-        )
-        self.context.add_query(qry)
-        return return_type
-
-    def batch_delete(self, task_id_list: list[str], delete_in_progress_task: bool) -> ClientResult[BatchDeletionResult]:
-        """BatchDelete operation.
-
-        Args:
-            task_id_list (list[str]): taskIdList parameter
-            delete_in_progress_task (bool): deleteInProgressTask parameter
-        """
-        return_type = ClientResult(self.context, BatchDeletionResult())
-        qry = ServiceOperationQuery(
-            self,
-            "BatchDelete",
-            None,
-            {"taskIdList": GuidCollection(task_id_list), "deleteInProgressTask": delete_in_progress_task},
-            None,
-            return_type,
-        )
-        self.context.add_query(qry)
-        return return_type
-
-    def batch_update(self, tasks: ClientValueCollection[BatchUpdatePayload]) -> ClientResult[BatchUpdateResult]:
-        """BatchUpdate operation.
-
-        Args:
-            tasks (ClientValueCollection[BatchUpdatePayload]): tasks parameter
-        """
-        return_type = ClientResult(self.context, BatchUpdateResult())
-        qry = ServiceOperationQuery(self, "BatchUpdate", None, {"tasks": tasks}, None, return_type)
-        self.context.add_query(qry)
-        return return_type

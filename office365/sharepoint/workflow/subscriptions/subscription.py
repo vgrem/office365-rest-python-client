@@ -64,12 +64,6 @@ class WorkflowSubscription(Entity):
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
-    def sort(self) -> Self:
-        """Sort operation."""
-        qry = ServiceOperationQuery(self, "Sort", None, {}, None, None)
-        self.context.add_query(qry)
-        return self
-
     def get_external_variable(self, name: str) -> ClientResult[str]:
         """GetExternalVariable operation.
 

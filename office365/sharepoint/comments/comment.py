@@ -4,7 +4,6 @@ from uuid import UUID
 
 from typing_extensions import Self
 
-from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -123,10 +122,3 @@ class Comment(Entity):
     def text(self) -> Optional[str]:
         """Gets the text property"""
         return self.properties.get("text", None)
-
-    def delete_all(self) -> ClientResult[bool]:
-        """DeleteAll operation."""
-        return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(self, "DeleteAll", None, {}, None, return_type)
-        self.context.add_query(qry)
-        return return_type

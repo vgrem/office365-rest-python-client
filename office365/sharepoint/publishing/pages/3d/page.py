@@ -32,12 +32,6 @@ class SitePage3D(SitePage):
     def entity_type_name(self):
         return "SP.Publishing.SitePage3D"
 
-    def activate(self) -> Self:
-        """Activate operation."""
-        qry = ServiceOperationQuery(self, "Activate", None, {}, None, None)
-        self.context.add_query(qry)
-        return self
-
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
         """Amplify operation.
 

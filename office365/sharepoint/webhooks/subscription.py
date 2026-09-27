@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional, Union
-from uuid import UUID
 
 from typing_extensions import Self
 
@@ -76,16 +75,6 @@ class Subscription(Entity):
     def scenarios(self) -> StringCollection:
         """Gets the scenarios property"""
         return self.properties.get("scenarios", StringCollection())
-
-    def remove(self, subscription_id: UUID) -> Self:
-        """Remove operation.
-
-        Args:
-            subscription_id (UUID): subscriptionId parameter
-        """
-        qry = ServiceOperationQuery(self, "Remove", None, {"subscriptionId": subscription_id}, None, None)
-        self.context.add_query(qry)
-        return self
 
     def delete(self) -> Self:
         """Delete operation."""

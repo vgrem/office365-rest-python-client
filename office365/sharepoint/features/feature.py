@@ -1,10 +1,5 @@
 from __future__ import annotations
 
-from uuid import UUID
-
-from typing_extensions import Self
-
-from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
 
@@ -24,14 +19,3 @@ class Feature(Entity):
     @property
     def property_ref_name(self) -> str:
         return "DefinitionId"
-
-    def remove(self, feature_id: UUID, force: bool) -> Self:
-        """Remove operation.
-
-        Args:
-            feature_id (UUID): featureId parameter
-            force (bool): force parameter
-        """
-        qry = ServiceOperationQuery(self, "Remove", None, {"featureId": feature_id, "force": force}, None, None)
-        self.context.add_query(qry)
-        return self

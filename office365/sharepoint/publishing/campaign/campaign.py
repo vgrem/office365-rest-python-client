@@ -8,7 +8,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.publishing.campaign.association import CampaignAssociation
 from office365.sharepoint.publishing.publicationmetadata import PublicationMetadata
 from office365.sharepoint.publishing.sharepointids import SharePointIds
 
@@ -57,25 +56,6 @@ class Campaign(Entity):
     @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Publishing.Campaigns.Campaign"
-
-    def get_associations_by_campaign_id(
-        self, campaign_id: int
-    ) -> ClientResult[ClientValueCollection[CampaignAssociation]]:
-        """GetAssociationsByCampaignId operation.
-
-        Args:
-            campaign_id (int): campaignId parameter
-        """
-        return_type = ClientResult(self.context, ClientValueCollection[CampaignAssociation]())
-        qry = FunctionQuery(self, "GetAssociationsByCampaignId", [campaign_id], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def migrate(self) -> Self:
-        """Migrate operation."""
-        qry = ServiceOperationQuery(self, "Migrate", None, {}, None, None)
-        self.context.add_query(qry)
-        return self
 
     def associate(self, publication_id: int) -> Self:
         """Associate operation.

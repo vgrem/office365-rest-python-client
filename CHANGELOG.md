@@ -250,6 +250,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   queued entities, keeping large record migrations memory-bounded.
 
 ### Fixed
+- **Collection-bound OData operations are no longer generated onto item types.** A bindable
+  `FunctionImport` whose `this` parameter is `Collection(X)` (e.g. `SP.User`'s
+  `RemoveById` / `RemoveByLoginName`) was attached to the item class `X` with the wrong
+  resource path, because the binding type name had `Collection(...)` stripped during
+  normalization. The SharePoint (v3) and Graph (v4) readers now skip collection-bound
+  operations — their home is the hand-written `<Item>Collection` class — and the 49
+  already-generated methods were removed from 24 item classes (e.g. `User.remove_by_id`,
+  `Feature.remove`, `SubtitleFile.add`, `SitePublishingPage.set_multilingual`,
+  `SiteProperties.get_lock_state_by_id`, `MigrationTask.batch_*`).
 - **A custom session carrying its own auth handler now counts as credentials (refs #1045).**
   `with_transport(session=...)` advertises `session.auth` for NTLM/SSPI, but every
   SharePoint request still went through `AuthenticationContext.authenticate_request`,

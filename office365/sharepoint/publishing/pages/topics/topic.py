@@ -47,13 +47,6 @@ class TopicSitePage(SitePage):
     def entity_type_name(self):
         return "SP.Publishing.TopicSitePage"
 
-    def is_content_type_available(self) -> ClientResult[bool]:
-        """IsContentTypeAvailable operation."""
-        return_type = ClientResult(self.context, bool())
-        qry = FunctionQuery(self, "IsContentTypeAvailable", [], return_type)
-        self.context.add_query(qry)
-        return return_type
-
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
         """Amplify operation.
 

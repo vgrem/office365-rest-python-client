@@ -5,9 +5,7 @@ from uuid import UUID
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
-from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.contentcenter.machinelearning.modeldependencies import SPModelDependencies
 from office365.sharepoint.contentcenter.machinelearning.modelpublishconfig import SPModelPublishConfig
 from office365.sharepoint.entity import Entity
@@ -238,26 +236,5 @@ class SPMachineLearningModel(Entity):
             settings (dict): Settings parameter
         """
         qry = ServiceOperationQuery(self, "UpdateModelTypeSpecificSettings", None, {"Settings": settings}, None)
-        self.context.add_query(qry)
-        return self
-
-    def get_extractor_names(self, package_name: str) -> ClientResult[StringCollection]:
-        """GetExtractorNames operation.
-
-        Args:
-            package_name (str): packageName parameter
-        """
-        return_type = ClientResult(self.context, StringCollection())
-        qry = FunctionQuery(self, "GetExtractorNames", [package_name], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def unbind_model_from_content_type(self, content_type_id: str) -> Self:
-        """UnbindModelFromContentType operation.
-
-        Args:
-            content_type_id (str): contentTypeId parameter
-        """
-        qry = ServiceOperationQuery(self, "UnbindModelFromContentType", None, {"contentTypeId": content_type_id}, None)
         self.context.add_query(qry)
         return self

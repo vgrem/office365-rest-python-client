@@ -2,23 +2,6 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from office365.runtime.client_result import ClientResult
-from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.sharepoint.contentcenter.machinelearning.column_autofill_preview_data import (
-    SPMachineLearningColumnAutofillPreviewData,
-)
-from office365.sharepoint.contentcenter.machinelearning.column_autofill_preview_result import (
-    SPMachineLearningColumnAutofillPreviewResult,
-)
-from office365.sharepoint.contentcenter.machinelearning.list_autofill_entity_data import (
-    SPMachineLearningListAutofillEntityData,
-)
-from office365.sharepoint.contentcenter.machinelearning.list_autofill_item_results import (
-    SPMachineLearningListAutofillItemResults,
-)
-from office365.sharepoint.contentcenter.machinelearning.sp_machine_learning_doc_lib_autofill_item_results import (
-    SPMachineLearningDocLibAutofillItemResults,
-)
 from office365.sharepoint.entity import Entity
 
 
@@ -91,66 +74,3 @@ class SPMachineLearningWorkItem(Entity):
     def type_(self) -> Optional[UUID]:
         """Gets the Type property"""
         return self.properties.get("Type", None)
-
-    def autofill_doc_lib_synchronous(
-        self, parameters: SPMachineLearningListAutofillEntityData
-    ) -> ClientResult[SPMachineLearningDocLibAutofillItemResults]:
-        """AutofillDocLibSynchronous operation.
-
-        Args:
-            parameters (SPMachineLearningListAutofillEntityData): parameters parameter
-        """
-        return_type = ClientResult(self.context, SPMachineLearningDocLibAutofillItemResults())
-        qry = ServiceOperationQuery(
-            self, "AutofillDocLibSynchronous", None, {"parameters": parameters}, None, return_type
-        )
-        self.context.add_query(qry)
-        return return_type
-
-    def autofill_list_synchronous(
-        self, parameters: SPMachineLearningListAutofillEntityData
-    ) -> ClientResult[SPMachineLearningListAutofillItemResults]:
-        """AutofillListSynchronous operation.
-
-        Args:
-            parameters (SPMachineLearningListAutofillEntityData): parameters parameter
-        """
-        return_type = ClientResult(self.context, SPMachineLearningListAutofillItemResults())
-        qry = ServiceOperationQuery(self, "AutofillListSynchronous", None, {"parameters": parameters}, None, return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def autofill_test_prompt(
-        self, parameters: SPMachineLearningColumnAutofillPreviewData
-    ) -> ClientResult[SPMachineLearningColumnAutofillPreviewResult]:
-        """AutofillTestPrompt operation.
-
-        Args:
-            parameters (SPMachineLearningColumnAutofillPreviewData): parameters parameter
-        """
-        return_type = ClientResult(self.context, SPMachineLearningColumnAutofillPreviewResult())
-        qry = ServiceOperationQuery(self, "AutofillTestPrompt", None, {"parameters": parameters}, None, return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def create_doc_lib_autofill(self, parameters: SPMachineLearningListAutofillEntityData) -> ClientResult[str]:
-        """CreateDocLibAutofill operation.
-
-        Args:
-            parameters (SPMachineLearningListAutofillEntityData): parameters parameter
-        """
-        return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(self, "CreateDocLibAutofill", None, {"parameters": parameters}, None, return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def create_list_autofill(self, parameters: SPMachineLearningListAutofillEntityData) -> ClientResult[str]:
-        """CreateListAutofill operation.
-
-        Args:
-            parameters (SPMachineLearningListAutofillEntityData): parameters parameter
-        """
-        return_type = ClientResult(self.context, str())
-        qry = ServiceOperationQuery(self, "CreateListAutofill", None, {"parameters": parameters}, None, return_type)
-        self.context.add_query(qry)
-        return return_type

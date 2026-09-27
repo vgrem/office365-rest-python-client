@@ -1,9 +1,6 @@
 from typing import Optional
 from uuid import UUID
 
-from typing_extensions import Self
-
-from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
 
@@ -78,9 +75,3 @@ class WorkflowDefinition(Entity):
     def id(self) -> Optional[UUID]:
         """Gets the Id property"""
         return self.properties.get("Id", None)
-
-    def sort(self) -> Self:
-        """Sort operation."""
-        qry = ServiceOperationQuery(self, "Sort", None, {}, None, None)
-        self.context.add_query(qry)
-        return self

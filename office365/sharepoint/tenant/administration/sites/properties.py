@@ -4,9 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.sharepoint.client_context import ClientContext
@@ -14,8 +12,6 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.tenant.administration.deny_add_and_customize_pages_status import DenyAddAndCustomizePagesStatus
 from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
 from office365.sharepoint.tenant.administration.sharing_capabilities import SharingCapabilities
-from office365.sharepoint.tenant.administration.site_user_group_info import SiteUserGroupInfo
-from office365.sharepoint.tenant.administration.sites.state_properties import SiteStateProperties
 from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysettings import (
     SPOFileVersionFileTypePolicySettings,
 )
@@ -767,63 +763,3 @@ class SiteProperties(Entity):
             }
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
-
-    def check_site_is_archived_by_id(self, site_id: UUID) -> ClientResult[bool]:
-        """CheckSiteIsArchivedById operation.
-
-        Args:
-            site_id (UUID): siteId parameter
-        """
-        return_type = ClientResult(self.context, bool())
-        qry = FunctionQuery(self, "CheckSiteIsArchivedById", [site_id], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def get_group_site_relationship(self, site_id: UUID) -> ClientResult[int]:
-        """GetGroupSiteRelationship operation.
-
-        Args:
-            site_id (UUID): siteId parameter
-        """
-        return_type = ClientResult(self.context, int())
-        qry = FunctionQuery(self, "GetGroupSiteRelationship", [site_id], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def get_lock_state_by_id(self, site_id: UUID) -> ClientResult[int]:
-        """GetLockStateById operation.
-
-        Args:
-            site_id (UUID): siteId parameter
-        """
-        return_type = ClientResult(self.context, int())
-        qry = FunctionQuery(self, "GetLockStateById", [site_id], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def get_site_state_properties(self, site_id: UUID) -> ClientResult[SiteStateProperties]:
-        """GetSiteStateProperties operation.
-
-        Args:
-            site_id (UUID): siteId parameter
-        """
-        return_type = ClientResult(self.context, SiteStateProperties())
-        qry = FunctionQuery(self, "GetSiteStateProperties", [site_id], return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    def get_site_user_groups(
-        self, site_id: UUID, user_group_ids: list[int]
-    ) -> ClientResult[ClientValueCollection[SiteUserGroupInfo]]:
-        """GetSiteUserGroups operation.
-
-        Args:
-            site_id (UUID): siteId parameter
-            user_group_ids (list[int]): userGroupIds parameter
-        """
-        return_type = ClientResult(self.context, ClientValueCollection[SiteUserGroupInfo]())
-        qry = FunctionQuery(
-            self, "GetSiteUserGroups", [site_id, ClientValueCollection(int, user_group_ids)], return_type
-        )
-        self.context.add_query(qry)
-        return return_type

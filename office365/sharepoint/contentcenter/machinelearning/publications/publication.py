@@ -4,8 +4,6 @@ from uuid import UUID
 
 from typing_extensions import Self
 
-from office365.runtime.client_result import ClientResult
-from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 
@@ -175,10 +173,3 @@ class SPMachineLearningPublication(Entity):
         qry = ServiceOperationQuery(self, "Delete")
         self.context.add_query(qry)
         return self
-
-    def check_tenant_publish_permissions(self) -> ClientResult[bool]:
-        """CheckTenantPublishPermissions operation."""
-        return_type = ClientResult(self.context, bool())
-        qry = FunctionQuery(self, "CheckTenantPublishPermissions", [], return_type)
-        self.context.add_query(qry)
-        return return_type
