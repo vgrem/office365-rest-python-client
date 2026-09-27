@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-09-27
+
 ### Added
 - **Locked-file handling (HTTP 423):** a typed
   `FileLockedException` (also exported as `office365.sharepoint.exceptions.SPFileLockedException`)
