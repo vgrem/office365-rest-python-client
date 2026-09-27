@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
+from uuid import UUID
+
+from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.types.property_values import PropertyValues
 
 if TYPE_CHECKING:
     from office365.sharepoint.listitems.listitem import ListItem
@@ -54,3 +60,76 @@ class Alert(Entity):
         from office365.sharepoint.lists.list import List
 
         return self.properties.get("List", List(self.context, ResourcePath("list", self.resource_path)))
+
+    @property
+    def alert_time(self) -> Optional[datetime]:
+        """Gets the AlertTime property"""
+        return self.properties.get("AlertTime", datetime.min)
+
+    @property
+    def alert_type(self) -> Optional[int]:
+        """Gets the AlertType property"""
+        return self.properties.get("AlertType", None)
+
+    @property
+    def delivery_channels(self) -> Optional[int]:
+        """Gets the DeliveryChannels property"""
+        return self.properties.get("DeliveryChannels", None)
+
+    @property
+    def event_type(self) -> Optional[int]:
+        """Gets the EventType property"""
+        return self.properties.get("EventType", None)
+
+    @property
+    def filter_(self) -> Optional[str]:
+        """Gets the Filter property"""
+        return self.properties.get("Filter", None)
+
+    @property
+    def id_(self) -> Optional[UUID]:
+        """Gets the ID property"""
+        return self.properties.get("ID", None)
+
+    @property
+    def item_id(self) -> Optional[int]:
+        """Gets the ItemID property"""
+        return self.properties.get("ItemID", None)
+
+    @property
+    def list_id(self) -> Optional[UUID]:
+        """Gets the ListID property"""
+        return self.properties.get("ListID", None)
+
+    @property
+    def list_url(self) -> Optional[str]:
+        """Gets the ListUrl property"""
+        return self.properties.get("ListUrl", None)
+
+    @property
+    def status(self) -> Optional[int]:
+        """Gets the Status property"""
+        return self.properties.get("Status", None)
+
+    @property
+    def title(self) -> Optional[str]:
+        """Gets the Title property"""
+        return self.properties.get("Title", None)
+
+    @property
+    def user_id(self) -> Optional[int]:
+        """Gets the UserId property"""
+        return self.properties.get("UserId", None)
+
+    @property
+    def all_properties(self) -> PropertyValues:
+        """Gets the AllProperties property"""
+        return self.properties.get(
+            "AllProperties", PropertyValues(self.context, ResourcePath("AllProperties", self.resource_path))
+        )
+
+    def update_alert(self) -> Self:
+        """UpdateAlert operation."""
+        qry = ServiceOperationQuery(self, "UpdateAlert", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

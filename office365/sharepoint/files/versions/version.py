@@ -5,7 +5,6 @@ from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
@@ -57,10 +56,7 @@ class FileVersion(Entity):
         """Gets the user that created the file version."""
         from office365.sharepoint.principal.users.user import User
 
-        return self.properties.get(
-            "CreatedBy",
-            User(self.context, ResourcePath("CreatedBy", self.resource_path)),
-        )
+        return self.properties.get("CreatedBy", User(self.context, ResourcePath("CreatedBy", self.resource_path)))
 
     @property
     def id(self) -> Optional[int]:
@@ -87,12 +83,41 @@ class FileVersion(Entity):
         """Gets a value that specifies the check-in comment."""
         return self.properties.get("CheckInComment", None)
 
-    def set_property(self, key, value, persist_changes=True):  # type: ignore[override]
-        super().set_property(key, value, persist_changes)
-        if key.lower() == self.property_ref_name.lower():
-            assert self.parent_collection is not None
-            if self._resource_path is None:
-                self._resource_path = EntityPath(value, self.parent_collection.resource_path)
-            else:
-                self._resource_path.set_segment(value)
+    @property
+    def check_in_comment(self) -> Optional[str]:
+        """Gets the CheckInComment property"""
+        return self.properties.get("CheckInComment", None)
+
+    @property
+    def expiration_date(self) -> Optional[str]:
+        """Gets the ExpirationDate property"""
+        return self.properties.get("ExpirationDate", None)
+
+    @property
+    def length(self) -> Optional[int]:
+        """Gets the Length property"""
+        return self.properties.get("Length", None)
+
+    @property
+    def size(self) -> Optional[int]:
+        """Gets the Size property"""
+        return self.properties.get("Size", None)
+
+    @property
+    def snapshot_date(self) -> Optional[str]:
+        """Gets the SnapshotDate property"""
+        return self.properties.get("SnapshotDate", None)
+
+    @property
+    def property_ref_name(self) -> str:
+        return "ID"
+
+    def set_expiration_date(self, expiration_date: datetime) -> Self:
+        """SetExpirationDate operation.
+
+        Args:
+            expiration_date (datetime): expirationDate parameter
+        """
+        qry = ServiceOperationQuery(self, "SetExpirationDate", None, {"expirationDate": expiration_date}, None, None)
+        self.context.add_query(qry)
         return self

@@ -428,3 +428,13 @@ class User(Principal):
     @property
     def entity_type_name(self) -> str:
         return "SP.User"
+
+    @property
+    def hex_cid(self) -> Optional[str]:
+        """Gets the HexCid property"""
+        return self.properties.get("HexCid", None)
+
+    @property
+    def user_identity_type(self) -> Optional[int]:
+        """Gets the UserIdentityType property"""
+        return self.properties.get("UserIdentityType", None)

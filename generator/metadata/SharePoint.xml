@@ -1820,7 +1820,11 @@
             <Property Name="Updated" Type="Edm.DateTime" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="SystemSiteLockExpirationResult">
+            <Property Name="DatabaseNowUtc" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="Error" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="ExistingExpirationUtc" Type="Edm.DateTime" Nullable="false"/>
+            <Property Name="ExistingFirstAcquiredUtc" Type="Edm.DateTime" Nullable="false"/>
+            <Property Name="ExistingLockRequestor" Type="Edm.String"/>
             <Property Name="Expiration" Type="Edm.DateTime" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="TemplateMetaData">
@@ -1975,6 +1979,7 @@
          </ComplexType>
          <ComplexType Name="NavigationNodeCreationInformation">
             <Property Name="AsLastNode" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="ExpectedParentContainerId" Type="Edm.Int32" Nullable="false"/>
             <Property Name="IsExternal" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="Title" Type="Edm.String"/>
             <Property Name="Url" Type="Edm.String"/>
@@ -2094,6 +2099,7 @@
             <Property Name="CommentsOnSitePagesDisabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CompatibilityLevel" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ComplianceAttribute" Type="Edm.String"/>
+            <Property Name="CopilotSearchOptOut" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CurrentChangeToken" Type="SP.ChangeToken"/>
             <Property Name="CustomizedFormsPages" Type="SP.CustomizedFormsPageCollection"/>
             <Property Name="DisableAppViews" Type="Edm.Boolean" Nullable="false"/>
@@ -6406,6 +6412,10 @@
             <FunctionImport Name="AutofillListSynchronous" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillItemResults" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
                <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData"/>
+            </FunctionImport>
+            <FunctionImport Name="AutofillSuggestPrompts" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionResult" IsBindable="true">
+               <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
+               <Parameter Name="parameters" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData"/>
             </FunctionImport>
             <FunctionImport Name="AutofillTestPrompt" ReturnType="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewResult" IsBindable="true">
                <Parameter Name="this" Type="Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem)"/>
@@ -11326,15 +11336,6 @@
                <Parameter Name="tableName" Type="Edm.String"/>
                <Parameter Name="schemaName" Type="Edm.String"/>
             </FunctionImport>
-            <FunctionImport Name="GetDataChunks" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-            </FunctionImport>
-            <FunctionImport Name="GetDataChunksIterator" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-            </FunctionImport>
-            <FunctionImport Name="GetDataChunksIteratorStream" ReturnType="Edm.Stream" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-            </FunctionImport>
             <FunctionImport Name="GetDataReader" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="sqlCommandText" Type="Edm.String"/>
@@ -11350,11 +11351,6 @@
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="lowerBound" Type="Edm.Int64" Nullable="false"/>
                <Parameter Name="upperBound" Type="Edm.Int64" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="GetEventCacheDataChunk" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-               <Parameter Name="lastCopiedId" Type="Edm.Int64" Nullable="false"/>
-               <Parameter Name="searchChangeToken" Type="Edm.Int64" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="GetEventCacheDataChunkIterator" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
@@ -11373,10 +11369,6 @@
             </FunctionImport>
             <FunctionImport Name="GetEventCacheExColumns" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-            </FunctionImport>
-            <FunctionImport Name="GetEventCacheExDataChunk" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-               <Parameter Name="lastCopiedId" Type="Edm.Int64" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="GetEventCacheExDataChunkIterator" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
@@ -11408,6 +11400,14 @@
                <Parameter Name="schemaName" Type="Edm.String"/>
                <Parameter Name="tableName" Type="Edm.String"/>
             </FunctionImport>
+            <FunctionImport Name="GetPermsIncrementalRows" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
+               <Parameter Name="serializedScopeIds" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="GetPermsIncrementalRowsStream" ReturnType="Edm.Stream" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
+               <Parameter Name="serializedScopeIds" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="GetPostLockEventSummaryJson" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="watermark" Type="Edm.Int64" Nullable="false"/>
@@ -11430,6 +11430,13 @@
             <FunctionImport Name="GetServiceVersion" ReturnType="Edm.Int32" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
+            <FunctionImport Name="GetSiteChanges" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
+               <Parameter Name="fromChangeNumber" Type="Edm.Int64" Nullable="false"/>
+               <Parameter Name="toChangeNumber" Type="Edm.Int64" Nullable="false"/>
+               <Parameter Name="hasToChangeNumber" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="maxChanges" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
             <FunctionImport Name="GetSiteDeletionRestorableAndMigrationFlags" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
             </FunctionImport>
@@ -11451,11 +11458,6 @@
             <FunctionImport Name="GetSPDeletedSiteRelocationStatus" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
                <Parameter Name="checkLockTime" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="GetTableDataChunk" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
-               <Parameter Name="tableName" Type="Edm.String"/>
-               <Parameter Name="schemaName" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="GetTableDataChunkIterator" ReturnType="Edm.String" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"/>
@@ -12345,6 +12347,15 @@
             <FunctionImport Name="EnsureSmartWikiLibraryFeature" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
             </FunctionImport>
+            <FunctionImport Name="GetSkillStatus" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
+               <Parameter Name="listId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SetSkillStatus" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"/>
+               <Parameter Name="listId" Type="Edm.String"/>
+               <Parameter Name="skillStatus" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_SiteManager_SiteManagerService" ReturnType="Microsoft.SharePoint.SiteManager.SiteManagerService" IsComposable="true" EntitySet="SiteManagers"/>
             <FunctionImport Name="AddSuggestionItems" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.SharePoint.SiteManager.SiteManagerService"/>
@@ -13214,40 +13225,49 @@
             <FunctionImport Name="SP_Automations_AddFlowOwner" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
                <Parameter Name="principalObjectId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_AuthorizeConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
                <Parameter Name="consentPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_ConfirmConnectionConsentCode" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
                <Parameter Name="consentCodePayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_CreateConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="newConnectionId" Type="Edm.String"/>
                <Parameter Name="connectionPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_CreateFirstPartyConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_CreateFlow" ReturnType="Edm.Stream">
                <Parameter Name="flowPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_CreateOrUpdateConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
                <Parameter Name="connectionPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_DeleteConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_DeleteFlow" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_GetConnection" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
@@ -13256,6 +13276,7 @@
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
                <Parameter Name="consentLinkPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_GetConnections" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
@@ -13263,13 +13284,18 @@
             <FunctionImport Name="SP_Automations_GetConnector" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
             </FunctionImport>
-            <FunctionImport Name="SP_Automations_GetConnectors" ReturnType="Edm.Stream" IsSideEffecting="false"/>
+            <FunctionImport Name="SP_Automations_GetConnectors" ReturnType="Edm.Stream" IsSideEffecting="false">
+               <Parameter Name="environmentId" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="SP_Automations_GetDynamicProperties" ReturnType="Edm.Stream">
                <Parameter Name="apiName" Type="Edm.String"/>
                <Parameter Name="connectionName" Type="Edm.String"/>
                <Parameter Name="requestPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
-            <FunctionImport Name="SP_Automations_GetEnvironment" ReturnType="Edm.Stream" IsSideEffecting="false"/>
+            <FunctionImport Name="SP_Automations_GetEnvironment" ReturnType="Edm.Stream" IsSideEffecting="false">
+               <Parameter Name="environmentId" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="SP_Automations_GetFlow" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
             </FunctionImport>
@@ -13301,11 +13327,13 @@
                <Parameter Name="apiName" Type="Edm.String"/>
                <Parameter Name="connectionName" Type="Edm.String"/>
                <Parameter Name="requestPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_ListDynamicSchemaProperties" ReturnType="Edm.Stream">
                <Parameter Name="apiName" Type="Edm.String"/>
                <Parameter Name="connectionName" Type="Edm.String"/>
                <Parameter Name="requestPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_ListFlows" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
@@ -13313,32 +13341,41 @@
             <FunctionImport Name="SP_Automations_ListTemplates" ReturnType="Edm.Stream" IsSideEffecting="false">
                <Parameter Name="properties" Type="Collection(SP.KeyValue)"/>
             </FunctionImport>
-            <FunctionImport Name="SP_Automations_PrepareFlowOperations" ReturnType="Edm.Stream"/>
+            <FunctionImport Name="SP_Automations_PrepareFlowOperations" ReturnType="Edm.Stream">
+               <Parameter Name="environmentId" Type="Edm.String"/>
+            </FunctionImport>
             <FunctionImport Name="SP_Automations_RemoveFlowOwner" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
                <Parameter Name="principalObjectId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_RunRecurrenceFlow" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
                <Parameter Name="triggerName" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_StartFlow" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_StopFlow" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_TestConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_UpdateFirstPartyConnection" ReturnType="Edm.Stream">
                <Parameter Name="connectorName" Type="Edm.String"/>
                <Parameter Name="connectionId" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_Automations_UpdateFlow" ReturnType="Edm.Stream">
                <Parameter Name="flowId" Type="Edm.String"/>
                <Parameter Name="flowPayload" Type="Edm.String"/>
+               <Parameter Name="environmentId" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_BrandCenter" ReturnType="SP.BrandCenter" IsComposable="true" EntitySet="BrandCenters"/>
             <FunctionImport Name="AddSiteTheme" ReturnType="SP.ThemeData" IsBindable="true">
@@ -15456,6 +15493,9 @@
                <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
             </FunctionImport>
             <FunctionImport Name="SP_eSignInternal_GetEsignSettings" ReturnType="Edm.String"/>
+            <FunctionImport Name="SP_eSignInternal_GetStartCreateStatus" ReturnType="Edm.String" IsSideEffecting="false">
+               <Parameter Name="parameters" Type="Collection(SP.KeyValue)"/>
+            </FunctionImport>
             <FunctionImport Name="SP_eSignInternal_InitializeAgreement" ReturnType="Edm.String">
                <Parameter Name="initializeAgreement" Type="Microsoft.SharePoint.ESign.Models.Requests.InitializeAgreementModel"/>
             </FunctionImport>
@@ -15485,6 +15525,319 @@
             </FunctionImport>
             <FunctionImport Name="SP_eSignSelectedWriteBackInternal_UpdateWriteBackFile" ReturnType="Edm.String">
                <Parameter Name="updateWriteBackModel" Type="Microsoft.SharePoint.ESign.Models.Requests.UpdateWriteBackFileModel"/>
+            </FunctionImport>
+            <FunctionImport Name="CancelDeleteFileVersions" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="CancelSetVersionPolicyForDocLibs" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateCopyJob" ReturnType="SP.CopyMigrationInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="exportObjectUris" Type="Collection(Edm.String)"/>
+               <Parameter Name="destinationUri" Type="Edm.String"/>
+               <Parameter Name="options" Type="SP.CopyMigrationOptions"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateCopyJobs" ReturnType="Collection(SP.CopyMigrationInfo)" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="exportObjectUris" Type="Collection(Edm.String)"/>
+               <Parameter Name="destinationUri" Type="Edm.String"/>
+               <Parameter Name="options" Type="SP.CopyMigrationOptions"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateMigrationIngestionJob" ReturnType="Edm.Guid" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="azureContainerSourceUri" Type="Edm.String"/>
+               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
+               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
+               <Parameter Name="ingestionTaskKey" Type="SP.IngestionTaskKey"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateMigrationJob" ReturnType="Edm.Guid" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="azureContainerSourceUri" Type="Edm.String"/>
+               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
+               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateMigrationJobEncrypted" ReturnType="Edm.Guid" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="azureContainerSourceUri" Type="Edm.String"/>
+               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
+               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
+               <Parameter Name="options" Type="SP.EncryptionOption"/>
+            </FunctionImport>
+            <FunctionImport Name="CreatePreviewSPSite" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="upgrade" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="sendemail" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateSPAsyncReadJob" ReturnType="SP.AsyncReadJobInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="url" Type="Edm.String"/>
+               <Parameter Name="readOptions" Type="SP.AsyncReadOptions"/>
+               <Parameter Name="encryptionOption" Type="SP.EncryptionOption"/>
+               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
+               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="CreateSPAsyncReadJobWithMultiUrl" ReturnType="SP.AsyncReadJobInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="urls" Type="Collection(Edm.String)"/>
+               <Parameter Name="readOptions" Type="SP.AsyncReadOptions"/>
+               <Parameter Name="encryptionOption" Type="SP.EncryptionOption"/>
+               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
+               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="DeleteMigrationJob" ReturnType="Edm.Boolean" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="EnqueueApplySensitivityLabelWork" ReturnType="SP.EnqueueJobInformation" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="workItemInformation" Type="SP.AutoLabellingWorkInformation"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_Exists" ReturnType="Edm.Boolean" IsSideEffecting="false">
+               <Parameter Name="url" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="ExtendUpgradeReminderDate" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetBlockDownloadPolicyForFilesData" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetBringYourOwnKeyRecoveryKeyMode" ReturnType="Edm.Int32" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetBringYourOwnKeySiteStatus" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetBringYourOwnKeyTenantStatus" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetCatalog" ReturnType="SP.List" IsComposable="true" IsBindable="true" EntitySet="Lists">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="typeCatalog" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetChanges" ReturnType="Collection(SP.Change)" IsBindable="true" EntitySet="Changes">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="query" Type="SP.ChangeQuery"/>
+            </FunctionImport>
+            <FunctionImport Name="GetCopyJobProgress" ReturnType="SP.CopyJobProgress" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="copyJobInfo" Type="SP.CopyMigrationInfo"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_GetEbarProtectionUnitsExistByIds" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false">
+               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="protectionUnitIds" Type="Collection(Edm.Guid)" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_GetEbarRestoreSessionExistsById" ReturnType="Edm.Boolean" IsSideEffecting="false">
+               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="restoreSessionId" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetHubSiteJoinApprovalCorrelationId" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetMigrationJobProgress" ReturnType="SP.MigrationJobProgress" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="jobId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="nextToken" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="GetMigrationJobStatus" ReturnType="Edm.Int32" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetMigrationStatus" ReturnType="Collection(SP.SPMigrationJobStatus)" IsComposable="true" IsBindable="true" EntitySet="SPMigrationJobStatuss">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetProgressForDeleteFileVersions" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetProgressForExpireFileVersionsBySchedule" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="scheduleFilePath" Type="SP.ResourcePath"/>
+            </FunctionImport>
+            <FunctionImport Name="GetProgressForFileVersionExpirationReport" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="reportFileUrl" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="GetProgressForSetVersionPolicyForDocLibs" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="GetRecycleBinItems" ReturnType="Collection(SP.RecycleBinItem)" IsComposable="true" IsBindable="true" EntitySet="RecycleBinItems">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="pagingInfo" Type="Edm.String"/>
+               <Parameter Name="rowLimit" Type="Edm.Int32" Nullable="false"/>
+               <Parameter Name="isAscending" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="orderBy" Type="Edm.Int32" Nullable="false"/>
+               <Parameter Name="itemState" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_GetSitesExistBySiteIds" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false">
+               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="siteIds" Type="Collection(Edm.Guid)" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_GetSitesExistBySiteUrls" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false">
+               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="urls" Type="Collection(Edm.String)"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_GetUrlById" ReturnType="Edm.String" IsSideEffecting="false">
+               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="stopRedirect" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_Site_GetUrlByIdForWeb" ReturnType="Edm.String" IsSideEffecting="false">
+               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="stopRedirect" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="webId" Type="Edm.Guid"/>
+            </FunctionImport>
+            <FunctionImport Name="GetWebPath" ReturnType="SP.ResourcePath" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="webId" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="GetWebTemplates" ReturnType="Collection(SP.WebTemplate)" IsComposable="true" IsBindable="true" EntitySet="WebTemplates">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="LCID" Type="Edm.Int64" Nullable="false"/>
+               <Parameter Name="overrideCompatLevel" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="Invalidate" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="JoinHubSite" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="hubSiteId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="approvalToken" Type="Edm.String"/>
+               <Parameter Name="approvalCorrelationId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="MultiGeoCopyJob" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="jobId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="userId" Type="Edm.Int32" Nullable="false"/>
+               <Parameter Name="binaryPayload" Type="Edm.Binary"/>
+            </FunctionImport>
+            <FunctionImport Name="NeedsUpgradeByType" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="versionUpgrade" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="recursive" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="NeedsUpgradeByTypeFromSpoShell" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="versionUpgrade" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="recursive" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="OnboardTenantForBringYourOwnKey" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="keyInfo" Type="SP.CustomerKeyInfo"/>
+            </FunctionImport>
+            <FunctionImport Name="OnHubSiteJoinRequestApproved" ReturnType="Edm.String" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="joiningSiteId" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="OnHubSiteJoinRequestCanceled" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="approvalCorrelationId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="OnHubSiteJoinRequestStarted" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="approvalCorrelationId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="OpenWeb" ReturnType="SP.Web" IsBindable="true" EntitySet="Webs">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="strUrl" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="OpenWebById" ReturnType="SP.Web" IsBindable="true" EntitySet="Webs">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="OpenWebUsingPath" ReturnType="SP.Web" IsBindable="true" EntitySet="Webs">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="path" Type="SP.ResourcePath"/>
+            </FunctionImport>
+            <FunctionImport Name="ProcessStorageMetricsChanges" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="ProvisionMigrationContainers" ReturnType="SP.ProvisionedMigrationContainersInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="ProvisionMigrationQueue" ReturnType="SP.ProvisionedMigrationQueueInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="ProvisionTemporaryAzureContainer" ReturnType="SP.ProvisionedTemporaryAzureContainerInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="RecoverTenantForBringYourOwnKey" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="keyInfo" Type="SP.CustomerKeyInfo"/>
+            </FunctionImport>
+            <FunctionImport Name="RegisterHubSite" ReturnType="SP.HubSite" IsBindable="true" EntitySet="Hubsites">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="creationInformation" Type="SP.HubSiteCreationInformation"/>
+            </FunctionImport>
+            <FunctionImport Name="RollTenantBringYourOwnKey" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="keyType" Type="Edm.Int32" Nullable="false"/>
+               <Parameter Name="keyVaultInfo" Type="SP.CustomerKeyVaultInfo"/>
+            </FunctionImport>
+            <FunctionImport Name="RunHealthCheck" ReturnType="SP.SiteHealth.SiteHealthSummary" IsBindable="true" EntitySet="SiteHealthSummarys">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="ruleId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="bRepair" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="bRunAlways" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="RunUpgradeSiteSession" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="versionUpgrade" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="queueOnly" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="sendEmail" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="SetBlockDownloadPolicyForFiles" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="blockDownloadPolicyFileTypeIds" Type="Collection(Edm.String)"/>
+            </FunctionImport>
+            <FunctionImport Name="SetIsContributorOwnerEnabledPropertyForDefaultDocLib" ReturnType="Edm.Boolean" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="propertyValue" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="forceDocLibActivation" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="deleteIfDocLibAlreadyExists" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="allowDeleteOfContributorOwnerEnabledDocLib" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="StartDeleteFileVersions" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="deleteOlderThanDays" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="StartDeleteFileVersionsByMode" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="batchDeleteParameters" Type="SP.FileVersionBatchDeleteParameters"/>
+            </FunctionImport>
+            <FunctionImport Name="StartExpireFileVersionsBySchedule" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="scheduleFilePath" Type="SP.ResourcePath"/>
+            </FunctionImport>
+            <FunctionImport Name="StartFileVersionExpirationReport" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="reportFileUrl" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="StartSetVersionPolicyForDocLibs" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="enableAutoTrim" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="majorVersionLimit" Type="Edm.Int32"/>
+               <Parameter Name="majorWithMinorVersionsLimit" Type="Edm.Int32"/>
+               <Parameter Name="expireAfterDays" Type="Edm.Int32"/>
+            </FunctionImport>
+            <FunctionImport Name="UnregisterHubSite" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+            </FunctionImport>
+            <FunctionImport Name="UpdateClientObjectModelUseRemoteAPIsPermissionSetting" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="requireUseRemoteAPIs" Type="Edm.Boolean" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="UpdateInactiveSiteProperties" ReturnType="Microsoft.SharePoint.ActionableMessage.UpdateCard" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="operation" Type="Edm.String"/>
+               <Parameter Name="executionId" Type="Edm.Int32" Nullable="false"/>
+            </FunctionImport>
+            <FunctionImport Name="ValidateHubSiteJoinApprovalToken" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="SP.Site"/>
+               <Parameter Name="joiningSiteId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="approvalToken" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_FavoriteItemCollection_GetFavoriteItems" ReturnType="Edm.String" IsSideEffecting="false"/>
             <FunctionImport Name="SP_GlutamateController_GetThreadEngagementData" ReturnType="Collection(SP.ThreadEngagementData)">
@@ -17297,319 +17650,6 @@
                <Parameter Name="title" Type="Edm.String"/>
             </FunctionImport>
             <FunctionImport Name="SP_SiteFontPackages_Load" ReturnType="Collection(SP.FontPackage)" IsComposable="true" EntitySet="Fontpackages"/>
-            <FunctionImport Name="CancelDeleteFileVersions" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="CancelSetVersionPolicyForDocLibs" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateCopyJob" ReturnType="SP.CopyMigrationInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="exportObjectUris" Type="Collection(Edm.String)"/>
-               <Parameter Name="destinationUri" Type="Edm.String"/>
-               <Parameter Name="options" Type="SP.CopyMigrationOptions"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateCopyJobs" ReturnType="Collection(SP.CopyMigrationInfo)" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="exportObjectUris" Type="Collection(Edm.String)"/>
-               <Parameter Name="destinationUri" Type="Edm.String"/>
-               <Parameter Name="options" Type="SP.CopyMigrationOptions"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateMigrationIngestionJob" ReturnType="Edm.Guid" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="azureContainerSourceUri" Type="Edm.String"/>
-               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
-               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
-               <Parameter Name="ingestionTaskKey" Type="SP.IngestionTaskKey"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateMigrationJob" ReturnType="Edm.Guid" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="azureContainerSourceUri" Type="Edm.String"/>
-               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
-               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateMigrationJobEncrypted" ReturnType="Edm.Guid" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="azureContainerSourceUri" Type="Edm.String"/>
-               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
-               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
-               <Parameter Name="options" Type="SP.EncryptionOption"/>
-            </FunctionImport>
-            <FunctionImport Name="CreatePreviewSPSite" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="upgrade" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="sendemail" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateSPAsyncReadJob" ReturnType="SP.AsyncReadJobInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="url" Type="Edm.String"/>
-               <Parameter Name="readOptions" Type="SP.AsyncReadOptions"/>
-               <Parameter Name="encryptionOption" Type="SP.EncryptionOption"/>
-               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
-               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="CreateSPAsyncReadJobWithMultiUrl" ReturnType="SP.AsyncReadJobInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="urls" Type="Collection(Edm.String)"/>
-               <Parameter Name="readOptions" Type="SP.AsyncReadOptions"/>
-               <Parameter Name="encryptionOption" Type="SP.EncryptionOption"/>
-               <Parameter Name="azureContainerManifestUri" Type="Edm.String"/>
-               <Parameter Name="azureQueueReportUri" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="DeleteMigrationJob" ReturnType="Edm.Boolean" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="EnqueueApplySensitivityLabelWork" ReturnType="SP.EnqueueJobInformation" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="workItemInformation" Type="SP.AutoLabellingWorkInformation"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_Exists" ReturnType="Edm.Boolean" IsSideEffecting="false">
-               <Parameter Name="url" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="ExtendUpgradeReminderDate" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetBlockDownloadPolicyForFilesData" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetBringYourOwnKeyRecoveryKeyMode" ReturnType="Edm.Int32" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetBringYourOwnKeySiteStatus" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetBringYourOwnKeyTenantStatus" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetCatalog" ReturnType="SP.List" IsComposable="true" IsBindable="true" EntitySet="Lists">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="typeCatalog" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="GetChanges" ReturnType="Collection(SP.Change)" IsBindable="true" EntitySet="Changes">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="query" Type="SP.ChangeQuery"/>
-            </FunctionImport>
-            <FunctionImport Name="GetCopyJobProgress" ReturnType="SP.CopyJobProgress" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="copyJobInfo" Type="SP.CopyMigrationInfo"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_GetEbarProtectionUnitsExistByIds" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false">
-               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="protectionUnitIds" Type="Collection(Edm.Guid)" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_GetEbarRestoreSessionExistsById" ReturnType="Edm.Boolean" IsSideEffecting="false">
-               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="restoreSessionId" Type="Edm.Guid" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="GetHubSiteJoinApprovalCorrelationId" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetMigrationJobProgress" ReturnType="SP.MigrationJobProgress" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="jobId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="nextToken" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="GetMigrationJobStatus" ReturnType="Edm.Int32" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="GetMigrationStatus" ReturnType="Collection(SP.SPMigrationJobStatus)" IsComposable="true" IsBindable="true" EntitySet="SPMigrationJobStatuss">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetProgressForDeleteFileVersions" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetProgressForExpireFileVersionsBySchedule" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="scheduleFilePath" Type="SP.ResourcePath"/>
-            </FunctionImport>
-            <FunctionImport Name="GetProgressForFileVersionExpirationReport" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="reportFileUrl" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="GetProgressForSetVersionPolicyForDocLibs" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="GetRecycleBinItems" ReturnType="Collection(SP.RecycleBinItem)" IsComposable="true" IsBindable="true" EntitySet="RecycleBinItems">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="pagingInfo" Type="Edm.String"/>
-               <Parameter Name="rowLimit" Type="Edm.Int32" Nullable="false"/>
-               <Parameter Name="isAscending" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="orderBy" Type="Edm.Int32" Nullable="false"/>
-               <Parameter Name="itemState" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_GetSitesExistBySiteIds" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false">
-               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="siteIds" Type="Collection(Edm.Guid)" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_GetSitesExistBySiteUrls" ReturnType="Collection(SP.KeyValue)" IsSideEffecting="false">
-               <Parameter Name="siteSubscriptionId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="urls" Type="Collection(Edm.String)"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_GetUrlById" ReturnType="Edm.String" IsSideEffecting="false">
-               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="stopRedirect" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SP_Site_GetUrlByIdForWeb" ReturnType="Edm.String" IsSideEffecting="false">
-               <Parameter Name="id" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="stopRedirect" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="webId" Type="Edm.Guid"/>
-            </FunctionImport>
-            <FunctionImport Name="GetWebPath" ReturnType="SP.ResourcePath" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="siteId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="webId" Type="Edm.Guid" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="GetWebTemplates" ReturnType="Collection(SP.WebTemplate)" IsComposable="true" IsBindable="true" EntitySet="WebTemplates">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="LCID" Type="Edm.Int64" Nullable="false"/>
-               <Parameter Name="overrideCompatLevel" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="Invalidate" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="JoinHubSite" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="hubSiteId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="approvalToken" Type="Edm.String"/>
-               <Parameter Name="approvalCorrelationId" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="MultiGeoCopyJob" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="jobId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="userId" Type="Edm.Int32" Nullable="false"/>
-               <Parameter Name="binaryPayload" Type="Edm.Binary"/>
-            </FunctionImport>
-            <FunctionImport Name="NeedsUpgradeByType" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="versionUpgrade" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="recursive" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="NeedsUpgradeByTypeFromSpoShell" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="versionUpgrade" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="recursive" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="OnboardTenantForBringYourOwnKey" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="keyInfo" Type="SP.CustomerKeyInfo"/>
-            </FunctionImport>
-            <FunctionImport Name="OnHubSiteJoinRequestApproved" ReturnType="Edm.String" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="joiningSiteId" Type="Edm.Guid" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="OnHubSiteJoinRequestCanceled" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="approvalCorrelationId" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="OnHubSiteJoinRequestStarted" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="approvalCorrelationId" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="OpenWeb" ReturnType="SP.Web" IsBindable="true" EntitySet="Webs">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="strUrl" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="OpenWebById" ReturnType="SP.Web" IsBindable="true" EntitySet="Webs">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="gWebId" Type="Edm.Guid" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="OpenWebUsingPath" ReturnType="SP.Web" IsBindable="true" EntitySet="Webs">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="path" Type="SP.ResourcePath"/>
-            </FunctionImport>
-            <FunctionImport Name="ProcessStorageMetricsChanges" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="ProvisionMigrationContainers" ReturnType="SP.ProvisionedMigrationContainersInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="ProvisionMigrationQueue" ReturnType="SP.ProvisionedMigrationQueueInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="ProvisionTemporaryAzureContainer" ReturnType="SP.ProvisionedTemporaryAzureContainerInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="RecoverTenantForBringYourOwnKey" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="keyInfo" Type="SP.CustomerKeyInfo"/>
-            </FunctionImport>
-            <FunctionImport Name="RegisterHubSite" ReturnType="SP.HubSite" IsBindable="true" EntitySet="Hubsites">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="creationInformation" Type="SP.HubSiteCreationInformation"/>
-            </FunctionImport>
-            <FunctionImport Name="RollTenantBringYourOwnKey" ReturnType="SP.CustomerKeyStatusInfo" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="keyType" Type="Edm.Int32" Nullable="false"/>
-               <Parameter Name="keyVaultInfo" Type="SP.CustomerKeyVaultInfo"/>
-            </FunctionImport>
-            <FunctionImport Name="RunHealthCheck" ReturnType="SP.SiteHealth.SiteHealthSummary" IsBindable="true" EntitySet="SiteHealthSummarys">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="ruleId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="bRepair" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="bRunAlways" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="RunUpgradeSiteSession" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="versionUpgrade" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="queueOnly" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="sendEmail" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="SetBlockDownloadPolicyForFiles" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="blockDownloadPolicyFileTypeIds" Type="Collection(Edm.String)"/>
-            </FunctionImport>
-            <FunctionImport Name="SetIsContributorOwnerEnabledPropertyForDefaultDocLib" ReturnType="Edm.Boolean" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="propertyValue" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="forceDocLibActivation" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="deleteIfDocLibAlreadyExists" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="allowDeleteOfContributorOwnerEnabledDocLib" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="StartDeleteFileVersions" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="deleteOlderThanDays" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="StartDeleteFileVersionsByMode" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="batchDeleteParameters" Type="SP.FileVersionBatchDeleteParameters"/>
-            </FunctionImport>
-            <FunctionImport Name="StartExpireFileVersionsBySchedule" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="scheduleFilePath" Type="SP.ResourcePath"/>
-            </FunctionImport>
-            <FunctionImport Name="StartFileVersionExpirationReport" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="reportFileUrl" Type="Edm.String"/>
-            </FunctionImport>
-            <FunctionImport Name="StartSetVersionPolicyForDocLibs" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="enableAutoTrim" Type="Edm.Boolean" Nullable="false"/>
-               <Parameter Name="majorVersionLimit" Type="Edm.Int32"/>
-               <Parameter Name="majorWithMinorVersionsLimit" Type="Edm.Int32"/>
-               <Parameter Name="expireAfterDays" Type="Edm.Int32"/>
-            </FunctionImport>
-            <FunctionImport Name="UnregisterHubSite" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-            </FunctionImport>
-            <FunctionImport Name="UpdateClientObjectModelUseRemoteAPIsPermissionSetting" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="requireUseRemoteAPIs" Type="Edm.Boolean" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="UpdateInactiveSiteProperties" ReturnType="Microsoft.SharePoint.ActionableMessage.UpdateCard" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="operation" Type="Edm.String"/>
-               <Parameter Name="executionId" Type="Edm.Int32" Nullable="false"/>
-            </FunctionImport>
-            <FunctionImport Name="ValidateHubSiteJoinApprovalToken" ReturnType="Edm.Boolean" IsSideEffecting="false" IsBindable="true">
-               <Parameter Name="this" Type="SP.Site"/>
-               <Parameter Name="joiningSiteId" Type="Edm.Guid" Nullable="false"/>
-               <Parameter Name="approvalToken" Type="Edm.String"/>
-            </FunctionImport>
             <FunctionImport Name="InheritTenantSettings" IsBindable="true">
                <Parameter Name="this" Type="SP.SiteVersionPolicyManager"/>
             </FunctionImport>
@@ -18993,6 +19033,7 @@
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
                <Parameter Name="policyId" Type="Edm.Guid" Nullable="false"/>
                <Parameter Name="siteUrl" Type="Edm.String"/>
+               <Parameter Name="isExcluded" Type="Edm.Boolean" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="AddSPOContainerUserRole" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -19109,6 +19150,7 @@
                <Parameter Name="monthsSinceLastAccessCriteria" Type="Edm.Int32" Nullable="false"/>
                <Parameter Name="fileTypeCriteria" Type="Collection(Edm.String)"/>
                <Parameter Name="isWhatIfMode" Type="Edm.Boolean" Nullable="false"/>
+               <Parameter Name="fileTypeExclusionCriteria" Type="Collection(Edm.String)"/>
             </FunctionImport>
             <FunctionImport Name="CreatePolicyDefinition" ReturnType="Microsoft.SharePoint.Administration.TenantAdmin.TenantAdminPolicyDefinition" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -20111,6 +20153,7 @@
                <Parameter Name="shouldUpdateWhatIfMode" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="isWhatIfMode" Type="Edm.Boolean" Nullable="false"/>
                <Parameter Name="state" Type="Edm.String"/>
+               <Parameter Name="fileTypeExclusionCriteria" Type="Collection(Edm.String)"/>
             </FunctionImport>
             <FunctionImport Name="SetFileTypeVersionPolicy" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Online.SharePoint.TenantAdministration.Tenant"/>
@@ -24228,6 +24271,39 @@
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewResult/Value">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/ChoiceSettings">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/ColumnDataType">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/Description">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/DisplayName">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/ListId">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/MaxSuggestions">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData/Mode">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionResult">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionResult/Prompts">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionResult/Status">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.Office.Server.ContentCenter.SPMachineLearningDocLibAutofillItemResults">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -24895,6 +24971,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.Portal.Home.SharePointHomePageContext/AlternateWebAppHost">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="Microsoft.SharePoint.Portal.Home.SharePointHomePageContext/CustomFormURL">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.Portal.Home.SharePointHomePageContext/ExperienceState">
@@ -30421,6 +30500,9 @@
          <Annotations Target="SP.ApiData/AutofillListSynchronous(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningListAutofillEntityData)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/AutofillSuggestPrompts(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPromptSuggestionData)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/AutofillTestPrompt(Collection(Microsoft.Office.Server.ContentCenter.SPMachineLearningWorkItem), Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillPreviewData)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -32995,6 +33077,9 @@
          <Annotations Target="SP.ApiData/SP_eSignInternal_GetEsignSettings()">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/SP_eSignInternal_GetStartCreateStatus(Collection(SP.KeyValue))">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/SP_eSignInternal_InitializeAgreement(Microsoft.SharePoint.ESign.Models.Requests.InitializeAgreementModel)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -33023,6 +33108,93 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_eSignSelectedWriteBackInternal_UpdateWriteBackFile(Microsoft.SharePoint.ESign.Models.Requests.UpdateWriteBackFileModel)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/CancelDeleteFileVersions(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/CancelSetVersionPolicyForDocLibs(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetBlockDownloadPolicyForFilesData(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetBringYourOwnKeyRecoveryKeyMode(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetBringYourOwnKeySiteStatus(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetBringYourOwnKeyTenantStatus(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetHubSiteJoinApprovalCorrelationId(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetProgressForDeleteFileVersions(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetProgressForExpireFileVersionsBySchedule(SP.Site, SP.ResourcePath)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetProgressForFileVersionExpirationReport(SP.Site, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetProgressForSetVersionPolicyForDocLibs(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/GetWebPath(SP.Site, Edm.Guid, Edm.Guid)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/JoinHubSite(SP.Site, Edm.Guid, Edm.String, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/MultiGeoCopyJob(SP.Site, Edm.Guid, Edm.Int32, Edm.Binary)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/OnboardTenantForBringYourOwnKey(SP.Site, SP.CustomerKeyInfo)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/OnHubSiteJoinRequestApproved(SP.Site, Edm.Guid)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/OnHubSiteJoinRequestCanceled(SP.Site, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/OnHubSiteJoinRequestStarted(SP.Site, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/RecoverTenantForBringYourOwnKey(SP.Site, SP.CustomerKeyInfo)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/RegisterHubSite(SP.Site, SP.HubSiteCreationInformation)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/RollTenantBringYourOwnKey(SP.Site, Edm.Int32, SP.CustomerKeyVaultInfo)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SetBlockDownloadPolicyForFiles(SP.Site, Collection(Edm.String))">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/StartDeleteFileVersions(SP.Site, Edm.Int32)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/StartDeleteFileVersionsByMode(SP.Site, SP.FileVersionBatchDeleteParameters)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/StartExpireFileVersionsBySchedule(SP.Site, SP.ResourcePath)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/StartFileVersionExpirationReport(SP.Site, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/StartSetVersionPolicyForDocLibs(SP.Site, Edm.Boolean, Edm.Int32, Edm.Int32, Edm.Int32)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/UnregisterHubSite(SP.Site)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/ValidateHubSiteJoinApprovalToken(SP.Site, Edm.Guid, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_FavoriteItemCollection_GetFavoriteItems()">
@@ -33461,93 +33633,6 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SP_SiteFontPackages_Load()">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/CancelDeleteFileVersions(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/CancelSetVersionPolicyForDocLibs(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetBlockDownloadPolicyForFilesData(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetBringYourOwnKeyRecoveryKeyMode(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetBringYourOwnKeySiteStatus(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetBringYourOwnKeyTenantStatus(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetHubSiteJoinApprovalCorrelationId(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetProgressForDeleteFileVersions(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetProgressForExpireFileVersionsBySchedule(SP.Site, SP.ResourcePath)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetProgressForFileVersionExpirationReport(SP.Site, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetProgressForSetVersionPolicyForDocLibs(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/GetWebPath(SP.Site, Edm.Guid, Edm.Guid)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/JoinHubSite(SP.Site, Edm.Guid, Edm.String, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/MultiGeoCopyJob(SP.Site, Edm.Guid, Edm.Int32, Edm.Binary)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/OnboardTenantForBringYourOwnKey(SP.Site, SP.CustomerKeyInfo)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/OnHubSiteJoinRequestApproved(SP.Site, Edm.Guid)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/OnHubSiteJoinRequestCanceled(SP.Site, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/OnHubSiteJoinRequestStarted(SP.Site, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/RecoverTenantForBringYourOwnKey(SP.Site, SP.CustomerKeyInfo)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/RegisterHubSite(SP.Site, SP.HubSiteCreationInformation)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/RollTenantBringYourOwnKey(SP.Site, Edm.Int32, SP.CustomerKeyVaultInfo)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/SetBlockDownloadPolicyForFiles(SP.Site, Collection(Edm.String))">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/StartDeleteFileVersions(SP.Site, Edm.Int32)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/StartDeleteFileVersionsByMode(SP.Site, SP.FileVersionBatchDeleteParameters)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/StartExpireFileVersionsBySchedule(SP.Site, SP.ResourcePath)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/StartFileVersionExpirationReport(SP.Site, Edm.String)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/StartSetVersionPolicyForDocLibs(SP.Site, Edm.Boolean, Edm.Int32, Edm.Int32, Edm.Int32)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/UnregisterHubSite(SP.Site)">
-            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
-         </Annotations>
-         <Annotations Target="SP.ApiData/ValidateHubSiteJoinApprovalToken(SP.Site, Edm.Guid, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/InheritTenantSettings(SP.SiteVersionPolicyManager)">
@@ -34337,6 +34422,19 @@
          <ComplexType Name="SPMachineLearningColumnAutofillPreviewResult">
             <Property Name="Status" Type="Edm.String"/>
             <Property Name="Value" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="SPMachineLearningColumnAutofillPromptSuggestionData">
+            <Property Name="ChoiceSettings" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningColumnAutofillChoiceSettings"/>
+            <Property Name="ColumnDataType" Type="Edm.String"/>
+            <Property Name="Description" Type="Edm.String"/>
+            <Property Name="DisplayName" Type="Edm.String"/>
+            <Property Name="ListId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="MaxSuggestions" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="Mode" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="SPMachineLearningColumnAutofillPromptSuggestionResult">
+            <Property Name="Prompts" Type="Collection(Edm.String)"/>
+            <Property Name="Status" Type="Edm.String"/>
          </ComplexType>
          <ComplexType Name="SPMachineLearningDocLibAutofillItemResults">
             <Property Name="Failed" Type="Collection(Edm.Int32)" Nullable="false"/>
@@ -40639,6 +40737,7 @@
          <ComplexType Name="SharePointHomePageContext">
             <Property Name="ActiveFlights" Type="Collection(Edm.String)"/>
             <Property Name="AlternateWebAppHost" Type="Edm.String"/>
+            <Property Name="CustomFormURL" Type="Edm.String"/>
             <Property Name="ExperienceState" Type="Edm.Int64" Nullable="false"/>
             <Property Name="IsGraphEnabled" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="IsGroupCreationNewUXEnabled" Type="Edm.Boolean" Nullable="false"/>
@@ -45081,6 +45180,7 @@
             <Property Name="CreatedBy" Type="Edm.String"/>
             <Property Name="CreatedOn" Type="Edm.DateTime" Nullable="false"/>
             <Property Name="FileTypeCriteria" Type="Collection(Edm.String)"/>
+            <Property Name="FileTypeExclusionCriteria" Type="Collection(Edm.String)"/>
             <Property Name="LastAccessDateCriteria" Type="Edm.Int32" Nullable="false"/>
             <Property Name="LastModifiedBy" Type="Edm.String"/>
             <Property Name="LastRunDate" Type="Edm.DateTime" Nullable="false"/>
@@ -45170,6 +45270,7 @@
             <Property Name="Department" Type="Edm.String"/>
             <Property Name="ExternalSharing" Type="Edm.String"/>
             <Property Name="IncludeE7Fields" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="Operations" Type="Edm.String"/>
             <Property Name="RequestVolume" Type="Edm.Int64" Nullable="false"/>
             <Property Name="RestrictSiteAccessEnabled" Type="Edm.String"/>
             <Property Name="RestrictSiteDiscoveryEnabled" Type="Edm.String"/>
@@ -45420,7 +45521,9 @@
             <Property Name="ExcludedBlockDownloadGroupIds" Type="Collection(Edm.Guid)" Nullable="false"/>
             <Property Name="ExpireVersionsAfterDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ExternalUserExpirationInDays" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="FileAnonymousLinkType" Type="Edm.Int32" Nullable="false"/>
             <Property Name="FileTypesForVersionExpiration" Type="Collection(Edm.String)"/>
+            <Property Name="FolderAnonymousLinkType" Type="Edm.Int32" Nullable="false"/>
             <Property Name="GroupId" Type="Edm.Guid" Nullable="false"/>
             <Property Name="GroupOwnerLoginName" Type="Edm.String"/>
             <Property Name="HasHolds" Type="Edm.Boolean" Nullable="false"/>
@@ -45703,6 +45806,7 @@
             <Property Name="ContentSecurityPolicyConfigSynced" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ContentSecurityPolicyEnforcement" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="ContentTypeSyncSiteTemplatesList" Type="Collection(Edm.String)"/>
+            <Property Name="CopilotSearchOptIn" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="CoreAnyoneSharingLinkMaxExpirationInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="CoreAnyoneSharingLinkRecommendedExpirationInDays" Type="Edm.Int32" Nullable="false"/>
             <Property Name="CoreBlockGuestsAsSiteAdmin" Type="Edm.Int32" Nullable="false"/>
