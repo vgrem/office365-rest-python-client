@@ -50,6 +50,7 @@ root_site_url = _optional("OFFICE365_ROOT_SITE_URL", f"https://{tenant_prefix}.s
 site_url = _optional("OFFICE365_SITE_URL", root_site_url)
 team_site_url = _optional("OFFICE365_TEAM_SITE_URL", f"https://{tenant_prefix}.sharepoint.com/sites/project")
 admin_site_url = _optional("OFFICE365_ADMIN_SITE_URL", f"https://{tenant_prefix}-admin.sharepoint.com")
+content_type_hub_url = _optional("OFFICE365_CONTENT_TYPE_HUB_URL", f"{root_site_url}/sites/contentTypeHub")
 
 # Optional — only needed for specific scenarios (empty default = skip)
 cert_thumbprint = _optional("OFFICE365_CERT_THUMBPRINT")

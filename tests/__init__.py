@@ -23,6 +23,9 @@ from tests.settings import (
     client_secret as test_client_secret,
 )
 from tests.settings import (
+    content_type_hub_url as test_content_type_hub_url,
+)
+from tests.settings import (
     password as test_password,
 )
 from tests.settings import (
@@ -62,6 +65,7 @@ __all__ = [
     "test_client_credentials",
     "test_client_id",
     "test_client_secret",
+    "test_content_type_hub_url",
     "test_password",
     "test_root_site_url",
     "test_shared_mailbox_upn",
