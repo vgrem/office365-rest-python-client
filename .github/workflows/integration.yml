@@ -35,12 +35,13 @@ jobs:
         run: uv sync --frozen --all-extras
       - name: Run integration tests
         env:
-          office365_python_sdk_securevars: ${{ secrets.OFFICE365_PYTHON_SDK_SECUREVARS }}
+          OFFICE365_ENV: ${{ secrets.OFFICE365_ENV }}
         run: |
-          if [ -z "$OFFICE365_PYTHON_SDK_SECUREVARS" ]; then
-            echo "❌ OFFICE365_PYTHON_SDK_SECUREVARS not set"
+          if [ -z "$OFFICE365_ENV" ]; then
+            echo "❌ OFFICE365_ENV secret not set"
             exit 1
           fi
+          printf '%s\n' "$OFFICE365_ENV" > .env
           args="${{ github.event.inputs.pytest_args }}"
           if [ -z "$args" ]; then
             uv run pytest -q

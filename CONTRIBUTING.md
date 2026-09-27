@@ -86,16 +86,31 @@ It is the fastest way to validate a change, and where new tests should go.
 ### End-to-end tests (maintainers / optional)
 
 The `tests/` suites outside `tests/unit` are end-to-end and need real Microsoft 365
-credentials. If you have a tenant, you can run them with a `.env` file in the project
-root:
+credentials. If you have a tenant, create a `.env` file in the project root (it is
+`.gitignore`d):
 
 ```bash
-export office365_python_sdk_securevars='{username};{password};{client_id};{client_secret}'
-. .env
+OFFICE365_TENANT=contoso.onmicrosoft.com
+OFFICE365_CLIENT_ID=00000000-0000-0000-0000-000000000000
+OFFICE365_CLIENT_SECRET=...
+OFFICE365_USERNAME=admin@contoso.onmicrosoft.com
+OFFICE365_PASSWORD=...
+# optional — derived from OFFICE365_TENANT when omitted
+OFFICE365_TENANT_PREFIX=contoso
+OFFICE365_TEAM_SITE_URL=https://contoso.sharepoint.com/sites/project
+OFFICE365_ADMIN_SITE_URL=https://contoso-admin.sharepoint.com
+```
+
+`tests/settings.py` reads these variables and loads `.env` automatically, so no
+`export` is needed:
+
+```bash
 uv run pytest tests/sharepoint/
 ```
 
-The order of values is significant because the tests parse by index.
+`OFFICE365_TENANT`, `OFFICE365_CLIENT_ID`, `OFFICE365_CLIENT_SECRET`,
+`OFFICE365_USERNAME` and `OFFICE365_PASSWORD` are mandatory; the rest are optional
+and only needed for specific scenarios.
 
 #### Required tenant permissions
 
@@ -113,6 +128,9 @@ For comprehensive testing, your test tenant should have these admin roles:
   tests are skipped automatically; formatting, linting, type checking and the
   offline unit suite still run.
 - Maintainers run the full E2E suite on branches with secrets before merging.
+- The scheduled `Integration Tests` workflow reads one repository secret,
+  `OFFICE365_ENV`, which holds the full `.env` contents, and writes it to `.env`
+  before running `pytest`.
 
 ## Finding Something to Work On
 

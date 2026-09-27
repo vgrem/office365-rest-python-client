@@ -23,18 +23,21 @@ $ pip install -e ".[examples,ntlm]"
 
 ## Running tests
 
-Most tests are end-to-end and run against a real tenant. Configure your credentials in a `.env` file:
+Most tests are end-to-end and run against a real tenant. Configure your credentials in a `.env` file in the project root:
 
 ```bash
-export office365_python_sdk_securevars='{username};{password};{client_id};{client_password}'
+OFFICE365_TENANT=contoso.onmicrosoft.com
+OFFICE365_CLIENT_ID=00000000-0000-0000-0000-000000000000
+OFFICE365_CLIENT_SECRET=...
+OFFICE365_USERNAME=admin@contoso.onmicrosoft.com
+OFFICE365_PASSWORD=...
 ```
 
-This file is `.gitignore`d. Source it before running tests:
+This file is `.gitignore`d — `tests/settings.py` reads it automatically, so just run:
 
 ```bash
-$ . .env
 $ pytest                        # all tests
-$ pytest tests/test_sharepoint   # specific area
+$ pytest tests/sharepoint       # specific area
 ```
 
 ### Required tenant roles
