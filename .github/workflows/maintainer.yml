@@ -1,0 +1,64 @@
+name: Maintainer bot
+
+# Runs trusted slash-commands on issues as office365-maintainer[bot].
+#
+# The workflow definition is always taken from the default branch, so a pull
+# request cannot alter it, and comments on pull requests are ignored.
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maintainer-bot-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: >
+      github.event.issue.pull_request == null &&
+      github.event.comment.user.type != 'Bot' &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mint app token
+        id: app
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Run slash-command
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Read the first line, trim surrounding whitespace, drop a CR from CRLF.
+          command="$(printf '%s\n' "$COMMENT_BODY" | head -n 1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+          case "$command" in
+            /close)
+              gh issue close "$ISSUE_NUMBER" --repo "$REPOSITORY" \
+                --comment "Closing as answered. Reopen if the problem persists."
+              ;;
+            /reopen)
+              gh issue reopen "$ISSUE_NUMBER" --repo "$REPOSITORY"
+              ;;
+            "/duplicate "*)
+              duplicate="${command#/duplicate }"
+              duplicate="${duplicate#\#}"
+              gh issue comment "$ISSUE_NUMBER" --repo "$REPOSITORY" --body "Duplicate of #${duplicate}."
+              gh issue close "$ISSUE_NUMBER" --repo "$REPOSITORY"
+              ;;
+            "/label "*)
+              gh issue edit "$ISSUE_NUMBER" --repo "$REPOSITORY" --add-label "${command#/label }"
+              ;;
+            *)
+              echo "No supported slash-command in '${command}'; ignoring."
+              ;;
+          esac

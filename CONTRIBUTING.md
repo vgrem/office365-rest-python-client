@@ -204,6 +204,36 @@ of the [README](README.md) if you'd like to help fund maintenance.
 
 Be respectful and constructive in all interactions.
 
+### Maintainer automation
+
+Issue triage is automated by the `office365-maintainer` GitHub App, which posts
+as [`office365-maintainer[bot]`](https://github.com/apps/office365-maintainer).
+Maintainers can drive it with a slash-command in an issue comment:
+
+| Command | Effect |
+| --- | --- |
+| `/close` | Close the issue with a canned reply |
+| `/reopen` | Reopen the issue |
+| `/duplicate #123` | Link as a duplicate, then close |
+| `/label <name>` | Add an existing label to the issue |
+
+Commands are honored only for comments from `OWNER`, `MEMBER` or `COLLABORATOR`
+accounts (see `.github/workflows/maintainer.yml`).
+
+To perform manual actions under the same bot identity, export a short-lived
+installation token and use `gh` as usual:
+
+```bash
+export GH_TOKEN="$(uv run python scripts/github_app_token.py \
+    --app-id <app-id> \
+    --private-key ~/.config/office365-maintainer/app.pem \
+    --repo vgrem/office365-rest-python-client)"
+gh issue comment 123 --body-file reply.md
+```
+
+The token expires after about an hour; re-run the command to refresh it. `git`
+operations are unaffected and still use your own identity.
+
 ### License
 
 MIT License. By contributing, you agree that your contributions are licensed under
