@@ -13,7 +13,14 @@ from office365.runtime.client_request_exception import (
     ErrorPayload,
     register_error_type,
 )
+from office365.runtime.exceptions import FileLockedException
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE
+
+#: SharePoint-flavoured alias of :class:`~office365.runtime.exceptions.FileLockedException`.
+#: Raised when a file is open for coauthoring (HTTP 423 /
+#: ``Microsoft.SharePoint.SPFileLockException``) and therefore cannot be
+#: overwritten. See ``FileLockedException.GUIDANCE`` for the available options.
+SPFileLockedException = FileLockedException
 
 
 class SecurityValidationException(ClientRequestException):

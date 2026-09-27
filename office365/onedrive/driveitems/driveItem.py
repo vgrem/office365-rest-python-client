@@ -427,6 +427,22 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
+    def delete_object(self, bypass_shared_lock: bool = False) -> Self:
+        """Deletes the driveItem.
+
+        Args:
+            bypass_shared_lock: Send ``Prefer: bypass-shared-lock`` so the delete
+                succeeds even when the item is open for editing. Without it the
+                server rejects the request with
+                :class:`~office365.runtime.exceptions.FileLockedException` (HTTP 423).
+        """
+        super().delete_object()
+        if bypass_shared_lock:
+            from office365.runtime.http.prefer import prefer_bypass_shared_lock
+
+            self.context.before_execute(prefer_bypass_shared_lock, once=True)
+        return self
+
     def extract_sensitivity_labels(
         self,
     ) -> ClientResult[ExtractSensitivityLabelsResult]:

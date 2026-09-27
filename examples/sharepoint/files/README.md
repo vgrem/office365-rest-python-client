@@ -150,6 +150,17 @@ For libraries with required check-out or content approval:
 | Publish / unpublish | [`publish_unpublish.py`](./publish_unpublish.py) | Submit for approval |
 | Approve / deny | [`approve_deny.py`](./approve_deny.py) | Review submitted files |
 
+### Locked files (open in Office)
+
+A file open in Office holds a **shared lock** — different from a check-out
+lock. An overwrite fails with `SPFileLockedException` (HTTP 423), because the
+API cannot break a shared lock. The library makes the failure catchable and
+offers opt-in remedies:
+
+| What | File | Notes |
+|------|------|-------|
+| Retry / metadata / bypass delete | [`handle_locked_file.py`](./handle_locked_file.py) | `retry_on(FileLockedException)`, `update_ex(bypass_shared_lock=True)`, `delete_object(bypass_shared_lock=True)` |
+
 ## Sharing
 
 | What | File | Notes |

@@ -182,3 +182,22 @@ def retry(
 
         return decorator
     return _run_with_retry(func, **options)  # type: ignore[arg-type]
+
+
+def retry_on(*exception_types: Type[Exception]) -> Callable[[Exception], bool]:
+    """Return a predicate that retries only the given exception types.
+
+    By default only transient failures are retried (HTTP 408/429/500/502/503/504
+    or non-HTTP errors). Use this as ``is_retriable`` to opt into retrying
+    failures the runtime does not consider transient - for example a file that
+    is locked while a user has it open (HTTP 423)::
+
+        from office365.runtime.exceptions import FileLockedException
+        from office365.runtime.retry import retry_on
+
+        folder.upload_file(name, content).execute_query_retry(is_retriable=retry_on(FileLockedException))
+
+    Args:
+        exception_types: Exception classes that should be retried.
+    """
+    return lambda ex: isinstance(ex, exception_types)

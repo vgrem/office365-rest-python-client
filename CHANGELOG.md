@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Locked-file handling (HTTP 423):** a typed
+  `FileLockedException` (also exported as `office365.sharepoint.exceptions.SPFileLockedException`)
+  classifies the `Microsoft.SharePoint.SPFileLockException` /
+  Graph `resourceLocked` shared-lock response and parses the lock holder into
+  `.lock_owner`, with remediation in `.GUIDANCE`. `execute_query_retry(...,
+  is_retriable=retry_on(FileLockedException))` opts into retrying otherwise
+  permanent lock errors (new `retry_on` helper), and `delete_object(
+  bypass_shared_lock=True)` sends `Prefer: bypass-shared-lock` on Graph and
+  SharePoint. See `examples/sharepoint/files/handle_locked_file.py`.
 - **Idempotent file provisioning:** `DriveItem.ensure_file(path, content,
   on_conflict=...)` — the file counterpart of `ensure_folder`. Missing parent
   folders are created, then the leaf file is reused when present (`"skip"`, the

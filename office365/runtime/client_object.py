@@ -146,6 +146,7 @@ class ClientObject:
         success_callback=None,
         failure_callback=None,
         exceptions=(ClientRequestException,),
+        is_retriable=None,
     ) -> Self:
         """Executes the current set of data retrieval queries and method invocations and retries it if needed.
 
@@ -157,6 +158,9 @@ class ClientObject:
             success_callback (callable): A callback to call if the request executes successfully.
             failure_callback (callable): A callback to call if the request fails to execute.
             exceptions (tuple): Tuple of exceptions that we retry.
+            is_retriable (callable): Optional predicate deciding whether a caught
+                exception is retried. Defaults to transient errors; pass
+                ``retry_on(...)`` to also retry otherwise-permanent errors.
         """
         self.context.execute_query_retry(
             max_retry=max_retry,
@@ -166,6 +170,7 @@ class ClientObject:
             success_callback=success_callback,
             failure_callback=failure_callback,
             exceptions=exceptions,
+            is_retriable=is_retriable,
         )
         return self
 

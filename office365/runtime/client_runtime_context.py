@@ -71,6 +71,7 @@ class ClientRuntimeContext(ABC):
         success_callback: Optional[Callable[[ClientObject | None], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], Optional[int]]] = None,
         exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+        is_retriable: Optional[Callable[[Exception], bool]] = None,
     ) -> None:
         """Executes pending queries with retry logic.
 
@@ -91,8 +92,12 @@ class ClientRuntimeContext(ABC):
             failure_callback: Called after each failed attempt; may return a
                 retry delay in seconds to override the backoff
             exceptions: Exception types that trigger retries
+            is_retriable: Optional predicate deciding whether a caught exception
+                is retried. Defaults to :func:`~office365.runtime.retry.is_transient_error`;
+                pass :func:`~office365.runtime.retry.retry_on` to also retry
+                otherwise-permanent errors such as a locked file (HTTP 423).
         """
-        from office365.runtime.retry import retry
+        from office365.runtime.retry import is_transient_error, retry
 
         def _on_failure(_attempt: int, ex: Exception) -> Optional[int]:
             # Re-queue the failed query for a retry, except on the last attempt —
@@ -113,6 +118,7 @@ class ClientRuntimeContext(ABC):
                 max_delay=max_delay,
                 jitter=jitter,
                 exceptions=exceptions,
+                is_retriable=is_retriable or is_transient_error,
                 on_failure=_on_failure,
                 on_success=_on_success,
             )
