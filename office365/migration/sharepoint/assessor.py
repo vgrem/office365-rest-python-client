@@ -105,6 +105,9 @@ class MigrationAssessor(Entity):
         report = runner.report
 
         needs_site = bool(runner.scanners(ScanContainer.SITE))
+        needs_site_template = any(
+            scanner.scan_name == "UnsupportedSiteTemplates" for scanner in runner.scanners(ScanContainer.SITE)
+        )
         # item counts / last-modified feed the SITE summary and the LIST-container scans
         needs_list_metadata = needs_site or bool(runner.scanners(ScanContainer.LIST))
         summary = SiteScanSummary()
@@ -140,9 +143,14 @@ class MigrationAssessor(Entity):
         # site collection metadata (usage/storage, owner) for SITE-container scans
         if needs_site:
             site = self._web.context.site
+            columns = ["Id", "Url", "UsageInfo", "Owner/Title", "Owner/Email"]
+            expands = ["Owner"]
+            if needs_site_template:  # the root web template feeds UnsupportedSiteTemplates
+                columns += ["RootWeb/WebTemplate", "RootWeb/Configuration"]
+                expands.append("RootWeb")
             (
-                site.select(["Id", "Url", "UsageInfo", "Owner/Title", "Owner/Email"])
-                .expand(["Owner"])
+                site.select(columns)
+                .expand(expands)
                 .get()
                 .on_error(lambda e: _flag_failure("web", e))
                 .after_execute(lambda site: self._on_site_loaded(site, summary, needs_site))
@@ -184,6 +192,20 @@ class MigrationAssessor(Entity):
             site.root_web.associated_owner_group.users.get().on_error(lambda e: None).after_execute(
                 lambda users: self._set_site_admins(summary, users)
             )
+        root_web = site.properties.get("RootWeb")
+        if root_web is not None:
+            summary.web_template = self._web_template(root_web)
+
+    @staticmethod
+    def _web_template(web: "Web") -> str | None:
+        """The root web's ``WebTemplate`` plus its configuration id (e.g. ``STS#0``)."""
+        template = web.properties.get("WebTemplate")
+        if not template:
+            return None
+        if "#" in template:
+            return template
+        configuration = web.properties.get("Configuration")
+        return f"{template}#{configuration}" if configuration is not None else template
 
     @staticmethod
     def _set_site_admins(summary: SiteScanSummary, users) -> None:

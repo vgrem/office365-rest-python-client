@@ -105,13 +105,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   file that carries version history (via its `MajorVersion`/`MinorVersion`), with
   the SMAT columns (`VersionCount`, `File`, `ScanID`, …).
 - **SMAT report scans:** `CheckedOutFiles` (checked-out files + a per-list
-  warning), `LargeExcelFiles` (Excel workbooks over the browser-open limit), and
-  `BrowserFileHandling` (`.htm`/`.html` files affected by Strict handling) — typed
-  detail reports sharing a `SiteScanRecord` base (the SMAT site-column prefix).
-  New `Limits.LARGE_EXCEL_FILE` (10 MB) backs the Excel threshold; `AssessmentOptions`
+  warning), `LargeExcelFiles` (Excel workbooks over the browser-open limit),
+  `BrowserFileHandling` (`.htm`/`.html` files affected by Strict handling),
+  `LongOneDriveUrls` (files whose full URL crosses the OneDrive sync limit —
+  backed by the new `Limits.LONG_ONEDRIVE_URL`, 400 chars, and the
+  `long_onedrive_url` option), `ThicketFolder` (a `THICKET_FOLDER_UNSUPPORTED`
+  blocker for `*_file`/`*_files` folders), and `UnsupportedSiteTemplates` (site
+  collections whose root web template is on-premises-only) — typed detail reports
+  sharing a `SiteScanRecord` base (the SMAT site-column prefix). `WebTemplateType`
+  now covers the full `Get-SpoWebTemplate` catalog (with a `name_part` helper) and
+  is exported from `office365.sharepoint.webs.templates`. New
+  `Limits.LARGE_EXCEL_FILE` (10 MB) backs the Excel threshold; `AssessmentOptions`
   gained `large_excel_bytes`. The assessor's item load now also selects
   `File/CheckOutType`/`File/TimeCreated`/`File/TimeLastModified` and expands
-  `File/ModifiedBy`/`File/CheckedOutByUser`.
+  `File/ModifiedBy`/`File/CheckedOutByUser`; the root-web template
+  (`RootWeb/WebTemplate`) is loaded with the site-collection metadata.
 
 ### Changed
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry

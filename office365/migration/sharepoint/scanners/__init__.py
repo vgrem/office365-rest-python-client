@@ -19,9 +19,15 @@ from office365.migration.sharepoint.scanners.files import FileScanner
 from office365.migration.sharepoint.scanners.large_excel_files import LargeExcelFilesRecord, LargeExcelFilesScanner
 from office365.migration.sharepoint.scanners.large_sites import LargeSitesScanner
 from office365.migration.sharepoint.scanners.locked_sites import SiteLockedScanner
+from office365.migration.sharepoint.scanners.long_onedrive_urls import LongOneDriveUrlsRecord, LongOneDriveUrlsScanner
 from office365.migration.sharepoint.scanners.paths import PathScanner
 from office365.migration.sharepoint.scanners.permissions import PermissionScanner
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
+from office365.migration.sharepoint.scanners.thicket_folders import ThicketFolderScanner
+from office365.migration.sharepoint.scanners.unsupported_site_templates import (
+    UnsupportedSiteTemplatesRecord,
+    UnsupportedSiteTemplatesScanner,
+)
 
 __all__ = [
     "AssessmentOptions",
@@ -37,9 +43,14 @@ __all__ = [
     "LargeExcelFilesRecord",
     "LargeExcelFilesScanner",
     "LargeSitesScanner",
+    "LongOneDriveUrlsRecord",
+    "LongOneDriveUrlsScanner",
     "PathScanner",
     "PermissionScanner",
     "ScanTarget",
     "SiteLockedScanner",
     "SiteScanSummary",
+    "ThicketFolderScanner",
+    "UnsupportedSiteTemplatesRecord",
+    "UnsupportedSiteTemplatesScanner",
 ]

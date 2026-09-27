@@ -19,9 +19,12 @@ from office365.migration.sharepoint.scanners.large_excel_files import LargeExcel
 from office365.migration.sharepoint.scanners.large_lists import LargeListScanner
 from office365.migration.sharepoint.scanners.large_sites import LargeSitesScanner
 from office365.migration.sharepoint.scanners.locked_sites import SiteLockedScanner
+from office365.migration.sharepoint.scanners.long_onedrive_urls import LongOneDriveUrlsScanner
 from office365.migration.sharepoint.scanners.lookup import LookupColumnScanner
 from office365.migration.sharepoint.scanners.paths import PathScanner
 from office365.migration.sharepoint.scanners.permissions import PermissionScanner
+from office365.migration.sharepoint.scanners.thicket_folders import ThicketFolderScanner
+from office365.migration.sharepoint.scanners.unsupported_site_templates import UnsupportedSiteTemplatesScanner
 
 SHAREPOINT_SCANS: list[ScanDefinition] = [
     ScanDefinition(name="fields", scanner=FieldScanner, container=ScanContainer.FIELDS),
@@ -32,9 +35,16 @@ SHAREPOINT_SCANS: list[ScanDefinition] = [
     ScanDefinition(name="FileVersions", scanner=FileVersionsScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="CheckedOutFiles", scanner=CheckedOutFilesScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="LargeExcelFiles", scanner=LargeExcelFilesScanner, container=ScanContainer.ITEMS),
+    ScanDefinition(name="LongOneDriveUrls", scanner=LongOneDriveUrlsScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="BrowserFileHandling", scanner=BrowserFileHandlingScanner, container=ScanContainer.ITEMS),
+    ScanDefinition(name="ThicketFolder", scanner=ThicketFolderScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="permissions", scanner=PermissionScanner, container=ScanContainer.ITEMS),
     ScanDefinition(name="LargeSites", scanner=LargeSitesScanner, container=ScanContainer.SITE),
+    ScanDefinition(
+        name="UnsupportedSiteTemplates",
+        scanner=UnsupportedSiteTemplatesScanner,
+        container=ScanContainer.SITE,
+    ),
     ScanDefinition(
         name="LockedSites",
         scanner=SiteLockedScanner,

@@ -44,7 +44,10 @@ _ISOLATED = SharePointAssessmentOptions(
         "FileVersions",
         "CheckedOutFiles",
         "LargeExcelFiles",
+        "LongOneDriveUrls",
         "BrowserFileHandling",
+        "ThicketFolder",
+        "UnsupportedSiteTemplates",
     }
 )
 
@@ -255,8 +258,11 @@ def test_registry_gates_scans_and_disabling_drops_site_query():
             "FileVersions",
             "CheckedOutFiles",
             "LargeExcelFiles",
+            "LongOneDriveUrls",
             "BrowserFileHandling",
+            "ThicketFolder",
             "LargeSites",
+            "UnsupportedSiteTemplates",
         }
     )
     report = MigrationAssessor(ctx.web, options).assess().execute_query().value
@@ -558,6 +564,65 @@ def test_browser_file_handling_scanner_reports_html():
     assert row.File == "/sites/x/Docs/page.html"
     assert row.ModifiedBy == "i:0#.f|membership|jane@contoso.com"
     assert row.TimeCreated == datetime(2020, 1, 1)
+
+
+def test_thicket_folder_scanner_flags_only_folders():
+    from office365.migration.sharepoint.scanners.thicket_folders import ThicketFolderScanner
+
+    class _File:
+        pass
+
+    items = [
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/page_files", "FileLeafRef": "page_files"}, file=None),
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/notes_file", "FileLeafRef": "notes_file"}, file=None),
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/a.txt", "FileLeafRef": "a.txt"}, file=_File()),
+    ]
+    report = AssessmentReport.new()
+    ThicketFolderScanner(SharePointAssessmentOptions()).run(
+        ScanTarget(ScanContainer.ITEMS, items, "https://x/sites/x/lists/Docs"), report
+    )
+    assert len(report.issues) == 2  # noqa: PLR2004
+    assert {i.risk_code for i in report.issues} == {"THICKET_FOLDER_UNSUPPORTED"}
+    assert all(i.severity == "blocker" for i in report.issues)
+    assert not any(i.location.endswith("a.txt") for i in report.issues)
+
+
+def test_long_onedrive_urls_scanner_measures_full_url():
+    from office365.migration.sharepoint.scanners.long_onedrive_urls import LongOneDriveUrlsScanner
+
+    long_path = "/sites/x/Docs/" + "a" * 420 + ".txt"
+    items = [
+        SimpleNamespace(properties={"FileRef": long_path}),
+        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/short.txt"}),
+    ]
+    report = AssessmentReport.new()
+    scanner = LongOneDriveUrlsScanner(SharePointAssessmentOptions())
+    scanner.run(ScanTarget(ScanContainer.ITEMS, items, "https://contoso.sharepoint.com/sites/x/lists/Docs"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.File == long_path
+    assert row.UrlLength == len("https://contoso.sharepoint.com" + long_path)
+    assert row.SiteURL == "https://contoso.sharepoint.com/sites/x"
+    assert row.ScanID == report.scan_id
+
+
+def test_unsupported_site_templates_scanner_reports_legacy_templates():
+    from office365.migration.sharepoint.scanners.summary import SiteScanSummary
+    from office365.migration.sharepoint.scanners.unsupported_site_templates import UnsupportedSiteTemplatesScanner
+
+    report = AssessmentReport.new()
+    scanner = UnsupportedSiteTemplatesScanner(SharePointAssessmentOptions())
+    supported = SiteScanSummary(site_url="https://x/sites/a", web_template="STS#0")
+    legacy = SiteScanSummary(site_url="https://x/sites/b", web_template="SPSMSITEHOST#0")
+    scanner.run(ScanTarget(ScanContainer.SITE, supported, "https://x/sites/a"), report)
+    scanner.run(ScanTarget(ScanContainer.SITE, legacy, "https://x/sites/b"), report)
+
+    assert len(scanner.records) == 1
+    row = scanner.records[0]
+    assert row.URL == "https://x/sites/b"
+    assert row.Template == "SPSMSITEHOST#0"
+    assert row.ScanID == report.scan_id
 
 
 def test_lookup_column_scanner_flags_too_many_lookups():

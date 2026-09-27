@@ -34,4 +34,5 @@ class SiteScanSummary:
     item_count: int = 0
     last_modified: Any | None = None
     lock_state: str | None = None
+    web_template: str | None = None
     report_impacted_only: bool = False

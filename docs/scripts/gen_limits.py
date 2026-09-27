@@ -56,7 +56,10 @@ reports several of these limits as [SPMT scan-assessment risk codes](https://lea
 | `UNIQUE_PERMISSION_EXCEED_LIMIT` | unique security scopes | `PermissionScanner` |
 
 Each `AssessmentIssue` carries the `risk_code`, and `report.by_risk_code` groups
-the issues by code.
+the issues by code. The `LongOneDriveUrls` detail report (`LongOneDriveUrlsScanner`)
+additionally flags files whose full URL crosses `LONG_ONEDRIVE_URL`; `ThicketFolder`
+(`THICKET_FOLDER_UNSUPPORTED`) and `UnsupportedSiteTemplates` cover the remaining
+blockers.
 """
 
 

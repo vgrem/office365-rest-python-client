@@ -22,6 +22,7 @@ def _limits() -> dict[str, Limit]:
         "max_name_length": Limits.FILE_NAME_LENGTH,
         "large_file_bytes": Limits.MIGRATION_FILE_SIZE,
         "large_excel_bytes": Limits.LARGE_EXCEL_FILE,
+        "long_onedrive_url": Limits.LONG_ONEDRIVE_URL,
         "list_view_threshold": Limits.LIST_VIEW,
         "index_threshold": Limits.INDEX_ADD_REMOVE,
         "max_list_items": Limits.MAX_LIST_ITEMS,
@@ -40,6 +41,7 @@ class SharePointAssessmentOptions(AssessmentOptions):
     invalid_chars: set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
     large_file_bytes: Optional[int] = Limits.MIGRATION_FILE_SIZE.value
     large_excel_bytes: Optional[int] = Limits.LARGE_EXCEL_FILE.value
+    long_onedrive_url: Optional[int] = Limits.LONG_ONEDRIVE_URL.value
     list_view_threshold: Optional[int] = Limits.LIST_VIEW.value
     index_threshold: Optional[int] = Limits.INDEX_ADD_REMOVE.value
     max_list_items: Optional[int] = Limits.MAX_LIST_ITEMS.value

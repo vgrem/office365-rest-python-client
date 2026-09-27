@@ -232,6 +232,15 @@ class Limits:
         "the folder path plus file name after decoding",
         f"{_DOC_ONLINE}#file-size-and-file-path-length",
     )
+    LONG_ONEDRIVE_URL = Limit(
+        "long OneDrive URL",
+        400,
+        _BOUNDARY,
+        "chars",
+        "url",
+        "the decoded full file URL; OneDrive/SharePoint sync fails beyond it",
+        f"{_DOC_ONLINE}#file-size-and-file-path-length",
+    )
     FILE_NAME_LENGTH = Limit(
         "file name length",
         128,
