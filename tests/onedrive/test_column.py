@@ -40,6 +40,7 @@ class TestColumn(GraphDelegatedTestCase):
     )
     def test_01_list_list_columns(self):
         """Listing all columns in the document library returns at least one column."""
+        assert self.doclib is not None
         columns = self.doclib.columns.get().execute_query()
         self.assertGreater(len(columns), 0)
 
@@ -51,6 +52,7 @@ class TestColumn(GraphDelegatedTestCase):
     def test_02_create_text_column(self):
         """Creating a text column in the document library should succeed."""
         name = create_unique_name("TextColumn")
+        assert self.doclib is not None
         column = self.doclib.columns.add_text(name).execute_query()
         self.assertIsNotNone(column.resource_path)
         self.assertEqual(column.display_name, name)
@@ -65,6 +67,7 @@ class TestColumn(GraphDelegatedTestCase):
     def test_03_create_lookup_column(self):
         """Creating a lookup column referencing the same list should succeed."""
         name = create_unique_name("LookupColumn")
+        assert self.doclib is not None
         column = self.doclib.columns.add_lookup(name, self.doclib).execute_query()
         self.assertIsNotNone(column.resource_path)
         self.assertEqual(column.display_name, name)

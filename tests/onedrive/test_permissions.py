@@ -91,7 +91,11 @@ class TestDriveItemPermissions(GraphApplicationTestCase):
         if len(result) == 0:
             self.skipTest("No permissions found")
 
-        perm = item.permissions[result[0].id].get().execute_query()
+        perm_id = result[0].id
+        if not perm_id:
+            self.skipTest("Permission has no id")
+
+        perm = item.permissions[perm_id].get().execute_query()
         self.assertIsNotNone(perm.resource_path)
         TestDriveItemPermissions.target_permission = perm
 
