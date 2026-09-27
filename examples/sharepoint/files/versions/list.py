@@ -5,7 +5,7 @@ Retrieves versions of the file
 import argparse
 
 from office365.sharepoint.client_context import ClientContext
-from tests.settings import client_id, password, site_url, tenant, username
+from tests.settings import client_id, password, team_site_url, tenant, username
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--file-url", default="SitePages/Home.aspx", help="server-relative file URL")
     args = parser.parse_args()
 
-    ctx = ClientContext(site_url).with_username_and_password(
+    ctx = ClientContext(team_site_url).with_username_and_password(
         tenant=tenant, client_id=client_id, username=username, password=password
     )
     file_with_versions = (
