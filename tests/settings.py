@@ -1,7 +1,9 @@
 """Test configuration — reads from environment and .env file.
 
 Mandatory vs optional:
-    Mandatory — required for any integration test to run.
+    Mandatory — needed to run integration tests; falls back to ``"x"`` when unset
+                so offline collection keeps working (the base test cases treat
+                ``"x"`` as "not configured").
     Optional  — derived from tenant when not set, or left empty (skips related tests).
 """
 
@@ -25,12 +27,18 @@ def _load_dotenv() -> None:
 
 _load_dotenv()
 
+_MISSING = "x"
+
 
 def _require(key: str) -> str:
-    val = os.environ.get(key)
-    if not val:
-        raise RuntimeError(f"{key} is not set. Add it to .env in the project root.")
-    return val
+    """Return a value, or the ``"x"`` sentinel when it is unset.
+
+    Missing credentials must not break test collection: the offline unit suite
+    runs without a tenant, and the credentialed suites skip via
+    ``tests/conftest.py`` (``--offline``) and the ``"x"`` guards in the base
+    test cases.
+    """
+    return os.environ.get(key) or _MISSING
 
 
 def _optional(key: str, default: str = "") -> str:

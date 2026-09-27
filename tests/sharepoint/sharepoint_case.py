@@ -20,7 +20,10 @@ class SPTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         if test_client_secret == "x":
-            raise EnvironmentError("The environment variable 'office365_python_sdk_securevars' is not set.")
+            raise EnvironmentError(
+                "Credentials are not configured. Add OFFICE365_* values to .env at the project "
+                "root (see CONTRIBUTING.md), or run with --offline."
+            )
 
         # cls.client = ClientContext(test_team_site_url).with_client_credentials(test_client_id, test_client_secret)
         cls.client: ClientContext = ClientContext(test_team_site_url).with_client_certificate(

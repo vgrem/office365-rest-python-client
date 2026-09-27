@@ -32,7 +32,6 @@ from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.listitems.collection import ListItemCollection
 from office365.sharepoint.listitems.listitem import ListItem
 from tests import test_site_url
-from tests.settings import cert_path, cert_thumbprint, client_id, tenant
 
 CSV_TEXT = (
     "userPrincipalName,givenName,displayName,accountEnabled,officeLocation,"
@@ -42,9 +41,8 @@ CSV_TEXT = (
 
 
 def _graph_client() -> GraphClient:
-    with open(cert_path, "r", encoding="utf-8") as f:
-        private_key = f.read()
-    return GraphClient(tenant=tenant).with_certificate(client_id, cert_thumbprint, private_key)
+    """An unauthenticated client: these tests only queue records, never send them."""
+    return GraphClient()
 
 
 class TestCsvRecords(unittest.TestCase):

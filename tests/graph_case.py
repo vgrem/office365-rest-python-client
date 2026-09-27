@@ -13,7 +13,10 @@ class GraphDelegatedTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         if test_username == "x" or test_password == "x":
-            raise EnvironmentError("The environment variable 'office365_python_sdk_securevars' is not set.")
+            raise EnvironmentError(
+                "Credentials are not configured. Add OFFICE365_* values to .env at the project "
+                "root (see CONTRIBUTING.md), or run with --offline."
+            )
 
         cls.client = GraphClient(tenant=test_tenant).with_username_and_password(
             test_client_id, test_username, test_password
