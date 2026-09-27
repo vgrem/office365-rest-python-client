@@ -49,8 +49,8 @@ flowchart LR
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/appcatalog").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/appcatalog").with_client_certificate(
+    "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 
 # List apps in the app catalog

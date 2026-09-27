@@ -18,8 +18,8 @@ and hierarchical menu nodes.
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
+    "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 
 # Read top navigation

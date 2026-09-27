@@ -51,8 +51,8 @@ A hub site can also be set as the **home site** (intranet landing page).
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso-admin.sharepoint.com").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext("https://contoso-admin.sharepoint.com").with_client_certificate(
+    "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 
 # List all hub sites

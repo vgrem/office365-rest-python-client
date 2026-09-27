@@ -2,13 +2,20 @@
 Generate a documentation page per example script (mkdocs-gen-files plugin).
 
 For every script under ``MKDOCS_EXAMPLES_ROOT`` (default ``examples``) emit
-``examples/<rel>.md`` (module docstring as the narrative + full source).
+``examples/<rel>.md``. The module docstring becomes the page narrative:
+its first line is the ``H1`` title, the remaining prose is rendered below,
+a ``Requires ...`` block becomes a "Permissions" callout, bare reference URLs
+are collected into a "Reference" list, and the source is shown **without** the
+docstring (so the narrative is not repeated inside the code block). Each page
+also links to its GitHub source and back to the section index.
+
 Every directory that contains a ``README.md`` gets an index page
 (``examples/<rel>/index.md``), so the gallery mirrors the product →
 namespace layout (e.g. ``sharepoint/files/``, ``outlook/messages/``).
 Relative ``.py``/``README.md`` links in those READMEs are rewritten to the
-generated pages; the top-level ``examples/README.md`` becomes the gallery
-landing page.
+generated pages. When a README does not link every script in its folder, the
+missing ones are appended as a "More examples" table, so no example is
+unreachable from the docs.
 
 The navigation is derived from the generated pages by ``mkdocs-awesome-pages``,
 so no nav file is needed here. To keep the sidebar compact, every subdirectory
@@ -37,7 +44,15 @@ import mkdocs_gen_files
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 EXAMPLES_ROOT = pathlib.Path(os.environ.get("MKDOCS_EXAMPLES_ROOT", REPO_ROOT / "examples"))
 
+_SOURCE_URL = "https://github.com/vgrem/office365-rest-python-client/blob/master"
+
 _REL_LINK = re.compile(r"\]\(((?:\.\./|\./)?[^)#]+?)\)")
+_URL = re.compile(r"https?://\S+")
+_REFERENCE_LABEL = re.compile(
+    r"^(?:official\s+documentation|documentation|references?|docs|see\s+also)\s*[:\-]\s*",
+    re.I,
+)
+_REQUIREMENT = re.compile(r"^(?:requires?|required|permissions?)\b", re.I)
 
 # Pretty sidebar titles for the product galleries (folder names are the fallback).
 _PRODUCT_TITLES = {
@@ -65,6 +80,135 @@ _PRODUCT_TITLES = {
 def _emit(path: str, content: str) -> None:
     with mkdocs_gen_files.open(path, "w") as f:
         f.write(content)
+
+
+def _indent(text: str, prefix: str = "    ") -> str:
+    return "\n".join(f"{prefix}{line}" if line else "" for line in text.splitlines())
+
+
+def _first_line(doc: str) -> str:
+    """The docstring's first non-empty line, stripped of any Markdown heading marker."""
+    for raw in doc.strip().splitlines():
+        line = raw.lstrip("# ").strip()
+        if line:
+            return line
+    return ""
+
+
+def _is_reference(line: str) -> bool:
+    """True when a line carries nothing but a documentation link."""
+    return bool(_URL.fullmatch(_REFERENCE_LABEL.sub("", line).strip()))
+
+
+def _split_doc(doc: str) -> tuple[str, str, str, list[str]]:
+    """Split a module docstring into (title, prose, requirements, references).
+
+    ``Requires ...`` blocks are pulled out into a callout and bare reference
+    URLs into a list, so the generated page has structure instead of a wall of
+    text.
+    """
+    lines = doc.strip().splitlines()
+    if not lines:
+        return "", "", "", []
+
+    title = lines[0].lstrip("# ").strip()
+    body = lines[1:]
+    prose: list[str] = []
+    requirements: list[str] = []
+    references: list[str] = []
+
+    i = 0
+    while i < len(body):
+        line = body[i]
+        stripped = line.strip()
+        if _REQUIREMENT.match(stripped):
+            requirements.append(stripped)
+            i += 1
+            while i < len(body) and body[i].strip() and not _is_reference(body[i]):
+                requirements.append(body[i].strip())
+                i += 1
+            continue
+        if _is_reference(stripped):
+            references.extend(_URL.findall(stripped))
+            i += 1
+            continue
+        prose.append(line)
+        i += 1
+
+    return title, "\n".join(prose).strip(), "\n".join(requirements).strip(), list(dict.fromkeys(references))
+
+
+def _code_without_docstring(source: str, module: ast.Module) -> str:
+    """The module source with its leading docstring removed."""
+    body = module.body
+    if (
+        body
+        and isinstance(body[0], ast.Expr)
+        and isinstance(body[0].value, ast.Constant)
+        and isinstance(body[0].value.value, str)
+    ):
+        node = body[0]
+        lines = source.splitlines(keepends=True)
+        return "".join(lines[: node.lineno - 1] + lines[node.end_lineno :]).lstrip("\n")
+    return source
+
+
+def _render_script(
+    module: ast.Module,
+    source: str,
+    title: str,
+    prose: str,
+    requirements: str,
+    references: list[str],
+    section: str,
+    repo_rel: str,
+) -> str:
+    parts = [f"# {title}", ""]
+    if prose:
+        parts += [prose, ""]
+    if requirements:
+        parts += ['!!! info "Permissions"', "", _indent(requirements), ""]
+    if references:
+        parts += ["## Reference", ""]
+        parts += [f"- <{url}>" for url in references]
+        parts += [""]
+    parts += [
+        f"[:material-github: View source]({_SOURCE_URL}/{repo_rel}){{ .md-button target=_blank rel=noopener }}",
+        "",
+    ]
+    code = _code_without_docstring(source, module).strip("\n")
+    if code:
+        parts += ["```python", code, "```", ""]
+    parts += ["---", "", f"[← Back to {section}](index.md)", ""]
+    return "\n".join(parts)
+
+
+def _mentions(text: str, name: str) -> bool:
+    """True when *name* appears in *text* as a whole token (e.g. ``create.py``)."""
+    return re.search(rf"(?<![\w.-]){re.escape(name)}(?![\w])", text) is not None
+
+
+def _unlisted_scripts(directory: pathlib.Path, readme_text: str) -> list[tuple[str, str]]:
+    """Scripts in *directory* that the README does not already link."""
+    rows: list[tuple[str, str]] = []
+    for child in sorted(directory.glob("*.py")):
+        if child.name.startswith("__") or _mentions(readme_text, child.name):
+            continue
+        doc = ast.get_docstring(ast.parse(child.read_text(encoding="utf-8")), clean=True) or ""
+        rows.append((child.name, _first_line(doc) or child.stem.replace("_", " ").title()))
+    return rows
+
+
+def _render_index(readme: pathlib.Path) -> str:
+    text = readme.read_text(encoding="utf-8")
+    body = _rewrite_links(text, readme.parent)
+    extra = _unlisted_scripts(readme.parent, text)
+    if extra:
+        table = ["| Script | What it does |", "|---|---|"]
+        for name, summary in extra:
+            table.append(f"| [`{name}`]({pathlib.Path(name).with_suffix('.md').as_posix()}) | {summary} |")
+        body = body.rstrip() + "\n\n## More examples\n\n" + "\n".join(table) + "\n"
+    return body
 
 
 def _rewrite_links(text: str, base: pathlib.Path) -> str:
@@ -113,19 +257,33 @@ def _emit_product(product: pathlib.Path) -> None:
     prefix = "auth" if product.name == "auth" else f"products/{product.name}"
 
     for path in sorted(product.rglob("*.py")):
-        if "__pycache__" in path.parts:
+        if "__pycache__" in path.parts or path.name.startswith("__"):
             continue
-        doc = ast.get_docstring(ast.parse(path.read_text(encoding="utf-8")), clean=False) or ""
-        title = (doc.strip().splitlines() or [path.stem])[0].lstrip("# ").strip() or path.stem
+        source = path.read_text(encoding="utf-8")
+        module = ast.parse(source)
+        doc = ast.get_docstring(module, clean=True) or ""
+        title, prose, requirements, references = _split_doc(doc)
         rel = path.relative_to(product).with_suffix(".md")
-        _emit(f"{prefix}/{rel}", f"# {title}\n\n{doc}\n\n```python\n{path.read_text(encoding='utf-8')}\n```\n")
+        _emit(
+            f"{prefix}/{rel}",
+            _render_script(
+                module,
+                source,
+                title or path.stem,
+                prose,
+                requirements,
+                references,
+                _section_title(path.parent),
+                path.relative_to(REPO_ROOT).as_posix(),
+            ),
+        )
 
     for readme in sorted(product.rglob("README.md")):
         if "__pycache__" in readme.parts:
             continue
         rel = readme.parent.relative_to(product)
         key = f"{prefix}/{rel}/index.md" if rel.parts else f"{prefix}/index.md"
-        _emit(key, _rewrite_links(readme.read_text(encoding="utf-8"), readme.parent))
+        _emit(key, _render_index(readme))
 
     # hide the per-example pages under every subdirectory — the directory index links to them
     for directory in sorted({p.parent for p in product.rglob("*.py")}):
@@ -135,7 +293,9 @@ def _emit_product(product: pathlib.Path) -> None:
         if not (directory / "README.md").exists():
             lines = [f"# {_section_title(directory)}", "", "Examples:"]
             for child in sorted(directory.iterdir()):
-                if child.is_dir() and not child.name.startswith("__"):
+                if child.name.startswith("__"):
+                    continue
+                if child.is_dir():
                     lines.append(f"- [{child.name.replace('_', ' ').title()}]({child.name}/index.md)")
                 elif child.suffix == ".py":
                     lines.append(f"- [{child.stem.replace('_', ' ').title()}]({child.stem}.md)")

@@ -14,12 +14,18 @@ theme:
     logo: material/library-outline
   features:
     - content.code.copy
+    - content.code.annotate
     - content.action.edit
     - navigation.sections
     - navigation.collapse
     - navigation.indexes
+    - navigation.path
+    - navigation.tracking
     - navigation.top
     - navigation.footer
+    - search.suggest
+    - search.highlight
+    - toc.follow
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -61,8 +67,13 @@ plugins:
             heading_level: 3
 
 markdown_extensions:
+  - admonition
   - attr_list
   - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.superfences:

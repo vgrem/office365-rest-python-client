@@ -1,43 +1,54 @@
 # office365-rest-python-client
 
+**A Python client library for Microsoft 365, the SharePoint REST API and Microsoft Graph.**
+
 [![Downloads](https://pepy.tech/badge/office365-rest-python-client/month)](https://pepy.tech/project/office365-rest-python-client)
 [![PyPI](https://img.shields.io/pypi/v/office365-rest-python-client.svg)](https://pypi.python.org/pypi/office365-rest-python-client)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/office365-rest-python-client.svg)](https://pypi.python.org/pypi/office365-rest-python-client/)
-[![Sponsor](https://img.shields.io/badge/-Sponsor-%23EA4AAA?logo=github&logoColor=white)](https://github.com/sponsors/vgrem)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vgrem/office365-rest-python-client/blob/master/LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-vgrem-ea4aaa.svg?logo=github-sponsors)](https://github.com/sponsors/vgrem)
 
-**Python client library for Microsoft 365 and Microsoft Graph APIs.**
+**Python 3.8+** · typed models · fluent queries · deferred execution · 700+ runnable examples
 
-Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNote, Planner, and more), and supports all modern Azure AD authentication flows.
+- **Two clients, one library** — `ClientContext` speaks the SharePoint REST API; `GraphClient` speaks Microsoft Graph.
+- **Fluent and deferred** — chain `.select()`, `.filter()`, `.expand()`, `.top()`, `.order_by()` and only hit the wire when you call `execute_query()`.
+- **Typed models** — every entity is a real Python class (`List`, `File`, `Team`, `Message`, …), not a dictionary.
+- **Copy-paste examples** — a runnable script for every service and scenario under [`examples/`](https://github.com/vgrem/office365-rest-python-client/tree/master/examples).
 
-> **Python 3.8+ required.**
+> **New here?** Pick a client in [Choose your client](#choose-your-client), then jump straight to a runnable snippet in [Examples by product](#examples-by-product).
 
----
+## Table of contents
 
-## Support
-
-`office365-rest-python-client` is free and maintained in the open. Sponsorship is **entirely optional** — the library stays free and MIT-licensed, and it never affects whether an issue is fixed. It funds security updates, new API coverage, documentation, and releases. See the [roadmap](ROADMAP.md) for what's funded.
-
-- [**GitHub Sponsors**](https://github.com/sponsors/vgrem) — recurring monthly support
-- [**Ko-fi**](https://ko-fi.com/vgrem) — one-off tip or monthly membership (0% tips / 5% memberships; PayPal & card accepted)
-- [**PayPal**](https://paypal.me/ossvgrem) — one-off donation
-- **Using this in production?** The [Organization tier](https://github.com/sponsors/vgrem) adds priority issue response and a roadmap vote; [contact us](https://github.com/vgrem/office365-rest-python-client/discussions) for paid support, custom feature work, or help migrating from 2.6.2 → 3.0.0.
-
----
-
-## Table of Contents
-
+- [Choose your client](#choose-your-client)
 - [Installation](#installation)
-- [Support](#support)
-- [Which client do I need?](#which-client-do-i-need)
 - [Authentication](#authentication)
-  - [ClientContext — SharePoint auth](#clientcontext--sharepoint-auth)
-  - [GraphClient — Microsoft Graph auth](#graphclient--microsoft-graph-auth)
-  - [Azure Environments](#azure-environments)
-- [SharePoint — ClientContext](#sharepoint--clientcontext)
-- [Microsoft Graph — GraphClient](#microsoft-graph--graphclient)
+- [Quick start](#quick-start)
+- [Examples by product](#examples-by-product)
+- [Common patterns](#common-patterns)
 - [Dependencies](#dependencies)
+- [Contributing](#contributing)
+- [Support](#support)
 
----
+## Choose your client
+
+The library ships two clients. Pick the one that matches the API you need.
+
+| | `ClientContext` | `GraphClient` |
+|---|---|---|
+| **Talks to** | SharePoint REST API (`/_api`) | Microsoft Graph (`graph.microsoft.com`) |
+| **Entry point** | `ClientContext("https://contoso.sharepoint.com/sites/team")` | `GraphClient(tenant="contoso.onmicrosoft.com")` |
+| **Best for** | SharePoint lists, items, files, folders, search, permissions, site and tenant administration, taxonomy, webhooks | Outlook, OneDrive, Teams, OneNote, Planner, To Do, Entra ID, Intune, Purview, Bookings, reports, security… |
+| **SharePoint** | Full fidelity | Partial — prefer `ClientContext` for SharePoint-only work |
+| **Typed models** | `List`, `ListItem`, `File`, `Folder`, `Web`, `Site`, `User` … | `DriveItem`, `Team`, `Message`, `Event`, `User`, `Group`, `PlannerTask` … |
+| **Auth** | certificate, interactive, device flow, cookies, NTLM (on-prem) | client secret, certificate, interactive, device flow, ROPC |
+| **Examples** | [`examples/sharepoint/`](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint) | [`examples/`](https://github.com/vgrem/office365-rest-python-client/tree/master/examples) by product |
+| **API reference** | [SharePoint REST](https://learn.microsoft.com/sharepoint/dev/sp-add-ins/get-to-know-the-sharepoint-rest-service) | [Microsoft Graph](https://learn.microsoft.com/graph/overview) |
+
+**Rule of thumb**
+
+- SharePoint lists, files, site or tenant administration → **`ClientContext`**
+- Teams, Outlook, OneDrive, Entra ID, Intune, Purview, reports → **`GraphClient`**
+- OneDrive files work with either client; `GraphClient` is the modern, cross-service path.
 
 ## Installation
 
@@ -45,390 +56,476 @@ Covers SharePoint REST API v1, Microsoft Graph (Outlook, OneDrive, Teams, OneNot
 pip install office365-rest-python-client
 ```
 
-With [uv](https://github.com/astral-sh/uv):
+With [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv pip install office365-rest-python-client
+uv add office365-rest-python-client
 ```
 
-Latest from GitHub (includes unreleased changes):
+Directly from source:
 
 ```bash
 pip install git+https://github.com/vgrem/office365-rest-python-client.git
 ```
 
----
-
-## Which client do I need?
-
-| | `ClientContext` | `GraphClient` |
-|---|---|---|
-| **Target API** | SharePoint REST API v1 | Microsoft Graph API |
-| **Use for** | SharePoint lists, files, folders, search, site admin, permissions | Outlook, OneDrive, Teams, OneNote, Planner, Users, Groups |
-| **SharePoint via Graph?** | — | Partial - use `ClientContext` for full SharePoint fidelity |
-| **Docs** | [SharePoint REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/get-to-know-the-sharepoint-rest-service) | [Microsoft Graph](https://learn.microsoft.com/en-us/graph/overview) |
-
----
-
 ## Authentication
 
-> All modern auth flows use **Azure AD** via the [MSAL](https://github.com/AzureAD/microsoft-authentication-library-for-python) library.
-> Legacy flows (ACS, SAML) are fully retired as of April/May 2026.
->
-> [ACS retirement notice](https://aka.ms/retirement/acs/support) | [SAML retirement MC1184649](https://learn.microsoft.com/en-us/sharepoint/dev/security/saml-auth-retirement)
->
-> Migrating from SAML? See [examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py](examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py)
+Modern flows authenticate through **Microsoft Entra ID** using [MSAL](https://learn.microsoft.com/entra/identity-platform/msal-overview). Both clients support delegated (user) and app-only (application) access.
 
-Two clients, different auth capabilities:
+> [!IMPORTANT]
+> SharePoint **ACS app-only** access was retired in April 2026 and **SAML-based** authentication in May 2026. Use the certificate, interactive or device-code flows below instead — see [`examples/sharepoint/auth/modern/`](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/auth/modern) and the migration script [`migrate_from_saml_to_cert.py`](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py).
 
-| | `ClientContext` | `GraphClient` |
+### ClientContext (SharePoint)
+
+| Flow | Access | Method |
 |---|---|---|
-| **Target** | SharePoint REST API v1 | Microsoft Graph API |
-| **Resource** | `{tenant}.sharepoint.com` | `graph.microsoft.com` |
+| Certificate | App-only | `with_client_certificate(tenant, client_id, thumbprint, cert_path=...)` |
+| Interactive | Delegated (MFA) | `with_interactive(tenant, client_id)` |
+| Device code | Delegated (MFA) | `with_device_flow(tenant, client_id)` |
+| Username / password | Delegated | `with_username_and_password(tenant, client_id, username, password)` |
+| Custom token | Either | `with_access_token(token_func)` |
+| Browser cookies | Delegated | `with_cookies(cookie_source)` |
+| NTLM | On-premises | `ClientContext(url, allow_ntlm=True).with_user_credentials(username, password)` |
+| ACS / SAML | On-premises (legacy) | [legacy app-only](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/legacy/with_app_only.py) · [legacy SAML](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/legacy/with_user_credential.py) |
 
-### ClientContext — SharePoint auth
-
-| Flow | Method | User/App | MFA | Status | Docs |
-|------|--------|----------|-----|--------|------|
-| **Certificate** (Azure AD) | `with_client_certificate(tenant, client_id, thumbprint, cert_path)` | App-only | — | ✅ Recommended | [Docs](https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread) |
-| **Username & password** (MSAL ROPC) | `with_username_and_password(tenant, client_id, username, password)` | Delegated | ❌ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) |
-| **Interactive** (browser) | `with_interactive(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows) |
-| **Device code** | `with_device_flow(tenant, client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) |
-| **NTLM** (on-prem only) | `with_user_credentials(username, password)` | Delegated | — | ✅ On-prem only | [Example](examples/sharepoint/auth/legacy/with_ntlm.py) |
-| **Client secret** (Azure AD) | `with_client_secret(tenant, client_id, secret)` | App-only | — | ❌ Not documented | [Microsoft's own migration guidance](https://mc.merill.net/message/MC1184649) confirms: replace legacy ACS auth with OAuth2 client credentials flow using certificates, not client secrets, for SharePoint access. |
-| ~~SAML user auth~~ | `with_user_credentials(username, password)` | Delegated | ❌ | 🚫 Retired May 2026 | [Migration guide](examples/sharepoint/auth/modern/migrate_from_saml_to_cert.py) |
-| ~~ACS app-only~~ | `with_credentials(ClientCredential(...))` | App-only | — | 🚫 Retired Apr 2026 | [Notice](https://aka.ms/retirement/acs/support) |
-
-### GraphClient — Microsoft Graph auth
-
-| Flow | Method | User/App | MFA | Status | Docs |
-|------|--------|----------|-----|--------|------|
-| **Client secret** | `with_client_secret(client_id, secret)` | App-only | — | ✅ Recommended | [Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) |
-| **Certificate** | `with_client_certificate(client_id, thumbprint, key)` | App-only | — | ✅ Recommended | [Docs](https://learn.microsoft.com/en-us/graph/auth-v2-service) |
-| **Interactive** | `with_token_interactive(client_id)` | Delegated | ✅ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentication-flows) |
-| **Username & password** | `with_username_and_password(client_id, username, password)` | Delegated | ❌ | ✅ Supported | [Docs](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc) |
-| **Custom token** | `GraphClient(acquire_token_func)` | Both | ✅ | ✅ Supported | — |
-
----
-
-### Azure Environments
-
-For national and sovereign clouds, pass the `environment` parameter:
-
-```python
-from office365.azure_env import AzureEnvironment
-from office365.sharepoint.client_context import ClientContext
-
-ctx = ClientContext("{site_url}", environment=AzureEnvironment.USGovernmentHigh)\
-    .with_client_certificate(...)
-```
-
-| Environment | Constant |
-|---|---|
-| Global (default) | `AzureEnvironment.Global` |
-| US Government GCC | `AzureEnvironment.USGovernment` |
-| US Government GCC High | `AzureEnvironment.USGovernmentHigh` |
-| US Government DoD | `AzureEnvironment.USGovernmentDoD` |
-| China (21Vianet) | `AzureEnvironment.China` |
-| Germany (legacy) | `AzureEnvironment.Germany` |
-
----
-
-## SharePoint — ClientContext
-
-### Quick start
+> [!NOTE]
+> SharePoint app-only access requires a **certificate**. A client secret is not accepted by the SharePoint `/_api` endpoints — use `GraphClient` for secret-based app-only. See [why a client secret doesn't work for SharePoint](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/README.md).
 
 ```python
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("{site_url}").with_client_certificate(
-    tenant="{tenant}", client_id="{client_id}",
-    thumbprint="{thumbprint}", cert_path="./cert.pem"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
+    "contoso.onmicrosoft.com",
+    client_id="00000000-0000-0000-0000-000000000000",
+    thumbprint="AA11BB22CC33DD44EE55FF66AA77BB88CC99DD00",
+    cert_path="./private.pem",
 )
+
 web = ctx.web.get().execute_query()
-print(f"Site title: {web.title}")
+print(web.title)
 ```
 
-### Lists & Items
+Ready-made scripts: [certificate](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_certificate.py) ·
+[certificate (private key)](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_certificate_and_privkey.py) ·
+[custom scopes](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_certificate_and_scopes.py) ·
+[interactive](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_interactive.py) ·
+[device flow](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_device_flow.py) ·
+[username/password](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_username_and_password.py) ·
+[access token](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/files/download_parallel.py) ·
+[cookies](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/modern/with_cookies.py) ·
+[NTLM](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/legacy/with_ntlm.py)
 
-```python
-# Get all items (handles 5000+ row threshold automatically)
-items = ctx.web.lists.get_by_title("Orders").items.get_all().execute_query()
-for item in items:
-    print(item.properties["Title"])
+### GraphClient (Microsoft Graph)
 
-# Create item
-target_list = ctx.web.lists.get_by_title("Tasks")
-item = target_list.add_item({"Title": "New task", "Status": "Active"}).execute_query()
-
-# Bulk create — auto-batches in chunks of 100 (sequential by default)
-for row in data:
-    target_list.add_item({"Title": row["name"]})
-ctx.execute_batch()
-
-# Parallel bulk create — up to 5 batch requests in flight at once, cutting
-# wall time for large imports. Transient failures (e.g. HTTP 429) are retried,
-# honoring Retry-After. With concurrency > 1 the success_callback runs on the
-# caller thread in completion order (not submission order).
-ctx.execute_batch(concurrency=5)
-
-# Filter, select, expand
-items = ctx.web.lists.get_by_title("Projects")\
-    .items\
-    .filter("Status eq 'Active'")\
-    .select(["Title", "Author/Title"])\
-    .expand(["Author"])\
-    .get_all().execute_query()
-```
-
-#### Large lists & folders
-
-The 5,000-item list view threshold is handled by paging; single-shot loads warn
-when they hit it, and CAML queries can be pre-flighted:
-
-```python
-# a folder with >5,000 files (recursive=True to descend)
-folder = ctx.web.get_folder_by_server_relative_url("/Shared Documents")
-files = folder.get_files(page_size=2000).execute_query()
-
-# paged CAML — continues from the last item (ListItemCollectionPosition)
-for item in lst.get_items(query, page_size=2000).execute_query():
-    ...
-
-# index the columns a query filters/sorts on (explicit, never implicit)
-lst.ensure_indexed("Status").execute_query()
-lst.index_candidates(query)            # -> ['Status']  (what to index)
-lst.check_query(query)                 # actionable guidance before the server call
-```
-
-See [Large lists and folders](docs/large-lists.md).
-
-[All list examples](examples/sharepoint/lists/)
-
-### Files & Folders
-
-```python
-# Upload file
-with open("report.pdf", "rb") as f:
-    folder = ctx.web.get_folder_by_server_relative_url("/sites/mysite/Shared Documents")
-    file = folder.upload_file("report.pdf", f).execute_query()
-
-# Download file
-with open("report.pdf", "wb") as f:
-    ctx.web.get_file_by_server_relative_path("/sites/mysite/Shared Documents/report.pdf")\
-        .download(f).execute_query()
-
-# Large file upload (chunked)
-folder.files.create_upload_session(
-    local_path, chunk_size=10*1024*1024,
-    chunk_uploaded=lambda offset: print(f"{offset} bytes uploaded")
-).execute_query()
-
-# Download folder as zip
-with open("archive.zip", "wb") as f:
-    folder.download_folder(f).execute_query()
-
-# Create nested folders
-base = ctx.web.get_folder_by_server_relative_url("/sites/mysite/Shared Documents")
-sub = base.add("Projects").execute_query()
-sub.add("2025").execute_query()
-```
-
-[All file examples](examples/sharepoint/files/) | [All folder examples](examples/sharepoint/folders/)
-
-### Search
-
-```python
-from office365.sharepoint.search.request import SearchRequest
-from office365.sharepoint.search.service import SearchService
-
-search = SearchService(ctx)
-request = SearchRequest("IsDocument:1", RowLimit=50, StartRow=0)
-result = search.post_query(request).execute_query()
-
-rows = result.value.PrimaryQueryResult.RelevantResults.Table.Rows
-for row in rows:
-    print(row)
-```
-
-[All search examples](examples/sharepoint/search/)
-
-### Permissions
-
-```python
-from office365.sharepoint.roles.type import RoleType
-
-# Break inheritance and grant access to a user
-role_def = ctx.web.role_definitions.get_by_type(RoleType.Reader)
-user = ctx.web.ensure_user("i:0#.f|membership|user@company.com")
-item = ctx.web.lists.get_by_title("Confidential").items.get_by_id(1)
-item.break_role_inheritance(copy_role_assignments=False)
-item.add_role_assignment(user, role_def)
-ctx.execute_query()
-```
-
-[Permissions examples](examples/sharepoint/permissions/)
-
-### Site Administration (Tenant)
-
-```python
-from office365.sharepoint.tenant.administration.tenant import Tenant
-
-tenant = Tenant(ctx)
-
-# List all sites
-sites = tenant.get_site_properties_from_sharepoint_by_filters().execute_query()
-for site in sites:
-    print(site.url)
-
-# Create a site
-tenant.create_site({"Url": "https://tenant.sharepoint.com/sites/newsite", "Title": "New Site"}).execute_query()
-```
-
-[All tenant/admin examples](examples/sharepoint/tenant/)
-
----
-
-## Microsoft Graph - GraphClient
-
-### Quick start
+| Flow | Access | Method |
+|---|---|---|
+| Client secret | App-only | `with_client_secret(client_id, client_secret)` |
+| Certificate | App-only | `with_certificate(client_id, thumbprint, private_key)` |
+| Interactive | Delegated (MFA) | `with_token_interactive(client_id)` |
+| Device code | Delegated (MFA) | `with_device_flow(client_id)` |
+| Username / password | Delegated | `with_username_and_password(client_id, username, password)` |
+| Custom token | Either | `GraphClient(token_callback, tenant=...)` |
 
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="{tenant}").with_client_secret(
-    client_id="{client_id}", client_secret="{client_secret}"
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
+    client_id="00000000-0000-0000-0000-000000000000",
+    client_secret="your-client-secret",
 )
-me = client.me.get().execute_query()
-print(f"Signed in as: {me.user_principal_name}")
+
+users = client.users.get().execute_query()
+print(len(users), "users")
 ```
 
-### Outlook - Mail & Calendar
+Ready-made scripts: [client secret](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/auth/with_client_secret.py) ·
+[certificate](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/auth/with_client_cert.py) ·
+[interactive](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/auth/interactive.py) ·
+[device flow](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/auth/with_device_flow.py) ·
+[username/password](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/auth/with_user_creds.py) ·
+[custom token callback](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/auth/with_token_callback.py)
+
+## Quick start
+
+**SharePoint list — read and write items**
 
 ```python
-# Send email
+from office365.sharepoint.client_context import ClientContext
+
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
+    "contoso.onmicrosoft.com", client_id, thumbprint, cert_path="./private.pem"
+)
+
+tasks = ctx.web.lists.get_by_title("Tasks")
+item = tasks.add_item({"Title": "Write the release notes"}).execute_query()
+print("Created item:", item.id)
+
+for task in tasks.items.get_all().execute_query():
+    print(task.properties["Title"])
+```
+
+**Microsoft Graph — send an email**
+
+```python
+from office365.graph_client import GraphClient
+
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(client_id, client_secret)
+
 client.me.send_mail(
-    subject="Hello",
-    body="Message body",
-    to_recipients=["user@company.com"]
-).execute_query()
-
-# List messages
-messages = client.me.messages.top(10).get().execute_query()
-for msg in messages:
-    print(msg.subject)
-
-# Create calendar event
-from office365.outlook.calendar.events.event import Event
-event = client.me.calendar.events.add(
-    subject="Team standup",
-    start="2025-06-01T09:00:00",
-    end="2025-06-01T09:30:00"
+    subject="Hello from Graph API",
+    body="This email was sent using the Microsoft Graph API.",
+    to_recipients=["alex@contoso.onmicrosoft.com"],
 ).execute_query()
 ```
 
-[All Outlook examples](examples/outlook/)
+## Examples by product
+
+Every snippet below is lifted from a runnable script. Follow the **More →** link for the full example and its required permissions.
+
+### SharePoint (ClientContext)
+
+```python
+# Lists and items
+tasks = ctx.web.lists.get_by_title("Tasks")
+item = tasks.add_item({"Title": "Ship it", "Status": "Active"}).execute_query()
+tasks.items.get_all().execute_query()               # or .filter("Status eq 'Active'").get_all()
+
+# Files and folders
+folder = ctx.web.get_folder_by_server_relative_url("/sites/team/Shared Documents")
+with open("report.pdf", "rb") as f:
+    file = folder.files.upload(f).execute_query()
+
+with open("report.pdf", "wb") as f:
+    ctx.web.get_file_by_server_relative_path("/sites/team/Shared Documents/report.pdf").download(f).execute_query()
+
+# Large file (chunked upload session)
+with open("video.mp4", "rb") as f:
+    folder.files.create_upload_session(f, 10 * 1024 * 1024).execute_query()
+```
+
+| Area | Examples |
+|---|---|
+| Lists and items | [lists](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/lists) · [listitems](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/listitems) · [views](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/views) |
+| Files and folders | [files](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/files) · [folders](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/folders) |
+| Sites and webs | [sites](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/sites) · [webs](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/webs) · [hubsites](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/hubsites) |
+| Search | [search](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/search) |
+| Permissions and sharing | [permissions](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/permissions) · [sharing](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/sharing) |
+| Fields and content types | [fields](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/fields) · [contenttypes](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/contenttypes) |
+| Pages and navigation | [pages](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/pages) · [navigation](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/navigation) |
+| Taxonomy and profiles | [taxonomy](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/taxonomy) · [userprofile](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/userprofile) |
+| Tenant administration | [tenant](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/tenant) · [groups](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/groups) · [users](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/users) |
+| Webhooks, migration, advanced | [webhooks](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/webhooks) · [migration](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/migration) · [advanced](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/sharepoint/advanced) |
 
 ### OneDrive
 
 ```python
-# List drives
-drives = client.drives.get().execute_query()
+uploaded = client.me.drive.root.upload_file("report.xlsx").execute_query()
 
-# Upload file to OneDrive
-with open("report.xlsx", "rb") as f:
-    client.me.drive.root.upload("report.xlsx", f).execute_query()
-
-# Download file
-with open("report.xlsx", "wb") as local_file:
-    client.me.drive.root.get_by_path("Documents/report.xlsx")\
-        .download(local_file).execute_query()
+with open("report.xlsx", "wb") as f:
+    client.me.drive.root.get_by_path("report.xlsx").download(f).execute_query()
 ```
 
-[All OneDrive examples](examples/onedrive/)
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/onedrive)
 
 ### Teams
 
 ```python
-# List all teams
-teams = client.groups.get().execute_query()
+team = client.teams.create_and_wait("Contoso Project", "All project collaboration").execute_query()
 
-# Send channel message
-client.teams["{team_id}"].channels["{channel_id}"]\
-    .messages.add(body="Hello team!").execute_query()
-
-# Create a team
-new_team = client.groups["{group_id}"].add_team().execute_query()
+channel = team.channels.add("Project Chat").execute_query()
+channel.messages.add("Hello team!").execute_query()
 ```
 
-[All Teams examples](examples/teams/)
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/teams)
 
-### OneNote
+### Outlook (mail and calendar)
 
 ```python
-# Create a page
-with open("MyPage.html", "rb") as f:
-    page = client.me.onenote.pages.add(presentation_file=f).execute_query()
+from datetime import datetime, timedelta, timezone
+
+# Send mail
+client.me.send_mail(
+    subject="Hello from Graph API",
+    body="This email was sent using the Microsoft Graph API.",
+    to_recipients=["alex@contoso.onmicrosoft.com"],
+).execute_query()
+
+# Create a calendar event
+when = datetime.now(timezone.utc) + timedelta(days=1)
+client.me.calendar.events.add(
+    subject="Team Lunch",
+    body="Let's grab lunch together.",
+    start=when,
+    end=when + timedelta(hours=1),
+    attendees=["alex@contoso.onmicrosoft.com"],
+).execute_query()
 ```
 
-[All OneNote examples](examples/onenote/)
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/outlook)
+
+### Entra ID
+
+```python
+from office365.directory.users.password_profile import PasswordProfile
+from office365.directory.users.profile import UserProfile
+
+profile = UserProfile(
+    displayName="Alex Wilber",
+    userPrincipalName="alex@contoso.onmicrosoft.com",
+    mailNickname="alex",
+    accountEnabled=True,
+    passwordProfile=PasswordProfile(password="P@ssw0rd!", forceChangePasswordNextSignIn=True),
+)
+user = client.users.add(profile).execute_query()
+print(user.display_name)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/entraid)
 
 ### Planner
 
 ```python
-# Create a task
-task = client.planner.tasks.add(
-    title="Review PR",
-    planId="{plan_id}"
-).execute_query()
+group = client.groups.get_by_name("My Sample Team").get().execute_query()
+plans = group.planner.plans.get().execute_query()
+task = client.planner.tasks.add("Update client list", plans[0].id).execute_query()
+print(task.title)
 ```
 
-[All Planner examples](examples/planner/)
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/planner)
 
-### Users & Groups
+### To Do
 
 ```python
-# List users
-users = client.users.top(100).get().execute_query()
+for task_list in client.me.todo.lists.get().execute_query():
+    print(task_list.display_name, len(task_list.tasks.get().execute_query()), "tasks")
+```
 
-# Create group
-group = client.groups.add(
-    display_name="Engineering",
-    mail_nickname="engineering",
-    mail_enabled=False,
-    security_enabled=True
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/todo)
+
+### OneNote
+
+```python
+with open("Sample.html", "rb") as page_html:
+    page = client.me.onenote.pages.add(presentation_file=page_html).execute_query()
+print(page.links.oneNoteWebUrl)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/onenote)
+
+<details>
+<summary><strong>More services</strong> — Admin, Reports, Defender, Intune, Purview, Bookings, Communications, Security, Insights, Backup Storage</summary>
+
+#### Microsoft 365 admin
+
+```python
+announcement = client.admin.service_announcement
+health = announcement.health_overviews.get().execute_query()
+issues = announcement.issues.get().execute_query()
+messages = announcement.messages.get().execute_query()
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/admin)
+
+#### Usage reports
+
+```python
+report = client.reports.get_email_activity_counts("D30").execute_query()
+print(report.value)  # CSV payload
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/reports)
+
+#### Microsoft Defender
+
+```python
+alerts = client.security.alerts_v2.top(20).get().execute_query()
+for alert in alerts:
+    print(alert)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/defender)
+
+#### Microsoft Intune
+
+```python
+devices = client.device_management.managed_devices.get().execute_query()
+for device in devices:
+    print(device.device_name, device.operating_system, device.compliance_state)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/intune)
+
+#### Microsoft Purview
+
+```python
+labels = client.security.data_security_and_governance.sensitivity_labels.get().execute_query()
+for label in labels:
+    print(label.display_name, label.id)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/purview)
+
+#### Microsoft Bookings
+
+```python
+businesses = client.solutions.booking_businesses.get().execute_query()
+for business in businesses:
+    print(business.display_name)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/booking)
+
+#### Cloud communications
+
+```python
+presence = client.users["alex@contoso.onmicrosoft.com"].presence.get().execute_query()
+print(presence.availability, presence.activity)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/communications)
+
+#### Security (threat intelligence)
+
+```python
+host = client.security.threat_intelligence.hosts["contoso.com"].get().execute_query()
+reputation = host.reputation.get().execute_query()
+print(reputation.properties.get("score"))
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/security)
+
+#### Insights
+
+```python
+for item in client.me.insights.trending.get().execute_query():
+    print(item.resource_reference)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/insights)
+
+#### Backup Storage
+
+```python
+backup = client.solutions.backup_restore
+backup.get().execute_query()
+print(backup.service_status.status)
+```
+
+[More →](https://github.com/vgrem/office365-rest-python-client/tree/master/examples/backuprestore)
+
+</details>
+
+## Common patterns
+
+**Deferred execution.** Requests are queued and sent only when you call `execute_query()`. Chain the fluent methods first, then execute once.
+
+```python
+items = (
+    ctx.web.lists.get_by_title("Tasks")
+    .items.select(["Title", "Status"])
+    .filter("Status eq 'Active'")
+    .order_by("Title")
+    .top(100)
+    .get()
+    .execute_query()
+)
+```
+
+**Reading large collections.** Use `get_all()` to follow paging automatically, and `page_size` to stay under server limits.
+
+```python
+items = ctx.web.lists.get_by_title("Orders").items.get_all(page_size=2000).execute_query()
+
+files = ctx.web.get_folder_by_server_relative_url("/sites/team/Shared Documents").get_files(
+    recursive=True, page_size=2000
 ).execute_query()
 ```
 
-[All user examples](examples/entraid/users/)
+**Batching.** Dispatch many queued operations in one round trip. Raise `concurrency` to run batches in parallel; throttled sub-requests are retried individually, honoring `Retry-After`.
 
----
+```python
+for row in rows:
+    ctx.web.lists.get_by_title("Contacts").add_item(row)
+
+ctx.execute_batch()                     # sequential
+ctx.execute_batch(concurrency=5)        # up to 5 batches in flight
+
+# Graph
+for user in new_users:
+    client.users.add(user)
+client.execute_batch(concurrency=5)
+```
+
+**Large lists (> 5,000 items).** SharePoint refuses filtered/sorted queries on non-indexed columns. The library can tell you what to index and pre-flight the query.
+
+```python
+from office365.sharepoint.listitems.caml import Caml, CamlQuery
+
+query = (
+    CamlQuery.builder()
+    .where(Caml.text("Status").eq("Active"))
+    .order_by("ID")
+    .row_limit(2000, paged=True)
+    .build()
+)
+
+lst.check_query(query)                          # raises with a clear message if an index is missing
+print(lst.index_candidates(query))              # columns worth indexing
+lst.ensure_indexed("Status").execute_query()    # create the index (builds in the background)
+```
+
+**Import and export DataFrames.** Optional helpers turn list items into [pandas](https://pandas.pydata.org/) / [Polars](https://pola.rs/) frames and back.
+
+```python
+lst = ctx.web.lists.ensure_list("Orders").execute_query()
+
+df = lst.to_dataframe().execute_query().value
+lst.from_dataframe(df, chunksize=100).execute_query()
+```
 
 ## Dependencies
 
-Installed automatically:
+Install the core package on its own, or add the extras you need:
 
-| Package | Purpose |
-|---|---|
-| [requests](https://github.com/psf/requests) | HTTP transport |
-| [msal](https://github.com/AzureAD/microsoft-authentication-library-for-python) | Azure AD authentication |
-
-Optional:
+| Extra | Adds | Use it for |
+|---|---|---|
+| `azure` | `azure-storage-blob`, `cryptography` | Azure Blob Storage and certificate helpers |
+| `excel` | `openpyxl` | Reading and writing Excel workbooks |
+| `examples` | `faker` | Running the sample scripts |
+| `ntlm` | `requests-ntlm` | On-premises SharePoint with NTLM |
+| `pandas` | `pandas` | `to_dataframe()` / `from_dataframe()` |
+| `parquet` | `pyarrow` | Parquet import and export |
+| `duckdb` | `duckdb` | Querying exported data locally |
+| `sql` | `sqlalchemy` | SQL-backed import and export |
+| `notebooks` | `jupyter`, `nbformat`, `jinja2` | Running the notebook samples |
 
 ```bash
-pip install office365-rest-python-client[pandas]   # to_dataframe() on collections
+pip install "office365-rest-python-client[pandas,excel]"
 ```
-
----
 
 ## Contributing
 
-PRs welcome! Start with [CONTRIBUTING.md](CONTRIBUTING.md) — you can validate changes with the **offline** unit suite (`uv run pytest --offline -q`), no Microsoft 365 tenant required. Look for [`good first issue`](https://github.com/vgrem/office365-rest-python-client/labels/good%20first%20issue) or [`help wanted`](https://github.com/vgrem/office365-rest-python-client/labels/help%20wanted).
+Issues and pull requests are welcome — please use the
+[issue tracker](https://github.com/vgrem/office365-rest-python-client/issues) for bugs and ideas.
 
-## Links
+```bash
+git clone https://github.com/vgrem/office365-rest-python-client.git
+cd office365-rest-python-client
+uv sync --all-extras
+pytest --offline -q
+```
 
-- [PyPI](https://pypi.org/project/office365-rest-python-client/)
-- [Changelog](CHANGELOG.md)
-- [SharePoint REST API docs](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/get-to-know-the-sharepoint-rest-service)
-- [Microsoft Graph docs](https://learn.microsoft.com/en-us/graph/overview)
-- [MSAL for Python](https://github.com/AzureAD/microsoft-authentication-library-for-python)
+See [CONTRIBUTING.md](https://github.com/vgrem/office365-rest-python-client/blob/master/CONTRIBUTING.md) for the full development setup. Run the gate before submitting: `ruff check .`, `ruff format --check .`, `pyright` and `pytest --offline -q`.
+
+## Support
+
+- **Source and examples** — [github.com/vgrem/office365-rest-python-client](https://github.com/vgrem/office365-rest-python-client)
+- **Documentation** — [vgrem.github.io/office365-rest-python-client](https://vgrem.github.io/office365-rest-python-client/)
+- **Changelog** — [CHANGELOG.md](https://github.com/vgrem/office365-rest-python-client/blob/master/CHANGELOG.md)
+- **Questions** — [GitHub Discussions](https://github.com/vgrem/office365-rest-python-client/discussions) or tag [`office365-rest-python-client` on Stack Overflow](https://stackoverflow.com/questions/tagged/office365-rest-python-client)
+
+If this project saves you time, please consider [sponsoring its development](https://github.com/sponsors/vgrem). ⭐
+
+## License
+
+Released under the [MIT License](https://github.com/vgrem/office365-rest-python-client/blob/master/LICENSE).

@@ -39,8 +39,8 @@ from office365.migration import MigrationAssessor
 from office365.migration.sharepoint.scanners import LargeSitesScanner
 from office365.sharepoint.client_context import ClientContext
 
-ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
+    "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 report = MigrationAssessor(ctx.web).include_permissions().assess(recursive=True).execute_query().value
 print(report.summary())          # Webs/Lists/Files/Size + blockers/warnings + ready

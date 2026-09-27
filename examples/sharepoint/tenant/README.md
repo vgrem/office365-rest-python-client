@@ -73,8 +73,8 @@ A `Tenant` object is the entry point for all tenant-level operations.
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
-ctx = ClientContext("https://contoso-admin.sharepoint.com").with_client_secret(
-    "contoso.onmicrosoft.com", "client_id", "client_secret"
+ctx = ClientContext("https://contoso-admin.sharepoint.com").with_client_certificate(
+    "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 
 tenant = Tenant(ctx)
