@@ -135,8 +135,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `File/CheckOutType`/`File/TimeCreated`/`File/TimeLastModified` and expands
   `File/ModifiedBy`/`File/CheckedOutByUser`; the root-web template
   (`RootWeb/WebTemplate`) is loaded with the site-collection metadata.
+- **Locale-independent error classification + SharePoint taxonomy:** request
+  errors are dispatched by a deterministic `MATCH_PRIORITY` (highest wins,
+  registration order breaks ties) instead of import order, and
+  `ClientRequestException` exposes the parsed `.hresult` / `.error_type` from a
+  SharePoint `"<hresult>, <dotnet-type>"` code. New
+  `office365.sharepoint.exceptions.SharePointException` catch-all, plus typed
+  `SPFileCheckOutException` (HTTP 423, distinct from the shared-lock
+  `FileLockedException`), `SPListDataValidationException`,
+  `SPFieldValidationException`, `SPFieldValueException`,
+  `SPDuplicateValuesFoundException`, `SPInvalidLookupValuesException`,
+  `SPContentTypeReadOnlyException` and `SPContentTypeSealedException`.
 
 ### Changed
+- **Error classification is locale-independent:** SharePoint exceptions no
+  longer match translated messages — they key off the numeric HRESULT and/or the
+  embedded .NET type name (e.g. `SPListDataValidationException`,
+  `SPDuplicateValuesFoundException`), which are stable across locales.
+  `DuplicatedObjectException` keeps its English message fallback only for the
+  opaque `-1, System.Exception` case. HTTP 423 is now disambiguated: a
+  `SPFileCheckOutException` (check-out, releasable) is typed separately from the
+  shared coauthoring `FileLockedException`; a 423 with no other signal still maps
+  to `FileLockedException`.
 - **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry
   (returns `ImportResult`) and `queue_*` (`queue_records`/`queue_dataframe`) is
   the deferred queue-all path. Removed `import_from`/`import_records`/

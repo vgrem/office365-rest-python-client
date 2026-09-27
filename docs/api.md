@@ -175,6 +175,49 @@ catalog("sharepoint")                        # every registered SharePoint limit
 
 See [Service limits](limits.md) for the SharePoint catalog.
 
+## Error handling
+
+Every failed request raises a `ClientRequestException`, dispatched to the most
+specific registered type. Classification is locale-independent: SharePoint
+encodes the error as `"<HRESULT>, <dotnet-type>"` in `error.code`, so the library
+matches the numeric HRESULT and/or the embedded .NET type name — never the
+translated message. Graph's symbolic codes (`resourceLocked`, `itemNotFound`, …)
+are matched too.
+
+```python
+from office365.sharepoint.exceptions import (
+    SharePointException,             # catch-all for any Microsoft.SharePoint.* error
+    SPFileCheckOutException,         # HTTP 423 — a releasable check-out
+    SPDuplicateValuesFoundException,
+    SPListDataValidationException,
+    SPQueryThrottledException,
+)
+from office365.runtime.exceptions import FileLockedException
+
+try:
+    ctx.web.lists.get_by_title("Tasks").add_item({"Title": "x"}).execute_query()
+except SPListDataValidationException as exc:
+    print(exc.message)
+except SharePointException as exc:  # any other SharePoint error
+    print(exc.code, exc.hresult, exc.error_type, exc.request_id)
+```
+
+- `DuplicatedObjectException` (HTTP 400 / `ConflictingObjects`),
+  `ObjectNotFoundException` (404 / `ResourceNotFound`) and `FileLockedException`
+  (shared coauthoring lock, HTTP 423) are runtime-level and shared with Graph.
+- `SharePointException` is the catch-all base for product-specific errors; every
+  `SP*` type subclasses it, so `except SharePointException` catches them all.
+- HTTP 423 is disambiguated: `SPFileCheckOutException` (an explicit check-out,
+  releasable with `File.checkin()`/`File.undocheckout()`) is typed separately from
+  the shared `FileLockedException` (open in Office, not breakable via the API).
+- `exc.hresult` / `exc.error_type` expose the parsed SharePoint code, while
+  `exc.request_id`, `exc.server_guid` and `exc.duration_ms` carry correlation and
+  server diagnostics.
+
+Errors with a recovery path expose it in `GUIDANCE`, appended to `str(exc)`:
+`SPFileCheckOutException`, `FileLockedException`, and `SPQueryThrottledException`
+(page or index a column — see [Large lists](large-lists.md)).
+
 ## Power features
 
 ### Proxy, custom SSL, timeouts

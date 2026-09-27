@@ -21,25 +21,37 @@ from office365.runtime.client_request_exception import (
 class DuplicatedObjectException(ClientRequestException):
     """Raised when creating an object that already exists (HTTP 400 + ConflictingObjects)."""
 
+    MATCH_PRIORITY = 10
     _CODES = frozenset({"nameAlreadyExists", "ErrorFolderExists", "-2130575342"})
 
     @classmethod
     def matches(cls, payload: ErrorPayload) -> bool:
         return (
-            payload.code in cls._CODES
+            payload.hresult in cls._CODES
+            or payload.code.lower() in cls._CODES
             or any(detail.get("code") == "ConflictingObjects" for detail in payload.details)
-            or "already exists" in payload.message.lower()
+            # The generic ``-1, System.Exception`` carries no code, so fall back to
+            # the (English) message — scoped to that opaque case only.
+            or (payload.hresult == "-1" and "already exists" in payload.message.lower())
         )
 
 
 class ObjectNotFoundException(ClientRequestException):
     """Raised when a requested object is not found (HTTP 404 or ResourceNotFound code)."""
 
+    MATCH_PRIORITY = 10
     _CODES = frozenset({"itemnotfound", "resourcenotfound", "notfound"})
+    _TYPE_NAMES = ("FileNotFoundException", "DirectoryNotFoundException", "ResourceNotFoundException")
 
     @classmethod
     def matches(cls, payload: ErrorPayload) -> bool:
-        return "-2147024809" in payload.code or payload.code.lower() in cls._CODES
+        error_type = (payload.error_type or "").lower()
+        return (
+            "-2147024809" in payload.code  # System.ArgumentException (kept for back-compat)
+            or "-2147024894" in payload.code  # System.IO.FileNotFoundException
+            or payload.code.lower() in cls._CODES
+            or any(name.lower() in error_type for name in cls._TYPE_NAMES)
+        )
 
 
 register_error_type(DuplicatedObjectException)
@@ -53,10 +65,15 @@ class FileLockedException(ClientRequestException):
     Office (web or desktop), so SharePoint/Graph refuses the write. Unlike a
     check-out lock, a shared lock cannot be broken through the API. See
     :attr:`GUIDANCE` for the available options.
+
+    HTTP 423 is also used by ``Microsoft.SharePoint.SPFileCheckOutException``;
+    that case is classified separately as
+    :class:`~office365.sharepoint.exceptions.SPFileCheckOutException` (a higher
+    priority match), so this type only claims status-only 423 responses.
     """
 
+    MATCH_PRIORITY = 10
     _CODES = ("-2147018894", "spfilelockexception", "resourcelocked")
-    _MARKERS = ("locked for shared use", "resource is locked", "file is locked")
 
     GUIDANCE = (
         "The file is locked - typically because it is open for editing in Office. A shared lock "
@@ -68,12 +85,10 @@ class FileLockedException(ClientRequestException):
 
     @classmethod
     def matches(cls, payload: ErrorPayload) -> bool:
-        if payload.status == 423:  # noqa: PLR2004
-            return True
         code = payload.code.lower()
         if any(marker in code for marker in cls._CODES):
             return True
-        return any(marker in payload.message.lower() for marker in cls._MARKERS)
+        return payload.status == 423  # noqa: PLR2004
 
     @property
     def lock_owner(self) -> Optional[str]:
