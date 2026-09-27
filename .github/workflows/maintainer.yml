@@ -34,31 +34,43 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_ID: ${{ github.event.comment.id }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
           # Read the first line, trim surrounding whitespace, drop a CR from CRLF.
           command="$(printf '%s\n' "$COMMENT_BODY" | head -n 1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+          handled=0
 
           case "$command" in
             /close)
               gh issue close "$ISSUE_NUMBER" --repo "$REPOSITORY" \
                 --comment "Closing as answered. Reopen if the problem persists."
+              handled=1
               ;;
             /reopen)
               gh issue reopen "$ISSUE_NUMBER" --repo "$REPOSITORY"
+              handled=1
               ;;
             "/duplicate "*)
               duplicate="${command#/duplicate }"
               duplicate="${duplicate#\#}"
               gh issue comment "$ISSUE_NUMBER" --repo "$REPOSITORY" --body "Duplicate of #${duplicate}."
               gh issue close "$ISSUE_NUMBER" --repo "$REPOSITORY"
+              handled=1
               ;;
             "/label "*)
               gh issue edit "$ISSUE_NUMBER" --repo "$REPOSITORY" --add-label "${command#/label }"
+              handled=1
               ;;
             *)
               echo "No supported slash-command in '${command}'; ignoring."
               ;;
           esac
+
+          # Remove the trigger comment so the thread only shows the bot's action.
+          if [ "$handled" = "1" ]; then
+            gh api -X DELETE "repos/${REPOSITORY}/issues/comments/${COMMENT_ID}" \
+              || echo "::warning::could not remove the trigger comment"
+          fi

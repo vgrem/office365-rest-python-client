@@ -218,7 +218,8 @@ Maintainers can drive it with a slash-command in an issue comment:
 | `/label <name>` | Add an existing label to the issue |
 
 Commands are honored only for comments from `OWNER`, `MEMBER` or `COLLABORATOR`
-accounts (see `.github/workflows/maintainer.yml`).
+accounts, and the triggering command comment is deleted afterwards so the thread
+only shows the bot's action (see `.github/workflows/maintainer.yml`).
 
 To perform manual actions under the same bot identity, export a short-lived
 installation token and use `gh` as usual:
