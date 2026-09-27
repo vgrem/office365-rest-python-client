@@ -5,10 +5,21 @@ from io import BytesIO
 from typing import ClassVar, Optional
 
 from office365.sharepoint.changes.query import ChangeQuery
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.file import File
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.tenant.administration.sharing_capabilities import SharingCapabilities
+from office365.sharepoint.tenant.administration.tenant import Tenant
 
-from tests import create_unique_name, test_cert_path, test_cert_thumbprint, test_client_id, test_tenant
+from tests import (
+    create_unique_name,
+    test_admin_site_url,
+    test_cert_path,
+    test_cert_thumbprint,
+    test_client_id,
+    test_team_site_url,
+    test_tenant,
+)
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -35,6 +46,18 @@ class TestSharePointFile(SPTestCase):
         assert cls.folder_to is not None
         cls.folder_from.delete_object().execute_query()
         cls.folder_to.delete_object().execute_query()
+
+    @classmethod
+    def _site_sharing_capability(cls) -> Optional[SharingCapabilities]:
+        """Read the team site collection's external sharing capability via the tenant admin API."""
+        admin_client = ClientContext(test_admin_site_url).with_client_certificate(
+            test_tenant,
+            client_id=test_client_id,
+            thumbprint=test_cert_thumbprint,
+            cert_path=test_cert_path,
+        )
+        site_props = Tenant(admin_client).get_site_properties_by_url(test_team_site_url, True).execute_query()
+        return site_props.sharing_capability
 
     def test_01_upload_file_as_content(self):
         """Upload a file as binary content"""
@@ -76,6 +99,9 @@ class TestSharePointFile(SPTestCase):
         """Create anonymous link for file"""
         file = TestSharePointFile.file
         assert file is not None
+        # Guest ("Anyone") link creation is rejected unless the site collection allows it
+        if TestSharePointFile._site_sharing_capability() != SharingCapabilities.ExternalUserAndGuestSharing:
+            self.skipTest("Anonymous links are disabled for the team site collection")
         result = file.create_anonymous_link(False).execute_query()
         self.assertIsNotNone(result.value)
 
