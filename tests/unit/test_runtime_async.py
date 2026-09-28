@@ -152,6 +152,23 @@ def test_async_context_manager_closes_transport() -> None:
     assert closed == [True]
 
 
+def test_clone_reuses_async_transport() -> None:
+    """A clone keeps the explicitly configured async transport of its parent."""
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    async_transport = ScriptedTransport([{"d": {"Title": "Contoso"}}])
+    ctx.pending_request().with_async_transport(async_transport)
+
+    clone = ctx.clone(_SITE_URL)
+    clone.pending_request().beforeExecute.clear()
+    clone.load(clone.web)
+
+    asyncio.run(clone.execute_query_async())
+
+    assert clone.web.properties.get("Title") == "Contoso"
+    assert async_transport.calls == 1
+
+
 class _AsyncGraphBatchHarness(GraphClient):
     """GraphClient whose batch units are recorded instead of sent over HTTP."""
 

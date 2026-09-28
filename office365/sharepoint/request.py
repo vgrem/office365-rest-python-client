@@ -90,13 +90,18 @@ class SharePointRequest(ODataRequest):
         """Reuse the authentication context and transport of another request.
 
         The same objects are shared by reference (not copied), so the token
-        cache and HTTP session stay single-flight and thread-safe.
+        cache and HTTP session stay single-flight and thread-safe. An explicit
+        async transport (see ``with_async_transport``) and the shared rate
+        limiter are carried over as well, so clones keep using the same
+        native-async engine and fleet-wide pacing.
 
         Args:
             other: The request whose auth context and transport to reuse
         """
         self._auth_context = other._auth_context
         self._transport = other._transport
+        self._async_transport = other._async_transport
+        self._rate_limiter = other._rate_limiter
         return self
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
