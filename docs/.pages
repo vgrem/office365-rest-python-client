@@ -3,6 +3,7 @@ nav:
   - index.md
   - installation.md
   - getting-started.md
+  - async.md
   - data-pipeline.md
   - migration.md
   - large-lists.md

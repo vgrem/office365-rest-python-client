@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Async/await support:** every terminal query gains an async twin —
+  `ClientRuntimeContext.execute_query_async`, `ClientObject.execute_query_async`,
+  `ClientResult.execute_query_async`, `execute_query_async_retry`, and async
+  context management (`async with ctx:`). Builders stay synchronous; only the
+  network call is awaited. The default transport offloads the blocking
+  `requests` call to a worker thread (`BaseTransport.execute_async`), so no extra
+  dependency is required and existing session/auth/proxy/throttling behaviour is
+  reused. See `docs/async.md` and `examples/async/`.
+- **Async batching:** `ClientContext.execute_batch_async` and
+  `GraphClient.execute_batch_async` reuse the existing split / retry /
+  form-digest machinery off the event loop; `concurrency > 1` overlaps batches.
+- **Async retry:** `retry_async` in `office365.runtime.retry` (the counterpart of
+  `retry`, sleeping with `asyncio.sleep`), surfaced as
+  `execute_query_async_retry`.
+- **Optional native-async transport:** `HttpxTransport`
+  (`office365.runtime.transport.httpx_transport`), enabled per request via
+  `ClientRequest.with_async_transport(...)`, behind the `[httpx]` extra
+  (`httpx>=0.27,<1`). The synchronous path keeps using `requests`.
+
 ## [3.2.0] - 2026-09-27
 
 ### Added

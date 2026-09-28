@@ -29,6 +29,19 @@ pip install git+https://github.com/vgrem/office365-rest-python-client.git
 pip install --upgrade office365-rest-python-client
 ```
 
+## Optional extras
+
+Features that need a third-party package are extras:
+
+```bash
+pip install "office365-rest-python-client[httpx]"     # native-async HTTP transport
+pip install "office365-rest-python-client[pandas]"    # DataFrames
+pip install "office365-rest-python-client[excel]"     # Excel
+pip install "office365-rest-python-client[parquet]"   # Parquet
+pip install "office365-rest-python-client[sql]"       # SQLAlchemy
+pip install "office365-rest-python-client[duckdb]"    # DuckDB
+```
+
 ---
 
 Once installed, head to **[Getting Started](getting-started.md)** to pick your
