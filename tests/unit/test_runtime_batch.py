@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json as jsonlib
 import threading
 import time
@@ -374,3 +375,127 @@ def test_execute_batch_success_callback_receives_return_types():
         client.execute_batch(success_callback=received.append)
 
     assert received == [[obj]]
+
+
+# ── Async batch (true-async twin of execute_query_with_retry) ────────────────
+
+
+class _ResponseTransport(BaseTransport):
+    """Returns pre-built ``Response`` objects in order (sync execute; async offloads)."""
+
+    def __init__(self, responses: list[Response]) -> None:
+        self._responses = responses
+        self.calls = 0
+
+    def execute(self, request):
+        resp = self._responses[min(self.calls, len(self._responses) - 1)]
+        self.calls += 1
+        return resp
+
+
+class _RejectThenOkTransport(BaseTransport):
+    """Whole-batch rejection (413) on the first call, a 200 envelope afterwards."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def execute(self, request):
+        self.calls += 1
+        resp = Response()
+        resp.url = request.url
+        if self.calls == 1:
+            resp.status_code = 413
+            resp._content = b"payload too large"
+        else:
+            resp.status_code = 200
+            resp._content = jsonlib.dumps(_envelope([200])).encode("utf-8")
+        return resp
+
+
+def _v3_batch_response(sub_statuses: list[int], retry_after: int | None = None) -> Response:
+    """Build a multipart/mixed v3 batch response with the given sub-statuses."""
+    boundary = "batch_response"
+    parts = []
+    for status in sub_statuses:
+        if status == 429:  # noqa: PLR2004
+            inner = f"HTTP/1.1 429 Too Many Requests\r\nRetry-After: {retry_after or 1}\r\n"
+        else:
+            inner = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" + jsonlib.dumps({"d": {}})
+        parts.append(
+            f"--{boundary}\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\n{inner}\r\n"
+        )
+    body = "".join(parts) + f"--{boundary}--\r\n"
+    resp = Response()
+    resp.status_code = 200
+    resp.url = "https://contoso.sharepoint.com/_api/$batch"
+    resp.headers["Content-Type"] = f"multipart/mixed; boundary={boundary}"
+    resp._content = body.encode("utf-8")
+    return resp
+
+
+class TestBatchSubRequestRetryAsync(unittest.TestCase):
+    def test_async_retries_only_failed_subrequests(self):
+        client = GraphClient()
+        transport = _FakeTransport([_envelope([200, 429], retry_after=1), _envelope([200])])
+        req = ODataV4BatchRequest("", V4JsonFormat())
+        req.transport = transport
+
+        with mock.patch("office365.runtime.retry.asyncio.sleep", new=mock.AsyncMock()):
+            asyncio.run(
+                req.execute_query_with_retry_async(_make_batch(client, 2), max_retry=3, base_delay=1, jitter=False)
+            )
+
+        self.assertEqual(transport.calls, 2)
+        self.assertEqual(len(transport.request_payloads[0]["requests"]), 2)
+        self.assertEqual(len(transport.request_payloads[1]["requests"]), 1)
+
+    def test_async_non_transient_sub_failure_raises_without_retry(self):
+        client = GraphClient()
+        transport = _FakeTransport([_envelope([200, 400])])
+        req = ODataV4BatchRequest("", V4JsonFormat())
+        req.transport = transport
+
+        with self.assertRaises(ClientRequestException):
+            asyncio.run(req.execute_query_with_retry_async(_make_batch(client, 2), max_retry=3))
+
+        self.assertEqual(transport.calls, 1)
+
+    def test_async_honors_longest_retry_after(self):
+        client = GraphClient()
+        transport = _FakeTransport([_envelope([429, 429], retry_after=7), _envelope([200, 200])])
+        req = ODataV4BatchRequest("", V4JsonFormat())
+        req.transport = transport
+        sleep_mock = mock.AsyncMock()
+
+        with mock.patch("office365.runtime.retry.asyncio.sleep", new=sleep_mock):
+            asyncio.run(req.execute_query_with_retry_async(_make_batch(client, 2), max_retry=3, jitter=False))
+
+        sleep_mock.assert_awaited_once_with(7)
+
+    def test_async_splits_whole_batch_rejection(self):
+        client = GraphClient()
+        transport = _RejectThenOkTransport()
+        req = ODataV4BatchRequest("", V4JsonFormat())
+        req.transport = transport
+
+        with mock.patch("office365.runtime.retry.asyncio.sleep", new=mock.AsyncMock()):
+            asyncio.run(
+                req.execute_query_with_retry_async(_make_batch(client, 2), max_retry=1, base_delay=1, jitter=False)
+            )
+
+        self.assertEqual(transport.calls, 3)
+
+    def test_v3_async_retries_only_failed_subrequests(self):
+        client = GraphClient()
+        client.pending_request().beforeExecute.clear()  # no auth handler during offline payload build
+        obj1 = ClientObject(client, ResourcePath("me"))
+        obj2 = ClientObject(client, ResourcePath("me"))
+        batch = BatchQuery(client, [ReadEntityQuery(obj1, ["a"]), ReadEntityQuery(obj2, ["b"])])
+        transport = _ResponseTransport([_v3_batch_response([200, 429], retry_after=1), _v3_batch_response([200])])
+        req = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())
+        req.transport = transport
+
+        with mock.patch("office365.runtime.retry.asyncio.sleep", new=mock.AsyncMock()):
+            asyncio.run(req.execute_query_with_retry_async(batch, max_retry=3, base_delay=1, jitter=False))
+
+        self.assertEqual(transport.calls, 2)

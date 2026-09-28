@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import copy
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 from urllib.parse import urlparse
@@ -335,10 +334,9 @@ class ClientContext(ClientRuntimeContext):
             max_batch_bytes (int or None): Maximum estimated batch payload size (default ~1 MB)
         """
         max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
-        loop = asyncio.get_running_loop()
         request = self.pending_request()
         # fetch the form digest once before dispatching any batch (off the loop)
-        await loop.run_in_executor(None, request.warm_up)
+        await request.warm_up_async()
         batches = self._split_batches(items_per_batch, max_bytes)
         await self._run_batches_async(batches, concurrency, success_callback)
         return self
@@ -360,6 +358,31 @@ class ClientContext(ClientRuntimeContext):
         batch_request.beforeExecute += self.pending_request()._authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
         self._run_batch(batch_request, batch_qry)
+        return batch_qry.return_types
+
+    async def _run_batch_async(self, batch_request: ODataBatchV3Request, batch_qry: "BatchQuery") -> None:
+        """Execute one batch, refreshing an expired form digest once and retrying."""
+        try:
+            await batch_request.execute_query_with_retry_async(batch_qry)
+        except SecurityValidationException:
+            self.pending_request().invalidate_digest()
+            await self.pending_request().warm_up_async()
+            await batch_request.execute_query_with_retry_async(batch_qry)
+
+    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list[Any]:
+        """Execute a single batch unit through the async transport.
+
+        Unlike the base implementation (which offloads the whole synchronous
+        batch to a worker thread), this awaits the v3 batch's own async retry
+        loop, so a native async transport configured on the context is used.
+        """
+        request = self.pending_request()
+        batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat(), transport=request.transport)
+        batch_request.beforeExecute += request._authenticate_request
+        batch_request.beforeExecute += request.ensure_form_digest
+        if request.has_async_transport:
+            batch_request.with_async_transport(request.async_transport)
+        await self._run_batch_async(batch_request, batch_qry)
         return batch_qry.return_types
 
     def pending_request(self) -> SharePointRequest:

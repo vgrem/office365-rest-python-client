@@ -17,14 +17,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   dependency is required and existing session/auth/proxy/throttling behaviour is
   reused. See `docs/async.md` and `examples/async/`.
 - **Async batching:** `ClientContext.execute_batch_async` and
-  `GraphClient.execute_batch_async` reuse the existing split / retry /
-  form-digest machinery off the event loop; `concurrency > 1` overlaps batches.
+  `GraphClient.execute_batch_async` split and retry like their synchronous twins
+  but send each batch through the configured async transport — so a native
+  transport is used when set — with only the transiently-failed sub-requests
+  resent (honoring `Retry-After`). `concurrency > 1` overlaps batches, and the
+  form digest is refreshed off the event loop (`SharePointRequest.warm_up_async`).
 - **Async parallel queries:** `ClientRuntimeContext.execute_query_parallel_async`
   — the awaitable twin of `execute_query_parallel`. Queue independent requests
   (e.g. one `download()` per file) and drain them with bounded `concurrency`,
   per-query retry honoring `Retry-After`, and `progress` — no clones or
   semaphores. Requests go through the configured async transport, so it also
   drives the optional `HttpxTransport`.
+- **Async paging:** `ClientObjectCollection.get_all_async(page_size, ...)` loads
+  every server-driven page (`@odata.nextLink` or the SharePoint skip fallback)
+  without blocking the event loop, firing `progress` / `page_loaded` per page.
+- **Async pacing parity:** the shared `RateLimiter` now exposes
+  `acquire_async`/`paced_async` (awaited on the loop) and
+  `ThrottledTransport.execute_async`/`aclose`, so async requests honor the same
+  fleet-wide throttling gate as synchronous ones instead of blocking a worker
+  thread.
+- **Async cancellation cleanup:** an aborted (`CancelledError`/`BaseException`)
+  `execute_query_parallel` / `execute_query_parallel_async` run now restores the
+  queries that were never applied and clears the current query, so a retry can
+  resume cleanly.
+- **Async auth offload:** `beforeExecute` hooks (token acquisition, digest
+  refresh, user callbacks) run on a worker thread from the async path
+  (`ClientRequest.before_execute_async`), so a slow token refresh cannot stall
+  the loop.
 - **Async retry:** `retry_async` in `office365.runtime.retry` (the counterpart of
   `retry`, sleeping with `asyncio.sleep`), surfaced as
   `execute_query_async_retry`.

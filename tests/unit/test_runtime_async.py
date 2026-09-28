@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import asyncio
 import threading
-import time
 from unittest import mock
 
 import pytest
@@ -22,6 +21,7 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
+from requests import Response
 from tests._scripted_transport import ScriptedTransport
 
 _URL = "https://contoso.sharepoint.com/_api/web"
@@ -180,16 +180,30 @@ class _AsyncGraphBatchHarness(GraphClient):
         self._active = 0
         self._lock = threading.Lock()
 
-    def _execute_batch(self, batch_qry):
+    async def _execute_batch_async(self, batch_qry):
         with self._lock:
             self._active += 1
             self.max_active = max(self.max_active, self._active)
-        time.sleep(0.02)
-        with self._lock:
-            self._active -= 1
-        self.executed.append(batch_qry)
-        self.thread_ids.append(threading.get_ident())
-        return [batch_qry]
+        try:
+            await asyncio.sleep(0.02)
+            self.executed.append(batch_qry)
+            self.thread_ids.append(threading.get_ident())
+            return [batch_qry]
+        finally:
+            with self._lock:
+                self._active -= 1
+
+
+class _ThreadRecordingTransport(ScriptedTransport):
+    """Transport that records the thread its (blocking) send runs on."""
+
+    def __init__(self, payloads: list) -> None:
+        super().__init__(payloads)
+        self.threads: list[int] = []
+
+    def execute(self, request):
+        self.threads.append(threading.get_ident())
+        return super().execute(request)
 
 
 def _enqueue(ctx: GraphClient, count: int) -> None:
@@ -212,22 +226,25 @@ def test_execute_batch_async_runs_batches_concurrently() -> None:
 
 
 def test_execute_batch_async_offloads_off_loop_thread() -> None:
+    """The real Graph async batch sends through the configured async transport."""
     loop_thread = threading.get_ident()
-    ctx = _AsyncGraphBatchHarness()
+    ctx = GraphClient()
     _enqueue(ctx, 1)
+    transport = _ThreadRecordingTransport([{"responses": [{"id": "0", "status": 200, "headers": {}, "body": {}}]}])
+    ctx.pending_request().with_async_transport(transport)
 
     asyncio.run(ctx.execute_batch_async(items_per_batch=1))
 
-    assert ctx.thread_ids and ctx.thread_ids[0] != loop_thread
+    assert transport.threads and transport.threads[0] != loop_thread
 
 
 def test_execute_batch_async_raises_first_error() -> None:
     ctx = _AsyncGraphBatchHarness()
 
-    def _boom(batch_qry):
+    async def _boom(batch_qry):
         raise RuntimeError("boom")
 
-    ctx._execute_batch = _boom  # type: ignore[method-assign]
+    ctx._execute_batch_async = _boom  # type: ignore[method-assign]
     _enqueue(ctx, 2)
     results: list[list] = []
 
@@ -267,11 +284,11 @@ def test_sharepoint_execute_batch_async_warms_up_and_splits() -> None:
     ctx.pending_request().warm_up = lambda: warmed.append(True)  # type: ignore[method-assign]
     seen: list[object] = []
 
-    def _record(batch_qry):
+    async def _record(batch_qry):
         seen.append(batch_qry)
         return [batch_qry]
 
-    ctx._execute_batch = _record  # type: ignore[method-assign]
+    ctx._execute_batch_async = _record  # type: ignore[method-assign]
     _enqueue(ctx, 2)
 
     asyncio.run(ctx.execute_batch_async(items_per_batch=1, concurrency=2))
@@ -300,6 +317,47 @@ class _ConcurrencyTrackingTransport(ScriptedTransport):
 def _queue_loads(ctx: ClientContext, count: int) -> None:
     for _ in range(count):
         ctx.load(ctx.web)
+
+
+def _sp_page(items: list) -> dict:
+    return {"d": {"results": [{"Id": i, "Title": f"Item {i}"} for i in items]}}
+
+
+def test_get_all_async_pages_until_exhausted() -> None:
+    ctx = ClientContext(_SITE_URL)
+    transport = ScriptedTransport([_sp_page([1, 2]), _sp_page([3, 4]), _sp_page([])])
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    seen: list[int] = []
+    col = ctx.web.lists
+
+    asyncio.run(col.get_all_async(page_size=2, progress=lambda p: seen.append(p.done)))
+
+    assert [lst.properties.get("Id") for lst in col] == [1, 2, 3, 4]
+    assert transport.calls == 3  # noqa: PLR2004
+    assert seen == [2, 4, 4]
+    assert not ctx.has_pending_request
+
+
+def test_get_all_async_follows_next_link() -> None:
+    next_url = "https://graph.microsoft.com/v1.0/users?$skiptoken=abc"
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport(
+        [
+            {"@odata.nextLink": next_url, "value": [{"id": "1"}, {"id": "2"}]},
+            {"value": [{"id": "3"}]},
+        ]
+    )
+    ctx.pending_request().transport = transport
+    loaded: list[int] = []
+    col = ctx.users
+
+    asyncio.run(col.get_all_async(page_size=2, page_loaded=lambda _col: loaded.append(1)))
+
+    assert [u.properties.get("id") for u in col] == ["1", "2", "3"]
+    assert transport.calls == 2  # noqa: PLR2004
+    assert loaded == [1, 1]
 
 
 def test_execute_query_parallel_async_overlaps_requests() -> None:
@@ -434,3 +492,63 @@ def test_execute_query_parallel_on_error_honored_with_concurrency_one() -> None:
     assert len(errors) == 1
     assert transport.calls == 1
     assert not ctx.has_pending_request
+
+
+def test_execute_query_async_offloads_before_execute_hooks() -> None:
+    """Blocking ``beforeExecute`` hooks (auth/digest) run off the loop thread."""
+    loop_thread = threading.get_ident()
+    ctx, transport = _context([{"d": {"Title": "Contoso"}}])
+    hook_threads: list[int] = []
+
+    def _hook(_request: RequestOptions) -> None:
+        hook_threads.append(threading.get_ident())
+
+    ctx.pending_request().before_execute(_hook, once=False)
+    ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_async())
+
+    assert hook_threads and hook_threads[0] != loop_thread
+    assert ctx.web.properties.get("Title") == "Contoso"
+
+
+class _CancellingTransport(ScriptedTransport):
+    """Async transport that cancels the in-flight request (simulated)."""
+
+    def __init__(self) -> None:
+        super().__init__([])
+        self.started = 0
+
+    async def execute_async(self, request):
+        self.started += 1
+        raise asyncio.CancelledError
+
+
+def test_execute_query_parallel_async_restores_pending_on_cancellation() -> None:
+    """Cancellation mid-flight re-queues the unapplied queries and clears state."""
+    transport = _CancellingTransport()
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    _queue_loads(ctx, 3)
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(ctx.execute_query_parallel_async(concurrency=3))
+
+    assert ctx.has_pending_request
+    assert len(ctx._queries) == 3  # noqa: PLR2004
+    assert ctx._current_query is None
+
+
+def test_observe_throttle_prefers_recorded_limiter() -> None:
+    """A batch request observes sub-responses via its recorded limiter."""
+    ctx = ClientContext(_SITE_URL)
+    request = ctx.pending_request()
+    limiter = mock.Mock()
+    request._rate_limiter = limiter
+    response = Response()
+    response.status_code = 200  # noqa: PLR2004
+
+    request._observe_throttle(response)
+
+    limiter.observe.assert_called_once_with(response)

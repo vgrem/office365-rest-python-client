@@ -24,12 +24,13 @@ see :meth:`ClientRequest.on_error`), so they must not be used for observation.
 
 from __future__ import annotations
 
+import asyncio
 import threading
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass, fields
 from enum import Enum
-from typing import TYPE_CHECKING, Callable, Iterator, Optional
+from typing import TYPE_CHECKING, Awaitable, Callable, Iterator, Optional
 
 from requests import Response
 
@@ -317,6 +318,28 @@ def paced(func: Callable[[], Response], gate: "RateLimiter") -> Response:
     return result
 
 
+async def paced_async(func: Callable[[], Awaitable[Response]], gate: "RateLimiter") -> Response:
+    """Async twin of :func:`paced`: await the gate, then observe the outcome.
+
+    Lets the async path reuse the exact pacing policy as the sync path — only
+    the wait is a coroutine, so the event loop keeps running while the group
+    gate is closed. The outcome (returned response or ``exception.response``)
+    is fed back to the limiter, including on failure.
+
+    Args:
+        func: Coroutine performing one request/operation.
+        gate: The shared :class:`RateLimiter` to pace against.
+    """
+    await gate.acquire_async()
+    try:
+        result = await func()
+    except Exception as ex:
+        gate.observe(getattr(ex, "response", None))
+        raise
+    gate.observe(result)
+    return result
+
+
 class RateLimiter:
     """Thread-safe gate shared across workers so parallel requests pace as a group.
 
@@ -343,6 +366,7 @@ class RateLimiter:
         percentage_interval: float = 1.0,
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
+        async_sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
     ) -> None:
         self._lock = threading.Lock()
         self._state = PaceState()
@@ -352,6 +376,7 @@ class RateLimiter:
         self._percentage_interval = percentage_interval
         self._clock = clock
         self._sleep = sleep
+        self._async_sleep = async_sleep
 
     def snapshot(self) -> PaceState:
         """Return the current gate state (a pure value)."""
@@ -369,6 +394,22 @@ class RateLimiter:
             if wait <= 0:
                 return
             self._sleep(min(wait, self._SLEEP_GRANULARITY))
+
+    async def acquire_async(self) -> None:
+        """Await until the group gate opens without blocking the event loop.
+
+        Async counterpart of :meth:`acquire`: the shared state is read under the
+        same thread lock (a fast, non-blocking read) but the wait yields to the
+        event loop, so concurrently-running tasks keep making progress. Only the
+        wait step is async — the limiter never holds a loop-bound primitive, so
+        a single limiter can pace both the synchronous and asynchronous paths.
+        """
+        while True:
+            with self._lock:
+                wait = wait_delay(self._state, now=self._clock())
+            if wait <= 0:
+                return
+            await self._async_sleep(min(wait, self._SLEEP_GRANULARITY))
 
     def observe(self, response: Optional[Response]) -> None:
         """Record throttling signals and pause the group when the server asks."""

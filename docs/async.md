@@ -10,6 +10,7 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `ctx.execute_query_retry()` | `await ctx.execute_query_async_retry()` |
 | `ctx.execute_query_parallel()` | `await ctx.execute_query_parallel_async()` |
 | `ctx.execute_batch()` | `await ctx.execute_batch_async()` |
+| `collection.get_all()` | `await collection.get_all_async()` |
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
@@ -159,9 +160,10 @@ End-to-end examples that show where async pays off:
 ## Batch
 
 `execute_batch_async()` splits pending changes exactly like `execute_batch()` and
-runs each batch off the event loop. With `concurrency` > 1 the batches overlap,
-and throttling / per-sub-request retry (including honoring `Retry-After`) behave
-as in the synchronous path:
+sends each batch through the configured async transport (native if one is set,
+otherwise a worker thread), so the loop is never blocked. Only the
+transiently-failed sub-requests are resent, honoring `Retry-After`. With
+`concurrency` > 1 the batches overlap:
 
 ```python
 target_list = ctx.web.lists.get_by_title("Company Tasks")
@@ -177,6 +179,27 @@ exactly as the synchronous method:
 ```python
 await client.execute_batch_async(items_per_batch=20, sequential=True)
 ```
+
+## Paging
+
+`get_all_async()` is the awaitable twin of `get_all()`: it follows
+server-driven paging (`@odata.nextLink`, or the SharePoint `$skip` fallback)
+until the collection is exhausted, without blocking the loop:
+
+```python
+files = ctx.web.get_folder_by_server_relative_url("/sites/contoso/Shared Documents").files
+await files.get_all_async(page_size=2000, progress=lambda p: print(p.done))
+for file in files:
+    print(file.name)
+```
+
+## Throttling
+
+Async requests share the exact same pacing gate as synchronous ones. When a
+context is configured with `with_rate_limit(...)`, the gate is awaited on the
+event loop (`RateLimiter.acquire_async`) and every response — including each
+sub-response of a batch — is observed, so concurrent async tasks ease off
+together instead of blocking a worker thread.
 
 ## Retry
 
@@ -235,11 +258,14 @@ finally:
 - Async support is additive: nothing in the synchronous API changed, and both
   paths can share one context. Builders remain synchronous; call them before
   `await`ing.
-- The async batch path runs the existing (synchronous) batch machinery off the
-  loop, so it currently uses the request's synchronous transport even when an
-  async transport is configured. `execute_query_parallel_async()`, by contrast,
-  sends through the async transport and so uses the native-async engine when one
-  is configured.
+- The async batch path now sends through the request's async transport and
+  retries only transiently-failed sub-requests, exactly like the synchronous
+  path; it no longer offloads the whole synchronous batch. Blocking
+  `beforeExecute` hooks (token acquisition, digest refresh) are offloaded to a
+  worker thread so they cannot stall the loop.
+- If an async parallel run is cancelled, the queries that were not applied are
+  put back on the context's queue and the current query is cleared, so a retry
+  resumes cleanly.
 - `retry_async()` and the async terminals are available from
   `office365.runtime.retry` and the usual query objects.
 

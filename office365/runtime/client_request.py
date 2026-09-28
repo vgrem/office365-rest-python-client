@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
 
@@ -45,6 +46,11 @@ class ClientRequest(ABC):
         synchronous path on its own transport.
         """
         return self._async_transport or self._transport
+
+    @property
+    def has_async_transport(self) -> bool:
+        """Whether a dedicated async transport was set via :meth:`with_async_transport`."""
+        return self._async_transport is not None
 
     @property
     def rate_limiter(self) -> RateLimiter | None:
@@ -296,7 +302,9 @@ class ClientRequest(ABC):
         transport (which only sees the outer ``200``) cannot observe, so the
         batch loop surfaces each sub-response here.
         """
-        limiter = getattr(self._transport, "limiter", None)
+        limiter = self._rate_limiter
+        if limiter is None:
+            limiter = getattr(self._transport, "limiter", None)
         if limiter is not None:
             limiter.observe(response)
 
@@ -307,13 +315,29 @@ class ClientRequest(ABC):
         self._raise_for_status(response)
         return response
 
+    async def before_execute_async(self, request: RequestOptions) -> None:
+        """Run ``beforeExecute`` hooks without blocking the event loop.
+
+        Auth, form-digest refresh and user hooks are synchronous callbacks that
+        may perform blocking I/O (e.g. a token refresh). Like
+        :meth:`~office365.runtime.transport.base.BaseTransport.execute_async`
+        does for the request itself, they are offloaded to a worker thread so a
+        slow hook cannot stall the loop. Handlers registered ``once`` still run
+        exactly once and registration order is preserved.
+
+        Args:
+            request: The request about to be sent.
+        """
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self.beforeExecute, request)
+
     async def execute_request_direct_async(self, request: RequestOptions) -> Response:
         """Execute the client request without blocking the loop.
 
         Mirrors :meth:`execute_request_direct` but awaits the transport's
         :meth:`~office365.runtime.transport.base.BaseTransport.execute_async`.
         """
-        self.beforeExecute(request)
+        await self.before_execute_async(request)
         response = await self.async_transport.execute_async(request)
         self._raise_for_status(response)
         return response

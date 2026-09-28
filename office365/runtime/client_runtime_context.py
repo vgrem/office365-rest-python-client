@@ -361,6 +361,17 @@ class ClientRuntimeContext(ABC):
             self._clear_retry_state()
             raise
 
+    def _restore_pending(self, prepared: List[Tuple[ClientQuery, RequestOptions]]) -> None:
+        """Re-queue popped queries in their original order after an aborted run.
+
+        :meth:`execute_query_parallel` / :meth:`execute_query_parallel_async`
+        pop queries off the queue before fan-out. When the run aborts
+        (``BaseException`` / cancellation), the queries that were never applied
+        are put back at the front so a later ``execute_query`` can retry them.
+        """
+        for qry, _options in reversed(prepared):
+            self._queries.appendleft(qry)
+
     def execute_query_parallel(
         self,
         concurrency: int = 4,
@@ -423,35 +434,47 @@ class ClientRuntimeContext(ABC):
             if not prepared:
                 break
 
-            responses = run_parallel(
-                _send,
-                prepared,
-                concurrency=concurrency,
-                progress=progress,
-                on_error=lambda _task, error: error,
-            )
+            processed = 0
+            try:
+                responses = run_parallel(
+                    _send,
+                    prepared,
+                    concurrency=concurrency,
+                    progress=progress,
+                    on_error=lambda _task, error: error,
+                )
 
-            for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
-                if isinstance(response, BaseException):
-                    if on_error is not None:
-                        on_error(qry, response)
+                for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
+                    if isinstance(response, BaseException):
+                        if on_error is not None:
+                            on_error(qry, response)
+                            processed = index + 1
+                            continue
+                        for pending, _ in prepared[index:]:  # keep failed + unhandled queries
+                            self._queries.append(pending)
+                        processed = len(prepared)
+                        self._current_query = None
+                        raise response
+                    self._current_query = qry
+                    if on_error is None:
+                        request._raise_for_status(response)
+                        request.process_response(response, qry)
+                        request.afterExecute(response)
+                        processed = index + 1
                         continue
-                    for pending, _ in prepared[index:]:  # keep failed + unhandled queries
-                        self._queries.append(pending)
-                    self._current_query = None
-                    raise response
-                self._current_query = qry
-                if on_error is None:
-                    request._raise_for_status(response)
-                    request.process_response(response, qry)
-                    request.afterExecute(response)
-                    continue
-                try:
-                    request._raise_for_status(response)
-                    request.process_response(response, qry)
-                    request.afterExecute(response)
-                except BaseException as error:  # noqa: BLE001 - collected, batch continues
-                    on_error(qry, error)
+                    try:
+                        request._raise_for_status(response)
+                        request.process_response(response, qry)
+                        request.afterExecute(response)
+                    except BaseException as error:  # noqa: BLE001 - collected, batch continues
+                        on_error(qry, error)
+                    processed = index + 1
+            except BaseException:
+                # Aborted mid-run (e.g. cancellation/interrupt): restore the
+                # queries that were not applied so the caller can retry them.
+                self._restore_pending(prepared[processed:])
+                self._current_query = None
+                raise
         self._current_query = None
         return self
 
@@ -517,43 +540,55 @@ class ClientRuntimeContext(ABC):
                     await qry.execute_query_async(request)  # deferred/no-op queries stay sequential
                     continue
                 options = request.build_request(qry)
-                request.beforeExecute(options)
+                await request.before_execute_async(options)
                 prepared.append((qry, options))
             if not prepared:
                 break
 
-            responses = await self._run_parallel_async(
-                request,
-                prepared,
-                concurrency=concurrency,
-                progress=progress,
-                max_retry=max_retry,
-                timeout_secs=timeout_secs,
-                max_delay=max_delay,
-                jitter=jitter,
-            )
+            processed = 0
+            try:
+                responses = await self._run_parallel_async(
+                    request,
+                    prepared,
+                    concurrency=concurrency,
+                    progress=progress,
+                    max_retry=max_retry,
+                    timeout_secs=timeout_secs,
+                    max_delay=max_delay,
+                    jitter=jitter,
+                )
 
-            for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
-                if isinstance(response, BaseException):
-                    if on_error is not None:
-                        on_error(qry, response)
+                for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
+                    if isinstance(response, BaseException):
+                        if on_error is not None:
+                            on_error(qry, response)
+                            processed = index + 1
+                            continue
+                        for pending, _ in prepared[index:]:  # keep failed + unhandled queries
+                            self._queries.append(pending)
+                        processed = len(prepared)
+                        self._current_query = None
+                        raise response
+                    self._current_query = qry
+                    if on_error is None:
+                        request._raise_for_status(response)
+                        request.process_response(response, qry)
+                        request.afterExecute(response)
+                        processed = index + 1
                         continue
-                    for pending, _ in prepared[index:]:  # keep failed + unhandled queries
-                        self._queries.append(pending)
-                    self._current_query = None
-                    raise response
-                self._current_query = qry
-                if on_error is None:
-                    request._raise_for_status(response)
-                    request.process_response(response, qry)
-                    request.afterExecute(response)
-                    continue
-                try:
-                    request._raise_for_status(response)
-                    request.process_response(response, qry)
-                    request.afterExecute(response)
-                except BaseException as error:  # noqa: BLE001 - collected, batch continues
-                    on_error(qry, error)
+                    try:
+                        request._raise_for_status(response)
+                        request.process_response(response, qry)
+                        request.afterExecute(response)
+                    except BaseException as error:  # noqa: BLE001 - collected, batch continues
+                        on_error(qry, error)
+                    processed = index + 1
+            except BaseException:
+                # Cancelled/aborted mid-run: restore unapplied queries and drop
+                # the (now-stale) current query so a retry starts clean.
+                self._restore_pending(prepared[processed:])
+                self._current_query = None
+                raise
         self._current_query = None
         return self
 

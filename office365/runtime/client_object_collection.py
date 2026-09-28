@@ -374,6 +374,43 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.paged(page_size, page_loaded).get().after_execute(_page_loaded)
         return self
 
+    async def get_all_async(
+        self,
+        page_size: int | None = None,
+        page_loaded: Callable[[Self], None] | None = None,
+        progress: "ProgressCallback | None" = None,
+    ) -> Self:
+        """
+        Async twin of :meth:`get_all`: load every page without blocking the loop.
+
+        Pages are fetched sequentially (server-driven paging) and the event loop
+        stays free while each request is in flight. ``page_loaded`` / ``progress``
+        fire per page exactly as in the synchronous path.
+
+        Args:
+            page_size: Items per page (uses server default if None)
+            page_loaded: Legacy callback invoked with the loaded collection after
+              each page.
+            progress: Optional hook invoked per page with a ``Progress`` snapshot
+              (``done`` = items loaded so far; ``total`` unknown for server-driven
+              paging, so the bar is indeterminate).
+
+        Returns:
+            self: Supports fluent method chaining
+        """
+        self.paged(page_size, page_loaded)
+
+        def _page_loaded(_col: ClientObjectCollection) -> None:
+            if callable(progress):
+                progress(Progress(done=len(self._data), stage="loading"))
+
+        self.get().after_execute(_page_loaded)
+        await self.context.execute_query_async()
+        while self.has_next:
+            self._get_next().after_execute(_page_loaded)
+            await self.context.execute_query_async()
+        return self
+
     def _can_offset_next(self) -> bool:
         """Whether the next page can be fetched with a client-driven offset request.
 

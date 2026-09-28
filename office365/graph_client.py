@@ -480,6 +480,22 @@ class GraphClient(ClientRuntimeContext):
         batch_request.execute_query_with_retry(batch_qry)
         return batch_qry.return_types
 
+    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list[Any]:
+        """Execute a single batch unit through the async transport.
+
+        Unlike the base implementation (which offloads the whole synchronous
+        batch to a worker thread), this awaits the v4 batch's own async retry
+        loop, so a native async transport configured on the context is used and
+        independent batches truly overlap.
+        """
+        pending = self.pending_request()
+        batch_request = ODataV4BatchRequest("", V4JsonFormat())
+        batch_request.beforeExecute += pending.authenticate_request
+        if pending.has_async_transport:
+            batch_request.with_async_transport(pending.async_transport)
+        await batch_request.execute_query_with_retry_async(batch_qry)
+        return batch_qry.return_types
+
     def pending_request(self) -> GraphRequest:
         """Get or create the pending request"""
         if self._pending_request is None:

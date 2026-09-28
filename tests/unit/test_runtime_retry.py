@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import threading
 import time
 import unittest
@@ -19,6 +20,7 @@ from office365.runtime.http.throttling import (
     ThrottleLimits,
     pace,
     paced,
+    paced_async,
     parse_throttling,
     rate_limit_hook,
     throttle_guard,
@@ -514,6 +516,94 @@ class TestPacedGuard(unittest.TestCase):
             transport.execute(object())
         gate.acquire.assert_called_once_with()
         gate.observe.assert_called_once_with(None)
+
+
+class TestPacedAsync(unittest.TestCase):
+    def test_acquire_async_uses_injected_clock_and_sleep(self):
+        clock = _FakeClock()
+        slept: list[float] = []
+
+        async def _async_sleep(delay: float) -> None:
+            slept.append(delay)
+            clock.t += delay
+
+        limiter = RateLimiter(clock=clock, async_sleep=_async_sleep)
+        limiter.observe(ratelimiter__response(retry_after="5"))
+        asyncio.run(limiter.acquire_async())
+        self.assertGreaterEqual(sum(slept), 5.0)
+
+    def test_acquire_async_yields_to_the_event_loop(self):
+        """While one task waits on the gate, siblings keep running."""
+        limiter = RateLimiter()
+        limiter.observe(ratelimiter__response(retry_after="1"))
+        events: list[str] = []
+
+        async def _acquire() -> None:
+            await limiter.acquire_async()
+            events.append("acquired")
+
+        async def _run() -> None:
+            task = asyncio.ensure_future(_acquire())
+            await asyncio.sleep(0.05)
+            events.append("sibling")
+            await task
+
+        asyncio.run(_run())
+        self.assertEqual(events, ["sibling", "acquired"])
+
+    def test_paced_async_observes_success(self):
+        gate = mock.Mock()
+        gate.acquire_async = mock.AsyncMock()
+        response = ratelimiter__response()
+
+        async def _func():
+            return response
+
+        result = asyncio.run(paced_async(_func, gate))
+
+        self.assertIs(result, response)
+        gate.acquire_async.assert_awaited_once_with()
+        gate.observe.assert_called_once_with(response)
+
+    def test_paced_async_observes_error_response_and_reraises(self):
+        gate = mock.Mock()
+        gate.acquire_async = mock.AsyncMock()
+        err = ClientRequestException("boom", response=ratelimiter__response(retry_after="3"))
+
+        async def _boom():
+            raise err
+
+        with self.assertRaises(ClientRequestException):
+            asyncio.run(paced_async(_boom, gate))
+        gate.observe.assert_called_once_with(err.response)
+
+    def test_throttled_transport_execute_async_paces(self):
+        gate = mock.Mock()
+        gate.acquire_async = mock.AsyncMock()
+        response = ratelimiter__response()
+        inner = _StubTransport(response=response)
+        transport = ThrottledTransport(inner, gate)
+
+        result = asyncio.run(transport.execute_async(mock.Mock()))
+
+        self.assertIs(result, response)
+        gate.acquire_async.assert_awaited_once_with()
+        gate.observe.assert_called_once_with(response)
+
+    def test_throttled_transport_aclose_delegates(self):
+        gate = mock.Mock()
+        inner = _StubTransport(response=ratelimiter__response())
+        closed: list[bool] = []
+
+        async def _aclose() -> None:
+            closed.append(True)
+
+        inner.aclose = _aclose  # type: ignore[method-assign]
+        transport = ThrottledTransport(inner, gate)
+
+        asyncio.run(transport.aclose())
+
+        self.assertEqual(closed, [True])
 
 
 class _Pending:

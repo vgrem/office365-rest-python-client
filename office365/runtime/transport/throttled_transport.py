@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Tuple
 
-from office365.runtime.http.throttling import paced
+from office365.runtime.http.throttling import paced, paced_async
 from office365.runtime.transport.base import BaseTransport
 
 if TYPE_CHECKING:
@@ -47,6 +47,15 @@ class ThrottledTransport(BaseTransport):
     def execute(self, request: "RequestOptions") -> "Response":
         return paced(lambda: self._inner.execute(request), self._limiter)
 
+    async def execute_async(self, request: "RequestOptions") -> "Response":
+        """Async twin of :meth:`execute` that paces without blocking the loop.
+
+        The gate is awaited on the event loop and the wrapped transport's own
+        async path (native or thread-offloaded) performs the I/O, so async
+        callers get the same fleet pacing as the synchronous path.
+        """
+        return await paced_async(lambda: self._inner.execute_async(request), self._limiter)
+
     @property
     def proxies(self) -> dict[str, str] | None:
         return self._inner.proxies
@@ -65,3 +74,6 @@ class ThrottledTransport(BaseTransport):
 
     def close(self) -> None:
         self._inner.close()
+
+    async def aclose(self) -> None:
+        await self._inner.aclose()

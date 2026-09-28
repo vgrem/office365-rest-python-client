@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import threading
 from typing import Callable, List, Optional, Union
 
@@ -151,6 +152,15 @@ class SharePointRequest(ODataRequest):
     def warm_up(self) -> None:
         """Fetch the form digest once (e.g. before dispatching parallel batches)."""
         self._ensure_digest()
+
+    async def warm_up_async(self) -> None:
+        """Async twin of :meth:`warm_up`: fetch the digest without blocking the loop.
+
+        The digest fetch uses blocking HTTP, so it is offloaded to a worker
+        thread while the event loop stays free.
+        """
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self.warm_up)
 
     def invalidate_digest(self) -> None:
         """Drop the cached digest so the next request re-fetches it."""
