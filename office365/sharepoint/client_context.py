@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import copy
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 from urllib.parse import urlparse
@@ -309,6 +310,37 @@ class ClientContext(ClientRuntimeContext):
             return self
 
         self._execute_batches_in_parallel(batches, concurrency, success_callback)
+        return self
+
+    @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+    async def execute_batch_async(
+        self,
+        items_per_batch: int = Limits.BATCH_ITEMS.value,
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
+        concurrency: int = 1,
+        max_batch_bytes: Optional[int] = None,
+    ) -> Self:
+        """Async counterpart of :meth:`execute_batch`.
+
+        Pending queries are split exactly like the synchronous method, but each
+        batch's HTTP round-trip runs off the event loop, so the loop is never
+        blocked and independent batches overlap when ``concurrency`` > 1. Retry,
+        form-digest handling and per-sub-request throttling behave as in the
+        synchronous path.
+
+        Args:
+            items_per_batch (int): Maximum to be selected for bulk operation
+            success_callback ((List[ClientObject|ClientResult])-> None): A success callback
+            concurrency (int): Maximum number of concurrent batch requests (default 1)
+            max_batch_bytes (int or None): Maximum estimated batch payload size (default ~1 MB)
+        """
+        max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
+        loop = asyncio.get_running_loop()
+        request = self.pending_request()
+        # fetch the form digest once before dispatching any batch (off the loop)
+        await loop.run_in_executor(None, request.warm_up)
+        batches = self._split_batches(items_per_batch, max_bytes)
+        await self._run_batches_async(batches, concurrency, success_callback)
         return self
 
     def _run_batch(self, batch_request: ODataBatchV3Request, batch_qry: "BatchQuery") -> None:

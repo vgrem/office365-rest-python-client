@@ -20,6 +20,7 @@ from office365.runtime.types.event_handler import EventHandler
 class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):
         self._transport = transport or RequestsTransport()
+        self._async_transport: BaseTransport | None = None
         self._rate_limiter: RateLimiter | None = None
         self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
         self.afterExecute: EventHandler[[Response]] = EventHandler()
@@ -33,6 +34,17 @@ class ClientRequest(ABC):
     @transport.setter
     def transport(self, value: BaseTransport) -> None:
         self._transport = value
+
+    @property
+    def async_transport(self) -> BaseTransport:
+        """The transport backing ``execute_query_async``.
+
+        Defaults to :attr:`transport`, so the async path reuses the same
+        session. Set a dedicated transport via :meth:`with_async_transport` to
+        run async requests through a native async engine while keeping the
+        synchronous path on its own transport.
+        """
+        return self._async_transport or self._transport
 
     @property
     def rate_limiter(self) -> RateLimiter | None:
@@ -69,6 +81,23 @@ class ClientRequest(ABC):
         )
         if self._rate_limiter is not None:
             self._transport = ThrottledTransport(self._transport, self._rate_limiter)
+        return self
+
+    def with_async_transport(self, transport: BaseTransport) -> Self:
+        """Set the transport used by ``execute_query_async``.
+
+        By default the async path offloads :attr:`transport` to a worker thread.
+        Pass a native async transport (e.g. an httpx-backed one) to run async
+        requests without worker threads, while the synchronous path keeps using
+        :attr:`transport` unchanged.
+
+        Args:
+            transport: The transport to use for asynchronous execution.
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self._async_transport = transport
         return self
 
     def with_rate_limit(self, health_threshold: int = 80, min_interval: float = 0.0) -> Self:
@@ -137,6 +166,27 @@ class ClientRequest(ABC):
         try:
             request = self.build_request(query)
             response = self.execute_request_direct(request)
+            self.process_response(response, query)
+            self.afterExecute(response)
+        except ClientRequestException as e:
+            if self.onError:
+                self.onError(e)
+                return
+            raise
+        except HTTPError as e:
+            raise ClientRequestException.from_response(e.response) from e
+
+    async def execute_query_async(self, query: ClientQuery) -> None:
+        """Submits a pending request to the server without blocking the loop.
+
+        Async counterpart of :meth:`execute_query` with the same semantics:
+        ``beforeExecute`` runs before the request, and ``process_response`` /
+        ``afterExecute`` run after the awaited response. Errors are dispatched to
+        ``onError`` (swallowed) or re-raised, mirroring the sync path.
+        """
+        try:
+            request = self.build_request(query)
+            response = await self.execute_request_direct_async(request)
             self.process_response(response, query)
             self.afterExecute(response)
         except ClientRequestException as e:
@@ -254,6 +304,17 @@ class ClientRequest(ABC):
         """Execute the client request"""
         self.beforeExecute(request)
         response = self._transport.execute(request)
+        self._raise_for_status(response)
+        return response
+
+    async def execute_request_direct_async(self, request: RequestOptions) -> Response:
+        """Execute the client request without blocking the loop.
+
+        Mirrors :meth:`execute_request_direct` but awaits the transport's
+        :meth:`~office365.runtime.transport.base.BaseTransport.execute_async`.
+        """
+        self.beforeExecute(request)
+        response = await self.async_transport.execute_async(request)
         self._raise_for_status(response)
         return response
 

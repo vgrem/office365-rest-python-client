@@ -72,6 +72,11 @@ class ClientResult(Generic[ClientValueT]):
         self._context.execute_query()
         return self
 
+    async def execute_query_async(self) -> ClientResult[ClientValueT]:
+        """Submit request(s) to the server without blocking the loop"""
+        await self._context.execute_query_async()
+        return self
+
     def execute_query_retry(
         self,
         max_retry: int = 5,
@@ -100,6 +105,28 @@ class ClientResult(Generic[ClientValueT]):
 
         """
         self._context.execute_query_retry(
+            max_retry=max_retry,
+            timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
+            success_callback=success_callback,
+            failure_callback=failure_callback,
+            exceptions=exceptions,
+        )
+        return self
+
+    async def execute_query_async_retry(
+        self,
+        max_retry: int = 5,
+        timeout_secs: int = 5,
+        max_delay: Optional[int] = None,
+        jitter: bool = True,
+        success_callback: Optional[Callable[[Any], None]] = None,
+        failure_callback: Optional[Callable[[int, Exception], None]] = None,
+        exceptions: tuple[type[Exception], ...] = (ClientRequestException,),
+    ) -> ClientResult[ClientValueT]:
+        """Async counterpart of :meth:`execute_query_retry`."""
+        await self._context.execute_query_async_retry(
             max_retry=max_retry,
             timeout_secs=timeout_secs,
             max_delay=max_delay,

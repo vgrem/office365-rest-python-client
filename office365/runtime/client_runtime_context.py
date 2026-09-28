@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from abc import ABC, abstractmethod
 from collections import deque
 from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Type
@@ -143,6 +144,12 @@ class ClientRuntimeContext(ABC):
     def __exit__(self, *args) -> None:
         self.pending_request().transport.close()
 
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *args) -> None:
+        await self.pending_request().async_transport.aclose()
+
     @abstractmethod
     def pending_request(self) -> ClientRequest:
         """Gets the pending client request."""
@@ -276,6 +283,82 @@ class ClientRuntimeContext(ABC):
             qry = self._get_next_query()
             qry.execute_query(self.pending_request())
         return self
+
+    async def execute_query_async(self) -> Self:
+        """Executes all pending queries without blocking the event loop.
+
+        Async counterpart of :meth:`execute_query`: queries are awaited in
+        submission order on the current task. Each call drains the context's
+        pending queue, so to overlap independent requests either run them on
+        separate contexts (see :meth:`clone`) or use
+        :meth:`execute_batch_async` with ``concurrency`` > 1.
+
+        Returns:
+            Self for method chaining
+        """
+        while self.has_pending_request:
+            qry = self._get_next_query()
+            await qry.execute_query_async(self.pending_request())
+        return self
+
+    async def execute_query_async_retry(
+        self,
+        max_retry: int = 5,
+        timeout_secs: int = 5,
+        max_delay: Optional[int] = None,
+        jitter: bool = True,
+        success_callback: Optional[Callable[[ClientObject | None], None]] = None,
+        failure_callback: Optional[Callable[[int, Exception], Optional[int]]] = None,
+        exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+        is_retriable: Optional[Callable[[Exception], bool]] = None,
+    ) -> None:
+        """Executes pending queries with retry logic, without blocking the loop.
+
+        Async counterpart of :meth:`execute_query_retry` — same retry policy
+        (transient-only by default, exponential backoff with jitter), but the
+        delay between attempts uses ``asyncio.sleep``.
+
+        Args:
+            max_retry: Maximum number of retry attempts
+            timeout_secs: Base delay for exponential backoff (seconds)
+            max_delay: Optional cap on the exponential delay (seconds)
+            jitter: Whether to randomize the delay (default True)
+            success_callback: Called on successful execution
+            failure_callback: Called after each failed attempt; may return a
+                retry delay in seconds to override the backoff
+            exceptions: Exception types that trigger retries
+            is_retriable: Optional predicate deciding whether a caught exception
+                is retried. Defaults to
+                :func:`~office365.runtime.retry.is_transient_error`.
+        """
+        from office365.runtime.retry import is_transient_error, retry_async
+
+        def _on_failure(_attempt: int, ex: Exception) -> Optional[int]:
+            # Re-queue the failed query for a retry, except on the last attempt —
+            # otherwise the context is left with a stale, un-executed query.
+            if _attempt < max_retry and self.current_query is not None:
+                self.add_query(self.current_query)
+            return failure_callback(_attempt, ex) if callable(failure_callback) else None
+
+        def _on_success(_) -> None:
+            if callable(success_callback) and self.current_query is not None:
+                success_callback(self.current_query.return_type)
+
+        try:
+            await retry_async(
+                self.execute_query_async,
+                max_retry=max_retry,
+                timeout_secs=timeout_secs,
+                max_delay=max_delay,
+                jitter=jitter,
+                exceptions=exceptions,
+                is_retriable=is_retriable or is_transient_error,
+                on_failure=_on_failure,
+                on_success=_on_success,
+            )
+        except BaseException:
+            self._clear_retry_state()
+            raise
 
     def execute_query_parallel(
         self,
@@ -515,6 +598,60 @@ class ClientRuntimeContext(ABC):
             progress=_on_progress,
             on_error=_on_error,
         )
+        if errors:
+            raise errors[0]
+
+    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> List[Any]:
+        """Execute a single batch unit without blocking the event loop.
+
+        The synchronous batch machinery owns form-digest handling and
+        per-sub-request retry, so the default async path runs :meth:`_execute_batch`
+        in a worker thread. That keeps the loop free and lets independent batches
+        overlap; a context with a native async batch stack can override this.
+        """
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, self._execute_batch, batch_qry)
+
+    async def _run_batches_async(
+        self,
+        batches: list["BatchQuery"],
+        concurrency: int,
+        success_callback: Optional[Callable[[List[Any]], None]] = None,
+    ) -> None:
+        """Execute batch units without blocking the loop.
+
+        Async counterpart of :meth:`_execute_batches_in_parallel`: with
+        ``concurrency`` > 1 batches overlap up to that limit, and
+        ``success_callback`` is invoked as each batch completes. After all
+        batches settle, the first failure is re-raised.
+
+        Args:
+            batches: Batch units to execute
+            concurrency: Maximum number of concurrent batch requests
+            success_callback: Called with each successfully completed batch's
+                return types, in completion order
+        """
+        if concurrency <= 1:
+            for qry in batches:
+                return_types = await self._execute_batch_async(qry)
+                if callable(success_callback) and return_types:
+                    success_callback(return_types)
+            return
+
+        semaphore = asyncio.Semaphore(max(1, concurrency))
+        errors: list[BaseException] = []
+
+        async def _one(batch_qry: "BatchQuery") -> None:
+            async with semaphore:
+                try:
+                    return_types = await self._execute_batch_async(batch_qry)
+                except Exception as err:  # first error is re-raised after draining
+                    errors.append(err)
+                    return
+                if callable(success_callback) and return_types:
+                    success_callback(return_types)
+
+        await asyncio.gather(*(_one(batch) for batch in batches))
         if errors:
             raise errors[0]
 

@@ -7,10 +7,11 @@ jitter (so a fleet of clients doesn't retry in lock-step).
 
 from __future__ import annotations
 
+import asyncio
 import random
 from functools import wraps
 from time import sleep
-from typing import Any, Callable, Optional, Tuple, Type
+from typing import Any, Awaitable, Callable, Optional, Tuple, Type
 
 from typing_extensions import ParamSpec
 
@@ -182,6 +183,57 @@ def retry(
 
         return decorator
     return _run_with_retry(func, **options)  # type: ignore[arg-type]
+
+
+async def retry_async(
+    func: Callable[[], Awaitable[Any]],
+    *,
+    max_retry: int = 5,
+    timeout_secs: int = 5,
+    max_delay: Optional[int] = None,
+    jitter: bool = True,
+    exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+    is_retriable: Callable[[Exception], bool] = is_transient_error,
+    on_failure: Optional[Callable[[int, Exception], Optional[int]]] = None,
+    on_success: Optional[Callable[[Any], None]] = None,
+) -> Any:
+    """Run an awaitable ``func`` with retries, without blocking the event loop.
+
+    Async counterpart of :func:`retry`: identical retry/backoff semantics
+    (transient-only by default, exponential backoff with jitter, ``Retry-After``
+    override), but the wait between attempts uses ``asyncio.sleep`` so
+    concurrently-running tasks keep making progress.
+
+    Args:
+        func: Awaitable callable to execute.
+        max_retry: Maximum number of retry attempts
+        timeout_secs: Base delay for exponential backoff (seconds)
+        max_delay: Optional cap for the exponential delay (seconds)
+        jitter: Whether to randomize the delay (default True)
+        exceptions: Exception types that are candidates for retry
+        is_retriable: Classifier deciding whether a caught exception is retried
+        on_failure: Called after each failed attempt with ``(attempt, ex)``;
+            may return a retry delay (seconds) to override the backoff
+        on_success: Called with ``await func()`` result on success
+    """
+    last_ex: Exception | None = None
+    for attempt in range(1, max_retry + 1):
+        try:
+            result = await func()
+            if callable(on_success):
+                on_success(result)
+            return result
+        except exceptions as e:
+            if not callable(is_retriable) or not is_retriable(e):
+                raise
+            last_ex = e
+            retry_after: Optional[int] = None
+            if callable(on_failure):
+                retry_after = on_failure(attempt, e)
+            delay = retry_after if retry_after is not None else backoff_delay(attempt, timeout_secs, max_delay, jitter)
+            await asyncio.sleep(delay)
+    assert last_ex is not None
+    raise last_ex
 
 
 def retry_on(*exception_types: Type[Exception]) -> Callable[[Exception], bool]:

@@ -137,6 +137,16 @@ class ClientObject:
         self.context.execute_query()
         return self
 
+    async def execute_query_async(self) -> Self:
+        """
+        Submits all pending requests to the server without blocking the loop.
+
+        Returns:
+            The current instance for method chaining
+        """
+        await self.context.execute_query_async()
+        return self
+
     def execute_query_retry(
         self,
         max_retry: int = 5,
@@ -163,6 +173,42 @@ class ClientObject:
                 ``retry_on(...)`` to also retry otherwise-permanent errors.
         """
         self.context.execute_query_retry(
+            max_retry=max_retry,
+            timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
+            success_callback=success_callback,
+            failure_callback=failure_callback,
+            exceptions=exceptions,
+            is_retriable=is_retriable,
+        )
+        return self
+
+    async def execute_query_async_retry(
+        self,
+        max_retry: int = 5,
+        timeout_secs: int = 5,
+        max_delay=None,
+        jitter: bool = True,
+        success_callback=None,
+        failure_callback=None,
+        exceptions=(ClientRequestException,),
+        is_retriable=None,
+    ) -> Self:
+        """Async counterpart of :meth:`execute_query_retry`.
+
+        Args:
+            max_retry (int): Number of times to retry the request
+            timeout_secs (int): Base delay for exponential backoff (seconds)
+            max_delay (int): Optional cap on the exponential delay (seconds)
+            jitter (bool): Whether to randomize the delay
+            success_callback (callable): Called if the request executes successfully.
+            failure_callback (callable): Called if a retry attempt fails.
+            exceptions (tuple): Tuple of exceptions that we retry.
+            is_retriable (callable): Optional predicate deciding whether a caught
+                exception is retried. Defaults to transient errors.
+        """
+        await self.context.execute_query_async_retry(
             max_retry=max_retry,
             timeout_secs=timeout_secs,
             max_delay=max_delay,

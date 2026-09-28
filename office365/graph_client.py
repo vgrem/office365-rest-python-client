@@ -436,6 +436,43 @@ class GraphClient(ClientRuntimeContext):
         self._execute_batches_in_parallel(batches, concurrency, success_callback)
         return self
 
+    async def execute_batch_async(
+        self,
+        items_per_batch: int = 20,
+        success_callback: Optional[Callable[[List[Any]], None]] = None,
+        concurrency: int = 1,
+        max_batch_bytes: Optional[int] = None,
+        sequential: bool = False,
+    ) -> Self:
+        """Async counterpart of :meth:`execute_batch`.
+
+        Pending queries are split exactly like the synchronous method, but each
+        batch's HTTP round-trip runs off the event loop, so the loop is never
+        blocked and independent batches overlap when ``concurrency`` > 1.
+        ``sequential=True`` chains sub-requests with ``dependsOn`` just as the
+        synchronous method does.
+
+        Args:
+            items_per_batch: Maximum items per batch (default: 20)
+            success_callback: Optional callback for successful requests
+            concurrency: Maximum number of concurrent batch requests (default 1)
+            max_batch_bytes: Maximum estimated batch payload size (default ~3 MB)
+            sequential: Chain sub-requests with ``dependsOn`` (Graph v4 only).
+
+        Raises:
+            ValueError: When ``sequential`` is combined with ``concurrency > 1``.
+        """
+        if sequential and concurrency > 1:
+            raise ValueError("sequential=True requires concurrency=1 (Graph sequences within a batch only)")
+        max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
+        batches = self._split_batches(items_per_batch, max_bytes)
+        if sequential:
+            for batch in batches:
+                batch.sequential = True
+        self.pending_request()
+        await self._run_batches_async(batches, concurrency, success_callback)
+        return self
+
     def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
         """Execute a single batch unit on a worker thread (with per-request retry)."""
         batch_request = ODataV4BatchRequest("", V4JsonFormat())

@@ -61,6 +61,10 @@ class ClientQuery(Generic[ReturnT]):
         """
         request.execute_query(self)
 
+    async def execute_query_async(self, request: "ClientRequest") -> None:
+        """Async counterpart of :meth:`execute_query`."""
+        await request.execute_query_async(self)
+
     def before_execute(self, action: Callable[[RequestOptions], None], once: bool = True) -> Self:
         """
         Attach an event handler which is triggered before query is submitted to server

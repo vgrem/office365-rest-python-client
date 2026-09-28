@@ -66,6 +66,13 @@ class DeferredOperationQuery(ClientQuery[Any]):
         else:
             request.afterExecute(_OK_RESPONSE)
 
+    async def execute_query_async(self, request: "ClientRequest") -> None:
+        """Async counterpart of :meth:`execute_query`."""
+        if self._deferred is not None:
+            await request.execute_query_async(self._deferred)
+        else:
+            request.afterExecute(_OK_RESPONSE)
+
     @property
     def deferred_query(self) -> Optional[ClientQuery]:
         """The attached operation, or ``None`` when not deferred."""
