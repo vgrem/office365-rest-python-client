@@ -278,3 +278,159 @@ def test_sharepoint_execute_batch_async_warms_up_and_splits() -> None:
 
     assert warmed == [True]
     assert len(seen) == 2  # noqa: PLR2004
+
+
+class _ConcurrencyTrackingTransport(ScriptedTransport):
+    """Off-loop transport that records the peak number of in-flight requests."""
+
+    def __init__(self, payloads: list) -> None:
+        super().__init__(payloads)
+        self.active = 0
+        self.max_active = 0
+
+    async def execute_async(self, request):
+        self.active += 1
+        self.max_active = max(self.max_active, self.active)
+        await asyncio.sleep(0.02)
+        response = self.execute(request)
+        self.active -= 1
+        return response
+
+
+def _queue_loads(ctx: ClientContext, count: int) -> None:
+    for _ in range(count):
+        ctx.load(ctx.web)
+
+
+def test_execute_query_parallel_async_overlaps_requests() -> None:
+    transport = _ConcurrencyTrackingTransport([{"d": {"Title": "Contoso"}}] * 4)
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    _queue_loads(ctx, 4)
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=4))
+
+    assert transport.calls == 4  # noqa: PLR2004
+    assert transport.max_active > 1
+    assert ctx.web.properties.get("Title") == "Contoso"
+
+
+def test_execute_query_parallel_async_processes_in_order_and_reports_progress() -> None:
+    ctx, transport = _context([{"d": {"Title": f"T{i}"}} for i in range(3)])
+    _queue_loads(ctx, 3)
+    seen: list = []
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=3, progress=seen.append))
+
+    assert [p.done for p in seen] == [1, 2, 3]
+    assert seen[-1].total == 3  # noqa: PLR2004
+    assert seen[-1].stage == "parallel"
+    assert transport.calls == 3  # noqa: PLR2004
+
+
+def test_execute_query_parallel_async_retries_transient() -> None:
+    ctx, transport = _context(
+        [
+            {"status": 429, "retry_after": 0, "body": {}},
+            {"d": {"Title": "Contoso"}},
+        ]
+    )
+    ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=2, max_retry=3, timeout_secs=0))
+
+    assert ctx.web.properties.get("Title") == "Contoso"
+    assert transport.calls == 2  # noqa: PLR2004
+
+
+def test_execute_query_parallel_async_raises_on_permanent_error() -> None:
+    ctx, transport = _context([{"status": 404, "body": {"error": {"message": "missing"}}}])
+    ctx.load(ctx.web)
+
+    with pytest.raises(ClientRequestException):
+        asyncio.run(ctx.execute_query_parallel_async(concurrency=2))
+
+    assert transport.calls == 1
+
+
+def test_execute_query_parallel_async_requeues_exhausted_transient() -> None:
+    ctx, transport = _context([{"status": 500, "body": {}}])
+    ctx.load(ctx.web)
+
+    with pytest.raises(ClientRequestException):
+        asyncio.run(ctx.execute_query_parallel_async(concurrency=2, max_retry=1, timeout_secs=0))
+
+    assert transport.calls == 1
+    assert ctx.has_pending_request  # failed query kept for a retry
+
+
+def test_execute_query_parallel_async_concurrency_one_falls_back() -> None:
+    ctx, transport = _context([{"d": {"Title": "Contoso"}}])
+    ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=1))
+
+    assert ctx.web.properties.get("Title") == "Contoso"
+    assert transport.calls == 1
+
+
+def test_execute_query_parallel_async_empty_queue_is_noop() -> None:
+    ctx, transport = _context([])
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=4))
+
+    assert transport.calls == 0
+    assert not ctx.has_pending_request
+
+
+def test_execute_query_parallel_on_error_collects_and_continues() -> None:
+    """A permanent failure is reported and skipped instead of aborting the batch."""
+    ctx, transport = _context(
+        [
+            {"status": 404, "body": {"error": {"message": "missing"}}},
+            {"d": {"Title": "Contoso"}},
+        ]
+    )
+    _queue_loads(ctx, 2)
+    errors: list[BaseException] = []
+
+    ctx.execute_query_parallel(concurrency=2, on_error=lambda _qry, error: errors.append(error))
+
+    assert len(errors) == 1
+    assert isinstance(errors[0], ClientRequestException)
+    assert ctx.web.properties.get("Title") == "Contoso"
+    assert transport.calls == 2  # noqa: PLR2004
+    assert not ctx.has_pending_request  # failed query is not re-queued
+
+
+def test_execute_query_parallel_async_on_error_collects_and_continues() -> None:
+    ctx, transport = _context(
+        [
+            {"status": 404, "body": {"error": {"message": "missing"}}},
+            {"d": {"Title": "Contoso"}},
+        ]
+    )
+    _queue_loads(ctx, 2)
+    errors: list[BaseException] = []
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=2, on_error=lambda _qry, error: errors.append(error)))
+
+    assert len(errors) == 1
+    assert isinstance(errors[0], ClientRequestException)
+    assert ctx.web.properties.get("Title") == "Contoso"
+    assert transport.calls == 2  # noqa: PLR2004
+    assert not ctx.has_pending_request
+
+
+def test_execute_query_parallel_on_error_honored_with_concurrency_one() -> None:
+    """With an on_error collector, concurrency=1 must not fall back to raising."""
+    ctx, transport = _context([{"status": 404, "body": {"error": {"message": "missing"}}}])
+    ctx.load(ctx.web)
+    errors: list[BaseException] = []
+
+    ctx.execute_query_parallel(concurrency=1, on_error=lambda _qry, error: errors.append(error))
+
+    assert len(errors) == 1
+    assert transport.calls == 1
+    assert not ctx.has_pending_request

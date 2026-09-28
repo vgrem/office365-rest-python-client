@@ -290,7 +290,8 @@ class ClientRuntimeContext(ABC):
         Async counterpart of :meth:`execute_query`: queries are awaited in
         submission order on the current task. Each call drains the context's
         pending queue, so to overlap independent requests either run them on
-        separate contexts (see :meth:`clone`) or use
+        separate contexts (see :meth:`clone`), use
+        :meth:`execute_query_parallel_async` with ``concurrency`` > 1, or use
         :meth:`execute_batch_async` with ``concurrency`` > 1.
 
         Returns:
@@ -368,6 +369,7 @@ class ClientRuntimeContext(ABC):
         timeout_secs: int = 5,
         max_delay: Optional[int] = None,
         jitter: bool = True,
+        on_error: Optional[Callable[[ClientQuery, BaseException], None]] = None,
     ) -> Self:
         """Executes pending queries concurrently, overlapping their HTTP I/O.
 
@@ -388,11 +390,15 @@ class ClientRuntimeContext(ABC):
             timeout_secs: Base delay for exponential backoff (seconds).
             max_delay: Optional cap on the exponential delay (seconds).
             jitter: Whether to randomize the backoff delay.
+            on_error: Optional collector invoked as ``(query, error)`` for each
+              failed query. When given, a permanent failure no longer aborts the
+              batch and is not re-queued — execution continues with the remaining
+              queries (used by bulk download to continue-and-report).
 
         Returns:
             Self for method chaining
         """
-        if concurrency <= 1 or not self.has_pending_request:
+        if (concurrency <= 1 and on_error is None) or not self.has_pending_request:
             return self.execute_query()
 
         request = self.pending_request()
@@ -427,16 +433,172 @@ class ClientRuntimeContext(ABC):
 
             for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
                 if isinstance(response, BaseException):
+                    if on_error is not None:
+                        on_error(qry, response)
+                        continue
                     for pending, _ in prepared[index:]:  # keep failed + unhandled queries
                         self._queries.append(pending)
                     self._current_query = None
                     raise response
                 self._current_query = qry
-                request._raise_for_status(response)
-                request.process_response(response, qry)
-                request.afterExecute(response)
+                if on_error is None:
+                    request._raise_for_status(response)
+                    request.process_response(response, qry)
+                    request.afterExecute(response)
+                    continue
+                try:
+                    request._raise_for_status(response)
+                    request.process_response(response, qry)
+                    request.afterExecute(response)
+                except BaseException as error:  # noqa: BLE001 - collected, batch continues
+                    on_error(qry, error)
         self._current_query = None
         return self
+
+    async def execute_query_parallel_async(
+        self,
+        concurrency: int = 4,
+        progress: Optional[Callable[[Any], None]] = None,
+        max_retry: int = 5,
+        timeout_secs: int = 5,
+        max_delay: Optional[int] = None,
+        jitter: bool = True,
+        on_error: Optional[Callable[[ClientQuery, BaseException], None]] = None,
+    ) -> Self:
+        """Executes pending queries concurrently without blocking the event loop.
+
+        Async counterpart of :meth:`execute_query_parallel` with identical
+        semantics — same bounded concurrency, per-query retry honoring
+        ``Retry-After``, and ``progress`` snapshots. Intended for **independent**
+        queries (e.g. bulk downloads: queue each ``item.download(f)`` then await
+        this once). Query lifecycle stays on the event-loop thread —
+        ``before_execute``/``after_execute``/``on_error`` hooks fire as usual —
+        only the awaiting of the network round-trips overlaps.
+
+        Requests are sent through each request's
+        :attr:`~office365.runtime.client_request.ClientRequest.async_transport`,
+        so a native async engine configured via
+        :meth:`~office365.runtime.client_request.ClientRequest.with_async_transport`
+        (e.g. ``HttpxTransport``) is used when present; otherwise the default
+        transport offloads the blocking call to a worker thread.
+
+        Falls back to sequential :meth:`execute_query_async` when ``concurrency
+        <= 1`` or when the context uses a non-standard request (e.g. an upload
+        session).
+
+        Args:
+            concurrency: Maximum number of concurrent requests.
+            progress: Optional hook fired per completed query with a ``Progress``
+              snapshot (``done``/``total``).
+            max_retry: Maximum retry attempts per query.
+            timeout_secs: Base delay for exponential backoff (seconds).
+            max_delay: Optional cap on the exponential delay (seconds).
+            jitter: Whether to randomize the backoff delay.
+            on_error: Optional collector invoked as ``(query, error)`` for each
+              failed query. When given, a permanent failure no longer aborts the
+              batch and is not re-queued — execution continues with the remaining
+              queries (used by bulk download to continue-and-report).
+
+        Returns:
+            Self for method chaining
+        """
+        if (concurrency <= 1 and on_error is None) or not self.has_pending_request:
+            return await self.execute_query_async()
+
+        request = self.pending_request()
+        if type(request).execute_query is not ClientRequest.execute_query:
+            return await self.execute_query_async()
+
+        while self.has_pending_request:
+            prepared: List[Tuple[ClientQuery, RequestOptions]] = []
+            while self.has_pending_request:
+                qry = self._get_next_query()
+                if type(qry).execute_query is not ClientQuery.execute_query:
+                    await qry.execute_query_async(request)  # deferred/no-op queries stay sequential
+                    continue
+                options = request.build_request(qry)
+                request.beforeExecute(options)
+                prepared.append((qry, options))
+            if not prepared:
+                break
+
+            responses = await self._run_parallel_async(
+                request,
+                prepared,
+                concurrency=concurrency,
+                progress=progress,
+                max_retry=max_retry,
+                timeout_secs=timeout_secs,
+                max_delay=max_delay,
+                jitter=jitter,
+            )
+
+            for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
+                if isinstance(response, BaseException):
+                    if on_error is not None:
+                        on_error(qry, response)
+                        continue
+                    for pending, _ in prepared[index:]:  # keep failed + unhandled queries
+                        self._queries.append(pending)
+                    self._current_query = None
+                    raise response
+                self._current_query = qry
+                if on_error is None:
+                    request._raise_for_status(response)
+                    request.process_response(response, qry)
+                    request.afterExecute(response)
+                    continue
+                try:
+                    request._raise_for_status(response)
+                    request.process_response(response, qry)
+                    request.afterExecute(response)
+                except BaseException as error:  # noqa: BLE001 - collected, batch continues
+                    on_error(qry, error)
+        self._current_query = None
+        return self
+
+    async def _run_parallel_async(
+        self,
+        request: ClientRequest,
+        prepared: List[Tuple[ClientQuery, RequestOptions]],
+        *,
+        concurrency: int,
+        progress: Optional[Callable[[Any], None]],
+        max_retry: int,
+        timeout_secs: int,
+        max_delay: Optional[int],
+        jitter: bool,
+    ) -> List[Any]:
+        """Send ``prepared`` requests concurrently, returning results/errors in input order.
+
+        Each task stores its outcome (a response or the raised exception) at its
+        index so the caller can apply responses in queue order; ``progress``
+        fires live as each task settles.
+        """
+        from office365.runtime.operations import Progress
+
+        semaphore = asyncio.Semaphore(concurrency)
+        results: List[Any] = [None] * len(prepared)
+        total = len(prepared)
+
+        async def _run(index: int, options: RequestOptions) -> int:
+            async with semaphore:
+                try:
+                    results[index] = await self._send_with_retry_async(
+                        request, options, max_retry, timeout_secs, max_delay, jitter
+                    )
+                except Exception as e:  # noqa: BLE001 — surfaced in order by the caller
+                    results[index] = e
+            return index
+
+        tasks = [asyncio.ensure_future(_run(index, options)) for index, (_qry, options) in enumerate(prepared)]
+        done = 0
+        for coro in asyncio.as_completed(tasks):
+            index = await coro
+            done += 1
+            if callable(progress):
+                progress(Progress(done=done, total=total, stage="parallel", items=[results[index]]))
+        return results
 
     @staticmethod
     def _send_with_retry(
@@ -457,6 +619,38 @@ class ClientRuntimeContext(ABC):
             return response
 
         return retry(
+            _attempt,
+            max_retry=max_retry,
+            timeout_secs=timeout_secs,
+            max_delay=max_delay,
+            jitter=jitter,
+            on_failure=lambda _attempt_num, ex: response_retry_after(getattr(ex, "response", None)),
+        )
+
+    @staticmethod
+    async def _send_with_retry_async(
+        request: ClientRequest,
+        options: RequestOptions,
+        max_retry: int,
+        timeout_secs: int,
+        max_delay: Optional[int],
+        jitter: bool,
+    ):
+        """Send one prepared request, retrying transient failures per ``Retry-After``.
+
+        Async counterpart of :meth:`_send_with_retry`: awaits the request's
+        async transport and backs off with ``asyncio.sleep`` so sibling tasks
+        keep making progress.
+        """
+        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry_async
+
+        async def _attempt():
+            response = await request.async_transport.execute_async(options)
+            if response.status_code in TRANSIENT_STATUS_CODES:
+                raise ClientRequestException.from_response(response)
+            return response
+
+        return await retry_async(
             _attempt,
             max_retry=max_retry,
             timeout_secs=timeout_secs,

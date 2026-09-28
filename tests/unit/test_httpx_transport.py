@@ -100,3 +100,22 @@ def test_context_execute_query_async_uses_httpx_transport() -> None:
     asyncio.run(ctx.execute_query_async())
 
     assert ctx.web.properties.get("Title") == "Contoso"
+
+
+def test_context_execute_query_parallel_async_uses_httpx_transport() -> None:
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(str(request.url))
+        return httpx.Response(200, json={"d": {"Title": "Contoso"}})
+
+    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().with_async_transport(_transport(handler))
+    for _ in range(3):
+        ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_parallel_async(concurrency=3))
+
+    assert len(seen) == 3  # noqa: PLR2004
+    assert ctx.web.properties.get("Title") == "Contoso"
