@@ -56,6 +56,9 @@ optional-dependencies.examples = [
 optional-dependencies.excel = [
   "openpyxl>=3.1",
 ]
+optional-dependencies.httpx = [
+  "httpx>=0.27,<1",
+]
 optional-dependencies.ntlm = [
   "requests-ntlm",
 ]
