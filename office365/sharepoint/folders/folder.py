@@ -35,6 +35,7 @@ from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
     from office365.sharepoint.files.collection import FileCollection
+    from office365.sharepoint.files.download_operation import DownloadOperation
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.collection import FolderCollection
 
@@ -97,6 +98,43 @@ class Folder(Entity):
     ):
         """Deprecated alias of :meth:`download_folder_as_zip`."""
         return self.download_folder_as_zip(download_file, after_file_downloaded, recursive, include_versions, progress)
+
+    def download(
+        self,
+        target_dir: Union[str, Path],
+        *,
+        recursive: bool = True,
+        overwrite: bool = False,
+        progress: Optional[ProgressCallback] = None,
+    ) -> "DownloadOperation":
+        """Download this folder's files into a local directory, concurrently.
+
+        Enumerates the folder (paged, optionally recursive) preserving the
+        relative tree under ``target_dir``, then downloads the files with
+        bounded concurrency and per-file retry. Returns a deferred
+        :class:`~office365.sharepoint.files.download_operation.DownloadOperation`;
+        drive it with ``execute_query()`` or ``await execute_query_async()``.
+
+        Unlike :meth:`download_folder_as_zip`, this writes loose files (no zip)
+        and never requires the caller to open or close destination streams.
+
+        Args:
+            target_dir: Local directory to write files into (created as needed).
+            recursive: Recurse into subfolders (default ``True``).
+            overwrite: When ``False`` (default) existing files are skipped, so a
+              re-run resumes where it left off.
+            progress: Optional hook invoked with ``Progress`` snapshots
+              (``stage="scanning"`` while enumerating, ``"downloading"`` while
+              transferring).
+
+        Returns:
+            A deferred bulk-download operation.
+        """
+        from office365.sharepoint.files.download_operation import DownloadOperation
+
+        return DownloadOperation.for_folder(
+            self, target_dir, recursive=recursive, overwrite=overwrite, progress=progress
+        )
 
     def upload_folder(
         self,

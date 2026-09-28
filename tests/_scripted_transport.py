@@ -1,11 +1,15 @@
-"""Shared scripted HTTP transport for offline unit tests (no network).
+"""Shared scripted HTTP transports for offline unit tests (no network).
 
-Payload forms handled by :class:`ScriptedTransport`:
+Payload forms handled by both transports:
 
+- plain ``bytes``/``bytearray`` -> ``200`` with ``application/octet-stream`` body
 - a plain dict (e.g. ``{"d": {...}}``) -> ``200`` verbose JSON
 - ``("deny",)`` -> ``403`` access-denied JSON
 - ``{"status": int, "retry_after": int, "health_score": int, "body": dict}``
   -> status + throttling headers + body
+
+:class:`ScriptedTransport` returns payloads in call order;
+:class:`RoutingTransport` picks the first route whose URL substring matches.
 """
 
 from __future__ import annotations
@@ -24,6 +28,34 @@ _DENIED = {
 }
 
 
+def build_response(request, payload: Any) -> Response:
+    """Build a :class:`requests.Response` for one scripted payload."""
+    resp = Response()
+    resp.url = request.url
+
+    if isinstance(payload, (bytes, bytearray)):
+        resp.status_code = 200
+        resp.headers.update({"Content-Type": "application/octet-stream"})
+        resp._content = bytes(payload)
+    elif isinstance(payload, tuple) and payload[0] == "deny":
+        resp.status_code = 403
+        resp.headers.update({"Content-Type": "application/json"})
+        resp._content = _json.dumps(_DENIED).encode("utf-8")
+    elif isinstance(payload, dict) and "status" in payload:
+        resp.status_code = int(payload["status"])
+        resp.headers.update({"Content-Type": "application/json"})
+        if "retry_after" in payload:
+            resp.headers["Retry-After"] = str(payload["retry_after"])
+        if "health_score" in payload:
+            resp.headers["X-SharePointHealthScore"] = str(payload["health_score"])
+        resp._content = _json.dumps(payload.get("body", {"d": {"results": []}})).encode("utf-8")
+    else:
+        resp.status_code = 200
+        resp.headers.update({"Content-Type": "application/json;odata=verbose"})
+        resp._content = _json.dumps(payload).encode("utf-8")
+    return resp
+
+
 class ScriptedTransport(BaseTransport):
     """Returns one scripted response per call, in order."""
 
@@ -34,23 +66,23 @@ class ScriptedTransport(BaseTransport):
     def execute(self, request):
         payload = self._payloads[self.calls]
         self.calls += 1
-        resp = Response()
-        resp.url = request.url
+        return build_response(request, payload)
 
-        if isinstance(payload, tuple) and payload[0] == "deny":
-            resp.status_code = 403
-            resp.headers.update({"Content-Type": "application/json"})
-            resp._content = _json.dumps(_DENIED).encode("utf-8")
-        elif isinstance(payload, dict) and "status" in payload:
-            resp.status_code = int(payload["status"])
-            resp.headers.update({"Content-Type": "application/json"})
-            if "retry_after" in payload:
-                resp.headers["Retry-After"] = str(payload["retry_after"])
-            if "health_score" in payload:
-                resp.headers["X-SharePointHealthScore"] = str(payload["health_score"])
-            resp._content = _json.dumps(payload.get("body", {"d": {"results": []}})).encode("utf-8")
-        else:
-            resp.status_code = 200
-            resp.headers.update({"Content-Type": "application/json;odata=verbose"})
-            resp._content = _json.dumps(payload).encode("utf-8")
-        return resp
+
+class RoutingTransport(BaseTransport):
+    """Returns the payload of the first route whose key is a substring of the URL.
+
+    Order-independent, so it is safe for concurrent requests.
+    """
+
+    def __init__(self, routes: list[tuple[str, Any]]) -> None:
+        self._routes = routes
+        self.calls: list[str] = []
+
+    def execute(self, request):
+        url = request.url
+        self.calls.append(url)
+        for key, payload in self._routes:
+            if key in url:
+                return build_response(request, payload)
+        raise AssertionError(f"RoutingTransport: no route matched {url}")

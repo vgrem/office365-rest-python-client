@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 from http import HTTPStatus
-from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional, Union, cast
+from pathlib import Path
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional, Union, cast, overload
 from urllib.parse import quote, unquote
 
 import requests
@@ -51,6 +52,7 @@ from office365.sharepoint.webparts.personalization_scope import PersonalizationS
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
     from office365.sharepoint.client_context import ClientContext
+    from office365.sharepoint.files.download_operation import DownloadOperation
 
 
 class AbstractFile(Entity):
@@ -768,13 +770,50 @@ class File(AbstractFile):
         response = context.pending_request().execute_request_direct(request)
         return response
 
-    def download(self, file_object: IO, after_downloaded: Optional[Callable[[File], None]] = None) -> Self:
-        """Download a file content. Use this method to download a content of a small size
+    @overload
+    def download(self, file_object: IO, after_downloaded: Optional[Callable[[File], None]] = ...) -> Self: ...
+
+    @overload
+    def download(
+        self,
+        file_object: Union[str, Path],
+        after_downloaded: Optional[Callable[[File], None]] = ...,
+        *,
+        overwrite: bool = ...,
+    ) -> "DownloadOperation": ...
+
+    def download(
+        self,
+        file_object: Union[IO, str, Path],
+        after_downloaded: Optional[Callable[[File], None]] = None,
+        *,
+        overwrite: bool = False,
+    ) -> Union[Self, "DownloadOperation"]:
+        """Download a file's content.
+
+        Two forms:
+
+        * **Stream** (small files): pass an open binary file object; the content
+          is written when the query executes and this file is returned for
+          chaining. Use :meth:`download_session` for large files.
+        * **Path** (convenience): pass a ``str``/``Path`` destination and get back
+          a deferred :class:`~office365.sharepoint.files.download_operation.DownloadOperation`
+          that opens/writes/closes the file for you:
+
+              >>> file.download("/tmp/a.docx").execute_query()
+              >>> await file.download("/tmp/a.docx").execute_query_async()
 
         Args:
-            file_object (typing.IO): File object
-            after_downloaded ((File) -> None): A download callback
+            file_object: Open binary stream, or a destination path.
+            after_downloaded ((File) -> None): Per-file callback (invoked with
+              ``self`` once the content is written).
+            overwrite: Path form only — when ``False`` (default) an existing
+              destination is skipped.
         """
+        if isinstance(file_object, (str, Path)):
+            from office365.sharepoint.files.download_operation import DownloadOperation
+
+            return DownloadOperation.for_file(self, file_object, overwrite=overwrite, on_file=after_downloaded)
 
         def _save_content(return_type: ClientResult[AnyStr]) -> None:
             file_object.write(return_type.value)

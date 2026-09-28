@@ -5,6 +5,7 @@ import io
 import os
 import tempfile
 import uuid
+from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
 from office365.runtime.operations import Progress, ProgressCallback
@@ -21,6 +22,7 @@ from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits, ensure_
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
+    from office365.sharepoint.files.download_operation import DownloadOperation
     from office365.sharepoint.folders.folder import Folder
 
 _DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload threshold / upload-session chunk
@@ -240,6 +242,36 @@ class FileCollection(EntityCollection[File]):
 
         self.parent.ensure_property("ServerRelativeUrl").after_execute(lambda _: _add_template_file())
         return return_type
+
+    def download(
+        self,
+        target_dir: Union[str, "Path"],
+        *,
+        overwrite: bool = False,
+        progress: Optional[ProgressCallback] = None,
+    ) -> "DownloadOperation":
+        """Download this collection's files into a local directory, concurrently.
+
+        Uses the already-loaded items; if the collection was not loaded, it is
+        enumerated first (paged). Files are written flat into ``target_dir``.
+        Returns a deferred
+        :class:`~office365.sharepoint.files.download_operation.DownloadOperation`;
+        drive it with ``execute_query()`` or ``await execute_query_async()``.
+
+        Args:
+            target_dir: Local directory to write files into (created as needed).
+            overwrite: When ``False`` (default) existing files are skipped, so a
+              re-run resumes where it left off.
+            progress: Optional hook invoked with ``Progress`` snapshots
+              (``stage="scanning"`` while enumerating, ``"downloading"`` while
+              transferring).
+
+        Returns:
+            A deferred bulk-download operation.
+        """
+        from office365.sharepoint.files.download_operation import DownloadOperation
+
+        return DownloadOperation.for_collection(self, target_dir, overwrite=overwrite, progress=progress)
 
     def get_by_url(self, url: str) -> File:
         """Retrieve File object by url"""
