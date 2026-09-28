@@ -19,9 +19,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Async batching:** `ClientContext.execute_batch_async` and
   `GraphClient.execute_batch_async` reuse the existing split / retry /
   form-digest machinery off the event loop; `concurrency > 1` overlaps batches.
+- **Async parallel queries:** `ClientRuntimeContext.execute_query_parallel_async`
+  — the awaitable twin of `execute_query_parallel`. Queue independent requests
+  (e.g. one `download()` per file) and drain them with bounded `concurrency`,
+  per-query retry honoring `Retry-After`, and `progress` — no clones or
+  semaphores. Requests go through the configured async transport, so it also
+  drives the optional `HttpxTransport`.
 - **Async retry:** `retry_async` in `office365.runtime.retry` (the counterpart of
   `retry`, sleeping with `asyncio.sleep`), surfaced as
   `execute_query_async_retry`.
+- **High-level bulk download:** `Folder.download(target_dir, ...)`,
+  `FileCollection.download(target_dir, ...)` and `File.download(path, ...)` return
+  a deferred `DownloadOperation`; drive it with `execute_query()` or
+  `await execute_query_async(...)` — which return the operation, with the outcome
+  on `.value` — to enumerate the folder (paged, recursive by default), preserve
+  the relative tree, skip existing files (`overwrite=False`, so a re-run
+  resumes), and download with bounded concurrency and per-file retry.
+  Permanently failing files are collected in `DownloadResult.failures`
+  (`stats` / `raise_if_errors()`) instead of aborting the run, and `progress`
+  reports both scanning and downloading. No destination streams, `ExitStack` or
+  context clones in caller code.
+- **`on_error` collector for parallel queries:** `execute_query_parallel` and
+  `execute_query_parallel_async` accept an optional keyword-only
+  `on_error=(query, error) -> None` — a permanently failing query is reported and
+  skipped rather than aborting the batch (honored even with `concurrency=1`).
+  This is the engine behind the continue-and-report behavior of bulk downloads.
 - **Optional native-async transport:** `HttpxTransport`
   (`office365.runtime.transport.httpx_transport`), enabled per request via
   `ClientRequest.with_async_transport(...)`, behind the `[httpx]` extra

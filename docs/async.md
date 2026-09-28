@@ -8,7 +8,9 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `ctx.execute_query()` | `await ctx.execute_query_async()` |
 | `obj.execute_query()` | `await obj.execute_query_async()` |
 | `ctx.execute_query_retry()` | `await ctx.execute_query_async_retry()` |
+| `ctx.execute_query_parallel()` | `await ctx.execute_query_parallel_async()` |
 | `ctx.execute_batch()` | `await ctx.execute_batch_async()` |
+| `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
 a worker thread, so the event loop stays free and existing transports (session,
@@ -54,6 +56,92 @@ web, lists = await asyncio.gather(
 
 For many queued operations, prefer the batch API below — it overlaps batches
 without hand-managing contexts.
+
+### Parallel queries on one context
+
+When you have queued several **independent** requests (e.g. a metadata read per
+file), drain them together with `execute_query_parallel_async()`. It overlaps the
+network round-trips with bounded concurrency and per-query retry, so you don't
+need clones, a `Semaphore`, or `as_completed`:
+
+```python
+def report(progress):
+    print(f"{progress.stage}: {progress.done}/{progress.total}")
+
+folder = ctx.web.get_folder_by_server_relative_url("/sites/contoso/Shared Documents")
+files = await folder.files.get().execute_query_async()
+for file in files:
+    file.ensure_property("Length")  # queue one read per file
+
+await ctx.execute_query_parallel_async(concurrency=6, progress=report)
+```
+
+It is the `await` twin of `execute_query_parallel()`, with the same
+`concurrency`/`progress`/`max_retry` arguments. It routes each request through
+the configured async transport, so it also drives the optional `httpx` engine
+below.
+
+Both forms take an optional keyword-only `on_error=(query, error) -> None`
+collector: when supplied, a permanently failing query is reported to it and
+skipped instead of aborting the batch (this is what bulk downloads use to
+continue-and-report). Without it, the first permanent failure raises as before.
+
+For downloads specifically you don't need this primitive directly — use the
+high-level API below.
+
+## Download
+
+Downloading a folder, a file collection, or a single file is a builder + terminal
+pair like every other query, so one name gives you both forms:
+
+```python
+# asynchronous
+op = folder.download("/data/docs")
+await op.execute_query_async(concurrency=8)
+
+# synchronous — same builder
+op = folder.download("/data/docs")
+op.execute_query()
+```
+
+Like every other terminal, `execute_query()` / `await execute_query_async()`
+return the operation itself; the outcome is on `op.value`.
+
+`folder.download(target_dir)` enumerates the folder (paged, recursive by
+default), preserves the relative tree under `target_dir`, and downloads the files
+with bounded concurrency and per-file retry. `files.download(target_dir)`
+downloads one collection flat; `file.download(path)` downloads a single file.
+No streams, no `ExitStack`, no handle bookkeeping — the operation opens and
+closes each destination itself.
+
+Domain intent stays on the builder; execution knobs stay on the terminal:
+
+| Builder (`download`) | Terminal (`execute_query` / `execute_query_async`) |
+|---|---|
+| `target_dir`, `recursive`, `overwrite`, `progress` | `concurrency`, `max_retry`, `timeout_secs`, `max_delay`, `jitter` |
+
+`op.value` is a `DownloadResult`:
+
+```python
+op = folder.download("/data/docs")
+op.execute_query(concurrency=8)
+result = op.value
+print(result.success, result.skipped, result.errors)
+for file, error in result.failures:
+    print("failed", file.server_relative_url, error)
+```
+
+- **Resumable by default** — `overwrite=False` skips files that already exist, so
+  re-running continues where it stopped. Pass `overwrite=True` to replace.
+- **Continue-and-report** — a permanently failing file is collected in
+  `result.failures` (and counted in `result.errors`); the rest keep downloading.
+  Call `result.raise_if_errors()` to opt back into fail-fast.
+- **Progress** — `progress` receives `Progress` snapshots: `stage="scanning"`
+  while enumerating, `stage="downloading"` with `done`/`total` while transferring.
+
+Under the hood this is the builder form of the parallel primitive above: it
+queues one `get_content()` per file and drains it with
+`execute_query_parallel(_async)`, bound to the destination paths.
 
 ## Recipes
 
@@ -149,7 +237,9 @@ finally:
   `await`ing.
 - The async batch path runs the existing (synchronous) batch machinery off the
   loop, so it currently uses the request's synchronous transport even when an
-  async transport is configured.
+  async transport is configured. `execute_query_parallel_async()`, by contrast,
+  sends through the async transport and so uses the native-async engine when one
+  is configured.
 - `retry_async()` and the async terminals are available from
   `office365.runtime.retry` and the usual query objects.
 

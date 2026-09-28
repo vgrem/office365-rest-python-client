@@ -37,6 +37,11 @@ web, lists = await asyncio.gather(
 )
 ```
 
+For many independent requests queued on **one** context, use
+`ctx.execute_query_parallel_async()` — it owns the bounded fan-out and per-query
+retry, so no clones or semaphores are needed. For downloads specifically, skip
+the primitive and use `folder.download(dir)` (see below).
+
 ## Recipes
 
 ### [Audit every site collection concurrently](tenant_site_audit.py)
@@ -53,11 +58,15 @@ async with sem:
 
 ### [Download a library concurrently](download_library_async.py)
 
-Bounded parallelism with progress as each file completes and per-file retry:
+`folder.download` enumerates the folder (paged, recursive by default), preserves
+the relative tree, skips files that already exist, and downloads with bounded
+concurrency — one builder, one terminal, no streams or semaphores:
 
 ```python
-for coro in asyncio.as_completed(tasks):
-    print("[OK]", await coro)
+op = root_folder.download(output_dir, progress=report)
+await op.execute_query_async(concurrency=6)
+result = op.value
+print(result.success, result.skipped, result.errors, len(result.failures))
 ```
 
 ### [Bulk-update list items](bulk_update_async.py)
@@ -91,10 +100,16 @@ ctx.pending_request().with_async_transport(HttpxTransport())
   don't `await` two `execute_query_async()` calls on the same context at once.
   Use `ctx.clone(url)` per task: clones share credentials and the HTTP
   connection pool (one token, one session) but each has its own queue.
+- **Drain many queued requests with the parallel terminal.** When the work is a
+  list of independent queries (a `get()` per site), queue them and
+  `await ctx.execute_query_parallel_async(concurrency=...)` — it bounds the
+  fan-out and retries each query, so you don't manage clones or a `Semaphore`
+  yourself. For downloads, use `folder.download(...)` (or `files.download(...)` /
+  `file.download(path)`) instead — same engine, no stream management.
 - **Bound the fan-out.** The default transport runs blocking calls on the event
   loop's thread pool (`min(32, os.cpu_count() + 4)` workers), so an unbounded
   `gather` over thousands of requests just queues. Size an `asyncio.Semaphore`
-  to what the server will tolerate.
+  (or the terminal's `concurrency`) to what the server will tolerate.
 - **Isolate failures.** Prefer `asyncio.gather(..., return_exceptions=True)` or a
   per-task `try/except` so one failed item doesn't cancel the rest.
 - **Retry transient errors.** Wrap terminals in `execute_query_async_retry()`

@@ -1,13 +1,13 @@
 """
-Download every file in a SharePoint library concurrently (async).
+Download a whole SharePoint library concurrently (async).
 
-Lists the files of a library, then downloads them with a bounded number of
-in-flight requests. Progress is reported as each download finishes, and each
-file is retried on transient (throttling / 5xx) failures.
-
-Each download runs on its own cloned context, which shares the parent's
-credentials and HTTP connection pool — one token and one session for the whole
-run. Bound the fan-out with ``--concurrency`` to stay polite to the server.
+``Folder.download`` is a builder: it enumerates the folder (paged, recursively
+by default), preserves the relative tree under the target directory, skips files
+that already exist, and — driven with ``await execute_query_async()`` — downloads
+with bounded concurrency and per-file retry. No streams, no ``ExitStack``, no
+semaphore, no clones: the operation owns all of it. The terminal returns the
+operation itself; the outcome is on ``op.value``, and per-file failures land in
+``op.value.failures`` instead of aborting the run.
 
 Requires ``Sites.Read.All``.
 
@@ -18,32 +18,12 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import os
 import tempfile
 import time
 
+from office365.runtime.operations import Progress
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, site_url, tenant, username
-
-
-async def download_file(
-    ctx: ClientContext,
-    server_relative_url: str,
-    output_dir: str,
-    sem: asyncio.Semaphore,
-) -> str:
-    """Download one file on its own cloned context, retrying transient errors."""
-    local_path = os.path.join(output_dir, os.path.basename(server_relative_url))
-    async with sem:
-        clone = ctx.clone(site_url)
-        # A short local open; the blocking HTTP read runs off the loop inside download().
-        with open(local_path, "wb") as stream:  # noqa: ASYNC230
-            await (
-                clone.web.get_file_by_server_relative_url(server_relative_url)
-                .download(stream)
-                .execute_query_async_retry(max_retry=5, timeout_secs=2)
-            )
-    return local_path
 
 
 async def main() -> None:
@@ -54,35 +34,24 @@ async def main() -> None:
     args = parser.parse_args()
 
     output_dir = args.output_dir or tempfile.mkdtemp()
-    os.makedirs(output_dir, exist_ok=True)
-
     ctx = ClientContext(site_url).with_username_and_password(
         tenant=tenant, client_id=client_id, username=username, password=password
     )
+    root_folder = ctx.web.lists.get_by_title(args.list_title).root_folder
 
-    # First page of the library; for large libraries collect paths with
-    # ``.root_folder.files.get_all().execute_query()`` before downloading.
-    files = await ctx.web.lists.get_by_title(args.list_title).root_folder.files.get().execute_query_async()
-    urls = [f.server_relative_url for f in files if f.server_relative_url]
-    if not urls:
-        print(f"No files found in '{args.list_title}'.")
-        return
+    def report(progress: Progress) -> None:
+        if progress.stage == "downloading":
+            print(f"[{progress.done}/{progress.total}] downloaded", flush=True)
 
-    sem = asyncio.Semaphore(args.concurrency)
-    tasks = [asyncio.ensure_future(download_file(ctx, url, output_dir, sem)) for url in urls]
-
+    op = root_folder.download(output_dir, progress=report)
     started = time.perf_counter()
-    ok = 0
-    for coro in asyncio.as_completed(tasks):
-        try:
-            local_path = await coro
-            ok += 1
-            print(f"[OK]   {local_path}")
-        except Exception as e:  # noqa: BLE001 - keep downloading the rest
-            print(f"[FAIL] {e}")
-
+    await op.execute_query_async(concurrency=args.concurrency)
     elapsed = time.perf_counter() - started
-    print(f"\nDownloaded {ok} of {len(urls)} files into {output_dir} ({elapsed:.1f}s)")
+
+    result = op.value
+    print(f"\nDownloaded {result.success}/{result.total} files into {output_dir} ({elapsed:.1f}s)")
+    for file, error in result.failures:
+        print(f"  failed: {file.server_relative_url}: {error}")
 
 
 asyncio.run(main())
