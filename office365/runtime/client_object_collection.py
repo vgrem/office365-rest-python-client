@@ -4,6 +4,7 @@ import warnings
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncIterator,
     Callable,
     Dict,
     Generic,
@@ -219,6 +220,37 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             while self.has_next:
                 self._get_next().execute_query()
                 yield from self._data[position:]
+                position = len(self._data)
+
+    def __aiter__(self) -> AsyncIterator[ClientObjectT]:
+        """Iterate all items, fetching pages without blocking the loop.
+
+        The async twin of :meth:`__iter__`: items already loaded are yielded
+        first, then any remaining server pages are awaited and their new items
+        yielded as they arrive. If nothing has been loaded yet the first page is
+        fetched on demand, so ``async for item in collection`` works without an
+        explicit :meth:`get_all_async`.
+        """
+        return self._iter_async()
+
+    async def _iter_async(self) -> AsyncIterator[ClientObjectT]:
+        # Paged mode keeps already-loaded items when a page response arrives
+        # (``clear_state`` otherwise resets ``_data``), matching ``get_all``.
+        self.paged(self._page_size)
+        if not self._data and self._next_request_url is None:
+            self.get()
+            await self.context.execute_query_async()
+
+        for item in self._data:
+            yield item
+
+        if self._paged_mode or self._next_request_url is not None:
+            position = len(self._data)
+            while self.has_next:
+                self._get_next()
+                await self.context.execute_query_async()
+                for item in self._data[position:]:
+                    yield item
                 position = len(self._data)
 
     def __len__(self) -> int:

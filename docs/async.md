@@ -11,6 +11,7 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `ctx.execute_query_parallel()` | `await ctx.execute_query_parallel_async()` |
 | `ctx.execute_batch()` | `await ctx.execute_batch_async()` |
 | `collection.get_all()` | `await collection.get_all_async()` |
+| `for item in collection` | `async for item in collection` |
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
@@ -192,6 +193,20 @@ await files.get_all_async(page_size=2000, progress=lambda p: print(p.done))
 for file in files:
     print(file.name)
 ```
+
+Collections are also async iterables, so you can stream page by page without
+loading everything first — the first page is fetched on demand and each
+remaining page is awaited as it is reached:
+
+```python
+files = ctx.web.get_folder_by_server_relative_url("/sites/contoso/Shared Documents").files.paged(2000)
+async for file in files:
+    print(file.name)
+```
+
+Both forms reuse `progress` / `page_loaded` and follow the same server-driven
+paging (`@odata.nextLink`, or the SharePoint `$skip` fallback) as the
+synchronous `for file in collection`.
 
 ## Throttling
 

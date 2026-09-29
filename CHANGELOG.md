@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Async paging:** `ClientObjectCollection.get_all_async(page_size, ...)` loads
   every server-driven page (`@odata.nextLink` or the SharePoint skip fallback)
   without blocking the event loop, firing `progress` / `page_loaded` per page.
+  Collections are now also async iterables: `async for item in collection`
+  fetches the first page on demand and awaits each remaining page as it is
+  reached, the awaitable twin of `__iter__`.
 - **Async pacing parity:** the shared `RateLimiter` now exposes
   `acquire_async`/`paced_async` (awaited on the loop) and
   `ThrottledTransport.execute_async`/`aclose`, so async requests honor the same

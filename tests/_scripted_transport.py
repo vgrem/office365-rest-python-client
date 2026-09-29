@@ -9,7 +9,9 @@ Payload forms handled by both transports:
   -> status + throttling headers + body
 
 :class:`ScriptedTransport` returns payloads in call order;
-:class:`RoutingTransport` picks the first route whose URL substring matches.
+:class:`RoutingTransport` picks the first route whose URL substring matches;
+:class:`AsyncScriptedTransport` is the native-async twin that only implements
+``execute_async``.
 """
 
 from __future__ import annotations
@@ -86,3 +88,24 @@ class RoutingTransport(BaseTransport):
             if key in url:
                 return build_response(request, payload)
         raise AssertionError(f"RoutingTransport: no route matched {url}")
+
+
+class AsyncScriptedTransport(BaseTransport):
+    """Returns one scripted response per call, natively on the event loop.
+
+    Only the asynchronous path is implemented. The synchronous :meth:`execute`
+    raises, so a test that accidentally drives this transport from blocking code
+    fails loudly instead of silently passing through a worker thread.
+    """
+
+    def __init__(self, payloads: list[Any]) -> None:
+        self._payloads = payloads
+        self.calls = 0
+
+    def execute(self, request):
+        raise NotImplementedError("AsyncScriptedTransport only supports execute_async")
+
+    async def execute_async(self, request):
+        payload = self._payloads[self.calls]
+        self.calls += 1
+        return build_response(request, payload)

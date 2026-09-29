@@ -22,7 +22,7 @@ from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
 from requests import Response
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport
 
 _URL = "https://contoso.sharepoint.com/_api/web"
 _SITE_URL = "https://contoso.sharepoint.com"
@@ -278,6 +278,24 @@ def test_graph_execute_batch_async_end_to_end() -> None:
     assert transport.calls == 1
 
 
+def test_graph_execute_batch_async_native_transport_end_to_end() -> None:
+    """The async batch runs through a transport that only implements ``execute_async``."""
+    ctx = GraphClient()
+    _enqueue(ctx, 1)
+    transport = AsyncScriptedTransport([{"responses": [{"id": "0", "status": 200, "headers": {}, "body": {}}]}])
+    real_cls = ODataV4BatchRequest
+
+    def _factory(*args, **kwargs):
+        batch_request = real_cls(*args, **kwargs)
+        batch_request.transport = transport
+        return batch_request
+
+    with mock.patch("office365.graph_client.ODataV4BatchRequest", side_effect=_factory):
+        asyncio.run(ctx.execute_batch_async(items_per_batch=1))
+
+    assert transport.calls == 1
+
+
 def test_sharepoint_execute_batch_async_warms_up_and_splits() -> None:
     ctx = ClientContext(_SITE_URL)
     warmed: list[bool] = []
@@ -297,8 +315,8 @@ def test_sharepoint_execute_batch_async_warms_up_and_splits() -> None:
     assert len(seen) == 2  # noqa: PLR2004
 
 
-class _ConcurrencyTrackingTransport(ScriptedTransport):
-    """Off-loop transport that records the peak number of in-flight requests."""
+class _ConcurrencyTrackingTransport(AsyncScriptedTransport):
+    """Native-async transport that records the peak number of in-flight requests."""
 
     def __init__(self, payloads: list) -> None:
         super().__init__(payloads)
@@ -309,7 +327,7 @@ class _ConcurrencyTrackingTransport(ScriptedTransport):
         self.active += 1
         self.max_active = max(self.max_active, self.active)
         await asyncio.sleep(0.02)
-        response = self.execute(request)
+        response = await super().execute_async(request)
         self.active -= 1
         return response
 
@@ -358,6 +376,59 @@ def test_get_all_async_follows_next_link() -> None:
     assert [u.properties.get("id") for u in col] == ["1", "2", "3"]
     assert transport.calls == 2  # noqa: PLR2004
     assert loaded == [1, 1]
+
+
+def test_aiter_fetches_pages_lazily() -> None:
+    """``async for`` pulls pages on demand, without a prior ``get_all_async``."""
+    ctx = ClientContext(_SITE_URL)
+    transport = ScriptedTransport([_sp_page([1, 2]), _sp_page([3, 4]), _sp_page([])])
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    col = ctx.web.lists
+
+    async def _collect() -> list:
+        return [lst.properties.get("Id") async for lst in col.paged(page_size=2)]
+
+    assert asyncio.run(_collect()) == [1, 2, 3, 4]  # noqa: PLR2004
+    assert transport.calls == 3  # noqa: PLR2004
+
+
+def test_aiter_follows_next_link() -> None:
+    """``async for`` follows a server-driven ``@odata.nextLink``."""
+    next_url = "https://graph.microsoft.com/v1.0/users?$skiptoken=abc"
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport(
+        [
+            {"@odata.nextLink": next_url, "value": [{"id": "1"}, {"id": "2"}]},
+            {"value": [{"id": "3"}]},
+        ]
+    )
+    ctx.pending_request().transport = transport
+    col = ctx.users
+
+    async def _collect() -> list:
+        return [u.properties.get("id") async for u in col]
+
+    assert asyncio.run(_collect()) == ["1", "2", "3"]
+    assert transport.calls == 2  # noqa: PLR2004
+
+
+def test_aiter_iterates_loaded_items_without_refetch() -> None:
+    ctx = ClientContext(_SITE_URL)
+    transport = ScriptedTransport([_sp_page([1, 2]), _sp_page([])])
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    col = ctx.web.lists
+
+    async def _collect() -> list:
+        await col.get_all_async(page_size=2)
+        calls_after_load = transport.calls
+        ids = [lst.properties.get("Id") async for lst in col]
+        assert transport.calls == calls_after_load  # iteration does not refetch
+        return ids
+
+    assert asyncio.run(_collect()) == [1, 2]
 
 
 def test_execute_query_parallel_async_overlaps_requests() -> None:
@@ -512,8 +583,8 @@ def test_execute_query_async_offloads_before_execute_hooks() -> None:
     assert ctx.web.properties.get("Title") == "Contoso"
 
 
-class _CancellingTransport(ScriptedTransport):
-    """Async transport that cancels the in-flight request (simulated)."""
+class _CancellingTransport(AsyncScriptedTransport):
+    """Native-async transport that cancels the in-flight request (simulated)."""
 
     def __init__(self) -> None:
         super().__init__([])
