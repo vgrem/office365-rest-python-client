@@ -6,6 +6,7 @@ import asyncio
 import json
 
 import pytest
+import requests
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.transport.httpx_transport import HttpxTransport
@@ -89,6 +90,64 @@ def test_aclose_closes_both_clients() -> None:
 
     assert async_client.is_closed
     assert sync_client.is_closed
+
+
+def test_stream_async_yields_body_natively() -> None:
+    body = b"0123456789" * 100
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=body)
+
+    transport = _transport(handler)
+
+    async def _run() -> bytes:
+        stream = transport.stream_async(RequestOptions(url=_URL), chunk_size=16)
+        return b"".join([chunk async for chunk in stream])
+
+    assert asyncio.run(_run()) == body
+
+
+def test_stream_sync_yields_body() -> None:
+    body = b"abcdef"
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=body)
+
+    transport = _transport(handler)
+
+    chunks = list(transport.stream(RequestOptions(url=_URL), chunk_size=2))
+
+    assert b"".join(chunks) == body
+    assert chunks == [b"ab", b"cd", b"ef"]
+
+
+def test_stream_invokes_on_headers() -> None:
+    seen: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=b"abc")
+
+    transport = _transport(handler)
+    list(transport.stream(RequestOptions(url=_URL), on_headers=seen.append))
+
+    assert len(seen) == 1
+    assert seen[0]["content-length"] == "3"
+
+
+def test_stream_async_raises_for_error_status() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(404, json={"error": {"message": "missing"}})
+
+    transport = _transport(handler)
+
+    async def _run() -> list[bytes]:
+        return [chunk async for chunk in transport.stream_async(RequestOptions(url=_URL))]
+
+    with pytest.raises(requests.HTTPError) as exc:
+        asyncio.run(_run())
+
+    assert exc.value.response.status_code == 404  # noqa: PLR2004
+    assert exc.value.response.json() == {"error": {"message": "missing"}}
 
 
 def test_context_execute_query_async_uses_httpx_transport() -> None:

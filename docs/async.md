@@ -13,6 +13,7 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `collection.get_all()` | `await collection.get_all_async()` |
 | `for item in collection` | `async for item in collection` |
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
+| `file.download_session(stream)` | `await file.download_session_async(stream)` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
 a worker thread, so the event loop stays free and existing transports (session,
@@ -145,6 +146,28 @@ Under the hood this is the builder form of the parallel primitive above: it
 queues one `get_content()` per file and drains it with
 `execute_query_parallel(_async)`, bound to the destination paths.
 
+### Streaming large files
+
+`file.download(path)` buffers each file in memory before writing it. For large
+files, open the destination yourself and use `download_session_async()`: it
+streams the body chunk by chunk through the async transport (native with
+`httpx`, otherwise a worker thread), so the content is never buffered and the
+event loop never blocks:
+
+```python
+with open("/data/big.iso", "wb") as stream:
+    await file.download_session_async(
+        stream,
+        chunk_size=1024 * 1024,
+        progress=lambda p: print(p.done, p.total),
+    )
+```
+
+The synchronous `file.download_session(stream)` is the twin; both accept
+`chunk_downloaded(bytes_so_far)`, `chunk_size`, `use_path` and `progress`. The
+awaitable form ensures the addressing property is loaded first and raises the
+same `ClientRequestException` on failure as the rest of the async API.
+
 ## Recipes
 
 End-to-end examples that show where async pays off:
@@ -263,10 +286,10 @@ finally:
 
 !!! note "Limits of the httpx transport"
     Responses are adapted to `requests.Response`, so downstream code is
-    unchanged, but the body is read eagerly (streamed downloads work via
-    `iter_content` yet are buffered in memory). TLS verification, proxies and
-    redirect policy are client-level constructor settings; per-request `verify`
-    and `proxies` are not honored.
+    unchanged. Non-streaming bodies are read eagerly into memory; streamed
+    downloads use the native `aiter_bytes` path and are never buffered. TLS
+    verification, proxies and redirect policy are client-level constructor
+    settings; per-request `verify` and `proxies` are not honored.
 
 ## Notes
 

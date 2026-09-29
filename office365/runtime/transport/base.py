@@ -4,12 +4,17 @@ from __future__ import annotations
 
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, Tuple
+from typing import Any, AsyncIterator, Callable, Iterator, Mapping, Optional, Tuple
 
 from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.http.request_options import RequestOptions
+
+#: Default slice size (bytes) used by the streaming helpers.
+DEFAULT_STREAM_CHUNK_SIZE = 8192
+
+HeadersCallback = Callable[[Mapping[str, str]], None]
 
 
 class BaseTransport(ABC):
@@ -46,6 +51,84 @@ class BaseTransport(ABC):
         """
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.execute, request)
+
+    def stream(
+        self,
+        request: RequestOptions,
+        chunk_size: int = DEFAULT_STREAM_CHUNK_SIZE,
+        on_headers: Optional[HeadersCallback] = None,
+    ) -> Iterator[bytes]:
+        """Send a request and yield the response body incrementally.
+
+        The default implementation sets ``request.stream``, delegates the send to
+        :meth:`execute` — so auth, pacing, proxies and connection reuse are
+        unchanged — and iterates the body in ``chunk_size`` slices. The response
+        is closed when iteration finishes, the caller stops early, or an error
+        occurs.
+
+        Args:
+            request: The request to send.
+            chunk_size: Number of bytes per chunk.
+            on_headers: Optional callback invoked once with the response headers
+                before the first chunk (e.g. to read ``Content-Length``).
+
+        Yields:
+            The response body in ``chunk_size`` slices.
+
+        Raises:
+            requests.HTTPError: When the server returns an error status.
+        """
+        request.stream = True
+        response = self.execute(request)
+        try:
+            response.raise_for_status()
+            if on_headers is not None:
+                on_headers(response.headers)
+            yield from response.iter_content(chunk_size=chunk_size)
+        finally:
+            response.close()
+
+    async def stream_async(
+        self,
+        request: RequestOptions,
+        chunk_size: int = DEFAULT_STREAM_CHUNK_SIZE,
+        on_headers: Optional[HeadersCallback] = None,
+    ) -> AsyncIterator[bytes]:
+        """Async twin of :meth:`stream` that never blocks the event loop.
+
+        Transports with a native async streaming engine override this. The
+        default implementation drives the blocking :meth:`stream` in a worker
+        thread one chunk per wait, so the loop stays free while a
+        ``requests``-backed response body is read.
+
+        Args:
+            request: The request to send.
+            chunk_size: Number of bytes per chunk.
+            on_headers: Optional callback invoked once with the response headers
+                before the first chunk.
+
+        Yields:
+            The response body in ``chunk_size`` slices.
+        """
+        loop = asyncio.get_running_loop()
+        iterator = self.stream(request, chunk_size=chunk_size, on_headers=on_headers)
+
+        def _next_chunk() -> Optional[bytes]:
+            try:
+                return next(iterator)
+            except StopIteration:
+                return None
+
+        try:
+            while True:
+                chunk = await loop.run_in_executor(None, _next_chunk)
+                if chunk is None:
+                    break
+                yield chunk
+        finally:
+            close = getattr(iterator, "close", None)
+            if close is not None:
+                await loop.run_in_executor(None, close)
 
     @property
     def proxies(self) -> dict[str, str] | None:

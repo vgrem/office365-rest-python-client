@@ -27,13 +27,13 @@ Notes:
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, AsyncIterator, Iterator, Optional
 
 from requests import Response
 from requests.structures import CaseInsensitiveDict
 
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.transport.base import BaseTransport
+from office365.runtime.transport.base import DEFAULT_STREAM_CHUNK_SIZE, BaseTransport, HeadersCallback
 
 
 class HttpxTransport(BaseTransport):
@@ -92,6 +92,37 @@ class HttpxTransport(BaseTransport):
         )
         return self._to_requests_response(httpx_response)
 
+    def stream(
+        self,
+        request: RequestOptions,
+        chunk_size: int = DEFAULT_STREAM_CHUNK_SIZE,
+        on_headers: Optional[HeadersCallback] = None,
+    ) -> Iterator[bytes]:
+        """Stream a response body synchronously through an ``httpx.Client``."""
+        with self._client.stream(request.method.value, request.url, **self._build_kwargs(request)) as response:
+            if response.status_code >= 400:  # noqa: PLR2004
+                self._to_error_response(response, response.read()).raise_for_status()
+            if on_headers is not None:
+                on_headers(response.headers)
+            yield from response.iter_bytes(chunk_size=chunk_size)
+
+    async def stream_async(
+        self,
+        request: RequestOptions,
+        chunk_size: int = DEFAULT_STREAM_CHUNK_SIZE,
+        on_headers: Optional[HeadersCallback] = None,
+    ) -> AsyncIterator[bytes]:
+        """Stream a response body natively on the event loop via ``httpx``."""
+        async with self._async_client.stream(
+            request.method.value, request.url, **self._build_kwargs(request)
+        ) as response:
+            if response.status_code >= 400:  # noqa: PLR2004
+                self._to_error_response(response, await response.aread()).raise_for_status()
+            if on_headers is not None:
+                on_headers(response.headers)
+            async for chunk in response.aiter_bytes(chunk_size=chunk_size):
+                yield chunk
+
     def close(self) -> None:
         """Close the synchronous client."""
         self._client.close()
@@ -115,6 +146,23 @@ class HttpxTransport(BaseTransport):
         elif method == "put" and request.data is not None:
             kwargs["content"] = request.data
         return kwargs
+
+    @staticmethod
+    def _to_error_response(httpx_response: Any, content: bytes) -> Response:
+        """Materialise an error ``httpx.Response`` as a ``requests.Response``.
+
+        The body is read (the caller has already done so) so
+        :meth:`~office365.runtime.client_request_exception.ClientRequestException.from_response`
+        can parse the error payload.
+        """
+        response = Response()
+        response.status_code = httpx_response.status_code
+        response.reason = httpx_response.reason_phrase
+        response.url = str(httpx_response.url)
+        response.headers = CaseInsensitiveDict(httpx_response.headers)
+        response._content = content
+        response._content_consumed = True  # type: ignore[reportAttributeAccessIssue]
+        return response
 
     @staticmethod
     def _to_requests_response(httpx_response: Any) -> Response:

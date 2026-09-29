@@ -14,7 +14,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.operations import Progress
+from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
@@ -69,6 +69,29 @@ class AbstractFile(Entity):
             raise ValueError
         response = File.save_binary(self.context, self.properties["ServerRelativeUrl"], content)
         return response
+
+
+def _consume_download_chunk(
+    file_object: IO,
+    chunk: bytes,
+    bytes_read: int,
+    total: Optional[int],
+    chunk_downloaded: Optional[Callable[[int], None]],
+    progress: Optional[ProgressCallback],
+) -> int:
+    """Write one downloaded chunk and report progress; returns the new byte count.
+
+    Shared by the synchronous and asynchronous ``download_session`` loops so the
+    chunk-downloaded callback, the ``progress`` snapshot and the write to the
+    destination stay in lock-step.
+    """
+    bytes_read += len(chunk)
+    if callable(chunk_downloaded):
+        chunk_downloaded(bytes_read)
+    if callable(progress):
+        progress(Progress(done=bytes_read, total=total, stage="downloading"))
+    file_object.write(chunk)
+    return bytes_read
 
 
 class File(AbstractFile):
@@ -861,12 +884,9 @@ class File(AbstractFile):
                 total = int(response.headers.get("Content-Length", 0)) or None
                 bytes_read = 0
                 for chunk in response.iter_content(chunk_size=chunk_size):
-                    bytes_read += len(chunk)
-                    if callable(chunk_downloaded):
-                        chunk_downloaded(bytes_read)
-                    if callable(progress):
-                        progress(Progress(done=bytes_read, total=total, stage="downloading"))
-                    file_object.write(chunk)
+                    bytes_read = _consume_download_chunk(
+                        file_object, chunk, bytes_read, total, chunk_downloaded, progress
+                    )
 
             self.context.add_query(qry).before_execute(_construct_request, once=False).after_execute(
                 _process_response, include_response=True
@@ -876,6 +896,79 @@ class File(AbstractFile):
             self.ensure_property("ServerRelativePath").after_execute(lambda _: _download_as_stream())
         else:
             self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _download_as_stream())
+        return self
+
+    async def download_session_async(
+        self,
+        file_object: IO,
+        chunk_downloaded: Optional[Callable[[int], None]] = None,
+        chunk_size: int = 1024 * 1024,
+        use_path: bool = True,
+        progress: Optional[ProgressCallback] = None,
+    ) -> Self:
+        """Async twin of :meth:`download_session` that never blocks the loop.
+
+        Streams a large file into ``file_object`` through the configured async
+        transport — native when one is set (e.g.
+        :class:`~office365.runtime.transport.httpx_transport.HttpxTransport`),
+        otherwise a worker thread — so the event loop stays free while the body
+        is transferred and the content is never buffered in memory.
+
+        Unlike the deferred :meth:`download_session`, this is an awaitable
+        coroutine: it ensures the required address property is loaded (draining
+        any pending queries), sends the request and writes every chunk before it
+        returns. ``chunk_downloaded`` and ``progress`` behave exactly as on the
+        synchronous path.
+
+        Args:
+            file_object: An open binary file object to write into.
+            chunk_downloaded: Optional ``(bytes_so_far) -> None`` callback invoked
+                after each chunk.
+            chunk_size: Number of bytes per chunk.
+            use_path: Address the file by ``ServerRelativePath`` (default) rather
+                than ``ServerRelativeUrl``.
+            progress: Optional ``ProgressCallback`` invoked per chunk with a
+                ``Progress`` snapshot (``done`` = bytes downloaded so far,
+                ``total`` = content length when known).
+
+        Returns:
+            Self for method chaining.
+        """
+        pending = self.context.pending_request()
+        self.ensure_property("ServerRelativePath" if use_path else "ServerRelativeUrl")
+        if self.context.has_pending_request:
+            await self.context.execute_query_async()
+
+        qry = ServiceOperationQuery(self, "$value")
+        request = pending.build_request(qry)
+        request.stream = True
+        request.method = HttpMethod.Get
+        await pending.before_execute_async(request)
+
+        if file_object.seekable():
+            file_object.seek(0)
+            file_object.truncate()
+
+        total: list[Optional[int]] = [None]
+
+        def _capture_length(headers) -> None:
+            length = headers.get("Content-Length")
+            total[0] = int(length) if length else None
+
+        bytes_read = 0
+        try:
+            async for chunk in pending.async_transport.stream_async(
+                request, chunk_size=chunk_size, on_headers=_capture_length
+            ):
+                bytes_read = _consume_download_chunk(
+                    file_object, chunk, bytes_read, total[0], chunk_downloaded, progress
+                )
+        except requests.HTTPError as e:
+            error = ClientRequestException.from_response(e.response)
+            if pending.onError:
+                pending.onError(error)
+                return self
+            raise error from e
         return self
 
     def rename(self, new_file_name: str) -> Self:

@@ -37,7 +37,7 @@ def build_response(request, payload: Any) -> Response:
 
     if isinstance(payload, (bytes, bytearray)):
         resp.status_code = 200
-        resp.headers.update({"Content-Type": "application/octet-stream"})
+        resp.headers.update({"Content-Type": "application/octet-stream", "Content-Length": str(len(payload))})
         resp._content = bytes(payload)
     elif isinstance(payload, tuple) and payload[0] == "deny":
         resp.status_code = 403
@@ -55,6 +55,9 @@ def build_response(request, payload: Any) -> Response:
         resp.status_code = 200
         resp.headers.update({"Content-Type": "application/json;odata=verbose"})
         resp._content = _json.dumps(payload).encode("utf-8")
+    # The body is materialised, so the response behaves like a fully-read one
+    # (`iter_content` slices `_content` instead of reading a live `raw`).
+    resp._content_consumed = True
     return resp
 
 

@@ -70,6 +70,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (`office365.runtime.transport.httpx_transport`), enabled per request via
   `ClientRequest.with_async_transport(...)`, behind the `[httpx]` extra
   (`httpx>=0.27,<1`). The synchronous path keeps using `requests`.
+- **Streaming transport contract:** `BaseTransport.stream(request, ...)` yields
+  the response body incrementally (optional `on_headers` hook), with
+  `stream_async` as its loop-safe twin. `HttpxTransport` implements both
+  natively (`iter_bytes` / `aiter_bytes`); the default transport drives the
+  blocking read one chunk per worker wait, so any transport can stream without
+  buffering the whole body in memory.
+- **Async streaming downloads:** `File.download_session_async(stream, ...)` — the
+  awaitable twin of `download_session`. It streams a large file through the
+  configured async transport (never buffering it or blocking the event loop),
+  with the same `chunk_downloaded`, `chunk_size`, `use_path` and `progress`
+  behavior, and surfaces failures as `ClientRequestException`. The sync method
+  keeps its deferred builder/terminal form and now shares the chunk-writing loop.
 
 ## [3.2.0] - 2026-09-27
 
