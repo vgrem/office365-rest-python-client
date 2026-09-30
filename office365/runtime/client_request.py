@@ -12,7 +12,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.throttling import RateLimiter
 from office365.runtime.queries.client_query import ClientQuery
-from office365.runtime.transport.base import BaseTransport
+from office365.runtime.transport.base import BaseTransport, NoTimeoutType
 from office365.runtime.transport.requests_transport import RequestsTransport
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
@@ -61,7 +61,7 @@ class ClientRequest(ABC):
         self,
         proxies: dict[str, str] | None = None,
         verify: bool | str | None = None,
-        timeout: int | tuple[int, int] | None = None,
+        timeout: float | tuple[float, Optional[float]] | NoTimeoutType | None = None,
         session: requests.Session | None = None,
     ) -> Self:
         """Configure the HTTP transport (proxy, SSL, timeout, custom session).
@@ -73,7 +73,10 @@ class ClientRequest(ABC):
         Args:
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
             verify: SSL verification — ``True``, ``False``, or a CA bundle path
-            timeout: Request timeout in seconds
+            timeout: Request timeout — a number or a ``(connect, read)`` tuple.
+                When ``None`` the bundled default (10 s connect, unbounded read)
+                applies; pass
+                :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable.
             session: Custom ``requests.Session`` with pre-configured adapters
 
         Returns:

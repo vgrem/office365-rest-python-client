@@ -9,6 +9,7 @@ import pytest
 import requests
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.transport.base import NO_TIMEOUT
 from office365.runtime.transport.httpx_transport import HttpxTransport
 from office365.sharepoint.client_context import ClientContext
 
@@ -90,6 +91,26 @@ def test_aclose_closes_both_clients() -> None:
 
     assert async_client.is_closed
     assert sync_client.is_closed
+
+
+def test_default_timeout_bounds_connect_only() -> None:
+    transport = HttpxTransport()
+    try:
+        for client in (transport._client, transport._async_client):
+            assert client.timeout.connect == 10.0  # noqa: PLR2004
+            assert client.timeout.read is None
+            assert client.timeout.write is None
+    finally:
+        asyncio.run(transport.aclose())
+
+
+def test_no_timeout_sentinel_disables_timeout() -> None:
+    transport = HttpxTransport(timeout=NO_TIMEOUT)
+    try:
+        assert transport._client.timeout == httpx.Timeout(None)
+        assert transport._async_client.timeout == httpx.Timeout(None)
+    finally:
+        asyncio.run(transport.aclose())
 
 
 def test_stream_async_yields_body_natively() -> None:

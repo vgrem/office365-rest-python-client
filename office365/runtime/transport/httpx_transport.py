@@ -35,7 +35,13 @@ from requests.exceptions import Timeout as RequestsTimeout
 from requests.structures import CaseInsensitiveDict
 
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.transport.base import DEFAULT_STREAM_CHUNK_SIZE, BaseTransport, HeadersCallback
+from office365.runtime.transport.base import (
+    DEFAULT_CONNECT_TIMEOUT,
+    DEFAULT_STREAM_CHUNK_SIZE,
+    BaseTransport,
+    HeadersCallback,
+    NoTimeoutType,
+)
 
 
 class HttpxTransport(BaseTransport):
@@ -44,8 +50,10 @@ class HttpxTransport(BaseTransport):
     Args:
         verify: TLS verification (``True``, ``False`` or a CA bundle path),
             applied to both clients.
-        timeout: Default timeout in seconds (``None`` disables it, matching the
-            default ``requests`` transport). A per-request timeout overrides it.
+        timeout: Default timeout — a number, an :class:`httpx.Timeout`, or
+            ``None`` to use the bundled default (10 s connect, unbounded read).
+            Pass :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable
+            timeouts entirely. A per-request timeout overrides it.
         follow_redirects: Whether to follow redirects (default ``True`` to match
             ``requests``).
         client: Optional pre-built ``httpx.Client`` (mainly for tests).
@@ -57,7 +65,7 @@ class HttpxTransport(BaseTransport):
         self,
         *,
         verify: bool | str = True,
-        timeout: Optional[float] = None,
+        timeout: Any | None = None,
         follow_redirects: bool = True,
         client: Any | None = None,
         async_client: Any | None = None,
@@ -71,16 +79,35 @@ class HttpxTransport(BaseTransport):
             ) from exc
 
         self._httpx = httpx
+        resolved_timeout = self._resolve_timeout(httpx, timeout)
         self._client = (
             client
             if client is not None
-            else httpx.Client(verify=verify, timeout=timeout, follow_redirects=follow_redirects, **client_kwargs)
+            else httpx.Client(
+                verify=verify, timeout=resolved_timeout, follow_redirects=follow_redirects, **client_kwargs
+            )
         )
         self._async_client = (
             async_client
             if async_client is not None
-            else httpx.AsyncClient(verify=verify, timeout=timeout, follow_redirects=follow_redirects, **client_kwargs)
+            else httpx.AsyncClient(
+                verify=verify, timeout=resolved_timeout, follow_redirects=follow_redirects, **client_kwargs
+            )
         )
+
+    @staticmethod
+    def _resolve_timeout(httpx: Any, timeout: Any | None) -> Any:
+        """Map the public ``timeout`` to an ``httpx`` timeout value.
+
+        ``None`` selects the bundled default (bounded connect, unbounded read),
+        :data:`NO_TIMEOUT` disables timeouts, and anything else (a number or an
+        ``httpx.Timeout``) is forwarded unchanged.
+        """
+        if timeout is None:
+            return httpx.Timeout(connect=DEFAULT_CONNECT_TIMEOUT, read=None, write=None, pool=None)
+        if isinstance(timeout, NoTimeoutType):
+            return None
+        return timeout
 
     def execute(self, request: RequestOptions) -> Response:
         """Send a request synchronously through an ``httpx.Client``."""

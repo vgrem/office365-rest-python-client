@@ -69,6 +69,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.transport.base import NoTimeoutType
 from office365.search.entity import SearchEntity
 from office365.search.external.connection import ExternalConnection
 from office365.search.external.external import External
@@ -326,7 +327,7 @@ class GraphClient(ClientRuntimeContext):
         self,
         proxies: dict[str, str] | None = None,
         verify: bool | str = True,
-        timeout: int | tuple[int, int] | None = None,
+        timeout: float | tuple[float, float | None] | NoTimeoutType | None = None,
         session: Session | None = None,
     ) -> Self:
         """Configure the HTTP transport (proxy, SSL, timeout, custom session).
@@ -339,7 +340,10 @@ class GraphClient(ClientRuntimeContext):
         Args:
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
             verify: SSL verification — ``True``, ``False``, or a CA bundle path
-            timeout: Request timeout in seconds
+            timeout: Request timeout — a number or a ``(connect, read)`` tuple.
+                When ``None`` the bundled default (10 s connect, unbounded read)
+                applies; pass
+                :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable.
             session: Custom ``requests.Session`` with pre-configured adapters
                    (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
 

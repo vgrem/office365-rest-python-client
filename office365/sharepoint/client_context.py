@@ -19,6 +19,7 @@ from office365.runtime.http.url import get_absolute_url
 from office365.runtime.odata.v3.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataBatchV3Request
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.transport.base import NoTimeoutType
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
@@ -182,7 +183,7 @@ class ClientContext(ClientRuntimeContext):
         self,
         proxies: dict[str, str] | None = None,
         verify: bool | str = True,
-        timeout: int | tuple[int, int] | None = None,
+        timeout: float | tuple[float, float | None] | NoTimeoutType | None = None,
         session: requests.Session | None = None,
     ) -> Self:
         """Configure the HTTP transport (proxy, SSL, timeout, custom session).
@@ -195,7 +196,10 @@ class ClientContext(ClientRuntimeContext):
         Args:
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
             verify: SSL verification — ``True``, ``False``, or a CA bundle path
-            timeout: Request timeout in seconds
+            timeout: Request timeout — a number or a ``(connect, read)`` tuple.
+                When ``None`` the bundled default (10 s connect, unbounded read)
+                applies; pass
+                :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable.
             session: Custom ``requests.Session`` with pre-configured adapters
                    (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
 

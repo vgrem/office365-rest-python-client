@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterator, Callable, Iterator, Mapping, Optional, Tuple
+from typing import Any, AsyncIterator, Callable, Iterator, Mapping, Optional, Tuple, Union
 
 from requests import Response
 from typing_extensions import Self
@@ -14,7 +14,28 @@ from office365.runtime.http.request_options import RequestOptions
 #: Default slice size (bytes) used by the streaming helpers.
 DEFAULT_STREAM_CHUNK_SIZE = 8192
 
+#: Default connect timeout (seconds) used by the bundled transports. It bounds
+#: connection establishment without capping long transfers, because the read
+#: phase stays unbounded (``None``).
+DEFAULT_CONNECT_TIMEOUT = 10.0
+
 HeadersCallback = Callable[[Mapping[str, str]], None]
+
+
+class NoTimeoutType:
+    """Sentinel type for :data:`NO_TIMEOUT`."""
+
+    __slots__ = ()
+
+    def __repr__(self) -> str:
+        return "NO_TIMEOUT"
+
+
+#: Pass as ``timeout`` to a bundled transport to disable its default timeout.
+NO_TIMEOUT = NoTimeoutType()
+
+#: A transport-level timeout: a single number or a ``(connect, read)`` tuple.
+TimeoutValue = Union[float, Tuple[float, Optional[float]]]
 
 
 class BaseTransport(ABC):
@@ -141,7 +162,7 @@ class BaseTransport(ABC):
         return True
 
     @property
-    def timeout(self) -> int | Tuple[int, int] | None:
+    def timeout(self) -> Optional[TimeoutValue]:
         """Transport-level request timeout in seconds."""
         return None
 

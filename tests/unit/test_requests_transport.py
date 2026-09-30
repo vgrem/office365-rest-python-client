@@ -1,8 +1,9 @@
 """Offline tests for the default ``requests``-backed transport.
 
 Regression coverage for C1: a configured timeout (transport-level or
-per-request) must actually reach ``requests`` instead of being silently dropped,
-while the default (no timeout) stays opt-out.
+per-request) must actually reach ``requests`` instead of being silently dropped.
+The bundled default bounds only the connect phase (10 s) while leaving reads
+unbounded; ``NO_TIMEOUT`` disables timeouts entirely.
 """
 
 from __future__ import annotations
@@ -12,7 +13,8 @@ from typing import Any
 
 import requests
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.transport.requests_transport import RequestsTransport
+from office365.runtime.transport.base import NO_TIMEOUT
+from office365.runtime.transport.requests_transport import DEFAULT_TIMEOUT, RequestsTransport
 from requests import Response
 
 
@@ -56,12 +58,22 @@ class TestRequestsTransportTimeout(unittest.TestCase):
 
         self.assertEqual(session.calls[0][2]["timeout"], 3)
 
-    def test_no_timeout_is_passed_by_default(self):
+    def test_default_connect_timeout_is_applied(self):
         session = _RecordingSession()
         transport = RequestsTransport(session=session)
 
         transport.execute(_get())
 
+        self.assertEqual(session.calls[0][2]["timeout"], DEFAULT_TIMEOUT)
+        self.assertEqual(DEFAULT_TIMEOUT, (10.0, None))
+
+    def test_no_timeout_sentinel_disables_timeout(self):
+        session = _RecordingSession()
+        transport = RequestsTransport(session=session, timeout=NO_TIMEOUT)
+
+        transport.execute(_get())
+
+        self.assertIsNone(transport.timeout)
         self.assertNotIn("timeout", session.calls[0][2])
 
     def test_tuple_timeout_is_forwarded(self):
