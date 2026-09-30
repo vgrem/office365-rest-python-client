@@ -17,6 +17,7 @@ from typing import Any
 
 import pytest
 import requests
+from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.transport.base import BaseTransport
@@ -268,4 +269,88 @@ def test_download_session_async_dispatches_to_on_error() -> None:
     result = asyncio.run(file.download_session_async(io.BytesIO()))
 
     assert result is file
+    assert len(handled) == 1
+
+
+def _drive_item_context(body: bytes, *, transport: BaseTransport | None = None):
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = transport or ScriptedTransport([body])
+    ctx.pending_request().transport = transport
+    return ctx, ctx.me.drive.root, transport
+
+
+def test_drive_item_download_session_async_writes_file_off_loop() -> None:
+    loop_thread = threading.get_ident()
+    transport = _RecordingStreamingTransport([_BODY])
+    _, item, _ = _drive_item_context(_BODY, transport=transport)
+    stream = io.BytesIO()
+
+    result = asyncio.run(item.download_session_async(stream, chunk_size=1024))
+
+    assert result is item
+    assert stream.getvalue() == _BODY
+    assert transport.calls == 1
+    assert transport.threads[0] != loop_thread
+
+
+def test_drive_item_download_session_async_reports_chunks_and_progress() -> None:
+    body = b"a" * 10
+    _, item, _ = _drive_item_context(body)
+    stream = io.BytesIO()
+    chunks: list[int] = []
+    progress: list[Any] = []
+
+    asyncio.run(
+        item.download_session_async(stream, chunk_downloaded=chunks.append, chunk_size=4, progress=progress.append)
+    )
+
+    assert stream.getvalue() == body
+    assert chunks == [4, 8, 10]
+    assert [p.done for p in progress] == [4, 8, 10]
+    assert progress[-1].total == 10  # noqa: PLR2004
+    assert progress[-1].stage == "downloading"
+
+
+def test_drive_item_download_session_async_truncates_existing_content() -> None:
+    _, item, _ = _drive_item_context(b"new")
+
+    stream = io.BytesIO(b"old-and-longer-content")
+    asyncio.run(item.download_session_async(stream))
+
+    assert stream.getvalue() == b"new"
+
+
+def test_drive_item_download_session_async_uses_native_async_stream() -> None:
+    transport = _NativeAsyncStreamTransport(_BODY)
+    _, item, _ = _drive_item_context(_BODY, transport=transport)
+    stream = io.BytesIO()
+
+    asyncio.run(item.download_session_async(stream, chunk_size=256))
+
+    assert stream.getvalue() == _BODY
+    assert transport.calls == 1
+    assert transport.threads == [threading.get_ident()]
+
+
+def test_drive_item_download_session_async_raises_client_request_exception() -> None:
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = ScriptedTransport([{"status": 404, "body": {"error": {"message": "missing"}}}])
+
+    with pytest.raises(ClientRequestException):
+        asyncio.run(ctx.me.drive.root.download_session_async(io.BytesIO()))
+
+
+def test_drive_item_download_session_async_dispatches_to_on_error() -> None:
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = ScriptedTransport([{"status": 404, "body": {"error": {"message": "missing"}}}])
+    handled: list[ClientRequestException] = []
+    ctx.pending_request().on_error(handled.append)
+    item = ctx.me.drive.root
+
+    result = asyncio.run(item.download_session_async(io.BytesIO()))
+
+    assert result is item
     assert len(handled) == 1

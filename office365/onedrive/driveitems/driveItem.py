@@ -53,13 +53,14 @@ from office365.onedrive.sensitivitylabels.extract_result import (
 from office365.onedrive.shares.shared import Shared
 from office365.onedrive.versions.drive_item import DriveItemVersion
 from office365.onedrive.workbooks.workbook import Workbook
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
-from office365.runtime.operations import Progress
+from office365.runtime.operations import Progress, ProgressCallback, emit_progress
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
@@ -727,6 +728,71 @@ class DriveItem(BaseItem):
                 file_object.write(chunk)
 
         self.get_content().before_execute(_construct_request).after_execute(_process_response, include_response=True)
+        return self
+
+    async def download_session_async(
+        self,
+        file_object: IO,
+        chunk_downloaded: Callable[[int], None] | None = None,
+        chunk_size: int = 1024 * 1024,
+        progress: ProgressCallback | None = None,
+    ) -> Self:
+        """Async twin of :meth:`download_session` that never blocks the loop.
+
+        Streams a large file into ``file_object`` through the configured async
+        transport — native when one is set (e.g.
+        :class:`~office365.runtime.transport.httpx_transport.HttpxTransport`),
+        otherwise a worker thread — so the event loop stays free while the body
+        is transferred and the content is never buffered in memory.
+
+        Unlike the deferred :meth:`download_session`, this is an awaitable
+        coroutine: it sends the request and writes every chunk before it returns.
+
+        Args:
+            file_object: An open binary file object to write into.
+            chunk_downloaded: Optional ``(bytes_so_far) -> None`` callback invoked
+                after each chunk.
+            chunk_size: Number of bytes per chunk.
+            progress: Optional ``ProgressCallback`` invoked per chunk with a
+                ``Progress`` snapshot (``done`` = bytes downloaded so far,
+                ``total`` = content length when known).
+
+        Returns:
+            Self for method chaining.
+        """
+        pending = self.context.pending_request()
+        qry = FunctionQuery(self, "content", None, None, return_raw_content=True)
+        request = pending.build_request(qry)
+        request.stream = True
+        request.method = HttpMethod.Get
+        await pending.before_execute_async(request)
+
+        if file_object.seekable():
+            file_object.seek(0)
+            file_object.truncate()
+
+        total: list[int | None] = [None]
+
+        def _capture_length(headers) -> None:
+            length = headers.get("Content-Length")
+            total[0] = int(length) if length else None
+
+        bytes_read = 0
+        try:
+            async for chunk in pending.async_transport.stream_async(
+                request, chunk_size=chunk_size, on_headers=_capture_length
+            ):
+                bytes_read += len(chunk)
+                if callable(chunk_downloaded):
+                    chunk_downloaded(bytes_read)
+                emit_progress(progress, done=bytes_read, total=total[0], stage="downloading")
+                file_object.write(chunk)
+        except requests.HTTPError as e:
+            error = ClientRequestException.from_response(e.response)
+            if pending.onError:
+                pending.onError(error)
+                return self
+            raise error from e
         return self
 
     @require_permission(
