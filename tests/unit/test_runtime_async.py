@@ -428,6 +428,28 @@ def test_get_all_async_follows_next_link() -> None:
     assert loaded == [1, 1]
 
 
+def test_get_all_async_dedupes_by_id() -> None:
+    """Rows repeated across pages can be dropped with ``dedupe_by="id"``."""
+    next_1 = "https://graph.microsoft.com/v1.0/users?$skiptoken=a"
+    next_2 = "https://graph.microsoft.com/v1.0/users?$skiptoken=b"
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport(
+        [
+            {"@odata.nextLink": next_1, "value": [{"id": "1"}, {"id": "2"}]},
+            {"@odata.nextLink": next_2, "value": [{"id": "2"}, {"id": "3"}]},
+            {"value": [{"id": "3"}, {"id": "4"}]},
+        ]
+    )
+    ctx.pending_request().transport = transport
+    col = ctx.users
+
+    asyncio.run(col.get_all_async(page_size=2, dedupe_by="id"))
+
+    assert [u.properties.get("id") for u in col] == ["1", "2", "3", "4"]
+    assert transport.calls == 3  # noqa: PLR2004
+
+
 def test_aiter_fetches_pages_lazily() -> None:
     """``async for`` pulls pages on demand, without a prior ``get_all_async``."""
     ctx = ClientContext(_SITE_URL)

@@ -225,3 +225,89 @@ class TestSPOffsetPaging(unittest.TestCase):
 
         self.assertEqual(len(items), 4)  # noqa: PLR2004
         self.assertEqual(transport.calls, 3)  # noqa: PLR2004
+
+
+class TestServerPagedReset(unittest.TestCase):
+    """A completed server-paged run must not disable $skip for a fresh enumeration."""
+
+    def _collection(self) -> ClientObjectCollection:
+        return ClientObjectCollection(GraphClient(), User, ResourcePath("users"))
+
+    def test_fresh_request_clears_server_paged_flag(self):
+        col = self._collection()
+        col._paged_mode = True
+        col._server_paged = True
+        col._next_request_url = None
+
+        col.clear_state()
+
+        self.assertFalse(col._server_paged)
+
+    def test_continuation_keeps_server_paged_flag(self):
+        col = self._collection()
+        col._paged_mode = True
+        col._server_paged = True
+        col._next_request_url = NEXT_LINK
+
+        col.clear_state()
+
+        self.assertTrue(col._server_paged)
+        self.assertIsNone(col._next_request_url)
+
+    def test_reused_collection_falls_back_to_skip(self):
+        ctx = ClientContext(test_site_url)
+        transport = _CaptureTransport([_page([1, 2]), _page([3, 4]), _page([])])
+        ctx.pending_request().beforeExecute.clear()
+        ctx.pending_request().transport = transport
+        col = ctx.web.lists
+        col._paged_mode = True
+        col._page_size = 2
+        col._server_paged = True  # left behind by a previous server-paged run
+        col._next_request_url = None
+
+        items = list(col.get_all(page_size=2).execute_query())
+
+        self.assertEqual(len(items), 4)  # noqa: PLR2004
+        self.assertIn("skip=2", transport.urls[1])
+
+
+class TestDedupePaging(unittest.TestCase):
+    """Opt-in de-duplication by a property (Graph can repeat rows across pages)."""
+
+    def _graph_context(self, payloads: list) -> tuple[GraphClient, _ScriptedTransport]:
+        ctx = GraphClient()
+        ctx.pending_request().beforeExecute.clear()
+        transport = _ScriptedTransport(payloads)
+        ctx.pending_request().transport = transport
+        return ctx, transport
+
+    def test_get_all_dedupes_by_id(self):
+        next_1 = "https://graph.microsoft.com/v1.0/users?$skiptoken=a"
+        next_2 = "https://graph.microsoft.com/v1.0/users?$skiptoken=b"
+        ctx, transport = self._graph_context(
+            [
+                {"@odata.nextLink": next_1, "value": [{"id": "1"}, {"id": "2"}]},
+                {"@odata.nextLink": next_2, "value": [{"id": "2"}, {"id": "3"}]},
+                {"value": [{"id": "3"}, {"id": "4"}]},
+            ]
+        )
+
+        col = ctx.users
+        col.get_all(page_size=2, dedupe_by="id").execute_query()
+
+        self.assertEqual([u.properties.get("id") for u in col], ["1", "2", "3", "4"])
+        self.assertEqual(transport.calls, 3)  # noqa: PLR2004
+
+    def test_get_all_without_dedupe_keeps_repeats(self):
+        next_1 = "https://graph.microsoft.com/v1.0/users?$skiptoken=a"
+        ctx, _transport = self._graph_context(
+            [
+                {"@odata.nextLink": next_1, "value": [{"id": "1"}, {"id": "2"}]},
+                {"value": [{"id": "2"}, {"id": "3"}]},
+            ]
+        )
+
+        col = ctx.users
+        col.get_all(page_size=2).execute_query()
+
+        self.assertEqual([u.properties.get("id") for u in col], ["1", "2", "2", "3"])

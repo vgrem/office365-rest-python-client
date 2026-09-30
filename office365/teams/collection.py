@@ -31,6 +31,7 @@ class TeamCollection(EntityCollection[Team]):
         page_size: int | None = None,
         page_loaded: Callable[[Any], None] | None = None,
         progress: "ProgressCallback | None" = None,
+        dedupe_by: str | None = None,
     ) -> Self:
         """List all teams in Microsoft Teams for an organization"""
 
@@ -43,7 +44,7 @@ class TeamCollection(EntityCollection[Team]):
                 page_loaded(self)
 
         self.context.groups.filter("resourceProvisioningOptions/Any(x:x eq 'Team')").get_all(
-            page_size, page_loaded=_init_teams, progress=progress
+            page_size, page_loaded=_init_teams, progress=progress, dedupe_by=dedupe_by
         )
         return self
 

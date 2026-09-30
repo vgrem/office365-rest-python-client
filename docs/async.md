@@ -237,6 +237,26 @@ Both forms reuse `progress` / `page_loaded` and follow the same server-driven
 paging (`@odata.nextLink`, or the SharePoint `$skip` fallback) as the
 synchronous `for file in collection`.
 
+### Repeated rows and `$top`
+
+Two paging caveats worth knowing:
+
+- **`$top` can suppress the next link.** On some Graph endpoints an explicit
+  `$top` (the `.top(n)` builder) makes the service return a single page and omit
+  `@odata.nextLink`, so an otherwise complete `get_all()` stops early. To read
+  everything, drive the page size with `page_size=` / `paged(page_size)` and let
+  the library follow the links, instead of capping the whole query with `$top`.
+- **A service can repeat rows across pages.** Graph directory-export APIs are
+  known to return the same item on two consecutive pages during a service
+  update. Pass `dedupe_by="id"` to `get_all()` / `get_all_async()` to keep only
+  the first occurrence of each value. De-duplication runs after the last page
+  loads, so it never disturbs the `$skip` offsets:
+
+  ```python
+  users = ctx.users
+  await users.get_all_async(page_size=200, dedupe_by="id")
+  ```
+
 ## Throttling
 
 Async requests share the exact same pacing gate as synchronous ones. When a

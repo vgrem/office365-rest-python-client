@@ -83,13 +83,19 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Reset the collection's internal state while maintaining configuration.
 
         Note:
-            In paged mode, only clears the next page pointer, preserving loaded items.
+            In paged mode, only clears the next page pointer and the
+            server-paging flag, preserving loaded items.
 
         Returns:
             self: Supports fluent method chaining
         """
         if not self._paged_mode:
             self._data = []
+            self._server_paged = False
+        elif self._next_request_url is None:
+            # A fresh request (not a ``$skiptoken`` continuation): a previous
+            # server-paged run must not keep the client-driven ``$skip`` offset
+            # fallback disabled for the new enumeration.
             self._server_paged = False
         self._next_request_url = None
         self._page_headers = None
@@ -381,6 +387,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         page_size: int | None = None,
         page_loaded: Callable[[Self], None] | None = None,
         progress: "ProgressCallback | None" = None,
+        dedupe_by: str | None = None,
     ) -> Self:
         """
         Load all items in the collection, automatically handling paging.
@@ -392,6 +399,11 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             progress: Optional hook invoked per page with a ``Progress`` snapshot
               (``done`` = items loaded so far; ``total`` unknown for server-driven
               paging, so the bar is indeterminate).
+            dedupe_by: Optional property name (e.g. ``"id"``) used to drop an
+              item that repeats one already seen on an earlier page. Some Graph
+              export APIs repeat rows during service updates; ``None`` (the
+              default) keeps every item. De-duplication runs once the last page
+              has loaded, so it does not disturb ``$skip`` offsets.
 
         Returns:
             self: Supports fluent method chaining
@@ -402,6 +414,8 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
                 progress(Progress(done=len(self._data), stage="loading"))
             if self.has_next:
                 self._get_next().after_execute(_page_loaded)
+            elif dedupe_by:
+                self._dedupe_loaded(dedupe_by)
 
         self.paged(page_size, page_loaded).get().after_execute(_page_loaded)
         return self
@@ -411,6 +425,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         page_size: int | None = None,
         page_loaded: Callable[[Self], None] | None = None,
         progress: "ProgressCallback | None" = None,
+        dedupe_by: str | None = None,
     ) -> Self:
         """
         Async twin of :meth:`get_all`: load every page without blocking the loop.
@@ -426,6 +441,11 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             progress: Optional hook invoked per page with a ``Progress`` snapshot
               (``done`` = items loaded so far; ``total`` unknown for server-driven
               paging, so the bar is indeterminate).
+            dedupe_by: Optional property name (e.g. ``"id"``) used to drop an
+              item that repeats one already seen on an earlier page. Some Graph
+              export APIs repeat rows during service updates; ``None`` (the
+              default) keeps every item. De-duplication runs once the last page
+              has loaded, so it does not disturb ``$skip`` offsets.
 
         Returns:
             self: Supports fluent method chaining
@@ -441,7 +461,43 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         while self.has_next:
             self._get_next().after_execute(_page_loaded)
             await self.context.execute_query_async()
+        if dedupe_by:
+            self._dedupe_loaded(dedupe_by)
         return self
+
+    def _dedupe_loaded(self, key: str) -> None:
+        """Drop items whose ``key`` already appeared on a previous page.
+
+        Preserves the first occurrence and the original order. Called only after
+        enumeration completes so it never affects ``$skip`` offsets mid-run.
+        """
+        seen: set[Any] = set()
+        unique: list[ClientObjectT] = []
+        for item in self._data:
+            value = self._dedupe_key(item, key)
+            if value is not None:
+                try:
+                    hash(value)
+                except TypeError:
+                    # An unhashable value cannot be tracked; keep the item.
+                    unique.append(item)
+                    continue
+                if value in seen:
+                    continue
+                seen.add(value)
+            unique.append(item)
+        self._data = unique
+        self._current_pos = len(self._data)
+
+    @staticmethod
+    def _dedupe_key(item: ClientObjectT, key: str) -> Any:
+        props = getattr(item, "properties", None)
+        if isinstance(props, dict) and key in props:
+            return props[key]
+        try:
+            return getattr(item, key, None)
+        except Exception:  # a missing or still-loading property must not abort de-dup
+            return None
 
     def _can_offset_next(self) -> bool:
         """Whether the next page can be fetched with a client-driven offset request.
