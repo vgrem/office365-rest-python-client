@@ -155,3 +155,18 @@ result = lst.from_dataframe(df, key=["id"])
 result.run(concurrency=5)          # == execute_batch
 report = result.verify(df, key=["id"])
 ```
+
+### Async
+
+The import terminals gain awaitable twins — the same chunking, checkpointing,
+dead-letter and `progress` semantics, only the wait differs:
+
+```python
+result = lst.from_dataframe(df, key=["id"])
+await result.execute_query_async()               # sequential, awaited
+await result.execute_batch_async(concurrency=5)  # server-side batches
+await result.run_async(concurrency=5)            # == execute_batch_async
+```
+
+`async for chunk in result:` mirrors the sync iteration for callers that drive
+execution themselves.

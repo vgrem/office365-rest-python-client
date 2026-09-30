@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from typing import Any, cast
 
@@ -55,6 +56,31 @@ class _FlakyContext(_FakeContext):
         if self.calls == self._fail_on:
             raise RuntimeError("boom")
         return super().execute_query()
+
+
+class _AsyncFakeContext(_FakeContext):
+    """Async terminals mirroring ``_FakeContext`` (must be awaited)."""
+
+    async def execute_query_async(self):
+        self.query_calls += 1
+        return self
+
+    async def execute_batch_async(self, items_per_batch=100, max_batch_bytes=None, concurrency=1, success_callback=None):
+        self.batch_calls.append({"items_per_batch": items_per_batch, "concurrency": concurrency})
+        return self
+
+
+class _AsyncFlakyContext(_AsyncFakeContext):
+    def __init__(self, fail_on: int) -> None:
+        super().__init__()
+        self._fail_on = fail_on
+        self.calls = 0
+
+    async def execute_query_async(self):
+        self.calls += 1
+        if self.calls == self._fail_on:
+            raise RuntimeError("boom")
+        return await super().execute_query_async()
 
 
 def _batches(*sizes: int) -> list[list[dict]]:
@@ -706,3 +732,137 @@ def test_from_records_applies_coerce_converters():
     driver.execute_query()
 
     assert collection.created == [{"n": 4}]
+
+
+# --------------------------------------------------------------------------
+# Async terminals (B6): execute_query_async / execute_batch_async / run_async
+# --------------------------------------------------------------------------
+
+
+def test_execute_query_async_chunks_once_and_bounds_memory():
+    ctx = _AsyncFakeContext()
+    collection = _FakeCollection()
+    driver = _driver(ctx, collection, _batches(2, 2, 1))
+
+    asyncio.run(driver.execute_query_async())
+
+    assert collection.clears == 3  # noqa: PLR2004 — one clear per chunk
+    assert driver.value.total == 5  # noqa: PLR2004
+    assert driver.value.success == 5  # noqa: PLR2004
+    assert driver.value.chunks == 3  # noqa: PLR2004
+    assert ctx.query_calls == 3  # noqa: PLR2004 — awaited once per chunk
+
+
+def test_execute_batch_async_passes_execution_config_per_chunk():
+    ctx = _AsyncFakeContext()
+    collection = _FakeCollection()
+    driver = _driver(ctx, collection, _batches(2, 2, 1))
+
+    asyncio.run(driver.execute_batch_async(items_per_batch=50, concurrency=4))
+
+    assert ctx.batch_calls == [{"items_per_batch": 50, "concurrency": 4}] * 3
+    assert collection.clears == 3  # noqa: PLR2004
+
+
+def test_import_result_run_async_is_the_batch_terminal():
+    ctx = _AsyncFakeContext()
+    driver = _driver(ctx, _FakeCollection(), _batches(2, 2))
+
+    asyncio.run(driver.run_async(items_per_batch=2, concurrency=3))
+
+    assert len(ctx.batch_calls) == 2  # noqa: PLR2004 — one batch call per chunk
+    assert all(call == {"items_per_batch": 2, "concurrency": 3} for call in ctx.batch_calls)
+
+
+def test_progress_async_fires_per_chunk_with_total():
+    seen: list[Any] = []
+    driver = _driver(_AsyncFakeContext(), _FakeCollection(), _batches(2, 3), progress=seen.append, total=5)
+
+    asyncio.run(driver.execute_query_async())
+
+    assert [p.done for p in seen] == [0, 2, 5]  # immediate tick, then per committed chunk
+    assert all(p.total == 5 for p in seen)  # noqa: PLR2004
+
+
+def test_on_error_collect_async_records_and_continues():
+    ctx = _AsyncFlakyContext(fail_on=2)
+    collection = _FakeCollection()
+    checkpoint = ImportCheckpoint()
+    driver = _driver(ctx, collection, _batches(2, 2, 2), checkpoint=checkpoint, on_error="collect")
+
+    asyncio.run(driver.execute_query_async())
+
+    assert driver.value.total == 6  # noqa: PLR2004
+    assert driver.value.success == 4  # noqa: PLR2004
+    assert driver.value.errors == 2  # noqa: PLR2004
+    assert len(checkpoint.failures) == 1
+    assert checkpoint.cursor == 6  # noqa: PLR2004 — failed chunk is skipped, not retried
+
+
+def test_on_error_raise_async_aborts():
+    ctx = _AsyncFlakyContext(fail_on=2)
+    collection = _FakeCollection()
+    driver = _driver(ctx, collection, _batches(2, 2, 2))
+
+    with pytest.raises(RuntimeError):
+        asyncio.run(driver.execute_query_async())
+
+    assert driver.value.success == 2  # noqa: PLR2004
+    assert driver.value.errors == 2  # noqa: PLR2004
+
+
+def test_resume_skips_committed_records_async(tmp_path):
+    path = tmp_path / "ckpt.json"
+
+    asyncio.run(
+        _driver(_AsyncFakeContext(), _FakeCollection(), _batches(2, 2), checkpoint=str(path)).execute_query_async()
+    )
+    assert ImportCheckpoint.load(path).cursor == 4  # noqa: PLR2004
+
+    collection = _FakeCollection()
+    driver = _driver(_AsyncFakeContext(), collection, _batches(2, 2, 2), checkpoint=str(path))
+    asyncio.run(driver.execute_query_async())
+
+    assert collection.queued == [{"n": 4}, {"n": 5}]
+    assert driver.value.total == 2  # noqa: PLR2004
+
+
+def test_aiter_yields_the_collection_and_drives_execution():
+    ctx = _AsyncFakeContext()
+    collection = _FakeCollection()
+    driver = _driver(ctx, collection, _batches(1, 1, 1))
+
+    async def _consume():
+        async for yielded in driver:
+            assert yielded is collection
+            await ctx.execute_query_async()
+
+    asyncio.run(_consume())
+
+    assert driver.value.total == 3  # noqa: PLR2004
+    assert collection.clears == 3  # noqa: PLR2004
+    assert ctx.query_calls == 3  # noqa: PLR2004
+
+
+def test_execute_query_async_uses_the_native_async_terminal():
+    """A real context + async-only transport proves no worker thread is used."""
+    from office365.runtime.queries.read_entity import ReadEntityQuery
+    from office365.sharepoint.client_context import ClientContext
+    from tests._scripted_transport import AsyncScriptedTransport
+
+    ctx = ClientContext("https://contoso.sharepoint.com/sites/dev")
+    ctx.pending_request().beforeExecute.clear()
+    transport = AsyncScriptedTransport([{"d": {"Title": "ok"}}] * 3)
+    ctx.pending_request().transport = transport
+    collection = _FakeCollection()
+
+    def queue(records):
+        ctx.add_query(ReadEntityQuery(ctx.web))  # one real request per chunk
+        return len(records), 0
+
+    driver = _driver(ctx, collection, _batches(1, 1, 1), queue=queue)
+
+    asyncio.run(driver.execute_query_async())
+
+    assert transport.calls == 3  # noqa: PLR2004
+    assert driver.value.success == 3  # noqa: PLR2004

@@ -37,6 +37,8 @@ from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncIterator,
+    Awaitable,
     Callable,
     Iterable,
     Iterator,
@@ -330,6 +332,59 @@ class ImportResult(ClientResult[ImportStats]):
             success_callback=success_callback,
         )
 
+    async def execute_query_async(self) -> Self:
+        """Import sequentially, awaiting each request.
+
+        Async twin of :meth:`execute_query`: the same queue/checkpoint/report
+        machinery drives ``await context.execute_query_async()`` per chunk.
+        """
+        await self._run_async(lambda: self._context.execute_query_async())
+        return self
+
+    async def execute_batch_async(
+        self,
+        items_per_batch: int = DEFAULT_BATCH_SIZE,
+        max_batch_bytes: Optional[int] = None,
+        concurrency: int = 1,
+        success_callback: Optional[Callable[[Any], None]] = None,
+    ) -> Self:
+        """Import via server-side OData batches, awaited.
+
+        Async twin of :meth:`execute_batch`; progress is reported per completed
+        batch exactly as on the synchronous path.
+        """
+
+        def _on_batch(return_types: Any) -> None:
+            self._report(self._done + (len(return_types) if return_types is not None else 0))
+            if callable(success_callback):
+                success_callback(return_types)
+
+        execute_batch = cast(Any, self._context).execute_batch_async
+        await self._run_async(
+            lambda: execute_batch(
+                items_per_batch=items_per_batch,
+                max_batch_bytes=max_batch_bytes,
+                concurrency=concurrency,
+                success_callback=_on_batch,
+            )
+        )
+        return self
+
+    async def run_async(
+        self,
+        items_per_batch: int = DEFAULT_BATCH_SIZE,
+        max_batch_bytes: Optional[int] = None,
+        concurrency: int = 1,
+        success_callback: Optional[Callable[[Any], None]] = None,
+    ) -> Self:
+        """Alias of :meth:`execute_batch_async` (migration-parity vocabulary)."""
+        return await self.execute_batch_async(
+            items_per_batch=items_per_batch,
+            max_batch_bytes=max_batch_bytes,
+            concurrency=concurrency,
+            success_callback=success_callback,
+        )
+
     def verify(
         self,
         source: Any,
@@ -370,6 +425,26 @@ class ImportResult(ClientResult[ImportStats]):
             self._report(self._progress_base + self.value.success)
         self._finish()
 
+    async def __aiter__(self) -> AsyncIterator["RecordSink"]:
+        """Async twin of :meth:`__iter__`: yield the target collection per chunk.
+
+        The caller awaits execution of each yielded chunk (e.g.
+        ``await collection.execute_query_async()``); checkpoint advancement
+        assumes each yielded chunk was committed successfully.
+        """
+        self._started_at = time.monotonic()
+        self._emit(self._done)
+        for raw, records in self._iter_records():
+            if callable(self._before_chunk):
+                self._before_chunk(raw)
+            queued, _skipped = self._queue(records)
+            yield self._collection
+            self.value.success += queued
+            self._advance(records)
+            self._collection.clear()
+            self._report(self._progress_base + self.value.success)
+        self._finish()
+
     # ── Core ─────────────────────────────────────────────────────
 
     def _run(self, execute: Callable[[], Any]) -> None:
@@ -393,29 +468,70 @@ class ImportResult(ClientResult[ImportStats]):
             self._save_checkpoint()
         self._finish()
 
+    async def _run_async(self, execute: Callable[[], Awaitable[Any]]) -> None:
+        """Async twin of :meth:`_run`; only the terminal call differs.
+
+        ``execute`` is awaited instead of called. Checkpointing, dead-letter,
+        ``on_error`` and ``progress`` semantics are shared with the sync path.
+        """
+        self._started_at = time.monotonic()
+        self._emit(self._done)
+        isolate = self._on_error == "collect" and self._dead_letter is not None
+        for raw, records in self._iter_records():
+            if callable(self._before_chunk):
+                self._before_chunk(raw)
+            if isolate and not self._dry_run:
+                await self._run_per_record_async(records, execute)
+            else:
+                await self._run_chunk_async(records, execute)
+            self._save_checkpoint()
+        self._finish()
+
     def _run_chunk(self, records: list[dict], execute: Callable[[], Any]) -> None:
         """Queue and execute one chunk as a unit (the default path)."""
         queued, _skipped = self._queue(records)
         if self._dry_run:
-            self.value.success += queued
-            self._advance(records)
-            self._collection.clear()
-            self._report(self._progress_base + self.value.success)
+            self._complete_chunk(records, queued)
             return
         try:
             execute()
         except Exception as ex:  # noqa: BLE001 — policy decides whether to abort
-            self._record_failure(queued, records, ex)
-            self._collection.clear()
+            self._fail_chunk(queued, records, ex)
             if self._on_error != "collect":
                 self._save_checkpoint()  # cursor unchanged — resume retries this chunk
                 raise
             self._advance(records)  # collect: skip the failed chunk, keep going
         else:
-            self.value.success += queued
-            self._advance(records)
-            self._collection.clear()
-            self._report(self._progress_base + self.value.success)
+            self._complete_chunk(records, queued)
+
+    async def _run_chunk_async(self, records: list[dict], execute: Callable[[], Awaitable[Any]]) -> None:
+        """Async twin of :meth:`_run_chunk` (awaits the terminal)."""
+        queued, _skipped = self._queue(records)
+        if self._dry_run:
+            self._complete_chunk(records, queued)
+            return
+        try:
+            await execute()
+        except Exception as ex:  # noqa: BLE001 — policy decides whether to abort
+            self._fail_chunk(queued, records, ex)
+            if self._on_error != "collect":
+                self._save_checkpoint()  # cursor unchanged — resume retries this chunk
+                raise
+            self._advance(records)  # collect: skip the failed chunk, keep going
+        else:
+            self._complete_chunk(records, queued)
+
+    def _complete_chunk(self, records: list[dict], queued: int) -> None:
+        """Bookkeeping after a chunk (or dry-run) committed successfully."""
+        self.value.success += queued
+        self._advance(records)
+        self._collection.clear()
+        self._report(self._progress_base + self.value.success)
+
+    def _fail_chunk(self, queued: int, records: list[dict], error: Exception) -> None:
+        """Record a failed chunk and discard its queued entities."""
+        self._record_failure(queued, records, error)
+        self._collection.clear()
 
     def _run_per_record(self, records: list[dict], execute: Callable[[], Any]) -> None:
         """Queue/execute one record at a time, dead-lettering each failing row."""
@@ -427,6 +543,25 @@ class ImportResult(ClientResult[ImportStats]):
                 continue
             try:
                 execute()
+            except Exception as ex:  # noqa: BLE001 — collect: record the row, keep going
+                self._record_row_failure(start + index, record, ex)
+            else:
+                self.value.success += queued
+            finally:
+                self._collection.clear()
+        self._advance(records)
+        self._report(self._progress_base + self.value.success)
+
+    async def _run_per_record_async(self, records: list[dict], execute: Callable[[], Awaitable[Any]]) -> None:
+        """Async twin of :meth:`_run_per_record` (awaits the terminal)."""
+        start = self._checkpoint.cursor
+        for index, record in enumerate(records):
+            queued, _skipped = self._queue([record])
+            if self._dry_run:
+                self.value.success += queued
+                continue
+            try:
+                await execute()
             except Exception as ex:  # noqa: BLE001 — collect: record the row, keep going
                 self._record_row_failure(start + index, record, ex)
             else:
