@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "uv_build"
-requires = [ "uv-build>=0.9,<0.10" ]
+requires = [ "uv-build>=0.9,<0.13" ]
 
 [project]
 name = "office365-rest-python-client"
@@ -86,22 +86,22 @@ urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 [dependency-groups]
 dev = [
   "adal~=1.2.4",
-  "configparser~=5.0.2",
+  "configparser>=5.0.2,<7.3.0",
   "cryptography>=44.0.0",
-  "faker~=4.1.2",
+  "faker>=4.1.2,<40.40.0",
   "pyproject-fmt",
   "pyright>=1.1.408",
   "pytest",
   # Ruff 0.15+ introduces new lint rules (PLW0108, PYI016, ...) and formatter
   # changes that would reformat 30+ notebooks/examples. Pin until that is
   # adopted as a dedicated change, so a dependency refresh stays low-churn.
-  "ruff==0.14.11",
+  "ruff==0.16.9",
   "types-requests",
 ]
 docs = [
   "mkdocs~=1.6; python_version >= '3.9'",
   "mkdocs-material~=9.5; python_version >= '3.9'",
-  "mkdocstrings[python]~=0.28; python_version >= '3.9'",
+  "mkdocstrings[python]>=0.28,<2.0; python_version >= '3.9'",
   "mkdocs-gen-files~=0.5; python_version >= '3.9'",
   "mkdocs-awesome-pages-plugin~=2.9; python_version >= '3.9'",
   "pygments>=2.17; python_version >= '3.9'",
