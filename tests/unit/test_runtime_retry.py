@@ -447,7 +447,14 @@ def test_throttle_guard_attaches_and_detaches():
     assert len(seen) == 1
 
 
-def ratelimiter__response(retry_after: str | None = None, health_score: str | None = None) -> Response:
+def ratelimiter__response(
+    retry_after: str | None = None,
+    health_score: str | None = None,
+    limit_percentage: str | None = None,
+    resource_unit: str | None = None,
+    scope: str | None = None,
+    reason: str | None = None,
+) -> Response:
     resp = Response()
     resp.status_code = 429 if retry_after else 200
     resp.headers["Content-Type"] = "application/json"
@@ -455,6 +462,14 @@ def ratelimiter__response(retry_after: str | None = None, health_score: str | No
         resp.headers["Retry-After"] = retry_after
     if health_score:
         resp.headers["X-SharePointHealthScore"] = health_score
+    if limit_percentage:
+        resp.headers["x-ms-throttle-limit-percentage"] = limit_percentage
+    if resource_unit:
+        resp.headers["x-ms-resource-unit"] = resource_unit
+    if scope:
+        resp.headers["x-ms-throttle-scope"] = scope
+    if reason:
+        resp.headers["x-ms-throttle-information"] = reason
     resp._content = b"{}"
     return resp
 
@@ -495,6 +510,43 @@ class TestPacePolicy(unittest.TestCase):
     def test_wait_delay(self):
         self.assertEqual(wait_delay(PaceState(105.0), now=100.0), 5.0)  # noqa: PLR2004
         self.assertEqual(wait_delay(PaceState(95.0), now=100.0), 0.0)
+
+    def test_resource_unit_weights_percentage_pace(self):
+        # 1.0 * (1 + (1.0 - 0.8)) * cost(3) = 3.6
+        state = pace(
+            PaceState(),
+            ThrottleLimits(limit_percentage=1.0, resource_unit=3),
+            now=100.0,
+            percentage_interval=1.0,
+        )
+        self.assertAlmostEqual(state.next_available_at, 103.6)
+
+    def test_resource_unit_weighting_can_be_disabled(self):
+        state = pace(
+            PaceState(),
+            ThrottleLimits(limit_percentage=1.0, resource_unit=3),
+            now=100.0,
+            weight_by_resource_unit=False,
+        )
+        self.assertAlmostEqual(state.next_available_at, 101.2)
+
+    def test_resource_unit_cost_is_capped(self):
+        state = pace(
+            PaceState(),
+            ThrottleLimits(limit_percentage=1.0, resource_unit=100),
+            now=100.0,
+            percentage_interval=1.0,
+        )
+        # cost clamped to MAX_RESOURCE_UNIT_COST (10): 1.2 * 10
+        self.assertAlmostEqual(state.next_available_at, 112.0)
+
+    def test_retry_after_is_not_scaled_by_resource_unit(self):
+        state = pace(
+            PaceState(),
+            ThrottleLimits(retry_after=2, resource_unit=5),
+            now=100.0,
+        )
+        self.assertEqual(state, PaceState(102.0))
 
 
 class _FakeClock:
@@ -565,6 +617,39 @@ class TestRateLimiter(unittest.TestCase):
         # the 429 response observed by the wrapped transport must gate the group
         self.assertGreaterEqual(_elapsed(limiter.acquire), 1.8)
 
+    def test_scope_signal_gates_the_group_by_default(self):
+        limiter = RateLimiter(clock=_FakeClock(), sleep=lambda _delay: None)
+
+        limiter.observe(ratelimiter__response(retry_after="5", scope="Mail.ReadWrite", reason="CPULimitExceeded"))
+
+        self.assertGreaterEqual(limiter.snapshot().next_available_at, 5.0)
+        self.assertEqual(limiter.last_scope, "Mail.ReadWrite")
+        self.assertEqual(limiter.last_reason, "CPULimitExceeded")
+
+    def test_per_scope_isolates_the_throttled_scope(self):
+        clock = _FakeClock()
+        slept: list[float] = []
+
+        def _sleep(delay: float) -> None:
+            slept.append(delay)
+            clock.t += delay
+
+        limiter = RateLimiter(per_scope=True, clock=clock, sleep=_sleep)
+        limiter.observe(ratelimiter__response(retry_after="5", scope="Mail.ReadWrite"))
+
+        # global gate is untouched and an unrelated scope is not gated
+        self.assertEqual(limiter.snapshot().next_available_at, 0.0)
+        limiter.acquire("Files.Read")
+        self.assertEqual(slept, [])
+
+        self.assertEqual(limiter.snapshot("Mail.ReadWrite").next_available_at, 5.0)
+        limiter.acquire("Mail.ReadWrite")
+        self.assertGreaterEqual(sum(slept), 5.0)
+
+        limiter.reset()
+        self.assertEqual(limiter.snapshot("Mail.ReadWrite").next_available_at, 0.0)
+        self.assertIsNone(limiter.last_scope)
+
 
 class _StubTransport(BaseTransport):
     def __init__(self, response: Response | None = None, error: Exception | None = None) -> None:
@@ -600,7 +685,7 @@ class TestPacedGuard(unittest.TestCase):
         response = ratelimiter__response()
         result = paced(lambda: response, gate)
         self.assertIs(result, response)
-        gate.acquire.assert_called_once_with()
+        gate.acquire.assert_called_once_with(None)
         gate.observe.assert_called_once_with(response)
 
     def test_paced_observes_error_response_and_reraises(self):
@@ -623,8 +708,8 @@ class TestPacedGuard(unittest.TestCase):
         self.assertEqual(transport.proxies, {"https": "http://proxy"})
         self.assertIs(transport.verify, False)
         self.assertEqual(transport.timeout, 7)  # noqa: PLR2004
-        self.assertIs(transport.execute(mock.Mock()), response)
-        gate.acquire.assert_called_once_with()
+        self.assertIs(transport.execute(RequestOptions(url="https://contoso.sharepoint.com")), response)
+        gate.acquire.assert_called_once_with(None)
         gate.observe.assert_called_once_with(response)
 
         transport.close()
@@ -637,8 +722,19 @@ class TestPacedGuard(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             transport.execute(object())
-        gate.acquire.assert_called_once_with()
+        gate.acquire.assert_called_once_with(None)
         gate.observe.assert_called_once_with(None)
+
+    def test_throttled_transport_passes_request_scope(self):
+        gate = mock.Mock()
+        inner = _StubTransport(response=ratelimiter__response())
+        transport = ThrottledTransport(inner, gate)
+        request = RequestOptions(url="https://graph.microsoft.com/v1.0/me")
+        request.throttle_scope = "Mail.ReadWrite"
+
+        transport.execute(request)
+
+        gate.acquire.assert_called_once_with("Mail.ReadWrite")
 
 
 class TestPacedAsync(unittest.TestCase):
@@ -685,7 +781,7 @@ class TestPacedAsync(unittest.TestCase):
         result = asyncio.run(paced_async(_func, gate))
 
         self.assertIs(result, response)
-        gate.acquire_async.assert_awaited_once_with()
+        gate.acquire_async.assert_awaited_once_with(None)
         gate.observe.assert_called_once_with(response)
 
     def test_paced_async_observes_error_response_and_reraises(self):
@@ -707,10 +803,10 @@ class TestPacedAsync(unittest.TestCase):
         inner = _StubTransport(response=response)
         transport = ThrottledTransport(inner, gate)
 
-        result = asyncio.run(transport.execute_async(mock.Mock()))
+        result = asyncio.run(transport.execute_async(RequestOptions(url="https://contoso.sharepoint.com")))
 
         self.assertIs(result, response)
-        gate.acquire_async.assert_awaited_once_with()
+        gate.acquire_async.assert_awaited_once_with(None)
         gate.observe.assert_called_once_with(response)
 
     def test_throttled_transport_aclose_delegates(self):

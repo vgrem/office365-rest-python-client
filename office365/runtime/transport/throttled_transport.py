@@ -45,7 +45,11 @@ class ThrottledTransport(BaseTransport):
         return self._limiter
 
     def execute(self, request: "RequestOptions") -> "Response":
-        return paced(lambda: self._inner.execute(request), self._limiter)
+        return paced(
+            lambda: self._inner.execute(request),
+            self._limiter,
+            scope=getattr(request, "throttle_scope", None),
+        )
 
     async def execute_async(self, request: "RequestOptions") -> "Response":
         """Async twin of :meth:`execute` that paces without blocking the loop.
@@ -54,7 +58,11 @@ class ThrottledTransport(BaseTransport):
         async path (native or thread-offloaded) performs the I/O, so async
         callers get the same fleet pacing as the synchronous path.
         """
-        return await paced_async(lambda: self._inner.execute_async(request), self._limiter)
+        return await paced_async(
+            lambda: self._inner.execute_async(request),
+            self._limiter,
+            scope=getattr(request, "throttle_scope", None),
+        )
 
     @property
     def proxies(self) -> dict[str, str] | None:

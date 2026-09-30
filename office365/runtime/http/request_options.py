@@ -28,6 +28,10 @@ class RequestOptions:
     stream: bool = False
     proxies: Optional[Dict[str, str]] = None
     timeout: Optional[Union[int, float]] = None
+    # Optional ``x-ms-throttle-scope`` this request belongs to. Set it so a
+    # ``RateLimiter(per_scope=True)`` can pace the request against its own scope
+    # bucket instead of the global gate.
+    throttle_scope: Optional[str] = None
 
     def __str__(self) -> str:
         return f"{self.method} {self.url}"

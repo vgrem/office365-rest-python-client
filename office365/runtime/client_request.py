@@ -125,7 +125,12 @@ class ClientRequest(ABC):
         inner = transport.inner if isinstance(transport, ThrottledTransport) else transport
         return ThrottledTransport(inner, self._rate_limiter)
 
-    def with_rate_limit(self, health_threshold: int = 80, min_interval: float = 0.0) -> Self:
+    def with_rate_limit(
+        self,
+        health_threshold: int = 80,
+        min_interval: float = 0.0,
+        per_scope: bool = False,
+    ) -> Self:
         """Pace every request of this request through a new shared rate limiter.
 
         Control plane: wraps the transport so the whole fleet — including the
@@ -139,11 +144,20 @@ class ClientRequest(ABC):
         Args:
             health_threshold: Health score at/above which the group paces.
             min_interval: Minimum pause applied on a high health score (seconds).
+            per_scope: When ``True``, a Graph ``x-ms-throttle-scope`` pauses only
+                requests tagged with that same ``RequestOptions.throttle_scope``
+                instead of the whole fleet.
 
         Returns:
             Self: Supports method chaining
         """
-        return self.with_rate_limiter(RateLimiter(health_threshold=health_threshold, min_interval=min_interval))
+        return self.with_rate_limiter(
+            RateLimiter(
+                health_threshold=health_threshold,
+                min_interval=min_interval,
+                per_scope=per_scope,
+            )
+        )
 
     def with_rate_limiter(self, limiter: RateLimiter) -> Self:
         """Pace every request through a caller-provided shared rate limiter.

@@ -260,7 +260,12 @@ class ClientRuntimeContext(ABC):
         """
         return self.pending_request().rate_limiter
 
-    def with_rate_limit(self, health_threshold: int = 80, min_interval: float = 0.0) -> Self:
+    def with_rate_limit(
+        self,
+        health_threshold: int = 80,
+        min_interval: float = 0.0,
+        per_scope: bool = False,
+    ) -> Self:
         """Enable fleet-wide pacing for this context (opt-in).
 
         Wraps the context transport with a shared rate limiter, so every request
@@ -271,11 +276,16 @@ class ClientRuntimeContext(ABC):
         Args:
             health_threshold: Health score at/above which the group paces.
             min_interval: Minimum pause applied on a high health score (seconds).
+            per_scope: When ``True``, a Graph ``x-ms-throttle-scope`` pauses only
+                requests tagged with that same ``RequestOptions.throttle_scope``
+                instead of the whole fleet.
 
         Returns:
             Self: Supports method chaining
         """
-        self.pending_request().with_rate_limit(health_threshold=health_threshold, min_interval=min_interval)
+        self.pending_request().with_rate_limit(
+            health_threshold=health_threshold, min_interval=min_interval, per_scope=per_scope
+        )
         return self
 
     def with_client_request_id(self, enabled: bool = True) -> Self:

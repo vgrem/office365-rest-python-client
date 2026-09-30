@@ -61,19 +61,35 @@ result = client.users.top(10).get().execute_query_retry()   # honor Retry-After 
 client.execute_batch(concurrency=5)                         # retries throttled sub-requests
 
 client.with_rate_limit()          # pace a fleet from the signals (proactive)
+client.with_rate_limit(per_scope=True)   # pace each x-ms-throttle-scope separately
 client.with_throttle_priority("low")     # mark background work low priority
 ```
 
 `client.with_rate_limit()` reads every response (including batch sub-responses)
 and gates the group on `Retry-After`, Graph's `x-ms-throttle-limit-percentage`
-and SharePoint's health score. See
-`office365.runtime.http.throttling` and `office365.runtime.retry`.
+and SharePoint's health score. When a response reports `x-ms-resource-unit`, the
+proactive pace is scaled by that request cost, so an expensive call rests
+proportionally longer. With `per_scope=True` a throttled `x-ms-throttle-scope`
+pauses only requests tagged with the matching `RequestOptions.throttle_scope`.
+See `office365.runtime.http.throttling` and `office365.runtime.retry`.
 
 ## Best practices to avoid throttling
 
+- **Honor `Retry-After`** — it is the server telling you exactly how long to
+  wait; retrying earlier only extends the throttle.
+- **Pace proactively** with `with_rate_limit()`; mark interactive calls
+  `with_throttle_priority("high")` and background jobs `"low"` so low-priority
+  work is throttled first.
+- **Share the load**: avoid a large fan-out of concurrent connections; spread
+  requests over time rather than bursting.
+- **Keep responses small**: use `$select`/`$top`/`$expand` deliberately; avoid
+  oversized `$top` and deep expansions that inflate server cost.
 - Prefer **delta queries** and **change notifications** over polling/scanning.
 - **Batch** related operations (JSON batching) and reduce operations per request.
-- Don't retry immediately — honor `Retry-After` (the fastest recovery).
+- Watch `X-SharePointHealthScore` — when the farm is busy, ease off before it
+  throttles you (the rate limiter already does this).
+- Set a descriptive `User-Agent` (e.g. `ISV|Contoso|MyApp/1.0`) so Microsoft can
+  attribute and, if needed, raise your limits.
 - For bulk extraction, use **Microsoft Graph Data Connect** (not throttled).
 
 ## Quotas (reference)

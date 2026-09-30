@@ -109,6 +109,10 @@ class ThrottleLimits:
 #: Alias for the newer, protocol-agnostic name.
 ThrottleSignal = ThrottleLimits
 
+#: Cap on the ``x-ms-resource-unit`` cost multiplier so a single expensive
+#: request can't translate into an unbounded pause.
+MAX_RESOURCE_UNIT_COST = 10.0
+
 _ALL_FIELDS = tuple(f.name for f in fields(ThrottleLimits))
 
 
@@ -259,6 +263,7 @@ def pace(
     min_interval: float = 0.0,
     percentage_threshold: float = 0.8,
     percentage_interval: float = 1.0,
+    weight_by_resource_unit: bool = True,
 ) -> PaceState:
     """Pure transition: observed server limits -> next gate state.
 
@@ -267,6 +272,12 @@ def pace(
     short, scaled pace so the group eases off *before* being throttled; a high
     ``X-SharePointHealthScore`` does the same as the farm heats up. Returns
     ``state`` unchanged when nothing applies.
+
+    When ``weight_by_resource_unit`` is set and the response reports an
+    ``x-ms-resource-unit`` cost, the proactive percentage pace is multiplied by
+    that cost (capped at :data:`MAX_RESOURCE_UNIT_COST`) — an expensive call
+    consumes more of the budget, so the group rests proportionally longer.
+    ``Retry-After`` is the server's explicit instruction and is never scaled.
 
     Args:
         state: The current gate state.
@@ -277,14 +288,18 @@ def pace(
         percentage_threshold: Graph limit-percentage at/above which the group paces.
         percentage_interval: Base pause for the Graph limit-percentage pace
             (scales 1x..2x across 0.8..1.8).
+        weight_by_resource_unit: Scale the percentage pace by the request cost.
     """
     if limits is None:
         return state
     delay = 0.0
     if limits.retry_after is not None and limits.retry_after > 0:
         delay = max(delay, float(limits.retry_after))
+    cost = 1.0
+    if weight_by_resource_unit and limits.resource_unit is not None:
+        cost = min(max(float(limits.resource_unit), 1.0), MAX_RESOURCE_UNIT_COST)
     if limits.limit_percentage is not None and limits.limit_percentage >= percentage_threshold:
-        delay = max(delay, percentage_interval * (1.0 + (limits.limit_percentage - percentage_threshold)))
+        delay = max(delay, percentage_interval * (1.0 + (limits.limit_percentage - percentage_threshold)) * cost)
     if limits.health_score is not None and limits.health_score >= health_threshold:
         delay = max(delay, (limits.health_score - health_threshold) / 20.0, min_interval)
     if delay <= 0:
@@ -297,7 +312,7 @@ def wait_delay(state: PaceState, *, now: float) -> float:
     return max(0.0, state.next_available_at - now)
 
 
-def paced(func: Callable[[], Response], gate: "RateLimiter") -> Response:
+def paced(func: Callable[[], Response], gate: "RateLimiter", scope: Optional[str] = None) -> Response:
     """Run ``func`` under a shared rate limiter — the functional guard.
 
     Mirrors :func:`~office365.runtime.retry.retry`: it waits for the group gate,
@@ -307,8 +322,10 @@ def paced(func: Callable[[], Response], gate: "RateLimiter") -> Response:
     Args:
         func: Callable performing one request/operation.
         gate: The shared :class:`RateLimiter` to pace against.
+        scope: Optional throttling scope for per-scope pacing (see
+            :meth:`RateLimiter.acquire`).
     """
-    gate.acquire()
+    gate.acquire(scope)
     try:
         result = func()
     except Exception as ex:
@@ -318,7 +335,11 @@ def paced(func: Callable[[], Response], gate: "RateLimiter") -> Response:
     return result
 
 
-async def paced_async(func: Callable[[], Awaitable[Response]], gate: "RateLimiter") -> Response:
+async def paced_async(
+    func: Callable[[], Awaitable[Response]],
+    gate: "RateLimiter",
+    scope: Optional[str] = None,
+) -> Response:
     """Async twin of :func:`paced`: await the gate, then observe the outcome.
 
     Lets the async path reuse the exact pacing policy as the sync path — only
@@ -329,8 +350,9 @@ async def paced_async(func: Callable[[], Awaitable[Response]], gate: "RateLimite
     Args:
         func: Coroutine performing one request/operation.
         gate: The shared :class:`RateLimiter` to pace against.
+        scope: Optional throttling scope for per-scope pacing.
     """
-    await gate.acquire_async()
+    await gate.acquire_async(scope)
     try:
         result = await func()
     except Exception as ex:
@@ -364,38 +386,75 @@ class RateLimiter:
         min_interval: float = 0.0,
         percentage_threshold: float = 0.8,
         percentage_interval: float = 1.0,
+        weight_by_resource_unit: bool = True,
+        per_scope: bool = False,
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
         async_sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
     ) -> None:
         self._lock = threading.Lock()
         self._state = PaceState()
+        self._scope_states: dict[str, PaceState] = {}
         self._health_threshold = health_threshold
         self._min_interval = min_interval
         self._percentage_threshold = percentage_threshold
         self._percentage_interval = percentage_interval
+        self._weight_by_resource_unit = weight_by_resource_unit
+        self._per_scope = per_scope
         self._clock = clock
         self._sleep = sleep
         self._async_sleep = async_sleep
+        self._last_reason: Optional[str] = None
+        self._last_scope: Optional[str] = None
 
-    def snapshot(self) -> PaceState:
-        """Return the current gate state (a pure value)."""
+    @property
+    def last_reason(self) -> Optional[str]:
+        """The most recent Graph ``x-ms-throttle-information`` value, if any."""
+        return self._last_reason
+
+    @property
+    def last_scope(self) -> Optional[str]:
+        """The most recent Graph ``x-ms-throttle-scope`` value, if any."""
+        return self._last_scope
+
+    def snapshot(self, scope: Optional[str] = None) -> PaceState:
+        """Return the current gate state (a pure value).
+
+        With ``scope`` and ``per_scope=True`` this returns that scope's bucket,
+        falling back to the global gate when the scope was never throttled.
+        """
         with self._lock:
+            if scope is not None:
+                return self._scope_states.get(scope, self._state)
             return self._state
 
-    def acquire(self) -> None:
+    def _wait(self, scope: Optional[str]) -> float:
+        """Seconds until both the global and (optional) scope gate open."""
+        wait = wait_delay(self._state, now=self._clock())
+        if scope is not None:
+            state = self._scope_states.get(scope)
+            if state is not None:
+                wait = max(wait, wait_delay(state, now=self._clock()))
+        return wait
+
+    def acquire(self, scope: Optional[str] = None) -> None:
         """Block the calling thread until the group gate opens.
 
-        Called before a request is sent; safe to invoke from many threads.
+        Called before a request is sent; safe to invoke from many threads. Pass
+        ``scope`` (with ``per_scope=True``) to also honor that scope's bucket,
+        so a throttle confined to one Graph scope doesn't stall unrelated work.
+
+        Args:
+            scope: Optional ``x-ms-throttle-scope`` the request belongs to.
         """
         while True:
             with self._lock:
-                wait = wait_delay(self._state, now=self._clock())
+                wait = self._wait(scope)
             if wait <= 0:
                 return
             self._sleep(min(wait, self._SLEEP_GRANULARITY))
 
-    async def acquire_async(self) -> None:
+    async def acquire_async(self, scope: Optional[str] = None) -> None:
         """Await until the group gate opens without blocking the event loop.
 
         Async counterpart of :meth:`acquire`: the shared state is read under the
@@ -403,31 +462,57 @@ class RateLimiter:
         event loop, so concurrently-running tasks keep making progress. Only the
         wait step is async — the limiter never holds a loop-bound primitive, so
         a single limiter can pace both the synchronous and asynchronous paths.
+
+        Args:
+            scope: Optional ``x-ms-throttle-scope`` the request belongs to.
         """
         while True:
             with self._lock:
-                wait = wait_delay(self._state, now=self._clock())
+                wait = self._wait(scope)
             if wait <= 0:
                 return
             await self._async_sleep(min(wait, self._SLEEP_GRANULARITY))
 
     def observe(self, response: Optional[Response]) -> None:
-        """Record throttling signals and pause the group when the server asks."""
+        """Record throttling signals and pause the group when the server asks.
+
+        A response carrying ``x-ms-throttle-scope`` updates that scope's bucket;
+        otherwise (or additionally, when not in ``per_scope`` mode) it updates
+        the global gate. The last throttle reason/scope are remembered for
+        logging.
+        """
         if response is None:
             return
         limits = parse_throttling(response)
         if limits is None:
             return
         with self._lock:
-            self._state = pace(
-                self._state,
-                limits,
-                now=self._clock(),
-                health_threshold=self._health_threshold,
-                min_interval=self._min_interval,
-                percentage_threshold=self._percentage_threshold,
-                percentage_interval=self._percentage_interval,
-            )
+            if limits.reason is not None:
+                self._last_reason = limits.reason
+            if limits.scope is not None:
+                self._last_scope = limits.scope
+            if self._per_scope and limits.scope is not None:
+                self._scope_states[limits.scope] = pace(
+                    self._scope_states.get(limits.scope, PaceState()),
+                    limits,
+                    now=self._clock(),
+                    health_threshold=self._health_threshold,
+                    min_interval=self._min_interval,
+                    percentage_threshold=self._percentage_threshold,
+                    percentage_interval=self._percentage_interval,
+                    weight_by_resource_unit=self._weight_by_resource_unit,
+                )
+            else:
+                self._state = pace(
+                    self._state,
+                    limits,
+                    now=self._clock(),
+                    health_threshold=self._health_threshold,
+                    min_interval=self._min_interval,
+                    percentage_threshold=self._percentage_threshold,
+                    percentage_interval=self._percentage_interval,
+                    weight_by_resource_unit=self._weight_by_resource_unit,
+                )
 
     def bind(self, context: "ClientRuntimeContext") -> "RateLimiter":
         """Pace every request of a context (or ``clone``) by wrapping its transport.
@@ -446,3 +531,6 @@ class RateLimiter:
         """Clear the current gate (used by tests / recovery)."""
         with self._lock:
             self._state = PaceState()
+            self._scope_states.clear()
+            self._last_reason = None
+            self._last_scope = None
