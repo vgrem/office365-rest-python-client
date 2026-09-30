@@ -92,7 +92,10 @@ dev = [
   "pyproject-fmt",
   "pyright>=1.1.408",
   "pytest",
-  "ruff",
+  # Ruff 0.15+ introduces new lint rules (PLW0108, PYI016, ...) and formatter
+  # changes that would reformat 30+ notebooks/examples. Pin until that is
+  # adopted as a dedicated change, so a dependency refresh stays low-churn.
+  "ruff==0.14.11",
   "types-requests",
 ]
 docs = [
@@ -103,6 +106,15 @@ docs = [
   "mkdocs-awesome-pages-plugin~=2.9; python_version >= '3.9'",
   "pygments>=2.17; python_version >= '3.9'",
 ]
+
+[tool.uv]
+# Resolve/lock only for interpreters we actually develop and test against.
+# The package still declares `requires-python >=3.8` (see [project]) so this
+# does not change what consumers may install; it only keeps the universal
+# lockfile from retaining unpatched pins that can no longer be upgraded on
+# EOL interpreters (3.8/3.9). Remove this once requires-python is raised
+# (planned for 4.0).
+environments = ["python_full_version >= '3.10'"]
 
 [tool.uv.build-backend]
 module-name = "office365"
