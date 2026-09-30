@@ -9,10 +9,10 @@ updates:
         patterns:
           - "*"
 
-  # - package-ecosystem: "uv"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "daily"
-  #   groups:
-  #     dev-deps:
-  #       dependency-type: "development"
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      dev-deps:
+        dependency-type: "development"
