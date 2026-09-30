@@ -278,6 +278,22 @@ class ClientRuntimeContext(ABC):
         self.pending_request().with_rate_limit(health_threshold=health_threshold, min_interval=min_interval)
         return self
 
+    def with_client_request_id(self, enabled: bool = True) -> Self:
+        """Enable or disable the per-request ``client-request-id`` header.
+
+        When enabled (the default) every request — including each sub-request of
+        a batch — carries a fresh GUID for server-side log correlation, per the
+        Microsoft Graph best practice. Pass ``False`` to opt out.
+
+        Args:
+            enabled: ``True`` to send the header (default), ``False`` to omit it.
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self.pending_request().with_client_request_id(enabled)
+        return self
+
     def execute_query(self) -> Self:
         """Executes all pending queries.
 

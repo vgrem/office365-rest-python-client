@@ -50,6 +50,7 @@ class ClientQuery(Generic[ReturnT]):
         """Builds a request"""
         request = self.context.pending_request().build_request(self)
         self.context.pending_request().beforeExecute(request)
+        self.context.pending_request().apply_client_request_id(request)
         return request
 
     def execute_query(self, request: "ClientRequest") -> None:

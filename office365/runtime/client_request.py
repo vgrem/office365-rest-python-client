@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
 
@@ -23,6 +24,7 @@ class ClientRequest(ABC):
         self._transport = transport or RequestsTransport()
         self._async_transport: BaseTransport | None = None
         self._rate_limiter: RateLimiter | None = None
+        self._client_request_id_enabled = True
         self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
         self.afterExecute: EventHandler[[Response]] = EventHandler()
         self.onError: EventHandler[[ClientRequestException]] = EventHandler()
@@ -161,6 +163,38 @@ class ClientRequest(ABC):
         if self._async_transport is not None:
             self._async_transport = self._with_limiter(self._async_transport)
         return self
+
+    @property
+    def client_request_id_enabled(self) -> bool:
+        """Whether a unique ``client-request-id`` is sent with each request."""
+        return self._client_request_id_enabled
+
+    def with_client_request_id(self, enabled: bool = True) -> Self:
+        """Enable or disable the per-request ``client-request-id`` header.
+
+        When enabled (the default) every outgoing request — including each
+        sub-request of a batch — carries a fresh GUID, matching the Microsoft
+        Graph best practice for correlating a call with server-side logs. Pass
+        ``False`` to opt out; a header set explicitly on a request always wins.
+
+        Args:
+            enabled: ``True`` to send the header (default), ``False`` to omit it.
+
+        Returns:
+            Self: Supports method chaining
+        """
+        self._client_request_id_enabled = enabled
+        return self
+
+    def apply_client_request_id(self, request: RequestOptions) -> None:
+        """Ensure ``request`` carries a ``client-request-id`` correlation GUID.
+
+        A no-op when disabled or when the caller already set the header. Called
+        on both the direct send path and when building batch sub-requests so the
+        whole fleet stays traceable.
+        """
+        if self._client_request_id_enabled:
+            request.ensure_header("client-request-id", str(uuid.uuid4()))
 
     @property
     @abstractmethod
@@ -329,6 +363,7 @@ class ClientRequest(ABC):
     def execute_request_direct(self, request: RequestOptions) -> Response:
         """Execute the client request"""
         self.beforeExecute(request)
+        self.apply_client_request_id(request)
         response = self._transport.execute(request)
         self._raise_for_status(response)
         return response
@@ -356,6 +391,7 @@ class ClientRequest(ABC):
         :meth:`~office365.runtime.transport.base.BaseTransport.execute_async`.
         """
         await self.before_execute_async(request)
+        self.apply_client_request_id(request)
         response = await self.async_transport.execute_async(request)
         self._raise_for_status(response)
         return response
