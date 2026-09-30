@@ -77,6 +77,24 @@ SharePoint collections expose `paged(page_size, page_loaded)` and
 all_items = ctx.web.lists.get_by_title("Contacts_Large").items.get_all(500).execute_query()
 ```
 
+#### Resuming a delta query
+
+A Graph delta collection tracks its own cursor: after a page, `delta_token`
+returns the resumable token from the `@odata.deltaLink`. Pass it back into
+`token(...)` to pick up where the last run stopped:
+
+```python
+changes = client.me.drive.root.delta.get().execute_query()
+token = changes.delta_token            # persist this between runs
+# ... later ...
+more = client.me.drive.root.delta.token(token).get().execute_query()
+```
+
+A resume token already encodes the query it came from, so Graph rejects a request
+that carries both a token and a `$filter` with `400 DeltaFilterNotAllowed`. The
+library therefore withholds `$filter` while resuming (and warns if a filter is
+still attached), which also covers the common "same collection, next run" case.
+
 ### Batching
 
 Queue operations and submit them as a single OData `$batch` request — and run

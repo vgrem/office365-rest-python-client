@@ -248,6 +248,7 @@ class FileCollection(EntityCollection[File]):
         target_dir: Union[str, "Path"],
         *,
         overwrite: bool = False,
+        resume: bool = False,
         progress: Optional[ProgressCallback] = None,
     ) -> "DownloadOperation":
         """Download this collection's files into a local directory, concurrently.
@@ -262,6 +263,9 @@ class FileCollection(EntityCollection[File]):
             target_dir: Local directory to write files into (created as needed).
             overwrite: When ``False`` (default) existing files are skipped, so a
               re-run resumes where it left off.
+            resume: When ``True``, an existing but incomplete destination is
+              completed by fetching only the missing byte range, instead of
+              being skipped.
             progress: Optional hook invoked with ``Progress`` snapshots
               (``stage="scanning"`` while enumerating, ``"downloading"`` while
               transferring).
@@ -271,7 +275,7 @@ class FileCollection(EntityCollection[File]):
         """
         from office365.sharepoint.files.download_operation import DownloadOperation
 
-        return DownloadOperation.for_collection(self, target_dir, overwrite=overwrite, progress=progress)
+        return DownloadOperation.for_collection(self, target_dir, overwrite=overwrite, resume=resume, progress=progress)
 
     def get_by_url(self, url: str) -> File:
         """Retrieve File object by url"""

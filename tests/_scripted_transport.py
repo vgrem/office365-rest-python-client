@@ -5,8 +5,9 @@ Payload forms handled by both transports:
 - plain ``bytes``/``bytearray`` -> ``200`` with ``application/octet-stream`` body
 - a plain dict (e.g. ``{"d": {...}}``) -> ``200`` verbose JSON
 - ``("deny",)`` -> ``403`` access-denied JSON
-- ``{"status": int, "retry_after": int, "health_score": int, "body": dict}``
-  -> status + throttling headers + body
+- ``{"status": int, "retry_after": int, "health_score": int, "body": dict|bytes}``
+  -> status + throttling headers + body (``bytes`` bodies are octet-stream,
+  which lets a test script a ``206`` partial-content range response)
 
 :class:`ScriptedTransport` returns payloads in call order;
 :class:`RoutingTransport` picks the first route whose URL substring matches;
@@ -45,12 +46,17 @@ def build_response(request, payload: Any) -> Response:
         resp._content = _json.dumps(_DENIED).encode("utf-8")
     elif isinstance(payload, dict) and "status" in payload:
         resp.status_code = int(payload["status"])
-        resp.headers.update({"Content-Type": "application/json"})
+        body = payload.get("body", {"d": {"results": []}})
+        if isinstance(body, (bytes, bytearray)):
+            resp.headers.update({"Content-Type": "application/octet-stream", "Content-Length": str(len(body))})
+            resp._content = bytes(body)
+        else:
+            resp.headers.update({"Content-Type": "application/json"})
+            resp._content = _json.dumps(body).encode("utf-8")
         if "retry_after" in payload:
             resp.headers["Retry-After"] = str(payload["retry_after"])
         if "health_score" in payload:
             resp.headers["X-SharePointHealthScore"] = str(payload["health_score"])
-        resp._content = _json.dumps(payload.get("body", {"d": {"results": []}})).encode("utf-8")
     else:
         resp.status_code = 200
         resp.headers.update({"Content-Type": "application/json;odata=verbose"})
@@ -83,10 +89,12 @@ class RoutingTransport(BaseTransport):
     def __init__(self, routes: list[tuple[str, Any]]) -> None:
         self._routes = routes
         self.calls: list[str] = []
+        self.requests: list[Any] = []
 
     def execute(self, request):
         url = request.url
         self.calls.append(url)
+        self.requests.append(request)
         for key, payload in self._routes:
             if key in url:
                 return build_response(request, payload)

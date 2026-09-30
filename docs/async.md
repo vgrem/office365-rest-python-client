@@ -121,7 +121,7 @@ Domain intent stays on the builder; execution knobs stay on the terminal:
 
 | Builder (`download`) | Terminal (`execute_query` / `execute_query_async`) |
 |---|---|
-| `target_dir`, `recursive`, `overwrite`, `progress` | `concurrency`, `max_retry`, `timeout_secs`, `max_delay`, `jitter` |
+| `target_dir`, `recursive`, `overwrite`, `resume`, `progress` | `concurrency`, `max_retry`, `timeout_secs`, `max_delay`, `jitter` |
 
 `op.value` is a `DownloadResult`:
 
@@ -136,6 +136,12 @@ for file, error in result.failures:
 
 - **Resumable by default** — `overwrite=False` skips files that already exist, so
   re-running continues where it stopped. Pass `overwrite=True` to replace.
+- **Resume partial files** — with `resume=True`, an existing destination smaller
+  than the remote file is completed by fetching only the missing byte range
+  (HTTP `Range`) and appending it, so an interrupted large download is not
+  restarted from scratch. A destination at least as large as the remote file is
+  treated as complete and skipped; servers that ignore the range (a `200` with
+  the full body) still produce a correct file.
 - **Continue-and-report** — a permanently failing file is collected in
   `result.failures` (and counted in `result.errors`); the rest keep downloading.
   Call `result.raise_if_errors()` to opt back into fail-fast.

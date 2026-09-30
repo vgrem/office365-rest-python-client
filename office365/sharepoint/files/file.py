@@ -164,10 +164,18 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _file_loaded())
         return return_type
 
-    def get_content(self) -> ClientResult[bytes]:
-        """Downloads a file content"""
+    def get_content(self, start: Optional[int] = None) -> ClientResult[bytes]:
+        """Downloads a file content.
+
+        Args:
+            start: Optional byte offset. When set, the request carries
+                ``Range: bytes={start}-`` so an interrupted download can be
+                resumed by appending the returned remainder.
+        """
         return_type = ClientResult(self.context, bytes())
         qry = FunctionQuery(self, "$value", return_type=return_type, return_raw_content=True)
+        if start:
+            qry.before_execute(lambda request: request.set_header("Range", f"bytes={start}-"))
         self.context.add_query(qry)
         return return_type
 
@@ -803,6 +811,7 @@ class File(AbstractFile):
         after_downloaded: Optional[Callable[[File], None]] = ...,
         *,
         overwrite: bool = ...,
+        resume: bool = ...,
     ) -> "DownloadOperation": ...
 
     def download(
@@ -811,6 +820,7 @@ class File(AbstractFile):
         after_downloaded: Optional[Callable[[File], None]] = None,
         *,
         overwrite: bool = False,
+        resume: bool = False,
     ) -> Union[Self, "DownloadOperation"]:
         """Download a file's content.
 
@@ -832,11 +842,16 @@ class File(AbstractFile):
               ``self`` once the content is written).
             overwrite: Path form only — when ``False`` (default) an existing
               destination is skipped.
+            resume: Path form only — when ``True`` and a smaller destination
+              exists, download only the missing bytes (HTTP ``Range``) and
+              append them, instead of skipping the file.
         """
         if isinstance(file_object, (str, Path)):
             from office365.sharepoint.files.download_operation import DownloadOperation
 
-            return DownloadOperation.for_file(self, file_object, overwrite=overwrite, on_file=after_downloaded)
+            return DownloadOperation.for_file(
+                self, file_object, overwrite=overwrite, resume=resume, on_file=after_downloaded
+            )
 
         def _save_content(return_type: ClientResult[AnyStr]) -> None:
             file_object.write(return_type.value)

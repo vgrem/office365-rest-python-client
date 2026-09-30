@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import re
+import warnings
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Optional, Type
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Tuple, Type
 
 from typing_extensions import Self
 
@@ -10,6 +11,7 @@ from office365.delta_path import DeltaPath
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_object import ClientObjectT
+from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
@@ -33,6 +35,25 @@ class ChangeType(Enum):
     created = "0"
     updated = "1"
     deleted = "2"
+
+
+class DeltaQueryOptions(QueryOptions):
+    """Query options for a delta collection.
+
+    A resumable delta token already encodes the query it was produced from:
+    Microsoft Graph rejects a request that carries both a resume token and a
+    ``$filter`` with ``400 DeltaFilterNotAllowed``. The filter is therefore
+    withheld whenever a ``token`` parameter is present, which also covers the
+    common re-run case where ``.filter(...)`` from the initial request is still
+    attached to the collection.
+    """
+
+    def __iter__(self) -> Iterator[Tuple[str, str]]:
+        resuming = bool(self.custom.get("token"))
+        for key, value in super().__iter__():
+            if resuming and key == "filter":
+                continue
+            yield key, value
 
 
 class DeltaCollection(EntityCollection[ClientObjectT]):
@@ -59,6 +80,9 @@ class DeltaCollection(EntityCollection[ClientObjectT]):
     ):
         super().__init__(context, item_type, resource_path, parent)
         self._delta_request_url = None
+        # A delta token is mutually exclusive with $filter: keep the specialized
+        # options object so a leftover filter is withheld on resume.
+        self._query_options: QueryOptions = DeltaQueryOptions()
 
     def token(self, value: str) -> Self:
         """Apply delta query
@@ -66,7 +90,19 @@ class DeltaCollection(EntityCollection[ClientObjectT]):
         Args:
             value (str): If unspecified, enumerates the hierarchy's current state. If latest, returns empty response
               with latest delta token. If a previous delta token, returns new state since that token.
+
+        Note:
+            Resuming from a token does not re-apply a ``$filter`` set on this
+            collection: the token already captures the original query, and
+            Graph rejects the combination with ``400 DeltaFilterNotAllowed``.
         """
+        if value and self.query_options.filter:
+            warnings.warn(
+                "A delta resume token already encodes the original query; the "
+                "$filter set on this collection is ignored while resuming.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         self.query_options.custom["token"] = value
         return self
 

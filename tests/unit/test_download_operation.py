@@ -215,6 +215,81 @@ def test_file_download_path_async_and_overwrite(tmp_path: Path) -> None:
     assert dest.read_bytes() == b"NEW"
 
 
+def test_download_resume_appends_missing_range(tmp_path: Path) -> None:
+    ctx, transport = _context([("a.txt", {"status": 206, "body": b"world"})])
+    col = _loaded_collection(ctx)
+    file = _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
+    file.set_property("Length", 10)
+    (tmp_path / "a.txt").write_bytes(b"hello")
+
+    result = col.download(tmp_path, resume=True).execute_query(concurrency=2).value
+
+    assert result.success == 1
+    assert result.skipped == 0
+    assert (tmp_path / "a.txt").read_bytes() == b"helloworld"
+    assert len(transport.calls) == 1
+    assert transport.requests[0].headers.get("Range") == "bytes=5-"
+
+
+def test_download_resume_async(tmp_path: Path) -> None:
+    ctx, _ = _context([("a.txt", {"status": 206, "body": b"world"})])
+    col = _loaded_collection(ctx)
+    file = _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
+    file.set_property("Length", 10)
+    (tmp_path / "a.txt").write_bytes(b"hello")
+
+    result = asyncio.run(col.download(tmp_path, resume=True).execute_query_async(concurrency=2)).value
+
+    assert result.success == 1
+    assert (tmp_path / "a.txt").read_bytes() == b"helloworld"
+
+
+def test_download_resume_rewrites_when_range_ignored(tmp_path: Path) -> None:
+    ctx, _ = _context([("a.txt", b"fullbody")])
+    col = _loaded_collection(ctx)
+    file = _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
+    file.set_property("Length", 20)
+    (tmp_path / "a.txt").write_bytes(b"partial")
+
+    result = col.download(tmp_path, resume=True).execute_query(concurrency=2).value
+
+    assert result.success == 1
+    assert (tmp_path / "a.txt").read_bytes() == b"fullbody"
+
+
+def test_download_resume_skips_complete(tmp_path: Path) -> None:
+    (tmp_path / "a.txt").write_bytes(b"1234567890")
+    ctx, transport = _context([])
+    col = _loaded_collection(ctx)
+    file = _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
+    file.set_property("Length", 10)
+
+    result = col.download(tmp_path, resume=True).execute_query(concurrency=2).value
+
+    assert result.skipped == 1
+    assert result.success == 0
+    assert transport.calls == []
+
+
+def test_file_download_resume_loads_length(tmp_path: Path) -> None:
+    dest = tmp_path / "out.bin"
+    dest.write_bytes(b"hello")
+    ctx, _ = _context(
+        [
+            ("$select=Length", {"d": {"Length": 10}}),
+            ("/$value", {"status": 206, "body": b"world"}),
+        ]
+    )
+    file = File(ctx)
+    file.set_property("Name", "out.bin")
+    file.set_property("ServerRelativeUrl", f"{_ROOT}/out.bin")
+
+    result = file.download(dest, resume=True).execute_query(concurrency=2).value
+
+    assert result.success == 1
+    assert dest.read_bytes() == b"helloworld"
+
+
 def test_value_requires_execution(tmp_path: Path) -> None:
     ctx, _ = _context([("a.txt", b"AAA")])
     col = _loaded_collection(ctx)

@@ -371,6 +371,30 @@ class TestDeltaToken(unittest.TestCase):
         col.set_property("@odata.deltaLink", "https://graph.microsoft.com/v1.0/users/delta?$deltatoken=latest")
         self.assertEqual(col.delta_token, "latest")
 
+    def test_delta_resume_withholds_filter(self):
+        delta = GraphClient().me.drive.root.delta
+        delta.filter("startswith(name,'A')")
+        with self.assertWarns(RuntimeWarning):
+            delta.token("abc123")
+        self.assertEqual(
+            ReadEntityQuery(delta).url,
+            "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=abc123",
+        )
+
+    def test_delta_initial_request_keeps_filter(self):
+        delta = GraphClient().me.drive.root.delta
+        delta.filter("startswith(name,'A')")
+        self.assertEqual(
+            ReadEntityQuery(delta).url,
+            "https://graph.microsoft.com/v1.0/me/drive/root/delta?$filter=startswith(name,'A')",
+        )
+
+    def test_delta_resume_warns_when_filter_present(self):
+        delta = GraphClient().me.drive.root.delta
+        delta.filter("startswith(name,'A')")
+        with self.assertWarns(RuntimeWarning):
+            delta.token("abc123")
+
 
 class TestClientMetadata(unittest.TestCase):
     """Entity type-name resolution, query-option building and ClientResult wrapping."""

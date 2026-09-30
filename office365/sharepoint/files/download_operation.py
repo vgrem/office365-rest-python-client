@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
+from http import HTTPStatus
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 
@@ -139,15 +140,23 @@ class _CollectionPlan(_Plan):
 class _FilePlan(_Plan):
     """A single, already-addressed file."""
 
-    def __init__(self, file: "File") -> None:
+    def __init__(self, file: "File", *, resume: bool = False) -> None:
         self._file = file
+        self._resume = resume
+
+    def _ensure_size(self) -> None:
+        # Resume needs the remote size to detect an incomplete destination.
+        if self._resume and not self._file.is_property_available("Length"):
+            self._file.ensure_property("Length")
 
     def resolve(self) -> List[_FilePair]:
+        self._ensure_size()
         if self._file.context.has_pending_request:
             self._file.context.execute_query()
         return [(self._file, "")]
 
     async def resolve_async(self) -> List[_FilePair]:
+        self._ensure_size()
         if self._file.context.has_pending_request:
             await self._file.context.execute_query_async()
         return [(self._file, "")]
@@ -183,6 +192,12 @@ def _write_bytes(dest: Path, content: bytes) -> None:
         stream.write(content)
 
 
+def _append_bytes(dest: Path, content: bytes) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with open(dest, "ab") as stream:  # noqa: ASYNC230 - local, brief, off the network
+        stream.write(content)
+
+
 class DownloadOperation:
     """A deferred bulk download, driven by ``execute_query`` / ``execute_query_async``.
 
@@ -197,6 +212,7 @@ class DownloadOperation:
         target_dir: Optional[_PathLike] = None,
         dest_file: Optional[_PathLike] = None,
         overwrite: bool = False,
+        resume: bool = False,
         progress: Optional[ProgressCallback] = None,
         on_file: Optional[Callable[["File"], None]] = None,
     ) -> None:
@@ -205,6 +221,7 @@ class DownloadOperation:
         self._target_dir = Path(target_dir) if target_dir is not None else None
         self._dest_file = Path(dest_file) if dest_file is not None else None
         self._overwrite = overwrite
+        self._resume = resume
         self._progress = progress
         self._on_file = on_file
         self._value: Optional[DownloadResult] = None
@@ -229,6 +246,7 @@ class DownloadOperation:
         *,
         recursive: bool = True,
         overwrite: bool = False,
+        resume: bool = False,
         progress: Optional[ProgressCallback] = None,
     ) -> "DownloadOperation":
         return cls(
@@ -236,6 +254,7 @@ class DownloadOperation:
             _FolderPlan(folder, recursive=recursive, scan_progress=progress),
             target_dir=target_dir,
             overwrite=overwrite,
+            resume=resume,
             progress=progress,
         )
 
@@ -246,6 +265,7 @@ class DownloadOperation:
         target_dir: _PathLike,
         *,
         overwrite: bool = False,
+        resume: bool = False,
         progress: Optional[ProgressCallback] = None,
     ) -> "DownloadOperation":
         return cls(
@@ -253,6 +273,7 @@ class DownloadOperation:
             _CollectionPlan(collection, scan_progress=progress),
             target_dir=target_dir,
             overwrite=overwrite,
+            resume=resume,
             progress=progress,
         )
 
@@ -263,14 +284,16 @@ class DownloadOperation:
         dest: _PathLike,
         *,
         overwrite: bool = False,
+        resume: bool = False,
         on_file: Optional[Callable[["File"], None]] = None,
         progress: Optional[ProgressCallback] = None,
     ) -> "DownloadOperation":
         return cls(
             file.context,
-            _FilePlan(file),
+            _FilePlan(file, resume=resume),
             dest_file=dest,
             overwrite=overwrite,
+            resume=resume,
             progress=progress,
             on_file=on_file,
         )
@@ -323,29 +346,51 @@ class DownloadOperation:
         )
         return self
 
-    def _prepare(self, pairs: List[_FilePair]) -> Tuple[List[Tuple["File", Path]], DownloadResult]:
+    def _resume_offset(self, file: "File", dest: Path) -> int:
+        """Byte offset to resume ``dest`` from, or ``0`` when it needs a full write."""
+        try:
+            local = dest.stat().st_size
+        except OSError:
+            return 0
+        remote = file.length or 0
+        if remote and 0 < local < remote:
+            return local
+        return 0
+
+    def _prepare(self, pairs: List[_FilePair]) -> Tuple[List[Tuple["File", Path, int]], DownloadResult]:
         result = DownloadResult()
-        todo: List[Tuple["File", Path]] = []
+        todo: List[Tuple["File", Path, int]] = []
         for file, rel in pairs:
             dest = self._dest_file if self._dest_file is not None else self._target_dir / rel  # type: ignore[operator]
             result.stats.total += 1
             if not self._overwrite and dest.exists():
+                offset = self._resume_offset(file, dest) if self._resume else 0
+                if offset:
+                    todo.append((file, dest, offset))
+                    continue
                 result.stats.skipped += 1
                 continue
-            todo.append((file, dest))
+            todo.append((file, dest, 0))
         return todo, result
 
-    def _queue(self, file: "File", dest: Path, result: DownloadResult) -> object:
-        return_type = file.get_content()
+    def _queue(self, file: "File", dest: Path, result: DownloadResult, offset: int = 0) -> object:
+        return_type = file.get_content(start=offset or None)
 
-        def _save(rt) -> None:
-            _write_bytes(dest, rt.value)
+        def _save(response) -> None:
+            content = return_type.value
+            # A 206 means the server honored the range and returned the rest;
+            # anything else (typically 200) means the range was ignored, so the
+            # full body is written from scratch.
+            if offset and getattr(response, "status_code", None) == HTTPStatus.PARTIAL_CONTENT:
+                _append_bytes(dest, content)
+            else:
+                _write_bytes(dest, content)
             result.paths.append(str(dest))
             result.stats.success += 1
             if callable(self._on_file):
                 self._on_file(file)
 
-        return_type.after_execute(_save)
+        return_type.after_execute(_save, include_response=True)
         return return_type
 
     def _collector(self, owners: dict, result: DownloadResult) -> Callable:
@@ -362,7 +407,7 @@ class DownloadOperation:
             return None
         return query_progress_hook(total, self._progress, stage="downloading")
 
-    def _windows(self, todo: List[Tuple["File", Path]], concurrency: int) -> List[List[Tuple["File", Path]]]:
+    def _windows(self, todo: List[Tuple["File", Path, int]], concurrency: int) -> List[List[Tuple["File", Path, int]]]:
         size = max(1, concurrency)
         return [todo[index : index + size] for index in range(0, len(todo), size)]
 
@@ -380,8 +425,8 @@ class DownloadOperation:
         progress = self._progress_hook(len(todo))
         for window in self._windows(todo, concurrency):
             owners: dict = {}
-            for file, dest in window:
-                owners[id(self._queue(file, dest, result))] = file
+            for file, dest, offset in window:
+                owners[id(self._queue(file, dest, result, offset))] = file
             self._context.execute_query_parallel(
                 concurrency=max(1, concurrency),
                 progress=progress,
@@ -407,8 +452,8 @@ class DownloadOperation:
         progress = self._progress_hook(len(todo))
         for window in self._windows(todo, concurrency):
             owners: dict = {}
-            for file, dest in window:
-                owners[id(self._queue(file, dest, result))] = file
+            for file, dest, offset in window:
+                owners[id(self._queue(file, dest, result, offset))] = file
             await self._context.execute_query_parallel_async(
                 concurrency=max(1, concurrency),
                 progress=progress,
