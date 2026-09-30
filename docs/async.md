@@ -18,6 +18,8 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `for item in collection` | `async for item in collection` |
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
 | `file.download_session(stream)` | `await file.download_session_async(stream)` |
+| `drive_item.download_session(stream)` | `await drive_item.download_session_async(stream)` |
+| `result.execute_batch()` | `await result.execute_batch_async()` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
 a worker thread, so the event loop stays free and existing transports (session,
