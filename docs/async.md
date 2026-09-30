@@ -8,8 +8,12 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `ctx.execute_query()` | `await ctx.execute_query_async()` |
 | `obj.execute_query()` | `await obj.execute_query_async()` |
 | `ctx.execute_query_retry()` | `await ctx.execute_query_async_retry()` |
+| `ctx.execute_query_with_incremental_retry()` | `await ctx.execute_query_with_incremental_retry_async()` |
 | `ctx.execute_query_parallel()` | `await ctx.execute_query_parallel_async()` |
 | `ctx.execute_batch()` | `await ctx.execute_batch_async()` |
+| `obj.execute_batch()` | `await obj.execute_batch_async()` |
+| `result.execute_query_retry()` | `await result.execute_query_async_retry()` |
+| `ctx.execute_request_direct(path)` | `await ctx.execute_request_direct_async(path)` |
 | `collection.get_all()` | `await collection.get_all_async()` |
 | `for item in collection` | `async for item in collection` |
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |

@@ -695,3 +695,66 @@ def test_observe_throttle_prefers_recorded_limiter() -> None:
     request._observe_throttle(response)
 
     limiter.observe.assert_called_once_with(response)
+
+
+def test_execute_request_direct_async_returns_response() -> None:
+    ctx, transport = _context([{"d": {"Title": "Contoso"}}])
+
+    response = asyncio.run(ctx.execute_request_direct_async("web"))
+
+    assert response.status_code == 200  # noqa: PLR2004
+    assert response.json() == {"d": {"Title": "Contoso"}}
+    assert transport.calls == 1
+
+
+def test_incremental_retry_async_recovers() -> None:
+    ctx, transport = _context(
+        [
+            {"status": 429, "retry_after": 0, "body": {}},
+            {"d": {"Title": "Contoso"}},
+        ]
+    )
+    ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_with_incremental_retry_async(max_retry=3))
+
+    assert ctx.web.properties.get("Title") == "Contoso"
+    assert transport.calls == 2  # noqa: PLR2004
+
+
+def test_client_result_async_retry_forwards_is_retriable() -> None:
+    from office365.runtime.client_result import ClientResult
+
+    ctx, transport = _context([{"status": 404, "body": {}}, {"d": {"Title": "Contoso"}}])
+    result = ClientResult(ctx, {})
+    ctx.load(ctx.web)
+
+    asyncio.run(result.execute_query_async_retry(max_retry=3, timeout_secs=0, is_retriable=lambda _ex: True))
+
+    assert transport.calls == 2  # noqa: PLR2004
+
+
+def test_entity_async_wrappers_delegate_to_context() -> None:
+    ctx = ClientContext(_SITE_URL)
+    web = ctx.web
+    seen: dict[str, object] = {}
+
+    async def _fake_incremental(max_retry=5, max_delay=None, jitter=True):
+        seen["incremental"] = (max_retry, max_delay, jitter)
+        return ctx
+
+    async def _fake_batch(items_per_batch=100, success_callback=None, concurrency=1, max_batch_bytes=None):
+        seen["batch"] = (items_per_batch, concurrency, max_batch_bytes)
+        return ctx
+
+    ctx.execute_query_with_incremental_retry_async = _fake_incremental  # type: ignore[method-assign]
+    ctx.execute_batch_async = _fake_batch  # type: ignore[method-assign]
+
+    async def _run() -> None:
+        assert await web.execute_query_with_incremental_retry_async(max_retry=2, jitter=False) is web
+        assert await web.execute_batch_async(items_per_batch=7, concurrency=3) is web
+
+    asyncio.run(_run())
+
+    assert seen["incremental"] == (2, None, False)
+    assert seen["batch"] == (7, 3, None)

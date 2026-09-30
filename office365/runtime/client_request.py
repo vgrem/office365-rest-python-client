@@ -422,3 +422,19 @@ class ClientRequest(ABC):
         full_url = "".join([self.service_root_url, "/", path])
         request = RequestOptions(url=full_url)
         return self.execute_request_direct(request)
+
+    async def execute_request_async(self, path: str) -> Response:
+        """Executes request directly against the specified path, without blocking the loop.
+
+        Async counterpart of :meth:`execute_request`; awaits
+        :meth:`execute_request_direct_async`.
+
+        Args:
+            path: The URL path to request
+
+        Returns:
+            Raw response from server
+        """
+        full_url = "".join([self.service_root_url, "/", path])
+        request = RequestOptions(url=full_url)
+        return await self.execute_request_direct_async(request)

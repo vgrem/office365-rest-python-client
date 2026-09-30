@@ -36,6 +36,22 @@ class Entity(ClientObject):
         self.context.execute_query_with_incremental_retry(max_retry, max_delay=max_delay, jitter=jitter)
         return self
 
+    async def execute_query_with_incremental_retry_async(
+        self, max_retry: int = 5, max_delay=None, jitter: bool = True
+    ) -> Self:
+        """Async counterpart of :meth:`execute_query_with_incremental_retry`.
+
+        Args:
+            max_retry: Maximum number of retry attempts (default: 5)
+            max_delay: Optional cap on the exponential delay (seconds)
+            jitter: Whether to randomize the delay (default True)
+
+        Returns:
+            self: Supports method chaining
+        """
+        await self.context.execute_query_with_incremental_retry_async(max_retry, max_delay=max_delay, jitter=jitter)
+        return self
+
     @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
     def execute_batch(
         self,
@@ -57,6 +73,33 @@ class Entity(ClientObject):
             self: Supports method chaining
         """
         self.context.execute_batch(
+            items_per_batch,
+            success_callback,
+            concurrency=concurrency,
+            max_batch_bytes=max_batch_bytes,
+        )
+        return self
+
+    @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+    async def execute_batch_async(
+        self,
+        items_per_batch: int = Limits.BATCH_ITEMS.value,
+        success_callback: Optional[Callable[[List[Union[ClientObject, ClientResult]]], None]] = None,
+        max_batch_bytes: Optional[int] = None,
+        concurrency: int = 1,
+    ) -> Self:
+        """Async counterpart of :meth:`execute_batch` (awaits the context's async batch).
+
+        Args:
+            items_per_batch: Number of items per batch (default: 100)
+            success_callback: Callback function for successful batch execution
+            max_batch_bytes: Maximum estimated batch payload size in bytes
+            concurrency: Maximum number of concurrent batch requests (default 1)
+
+        Returns:
+            self: Supports method chaining
+        """
+        await self.context.execute_batch_async(
             items_per_batch,
             success_callback,
             concurrency=concurrency,

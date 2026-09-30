@@ -418,6 +418,29 @@ class ClientContext(ClientRuntimeContext):
             failure_callback=lambda _retry, ex: retry_after_delay(ex),
         )
 
+    async def execute_query_with_incremental_retry_async(
+        self, max_retry: int = 5, max_delay=None, jitter: bool = True
+    ) -> None:
+        """Async counterpart of :meth:`execute_query_with_incremental_retry`.
+
+        Retries throttled requests (HTTP 429/503) after the server's
+        ``Retry-After`` delay, awaiting ``asyncio.sleep`` so the event loop stays
+        free while it waits.
+
+        Args:
+            max_retry: Maximum number of retry attempts
+            max_delay: Optional cap on the exponential delay (seconds)
+            jitter: Whether to randomize the delay (default True)
+        """
+        from office365.runtime.retry import retry_after_delay
+
+        await self.execute_query_async_retry(
+            max_retry=max_retry,
+            max_delay=max_delay,
+            jitter=jitter,
+            failure_callback=lambda _retry, ex: retry_after_delay(ex),
+        )
+
     def clone(self, url: str, clear_queries: bool = True) -> ClientContext:
         """Creates a clone of ClientContext for a new site URL.
 

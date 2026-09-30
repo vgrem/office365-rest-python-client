@@ -86,6 +86,7 @@ class ClientResult(Generic[ClientValueT]):
         success_callback: Optional[Callable[[Any], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
         exceptions: tuple[type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
+        is_retriable: Optional[Callable[[Exception], bool]] = None,
     ) -> ClientResult[ClientValueT]:
         """
         Executes the current set of data retrieval queries and method invocations and retries it if needed.
@@ -99,6 +100,8 @@ class ClientResult(Generic[ClientValueT]):
             success_callback: Called on successful execution
             failure_callback: Called after failed retries
             exceptions: Exception types that trigger retries
+            is_retriable: Optional predicate deciding whether a caught exception
+                is retried (defaults to transient-only)
 
          Returns:
             Self for method chaining
@@ -112,6 +115,7 @@ class ClientResult(Generic[ClientValueT]):
             success_callback=success_callback,
             failure_callback=failure_callback,
             exceptions=exceptions,
+            is_retriable=is_retriable,
         )
         return self
 
@@ -124,6 +128,7 @@ class ClientResult(Generic[ClientValueT]):
         success_callback: Optional[Callable[[Any], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
         exceptions: tuple[type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
+        is_retriable: Optional[Callable[[Exception], bool]] = None,
     ) -> ClientResult[ClientValueT]:
         """Async counterpart of :meth:`execute_query_retry`."""
         await self._context.execute_query_async_retry(
@@ -134,5 +139,6 @@ class ClientResult(Generic[ClientValueT]):
             success_callback=success_callback,
             failure_callback=failure_callback,
             exceptions=exceptions,
+            is_retriable=is_retriable,
         )
         return self

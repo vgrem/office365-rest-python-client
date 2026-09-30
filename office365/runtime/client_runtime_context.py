@@ -251,6 +251,19 @@ class ClientRuntimeContext(ABC):
         """
         return self.pending_request().execute_request(path)
 
+    async def execute_request_direct_async(self, path: str) -> Response:
+        """Executes request directly against the specified path, without blocking the loop.
+
+        Async counterpart of :meth:`execute_request_direct`.
+
+        Args:
+            path: The URL path to request
+
+        Returns:
+            Raw response from server
+        """
+        return await self.pending_request().execute_request_async(path)
+
     @property
     def rate_limiter(self) -> "RateLimiter | None":
         """The shared rate limiter pacing this context's requests, if any.
