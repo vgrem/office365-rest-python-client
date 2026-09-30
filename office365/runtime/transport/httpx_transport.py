@@ -30,6 +30,8 @@ from __future__ import annotations
 from typing import Any, AsyncIterator, Iterator, Optional
 
 from requests import Response
+from requests.exceptions import ConnectionError as RequestsConnectionError
+from requests.exceptions import Timeout as RequestsTimeout
 from requests.structures import CaseInsensitiveDict
 
 from office365.runtime.http.request_options import RequestOptions
@@ -82,14 +84,24 @@ class HttpxTransport(BaseTransport):
 
     def execute(self, request: RequestOptions) -> Response:
         """Send a request synchronously through an ``httpx.Client``."""
-        httpx_response = self._client.request(request.method.value, request.url, **self._build_kwargs(request))
+        try:
+            httpx_response = self._client.request(request.method.value, request.url, **self._build_kwargs(request))
+        except self._httpx.TimeoutException as exc:
+            raise RequestsTimeout(str(exc)) from exc
+        except self._httpx.TransportError as exc:
+            raise RequestsConnectionError(str(exc)) from exc
         return self._to_requests_response(httpx_response)
 
     async def execute_async(self, request: RequestOptions) -> Response:
         """Send a request asynchronously through an ``httpx.AsyncClient``."""
-        httpx_response = await self._async_client.request(
-            request.method.value, request.url, **self._build_kwargs(request)
-        )
+        try:
+            httpx_response = await self._async_client.request(
+                request.method.value, request.url, **self._build_kwargs(request)
+            )
+        except self._httpx.TimeoutException as exc:
+            raise RequestsTimeout(str(exc)) from exc
+        except self._httpx.TransportError as exc:
+            raise RequestsConnectionError(str(exc)) from exc
         return self._to_requests_response(httpx_response)
 
     def stream(
@@ -99,12 +111,17 @@ class HttpxTransport(BaseTransport):
         on_headers: Optional[HeadersCallback] = None,
     ) -> Iterator[bytes]:
         """Stream a response body synchronously through an ``httpx.Client``."""
-        with self._client.stream(request.method.value, request.url, **self._build_kwargs(request)) as response:
-            if response.status_code >= 400:  # noqa: PLR2004
-                self._to_error_response(response, response.read()).raise_for_status()
-            if on_headers is not None:
-                on_headers(response.headers)
-            yield from response.iter_bytes(chunk_size=chunk_size)
+        try:
+            with self._client.stream(request.method.value, request.url, **self._build_kwargs(request)) as response:
+                if response.status_code >= 400:  # noqa: PLR2004
+                    self._to_error_response(response, response.read()).raise_for_status()
+                if on_headers is not None:
+                    on_headers(response.headers)
+                yield from response.iter_bytes(chunk_size=chunk_size)
+        except self._httpx.TimeoutException as exc:
+            raise RequestsTimeout(str(exc)) from exc
+        except self._httpx.TransportError as exc:
+            raise RequestsConnectionError(str(exc)) from exc
 
     async def stream_async(
         self,
@@ -113,15 +130,20 @@ class HttpxTransport(BaseTransport):
         on_headers: Optional[HeadersCallback] = None,
     ) -> AsyncIterator[bytes]:
         """Stream a response body natively on the event loop via ``httpx``."""
-        async with self._async_client.stream(
-            request.method.value, request.url, **self._build_kwargs(request)
-        ) as response:
-            if response.status_code >= 400:  # noqa: PLR2004
-                self._to_error_response(response, await response.aread()).raise_for_status()
-            if on_headers is not None:
-                on_headers(response.headers)
-            async for chunk in response.aiter_bytes(chunk_size=chunk_size):
-                yield chunk
+        try:
+            async with self._async_client.stream(
+                request.method.value, request.url, **self._build_kwargs(request)
+            ) as response:
+                if response.status_code >= 400:  # noqa: PLR2004
+                    self._to_error_response(response, await response.aread()).raise_for_status()
+                if on_headers is not None:
+                    on_headers(response.headers)
+                async for chunk in response.aiter_bytes(chunk_size=chunk_size):
+                    yield chunk
+        except self._httpx.TimeoutException as exc:
+            raise RequestsTimeout(str(exc)) from exc
+        except self._httpx.TransportError as exc:
+            raise RequestsConnectionError(str(exc)) from exc
 
     def close(self) -> None:
         """Close the synchronous client."""

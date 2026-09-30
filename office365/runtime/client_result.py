@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar
 
 from typing_extensions import Self
 
-from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.value import deserialize_value
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
@@ -85,7 +85,7 @@ class ClientResult(Generic[ClientValueT]):
         jitter: bool = True,
         success_callback: Optional[Callable[[Any], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
-        exceptions: tuple[type[Exception], ...] = (ClientRequestException,),
+        exceptions: tuple[type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
     ) -> ClientResult[ClientValueT]:
         """
         Executes the current set of data retrieval queries and method invocations and retries it if needed.
@@ -123,7 +123,7 @@ class ClientResult(Generic[ClientValueT]):
         jitter: bool = True,
         success_callback: Optional[Callable[[Any], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], None]] = None,
-        exceptions: tuple[type[Exception], ...] = (ClientRequestException,),
+        exceptions: tuple[type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
     ) -> ClientResult[ClientValueT]:
         """Async counterpart of :meth:`execute_query_retry`."""
         await self._context.execute_query_async_retry(

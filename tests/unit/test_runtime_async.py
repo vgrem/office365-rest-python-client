@@ -22,7 +22,7 @@ from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
 from requests import Response
-from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport
+from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport, build_response
 
 _URL = "https://contoso.sharepoint.com/_api/web"
 _SITE_URL = "https://contoso.sharepoint.com"
@@ -131,6 +131,56 @@ def test_execute_query_async_retry_exhausts() -> None:
         asyncio.run(ctx.execute_query_async_retry(max_retry=3, timeout_secs=0))
 
     assert transport.calls == 3  # noqa: PLR2004
+
+
+def test_execute_query_async_retry_resets_connections_on_503() -> None:
+    class _ResettableTransport(ScriptedTransport):
+        def __init__(self, payloads: list) -> None:
+            super().__init__(payloads)
+            self.resets = 0
+
+        def reset_connections(self) -> None:
+            self.resets += 1
+
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    transport = _ResettableTransport([{"status": 503, "body": {}}, {"d": {"Title": "Contoso"}}])
+    ctx.pending_request().transport = transport
+    ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_async_retry(max_retry=3, timeout_secs=0))
+
+    assert transport.resets == 1
+
+
+def test_execute_query_async_retry_retries_connection_error() -> None:
+    class _FlakyAsyncTransport(BaseTransport):
+        def __init__(self, outcomes: list) -> None:
+            self._outcomes = outcomes
+            self.calls = 0
+
+        def execute(self, request):
+            raise AssertionError("async path must use execute_async")
+
+        async def execute_async(self, request):
+            outcome = self._outcomes[self.calls]
+            self.calls += 1
+            if isinstance(outcome, Exception):
+                raise outcome
+            return build_response(request, outcome)
+
+    import requests
+
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    transport = _FlakyAsyncTransport([requests.ConnectionError("boom"), {"d": {"Title": "Contoso"}}])
+    ctx.pending_request().with_async_transport(transport)
+    ctx.load(ctx.web)
+
+    asyncio.run(ctx.execute_query_async_retry(max_retry=3, timeout_secs=0))
+
+    assert ctx.web.properties.get("Title") == "Contoso"
+    assert transport.calls == 2  # noqa: PLR2004
 
 
 def test_async_context_manager_closes_transport() -> None:

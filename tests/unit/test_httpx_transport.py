@@ -150,6 +150,39 @@ def test_stream_async_raises_for_error_status() -> None:
     assert exc.value.response.json() == {"error": {"message": "missing"}}
 
 
+def test_execute_maps_connect_error_to_requests_connection_error() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("boom")
+
+    transport = _transport(handler)
+
+    with pytest.raises(requests.ConnectionError):
+        transport.execute(RequestOptions(url=_URL))
+
+
+def test_execute_async_maps_timeout_to_requests_timeout() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("slow")
+
+    transport = _transport(handler)
+
+    with pytest.raises(requests.Timeout):
+        asyncio.run(transport.execute_async(RequestOptions(url=_URL)))
+
+
+def test_stream_async_maps_transport_error() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("boom")
+
+    transport = _transport(handler)
+
+    async def _run() -> list[bytes]:
+        return [chunk async for chunk in transport.stream_async(RequestOptions(url=_URL))]
+
+    with pytest.raises(requests.ConnectionError):
+        asyncio.run(_run())
+
+
 def test_context_execute_query_async_uses_httpx_transport() -> None:
     ctx = ClientContext("https://contoso.sharepoint.com")
     ctx.pending_request().beforeExecute.clear()

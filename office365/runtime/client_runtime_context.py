@@ -16,6 +16,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
+from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
@@ -71,7 +72,7 @@ class ClientRuntimeContext(ABC):
         jitter: bool = True,
         success_callback: Optional[Callable[[ClientObject | None], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], Optional[int]]] = None,
-        exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+        exceptions: Tuple[Type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
         is_retriable: Optional[Callable[[Exception], bool]] = None,
     ) -> None:
         """Executes pending queries with retry logic.
@@ -98,9 +99,13 @@ class ClientRuntimeContext(ABC):
                 pass :func:`~office365.runtime.retry.retry_on` to also retry
                 otherwise-permanent errors such as a locked file (HTTP 423).
         """
-        from office365.runtime.retry import is_transient_error, retry
+        from office365.runtime.retry import is_transient_error, retry, should_reset_connections
 
         def _on_failure(_attempt: int, ex: Exception) -> Optional[int]:
+            # Drop a poisoned keep-alive socket before retrying a 503/connection
+            # failure (Graph best practices: back off and use a new connection).
+            if should_reset_connections(ex):
+                self.pending_request().transport.reset_connections()
             # Re-queue the failed query for a retry, except on the last attempt —
             # otherwise the context is left with a stale, un-executed query.
             if _attempt < max_retry and self.current_query is not None:
@@ -310,7 +315,7 @@ class ClientRuntimeContext(ABC):
         jitter: bool = True,
         success_callback: Optional[Callable[[ClientObject | None], None]] = None,
         failure_callback: Optional[Callable[[int, Exception], Optional[int]]] = None,
-        exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+        exceptions: Tuple[Type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
         is_retriable: Optional[Callable[[Exception], bool]] = None,
     ) -> None:
         """Executes pending queries with retry logic, without blocking the loop.
@@ -332,9 +337,13 @@ class ClientRuntimeContext(ABC):
                 is retried. Defaults to
                 :func:`~office365.runtime.retry.is_transient_error`.
         """
-        from office365.runtime.retry import is_transient_error, retry_async
+        from office365.runtime.retry import is_transient_error, retry_async, should_reset_connections
 
         def _on_failure(_attempt: int, ex: Exception) -> Optional[int]:
+            # Drop a poisoned keep-alive socket before retrying a 503/connection
+            # failure (Graph best practices: back off and use a new connection).
+            if should_reset_connections(ex):
+                self.pending_request().async_transport.reset_connections()
             # Re-queue the failed query for a retry, except on the last attempt —
             # otherwise the context is left with a stale, un-executed query.
             if _attempt < max_retry and self.current_query is not None:
@@ -645,7 +654,12 @@ class ClientRuntimeContext(ABC):
         jitter: bool,
     ):
         """Send one prepared request, retrying transient failures per ``Retry-After``."""
-        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry
+        from office365.runtime.retry import (
+            TRANSIENT_STATUS_CODES,
+            response_retry_after,
+            retry,
+            should_reset_connections,
+        )
 
         def _attempt():
             response = request.transport.execute(options)
@@ -653,13 +667,18 @@ class ClientRuntimeContext(ABC):
                 raise ClientRequestException.from_response(response)
             return response
 
+        def _on_failure(_attempt_num: int, ex: Exception) -> Optional[int]:
+            if should_reset_connections(ex):
+                request.transport.reset_connections()
+            return response_retry_after(getattr(ex, "response", None))
+
         return retry(
             _attempt,
             max_retry=max_retry,
             timeout_secs=timeout_secs,
             max_delay=max_delay,
             jitter=jitter,
-            on_failure=lambda _attempt_num, ex: response_retry_after(getattr(ex, "response", None)),
+            on_failure=_on_failure,
         )
 
     @staticmethod
@@ -677,7 +696,12 @@ class ClientRuntimeContext(ABC):
         async transport and backs off with ``asyncio.sleep`` so sibling tasks
         keep making progress.
         """
-        from office365.runtime.retry import TRANSIENT_STATUS_CODES, response_retry_after, retry_async
+        from office365.runtime.retry import (
+            TRANSIENT_STATUS_CODES,
+            response_retry_after,
+            retry_async,
+            should_reset_connections,
+        )
 
         async def _attempt():
             response = await request.async_transport.execute_async(options)
@@ -685,13 +709,18 @@ class ClientRuntimeContext(ABC):
                 raise ClientRequestException.from_response(response)
             return response
 
+        def _on_failure(_attempt_num: int, ex: Exception) -> Optional[int]:
+            if should_reset_connections(ex):
+                request.async_transport.reset_connections()
+            return response_retry_after(getattr(ex, "response", None))
+
         return await retry_async(
             _attempt,
             max_retry=max_retry,
             timeout_secs=timeout_secs,
             max_delay=max_delay,
             jitter=jitter,
-            on_failure=lambda _attempt_num, ex: response_retry_after(getattr(ex, "response", None)),
+            on_failure=_on_failure,
         )
 
     def add_query(self, query: ClientQuery) -> Self:

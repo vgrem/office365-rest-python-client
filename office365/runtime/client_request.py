@@ -97,14 +97,28 @@ class ClientRequest(ABC):
         requests without worker threads, while the synchronous path keeps using
         :attr:`transport` unchanged.
 
+        When a rate limiter is configured (see :meth:`with_rate_limit`) the
+        dedicated async transport is wrapped so the async path is paced too.
+
         Args:
             transport: The transport to use for asynchronous execution.
 
         Returns:
             Self: Supports method chaining
         """
-        self._async_transport = transport
+        self._async_transport = self._with_limiter(transport)
         return self
+
+    def _with_limiter(self, transport: BaseTransport) -> BaseTransport:
+        """Wrap ``transport`` in the shared limiter, unless none is configured.
+
+        Unwraps an existing :class:`ThrottledTransport` first, so re-configuring
+        replaces the limiter instead of stacking wrappers.
+        """
+        if self._rate_limiter is None:
+            return transport
+        inner = transport.inner if isinstance(transport, ThrottledTransport) else transport
+        return ThrottledTransport(inner, self._rate_limiter)
 
     def with_rate_limit(self, health_threshold: int = 80, min_interval: float = 0.0) -> Self:
         """Pace every request of this request through a new shared rate limiter.
@@ -139,9 +153,10 @@ class ClientRequest(ABC):
         Returns:
             Self: Supports method chaining
         """
-        inner = self._transport.inner if isinstance(self._transport, ThrottledTransport) else self._transport
         self._rate_limiter = limiter
-        self._transport = ThrottledTransport(inner, limiter)
+        self._transport = self._with_limiter(self._transport)
+        if self._async_transport is not None:
+            self._async_transport = self._with_limiter(self._async_transport)
         return self
 
     @property

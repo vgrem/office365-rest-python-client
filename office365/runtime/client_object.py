@@ -21,6 +21,7 @@ from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, col
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta
 
 if TYPE_CHECKING:
@@ -155,7 +156,7 @@ class ClientObject:
         jitter: bool = True,
         success_callback=None,
         failure_callback=None,
-        exceptions=(ClientRequestException,),
+        exceptions=DEFAULT_RETRY_EXCEPTIONS,
         is_retriable=None,
     ) -> Self:
         """Executes the current set of data retrieval queries and method invocations and retries it if needed.
@@ -192,7 +193,7 @@ class ClientObject:
         jitter: bool = True,
         success_callback=None,
         failure_callback=None,
-        exceptions=(ClientRequestException,),
+        exceptions=DEFAULT_RETRY_EXCEPTIONS,
         is_retriable=None,
     ) -> Self:
         """Async counterpart of :meth:`execute_query_retry`.

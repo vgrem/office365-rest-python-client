@@ -56,6 +56,12 @@ class RequestsTransport(BaseTransport):
             kwargs["proxies"] = request.proxies
         if request.auth is not None:
             kwargs["auth"] = request.auth
+        # A per-request timeout wins over the transport-level one; both accept a
+        # single value or a ``(connect, read)`` tuple. When neither is set the
+        # ``requests`` default (no timeout) is preserved.
+        timeout = request.timeout if request.timeout is not None else self._timeout
+        if timeout is not None:
+            kwargs["timeout"] = timeout
 
         method = request.method.value.lower()
         if method in ("post", "patch"):
@@ -66,6 +72,14 @@ class RequestsTransport(BaseTransport):
             kwargs["stream"] = request.stream
 
         return getattr(self._session, method)(request.url, **kwargs)
+
+    def reset_connections(self) -> None:
+        """Clear the session's connection pools so the retry opens a new socket.
+
+        ``Session.close()`` releases pooled (idle) connections while leaving the
+        session usable, so the next request transparently builds a fresh pool.
+        """
+        self._session.close()
 
     def close(self) -> None:
         self._session.close()

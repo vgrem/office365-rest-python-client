@@ -9,10 +9,14 @@ from __future__ import annotations
 
 import asyncio
 import random
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from functools import wraps
+from math import ceil
 from time import sleep
 from typing import Any, Awaitable, Callable, Optional, Tuple, Type
 
+from requests import exceptions as requests_exceptions
 from typing_extensions import ParamSpec
 
 from office365.runtime.client_request_exception import ClientRequestException
@@ -21,36 +25,83 @@ _P = ParamSpec("_P")
 
 TRANSIENT_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 
+#: Transport-level (non-HTTP) failures that are worth retrying: a dropped
+#: connection, a socket/read timeout or a connection closed mid-body. TLS
+#: verification failures (``SSLError``) are excluded even though ``requests``
+#: makes them subclasses of ``ConnectionError`` — they are permanent.
+TRANSIENT_TRANSPORT_EXCEPTIONS: Tuple[Type[Exception], ...] = (
+    requests_exceptions.ConnectionError,
+    requests_exceptions.Timeout,
+    requests_exceptions.ChunkedEncodingError,
+)
+
+#: Default set of exception types eligible for retry.
+DEFAULT_RETRY_EXCEPTIONS: Tuple[Type[Exception], ...] = (
+    ClientRequestException,
+    requests_exceptions.RequestException,
+)
+
 
 def is_transient_error(ex: Exception) -> bool:
     """Whether an exception reflects a transient failure worth retrying.
 
-    Non-HTTP errors (e.g. connection/timeout) are treated as transient.
+    HTTP failures are transient only for :data:`TRANSIENT_STATUS_CODES`.
+    Transport failures are transient only for :data:`TRANSIENT_TRANSPORT_EXCEPTIONS`
+    (so a malformed URL or a TLS error is not retried). Any other non-HTTP error
+    is treated as transient, preserving the historical behaviour for custom
+    exceptions.
     """
     status_code = getattr(getattr(ex, "response", None), "status_code", None)
-    if status_code is None:
+    if status_code is not None:
+        return status_code in TRANSIENT_STATUS_CODES
+    # A library HTTP error without a response has an unknown cause; keep the
+    # historical "non-HTTP is transient" behaviour for it.
+    if isinstance(ex, ClientRequestException):
         return True
-    return status_code in TRANSIENT_STATUS_CODES
+    if isinstance(ex, requests_exceptions.RequestException):
+        if isinstance(ex, requests_exceptions.SSLError):
+            return False
+        return isinstance(ex, TRANSIENT_TRANSPORT_EXCEPTIONS)
+    return True
+
+
+def should_reset_connections(ex: Exception) -> bool:
+    """Whether a failed attempt should discard its pooled connection before retrying.
+
+    Microsoft Graph best practices ask clients to back off a ``503`` **and use a
+    new connection**, so a poisoned keep-alive socket is not reused. True for
+    ``502``/``503``/``504`` responses and for connection/timeout failures.
+    """
+    status_code = getattr(getattr(ex, "response", None), "status_code", None)
+    if status_code is not None:
+        return status_code in {502, 503, 504}
+    if isinstance(ex, requests_exceptions.SSLError):
+        return False
+    return isinstance(ex, TRANSIENT_TRANSPORT_EXCEPTIONS)
 
 
 def retry_after_delay(ex: Exception) -> Optional[int]:
-    """Return the server-requested retry delay for throttling errors.
+    """Return the server-requested retry delay for a transient error.
 
-    Reads the ``Retry-After`` header of a 429/503 response; returns ``None``
-    when it is unavailable or malformed so callers fall back to the backoff.
+    Reads the ``Retry-After`` header of any :data:`TRANSIENT_STATUS_CODES`
+    response (408/429/5xx, including ``504``); returns ``None`` when it is
+    unavailable or malformed so callers fall back to the backoff.
 
     Args:
         ex: The exception that was raised
     """
     response = getattr(ex, "response", None)
-    if response is None or getattr(response, "status_code", None) not in {429, 503}:
+    if response is None or getattr(response, "status_code", None) not in TRANSIENT_STATUS_CODES:
         return None
     return response_retry_after(response)
 
 
 def response_retry_after(response: Any) -> Optional[int]:
-    """Parse the ``Retry-After`` header (seconds) from a response, if any.
+    """Parse the ``Retry-After`` header from a response, if any.
 
+    Supports both forms allowed by RFC 7231: a non-negative number of seconds
+    (``Retry-After: 10``) and an HTTP-date (``Retry-After: Wed, 21 Oct 2015
+    07:28:00 GMT``), which is converted to a positive delay relative to now.
     Returns ``None`` when the header is absent or malformed.
 
     Args:
@@ -62,9 +113,19 @@ def response_retry_after(response: Any) -> Optional[int]:
     if value is None:
         return None
     try:
-        return int(value)
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        pass
+    try:
+        parsed = parsedate_to_datetime(str(value))
     except (TypeError, ValueError):
         return None
+    if parsed is None:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    delay = (parsed - datetime.now(timezone.utc)).total_seconds()
+    return max(0, ceil(delay))
 
 
 def backoff_delay(attempt: int, base: int, max_delay: Optional[int] = None, jitter: bool = True) -> float:
@@ -129,7 +190,7 @@ def retry(
     timeout_secs: int = 5,
     max_delay: Optional[int] = None,
     jitter: bool = True,
-    exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+    exceptions: Tuple[Type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
     is_retriable: Callable[[Exception], bool] = is_transient_error,
     on_failure: Optional[Callable[[int, Exception], Optional[int]]] = None,
     on_success: Optional[Callable[[Any], None]] = None,
@@ -192,7 +253,7 @@ async def retry_async(
     timeout_secs: int = 5,
     max_delay: Optional[int] = None,
     jitter: bool = True,
-    exceptions: Tuple[Type[Exception], ...] = (ClientRequestException,),
+    exceptions: Tuple[Type[Exception], ...] = DEFAULT_RETRY_EXCEPTIONS,
     is_retriable: Callable[[Exception], bool] = is_transient_error,
     on_failure: Optional[Callable[[int, Exception], Optional[int]]] = None,
     on_success: Optional[Callable[[Any], None]] = None,

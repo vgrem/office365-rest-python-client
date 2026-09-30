@@ -150,6 +150,15 @@ class BaseTransport(ABC):
         """Transport-level authentication handler, e.g. ``session.auth``."""
         return None
 
+    def reset_connections(self) -> None:  # noqa: B027
+        """Discard pooled connections so the next request opens a fresh one.
+
+        Called before retrying a ``502``/``503``/``504`` or connection failure so
+        a poisoned keep-alive socket is not reused (Microsoft Graph best
+        practices). The default is a no-op; transports that pool connections
+        override it.
+        """
+
     def close(self) -> None:  # noqa: B027
         """Release transport resources (connections, etc.)."""
 

@@ -72,6 +72,9 @@ class ThrottledTransport(BaseTransport):
     def auth(self) -> Any | None:
         return self._inner.auth
 
+    def reset_connections(self) -> None:
+        self._inner.reset_connections()
+
     def close(self) -> None:
         self._inner.close()
 

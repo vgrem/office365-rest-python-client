@@ -6,6 +6,8 @@ import asyncio
 import threading
 import time
 import unittest
+from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime
 from unittest import mock
 
 import pytest
@@ -29,7 +31,14 @@ from office365.runtime.http.throttling import (
 from office365.runtime.operations import ProgressTracker
 from office365.runtime.parallel import run_parallel
 from office365.runtime.queries.client_query import ClientQuery
-from office365.runtime.retry import backoff_delay, retry, retry_after_delay
+from office365.runtime.retry import (
+    backoff_delay,
+    is_transient_error,
+    response_retry_after,
+    retry,
+    retry_after_delay,
+    should_reset_connections,
+)
 from office365.runtime.transport.base import BaseTransport
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
@@ -46,6 +55,13 @@ def _make_error_response(status_code: int, headers: dict | None = None) -> Respo
     resp.url = "https://contoso.sharepoint.com/_api/web"
     resp.headers.update(headers or {})
     resp._content = b'{"error":{"code":"-1, System.Exception","message":"boom"}}'
+    return resp
+
+
+def _response_with_retry_after(value: str) -> Response:
+    resp = Response()
+    resp.status_code = 503
+    resp.headers["Retry-After"] = value
     return resp
 
 
@@ -105,6 +121,52 @@ class TestExecuteQueryRetry(unittest.TestCase):
         )
 
         self.assertEqual(execute_query.call_count, 2)
+
+    def test_connection_error_is_retried_by_default(self):
+        ctx, execute_query = _make_context([requests.ConnectionError("boom"), None])
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            ctx.execute_query_retry(max_retry=5, timeout_secs=1)
+
+        self.assertEqual(execute_query.call_count, 2)
+
+    def test_transport_timeout_is_retried_by_default(self):
+        ctx, execute_query = _make_context([requests.Timeout("slow"), None])
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            ctx.execute_query_retry(max_retry=5, timeout_secs=1)
+
+        self.assertEqual(execute_query.call_count, 2)
+
+    def test_ssl_error_is_not_retried(self):
+        ctx, execute_query = _make_context([requests.exceptions.SSLError("bad cert"), None])
+
+        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
+            with self.assertRaises(requests.exceptions.SSLError):
+                ctx.execute_query_retry(max_retry=5, timeout_secs=1)
+
+        self.assertEqual(execute_query.call_count, 1)
+        sleep_mock.assert_not_called()
+
+    def test_reset_connections_called_on_503(self):
+        ctx, _execute_query = _make_context([_make_exception(503), None])
+        transport = mock.Mock()
+        ctx.pending_request().transport = transport
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            ctx.execute_query_retry(max_retry=5, timeout_secs=1)
+
+        transport.reset_connections.assert_called_once_with()
+
+    def test_reset_connections_not_called_on_429(self):
+        ctx, _execute_query = _make_context([_make_exception(429), None])
+        transport = mock.Mock()
+        ctx.pending_request().transport = transport
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            ctx.execute_query_retry(max_retry=5, timeout_secs=1)
+
+        transport.reset_connections.assert_not_called()
 
     def test_incremental_retry_does_not_retry_permanent_error(self):
         ctx, execute_query = _make_context([_make_exception(400)])
@@ -170,15 +232,76 @@ class TestRetryFunction(unittest.TestCase):
         assert cm.exception.response is not None
         self.assertEqual(cm.exception.response.status_code, 503)
 
+    def test_connection_error_is_retried(self):
+        func = mock.Mock(side_effect=[requests.ConnectionError("boom"), "ok"])
+
+        with mock.patch("office365.runtime.retry.sleep"):
+            result = retry(func, max_retry=5, timeout_secs=1)
+
+        self.assertEqual(result, "ok")
+        self.assertEqual(func.call_count, 2)
+
+    def test_invalid_url_is_not_retried(self):
+        func = mock.Mock(side_effect=requests.exceptions.InvalidURL("nope"))
+
+        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
+            with self.assertRaises(requests.exceptions.InvalidURL):
+                retry(func, max_retry=5, timeout_secs=1)
+
+        self.assertEqual(func.call_count, 1)
+        sleep_mock.assert_not_called()
+
+
+class TestTransportErrorClassification(unittest.TestCase):
+    def test_connection_and_timeout_are_transient(self):
+        self.assertTrue(is_transient_error(requests.ConnectionError("boom")))
+        self.assertTrue(is_transient_error(requests.Timeout("slow")))
+        self.assertTrue(is_transient_error(requests.exceptions.ChunkedEncodingError("cut")))
+
+    def test_ssl_and_malformed_url_are_permanent(self):
+        self.assertFalse(is_transient_error(requests.exceptions.SSLError("bad cert")))
+        self.assertFalse(is_transient_error(requests.exceptions.InvalidURL("nope")))
+
+    def test_non_request_exception_stays_transient(self):
+        self.assertTrue(is_transient_error(RuntimeError("unknown")))
+
+    def test_reset_connections_predicate(self):
+        self.assertTrue(should_reset_connections(_make_exception(503)))
+        self.assertTrue(should_reset_connections(requests.ConnectionError("boom")))
+        self.assertFalse(should_reset_connections(_make_exception(429)))
+        self.assertFalse(should_reset_connections(_make_exception(400)))
+        self.assertFalse(should_reset_connections(requests.exceptions.SSLError("bad cert")))
+
 
 class TestRetryAfterDelay(unittest.TestCase):
     def test_returns_retry_after_value(self):
         ex = _make_exception(429, {"Retry-After": "10"})
         self.assertEqual(retry_after_delay(ex), 10)
 
+    def test_returns_retry_after_value_for_504(self):
+        ex = _make_exception(504, {"Retry-After": "7"})
+        self.assertEqual(retry_after_delay(ex), 7)
+
     def test_returns_none_for_non_throttling_status(self):
         ex = _make_exception(400)
         self.assertIsNone(retry_after_delay(ex))
+
+    def test_parses_http_date(self):
+        future = datetime.now(timezone.utc) + timedelta(seconds=30)
+        value = format_datetime(future, usegmt=True)
+        self.assertGreaterEqual(response_retry_after(_response_with_retry_after(value)), 28)
+        self.assertLessEqual(response_retry_after(_response_with_retry_after(value)), 30)
+
+    def test_past_http_date_clamps_to_zero(self):
+        past = datetime.now(timezone.utc) - timedelta(seconds=30)
+        value = format_datetime(past, usegmt=True)
+        self.assertEqual(response_retry_after(_response_with_retry_after(value)), 0)
+
+    def test_malformed_header_returns_none(self):
+        self.assertIsNone(response_retry_after(_response_with_retry_after("not-a-date")))
+
+    def test_absent_header_returns_none(self):
+        self.assertIsNone(response_retry_after(_make_error_response(503)))
 
 
 class TestBackoffDelay(unittest.TestCase):

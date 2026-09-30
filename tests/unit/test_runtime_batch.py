@@ -240,6 +240,52 @@ class TestBatchTransportSharing(unittest.TestCase):
         self.assertIsInstance(req.transport.inner, RequestsTransport)
         self.assertIsNot(req.transport.limiter, limiter)
 
+    def test_async_transport_is_wrapped_when_limiter_configured(self):
+        req = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())
+        req.with_rate_limit(min_interval=0.0)
+        inner = _FakeTransport([])
+
+        req.with_async_transport(inner)
+
+        wrapped = req.async_transport
+        self.assertIsInstance(wrapped, ThrottledTransport)
+        self.assertIs(wrapped.inner, inner)
+        self.assertIs(wrapped.limiter, req.rate_limiter)
+
+    def test_limiter_configured_after_async_transport_wraps_it(self):
+        req = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())
+        inner = _FakeTransport([])
+        req.with_async_transport(inner)
+        self.assertIs(req.async_transport, inner)
+
+        req.with_rate_limit(min_interval=0.0)
+
+        wrapped = req.async_transport
+        self.assertIsInstance(wrapped, ThrottledTransport)
+        self.assertIs(wrapped.inner, inner)
+
+    def test_async_transport_is_untouched_without_limiter(self):
+        req = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())
+        inner = _FakeTransport([])
+
+        req.with_async_transport(inner)
+
+        self.assertIs(req.async_transport, inner)
+
+    def test_reapplying_limiter_does_not_stack_async_wrapper(self):
+        req = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())
+        inner = _FakeTransport([])
+        req.with_rate_limit(min_interval=0.0)
+        req.with_async_transport(inner)
+        first = req.async_transport
+
+        req.with_rate_limit(min_interval=0.0)
+
+        second = req.async_transport
+        self.assertIsInstance(second, ThrottledTransport)
+        self.assertIs(second.inner, inner)
+        self.assertIsNot(second.limiter, first.limiter)
+
 
 class _FakeQuery:
     def __init__(self, url: str, payload: dict | str | None = None, headers: dict | None = None):

@@ -77,9 +77,14 @@ class ODataV4BatchRequest(ODataRequest):
             base_delay: Base delay for exponential backoff (seconds)
             jitter: Whether to randomize the delay (default True)
         """
-        from office365.runtime.retry import retry, retry_after_delay
+        from office365.runtime.retry import retry, retry_after_delay, should_reset_connections
 
         state: dict = {"pending": query, "retry_after": None}
+
+        def _on_failure(_attempt_num: int, ex: Exception) -> Optional[int]:
+            if should_reset_connections(ex):
+                self.transport.reset_connections()
+            return state["retry_after"] or retry_after_delay(ex)
 
         def _attempt() -> None:
             try:
@@ -105,7 +110,7 @@ class ODataV4BatchRequest(ODataRequest):
                 max_retry=max_retry,
                 timeout_secs=base_delay,
                 jitter=jitter,
-                on_failure=lambda _attempt_num, ex: state["retry_after"] or retry_after_delay(ex),
+                on_failure=_on_failure,
             )
         except WholeBatchRejected as reject:
             self._split_and_retry(query, reject, max_retry, base_delay, jitter)
@@ -125,9 +130,14 @@ class ODataV4BatchRequest(ODataRequest):
         failed sub-requests, honoring ``Retry-After``. Whole-batch rejections are
         split and retried the same way as the sync path.
         """
-        from office365.runtime.retry import retry_after_delay, retry_async
+        from office365.runtime.retry import retry_after_delay, retry_async, should_reset_connections
 
         state: dict = {"pending": query, "retry_after": None}
+
+        def _on_failure(_attempt_num: int, ex: Exception) -> Optional[int]:
+            if should_reset_connections(ex):
+                self.async_transport.reset_connections()
+            return state["retry_after"] or retry_after_delay(ex)
 
         async def _attempt() -> None:
             try:
@@ -151,7 +161,7 @@ class ODataV4BatchRequest(ODataRequest):
                 max_retry=max_retry,
                 timeout_secs=base_delay,
                 jitter=jitter,
-                on_failure=lambda _attempt_num, ex: state["retry_after"] or retry_after_delay(ex),
+                on_failure=_on_failure,
             )
         except WholeBatchRejected as reject:
             await self._split_and_retry_async(query, reject, max_retry, base_delay, jitter)
