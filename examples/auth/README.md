@@ -124,13 +124,15 @@ Bring your own token acquisition — secrets vault, managed identity, or a custo
 ```python
 def acquire_token() -> dict:
     app = msal.ConfidentialClientApplication(
-        client_id, client_credential=client_secret,
+        client_id,
+        client_credential=client_secret,
         authority="https://login.microsoftonline.com/contoso.onmicrosoft.com",
     )
     result = app.acquire_token_for_client(scopes=["https://graph.microsoft.com/.default"])
     if not result or "access_token" not in result:
         raise RuntimeError(f"Token acquisition failed: {result}")
     return result
+
 
 client = GraphClient(tenant="contoso.onmicrosoft.com", token_callback=acquire_token)
 org = client.organization.get().execute_query()
@@ -161,9 +163,9 @@ Sovereign clouds (GCC High, DoD, China) via AzureEnvironment — applies to any 
 ```python
 from office365.azure_env import AzureEnvironment
 
-client = GraphClient(
-    tenant="contoso.onmicrosoft.com", environment=AzureEnvironment.USGovernmentHigh
-).with_client_secret(client_id="<client_id>", client_secret="<client_secret>")
+client = GraphClient(tenant="contoso.onmicrosoft.com", environment=AzureEnvironment.USGovernmentHigh).with_client_secret(
+    client_id="<client_id>", client_secret="<client_secret>"
+)
 org = client.organization.get().execute_query()
 ```
 
