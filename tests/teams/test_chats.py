@@ -17,9 +17,9 @@ from typing import ClassVar, Optional
 from office365.teams.chats.chat import Chat
 from office365.teams.chats.type import ChatType
 
-from tests import test_user_principal_name
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+from tests.settings import user_principal_alt
 
 
 class TestTeamChats(GraphDelegatedTestCase):
@@ -35,7 +35,7 @@ class TestTeamChats(GraphDelegatedTestCase):
     def test_01_create_one_on_one_chat(self):
         """Creating a 1-on-1 chat should succeed."""
         owner = self.client.me.get().execute_query()
-        other = self.client.users[test_user_principal_name].get().execute_query()
+        other = self.client.users[user_principal_alt].get().execute_query()
         if not owner.id or not other.id:
             self.skipTest("Cannot determine user IDs")
 
