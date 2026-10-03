@@ -27,7 +27,9 @@ def _format_status(config: Settings) -> str:
         lines.append(f"  {spec.label:<{width}}  {status:<9}{detail}")
     if all(ready.values()):  # every flow is missing at least one requirement
         lines.append("")
-        lines.append("  Tip: cp .env.example .env, fill it in, then re-run `python -m tests.doctor`.")
+        lines.append(
+            "  Tip: run `python -m tests.setup` (or cp .env.example .env), then re-run `python -m tests.doctor`."
+        )
     return "\n".join(lines)
 
 

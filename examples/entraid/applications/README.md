@@ -2,8 +2,8 @@
 
 Manage app registrations, certificate credentials, and API permissions.
 
-> **Setting up `.env`?** These scripts also automate local auth setup — client
-> secrets, certificates, and permissions. See
+> **Setting up `.env`?** Run `python -m tests.setup` for a guided setup, or use
+> these scripts directly — client secrets, certificates, and permissions. See
 > [Set up live authentication](https://github.com/vgrem/office365-rest-python-client/blob/master/README-dev.md#set-up-live-authentication).
 
 ## App Management

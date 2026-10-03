@@ -102,6 +102,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   paste-ready `.env` block) and now signs in interactively like the other setup
   scripts. README-dev presents certificate auth as shared by Graph and SharePoint,
   and the docs say "SharePoint REST API v1" instead of `/_api`.
+- **Guided credential setup:** `python -m tests.setup` prompts for the tenant,
+  certificate and optional client secret, reuses or creates app credentials
+  idempotently, and merges the results into `.env` (with a `.env.bak` backup and a
+  `--dry-run` preview). Generated certificates are no longer tracked.
 
 ## [3.2.0] - 2026-09-27
 

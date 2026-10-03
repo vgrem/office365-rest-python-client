@@ -81,32 +81,34 @@ uv run python examples/entraid/applications/redirect_uris.py
 
 ### 5. App-only
 
-**a. Certificate (Graph + SharePoint)** — the same certificate works for both
-clients; only the permissions differ (SharePoint REST API v1 rejects client
-secrets, Graph accepts them). One command generates a self-signed cert, uploads it
-and prints the values to paste:
+The guided wizard fills `.env` for you. It signs in with your app, reuses or
+generates one self-signed certificate (valid for both Graph and SharePoint),
+optionally creates a client secret, and merges the values in:
 
 ```bash
-# Graph app-only
-uv run python examples/entraid/applications/rotate_cert.py --generate
+uv run python -m tests.setup
+```
 
-# SharePoint app-only (also grants access to one site)
+It prompts for the tenant, whether to create a client secret, and whether
+SharePoint uses `all` or `selected` sites. Re-running reuses what is already
+there; `--dry-run` previews the `.env` merge without signing in or writing:
+
+```bash
+uv run python -m tests.setup --dry-run
+```
+
+Prerequisite: the app allows public client flows and has the delegated
+`Application.ReadWrite.All` permission with admin consent (steps 2–3). Permissions
+are still granted separately (step 3). Prefer the individual scripts?
+
+```bash
+# Certificate (Graph) and a SharePoint site
+uv run python examples/entraid/applications/rotate_cert.py --generate
 uv run python examples/sharepoint/auth/setup/certificate_auth.py \
     --site https://contoso.sharepoint.com/sites/project
-```
 
-```dotenv
-OFFICE365_CERT_THUMBPRINT=<thumbprint>
-```
-
-**b. Client secret (Graph)** — create one, then grant app permissions (step 3):
-
-```bash
+# Client secret (Graph only — SharePoint REST API v1 rejects secrets)
 uv run python examples/entraid/applications/rotate_secret.py
-```
-
-```dotenv
-OFFICE365_CLIENT_SECRET=<secret>
 ```
 
 Then run tests and examples — missing credentials are skipped, not failed:
