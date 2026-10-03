@@ -8,586 +8,322 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
-- **Async/await support:** every terminal query gains an async twin —
+- **Async/await support:** async twins of the terminal query API —
   `ClientRuntimeContext.execute_query_async`, `ClientObject.execute_query_async`,
-  `ClientResult.execute_query_async`, `execute_query_async_retry`, and async
-  context management (`async with ctx:`). Builders stay synchronous; only the
-  network call is awaited. The default transport offloads the blocking
-  `requests` call to a worker thread (`BaseTransport.execute_async`), so no extra
-  dependency is required and existing session/auth/proxy/throttling behaviour is
-  reused. See `docs/async.md` and `examples/async/`.
+  `ClientResult.execute_query_async`, `execute_query_async_retry`, and
+  `async with ctx:`. The default transport offloads the blocking `requests` call to
+  a worker thread (`BaseTransport.execute_async`), so no extra dependency is needed.
+  See `docs/async.md`.
 - **Async batching:** `ClientContext.execute_batch_async` and
-  `GraphClient.execute_batch_async` split and retry like their synchronous twins
-  but send each batch through the configured async transport — so a native
-  transport is used when set — with only the transiently-failed sub-requests
-  resent (honoring `Retry-After`). `concurrency > 1` overlaps batches, and the
-  form digest is refreshed off the event loop (`SharePointRequest.warm_up_async`).
+  `GraphClient.execute_batch_async`, with per-request retry honoring `Retry-After`
+  and optional `concurrency`.
 - **Async parallel queries:** `ClientRuntimeContext.execute_query_parallel_async`
-  — the awaitable twin of `execute_query_parallel`. Queue independent requests
-  (e.g. one `download()` per file) and drain them with bounded `concurrency`,
-  per-query retry honoring `Retry-After`, and `progress` — no clones or
-  semaphores. Requests go through the configured async transport, so it also
-  drives the optional `HttpxTransport`.
-- **Async paging:** `ClientObjectCollection.get_all_async(page_size, ...)` loads
-  every server-driven page (`@odata.nextLink` or the SharePoint skip fallback)
-  without blocking the event loop, firing `progress` / `page_loaded` per page.
-  Collections are now also async iterables: `async for item in collection`
-  fetches the first page on demand and awaits each remaining page as it is
-  reached, the awaitable twin of `__iter__`.
-- **Async pacing parity:** the shared `RateLimiter` now exposes
-  `acquire_async`/`paced_async` (awaited on the loop) and
-  `ThrottledTransport.execute_async`/`aclose`, so async requests honor the same
-  fleet-wide throttling gate as synchronous ones instead of blocking a worker
-  thread.
-- **Async cancellation cleanup:** an aborted (`CancelledError`/`BaseException`)
-  `execute_query_parallel` / `execute_query_parallel_async` run now restores the
-  queries that were never applied and clears the current query, so a retry can
-  resume cleanly.
-- **Async auth offload:** `beforeExecute` hooks (token acquisition, digest
-  refresh, user callbacks) run on a worker thread from the async path
-  (`ClientRequest.before_execute_async`), so a slow token refresh cannot stall
-  the loop.
-- **Async retry:** `retry_async` in `office365.runtime.retry` (the counterpart of
-  `retry`, sleeping with `asyncio.sleep`), surfaced as
-  `execute_query_async_retry`.
-- **High-level bulk download:** `Folder.download(target_dir, ...)`,
-  `FileCollection.download(target_dir, ...)` and `File.download(path, ...)` return
-  a deferred `DownloadOperation`; drive it with `execute_query()` or
-  `await execute_query_async(...)` — which return the operation, with the outcome
-  on `.value` — to enumerate the folder (paged, recursive by default), preserve
-  the relative tree, skip existing files (`overwrite=False`, so a re-run
-  resumes), and download with bounded concurrency and per-file retry.
-  Permanently failing files are collected in `DownloadResult.failures`
-  (`stats` / `raise_if_errors()`) instead of aborting the run, and `progress`
-  reports both scanning and downloading. No destination streams, `ExitStack` or
-  context clones in caller code.
-- **`on_error` collector for parallel queries:** `execute_query_parallel` and
-  `execute_query_parallel_async` accept an optional keyword-only
-  `on_error=(query, error) -> None` — a permanently failing query is reported and
-  skipped rather than aborting the batch (honored even with `concurrency=1`).
-  This is the engine behind the continue-and-report behavior of bulk downloads.
-- **Optional native-async transport:** `HttpxTransport`
-  (`office365.runtime.transport.httpx_transport`), enabled per request via
-  `ClientRequest.with_async_transport(...)`, behind the `[httpx]` extra
-  (`httpx>=0.27,<1`). The synchronous path keeps using `requests`.
-- **Streaming transport contract:** `BaseTransport.stream(request, ...)` yields
-  the response body incrementally (optional `on_headers` hook), with
-  `stream_async` as its loop-safe twin. `HttpxTransport` implements both
-  natively (`iter_bytes` / `aiter_bytes`); the default transport drives the
-  blocking read one chunk per worker wait, so any transport can stream without
-  buffering the whole body in memory.
-- **Async streaming downloads:** `File.download_session_async(stream, ...)` — the
-  awaitable twin of `download_session`. It streams a large file through the
-  configured async transport (never buffering it or blocking the event loop),
-  with the same `chunk_downloaded`, `chunk_size`, `use_path` and `progress`
-  behavior, and surfaces failures as `ClientRequestException`. The sync method
-  keeps its deferred builder/terminal form and now shares the chunk-writing loop.
+  (awaitable twin of `execute_query_parallel`) with `concurrency`, retry, and
+  `progress`.
+- **Async paging:** `ClientObjectCollection.get_all_async(page_size, ...)` and
+  `async for item in collection`.
+- **Async pacing parity:** `RateLimiter.acquire_async`/`paced_async` and
+  `ThrottledTransport.execute_async`/`aclose`.
+- **Async cancellation cleanup:** an aborted parallel run restores unapplied queries
+  and clears the current query so a retry can resume.
+- **Async auth offload:** `ClientRequest.before_execute_async` runs `beforeExecute`
+  hooks (token/digest/user callbacks) on a worker thread.
+- **Async retry:** `retry_async` in `office365.runtime.retry`.
+- **High-level bulk download:** `Folder.download`, `FileCollection.download` and
+  `File.download` return a `DownloadOperation` — paged/recursive enumeration,
+  relative tree, `overwrite=False` resume, bounded concurrency, per-file retry, and
+  `DownloadResult.failures`/`stats`/`raise_if_errors()`.
+- **`on_error` collector for parallel queries:** `execute_query_parallel` /
+  `..._async` accept `on_error=(query, error) -> None`; a permanently failing query
+  is reported and skipped instead of aborting the batch.
+- **Optional native-async transport:** `HttpxTransport` behind the `[httpx]` extra,
+  enabled per request via `ClientRequest.with_async_transport(...)`.
+- **Streaming transport contract:** `BaseTransport.stream`/`stream_async` (optional
+  `on_headers`), implemented natively by `HttpxTransport`.
+- **Async streaming downloads:** `File.download_session_async(stream, ...)` with the
+  same `chunk_downloaded`/`chunk_size`/`use_path`/`progress` behavior.
 
 ### Fixed
 - **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`
-  now reuses the signed-in account via `acquire_token_silent` before starting a new
-  device flow, matching the interactive and ROPC flows. Previously every Graph
-  request (e.g. each call in `python -m tests.setup`) printed a fresh device code.
-- **Chat members after creation:** `ChatCollection.add` now creates the chat with a
-  shared placeholder path, so the `members` navigation resolves to
-  `/chats/{id}/members` once the create response assigns the id. Previously it kept
-  pointing at `/members` (Graph returned `Resource not found for the segment 'members'`).
-- **Batch GETs after `File.get_content()`:** `BatchQuery` now treats `FunctionQuery`
-  (`$value` and other function calls) as a GET, so it is placed outside the change
-  set. Previously `file.get_content()` was grouped with the change sets and
-  `execute_batch()` failed with `An invalid HTTP method 'GET' was detected for a
-  request in a change set`. The v3 batch response parser now also splits sub-responses
-  at the header/body separator and keeps the body as raw bytes, so binary downloads
-  survive the round-trip instead of being decoded line by line ([#871](https://github.com/vgrem/office365-rest-python-client/issues/871)).
+  reuses the account via `acquire_token_silent` before starting a new device flow.
+- **Chat members after creation:** `ChatCollection.add` uses a shared placeholder
+  path so `members` resolves to `/chats/{id}/members` once the id is assigned.
+- **Batch GETs after `File.get_content()`:** `BatchQuery` treats `FunctionQuery` as a
+  GET, so it is placed outside the change set; the v3 batch response parser also
+  splits sub-responses at the header/body separator and keeps the body as raw bytes
+  so binary downloads survive ([#871](https://github.com/vgrem/office365-rest-python-client/issues/871)).
 - **Multi-phase writes in SharePoint batches:** `ClientContext.execute_batch` /
-  `execute_batch_async` now drain the queue in dependency order instead of
-  snapshotting it once. Each round flushes the requests collected so far, then
-  resolves any `DeferredOperationQuery` barrier so its `after_execute` handlers
-  enqueue the next round; the batch path also fires per-query
-  `before_execute`/`after_execute` handlers on the sub-requests, matching
-  `execute_query`. A query that targets an endpoint `/_api/$batch` rejects
-  (e.g. the `listdata.svc` document-set create) is now flagged `batchable = False`
-  and run on its own in order, instead of failing with `Invalid request.`. This
-  fixes `DocumentSet.create(...)` followed by `execute_batch()` — the create was
-  silently never sent because its prerequisite reads only produced the write
-  inside callbacks ([#868](https://github.com/vgrem/office365-rest-python-client/issues/868)).
+  `execute_batch_async` drain the queue in dependency order, resolving each
+  `DeferredOperationQuery` barrier so its handlers enqueue the next round, and fire
+  per-query `before_execute`/`after_execute` handlers. A query targeting
+  `/_api/$batch` is flagged `batchable = False` and run on its own. Fixes
+  `DocumentSet.create(...)` followed by `execute_batch()`
+  ([#868](https://github.com/vgrem/office365-rest-python-client/issues/868)).
 
 ### Internal
-- **Developer onboarding rework:** test and example credentials now flow through a
-  single `tests/settings.py` with per-flow readiness checks (`delegated`,
-  `delegated-ropc`, `app-only`, `app-only-cert`), a `python -m tests.doctor`
-  report, and `--require <flow>` gating. Live integration tests auto-skip with a
-  summary when their credentials are missing, so a fresh checkout stays green
-  without a tenant. `.env.example`, `README-dev.md`, `CONTRIBUTING.md` and the
-  example quick starts were rewritten around this, and the dead
-  `office365_python_sdk_securevars` reference was removed.
-- **Setup automation:** `.env.example` and README-dev document how each block can
-  be filled with the existing `examples/entraid/applications/` and
-  `examples/sharepoint/auth/setup/` scripts. `certificate_auth.py` now prints a
-  paste-ready `.env` block, `applications/create.py` gains `--keep`/`--name`, and
-  `applications/rotate_cert.py` uploads a configurable public certificate.
-- **Certificate setup for Graph:** `applications/rotate_cert.py` gains
-  `--generate` (creates a self-signed pair with openssl, uploads it and prints a
-  paste-ready `.env` block) and now signs in interactively like the other setup
-  scripts. README-dev presents certificate auth as shared by Graph and SharePoint,
-  and the docs say "SharePoint REST API v1" instead of `/_api`.
-- **Guided credential setup:** `python -m tests.setup` reads the existing `.env`,
-  prompts only for the tenant and sign-in app id when they are missing, reuses or
-  creates app credentials idempotently, derives the SharePoint URLs from the tenant
-  name, and writes `.env` (with a `.env.bak` backup and a `--dry-run` preview).
-  It now also asks whether to create a client secret (default no; `--with-secret`
-  and `--no-secret` force the choice, and `--yes` keeps it off) so both app-only
-  flows are one keystroke apart, and prints how to add the secret later when
-  `OFFICE365_CLIENT_SECRET` is left empty. Generated certificates are no longer
-  tracked.
-- **Two-user test model:** `OFFICE365_TEST_USER1`/`OFFICE365_TEST_USER2` are replaced
-  by `OFFICE365_USERNAME` (primary, also the ROPC account) and the optional
-  `OFFICE365_USERNAME_ALT`. `tests/__init__.py` still exposes
-  `test_user_principal_name`/`test_user_principal_name_alt`, so existing tests and
-  examples need no changes.
+- **Developer onboarding rework:** credentials flow through `tests/settings.py` with
+  per-flow readiness checks (`delegated`, `delegated-ropc`, `app-only`,
+  `app-only-cert`), `python -m tests.doctor`, and `--require <flow>` gating; live
+  tests auto-skip when credentials are missing. `.env.example`, `README-dev.md`,
+  `CONTRIBUTING.md` and the example quick starts were rewritten, and the dead
+  `office365_python_sdk_securevars` reference removed.
+- **Setup automation:** `.env.example`/README-dev document the existing
+  `examples/entraid/applications/` and `examples/sharepoint/auth/setup/` scripts;
+  `certificate_auth.py` prints a paste-ready `.env` block, `applications/create.py`
+  gains `--keep`/`--name`, and `rotate_cert.py` uploads a configurable public
+  certificate.
+- **Certificate setup for Graph:** `applications/rotate_cert.py` gains `--generate`;
+  docs say "SharePoint REST API v1" instead of `/_api`.
+- **Guided credential setup:** `python -m tests.setup` reads `.env`, prompts only for
+  the missing tenant/app id, reuses or creates app credentials, derives the
+  SharePoint URLs, and writes `.env` (with `.env.bak` and `--dry-run`). It now also
+  asks whether to create a client secret (default no; `--with-secret`/`--no-secret`
+  force it; `--yes` keeps it off) and prints how to add one later. Generated
+  certificates are no longer tracked.
+- **Two-user test model:** `OFFICE365_TEST_USER1`/`OFFICE365_TEST_USER2` replaced by
+  `OFFICE365_USERNAME` and optional `OFFICE365_USERNAME_ALT`; `tests/__init__.py`
+  still exposes `test_user_principal_name`/`test_user_principal_name_alt`.
 
 ## [3.2.0] - 2026-09-27
 
 ### Added
-- **Locked-file handling (HTTP 423):** a typed
-  `FileLockedException` (also exported as `office365.sharepoint.exceptions.SPFileLockedException`)
-  classifies the `Microsoft.SharePoint.SPFileLockException` /
-  Graph `resourceLocked` shared-lock response and parses the lock holder into
-  `.lock_owner`, with remediation in `.GUIDANCE`. `execute_query_retry(...,
-  is_retriable=retry_on(FileLockedException))` opts into retrying otherwise
-  permanent lock errors (new `retry_on` helper), and `delete_object(
-  bypass_shared_lock=True)` sends `Prefer: bypass-shared-lock` on Graph and
-  SharePoint. See `examples/sharepoint/files/handle_locked_file.py`.
+- **Locked-file handling (HTTP 423):** typed `FileLockedException` (also
+  `SPFileLockedException`) parses the lock holder into `.lock_owner` with remediation
+  in `.GUIDANCE`; `retry_on(FileLockedException)` opts into retrying lock errors, and
+  `delete_object(bypass_shared_lock=True)` sends `Prefer: bypass-shared-lock` on
+  Graph and SharePoint. See `examples/sharepoint/files/handle_locked_file.py`.
 - **Idempotent file provisioning:** `DriveItem.ensure_file(path, content,
-  on_conflict=...)` — the file counterpart of `ensure_folder`. Missing parent
-  folders are created, then the leaf file is reused when present (`"skip"`, the
-  default, never re-sends `content`) or overwritten in a single request
-  (`"replace"`). Fully deferred on one `execute_query()`, backed by the shared
-  `get_or_create` helper.
-- **Typed CAML query builder:** `Caml` / `CamlQuery.builder()` construct `ViewXml`
-  from composable Python expressions instead of raw CAML strings — fluent
-  comparisons (`Caml.text("Status").eq("Active")`), field-typed helpers
-  (`Caml.lookup("Category").id().in_([2, 3])`), value nodes (`Caml.now`), logical
-  joins (`.and_()/.or_()/.not_()`, `&`/`|`/`~`, variadic `Caml.and_/or_`) that
-  always render **binary-nested** CAML, plus
-  `where/order_by/group_by/row_limit/scope/view_fields`. Raw `ViewXml`/`parse`
-  remain supported. New modules under `office365/sharepoint/listitems/caml/`
-  (`values`, `fields`, `expressions`, `builder`); removed the unused `types` stubs.
-- `ImportResult` — a deferred, source-agnostic streaming import driver. Chunks
-  are queued, executed, and discarded (bounded memory), and the caller picks the
-  terminal: `execute_query()` (sequential), `execute_batch(...)` (server-side,
-  concurrent), or iterating the driver. `ClientObjectCollection.import_records()`
-  streams record batches; `List.from_dataframe()` streams a DataFrame / CSV
-  source and provisions the columns once.
-- **Idempotent list imports (skip / upsert):** `List.import_dataframe(..., key=...,
-  key_field="MigrationKey", on_conflict="skip"|"upsert")` derives a SHA-256 key
-  from the given natural-key column(s), stores it in a dedicated field, loads the
-  existing keys once, and skips or updates already-present rows — so a re-run
-  never duplicates. Backed by `runtime.converters.upsert.keyed_queue` +
-  `ListItemUpsertTarget` and a conflict-resolution `queue` hook on `ImportResult`
-  (`ImportStats.skipped`); `enforce_unique=True` and `dry_run=True` are supported.
-- **Resumable imports:** `ImportResult` accepts a `checkpoint` — a path
-  (`FileCheckpointStore`), an `ImportCheckpoint`/`None` (`MemoryCheckpointStore`),
-  or any `CheckpointStore` — and persists the committed cursor after each chunk
-  (atomically), so an interrupted long-running run resumes by skipping the
-  already-committed chunks. `ImportResult.resumed_from`/`.checkpoint` and
-  `ImportStats.resumed_from` (in `summary()`) expose the resumed offset.
-  `on_error="collect"` records a failing chunk (`ImportStats.errors` +
-  `checkpoint.failures`) and continues instead of aborting.
+  on_conflict=...)` reuses or overwrites the leaf file, creating missing parents.
+- **Typed CAML query builder:** `Caml` / `CamlQuery.builder()` build `ViewXml` from
+  composable expressions (comparisons, field-typed helpers, `Caml.now`, logical joins
+  rendering binary-nested CAML, `where/order_by/group_by/row_limit/scope/view_fields`);
+  raw `ViewXml`/`parse` remain. New modules under
+  `office365/sharepoint/listitems/caml/`.
+- `ImportResult` — a deferred, source-agnostic streaming import driver with a
+  sequential, batch, or iterated terminal; `ClientObjectCollection.import_records()`
+  and `List.from_dataframe()`.
+- **Idempotent list imports:** `List.import_dataframe(..., key=..., key_field=...,
+  on_conflict="skip"|"upsert")` derives SHA-256 keys and skips/updates existing rows
+  (`ImportStats.skipped`, `enforce_unique`, `dry_run`).
+- **Resumable imports:** `ImportResult(checkpoint=...)` persists the committed cursor
+  per chunk; `resumed_from`/`checkpoint`/`ImportStats.resumed_from` expose the offset;
+  `on_error="collect"` records a failing chunk and continues.
 - `ClientObjectCollection.clear()` and a `concurrency` argument on
   `Entity.execute_batch()`.
-- `OperationStats` — a shared counter base for bulk operations — with
-  `ImportStats` and `MigrationStats` as specializations (no lossy conversion
-  between them).
-- **Live import progress:** the `progress` hook now fires immediately (with the
-  resumed offset, so a bar appears with its total) and then per committed chunk
-  *and per completed batch* during `execute_batch`, instead of only once per
-  queued chunk. `run_parallel` reports progress on the calling thread as tasks
-  complete (the completed result in `Progress.items`), and `execute_batch`'s
-  `success_callback` now fires per batch in sequential mode too (it previously
-  never fired there). `List.import_from(..., total=...)` lets callers supply the
-  known total so the progress percentage/ETA is meaningful.
-- **Best-effort migration fidelity:** the migration runner now applies
-  `preserve_timestamps` / `preserve_permissions` client-side when the adapters
-  support it, via new optional hooks `DataSource.read_permissions(item)` /
-  `DataTarget.apply_timestamps(item)` / `DataTarget.apply_permissions(item,
-  permissions)` (with `PermissionEntry`). The SharePoint library adapters restore
-  `Created`/`Modified` through `ValidateUpdateListItem` and recreate the source
-  role assignments (same-tenant).
-- **Migration guide:** `docs/migration.md` documents the adapter/job model,
-  fidelity tiers, and the server-side ingestion path.
-- **Server-side migration (full fidelity):** new `Site` methods
-  `provision_migration_containers`, `provision_migration_queue`,
-  `create_migration_job_encrypted`, and `get_migration_job_progress`.
-  `MigrationServerJob` gained `submit_encrypted`, `progress`, and a
-  `GetMigrationJobProgress`-backed `status_fn` (`monitor` now defaults to it);
-  `parse_progress_events` reduces the event log to `(status, done, total)`.
-- **Migration API package layer** (`office365.migration.package`): models and
-  serialization for `Manifest.xml` / `ExportSettings.xml` / `SystemData.xml` /
-  `UserGroupMap.xml`, a `PackageBuilder` (deterministic GUIDs, folders, files,
-  versions; indented XML), `FileSystemStaging`, and optional `BlobStaging` (new `[azure]` extra:
-  `azure-storage-blob`; `AzureBlobStaging` kept as an alias). `create_staging(...)`
-  selects a backend from the container URL — the seam for a future S3 / Azure
-  Files staging. `SharePointPackageTarget` ties it together as a `DataTarget` — it
-  builds the package, stages the blobs, and submits an ingestion job (the
-  constructor accepts `staging=` alone, so a package can be built and staged
-  without Azure). Covers the **document-library subset**; the generated XML
-  follows the documented format but is **not yet verified against a live tenant**.
-- **Storage & vendor-neutrality docs:** `docs/migration.md` now covers which legs
-  need Azure (only the server-side SharePoint ingest leg, and containers can be
-  SharePoint-provided — no Azure account), the `Staging` seam, and a step-by-step
-  example.
-- **Encrypted migration staging:** `BlobStaging` / `create_staging` accept an
-  `encryption_key`; every content and manifest blob is then AES-256-CBC encrypted
-  (unique random IV, stored as the base64 `IV` blob property) — required for
-  SharePoint-provided containers. `SharePointPackageTarget` forwards its
-  `encryption_key` to the default staging, and the `[azure]` extra now also pulls
-  in `cryptography`.
-- **Migration examples:** `migrate_library_serverside.py` is a five-step,
-  zero-argument server-side migration (defaults to the repo sample data), and a
-  new tenant-free `package_library.py` builds the same package offline so the
-  manifest XML can be inspected. The migration README now explains the pipeline,
-  which example to run, and in what order.
-- **SPMT-style migration sessions:** `MigrationSession` now mirrors the
-  `Microsoft.SharePoint.MigrationTool.PowerShell` cmdlets — `register` / `get` /
-  `add_task` / `remove_task` / `show` / `start` / `stop` (cancel) / `unregister`,
-  with task ids. New `MigrationSettings` (the `Register-SPMTMigration` surface,
-  mapped to `MigrationOptions` via `to_options()`) and `MigrationTask`
-  (`FileShare`/`SharePoint` descriptors + the SPMT JSON task format). A SharePoint
-  resolver builds the adapters from a task descriptor — client-side REST by
-  default, or the server-side Migration API with `use_migration_api=True`.
-  `MigrationOptions` gained `created_after`/`modified_after` date filters.
-- **`FileVersions` scan** — the SMAT "File Versions" detail report: records each
-  file that carries version history (via its `MajorVersion`/`MinorVersion`), with
-  the SMAT columns (`VersionCount`, `File`, `ScanID`, …).
-- **SMAT report scans:** `CheckedOutFiles` (checked-out files + a per-list
-  warning), `LargeExcelFiles` (Excel workbooks over the browser-open limit),
-  `BrowserFileHandling` (`.htm`/`.html` files affected by Strict handling),
-  `LongOneDriveUrls` (files whose full URL crosses the OneDrive sync limit —
-  backed by the new `Limits.LONG_ONEDRIVE_URL`, 400 chars, and the
-  `long_onedrive_url` option), `ThicketFolder` (a `THICKET_FOLDER_UNSUPPORTED`
-  blocker for `*_file`/`*_files` folders), and `UnsupportedSiteTemplates` (site
-  collections whose root web template is on-premises-only) — typed detail reports
-  sharing a `SiteScanRecord` base (the SMAT site-column prefix). `WebTemplateType`
-  now covers the full `Get-SpoWebTemplate` catalog (with a `name_part` helper) and
-  is exported from `office365.sharepoint.webs.templates`. New
-  `Limits.LARGE_EXCEL_FILE` (10 MB) backs the Excel threshold; `AssessmentOptions`
-  gained `large_excel_bytes`. The assessor's item load now also selects
-  `File/CheckOutType`/`File/TimeCreated`/`File/TimeLastModified` and expands
-  `File/ModifiedBy`/`File/CheckedOutByUser`; the root-web template
-  (`RootWeb/WebTemplate`) is loaded with the site-collection metadata.
-- **Locale-independent error classification + SharePoint taxonomy:** request
-  errors are dispatched by a deterministic `MATCH_PRIORITY` (highest wins,
-  registration order breaks ties) instead of import order, and
-  `ClientRequestException` exposes the parsed `.hresult` / `.error_type` from a
-  SharePoint `"<hresult>, <dotnet-type>"` code. New
-  `office365.sharepoint.exceptions.SharePointException` catch-all, plus typed
-  `SPFileCheckOutException` (HTTP 423, distinct from the shared-lock
-  `FileLockedException`), `SPListDataValidationException`,
-  `SPFieldValidationException`, `SPFieldValueException`,
-  `SPDuplicateValuesFoundException`, `SPInvalidLookupValuesException`,
-  `SPContentTypeReadOnlyException` and `SPContentTypeSealedException`.
+- `OperationStats` shared counter base, specialized by `ImportStats`/`MigrationStats`.
+- **Live import progress:** `progress` fires immediately (with the resumed offset),
+  per committed chunk, and per completed batch; `run_parallel` reports on the calling
+  thread; `execute_batch`'s `success_callback` fires per batch in sequential mode;
+  `List.import_from(..., total=...)`.
+- **Best-effort migration fidelity:** `preserve_timestamps`/`preserve_permissions`
+  applied client-side via `DataSource.read_permissions`, `DataTarget.apply_timestamps`
+  and `apply_permissions(item, permissions)` (`PermissionEntry`).
+- **Migration guide:** `docs/migration.md`.
+- **Server-side migration (full fidelity):** `Site.provision_migration_containers`,
+  `provision_migration_queue`, `create_migration_job_encrypted`, and
+  `get_migration_job_progress`; `MigrationServerJob.submit_encrypted`/`progress`/
+  `status_fn`; `parse_progress_events`.
+- **Migration API package layer** (`office365.migration.package`): models for
+  `Manifest.xml`/`ExportSettings.xml`/`SystemData.xml`/`UserGroupMap.xml`,
+  `PackageBuilder`, `FileSystemStaging`, `BlobStaging` (new `[azure]` extra),
+  `create_staging(...)`, and `SharePointPackageTarget`. Covers the document-library
+  subset; the generated XML is not yet live-verified.
+- **Storage & vendor-neutrality docs:** `docs/migration.md` covers which legs need
+  Azure, the `Staging` seam, and a step-by-step example.
+- **Encrypted migration staging:** `BlobStaging`/`create_staging` accept an
+  `encryption_key` (AES-256-CBC, unique IV); `SharePointPackageTarget` forwards it,
+  and `[azure]` now also pulls in `cryptography`.
+- **Migration examples:** `migrate_library_serverside.py` and the tenant-free
+  `package_library.py`.
+- **SPMT-style migration sessions:** `MigrationSession` mirrors the SPMT cmdlets
+  (`register`/`get`/`add_task`/`remove_task`/`show`/`start`/`stop`/`unregister`), with
+  `MigrationSettings`, `MigrationTask`, and a SharePoint resolver (client-side REST or
+  `use_migration_api=True`); `MigrationOptions` gained `created_after`/`modified_after`.
+- **`FileVersions` scan** — records files with version history, with the SMAT columns.
+- **SMAT report scans:** `CheckedOutFiles`, `LargeExcelFiles`, `BrowserFileHandling`,
+  `LongOneDriveUrls`, `ThicketFolder`, and `UnsupportedSiteTemplates`, sharing a
+  `SiteScanRecord` base; `WebTemplateType` covers the full `Get-SpoWebTemplate`
+  catalog; `Limits.LARGE_EXCEL_FILE` backs the Excel threshold.
+- **Locale-independent error classification + SharePoint taxonomy:** deterministic
+  `MATCH_PRIORITY` dispatch; `ClientRequestException.hresult`/`.error_type`; a
+  `SharePointException` catch-all plus typed `SPFileCheckOutException`,
+  `SPListDataValidationException`, `SPFieldValidationException`,
+  `SPFieldValueException`, `SPDuplicateValuesFoundException`,
+  `SPInvalidLookupValuesException`, `SPContentTypeReadOnlyException`, and
+  `SPContentTypeSealedException`.
 
 ### Changed
-- **Error classification is locale-independent:** SharePoint exceptions no
-  longer match translated messages — they key off the numeric HRESULT and/or the
-  embedded .NET type name (e.g. `SPListDataValidationException`,
-  `SPDuplicateValuesFoundException`), which are stable across locales.
-  `DuplicatedObjectException` keeps its English message fallback only for the
-  opaque `-1, System.Exception` case. HTTP 423 is now disambiguated: a
-  `SPFileCheckOutException` (check-out, releasable) is typed separately from the
-  shared coauthoring `FileLockedException`; a 423 with no other signal still maps
-  to `FileLockedException`.
-- **Data-pipeline naming (breaking):** `from_*` is now the **streaming** entry
-  (returns `ImportResult`) and `queue_*` (`queue_records`/`queue_dataframe`) is
-  the deferred queue-all path. Removed `import_from`/`import_records`/
-  `import_dataframe`/`import_from_file` (use `from_records`/`from_dataframe`/
-  `from_file`) and `to_json_file`/`from_json_file` (use `export_to(..., format=
-  "json")`/`from_json`). `FieldCollection.from_dataframe` →
-  `ensure_from_dataframe`; the JSON-array file format is registered as `json`
-  (`json_file` kept as an alias).
-- **Architecture:** the data-interchange surface (pandas/CSV/JSON/NDJSON/Excel
-  import/export) moved off the core `ClientObjectCollection` onto a new
-  `RecordCollection` base (inherited by every typed `EntityCollection`). Formats
-  are resolved through `runtime.converters.registry`; unified `export_to(...)` /
-  `import_from(...)` sit alongside the existing `to_*`/`from_*` conveniences.
-  Keyed skip/upsert is a pluggable `UpsertTarget` (`runtime.converters.upsert`)
-  implemented for list items by `ListItemUpsertTarget`; the migration toolkit's
-  `SharePointListTarget` reuses it.
-- `import_from`/`import_records` gained `enforce_unique=True` (mark the key column
-  unique) and `dry_run=True` (plan the create/update/skip counts without writing).
-- `List` gained record facades over its items: `import_from`/`import_dataframe`/
-  `import_records` (streaming), `export_to`/`to_dataframe` (record export). The
-  naming is now consistent everywhere: `from_*` is deferred (queue-all),
-  `import_*` is the streaming `ImportResult`. `List.from_dataframe` is now
-  **deferred** (it was the streaming entry); use `List.import_dataframe` for the
-  streaming path. `List.export` remains the `.zip` **package** export.
-- `SharePointListSource` now reuses the shared record projection
-  (`to_records(raw=True)`, no JSON coercion).
-- `MigrationOptions.preserve_timestamps` now defaults to `False` (it was `True`
-  but never implemented). `preserve_timestamps`/`preserve_permissions` are
-  applied client-side on a best-effort basis (see above); `preserve_versions`
-  still needs the server-side Migration API (`MigrationServerJob`). Enabling a
-  flag the adapter pair can't honor raises `NotImplementedError` instead of
-  silently no-op'ing.
-- `Site.create_migration_ingestion_job` — `azure_queue_report_uri` and
-  `ingestion_task_key` are now optional (the API treats the queue as optional).
-- **Streaming export + row-level dead-letter:** `export_to(..., page_size=...)`
-  streams appendable formats (CSV/TSV/NDJSON/JSON) page by page — bounded memory
-  for large collections. With `on_error="collect"` **and** a `dead_letter`, a
-  chunk is executed record-by-record so each failing row is dead-lettered as
-  `{"row": ..., "error": ..., "record": {...}}`.
-- **Large-list threshold mitigations:** a typed
-  `SPQueryThrottledException` with actionable guidance; `Folder.get_files` now
-  pages (so >5,000-item folders work — refs #930/#936/#462);
-  `List.get_items(query, page_size=...)` pages CAML results (continuing from the
-  last item via `ListItemCollectionPosition`); `List.ensure_indexed(name)` /
-  `Field.ensure_indexed()` index an existing column via `enableIndex` (the real
-  fix for #427); and `List.get_items` warns on unpaged filter/sort queries. New
-  `docs/large-lists.md` guide (including the large-library upload caveat, #726).
-- **Large-list UX:** list-view-backed collections (`ListItemCollection`,
-  `FileCollection`, `FolderCollection`) now **warn once** when an unpaged load
-  reaches the 5,000-item threshold (they may have been silently trimmed) and point
-  at the paged API — covering the `ctx.load(folder, ["Files"])` path from
-  #930/#936. `CamlQuery.index_candidates` / `List.index_candidates(query)` name the
-  columns a query should index (propose, never mutate). `List.check_query(query)`
-  (and `List.get_items(query, ..., check=True)`) pre-flights a query and raises
-  actionable guidance naming the columns to index instead of the opaque server
-  500 (opt-in; performs 1–2 requests).
-- **Migration-parity vocabulary:** `ImportResult.run(...)` aliases
-  `execute_batch`, and `ImportResult.verify(source, key=...)` reconciles a
-  source's natural keys against the target (delegating to the collection). The
-  pipeline and the migration toolkit now share one `VerificationReport`
-  (`runtime.verification`); `RecordCollection.verify` / `List.verify` generalize
-  `verify_keys` / `verify_dataframe`.
-- **More formats + path/IO parity:** the pipeline now supports `tsv`, `parquet`,
-  `orc` and `feather` (optional `[parquet]` extra) alongside CSV/JSON/NDJSON/
-  Excel/DataFrame, plus `from_sql`/`to_sql` (`[sql]`) and `from_duckdb`/
-  `to_duckdb` (`[duckdb]`) for bounded-memory DB streaming. Every reader/writer
-  accepts a path, a `PathLike` **or** an open file object (pandas parity); the
-  JSON-array file format is registered as `json` (`json_file` alias kept).
-- **DataFrame ⇄ SharePoint file bridge:** `Folder.write_dataframe("stocks.csv",
-  df)` / `File.write_dataframe(df)` serialize a DataFrame into a file's
-  **content** (UTF-8-BOM CSV so Excel keeps the columns, XLSX, JSON, ...), and
-  `Folder.read_dataframe("stocks.csv")` / `File.read_dataframe()` parse a file's
-  content back into a DataFrame (deferred `DataFrameResult`). File **metadata**
-  stays as plain properties. `List.from_file("Shared Documents/stocks.csv",
-  key=...)` downloads a SharePoint-hosted CSV/XLSX and streams it into the list
-  (bounded, resumable, idempotent). `dataframe_to_bytes`/`dataframe_from_bytes`
-  are the content codecs.
-- **Typed field mapping on import:** `List.import_from(..., schema={column:
-  FieldType})` now also **coerces values** into the payload shape SharePoint
-  expects — MultiChoice (`"; "`-separated or a list), Lookup/MultiLookup,
-  User/MultiUser (`{LookupId}`/`{Email}`), URL (`{Url, Description}`),
-  Geolocation, plus Boolean/Integer/Number/DateTime parsing. Backed by
-  `office365.sharepoint.fields.coercion.coerce_field_value`; the generic
-  `RecordCollection.import_from(..., coerce={key: converter})` hook keeps the
-  runtime destination-agnostic.
-- **Column mapping:** `import_from(..., mapping={"SourceCol": "TargetField"})`
-  renames source columns/keys before queuing (list imports rename before
-  field-name sanitization), so differently-named sources land in the right columns.
-- **Import verification:** `RecordCollection.verify_keys(keys)` reconciles a keyed
-  import against the target (returns a `VerificationResult` with `ok`/`missing`);
-  `List.verify_dataframe(df, key=...)` derives the keys from a DataFrame.
-- **Dead-letter capture:** `ImportResult`/`import_from(..., dead_letter="dl.jsonl")`
-  appends each collected chunk failure (`{"error": ..., "records": [...]}`) to a
-  JSONL file (with `on_error="collect"`) for remediation.
-- **Import schema evolution:** `List.import_from(..., on_schema_change="evolve"|
-  "fail")` provisions columns that first appear in a later chunk (default
-  ``evolve``) or rejects them (``fail``); backed by a per-chunk ``before_chunk``
-  hook on `ImportResult` that runs before the chunk is queued.
-- **Incremental migration watermark:** `MigrationRunner` now uses the persisted
-  `Checkpoint.source_watermark` — with `MigrationOptions.incremental` it skips
-  items at/below the watermark and advances it to the highest migrated source
-  `modified` (filesystem, SharePoint library and list sources populate it), so a
-  resumed incremental run only re-scans new/changed items.
-- Removed `office365/migration/_util.py`; its helpers moved to their domains:
-  `emit_progress` → `runtime.operations`, `iso`/`iso_or_none`/`utc_now_iso` →
-  `runtime.converters.scalars`, `record_to_json` → `runtime.converters.json_file`.
-  Report writing is now **per-format** (`migration.report_io.write_dataset`/
-  `write_formats`) instead of the CSV+JSON-coupled `write_csv_json`.
-- `MigrationItem` carries `created` and the reliable system `author_id`/`editor_id`
-  (in addition to `modified`); the filesystem, SharePoint library and SharePoint
-  list sources populate them, and the item report exports them. Incremental
-  migration now has source timestamps for SharePoint libraries, and
-  `SharePointLibraryTarget.modified()` supports the target-side comparison.
-- **Idempotent metadata:** all client-side `ensure_*` (fields, lists, content
-  types, terms, contact folders) share new
-  `runtime.queries.get_or_create.get_or_create`/`create_or_get` primitives, and
-  accept `on_conflict="skip"|"update"` to reconcile an existing definition.
-- `List.ensure_field`/`ensure_fields` and `FieldCollection.from_dataframe`
-  now return the ensured **entity/entities** (`Field` / `list[Field]`);
-  `Folder.ensure_folders` returns `list[Folder]`. `List.ensure_fields_from_dataframe`
-  was removed (use `List.fields.from_dataframe`).
-- **Breaking:** `List.from_dataframe()` returns an `ImportResult` driver instead
-  of the `List`; `progress` is now keyword-only and the whole frame is no longer
-  queued — execution happens on the chosen terminal.
-- The SharePoint list migration target flushes each chunk and discards the
-  queued entities, keeping large record migrations memory-bounded.
+- **Error classification is locale-independent:** exceptions key off the numeric
+  HRESULT and/or embedded .NET type name; HTTP 423 disambiguates
+  `SPFileCheckOutException` from the shared-lock `FileLockedException` (an unresolved
+  423 still maps to `FileLockedException`).
+- **Data-pipeline naming (breaking):** `from_*` is the streaming entry (returns
+  `ImportResult`) and `queue_*` the deferred path. Removed `import_from`/
+  `import_records`/`import_dataframe`/`import_from_file` and `to_json_file`/
+  `from_json_file`; `FieldCollection.from_dataframe` → `ensure_from_dataframe`.
+- **Architecture:** the data-interchange surface moved onto a new `RecordCollection`
+  base (inherited by every typed `EntityCollection`); formats resolve through
+  `runtime.converters.registry`; keyed skip/upsert is a pluggable `UpsertTarget`
+  implemented by `ListItemUpsertTarget`.
+- `import_from`/`import_records` gained `enforce_unique=True` and `dry_run=True`.
+- `List` gained record facades (`import_from`/`import_dataframe`/`import_records`,
+  `export_to`/`to_dataframe`); `List.from_dataframe` is now deferred.
+- `SharePointListSource` reuses the shared record projection.
+- `MigrationOptions.preserve_timestamps` defaults to `False`; unhonorable flags raise
+  `NotImplementedError`; `preserve_versions` still needs the server-side Migration API.
+- `Site.create_migration_ingestion_job` — `azure_queue_report_uri`/`ingestion_task_key`
+  are now optional.
+- **Streaming export + row-level dead-letter:** `export_to(..., page_size=...)` streams
+  appendable formats; with `on_error="collect"` and a `dead_letter`, each failing row
+  is dead-lettered.
+- **Large-list threshold mitigations:** typed `SPQueryThrottledException`; paged
+  `Folder.get_files` (refs #930/#936/#462) and `List.get_items(query, page_size=...)`;
+  `List.ensure_indexed`/`Field.ensure_indexed` (the real fix for #427); a warning on
+  unpaged filter/sort queries; new `docs/large-lists.md` (including #726).
+- **Large-list UX:** list-view collections (`ListItemCollection`, `FileCollection`,
+  `FolderCollection`) warn once at the 5,000-item threshold (refs #930/#936);
+  `CamlQuery.index_candidates`/`List.index_candidates`; `List.check_query` pre-flights
+  a query.
+- **Migration-parity vocabulary:** `ImportResult.run(...)` aliases `execute_batch`;
+  `ImportResult.verify`; a shared `VerificationReport` (`runtime.verification`).
+- **More formats + path/IO parity:** `tsv`, `parquet`, `orc` and `feather`
+  (`[parquet]`), `from_sql`/`to_sql` (`[sql]`), `from_duckdb`/`to_duckdb`
+  (`[duckdb]`); every reader/writer accepts a path, `PathLike`, or open file.
+- **DataFrame ⇄ SharePoint file bridge:** `Folder.write_dataframe`/`File.write_dataframe`,
+  `Folder.read_dataframe`/`File.read_dataframe`, and `List.from_file`; codecs are
+  `dataframe_to_bytes`/`dataframe_from_bytes`.
+- **Typed field mapping on import:** `List.import_from(..., schema={column: FieldType})`
+  coerces values into the payload shape; `coerce_field_value`; generic
+  `RecordCollection.import_from(..., coerce={key: converter})`.
+- **Column mapping:** `import_from(..., mapping={...})` renames source columns/keys.
+- **Import verification:** `RecordCollection.verify_keys(keys)` and
+  `List.verify_dataframe(df, key=...)`.
+- **Dead-letter capture:** `import_from(..., dead_letter="dl.jsonl")` appends each
+  collected chunk failure.
+- **Import schema evolution:** `List.import_from(..., on_schema_change="evolve"|"fail")`,
+  backed by an `ImportResult` `before_chunk` hook.
+- **Incremental migration watermark:** `MigrationRunner` uses the persisted
+  `Checkpoint.source_watermark` to skip and advance.
+- Removed `office365/migration/_util.py`; helpers moved to `runtime.operations`,
+  `runtime.converters.scalars`, and `runtime.converters.json_file`. Report writing is
+  now per-format (`write_dataset`/`write_formats`).
+- `MigrationItem` carries `created` and `author_id`/`editor_id`.
+- **Idempotent metadata:** all client-side `ensure_*` share
+  `runtime.queries.get_or_create.get_or_create`/`create_or_get` and accept
+  `on_conflict="skip"|"update"`.
+- `List.ensure_field`/`ensure_fields` and `FieldCollection.from_dataframe` now return
+  the ensured entities; `List.ensure_fields_from_dataframe` was removed.
+- **Breaking:** `List.from_dataframe()` returns an `ImportResult` driver; `progress`
+  is keyword-only.
+- The SharePoint list migration target flushes and discards each chunk.
 
 ### Fixed
-- **Collection-bound OData operations are no longer generated onto item types.** A bindable
-  `FunctionImport` whose `this` parameter is `Collection(X)` (e.g. `SP.User`'s
-  `RemoveById` / `RemoveByLoginName`) was attached to the item class `X` with the wrong
-  resource path, because the binding type name had `Collection(...)` stripped during
-  normalization. The SharePoint (v3) and Graph (v4) readers now skip collection-bound
-  operations — their home is the hand-written `<Item>Collection` class — and the 49
-  already-generated methods were removed from 24 item classes (e.g. `User.remove_by_id`,
-  `Feature.remove`, `SubtitleFile.add`, `SitePublishingPage.set_multilingual`,
-  `SiteProperties.get_lock_state_by_id`, `MigrationTask.batch_*`).
+- **Collection-bound OData operations are no longer generated onto item types.** A
+  bindable `FunctionImport` whose `this` is `Collection(X)` was attached to item class
+  `X`; the SharePoint (v3) and Graph (v4) readers now skip them, removing 49 methods
+  from 24 item classes (e.g. `User.remove_by_id`, `Feature.remove`, `SubtitleFile.add`,
+  `SitePublishingPage.set_multilingual`, `SiteProperties.get_lock_state_by_id`,
+  `MigrationTask.batch_*`).
 - **A custom session carrying its own auth handler now counts as credentials (refs #1045).**
-  `with_transport(session=...)` advertises `session.auth` for NTLM/SSPI, but every
-  SharePoint request still went through `AuthenticationContext.authenticate_request`,
-  which raised `ValueError: Authentication credentials are missing or invalid` when no
-  provider was configured. The request, the form digest fetch and the batch paths now
-  skip the auth context when the transport carries a handler and nothing is configured;
-  a configured provider still wins, and a session without `auth` still raises.
+  SharePoint requests (and the form-digest and batch paths) skip
+  `AuthenticationContext.authenticate_request` when the transport carries a handler
+  and nothing is configured.
 - **Server-side file imports need a matching `SPListItem` (live-validated).** The
-  Migration API **silently skips** an `SPFile` unless the package also contains
-  the file's `SPListItem` (with a `<Fields>` member) — `PackageBuilder.add_file`
-  now emits it, and `add_list_item` reuses it for sharing metadata. Also: every
-  `<User>` must carry `SystemId` (the service schema requires it although the docs
-  call it optional), and `DeploymentRoles` must **not** be emitted (the target's
-  role definitions already exist — *"Updates to system roles is not allowed"*).
-- **`PackageBuilder.add_role_assignment` now defaults `object_type="2"`.** The
-  service parses `RoleAssignment/@ObjectType` as a numeric enum (`0` web, `1`
-  list, `2` item/file); `2` was live-validated to break inheritance on a file.
-  Note: the grant itself (`Assignment` role→principal) and `Author`/`ModifiedBy`
-  still don't land — the target user's `SystemId` (SID) isn't exposed by the SPO
-  REST API, so the principal can't be resolved yet (parked).
+  Migration API silently skips an `SPFile` unless the package also contains its
+  `SPListItem`; `PackageBuilder.add_file` now emits it. Every `<User>` must carry
+  `SystemId`, and `DeploymentRoles` must not be emitted.
+- **`PackageBuilder.add_role_assignment` now defaults `object_type="2"`.** The grant
+  itself and `Author`/`ModifiedBy` still don't land (the target SID isn't exposed by
+  the SPO REST API; parked).
 - **On-prem NTLM auth works again (refs #1045).** `ClientContext(url, allow_ntlm=True)`
-  was ignored twice over: `with_user_credentials` raised unconditionally instead of
-  delegating to `AuthenticationContext.with_credentials` (which already routes to
-  `NtlmProvider` when `allow_ntlm` is set), and `pending_request()` never forwarded
-  `allow_ntlm`/`browser_mode` to the request. `with_user_credentials` now delegates,
-  the flags are forwarded, and the retired-SAML guard still fires for SharePoint
-  Online (`allow_ntlm=False`).
+  delegates to `AuthenticationContext.with_credentials` and forwards
+  `allow_ntlm`/`browser_mode`; the retired-SAML guard still fires for SharePoint Online.
 - **`SharePointPackageTarget` no longer emits an empty `ExportSettings` `SiteUrl`.**
-  It fell back to an unloaded `site.url` (`None` → `""`), so the API rejected the
-  job with `There is an error in XML document (2, 62)` /
-  `Invalid URI: The URI is empty.` The target now resolves the site URL (loading
-  `Url` when needed) or raises a clear error, and accepts a `source_type`.
-- **`Manifest.xml` now matches the shape the service accepts.** It emitted a
-  `SPWeb` object (rejected — the service's `SPObjectType` excludes it) and a
-  `<List>` element. Following the working `MigrationApiDemo` sample it now emits
-  the library **root `SPFolder`**, the **`SPDocumentLibrary`**, an `SPFolder` per
-  subfolder, and an `SPFile` per file — with `FileValue` = the content blob name
-  (so the manifest points at the staged blobs) and `ListItemIntId`. Also fixed
-  `UserGroupMap.xml` → **`UserGroup.xml`** (the name the API downloads) and the
-  `ViewFormsList` namespace (`…viewformlist…`, not `…viewformslist…`).
-- **Migration packages now emit the manifest files the API fetches.** The
-  ingestion service downloads `Requirements.xml` / `RootObjectMap.xml` /
-  `LookupListMap.xml` / `ViewFormsList.xml` by name, and a missing one fails the
-  job (`Unable to download Requirements.xml … (404)`) even though the docs call
-  them optional. `PackageBuilder` emits all four (childless roots, plus a `List`
-  entry in `RootObjectMap.xml`). Failed jobs are now diagnosable:
-  `MigrationServerJob.all_events` / `errors`, `SharePointPackageTarget.events` /
-  `errors` / `diagnose` (which fetches and AES-decrypts the API's import log via
-  `BlobStaging.read_manifest_blob`).
-- **`CreateMigrationJobEncrypted` sends the AES key as base64 text.**
-  `provision_migration_containers()` returns the key already base64-encoded, and
-  the REST payload wants that base64 string — so `create_migration_job_encrypted`
-  now passes a `str` key through (base64-encoding raw `bytes`) instead of decoding
-  it. Decoding produced raw bytes that the payload serializer tried to UTF-8-decode
-  (`UnicodeDecodeError`).
-- **`$skip` paging no longer collides with a server `$skiptoken`.** Once the
-  server drives paging (`__next`/`@odata.nextLink`), the client-side `$skip`
-  fallback is disabled, fixing `The $skip and $skiptoken cannot be specified at
-  the same time` on the final page of a paged collection (e.g.
-  `items.order_by("ID").get_all(page_size=2000)`).
-- **Idempotent imports now load existing keys on every run**, not only on a fresh
-  one. A resumed run previously skipped the key load (it lived in the fresh-only
-  `prepare` hook), so a replayed or overlapping chunk (a crash between the server
-  commit and the checkpoint write, or a changed `--chunk`) could duplicate rows.
-  The key column is ensured and the existing keys are loaded lazily before the
-  first queued chunk — fresh or resumed — so `key=...` imports are idempotent on
-  every run. `ImportCheckpoint` also records a source signature (format, chunk
-  size, key columns); on a mismatch the chunk-based skip is discarded and the
-  source is re-scanned (the keyed skip keeps it duplicate-free).
-- DataFrame import no longer silently drops a column whose title collides with a
-  built-in SharePoint field (e.g. `Name` resolves to `FileLeafRef`): the column
-  is imported with a `_` suffix and a warning is emitted.
-- `series_kind`/`field_type_from_kind` now handle complex, timedelta, category
-  and object-datetime columns, and unknown kinds fall back to `Text` instead of
-  raising `KeyError`.
+  It resolves the site URL or raises a clear error, and accepts a `source_type`.
+- **`Manifest.xml` now matches the service shape.** It emits the library root
+  `SPFolder`, the `SPDocumentLibrary`, a folder per subfolder and an `SPFile` per file;
+  `UserGroupMap.xml` → `UserGroup.xml`; the `ViewFormsList` namespace is fixed.
+- **Migration packages now emit the manifest files the API fetches** (`Requirements.xml`,
+  `RootObjectMap.xml`, `LookupListMap.xml`, `ViewFormsList.xml`). Failed jobs are
+  diagnosable via `MigrationServerJob.all_events`/`errors` and
+  `SharePointPackageTarget.events`/`errors`/`diagnose`.
+- **`CreateMigrationJobEncrypted` sends the AES key as base64 text** instead of
+  decoding it.
+- **`$skip` paging no longer collides with a server `$skiptoken`.**
+- **Idempotent imports load existing keys on every run**, and `ImportCheckpoint` now
+  records a source signature so a mismatch rescans the source.
+- DataFrame import no longer silently drops a column colliding with a built-in field
+  (it is imported with a `_` suffix and a warning).
+- `series_kind`/`field_type_from_kind` handle more kinds and fall back to `Text`
+  instead of raising `KeyError`.
 
 ## [3.1.1] - 2026-09-13
 
 ### Fixed
-- SharePoint form digest is cached correctly again (`_valid_from` is set when
-  the digest is fetched) and refreshed with a safety margin, so
-  `/_api/contextInfo` is no longer requested on **every** call — it is fetched
-  once per site/run and pre-warmed before parallel `execute_batch`, which
-  removes the throttling (`429`) storm seen on long batch imports.
-- A throttled digest refresh (`429`/`503`) is now retried honoring
-  `Retry-After`, and an expired/invalidated digest (`403`, security validation)
-  is refreshed and the affected request retried once. The error is surfaced as
-  `SecurityValidationException` (`office365/sharepoint/exceptions.py`),
-  dispatched by `ClientRequestException.from_response` via a registry so the
-  runtime stays product-agnostic.
-- Whole-batch throttling (`429`/`503`) now honors `Retry-After` instead of
-  falling back to exponential backoff.
-- `File.open_binary` / `File.save_binary` mangled the URL by percent-encoding
-  the whole OData call (`(`→`%28`, `)`→`%29`, `$`→`%24`) and adding a stray
-  backslash before `$value`, causing a `400 Bad Request`
-  ([#978](https://github.com/vgrem/office365-rest-python-client/issues/978)).
-  Only the path value is encoded now; the call syntax and `/$value` stay
-  literal.
+- SharePoint form digest is cached correctly again (`_valid_from` set on fetch,
+  safety-margin refresh), so `/_api/contextInfo` is fetched once per site/run and
+  pre-warmed before parallel `execute_batch`.
+- A throttled digest refresh (`429`/`503`) is retried honoring `Retry-After`, and an
+  expired/invalidated digest (`403`) is refreshed and retried once, surfaced as
+  `SecurityValidationException`.
+- Whole-batch throttling (`429`/`503`) honors `Retry-After` instead of exponential
+  backoff.
+- `File.open_binary`/`File.save_binary` no longer percent-encode the whole OData call
+  ([#978](https://github.com/vgrem/office365-rest-python-client/issues/978)); only the
+  path value is encoded.
 
 ## [3.1.0] - 2026-09-13
 
 ### Added
-- **Migration toolkit** — product-agnostic core plus `sharepoint`, `outlook`
-  and `teams` products: resumable `MigrationJob`/`MigrationSession` with
-  checkpoints, filesystem/SharePoint/JSON/Teams archive adapters, parallel
-  transfer, a server-side ingestion job, and summary/item/failure reports.
+- **Migration toolkit** — product-agnostic core plus `sharepoint`, `outlook` and
+  `teams`: resumable `MigrationJob`/`MigrationSession`, filesystem/SharePoint/JSON/
+  Teams archive adapters, parallel transfer, a server-side ingestion job, and
+  summary/item/failure reports.
 - **SMAT-style pre-migration assessment** — modular scans/containers,
-  `MigrationAssessor`/`MigrationTenantAssessor`/`MailboxAssessor`, typed scan
-  reports (`LargeSites`, `LockedSites`, `MailFolders`) and CSV/JSON export.
-- **Parallel execution** — `execute_batch(concurrency=N)` on `ClientContext`
-  and `GraphClient`, plus `execute_query_parallel(concurrency=N)` for
-  pipelined I/O over independent queries; both retry transient failures per
-  request honoring `Retry-After`.
-- **Data pipeline** — CSV/JSON/NDJSON/Excel import-export,
-  `from_csv`/`from_json`/`from_records`, dynamic list-item columns, and an
-  optional pandas bridge (`to_dataframe`/`from_dataframe`).
-- **SharePoint** — taxonomy term store (OData v2.1/V4) support, site
-  primitives, folder download with version history, zip ↔ folder primitives,
-  `Web.ensure_list`, `DriveItem.ensure_folder`, and typed field creators.
-- **Generator** — OData function/action method generation, a return-type
-  descriptor/resolver, and list-typed primitive collection parameters.
+  `MigrationAssessor`/`MigrationTenantAssessor`/`MailboxAssessor`, typed reports
+  (`LargeSites`, `LockedSites`, `MailFolders`), and CSV/JSON export.
+- **Parallel execution** — `execute_batch(concurrency=N)` on `ClientContext` and
+  `GraphClient`, plus `execute_query_parallel(concurrency=N)`; per-request retry
+  honoring `Retry-After`.
+- **Data pipeline** — CSV/JSON/NDJSON/Excel import-export, `from_csv`/`from_json`/
+  `from_records`, dynamic list-item columns, and an optional pandas bridge.
+- **SharePoint** — taxonomy term store (OData v2.1/V4), site primitives, folder
+  download with version history, zip ↔ folder primitives, `Web.ensure_list`,
+  `DriveItem.ensure_folder`, and typed field creators.
+- **Generator** — OData function/action generation, a return-type descriptor/resolver,
+  and list-typed primitive collection parameters.
 
 ### Changed
 - Thread-safe auth and form-digest caches (single-flight refresh);
-  `ClientContext.clone` now shares the auth context and transport.
-- First-class retry (exponential backoff + jitter) and throttling
-  (rate-limit/health headers) primitives; `ClientQuery` generics made
-  consistent.
+  `ClientContext.clone` shares the auth context and transport.
+- First-class retry (exponential backoff + jitter) and throttling primitives;
+  `ClientQuery` generics made consistent.
 - Examples reorganized into product galleries and an SPMT-style migration flow
   (`assess/` → `migrate/` → `monitor/`).
 
 ### Fixed
 - Long file paths in moves ([#988](https://github.com/vgrem/office365-rest-python-client/issues/988)) —
-  body-based `File.move_by_path`/`MoveCopyUtil.move_file_by_path`; slashes are
-  no longer percent-encoded inside OData string literals.
+  body-based `File.move_by_path`/`MoveCopyUtil.move_file_by_path`; slashes are no
+  longer percent-encoded inside OData string literals.
 - Bulk OneDrive downloads ([#881](https://github.com/vgrem/office365-rest-python-client/issues/881)) —
-  `download_folder` paginates children instead of stopping at the first page.
-- SharePoint paging falls back to `$skip` when no next link is returned
-  ([#915](https://github.com/vgrem/office365-rest-python-client/issues/915)),
-  and custom headers are preserved across pages.
+  `download_folder` paginates children.
+- SharePoint paging falls back to `$skip` with no next link
+  ([#915](https://github.com/vgrem/office365-rest-python-client/issues/915)); custom
+  headers are preserved across pages.
 - Apostrophes in file paths ([#884](https://github.com/vgrem/office365-rest-python-client/issues/884)),
   in-memory upload streams ([#793](https://github.com/vgrem/office365-rest-python-client/issues/793)),
-  sharing-token UTF-8/padding ([#875](https://github.com/vgrem/office365-rest-python-client/issues/875)).
+  and sharing-token UTF-8/padding ([#875](https://github.com/vgrem/office365-rest-python-client/issues/875)).
 - `@odata.type` casting for directory collections
-  ([#921](https://github.com/vgrem/office365-rest-python-client/issues/921));
-  principal path precedence ([#895](https://github.com/vgrem/office365-rest-python-client/issues/895));
-  delta-token/custom query-param handling ([#948](https://github.com/vgrem/office365-rest-python-client/issues/948));
-  malformed JSON surfaced as `ClientRequestException`.
+  ([#921](https://github.com/vgrem/office365-rest-python-client/issues/921)); principal
+  path precedence ([#895](https://github.com/vgrem/office365-rest-python-client/issues/895));
+  delta-token/custom query-param handling
+  ([#948](https://github.com/vgrem/office365-rest-python-client/issues/948)); malformed
+  JSON surfaced as `ClientRequestException`.
 
 ### Internal
 - Generator metadata readers/model moved from `office365/runtime/odata` to
   `generator/odata`; generator checkpoints are no longer tracked.
-- Unit suite consolidated into themed modules and pruned; pyright clean.
+- Unit suite consolidated into themed modules; pyright clean.
 
 ## [3.0.0]
 
