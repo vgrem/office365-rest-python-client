@@ -92,6 +92,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   without a tenant. `.env.example`, `README-dev.md`, `CONTRIBUTING.md` and the
   example quick starts were rewritten around this, and the dead
   `office365_python_sdk_securevars` reference was removed.
+- **Setup automation:** `.env.example` and README-dev document how each block can
+  be filled with the existing `examples/entraid/applications/` and
+  `examples/sharepoint/auth/setup/` scripts. `certificate_auth.py` now prints a
+  paste-ready `.env` block, `applications/create.py` gains `--keep`/`--name`, and
+  `applications/rotate_cert.py` uploads a configurable public certificate.
 
 ## [3.2.0] - 2026-09-27
 

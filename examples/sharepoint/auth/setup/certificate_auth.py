@@ -81,9 +81,11 @@ def main() -> None:
     thumbprint = get_thumbprint()
     print(f"Certificate:  {CERT_PUBLIC}")
     print(f"Private key:  {CERT_PRIVATE}")
-    print(f"Tenant:       {tenant}")
-    print(f"Client ID:    {client_id}")
-    print(f"Thumbprint:   {thumbprint}")
+    print()
+    print("Add to .env:")
+    print(f"OFFICE365_TENANT={tenant}")
+    print(f"OFFICE365_CLIENT_ID={client_id}")
+    print(f"OFFICE365_CERT_THUMBPRINT={thumbprint}")
 
 
 if __name__ == "__main__":

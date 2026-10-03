@@ -20,15 +20,16 @@ The script:
 
 ```dotenv
 OFFICE365_TENANT=contoso.onmicrosoft.com
-OFFICE365_CLIENT_ID=51d03106-4726-442c-86db-70b32fa7547f
-OFFICE365_CERT_THUMBPRINT=6B36FBFC86FB1C019EB6496494B9195E6D179DDB
+OFFICE365_CLIENT_ID=00000000-0000-0000-0000-000000000000
+OFFICE365_CERT_THUMBPRINT=<thumbprint>
 ```
 
 It authenticates as a tenant administrator (`OFFICE365_ADMIN_USERNAME`) via
 interactive sign-in and requires the **Global Administrator** or **Privileged Role
-Administrator** role. See
-[README-dev.md](https://github.com/vgrem/office365-rest-python-client/blob/master/README-dev.md)
-for the full local setup.
+Administrator** role. It prints a paste-ready block (`OFFICE365_TENANT=…`,
+`OFFICE365_CLIENT_ID=…`, `OFFICE365_CERT_THUMBPRINT=…`). See
+[README-dev.md](https://github.com/vgrem/office365-rest-python-client/blob/master/README-dev.md#set-up-live-authentication)
+for the full local setup and the other flows.
 
 ## Manual setup
 
@@ -57,8 +58,8 @@ from office365.sharepoint.client_context import ClientContext
 
 ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
     tenant="contoso.onmicrosoft.com",
-    client_id="51d03106-4726-442c-86db-70b32fa7547f",
-    thumbprint="6B36FBFC86FB1C019EB6496494B9195E6D179DDB",
+    client_id="00000000-0000-0000-0000-000000000000",
+    thumbprint="0000000000000000000000000000000000000000",
     cert_path="tests/selfsigncert.pem",
 )
 
