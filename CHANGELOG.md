@@ -102,10 +102,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   paste-ready `.env` block) and now signs in interactively like the other setup
   scripts. README-dev presents certificate auth as shared by Graph and SharePoint,
   and the docs say "SharePoint REST API v1" instead of `/_api`.
-- **Guided credential setup:** `python -m tests.setup` prompts for the tenant,
-  certificate and optional client secret, reuses or creates app credentials
-  idempotently, and merges the results into `.env` (with a `.env.bak` backup and a
-  `--dry-run` preview). Generated certificates are no longer tracked.
+- **Guided credential setup:** `python -m tests.setup` reads the existing `.env`,
+  prompts only for the tenant and sign-in app id when they are missing, reuses or
+  creates app credentials idempotently, derives the SharePoint URLs from the tenant
+  name, and writes `.env` (with a `.env.bak` backup and a `--dry-run` preview).
+  Generated certificates are no longer tracked.
+- **Two-user test model:** `OFFICE365_TEST_USER1`/`OFFICE365_TEST_USER2` are replaced
+  by `OFFICE365_USERNAME` (primary, also the ROPC account) and the optional
+  `OFFICE365_USERNAME_ALT`. `tests/__init__.py` still exposes
+  `test_user_principal_name`/`test_user_principal_name_alt`, so existing tests and
+  examples need no changes.
 
 ## [3.2.0] - 2026-09-27
 

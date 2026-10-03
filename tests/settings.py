@@ -158,17 +158,15 @@ class Settings:
             tenant_prefix=prefix,
             root_site_url=root_site_url,
             site_url=_optional("OFFICE365_SITE_URL", root_site_url),
-            team_site_url=_optional(
-                "OFFICE365_TEAM_SITE_URL", f"{root_site_url}/sites/project" if root_site_url else ""
-            ),
+            team_site_url=_optional("OFFICE365_TEAM_SITE_URL", f"{root_site_url}/sites/team" if root_site_url else ""),
             admin_site_url=_optional(
                 "OFFICE365_ADMIN_SITE_URL", f"https://{prefix}-admin.sharepoint.com" if prefix else ""
             ),
             content_type_hub_url=_optional(
                 "OFFICE365_CONTENT_TYPE_HUB_URL", f"{root_site_url}/sites/contentTypeHub" if root_site_url else ""
             ),
-            user_principal=_optional("OFFICE365_TEST_USER1"),
-            user_principal_alt=_optional("OFFICE365_TEST_USER2"),
+            user_principal=_optional("OFFICE365_USERNAME"),
+            user_principal_alt=_optional("OFFICE365_USERNAME_ALT"),
             admin_username=_optional("OFFICE365_ADMIN_USERNAME"),
             shared_mailbox_upn=_optional("OFFICE365_SHARED_MAILBOX_UPN"),
         )

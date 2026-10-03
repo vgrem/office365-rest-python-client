@@ -67,12 +67,16 @@ Each prompts for the permission name, e.g. `Sites.FullControl.All` or `User.Read
 
 ### 4. User context (ROPC / delegated)
 
+`OFFICE365_USERNAME` is the primary test user and the ROPC account; the optional
+`OFFICE365_USERNAME_ALT` adds a second account for sharing/delegation tests.
+
 ```dotenv
-OFFICE365_USERNAME=admin@contoso.onmicrosoft.com
+OFFICE365_USERNAME=user1@contoso.onmicrosoft.com
 OFFICE365_PASSWORD=your-password
+# OFFICE365_USERNAME_ALT=user2@contoso.onmicrosoft.com
 ```
 
-Needs MFA off for that user. For interactive examples, also add a redirect URI and
+Needs MFA off for the ROPC user. For interactive examples, also add a redirect URI and
 the **Allow public client flows** toggle:
 
 ```bash
@@ -81,17 +85,20 @@ uv run python examples/entraid/applications/redirect_uris.py
 
 ### 5. App-only
 
-The guided wizard fills `.env` for you. It signs in with your app, reuses or
-generates one self-signed certificate (valid for both Graph and SharePoint),
-optionally creates a client secret, and merges the values in:
+The guided wizard generates `.env` for you. It reads the values already present,
+prompts only for the tenant and sign-in app id when they are missing, signs in,
+reuses or generates one self-signed certificate (valid for both Graph and
+SharePoint), optionally creates a client secret, and derives the SharePoint URLs
+from the tenant name (or the signed-in UPN):
 
 ```bash
 uv run python -m tests.setup
 ```
 
-It prompts for the tenant, whether to create a client secret, and whether
-SharePoint uses `all` or `selected` sites. Re-running reuses what is already
-there; `--dry-run` previews the `.env` merge without signing in or writing:
+Everything else — the admin/primary usernames, the optional secondary user and
+shared mailbox, and the `*_SITE_URL` defaults — is discovered or derived.
+Re-running reuses what is already there; `--dry-run` previews the `.env` merge
+without signing in or writing:
 
 ```bash
 uv run python -m tests.setup --dry-run
