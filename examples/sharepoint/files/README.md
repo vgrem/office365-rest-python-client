@@ -161,6 +161,24 @@ offers opt-in remedies:
 |------|------|-------|
 | Retry / metadata / bypass delete | [`handle_locked_file.py`](./handle_locked_file.py) | `retry_on(FileLockedException)`, `update_ex(bypass_shared_lock=True)`, `delete_object(bypass_shared_lock=True)` |
 
+### Acting on behalf of a user
+
+SharePoint REST has no "impersonate" switch — a request runs as whoever the
+access token represents, so a check-out is always attributed to the
+authenticated identity:
+
+- **As a specific user** — sign in with a delegated flow for that user
+  (`with_username_and_password`, `with_interactive`, `with_device_flow`, or a
+  delegated token supplied via `with_access_token`, e.g. an on-behalf-of token).
+  [`checkout_checkin.py`](./checkout_checkin.py) uses this flow.
+- **As the application** — app-only credentials (`with_client_certificate`) run
+  as the app, not a human user, so they cannot be used to attribute a check-out
+  to someone else.
+
+To release a file another user left checked out, list it with
+[`get_checked_out.py`](./get_checked_out.py) and take over the check-out
+(`CheckedOutFile.takeover_checkout()`), which requires sufficient permissions.
+
 ## Sharing
 
 | What | File | Notes |
