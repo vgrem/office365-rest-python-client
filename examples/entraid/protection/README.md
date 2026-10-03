@@ -65,9 +65,7 @@ checked against threat categories (spam, phishing, malware).
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 # Risky users report
 risky = client.identity_protection.risky_users.get().execute_query()

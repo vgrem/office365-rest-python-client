@@ -8,7 +8,6 @@ on:
 
 env:
   DEFAULT_PYTHON: "3.10"
-  RUFF_VERSION: 0.14.10
   UV_VERSION: 0.9.22
 
 permissions:
@@ -19,14 +18,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: chartboost/ruff-action@v1
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v7
         with:
-          args: "check --fix"
-          version: ${{ env.RUFF_VERSION }}
-      - uses: chartboost/ruff-action@v1
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          args: "format --check"
-          version: ${{ env.RUFF_VERSION }}
+          version: ${{ env.UV_VERSION }}
+      - name: Install Requirements
+        run: uv sync --frozen --all-extras
+      - name: Lint
+        run: uv run ruff check
+      - name: Check formatting
+        run: uv run ruff format --check
 
   pyright:
     runs-on: ubuntu-latest

@@ -6,7 +6,7 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 @dataclass
 class SyntexGetModifiedListResponse(ClientValue):
-    IgnoredUrlsList: StringCollection = field(default_factory=lambda: StringCollection())
+    IgnoredUrlsList: StringCollection = field(default_factory=StringCollection)
     ModifiedSelectedSitesList: GuidCollection = field(default_factory=GuidCollection)
 
     @property

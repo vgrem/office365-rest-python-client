@@ -45,7 +45,7 @@ class SPContainerProperties(ClientValue):
     Status: str | None = None
     StorageUsed: int | None = None
     TransferFromPrincipalOwnerIdentifier: str | None = None
-    Writers: StringCollection = field(default_factory=lambda: StringCollection())
+    Writers: StringCollection = field(default_factory=StringCollection)
     RestrictContentOrgWideSearch: bool | None = None
     ClearRestrictedAccessControl: bool | None = None
     ContainerRedirectUrl: str | None = None

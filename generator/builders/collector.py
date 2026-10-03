@@ -108,7 +108,7 @@ class TypeReferenceCollector:
         """Add a Python type name (resolving custom types to their modules)."""
         if "[" in type_name and type_name.endswith("]"):
             self._add_python_type(type_name.split("[", 1)[1][:-1])
-        base_name = type_name.split("[")[0]
+        base_name = type_name.split("[", maxsplit=1)[0]
         self.add(base_name)
         if base_name in self.KNOWN or base_name in self.OPTIONAL_TYPES:
             return

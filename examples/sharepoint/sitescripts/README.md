@@ -66,9 +66,7 @@ site_script = {
     "bindata": {},
     "version": 1,
 }
-created = SiteScriptUtility.create_site_script(
-    ctx, "Theme Script", "Applies Contoso theme", site_script
-).execute_query()
+created = SiteScriptUtility.create_site_script(ctx, "Theme Script", "Applies Contoso theme", site_script).execute_query()
 print(f"Created: {created.value.Title} (ID: {created.value.Id})")
 ```
 

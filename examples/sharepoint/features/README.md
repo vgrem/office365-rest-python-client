@@ -41,9 +41,7 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_cer
 )
 
 # Activate a feature
-f = ctx.site.features.add(
-    KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm
-).execute_query()
+f = ctx.site.features.add(KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm).execute_query()
 print(f"Activated: {f.display_name}")
 ```
 

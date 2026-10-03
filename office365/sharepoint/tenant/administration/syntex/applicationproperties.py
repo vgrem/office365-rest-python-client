@@ -12,9 +12,9 @@ class SPSyntexApplicationProperties(ClientValue):
     ApplicationId: UUID | None = None
     ApplicationName: str | None = None
     Applications: GuidCollection = field(default_factory=GuidCollection)
-    AppOnlyPermissions: StringCollection = field(default_factory=lambda: StringCollection())
-    CopilotEmbeddedChatHosts: StringCollection = field(default_factory=lambda: StringCollection())
-    DelegatedPermissions: StringCollection = field(default_factory=lambda: StringCollection())
+    AppOnlyPermissions: StringCollection = field(default_factory=StringCollection)
+    CopilotEmbeddedChatHosts: StringCollection = field(default_factory=StringCollection)
+    DelegatedPermissions: StringCollection = field(default_factory=StringCollection)
     OverrideTenantSharingCapability: bool | None = None
     OverrideTenantSharingCapabilityNullable: int | None = None
     OwningApplicationId: UUID | None = None

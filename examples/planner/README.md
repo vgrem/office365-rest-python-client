@@ -64,9 +64,7 @@ A **plan** is owned by a Microsoft 365 group. Plans contain **buckets**
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 group = client.groups.get_by_name("My Team").get().execute_query()
 plan = client.planner.plans.add("My Plan", group).execute_query()

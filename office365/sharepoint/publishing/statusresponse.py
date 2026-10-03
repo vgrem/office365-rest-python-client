@@ -13,7 +13,7 @@ from office365.sharepoint.viva.engagepublishingstatus import VivaEngagePublishin
 
 @dataclass
 class PublishingStatusResponse(ClientValue):
-    EmailPublishingStatus: _EmailPublishingStatus = field(default_factory=lambda: _EmailPublishingStatus())
+    EmailPublishingStatus: _EmailPublishingStatus = field(default_factory=_EmailPublishingStatus)
     LastTriedAt: Optional[datetime] = None
     PrePublishValidationErrorCode: Optional[int] = None
     PublishingStatus: Optional[int] = None
@@ -23,9 +23,7 @@ class PublishingStatusResponse(ClientValue):
     TeamsPublishingStatus: ClientValueCollection[TeamsPublishingStatusResponse] = field(
         default_factory=lambda: ClientValueCollection(TeamsPublishingStatusResponse)
     )
-    VivaEngagePublishingStatus: _VivaEngagePublishingStatus = field(
-        default_factory=lambda: _VivaEngagePublishingStatus()
-    )
+    VivaEngagePublishingStatus: _VivaEngagePublishingStatus = field(default_factory=_VivaEngagePublishingStatus)
     VivaEngageV2PublishingStatus: ClientValueCollection[_VivaEngagePublishingStatus] = field(
         default_factory=lambda: ClientValueCollection(_VivaEngagePublishingStatus)
     )

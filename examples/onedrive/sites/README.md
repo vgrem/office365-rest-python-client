@@ -59,9 +59,7 @@ Examples for working with SharePoint sites via Microsoft Graph API.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 site = client.sites.root.get().execute_query()
 print(f"Root site: {site.display_name}")

@@ -50,9 +50,7 @@ flow matrix and the certificate recipe.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 me = client.me.get().execute_query()
 print(f"Signed in as: {me.display_name}")

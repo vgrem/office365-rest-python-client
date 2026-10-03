@@ -15,10 +15,10 @@ class SPDataGovernanceInsightResponse(ClientValue):
     CountOfSitesInTenantUserPermissions: int | None = None
     CreatedDateTime: str | None = None
     EEEUType: str | None = None
-    InvalidUserEntries: StringCollection = field(default_factory=lambda: StringCollection())
+    InvalidUserEntries: StringCollection = field(default_factory=StringCollection)
     LabelId: UUID | None = None
     LabelName: str | None = None
-    PrivacyEEEU: StringCollection = field(default_factory=lambda: StringCollection())
+    PrivacyEEEU: StringCollection = field(default_factory=StringCollection)
     PrivacySitePermissions: str | None = None
     ReportEndTimeEEEU: str | None = None
     ReportEndTimeSharingLink: str | None = None
@@ -31,16 +31,16 @@ class SPDataGovernanceInsightResponse(ClientValue):
     ReportStartTimeEEEU: str | None = None
     ReportStartTimeSharingLink: str | None = None
     ReportType: str | None = None
-    SensitivityEEEU: StringCollection = field(default_factory=lambda: StringCollection())
-    SensitivitySitePermissions: StringCollection = field(default_factory=lambda: StringCollection())
+    SensitivityEEEU: StringCollection = field(default_factory=StringCollection)
+    SensitivitySitePermissions: StringCollection = field(default_factory=StringCollection)
     SharingLinkType: str | None = None
     SitesFoundEEEU: int | None = None
     SitesFoundSharingLink: int | None = None
     Status: str | None = None
-    TemplatesEEEU: StringCollection = field(default_factory=lambda: StringCollection())
+    TemplatesEEEU: StringCollection = field(default_factory=StringCollection)
     TemplatesSitePermissions: StringCollection | None = None
     TriggeredDateTime: str | None = None
-    UserEmailList: StringCollection = field(default_factory=lambda: StringCollection())
+    UserEmailList: StringCollection = field(default_factory=StringCollection)
     UserID: UUID | None = None
     UserIDList: GuidCollection = field(default_factory=GuidCollection)
     UserLimit: int | None = None

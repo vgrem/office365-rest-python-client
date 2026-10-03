@@ -64,10 +64,7 @@ print(stats.summary(), job.verify().summary())
 
 # Messages only — deferred collection adapters
 with open("messages.ndjson", "w") as f:
-    client.teams.get_all_messages() \
-        .filter("createdDateTime gt 2024-01-01T00:00:00Z") \
-        .get_all() \
-        .to_ndjson(f) \
-        .download_hosted_contents("attachments") \
-        .execute_query()
+    client.teams.get_all_messages().filter("createdDateTime gt 2024-01-01T00:00:00Z").get_all().to_ndjson(
+        f
+    ).download_hosted_contents("attachments").execute_query()
 ```

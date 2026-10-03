@@ -16,8 +16,8 @@ class PersonMagazineUserProfile(ClientValue):
     AadObjectId: Optional[str] = None
     AboutMe: Optional[str] = None
     AboutMeTruncated: Optional[str] = None
-    Assistant: PersonCore = field(default_factory=lambda: PersonCore())
-    BirthDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    Assistant: PersonCore = field(default_factory=PersonCore)
+    BirthDate: ProfileDateTime = field(default_factory=ProfileDateTime)
     Birthday: Optional[str] = None
     DateTimeCustomProperties: ClientValueCollection[DateTimeCustomProperty] = field(
         default_factory=lambda: ClientValueCollection(DateTimeCustomProperty)
@@ -27,7 +27,7 @@ class PersonMagazineUserProfile(ClientValue):
     Email: Optional[str] = None
     Fax: Optional[str] = None
     HasEditPermission: Optional[bool] = None
-    HireDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    HireDate: ProfileDateTime = field(default_factory=ProfileDateTime)
     HomePhone: Optional[str] = None
     Interest: Optional[str] = None
     Lync: Optional[str] = None

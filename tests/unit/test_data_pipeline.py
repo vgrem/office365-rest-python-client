@@ -238,7 +238,7 @@ def test_excel_round_trip(tmp_path):
 
 def test_query_progress_hook():
     events = []
-    hook = query_progress_hook(3, lambda p: events.append(p), stage="importing")
+    hook = query_progress_hook(3, events.append, stage="importing")
     for _ in range(3):
         hook(None)  # each call mimics one queued query completing
     assert [p.done for p in events] == [1, 2, 3]  # noqa: PLR2004
@@ -314,7 +314,7 @@ def test_get_all_accepts_progress():
     client = GraphClient()
     col = RecordCollection(client, User, None)
     events = []
-    col.get_all(progress=lambda p: events.append(p))
+    col.get_all(progress=events.append)
     assert len(client._queries) >= 1  # the first page query is queued
 
 

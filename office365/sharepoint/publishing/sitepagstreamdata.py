@@ -8,7 +8,7 @@ from office365.sharepoint.publishing.pages.stream_content import SitePageStreamC
 
 @dataclass
 class SitePagStreamData(ClientValue):
-    CoAuthState: SitePageCoAuthState = field(default_factory=lambda: SitePageCoAuthState())
+    CoAuthState: SitePageCoAuthState = field(default_factory=SitePageCoAuthState)
     StreamContents: ClientValueCollection[SitePageStreamContent] = field(
         default_factory=lambda: ClientValueCollection(SitePageStreamContent)
     )

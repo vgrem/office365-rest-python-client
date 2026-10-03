@@ -6,7 +6,7 @@ from office365.sharepoint.publishing.statusresponse import PublishingStatusRespo
 
 @dataclass
 class ClientAmplifyAnywhereResults(ClientValue):
-    publishingStatusResponse: PublishingStatusResponse = field(default_factory=lambda: PublishingStatusResponse())
+    publishingStatusResponse: PublishingStatusResponse = field(default_factory=PublishingStatusResponse)
 
     @property
     def entity_type_name(self):

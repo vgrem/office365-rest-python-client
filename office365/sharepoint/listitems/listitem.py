@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Union
 
 from typing_extensions import Self
 
@@ -111,9 +111,9 @@ class ListItem(SecurableObject):
     def share_link(
         self,
         link_kind: int,
-        expiration: Optional[Optional[datetime.datetime]] = None,
-        role: Optional[Optional[int]] = None,
-        password: Optional[Optional[str]] = None,
+        expiration: Union[None, datetime.datetime] = None,
+        role: Union[None, int] = None,
+        password: Union[None, str] = None,
     ) -> ClientResult[ShareLinkResponse]:
         """Creates a tokenized sharing link for a list item based on the specified parameters and optionally
         sends an email to the people that are listed in the specified parameters.

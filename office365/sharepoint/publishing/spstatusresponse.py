@@ -10,7 +10,7 @@ from office365.sharepoint.publishing.sharepointpublishingstatus import (
 @dataclass
 class SharePointPublishingStatusResponse(ClientValue):
     SiteId: Optional[str] = None
-    Status: SharePointPublishingStatus = field(default_factory=lambda: SharePointPublishingStatus())
+    Status: SharePointPublishingStatus = field(default_factory=SharePointPublishingStatus)
     WebId: Optional[str] = None
 
     @property

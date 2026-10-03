@@ -15,7 +15,7 @@ class SPContainerFilterOrder(ClientValue):
     FilteringApplicationName: str | None = None
     FilteringContainerTypeId: str | None = None
     FilteringField: int | None = None
-    FilteringSensitivityLabels: StringCollection = field(default_factory=lambda: StringCollection())
+    FilteringSensitivityLabels: StringCollection = field(default_factory=StringCollection)
     OpticalCharacterRecognitionEnabled: bool | None = None
     OwnersCount: int | None = None
     OwnershipType: int | None = None

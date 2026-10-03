@@ -39,6 +39,7 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_cer
 )
 
 import json
+
 result = ctx.group_site_manager.get_current_user_joined_teams().execute_query()
 data = json.loads(result.value)
 for team in data["value"]:

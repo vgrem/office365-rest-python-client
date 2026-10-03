@@ -56,7 +56,9 @@ For complex SharePoint queries, use a CAML query instead:
 from office365.sharepoint.listitems.caml.query import CamlQuery
 
 qry = CamlQuery()
-qry.ViewXml = "<View><Query><Where><Eq><FieldRef Name='Status'/><Value Type='Text'>Active</Value></Eq></Where></Query></View>"
+qry.ViewXml = (
+    "<View><Query><Where><Eq><FieldRef Name='Status'/><Value Type='Text'>Active</Value></Eq></Where></Query></View>"
+)
 items = ctx.web.lists.get_by_title("Tasks").get_items(qry).execute_query()
 ```
 
@@ -85,7 +87,7 @@ returns the resumable token from the `@odata.deltaLink`. Pass it back into
 
 ```python
 changes = client.me.drive.root.delta.get().execute_query()
-token = changes.delta_token            # persist this between runs
+token = changes.delta_token  # persist this between runs
 # ... later ...
 more = client.me.drive.root.delta.token(token).get().execute_query()
 ```
@@ -104,8 +106,8 @@ several batches concurrently to cut wall time on large imports:
 target_list = ctx.web.lists.get_by_title("Documents")
 for i in range(100):
     target_list.add_item({"Title": f"Item {i}"})
-ctx.execute_batch(items_per_batch=100)      # one $batch request
-ctx.execute_batch(concurrency=5)            # 5 batches in flight, retries on 429
+ctx.execute_batch(items_per_batch=100)  # one $batch request
+ctx.execute_batch(concurrency=5)  # 5 batches in flight, retries on 429
 ```
 
 Graph batches run their sub-requests **in parallel** by default. When order
@@ -114,7 +116,7 @@ ordering — pass `sequential=True` to chain them with Graph's
 [`dependsOn`](https://learn.microsoft.com/en-us/graph/json-batching#sequencing-requests-with-the-dependson-property):
 
 ```python
-graph.execute_batch(sequential=True)   # ordered; a failed dependency yields 424
+graph.execute_batch(sequential=True)  # ordered; a failed dependency yields 424
 ```
 
 Use it only for ordering-dependent side effects (parallel is faster for
@@ -131,8 +133,8 @@ reports `x-ms-throttle-limit-percentage`, `x-ms-resource-unit`,
 `Retry-After` and otherwise falls back to exponential backoff with jitter:
 
 ```python
-result = client.users.top(10).get().execute_query_retry()   # per query
-client.execute_batch(concurrency=5)                         # retries throttled sub-requests
+result = client.users.top(10).get().execute_query_retry()  # per query
+client.execute_batch(concurrency=5)  # retries throttled sub-requests
 ```
 
 Retry any callable with the same policy — call it, or decorate one:
@@ -140,9 +142,9 @@ Retry any callable with the same policy — call it, or decorate one:
 ```python
 from office365.runtime.retry import retry
 
+
 @retry(max_retry=5, timeout_secs=2)
-def do_request():
-    ...
+def do_request(): ...
 ```
 
 Pace a fleet proactively — the shared rate limiter reads the throttle signals
@@ -150,14 +152,14 @@ Pace a fleet proactively — the shared rate limiter reads the throttle signals
 score) on every response and gates the group *before* it hits 429:
 
 ```python
-client.with_rate_limit()          # or .with_rate_limiter(shared_limiter)
+client.with_rate_limit()  # or .with_rate_limiter(shared_limiter)
 ```
 
 Mark background work as low priority so it's throttled before user-visible calls
 (Graph doesn't change the limits — low is throttled first, high last):
 
 ```python
-client.with_throttle_priority("low")     # low | normal | high
+client.with_throttle_priority("low")  # low | normal | high
 ```
 
 See [Throttling](throttling.md) for the signals, the quota reference and the
@@ -172,13 +174,15 @@ them at a call site, and discover them from any resource or tool.
 from office365.limits import catalog, limit, limits_of, verify_limits
 from office365.sharepoint.thresholds import Limits
 
-@limit(Limits.LIST_VIEW, arg="page_size")   # declare + enforce (warn by default)
+
+@limit(Limits.LIST_VIEW, arg="page_size")  # declare + enforce (warn by default)
 def get_items(page_size=None): ...
 
-lst.get_items(page_size=6000)                # warns; the limit is discoverable
-lst.declared_limits()                        # the limits declared on the class
-verify_limits(lst.get_items, page_size=6000).ok   # False
-catalog("sharepoint")                        # every registered SharePoint limit
+
+lst.get_items(page_size=6000)  # warns; the limit is discoverable
+lst.declared_limits()  # the limits declared on the class
+verify_limits(lst.get_items, page_size=6000).ok  # False
+catalog("sharepoint")  # every registered SharePoint limit
 ```
 
 - **Mechanics** — `office365.limits` re-exports `Limit` (a static threshold *or*
@@ -204,8 +208,8 @@ are matched too.
 
 ```python
 from office365.sharepoint.exceptions import (
-    SharePointException,             # catch-all for any Microsoft.SharePoint.* error
-    SPFileCheckOutException,         # HTTP 423 — a releasable check-out
+    SharePointException,  # catch-all for any Microsoft.SharePoint.* error
+    SPFileCheckOutException,  # HTTP 423 — a releasable check-out
     SPDuplicateValuesFoundException,
     SPListDataValidationException,
     SPQueryThrottledException,
@@ -249,7 +253,7 @@ ctx = (
     .with_client_certificate("tenant", "client_id", "thumbprint")
     .with_transport(
         proxies={"https": "http://proxy:8080"},
-        verify="/path/to/ca-bundle.pem",   # or False for testing only
+        verify="/path/to/ca-bundle.pem",  # or False for testing only
         timeout=30,
     )
 )
@@ -290,9 +294,10 @@ import pandas as pd
 
 lst = ctx.web.lists.ensure_list("Housing").execute_query()
 
-lst.from_dataframe(df).execute_query()                            # sequential
-lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)) \
-   .execute_batch(items_per_batch=100, concurrency=5)             # batched
+lst.from_dataframe(df).execute_query()  # sequential
+lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000)).execute_batch(
+    items_per_batch=100, concurrency=5
+)  # batched
 ```
 
 For full control, iterate the driver and drive execution yourself:
@@ -312,10 +317,9 @@ records a failing chunk (in `ImportStats.errors` and the checkpoint's `failures`
 and continues instead of aborting:
 
 ```python
-lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
-                   checkpoint="housing.run.json",
-                   on_error="collect") \
-   .execute_batch(items_per_batch=100, concurrency=5)
+lst.from_dataframe(
+    pd.read_csv("housing.csv", chunksize=2000), checkpoint="housing.run.json", on_error="collect"
+).execute_batch(items_per_batch=100, concurrency=5)
 ```
 
 `checkpoint` accepts a path (`FileCheckpointStore`), an `ImportCheckpoint` or
@@ -337,10 +341,11 @@ the existing keys are loaded once, and a re-run either skips already-present
 rows (`on_conflict="skip"`) or updates them (`on_conflict="upsert"`):
 
 ```python
-lst.from_dataframe(pd.read_csv("housing.csv", chunksize=2000),
-                   key=["region", "date"],           # natural key -> MigrationKey hash
-                   on_conflict="upsert") \
-   .execute_batch(items_per_batch=100, concurrency=5)
+lst.from_dataframe(
+    pd.read_csv("housing.csv", chunksize=2000),
+    key=["region", "date"],  # natural key -> MigrationKey hash
+    on_conflict="upsert",
+).execute_batch(items_per_batch=100, concurrency=5)
 ```
 
 This works alongside `checkpoint` (resume) — the checkpoint skips committed
@@ -363,18 +368,18 @@ a facade: `List.from_dataframe`/`from_records`/`from_file` (streaming),
 optional content — distinct from the record export):
 
 ```python
-collection.export_to(f, format="csv").execute_query()        # unified record export
+collection.export_to(f, format="csv").execute_query()  # unified record export
 collection.export_to("out.csv", page_size=2000).execute_query()  # streamed (bounded)
 collection.from_dataframe(df, key=["id"], on_conflict="upsert")  # unified streaming import
-collection.from_records(batches, checkpoint="run.json")      # stream record batches
+collection.from_records(batches, checkpoint="run.json")  # stream record batches
 
-lst.queue_dataframe(df).execute_query()                      # deferred (queue-all)
-lst.export_to(f, format="csv").execute_query()               # list -> records
-lst.export(zip_file, include_content=True).execute_query()   # list -> .zip package
+lst.queue_dataframe(df).execute_query()  # deferred (queue-all)
+lst.export_to(f, format="csv").execute_query()  # list -> records
+lst.export(zip_file, include_content=True).execute_query()  # list -> .zip package
 
 result = lst.from_dataframe(df, key=["id"])
-result.run(concurrency=5)                                    # == execute_batch
-report = result.verify(df, key=["id"])                       # counts + missing keys
+result.run(concurrency=5)  # == execute_batch
+report = result.verify(df, key=["id"])  # counts + missing keys
 ```
 
 See the [data pipeline guide](data-pipeline.md) for the full model, formats,
@@ -399,9 +404,9 @@ Two idempotent layers, one model — a re-run never duplicates:
   analogue of upsert):
 
   ```python
-  lst.ensure_field("Status", FieldType.Text).execute_query()                 # create if missing
-  lst.ensure_fields({"Region": FieldType.Text, "Amount": FieldType.Number})   # -> list[Field]
-  lst.ensure_field("Status", FieldType.Choice, on_conflict="update")          # reconcile
+  lst.ensure_field("Status", FieldType.Text).execute_query()  # create if missing
+  lst.ensure_fields({"Region": FieldType.Text, "Amount": FieldType.Number})  # -> list[Field]
+  lst.ensure_field("Status", FieldType.Choice, on_conflict="update")  # reconcile
   ```
 
   All client-side `ensure_*` share the `office365.runtime.queries.get_or_create`

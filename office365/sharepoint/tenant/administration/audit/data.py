@@ -28,7 +28,10 @@ class AuditData(ClientValue):
     UserId: str | None = None
     CreationTime: datetime | None = None
     EventData: str | None = None
-    EventDataParsed: EventData = field(default_factory=lambda: EventData())
+    # The field above shadows the imported `EventData` type, so the lambda must
+    # resolve the class at call time (a class body is not a closure). PLW0108's
+    # fix would bind the `None` field value instead.
+    EventDataParsed: EventData = field(default_factory=lambda: EventData())  # noqa: PLW0108
     Id: str | None = None
     Name: str | None = None
     NewValue: str | None = None

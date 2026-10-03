@@ -1,3 +1,8 @@
+# `pre-commit install` registers both stages (see README-dev.md): fast checks
+# at commit, the slow type-check and test suite at push.
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
 repos:
 
   - repo: local
@@ -18,22 +23,26 @@ repos:
         name: ruff-check
         entry: uv run ruff check --fix --exit-non-zero-on-fix
         language: system
-        pass_filenames: false
+        types_or: [python, pyi, jupyter]
+        pass_filenames: true
 
       - id: ruff-format
         name: ruff-format
         entry: uv run ruff format --exit-non-zero-on-fix
         language: system
-        pass_filenames: false
+        types_or: [python, pyi, jupyter, markdown]
+        pass_filenames: true
 
       - id: pyright
         name: pyright
         entry: uv run pyright
         language: system
         pass_filenames: false
+        stages: [pre-push]
 
       - id: pytest
         name: pytest
         entry: uv run pytest --offline
         language: system
         pass_filenames: false
+        stages: [pre-push]

@@ -435,7 +435,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             from office365.runtime.converters.dataframe import dataframe_chunks, records_from_dataframe
 
             chunks, total = dataframe_chunks(source, chunksize)
-            convert = to_records or (lambda chunk: records_from_dataframe(chunk))
+            convert = to_records or (records_from_dataframe)
             return chunks, convert, total
         if format == "records":
             return source, (to_records or (lambda batch: batch)), None

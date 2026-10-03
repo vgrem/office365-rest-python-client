@@ -188,7 +188,7 @@ Every snippet below is lifted from a runnable script. Follow the **More →** li
 # Lists and items
 tasks = ctx.web.lists.get_by_title("Tasks")
 item = tasks.add_item({"Title": "Ship it", "Status": "Active"}).execute_query()
-tasks.items.get_all().execute_query()               # or .filter("Status eq 'Active'").get_all()
+tasks.items.get_all().execute_query()  # or .filter("Status eq 'Active'").get_all()
 
 # Files and folders
 folder = ctx.web.get_folder_by_server_relative_url("/sites/team/Shared Documents")
@@ -436,9 +436,11 @@ items = (
 ```python
 items = ctx.web.lists.get_by_title("Orders").items.get_all(page_size=2000).execute_query()
 
-files = ctx.web.get_folder_by_server_relative_url("/sites/team/Shared Documents").get_files(
-    recursive=True, page_size=2000
-).execute_query()
+files = (
+    ctx.web.get_folder_by_server_relative_url("/sites/team/Shared Documents")
+    .get_files(recursive=True, page_size=2000)
+    .execute_query()
+)
 ```
 
 **Batching.** Dispatch many queued operations in one round trip. Raise `concurrency` to run batches in parallel; throttled sub-requests are retried individually, honoring `Retry-After`.
@@ -447,8 +449,8 @@ files = ctx.web.get_folder_by_server_relative_url("/sites/team/Shared Documents"
 for row in rows:
     ctx.web.lists.get_by_title("Contacts").add_item(row)
 
-ctx.execute_batch()                     # sequential
-ctx.execute_batch(concurrency=5)        # up to 5 batches in flight
+ctx.execute_batch()  # sequential
+ctx.execute_batch(concurrency=5)  # up to 5 batches in flight
 
 # Graph
 for user in new_users:
@@ -461,17 +463,11 @@ client.execute_batch(concurrency=5)
 ```python
 from office365.sharepoint.listitems.caml import Caml, CamlQuery
 
-query = (
-    CamlQuery.builder()
-    .where(Caml.text("Status").eq("Active"))
-    .order_by("ID")
-    .row_limit(2000, paged=True)
-    .build()
-)
+query = CamlQuery.builder().where(Caml.text("Status").eq("Active")).order_by("ID").row_limit(2000, paged=True).build()
 
-lst.check_query(query)                          # raises with a clear message if an index is missing
-print(lst.index_candidates(query))              # columns worth indexing
-lst.ensure_indexed("Status").execute_query()    # create the index (builds in the background)
+lst.check_query(query)  # raises with a clear message if an index is missing
+print(lst.index_candidates(query))  # columns worth indexing
+lst.ensure_indexed("Status").execute_query()  # create the index (builds in the background)
 ```
 
 **Import and export DataFrames.** Optional helpers turn list items into [pandas](https://pandas.pydata.org/) / [Polars](https://pola.rs/) frames and back.

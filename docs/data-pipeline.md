@@ -29,8 +29,7 @@ ctx = ClientContext(site_url).with_username_and_password(tenant, client_id, user
 lst = ctx.web.lists.ensure_list("Stocks").execute_query()
 
 # DataFrame -> list (streaming, bounded, resumable, idempotent)
-lst.from_dataframe(pd.read_csv("stocks.csv", chunksize=2000), key=["Name", "date"]) \
-   .execute_batch(concurrency=5)
+lst.from_dataframe(pd.read_csv("stocks.csv", chunksize=2000), key=["Name", "date"]).execute_batch(concurrency=5)
 
 # list -> DataFrame
 df = lst.to_dataframe().execute_query().value
@@ -46,19 +45,17 @@ databases. Optional dependencies are extras: `[pandas]`, `[excel]`, `[parquet]`,
 Every reader/writer accepts a **path**, a `PathLike` or an open **file object**:
 
 ```python
-lst.from_csv("stocks.csv")              # path
-lst.from_csv(open("stocks.csv"))        # file object
+lst.from_csv("stocks.csv")  # path
+lst.from_csv(open("stocks.csv"))  # file object
 lst.to_parquet("stocks.parquet").execute_query()
 ```
 
 Streaming databases (bounded memory):
 
 ```python
-lst.from_sql("postgresql://...", query="SELECT * FROM stocks", chunksize=5000) \
-   .execute_batch(concurrency=5)
+lst.from_sql("postgresql://...", query="SELECT * FROM stocks", chunksize=5000).execute_batch(concurrency=5)
 
-lst.from_duckdb(duckdb.connect("analytics.db"), query="SELECT * FROM stocks") \
-   .execute_batch(concurrency=5)
+lst.from_duckdb(duckdb.connect("analytics.db"), query="SELECT * FROM stocks").execute_batch(concurrency=5)
 ```
 
 ## Idempotency
@@ -79,12 +76,13 @@ If the signature changes between runs, the chunk skip is discarded and the sourc
 is re-scanned — the key keeps it duplicate-free.
 
 ```python
-lst.from_dataframe(pd.read_csv("stocks.csv", chunksize=2000),
-                   key=["Name", "date"],
-                   checkpoint="stocks.run.json",
-                   on_error="collect",
-                   dead_letter="stocks.bad.jsonl") \
-   .execute_batch(concurrency=5)
+lst.from_dataframe(
+    pd.read_csv("stocks.csv", chunksize=2000),
+    key=["Name", "date"],
+    checkpoint="stocks.run.json",
+    on_error="collect",
+    dead_letter="stocks.bad.jsonl",
+).execute_batch(concurrency=5)
 ```
 
 ## Typed columns
@@ -96,12 +94,15 @@ coercion** (multi-choice, lookup, user, URL, geolocation, ...):
 ```python
 from office365.sharepoint.fields.type import FieldType
 
-lst.from_dataframe(df, schema={
-    "Status": FieldType.Choice,
-    "Tags": FieldType.MultiChoice,       # "a; b" or a list
-    "Owner": FieldType.User,             # email or {LookupId}
-    "Link": FieldType.URL,               # "https://..." or (url, description)
-})
+lst.from_dataframe(
+    df,
+    schema={
+        "Status": FieldType.Choice,
+        "Tags": FieldType.MultiChoice,  # "a; b" or a list
+        "Owner": FieldType.User,  # email or {LookupId}
+        "Link": FieldType.URL,  # "https://..." or (url, description)
+    },
+)
 ```
 
 ## Files (document libraries)
@@ -127,7 +128,7 @@ CSV is written UTF-8 with a BOM so Excel keeps the columns.
 Export a large list without loading it all:
 
 ```python
-lst.export_to("stocks.csv", page_size=2000).execute_query()   # CSV/TSV/NDJSON/JSON
+lst.export_to("stocks.csv", page_size=2000).execute_query()  # CSV/TSV/NDJSON/JSON
 ```
 
 `page_size` streams appendable formats page by page; other formats fall back to a
@@ -142,7 +143,7 @@ whole-collection write.
 
 ```python
 report = lst.verify(df, key=["Name", "date"])
-assert report.ok, report.summary()          # counts + missing keys
+assert report.ok, report.summary()  # counts + missing keys
 ```
 
 ## Migration parity
@@ -152,7 +153,7 @@ The streaming import and the migration toolkit share the engine (`keyed_queue`,
 
 ```python
 result = lst.from_dataframe(df, key=["id"])
-result.run(concurrency=5)          # == execute_batch
+result.run(concurrency=5)  # == execute_batch
 report = result.verify(df, key=["id"])
 ```
 
@@ -163,9 +164,9 @@ dead-letter and `progress` semantics, only the wait differs:
 
 ```python
 result = lst.from_dataframe(df, key=["id"])
-await result.execute_query_async()               # sequential, awaited
+await result.execute_query_async()  # sequential, awaited
 await result.execute_batch_async(concurrency=5)  # server-side batches
-await result.run_async(concurrency=5)            # == execute_batch_async
+await result.run_async(concurrency=5)  # == execute_batch_async
 ```
 
 `async for chunk in result:` mirrors the sync iteration for callers that drive

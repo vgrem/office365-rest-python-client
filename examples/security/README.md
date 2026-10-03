@@ -17,7 +17,9 @@ sim = client.security.attack_simulation
 # Phishing simulation campaigns
 simulations = sim.simulations.get().execute_query()
 for s in simulations:
-    print(f"{s.properties.get('displayName')}  status={s.properties.get('status')}  technique={s.properties.get('attackTechnique')}")
+    print(
+        f"{s.properties.get('displayName')}  status={s.properties.get('status')}  technique={s.properties.get('attackTechnique')}"
+    )
 
 # Recurring automations and their runs
 for a in sim.simulation_automations.get().execute_query():

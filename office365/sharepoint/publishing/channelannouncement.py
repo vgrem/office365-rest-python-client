@@ -9,10 +9,10 @@ from office365.sharepoint.publishing.icon import Icon as _Icon
 
 @dataclass
 class ChannelAnnouncement(ClientValue):
-    Author: AnnouncementAuthor = field(default_factory=lambda: AnnouncementAuthor())
-    CallToAction: _CallToAction = field(default_factory=lambda: _CallToAction())
+    Author: AnnouncementAuthor = field(default_factory=AnnouncementAuthor)
+    CallToAction: _CallToAction = field(default_factory=_CallToAction)
     ChannelName: Optional[str] = None
-    Icon: _Icon = field(default_factory=lambda: _Icon())
+    Icon: _Icon = field(default_factory=_Icon)
     ID: Optional[int] = None
     IsRead: Optional[bool] = None
     Message: Optional[str] = None

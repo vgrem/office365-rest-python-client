@@ -36,9 +36,7 @@ SKU inventory, license assignment, service plan management, and usage reports.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 skus = client.subscribed_skus.get().execute_query()
 for s in skus:

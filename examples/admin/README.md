@@ -45,9 +45,7 @@ graph TD
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 health = client.admin.service_announcement.health_overviews.get().execute_query()
 for item in health:

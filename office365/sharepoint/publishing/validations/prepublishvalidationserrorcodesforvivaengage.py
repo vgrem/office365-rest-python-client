@@ -12,7 +12,7 @@ class PrePublishValidationsErrorCodesForVivaEngage(ClientValue):
     DestinationType: Optional[int] = None
     ErrorCodes: ClientValueCollection[int] = field(default_factory=lambda: ClientValueCollection(int))
     NumberOfImageAttachments: Optional[int] = None
-    VivaEngageDestinationV2: _VivaEngageDestinationV2 = field(default_factory=lambda: _VivaEngageDestinationV2())
+    VivaEngageDestinationV2: _VivaEngageDestinationV2 = field(default_factory=_VivaEngageDestinationV2)
 
     @property
     def entity_type_name(self):

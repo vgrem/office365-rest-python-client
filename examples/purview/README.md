@@ -88,9 +88,7 @@ threat assessment.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 labels = client.security.labels.retention_labels.get().execute_query()
 for label in labels:

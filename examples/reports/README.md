@@ -25,6 +25,7 @@ def _parse_csv(result):
     text = value.content.decode("utf-8") if hasattr(value, "content") else value.decode("utf-8")
     return list(csv.DictReader(io.StringIO(text)))
 
+
 data = client.reports.get_email_activity_counts("D30").execute_query()
 for row in _parse_csv(data):
     print(f"{row['Report Date'][:10]}  sent={row['Send']}  read={row['Read']}")
@@ -177,11 +178,14 @@ Users holding a Copilot license with no recent sign-in — candidates for licens
 
 ```python
 # 1. Collect Copilot SKU ids
-sku_ids = {str(s.sku_id) for s in client.subscribed_skus.get().execute_query()
-           if "COPILOT" in (s.sku_part_number or "").upper()}
+sku_ids = {
+    str(s.sku_id) for s in client.subscribed_skus.get().execute_query() if "COPILOT" in (s.sku_part_number or "").upper()
+}
 
 # 2. Users with a Copilot license who never signed in
-users = client.users.select(["displayName", "userPrincipalName", "assignedLicenses", "signInActivity"]).get().execute_query()
+users = (
+    client.users.select(["displayName", "userPrincipalName", "assignedLicenses", "signInActivity"]).get().execute_query()
+)
 for user in users:
     licenses = {str(l.get("skuId")) for l in (user.properties.get("assignedLicenses") or [])}
     if licenses & sku_ids and not user.properties.get("signInActivity"):

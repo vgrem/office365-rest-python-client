@@ -379,7 +379,7 @@ class MoveCopyUtil(Entity):
         entries = []
 
         def _path_provider(path: Path) -> Callable[[], bytes]:
-            return lambda: path.read_bytes()
+            return path.read_bytes
 
         if isinstance(source, (str, Path)):
             path = Path(source)
@@ -459,5 +459,5 @@ def _content_provider(content):
     if isinstance(content, bytes):
         return lambda: content
     if isinstance(content, Path):
-        return lambda: content.read_bytes()
+        return content.read_bytes
     return lambda: str(content).encode("utf-8")

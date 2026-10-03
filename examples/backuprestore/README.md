@@ -49,9 +49,7 @@ restore points and restore sessions.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 status = client.solutions.backup_restore.service_status.get().execute_query()
 print(f"Backup service status: {status.status}")

@@ -35,9 +35,7 @@ reviews, PIM, entitlement management, and change notifications.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 agreements = client.identity_governance.terms_of_use.agreements.get().execute_query()
 for a in agreements:

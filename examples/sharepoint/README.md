@@ -223,9 +223,7 @@ from office365.sharepoint.features.known_list import KnownFeaturesList
 
 
 # Activate a feature
-f = ctx.site.features.add(
-    KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm
-).execute_query()
+f = ctx.site.features.add(KnownFeaturesList.ContentTypeHub, False, FeatureDefinitionScope.Farm).execute_query()
 print(f"Activated: {f.display_name}")
 ```
 
@@ -310,9 +308,7 @@ Webhooks let your app receive HTTP callbacks when items change in a SharePoint l
 target_list = ctx.web.lists.get_by_title("Documents")
 
 # Subscribe
-sub = target_list.subscriptions.add(
-    "https://your-app.azurewebsites.net/webhook/notifications"
-).execute_query()
+sub = target_list.subscriptions.add("https://your-app.azurewebsites.net/webhook/notifications").execute_query()
 print(f"Subscribed: {sub.id} (expires: {sub.expiration_datetime})")
 ```
 
@@ -424,9 +420,7 @@ site_script = {
     "bindata": {},
     "version": 1,
 }
-created = SiteScriptUtility.create_site_script(
-    ctx, "Theme Script", "Applies Contoso theme", site_script
-).execute_query()
+created = SiteScriptUtility.create_site_script(ctx, "Theme Script", "Applies Contoso theme", site_script).execute_query()
 print(f"Created: {created.value.Title} (ID: {created.value.Id})")
 ```
 
@@ -437,6 +431,7 @@ List Microsoft Teams and channels that the current user has access to.
 
 ```python
 import json
+
 result = ctx.group_site_manager.get_current_user_joined_teams().execute_query()
 data = json.loads(result.value)
 for team in data["value"]:

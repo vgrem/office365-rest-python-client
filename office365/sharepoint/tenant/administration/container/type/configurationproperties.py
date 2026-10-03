@@ -14,7 +14,7 @@ class SPContainerTypeConfigurationProperties(ClientValue):
     Classification: int | None = None
     ContainerTypeId: UUID | None = None
     ContainerTypeName: str | None = None
-    CopilotEmbeddedChatHosts: StringCollection = field(default_factory=lambda: StringCollection())
+    CopilotEmbeddedChatHosts: StringCollection = field(default_factory=StringCollection)
     IsDiscoverablilityDisabled: int | None = None
     IsMoveDisabled: int | None = None
     IsRenameDisabled: int | None = None

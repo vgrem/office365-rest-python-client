@@ -58,13 +58,13 @@ class StoreManager:
 
         def _on_sets_loaded(sets: SetCollection) -> None:
             for s in sets:
-                s.terms.get().after_execute(lambda terms: _on_terms_loaded(terms))
+                s.terms.get().after_execute(_on_terms_loaded)
 
         def _on_groups_loaded(groups: GroupCollection) -> None:
             for g in groups:
-                g.sets.get().after_execute(lambda sets: _on_sets_loaded(sets))
+                g.sets.get().after_execute(_on_sets_loaded)
 
-        self.store.groups.get().after_execute(lambda groups: _on_groups_loaded(groups))
+        self.store.groups.get().after_execute(_on_groups_loaded)
         return return_type
 
     def from_json(self, data: list[dict]) -> Store:

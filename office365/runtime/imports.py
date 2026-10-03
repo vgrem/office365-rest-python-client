@@ -285,7 +285,7 @@ class ImportResult(ClientResult[ImportStats]):
 
     def execute_query(self) -> Self:
         """Import sequentially (one request per item)."""
-        self._run(lambda: self._context.execute_query())
+        self._run(self._context.execute_query)
         return self
 
     def execute_batch(
@@ -338,7 +338,7 @@ class ImportResult(ClientResult[ImportStats]):
         Async twin of :meth:`execute_query`: the same queue/checkpoint/report
         machinery drives ``await context.execute_query_async()`` per chunk.
         """
-        await self._run_async(lambda: self._context.execute_query_async())
+        await self._run_async(self._context.execute_query_async)
         return self
 
     async def execute_batch_async(

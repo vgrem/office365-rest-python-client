@@ -11,7 +11,7 @@ from office365.runtime.types.collections import StringCollection
 class SPOFileVersionFileTypePolicySettings(ClientValue):
     EnableAutoExpirationVersionTrim: bool | None = None
     ExpireVersionsAfter: time | None = None
-    Extensions: StringCollection = field(default_factory=lambda: StringCollection())
+    Extensions: StringCollection = field(default_factory=StringCollection)
     MajorVersionLimit: int | None = None
     MajorWithMinorVersionsLimit: int | None = None
     Name: str | None = None

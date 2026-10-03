@@ -77,6 +77,7 @@ need clones, a `Semaphore`, or `as_completed`:
 def report(progress):
     print(f"{progress.stage}: {progress.done}/{progress.total}")
 
+
 folder = ctx.web.get_folder_by_server_relative_url("/sites/contoso/Shared Documents")
 files = await folder.files.get().execute_query_async()
 for file in files:

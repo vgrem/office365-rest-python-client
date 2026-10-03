@@ -31,7 +31,7 @@ at or below the threshold:
 items = lst.items.get_all(page_size=2000).execute_query()
 
 # a folder's files — pages automatically, so >5,000-item folders work
-files = folder.get_files(page_size=2000).execute_query()          # recursive=True to descend
+files = folder.get_files(page_size=2000).execute_query()  # recursive=True to descend
 
 # CAML query — iterating continues from the last item (ListItemCollectionPosition)
 for item in lst.get_items(query, page_size=2000).execute_query():
@@ -65,7 +65,7 @@ once the build finishes.
 To see which columns a query would need indexed:
 
 ```python
-lst.index_candidates(query)   # -> ['Status', 'date']  (query.index_candidates)
+lst.index_candidates(query)  # -> ['Status', 'date']  (query.index_candidates)
 ```
 
 ## Fix 3 — filter on an indexed column
@@ -81,8 +81,8 @@ lst.items.filter("ID gt 0").get_all(page_size=2000).execute_query()
 server return an opaque 500 (it performs 1–2 requests):
 
 ```python
-lst.check_query(query)                              # explicit
-lst.get_items(query, page_size=2000, check=True)    # or pre-flight inside get_items
+lst.check_query(query)  # explicit
+lst.get_items(query, page_size=2000, check=True)  # or pre-flight inside get_items
 ```
 
 `check=False` (the default) keeps `get_items` deferred with no extra request.

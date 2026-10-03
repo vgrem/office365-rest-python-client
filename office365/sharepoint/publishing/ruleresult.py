@@ -8,7 +8,7 @@ from office365.sharepoint.publishing.ruleerrordetails import RuleErrorDetails
 @dataclass
 class RuleResult(ClientValue):
     ActionToTake: Optional[str] = None
-    Details: RuleErrorDetails = field(default_factory=lambda: RuleErrorDetails())
+    Details: RuleErrorDetails = field(default_factory=RuleErrorDetails)
     description: Optional[str] = None
     LearnMoreLink: Optional[str] = None
     ResultCount: Optional[int] = None

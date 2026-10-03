@@ -9,13 +9,13 @@ from office365.sharepoint.publishing.sharepointids import SharePointIds as _Shar
 
 @dataclass
 class PublicationMetadata(ClientValue):
-    AmplifiedChannels: _AmplifiedChannels = field(default_factory=lambda: _AmplifiedChannels())
+    AmplifiedChannels: _AmplifiedChannels = field(default_factory=_AmplifiedChannels)
     BannerImageUrl: Optional[str] = None
     CanEdit: Optional[bool] = None
     CreationDate: Optional[datetime] = None
     Id: Optional[int] = None
     ModifiedDate: Optional[datetime] = None
-    SharePointIds: _SharePointIds = field(default_factory=lambda: _SharePointIds())
+    SharePointIds: _SharePointIds = field(default_factory=_SharePointIds)
     Status: Optional[str] = None
     Title: Optional[str] = None
     Url: Optional[str] = None

@@ -12,11 +12,11 @@ from office365.sharepoint.publishing.tooldetails import ToolDetails as _ToolDeta
 @dataclass
 class PageDiagnosticsResult(ClientValue):
     CreatedDate: Optional[datetime] = None
-    PageDetails: _PageDetails = field(default_factory=lambda: _PageDetails())
+    PageDetails: _PageDetails = field(default_factory=_PageDetails)
     ResultStatus: Optional[int] = None
     suggestions: ClientValueCollection[RuleResult] = field(default_factory=lambda: ClientValueCollection(RuleResult))
     Score: Optional[int] = None
-    ToolDetails: _ToolDetails = field(default_factory=lambda: _ToolDetails())
+    ToolDetails: _ToolDetails = field(default_factory=_ToolDetails)
 
     @property
     def entity_type_name(self):

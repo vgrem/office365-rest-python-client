@@ -10,13 +10,13 @@ from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 class ProfileFullProperties(ClientValue):
     AboutMe: Optional[str] = None
     AboutMeTruncated: Optional[str] = None
-    Assistant: PersonIdentity = field(default_factory=lambda: PersonIdentity())
-    BirthDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    Assistant: PersonIdentity = field(default_factory=PersonIdentity)
+    BirthDate: ProfileDateTime = field(default_factory=ProfileDateTime)
     DepartmentName: Optional[str] = None
     Email: Optional[str] = None
     Fax: Optional[str] = None
     HasEditPermission: Optional[bool] = None
-    HireDate: ProfileDateTime = field(default_factory=lambda: ProfileDateTime())
+    HireDate: ProfileDateTime = field(default_factory=ProfileDateTime)
     HomePhone: Optional[str] = None
     Interest: Optional[str] = None
     Lync: Optional[str] = None

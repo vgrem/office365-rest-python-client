@@ -16,7 +16,6 @@ authors = [
 ]
 # With Python 3.10 we get support for "Type | None", instead of Optional[Type]
 requires-python = ">=3.8.0"
-
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
@@ -31,10 +30,10 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries",
 ]
-
 dependencies = [
   "msal>=1.28,<2",
   "pytz>=2021.1",
@@ -50,6 +49,9 @@ optional-dependencies.azure = [
   "azure-storage-blob>=12.19",
   "cryptography>=42",
 ]
+optional-dependencies.duckdb = [
+  "duckdb>=1",
+]
 optional-dependencies.examples = [
   "faker",
 ]
@@ -58,6 +60,12 @@ optional-dependencies.excel = [
 ]
 optional-dependencies.httpx = [
   "httpx>=0.27,<1",
+]
+optional-dependencies.notebooks = [
+  "jinja2",
+  "jupyter",
+  "nbformat",
+  "pandas>=1.3",
 ]
 optional-dependencies.ntlm = [
   "requests-ntlm",
@@ -68,17 +76,8 @@ optional-dependencies.pandas = [
 optional-dependencies.parquet = [
   "pyarrow>=14",
 ]
-optional-dependencies.duckdb = [
-  "duckdb>=1.0",
-]
 optional-dependencies.sql = [
-  "sqlalchemy>=2.0",
-]
-optional-dependencies.notebooks = [
-  "pandas>=1.3.0",
-  "jupyter",
-  "nbformat",
-  "jinja2",
+  "sqlalchemy>=2",
 ]
 urls.funding = "https://ko-fi.com/vgrem"
 urls.repository = "https://github.com/vgrem/office365-rest-python-client"
@@ -86,25 +85,25 @@ urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 [dependency-groups]
 dev = [
   "adal~=1.2.4",
-  "configparser>=5.0.2,<7.3.0",
-  "cryptography>=44.0.0",
-  "faker>=4.1.2,<40.40.0",
+  "configparser>=5.0.2,<7.3",
+  "cryptography>=44",
+  "faker>=4.1.2,<40.40",
+  "pre-commit>=4",
   "pyproject-fmt",
   "pyright>=1.1.408",
   "pytest",
-  # Ruff 0.15+ introduces new lint rules (PLW0108, PYI016, ...) and formatter
-  # changes that would reformat 30+ notebooks/examples. Pin until that is
-  # adopted as a dedicated change, so a dependency refresh stays low-churn.
+  # Ruff is pinned once, here, and installed from this lockfile in CI
+  # (see .github/workflows/ci.yml), so local hooks and CI cannot drift.
   "ruff==0.16.9",
   "types-requests",
 ]
 docs = [
-  "mkdocs~=1.6; python_version >= '3.9'",
-  "mkdocs-material~=9.5; python_version >= '3.9'",
-  "mkdocstrings[python]>=0.28,<2.0; python_version >= '3.9'",
-  "mkdocs-gen-files~=0.5; python_version >= '3.9'",
-  "mkdocs-awesome-pages-plugin~=2.9; python_version >= '3.9'",
-  "pygments>=2.17; python_version >= '3.9'",
+  "mkdocs~=1.6; python_version>='3.9'",
+  "mkdocs-awesome-pages-plugin~=2.9; python_version>='3.9'",
+  "mkdocs-gen-files~=0.5; python_version>='3.9'",
+  "mkdocs-material~=9.5; python_version>='3.9'",
+  "mkdocstrings[python]>=0.28,<2; python_version>='3.9'",
+  "pygments>=2.17; python_version>='3.9'",
 ]
 
 [tool.uv]
@@ -114,17 +113,14 @@ docs = [
 # lockfile from retaining unpatched pins that can no longer be upgraded on
 # EOL interpreters (3.8/3.9). Remove this once requires-python is raised
 # (planned for 4.0).
-environments = ["python_full_version >= '3.10'"]
-
-[tool.uv.build-backend]
-module-name = "office365"
-module-root = ""
+environments = [ "python_full_version >= '3.10'" ]
+build-backend.module-name = "office365"
+build-backend.module-root = ""
 
 [tool.ruff]
 target-version = "py38"
 line-length = 121
 src = [ "examples", "generator", "office365", "tests" ]
-
 format.line-ending = "lf"
 format.docstring-code-format = true
 lint.select = [
@@ -132,28 +128,27 @@ lint.select = [
   "ASYNC", # flake8-async
   "B",     # bugbear
   #"D",     # pydocstyle
-  "E", # pycodestyle
-  "F", # pyflakes
-  "I", # isort
+  "E",     # pycodestyle
+  "F",     # pyflakes
+  "I",     # isort
   #"PGH", # pygrep-hooks
-  "PIE", # flake8-pie
-  "PL",  # pylint
+  "PIE",   # flake8-pie
+  "PL",    # pylint
   #"PTH", # flake8-pathlib
-  "PYI", # flake8-pyi
+  "PYI",   # flake8-pyi
   #"RUF", # ruff
   #"UP",  # pyupgrade
-  "W", # pycodestyle
+  "W",     # pycodestyle
 ]
 lint.ignore = [
   "B008",    # Do not perform function call in argument defaults
   "PLC0415", # `import` should be at the top-level of a file (circular import workaround)
 ]
-
 lint.pylint.max-args = 50
 lint.pylint.max-branches = 16
 lint.pylint.max-statements = 60
 
 [tool.pyright]
-include = ["office365"]
 pythonVersion = "3.8"
-extraPaths = [".venv/lib/python3.11/site-packages"]
+include = [ "office365" ]
+extraPaths = [ ".venv/lib/python3.11/site-packages" ]

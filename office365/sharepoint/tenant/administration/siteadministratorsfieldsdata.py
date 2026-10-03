@@ -9,7 +9,7 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class SiteAdministratorsFieldsData(ClientValue):
-    siteAdministrators: StringCollection = field(default_factory=lambda: StringCollection())
+    siteAdministrators: StringCollection = field(default_factory=StringCollection)
     siteId: UUID | None = None
 
     @property

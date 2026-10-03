@@ -9,7 +9,7 @@ from office365.runtime.types.collections import StringCollection
 @dataclass
 class SPContentEventsCustomEmailProperty(ClientValue):
     Category: int | None = None
-    EmailAddresses: StringCollection = field(default_factory=lambda: StringCollection())
+    EmailAddresses: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):  # type: ignore[override]

@@ -170,9 +170,7 @@ tenant-level policies, and audit logs.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 # List all users
 users = client.users.top(10).get().execute_query()

@@ -74,8 +74,8 @@ watermark.
 from office365.migration import MigrationSession, MigrationSettings
 
 session = MigrationSession().register(
-    context=ctx,                                    # a SharePoint ClientContext
-    settings=MigrationSettings(use_migration_api=True),   # server-side Migration API
+    context=ctx,  # a SharePoint ClientContext
+    settings=MigrationSettings(use_migration_api=True),  # server-side Migration API
 )
 session.add_task(
     file_share_source="C:/src",
@@ -144,8 +144,8 @@ target = SharePointPackageTarget(
 )
 job = MigrationJob(FileSystemSource("src"), target)
 job.plan()
-job.run()          # stages the package and submits the ingestion job
-target.monitor()   # polls GetMigrationJobProgress
+job.run()  # stages the package and submits the ingestion job
+target.monitor()  # polls GetMigrationJobProgress
 ```
 
 `MigrationServerJob` can also be driven directly (`submit` / `submit_encrypted` /
@@ -233,9 +233,7 @@ land is a strategy**. Pass `staging=` to `SharePointPackageTarget`:
 from office365.migration.package import FileSystemStaging
 
 # Build + write the package to disk (no Azure, no submit)
-target = SharePointPackageTarget(
-    ctx.site, web_id, staging=FileSystemStaging("pkg/content", "pkg/manifest")
-)
+target = SharePointPackageTarget(ctx.site, web_id, staging=FileSystemStaging("pkg/content", "pkg/manifest"))
 package = target.stage()
 ```
 

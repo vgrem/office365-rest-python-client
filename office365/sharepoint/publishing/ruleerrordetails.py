@@ -8,7 +8,7 @@ from office365.sharepoint.publishing.error import Error
 @dataclass
 class RuleErrorDetails(ClientValue):
     errorHeaders: StringCollection = field(default_factory=StringCollection)
-    errors: Error = field(default_factory=lambda: Error())
+    errors: Error = field(default_factory=Error)
 
     @property
     def entity_type_name(self):

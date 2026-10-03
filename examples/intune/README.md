@@ -58,9 +58,7 @@ admin actions via audit events.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 devices = client.device_management.managed_devices.get().execute_query()
 for d in devices:

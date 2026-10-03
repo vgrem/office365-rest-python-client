@@ -9,10 +9,10 @@ from office365.sharepoint.publishing.icon import Icon as _Icon
 
 @dataclass
 class AnnouncementsData(ClientValue):
-    CallToAction: _CallToAction = field(default_factory=lambda: _CallToAction())
+    CallToAction: _CallToAction = field(default_factory=_CallToAction)
     Dismissable: Optional[bool] = None
     ExpiresOn: Optional[datetime] = None
-    Icon: _Icon = field(default_factory=lambda: _Icon())
+    Icon: _Icon = field(default_factory=_Icon)
     ID: Optional[str] = None
     Message: Optional[str] = None
     PublishStartDate: Optional[datetime] = None

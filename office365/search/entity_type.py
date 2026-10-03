@@ -33,7 +33,7 @@ class EntityType:
 
     @staticmethod
     def resolve(name: str) -> Type[Union[Event, List, Site, ListItem, Message, Drive, DriveItem]]:
-        class_name = name.split(".")[-1]
+        class_name = name.rsplit(".", maxsplit=1)[-1]
         result = EntityType._types.get(class_name, None)
         assert result is not None
         return result

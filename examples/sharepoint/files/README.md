@@ -103,8 +103,8 @@ The highest-leverage scripts for migrations and backups:
 # Bulk upload: queue, then flush in one batch request
 for name in os.listdir("./data"):
     with open(f"./data/{name}", "rb") as f:
-        target_folder.upload_file(name, f.read())   # queue
-ctx.execute_batch()                                  # one request per batch
+        target_folder.upload_file(name, f.read())  # queue
+ctx.execute_batch()  # one request per batch
 
 # Backup a folder with its full version history
 with open("archive.zip", "wb") as f:

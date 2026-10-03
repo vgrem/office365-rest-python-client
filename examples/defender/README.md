@@ -37,9 +37,7 @@ Admin consent is required for all permissions above.
 ```python
 from office365.graph_client import GraphClient
 
-client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret(
-    "client_id", "client_secret"
-)
+client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
 incidents = client.security.incidents.get().execute_query()
 for inc in incidents:

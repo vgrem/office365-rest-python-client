@@ -13,7 +13,7 @@ class ProfileData(ClientValue):
     ManagerChain: ClientValueCollection[ProfileCoreProperties] = field(
         default_factory=lambda: ClientValueCollection(ProfileCoreProperties)
     )
-    Primary: PersonMagazineUserProfile = field(default_factory=lambda: PersonMagazineUserProfile())
+    Primary: PersonMagazineUserProfile = field(default_factory=PersonMagazineUserProfile)
 
     @property
     def entity_type_name(self):

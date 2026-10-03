@@ -49,9 +49,12 @@ for row in _parse_csv(data):
 Users holding a Copilot license with no recent sign-in — candidates for license reclamation.
 
 ```python
-sku_ids = {str(s.sku_id) for s in client.subscribed_skus.get().execute_query()
-           if "COPILOT" in (s.sku_part_number or "").upper()}
-users = client.users.select(["displayName", "userPrincipalName", "assignedLicenses", "signInActivity"]).get().execute_query()
+sku_ids = {
+    str(s.sku_id) for s in client.subscribed_skus.get().execute_query() if "COPILOT" in (s.sku_part_number or "").upper()
+}
+users = (
+    client.users.select(["displayName", "userPrincipalName", "assignedLicenses", "signInActivity"]).get().execute_query()
+)
 for user in users:
     licenses = {str(l.get("skuId")) for l in (user.properties.get("assignedLicenses") or [])}
     if licenses & sku_ids and not user.properties.get("signInActivity"):

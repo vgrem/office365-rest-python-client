@@ -66,7 +66,7 @@ def test_get_or_create_returns_existing_when_found():
     return_type = _FakeEntity(ctx)
     found = _FakeEntity(ctx)
 
-    result = get_or_create(find=lambda: found, create_query=lambda: object(), return_type=return_type)
+    result = get_or_create(find=lambda: found, create_query=object, return_type=return_type)
 
     assert result is return_type
     found._after[0](found)
@@ -97,7 +97,7 @@ def test_get_or_create_update_reconciles_existing():
 
     get_or_create(
         find=lambda: found,
-        create_query=lambda: object(),
+        create_query=object,
         return_type=return_type,
         on_conflict="update",
         reconcile=seen.append,
@@ -112,7 +112,7 @@ def test_get_or_create_rejects_unknown_conflict_mode():
     with pytest.raises(ValueError, match="on_conflict"):
         get_or_create(
             find=lambda: _FakeEntity(ctx),
-            create_query=lambda: object(),
+            create_query=object,
             return_type=_FakeEntity(ctx),
             on_conflict="nope",
         )

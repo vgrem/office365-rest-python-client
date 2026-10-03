@@ -11,7 +11,7 @@ class AmplifyPublishingHistoryResult(ClientValue):
     AmplifyId: Optional[str] = None
     PageId: Optional[int] = None
     PublicationMetadata: Optional[str] = None
-    publishingStatusResponse: PublishingStatusResponse = field(default_factory=lambda: PublishingStatusResponse())
+    publishingStatusResponse: PublishingStatusResponse = field(default_factory=PublishingStatusResponse)
     TimestampUTC: Optional[datetime] = None
 
     @property

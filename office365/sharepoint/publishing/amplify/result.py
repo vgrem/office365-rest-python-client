@@ -15,7 +15,7 @@ from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
 class ClientAmplifyResult(ClientValue):
     canvasElement: Optional[str] = None
     code: Optional[str] = None
-    endpoint: ClientAmplifyEndpointInfo = field(default_factory=lambda: ClientAmplifyEndpointInfo())
+    endpoint: ClientAmplifyEndpointInfo = field(default_factory=ClientAmplifyEndpointInfo)
     eventId: Optional[str] = None
     expected: Optional[bool] = None
     extraProperties: ClientValueCollection[ClientAmplifyExtraProperty] = field(

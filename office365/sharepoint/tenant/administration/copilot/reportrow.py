@@ -6,7 +6,7 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class ReportRow(ClientValue):
-    Row: StringCollection = field(default_factory=lambda: StringCollection())
+    Row: StringCollection = field(default_factory=StringCollection)
 
     @property
     def entity_type_name(self):  # type: ignore[override]

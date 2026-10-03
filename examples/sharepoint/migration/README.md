@@ -43,9 +43,9 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_cer
     "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 report = MigrationAssessor(ctx.web).include_permissions().assess(recursive=True).execute_query().value
-print(report.summary())          # Webs/Lists/Files/Size + blockers/warnings + ready
-print(report.to_records())       # issues as records (CSV/JSON export)
-print(report.scan_report(LargeSitesScanner).records)   # typed SMAT-style scan detail
+print(report.summary())  # Webs/Lists/Files/Size + blockers/warnings + ready
+print(report.to_records())  # issues as records (CSV/JSON export)
+print(report.scan_report(LargeSitesScanner).records)  # typed SMAT-style scan detail
 ```
 
 ### Scan reports (SMAT roadmap)
@@ -60,8 +60,8 @@ assessment report.
 from office365.migration.sharepoint.registry import SHAREPOINT_SCANS
 from office365.migration.assessment.export import export_assessment
 
-print([d.name for d in SHAREPOINT_SCANS])            # the registered scans
-written = export_assessment(report, "out")           # issues + ScannerReports/
+print([d.name for d in SHAREPOINT_SCANS])  # the registered scans
+written = export_assessment(report, "out")  # issues + ScannerReports/
 ```
 
 **Large Sites** (SPSite, on by default) validates site size against the 500 GB
@@ -82,7 +82,7 @@ from office365.sharepoint.tenant.administration.tenant import Tenant
 
 report = MigrationTenantAssessor(Tenant(admin_client)).assess().execute_query().value
 scan = report.scan_report(LargeSitesScanner)
-print(scan.to_csv())   # SMAT LargeSites-detail.csv (typed rows -> trivial export)
+print(scan.to_csv())  # SMAT LargeSites-detail.csv (typed rows -> trivial export)
 ```
 
 Each scan report has a typed row model — the dataclass fields are the SMAT
@@ -114,7 +114,7 @@ from office365.migration.adapters.filesystem import FileSystemSource, FileSystem
 job = MigrationJob(
     FileSystemSource("src"),
     FileSystemTarget("dst"),
-    checkpoint_path="checkpoint.json",   # enables pause/resume
+    checkpoint_path="checkpoint.json",  # enables pause/resume
 )
 job.plan()
 job.run()
@@ -264,8 +264,8 @@ Azure. It is a learning/debugging aid, not a step you must run first.
 | Monitor a local migration (live progress, Ctrl-C pause, re-run to resume) | [`monitor/monitor.py`](./monitor/monitor.py) | none (local) |
 
 ```python
-job.export_reports("reports")            # SummaryReport / ItemReport / FailureReport (CSV + JSON)
-print(job.verify().summary())            # reconcile source vs target
+job.export_reports("reports")  # SummaryReport / ItemReport / FailureReport (CSV + JSON)
+print(job.verify().summary())  # reconcile source vs target
 ```
 
 Reports carry SPMT-style summary columns (total/migrated/not-migrated bytes & GB,
