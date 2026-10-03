@@ -29,8 +29,7 @@ class ChatCollection(EntityCollection[Chat]):
         if isinstance(chat_type, ChatType):
             chat_type = chat_type.value
 
-        return_type = Chat(self.context)
-        return_type.set_property("chatType", chat_type)
+        return_type = self.create_typed_object({"chatType": chat_type})
         if owner_ids:
             from office365.teams.members.aad_user_conversation import (
                 AadUserConversationMember,

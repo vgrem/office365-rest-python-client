@@ -88,6 +88,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   now reuses the signed-in account via `acquire_token_silent` before starting a new
   device flow, matching the interactive and ROPC flows. Previously every Graph
   request (e.g. each call in `python -m tests.setup`) printed a fresh device code.
+- **Chat members after creation:** `ChatCollection.add` now creates the chat with a
+  shared placeholder path, so the `members` navigation resolves to
+  `/chats/{id}/members` once the create response assigns the id. Previously it kept
+  pointing at `/members` (Graph returned `Resource not found for the segment 'members'`).
 
 ### Internal
 - **Developer onboarding rework:** test and example credentials now flow through a
