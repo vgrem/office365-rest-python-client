@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from office365.graph_client import GraphClient
 
-from tests import test_client_id, test_client_secret, test_password, test_tenant, test_username
+from tests.settings import settings
 
 
 class GraphDelegatedTestCase(TestCase):
@@ -12,14 +12,10 @@ class GraphDelegatedTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        if test_username == "x" or test_password == "x":
-            raise EnvironmentError(
-                "Credentials are not configured. Add OFFICE365_* values to .env at the project "
-                "root (see CONTRIBUTING.md), or run with --offline."
-            )
+        settings.require("delegated-ropc")
 
-        cls.client = GraphClient(tenant=test_tenant).with_username_and_password(
-            test_client_id, test_username, test_password
+        cls.client = GraphClient(tenant=settings.tenant).with_username_and_password(
+            settings.client_id, settings.username, settings.password
         )
 
 
@@ -28,4 +24,6 @@ class GraphApplicationTestCase(GraphDelegatedTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
+        settings.require("app-only")
+
+        cls.client = GraphClient(tenant=settings.tenant).with_client_secret(settings.client_id, settings.client_secret)

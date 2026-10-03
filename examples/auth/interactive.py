@@ -15,6 +15,9 @@ https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-authentica
 
 from office365.graph_client import GraphClient
 from tests import test_client_id, test_tenant
+from tests.settings import settings
+
+settings.require("delegated")
 
 client = GraphClient(tenant=test_tenant).with_token_interactive(test_client_id)
 me = client.me.get().execute_query()

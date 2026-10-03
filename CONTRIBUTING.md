@@ -86,41 +86,18 @@ It is the fastest way to validate a change, and where new tests should go.
 ### End-to-end tests (maintainers / optional)
 
 The `tests/` suites outside `tests/unit` are end-to-end and need real Microsoft 365
-credentials. If you have a tenant, create a `.env` file in the project root (it is
-`.gitignore`d):
+credentials. The full setup — `.env` template, the authentication flows, certificate
+generation, required tenant roles and troubleshooting — lives in
+[README-dev.md](README-dev.md). In short:
 
 ```bash
-OFFICE365_TENANT=contoso.onmicrosoft.com
-OFFICE365_CLIENT_ID=00000000-0000-0000-0000-000000000000
-OFFICE365_CLIENT_SECRET=...
-OFFICE365_USERNAME=admin@contoso.onmicrosoft.com
-OFFICE365_PASSWORD=...
-# optional — derived from OFFICE365_TENANT when omitted
-OFFICE365_TENANT_PREFIX=contoso
-OFFICE365_TEAM_SITE_URL=https://contoso.sharepoint.com/sites/project
-OFFICE365_ADMIN_SITE_URL=https://contoso-admin.sharepoint.com
-```
-
-`tests/settings.py` reads these variables and loads `.env` automatically, so no
-`export` is needed:
-
-```bash
+cp .env.example .env
+uv run python -m tests.doctor
 uv run pytest tests/sharepoint/
 ```
 
-`OFFICE365_TENANT`, `OFFICE365_CLIENT_ID`, `OFFICE365_CLIENT_SECRET`,
-`OFFICE365_USERNAME` and `OFFICE365_PASSWORD` are mandatory; the rest are optional
-and only needed for specific scenarios.
-
-#### Required tenant permissions
-
-For comprehensive testing, your test tenant should have these admin roles:
-
-- Global reader
-- Groups admin
-- Search admin
-- SharePoint admin
-- Teams service admin
+Credentials are loaded automatically from `.env`, so no `export` is needed. Live
+tests with unconfigured credentials are skipped, not failed.
 
 #### Forks and CI
 

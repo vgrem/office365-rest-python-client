@@ -9,7 +9,9 @@ https://learn.microsoft.com/en-us/graph/deployments
 
 from office365.azure_env import AzureEnvironment
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, client_secret, settings, tenant
+
+settings.require("app-only")
 
 client = GraphClient(tenant=tenant, environment=AzureEnvironment.USGovernmentHigh).with_client_secret(
     client_id, client_secret

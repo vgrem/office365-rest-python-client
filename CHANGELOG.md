@@ -83,6 +83,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   behavior, and surfaces failures as `ClientRequestException`. The sync method
   keeps its deferred builder/terminal form and now shares the chunk-writing loop.
 
+### Internal
+- **Developer onboarding rework:** test and example credentials now flow through a
+  single `tests/settings.py` with per-flow readiness checks (`delegated`,
+  `delegated-ropc`, `app-only`, `app-only-cert`), a `python -m tests.doctor`
+  report, and `--require <flow>` gating. Live integration tests auto-skip with a
+  summary when their credentials are missing, so a fresh checkout stays green
+  without a tenant. `.env.example`, `README-dev.md`, `CONTRIBUTING.md` and the
+  example quick starts were rewritten around this, and the dead
+  `office365_python_sdk_securevars` reference was removed.
+
 ## [3.2.0] - 2026-09-27
 
 ### Added

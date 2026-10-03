@@ -10,7 +10,9 @@ https://learn.microsoft.com/en-us/graph/auth
 
 import msal
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, client_secret, settings, tenant
+
+settings.require("app-only")
 
 
 def acquire_token() -> dict:

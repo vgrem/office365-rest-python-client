@@ -7,7 +7,9 @@ https://learn.microsoft.com/en-us/entra/external-id/customers/overview
 """
 
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, client_secret, settings, tenant
+
+settings.require("app-only")
 
 authority = f"https://{tenant}.ciamlogin.com"
 client = GraphClient(tenant=tenant, authority=authority).with_client_secret(client_id, client_secret)

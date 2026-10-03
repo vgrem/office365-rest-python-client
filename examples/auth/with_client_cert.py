@@ -14,6 +14,9 @@ from typing import Dict, cast
 
 from office365.graph_client import GraphClient
 from tests import test_cert_path, test_cert_thumbprint, test_client_id, test_tenant_name
+from tests.settings import settings
+
+settings.require("app-only-cert")
 
 
 def acquire_token() -> Dict[str, str]:

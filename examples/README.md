@@ -34,6 +34,19 @@ library across Microsoft 365 and Entra ID services.
 
 ## Quick start
 
+Every script here is runnable from a repository checkout:
+
+```bash
+cp .env.example .env                                  # fill in the credentials you need
+uv run python -m tests.doctor                          # confirm what is configured
+uv run python examples/auth/with_client_secret.py
+```
+
+Examples authenticate through the same central loader as the tests
+(`tests/settings.py`, which reads `.env`) and reuse the test credentials. See
+[README-dev.md](../README-dev.md) for the full local setup, the authentication
+flow matrix and the certificate recipe.
+
 ```python
 from office365.graph_client import GraphClient
 

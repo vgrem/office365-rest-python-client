@@ -81,10 +81,13 @@ __all__ = [
     "create_unique_file_name",
 ]
 
-test_client_credentials = ClientCredential(test_client_id, test_client_secret)
+# Credential containers are only built when their inputs are configured, so
+# importing ``tests`` never fails on a machine without a ``.env``. Live tests
+# that use them are skipped by ``tests/conftest.py`` when credentials are absent.
+test_client_credentials = ClientCredential(test_client_id, test_client_secret) if test_client_secret else None
 
-test_user_credentials = UserCredential(test_username, test_password)
-test_admin_credentials = UserCredential(test_username, test_password)
+test_user_credentials = UserCredential(test_username, test_password) if test_username and test_password else None
+test_admin_credentials = test_user_credentials
 
 
 def create_unique_name(prefix: str) -> str:
