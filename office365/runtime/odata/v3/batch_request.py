@@ -4,7 +4,7 @@ import json
 import re
 from email import message_from_bytes
 from email.message import Message
-from typing import Iterator, List, Optional, Tuple
+from typing import TYPE_CHECKING, Iterator, List, Optional, Tuple
 
 import requests
 from requests import Response
@@ -17,6 +17,10 @@ from office365.runtime.odata.batch_util import WHOLE_BATCH_REJECT_CODES, WholeBa
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.queries.batch import BatchQuery, create_boundary
 from office365.runtime.queries.client_query import ClientQuery
+
+if TYPE_CHECKING:
+    from office365.runtime.client_runtime_context import ClientRuntimeContext
+
 
 DEFAULT_MAX_BATCH_BYTES = 1024 * 1024  # SharePoint Online conservative request-size cap
 
@@ -55,7 +59,20 @@ class ODataBatchV3Request(ODataRequest):
         for sub_qry, sub_resp in self._extract_response(response, query):
             self._observe_throttle(sub_resp)
             sub_resp.raise_for_status()
+            self._apply_sub_response(sub_qry, sub_resp, query.context)
+
+    def _apply_sub_response(self, sub_qry: ClientQuery, sub_resp: Response, context: "ClientRuntimeContext") -> None:
+        """Map one sub-response, then fire the sub-query's pending handlers.
+
+        Batch execution bypasses the ``_get_next_query`` cursor, so a sub-query's
+        ``after_execute`` handlers (registered on ``context.pending_request()``
+        and keyed on ``context.current_query``) would otherwise never run. Expose
+        the sub-query and run them exactly as the non-batch path does, so
+        callback-driven follow-up queries are queued for the next round.
+        """
+        with context.current_query_scope(sub_qry):
             super().process_response(sub_resp, sub_qry)
+            context.pending_request().afterExecute(sub_resp)
 
     def execute_query_with_retry(
         self,
@@ -187,7 +204,7 @@ class ODataBatchV3Request(ODataRequest):
                 retry_after = max(retry_after or 0, response_retry_after(sub_resp) or 0)
             else:
                 self._raise_for_status(sub_resp)
-                super(ODataBatchV3Request, self).process_response(sub_resp, sub_qry)
+                self._apply_sub_response(sub_qry, sub_resp, query.context)
         return failures, retry_after
 
     def _retry_pending(self, query: BatchQuery, failures: List[Tuple[ClientQuery, Response]]) -> BatchQuery:
@@ -274,13 +291,15 @@ class ODataBatchV3Request(ODataRequest):
             change_set_message.set_boundary(change_set_boundary)
 
             for qry in query.change_sets:
-                request = qry.build_request()
+                with query.context.current_query_scope(qry):
+                    request = qry.build_request()
                 message = self._serialize_request(request)
                 change_set_message.attach(message)
             main_message.attach(change_set_message)
 
         for qry in query.get_queries:
-            request = qry.build_request()
+            with query.context.current_query_scope(qry):
+                request = qry.build_request()
             message = self._serialize_request(request)
             main_message.attach(message)
 

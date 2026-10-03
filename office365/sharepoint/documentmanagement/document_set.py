@@ -37,6 +37,10 @@ class DocumentSet(Folder):
 
         def _create(target_list: List) -> None:
             qry = ClientQuery(context, return_type=return_type)
+            # ``listdata.svc`` is a WCF Data Services endpoint that SharePoint's
+            # ``/_api/$batch`` rejects, so run this query on its own even when it
+            # was enqueued by an enclosing ``execute_batch``.
+            qry.batchable = False
             assert parent_folder.server_relative_url is not None
             folder_url = parent_folder.server_relative_url + "/" + name
             return_type.set_property("ServerRelativeUrl", folder_url)

@@ -47,3 +47,15 @@ class TestSharePointDocumentSet(SPTestCase):
         if not target:
             self.skipTest("No resource from previous test")
         target.delete_object().execute_query()
+
+    def test_03_create_document_set_via_batch(self):
+        """#868: a document set materializes when submitted via execute_batch."""
+        doc_set_title = create_unique_name("Batch DocSet N")
+        target = TestSharePointDocumentSet.target_lib
+        if not target:
+            self.skipTest("No resource from previous test")
+        doc_set = DocumentSet.create(self.client, target.root_folder, doc_set_title)
+        self.client.execute_batch()
+        self.assertEqual(doc_set.name, doc_set_title)
+        self.assertIsNotNone(doc_set.resource_path)
+        doc_set.delete_object().execute_query()

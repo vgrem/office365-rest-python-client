@@ -99,6 +99,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   request in a change set`. The v3 batch response parser now also splits sub-responses
   at the header/body separator and keeps the body as raw bytes, so binary downloads
   survive the round-trip instead of being decoded line by line ([#871](https://github.com/vgrem/office365-rest-python-client/issues/871)).
+- **Multi-phase writes in SharePoint batches:** `ClientContext.execute_batch` /
+  `execute_batch_async` now drain the queue in dependency order instead of
+  snapshotting it once. Each round flushes the requests collected so far, then
+  resolves any `DeferredOperationQuery` barrier so its `after_execute` handlers
+  enqueue the next round; the batch path also fires per-query
+  `before_execute`/`after_execute` handlers on the sub-requests, matching
+  `execute_query`. A query that targets an endpoint `/_api/$batch` rejects
+  (e.g. the `listdata.svc` document-set create) is now flagged `batchable = False`
+  and run on its own in order, instead of failing with `Invalid request.`. This
+  fixes `DocumentSet.create(...)` followed by `execute_batch()` — the create was
+  silently never sent because its prerequisite reads only produced the write
+  inside callbacks ([#868](https://github.com/vgrem/office365-rest-python-client/issues/868)).
 
 ### Internal
 - **Developer onboarding rework:** test and example credentials now flow through a

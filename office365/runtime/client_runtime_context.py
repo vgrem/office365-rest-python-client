@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import threading
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Type
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any, Callable, Iterator, List, Optional, Tuple, Type
 
 from requests import Response
 from typing_extensions import Self
@@ -42,6 +44,10 @@ class ClientRuntimeContext(ABC):
         self._queries: deque[ClientQuery] = deque()
         self._current_query = None
         self._pending_request: ClientRequest | None = None
+        # Guards ``_current_query`` while a query's pre/post handlers run. Batch
+        # execution sets it per sub-query (including on worker threads), so query
+        # handlers keyed on ``current_query`` resolve to the right query.
+        self._current_query_lock = threading.RLock()
 
     @classmethod
     def declared_limits(cls) -> Tuple[Limit, ...]:
@@ -58,6 +64,27 @@ class ClientRuntimeContext(ABC):
     @property
     def current_query(self) -> ClientQuery | None:
         return self._current_query
+
+    @contextmanager
+    def current_query_scope(self, query: ClientQuery) -> Iterator[None]:
+        """Expose ``query`` as :attr:`current_query` while executing a block.
+
+        Query handlers (``before_execute`` / ``after_execute`` / ``on_error``)
+        are keyed on ``current_query``; batch execution bypasses the normal
+        ``_get_next_query`` cursor, so it uses this scope to make those handlers
+        resolve to the sub-query being built or applied. The lock keeps the
+        assignment safe when independent batches run on a thread pool.
+
+        Args:
+            query: The query to expose for the duration of the block.
+        """
+        with self._current_query_lock:
+            previous = self._current_query
+            self._current_query = query
+            try:
+                yield
+            finally:
+                self._current_query = previous
 
     @property
     def has_pending_request(self) -> bool:

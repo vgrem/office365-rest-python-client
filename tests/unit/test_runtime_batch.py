@@ -32,6 +32,7 @@ from office365.runtime.transport.base import BaseTransport
 from office365.runtime.transport.requests_transport import RequestsTransport
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.documentmanagement.document_set import DocumentSet
 from requests import Response
 
 
@@ -612,3 +613,200 @@ class TestBatchSubRequestRetryAsync(unittest.TestCase):
             asyncio.run(req.execute_query_with_retry_async(batch, max_retry=3, base_delay=1, jitter=False))
 
         self.assertEqual(transport.calls, 2)
+
+
+# ── SharePoint batch rounds: per-query handlers, deferred barriers, draining ──
+
+
+_DOCLIB_LIST_ID = "6f0a1b2c-3d4e-5f60-7182-93a4b5c6d7e8"
+_DOCLIB_URL = "/sites/dev/Shared Documents"
+
+_FOLDER_BODY = {
+    "d": {
+        "__metadata": {"type": "SP.Folder"},
+        "UniqueId": "11111111-2222-3333-4444-555555555555",
+        "ServerRelativeUrl": _DOCLIB_URL,
+        "Properties": {"vti_x005f_listname": _DOCLIB_LIST_ID},
+    }
+}
+_LIST_BODY = {"d": {"__metadata": {"type": "SP.List"}, "Title": "Shared Documents"}}
+_CREATE_BODY = {"d": {"__metadata": {"type": "SP.Folder"}, "ServerRelativeUrl": _DOCLIB_URL + "/A1"}}
+
+
+async def _noop_async() -> None:
+    pass
+
+
+def _v3_response_with_bodies(bodies: list[dict]) -> Response:
+    """Build a multipart/mixed v3 batch response carrying the given JSON bodies."""
+    boundary = "batch_response"
+    parts = []
+    for body in bodies:
+        inner = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n" + jsonlib.dumps(body)
+        parts.append(
+            f"--{boundary}\r\nContent-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\n{inner}\r\n"
+        )
+    raw = "".join(parts) + f"--{boundary}--\r\n"
+    resp = Response()
+    resp.status_code = 200
+    resp.url = "https://contoso.sharepoint.com/_api/$batch"
+    resp.headers["Content-Type"] = f"multipart/mixed; boundary={boundary}"
+    resp._content = raw.encode("utf-8")
+    return resp
+
+
+class _ScriptedBatchTransport(BaseTransport):
+    """Records batch rounds and standalone requests, replaying scripted JSON."""
+
+    def __init__(self, bodies_per_round: list[list[dict]], single_bodies: list[dict] | None = None) -> None:
+        self._bodies = bodies_per_round
+        self._single_bodies = single_bodies or []
+        self.rounds: list[list[str]] = []
+        self.singles: list[str] = []
+
+    def execute(self, request):
+        if "$batch" in request.url:
+            payload = request.data
+            if isinstance(payload, bytes):
+                payload = payload.decode("utf-8", "replace")
+            lines = [
+                line.strip()
+                for line in payload.splitlines()
+                if line.startswith(("GET ", "POST ", "PATCH ", "MERGE ", "DELETE "))
+            ]
+            self.rounds.append(lines)
+            index = min(len(self.rounds) - 1, len(self._bodies) - 1)
+            return _v3_response_with_bodies(self._bodies[index])
+
+        self.singles.append(f"{request.method} {request.url} HTTP/1.1")
+        index = min(len(self.singles) - 1, len(self._single_bodies) - 1)
+        body = self._single_bodies[index] if self._single_bodies else {"d": {}}
+        resp = Response()
+        resp.status_code = 200
+        resp.url = request.url
+        resp.headers["Content-Type"] = "application/json;odata=verbose"
+        resp._content = jsonlib.dumps(body).encode("utf-8")
+        return resp
+
+    def reset_connections(self) -> None:  # pragma: no cover - transport hygiene no-op
+        pass
+
+
+def _sharepoint_ctx(transport: _ScriptedBatchTransport) -> ClientContext:
+    """ClientContext whose auth/digest round-trips are stubbed for offline batches."""
+    ctx = ClientContext("https://contoso.sharepoint.com")
+    request = ctx.pending_request()
+    request.beforeExecute.clear()  # drop the auth handler; per-query handlers stay
+    request.warm_up = lambda: None
+    request.warm_up_async = _noop_async
+    request.ensure_form_digest = lambda *args, **kwargs: None
+    request._authenticate_request = lambda *args, **kwargs: None
+    request.transport = transport
+    return ctx
+
+
+def test_batch_applies_per_query_before_execute_handler():
+    """A sub-query's ``before_execute`` mutation is honored during payload build."""
+    transport = _ScriptedBatchTransport([[_FOLDER_BODY]])
+    ctx = _sharepoint_ctx(transport)
+    qry = ClientQuery(ctx)
+
+    def _construct(request):
+        request.url = "https://contoso.sharepoint.com/_api/custom"
+
+    ctx.add_query(qry).before_execute(_construct)
+    ctx.execute_batch()
+
+    assert transport.rounds == [["GET https://contoso.sharepoint.com/_api/custom HTTP/1.1"]]
+
+
+def test_batch_fires_per_query_after_execute_handler():
+    """A sub-query's ``after_execute`` handler runs as its sub-response is applied."""
+    transport = _ScriptedBatchTransport([[_FOLDER_BODY, _FOLDER_BODY]])
+    ctx = _sharepoint_ctx(transport)
+    ctx.add_query(ClientQuery(ctx))
+    fired: list[object] = []
+    ctx.load(ctx.web).after_execute(lambda _: fired.append(True))
+
+    ctx.execute_batch()
+
+    assert fired == [True]
+
+
+def test_independent_queries_execute_in_a_single_round():
+    """The drain loop must not add rounds when nothing enqueues follow-ups."""
+    transport = _ScriptedBatchTransport([[_FOLDER_BODY, _FOLDER_BODY, _FOLDER_BODY]])
+    ctx = _sharepoint_ctx(transport)
+    for _ in range(3):
+        ctx.load(ctx.web)
+
+    ctx.execute_batch(3)
+
+    assert len(transport.rounds) == 1
+
+
+def test_non_batchable_query_is_flushed_in_order():
+    """A non-batchable query splits the round: batch, standalone, then batch."""
+    transport = _ScriptedBatchTransport([[_FOLDER_BODY], [_FOLDER_BODY]])
+    ctx = _sharepoint_ctx(transport)
+    ctx.load(ctx.web)
+    single = ClientQuery(ctx)
+    single.batchable = False
+
+    def _construct(request):
+        request.url = "https://contoso.sharepoint.com/_api/standalone"
+
+    ctx.add_query(single).before_execute(_construct)
+    ctx.load(ctx.web)
+
+    ctx.execute_batch()
+
+    assert [round_[0].split()[0] for round_ in transport.rounds] == ["GET", "GET"]
+    assert transport.singles == ["GET https://contoso.sharepoint.com/_api/standalone HTTP/1.1"]
+
+
+def test_document_set_create_drains_all_rounds():
+    """#868: the multi-phase ``DocumentSet.create`` chain materializes under batch."""
+    transport = _ScriptedBatchTransport([[_FOLDER_BODY], [_LIST_BODY]], single_bodies=[_CREATE_BODY])
+    ctx = _sharepoint_ctx(transport)
+    parent = ctx.web.get_folder_by_server_relative_url(_DOCLIB_URL)
+
+    created = DocumentSet.create(ctx, parent, "A1")
+    ctx.execute_batch(3)
+
+    assert len(transport.rounds) == 2, transport.rounds  # noqa: PLR2004
+    assert transport.rounds[0][0].startswith("GET ")
+    assert transport.rounds[1][0].startswith("GET ")
+    # ``listdata.svc`` isn't accepted inside ``/_api/$batch`` -> run standalone
+    assert transport.singles == ["POST https://contoso.sharepoint.com/_vti_bin/listdata.svc/SharedDocuments HTTP/1.1"]
+    assert created.get_property("ServerRelativeUrl") == _DOCLIB_URL + "/A1"
+
+
+def test_document_set_create_resolves_deferred_barrier():
+    """Cached prerequisites queue a barrier; resolving it must drive the chain."""
+    transport = _ScriptedBatchTransport([[_LIST_BODY]], single_bodies=[_CREATE_BODY])
+    ctx = _sharepoint_ctx(transport)
+    parent = ctx.web.get_folder_by_server_relative_url(_DOCLIB_URL)
+    parent.set_property("UniqueId", "11111111-2222-3333-4444-555555555555")
+    parent.set_property("ServerRelativeUrl", _DOCLIB_URL)
+    parent.set_property("Properties", {"vti_x005f_listname": _DOCLIB_LIST_ID})
+
+    DocumentSet.create(ctx, parent, "A1")
+    ctx.execute_batch(3)
+
+    assert len(transport.rounds) == 1, transport.rounds
+    assert transport.rounds[0][0].startswith("GET ")
+    assert transport.singles == ["POST https://contoso.sharepoint.com/_vti_bin/listdata.svc/SharedDocuments HTTP/1.1"]
+
+
+def test_document_set_create_drains_all_rounds_async():
+    """Async twin of the multi-phase ``DocumentSet.create`` batch chain."""
+    transport = _ScriptedBatchTransport([[_FOLDER_BODY], [_LIST_BODY]], single_bodies=[_CREATE_BODY])
+    ctx = _sharepoint_ctx(transport)
+    parent = ctx.web.get_folder_by_server_relative_url(_DOCLIB_URL)
+
+    DocumentSet.create(ctx, parent, "A1")
+    asyncio.run(ctx.execute_batch_async(3))
+
+    assert len(transport.rounds) == 2, transport.rounds  # noqa: PLR2004
+    assert transport.singles == ["POST https://contoso.sharepoint.com/_vti_bin/listdata.svc/SharedDocuments HTTP/1.1"]

@@ -19,6 +19,7 @@ from office365.runtime.http.url import get_absolute_url
 from office365.runtime.odata.v3.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataBatchV3Request
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import NoTimeoutType
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.exceptions import SecurityValidationException
@@ -47,6 +48,7 @@ from office365.sharepoint.webs.web import Web
 
 if TYPE_CHECKING:
     from office365.runtime.queries.batch import BatchQuery
+    from office365.runtime.queries.client_query import ClientQuery
     from office365.sharepoint.brandcenter.brand_center import BrandCenter
     from office365.sharepoint.portal.theme_manager import ThemeManager
     from office365.sharepoint.search.service import SearchService
@@ -299,20 +301,24 @@ class ClientContext(ClientRuntimeContext):
         max_bytes = DEFAULT_MAX_BATCH_BYTES if max_batch_bytes is None else max_batch_bytes
         request = self.pending_request()
         request.warm_up()  # fetch the form digest once before dispatching any batch
-        batches = self._split_batches(items_per_batch, max_bytes)
         if concurrency <= 1:
             batch_request = ODataBatchV3Request(
                 self._base_url, JsonLightFormat(), transport=self.pending_request().transport
             )
             batch_request.beforeExecute += request._authenticate_request
             batch_request.beforeExecute += request.ensure_form_digest
-            for qry in batches:
-                self._run_batch(batch_request, qry)
-                if callable(success_callback):
-                    success_callback(qry.return_types)
+            while self.has_pending_request:
+                queries, barrier = self._take_batch_round()
+                self._run_batch_round(batch_request, queries, items_per_batch, max_bytes, concurrency, success_callback)
+                if barrier is not None:
+                    self._resolve_deferred(barrier)
             return self
 
-        self._execute_batches_in_parallel(batches, concurrency, success_callback)
+        while self.has_pending_request:
+            queries, barrier = self._take_batch_round()
+            self._run_batch_round(None, queries, items_per_batch, max_bytes, concurrency, success_callback)
+            if barrier is not None:
+                self._resolve_deferred(barrier)
         return self
 
     @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
@@ -341,9 +347,164 @@ class ClientContext(ClientRuntimeContext):
         request = self.pending_request()
         # fetch the form digest once before dispatching any batch (off the loop)
         await request.warm_up_async()
-        batches = self._split_batches(items_per_batch, max_bytes)
-        await self._run_batches_async(batches, concurrency, success_callback)
+        while self.has_pending_request:
+            queries, barrier = self._take_batch_round()
+            await self._run_batch_round_async(
+                request, queries, items_per_batch, max_bytes, concurrency, success_callback
+            )
+            if barrier is not None:
+                with self.current_query_scope(barrier):
+                    await barrier.execute_query_async(request)
         return self
+
+    def _take_batch_round(self) -> "tuple[list[ClientQuery], Optional[DeferredOperationQuery]]":
+        """Pop the next run of batchable queries, stopping at a deferred barrier.
+
+        Consecutive real queries are collected for one HTTP round. The first
+        :class:`~office365.runtime.queries.deferred.DeferredOperationQuery`
+        encountered terminates the run and is returned to the caller, so the
+        collected requests are dispatched *before* the barrier resolves. This
+        mirrors ``execute_query`` ordering, where a barrier's handlers only run
+        once the preceding request has completed, and lets the caller loop until
+        the queue -- including follow-up queries enqueued by response handlers --
+        is drained.
+
+        Returns:
+            Tuple of (batchable queries, terminating barrier or ``None``).
+        """
+        queries: list[ClientQuery] = []
+        while self.has_pending_request:
+            qry = self._queries.popleft()
+            if isinstance(qry, DeferredOperationQuery):
+                return queries, qry
+            queries.append(qry)
+        return queries, None
+
+    def _partition_batches(
+        self, queries: "list[ClientQuery]", items_per_batch: int, max_batch_bytes: int
+    ) -> "list[BatchQuery]":
+        """Split batchable queries into independent batch units."""
+        from office365.runtime.odata.batch_util import partition_by_limits
+        from office365.runtime.queries.batch import BatchQuery
+
+        return [BatchQuery(self, chunk) for chunk in partition_by_limits(queries, items_per_batch, max_batch_bytes)]
+
+    def _resolve_deferred(self, barrier: DeferredOperationQuery) -> None:
+        """Resolve a deferred barrier in place, firing its handlers.
+
+        Exposes the placeholder as the current query so its ``after_execute``
+        handlers resolve to it, then runs it as a no-op (or the deferred op).
+        Any queries those handlers enqueue are picked up by the next round.
+        """
+        with self.current_query_scope(barrier):
+            barrier.execute_query(self.pending_request())
+
+    def _run_batch_round(
+        self,
+        batch_request: Optional[ODataBatchV3Request],
+        queries: "list[ClientQuery]",
+        items_per_batch: int,
+        max_batch_bytes: int,
+        concurrency: int,
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]],
+    ) -> None:
+        """Dispatch one round's queries in submission order.
+
+        Consecutive batchable queries are grouped into ``/_api/$batch`` requests;
+        a query flagged ``batchable = False`` (an endpoint the batch service
+        rejects, such as ``listdata.svc``) is executed on its own. Preceding
+        batchable queries are flushed first, so mixed rounds stay ordered.
+
+        Args:
+            batch_request: Shared v3 batch request for sequential execution, or
+                ``None`` when ``concurrency`` > 1 (each batch builds its own).
+            queries: Queries collected for this round.
+            items_per_batch: Maximum queries per batch.
+            max_batch_bytes: Maximum estimated batch payload size.
+            concurrency: Maximum number of concurrent batch requests.
+            success_callback: Called with each completed unit's return types.
+        """
+        pending: list[ClientQuery] = []
+        for qry in queries:
+            if getattr(qry, "batchable", True):
+                pending.append(qry)
+                continue
+            self._flush_batch_group(
+                batch_request, pending, items_per_batch, max_batch_bytes, concurrency, success_callback
+            )
+            pending = []
+            self._execute_single(qry, success_callback)
+        self._flush_batch_group(batch_request, pending, items_per_batch, max_batch_bytes, concurrency, success_callback)
+
+    def _flush_batch_group(
+        self,
+        batch_request: Optional[ODataBatchV3Request],
+        queries: "list[ClientQuery]",
+        items_per_batch: int,
+        max_batch_bytes: int,
+        concurrency: int,
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]],
+    ) -> None:
+        """Partition and dispatch a run of consecutive batchable queries."""
+        if not queries:
+            return
+        batches = self._partition_batches(queries, items_per_batch, max_batch_bytes)
+        if concurrency <= 1:
+            assert batch_request is not None
+            for batch_qry in batches:
+                self._run_batch(batch_request, batch_qry)
+                if callable(success_callback):
+                    success_callback(batch_qry.return_types)
+        else:
+            self._execute_batches_in_parallel(batches, concurrency, success_callback)
+
+    def _execute_single(
+        self,
+        query: "ClientQuery",
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]] = None,
+    ) -> None:
+        """Execute a non-batchable query through the pending request, in order."""
+        with self.current_query_scope(query):
+            self.pending_request().execute_query(query)
+        if callable(success_callback) and query.return_type is not None:
+            success_callback([query.return_type])
+
+    async def _run_batch_round_async(
+        self,
+        request: SharePointRequest,
+        queries: "list[ClientQuery]",
+        items_per_batch: int,
+        max_batch_bytes: int,
+        concurrency: int,
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]],
+    ) -> None:
+        """Async twin of :meth:`_run_batch_round`."""
+        pending: list[ClientQuery] = []
+        for qry in queries:
+            if getattr(qry, "batchable", True):
+                pending.append(qry)
+                continue
+            await self._flush_batch_group_async(pending, items_per_batch, max_batch_bytes, concurrency, success_callback)
+            pending = []
+            with self.current_query_scope(qry):
+                await request.execute_query_async(qry)
+            if callable(success_callback) and qry.return_type is not None:
+                success_callback([qry.return_type])
+        await self._flush_batch_group_async(pending, items_per_batch, max_batch_bytes, concurrency, success_callback)
+
+    async def _flush_batch_group_async(
+        self,
+        queries: "list[ClientQuery]",
+        items_per_batch: int,
+        max_batch_bytes: int,
+        concurrency: int,
+        success_callback: Optional[Callable[[List[ClientObject | ClientResult]], None]],
+    ) -> None:
+        """Async twin of :meth:`_flush_batch_group`."""
+        if not queries:
+            return
+        batches = self._partition_batches(queries, items_per_batch, max_batch_bytes)
+        await self._run_batches_async(batches, concurrency, success_callback)
 
     def _run_batch(self, batch_request: ODataBatchV3Request, batch_qry: "BatchQuery") -> None:
         """Execute one batch, refreshing an expired form digest once and retrying."""

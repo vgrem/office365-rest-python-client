@@ -45,6 +45,10 @@ class ClientQuery(Generic[ReturnT]):
         self._parameters_type = parameters_type
         self._parameters_name = parameters_name
         self._return_type: ReturnT | None = return_type
+        # Queries run inside a batch by default. A query that targets an endpoint
+        # the batch service doesn't accept (e.g. ``_vti_bin/listdata.svc``) sets
+        # this to ``False`` so batch execution runs it on its own, in order.
+        self.batchable = True
 
     def build_request(self) -> RequestOptions:
         """Builds a request"""
