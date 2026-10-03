@@ -787,21 +787,23 @@ class ListItem(SecurableObject):
 
         tax_field.ensure_property("TextField").after_execute(lambda _: _tax_field_loaded())
 
-    def ensure_type_name(self, target_list, action=None):
-        """Determine metadata annotation for ListItem entity
+    def ensure_type_name(self, target_list) -> Self:
+        """Determine the metadata type annotation for this list item.
+
+        Adopts the target list's ``ListItemEntityTypeFullName`` once it is available.
+        When the list has not resolved it yet, a deferred barrier is queued right after
+        the read, so the annotation is set before any query built afterwards executes
+        -- including inside ``execute_batch``.
 
         Args:
             target_list (office365.sharepoint.lists.list.List): List resource
-            action (() -> None): Event handler
         """
         if self._entity_type_name is None:
+            from office365.runtime.queries.deferred import DeferredOperationQuery
 
             def _list_loaded():
                 self._entity_type_name = target_list.properties["ListItemEntityTypeFullName"]
-                if callable(action):
-                    action()
 
             target_list.ensure_property("ListItemEntityTypeFullName").after_execute(lambda _: _list_loaded())
-        elif callable(action):
-            action()
+            target_list.context.add_query(DeferredOperationQuery(target_list.context))
         return self

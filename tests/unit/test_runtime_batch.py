@@ -662,6 +662,7 @@ class _ScriptedBatchTransport(BaseTransport):
         self._bodies = bodies_per_round
         self._single_bodies = single_bodies or []
         self.rounds: list[list[str]] = []
+        self.payloads: list[str] = []
         self.singles: list[str] = []
 
     def execute(self, request):
@@ -669,6 +670,7 @@ class _ScriptedBatchTransport(BaseTransport):
             payload = request.data
             if isinstance(payload, bytes):
                 payload = payload.decode("utf-8", "replace")
+            self.payloads.append(payload)
             lines = [
                 line.strip()
                 for line in payload.splitlines()
@@ -797,6 +799,55 @@ def test_document_set_create_resolves_deferred_barrier():
     assert len(transport.rounds) == 1, transport.rounds
     assert transport.rounds[0][0].startswith("GET ")
     assert transport.singles == ["POST https://contoso.sharepoint.com/_vti_bin/listdata.svc/SharedDocuments HTTP/1.1"]
+
+
+# ── #717: list item entity type must be resolved before the create round ──────
+
+_LIST_TYPE_BODY = {
+    "d": {
+        "__metadata": {"type": "SP.List"},
+        "ListItemEntityTypeFullName": "SP.Data.MyListListItem",
+    }
+}
+
+
+def test_add_item_resolves_entity_type_before_create_round():
+    """#717: the create must not be batched with the list's type-name read.
+
+    The annotation (``SP.Data.<List>ListItem``) is read in one round, then the POST
+    is serialized in a later round; otherwise the server sees a multi-lookup value
+    collection on an ``SP.ListItem`` and rejects it as an open collection.
+    """
+    transport = _ScriptedBatchTransport([[_LIST_TYPE_BODY], [{"d": {}}]])
+    ctx = _sharepoint_ctx(transport)
+    lst = ctx.web.lists.get_by_title("MyList")
+
+    item = lst.add_item({"Title": "A1"})
+    ctx.execute_batch()
+
+    assert len(transport.rounds) == 2, transport.rounds  # noqa: PLR2004
+    assert transport.rounds[0][0].startswith("GET ")
+    assert transport.rounds[1][0].startswith("POST ")
+    assert "/items" in transport.rounds[1][0]
+    assert item.entity_type_name == "SP.Data.MyListListItem"
+    assert "SP.Data.MyListListItem" in transport.payloads[1]
+
+
+def test_add_item_reuses_cached_entity_type_without_reading_it_again():
+    """Once cached, the type annotation is adopted without an extra list read."""
+    transport = _ScriptedBatchTransport([[{"d": {}}]])
+    ctx = _sharepoint_ctx(transport)
+    lst = ctx.web.lists.get_by_title("MyList")
+    lst.set_property("Id", "11111111-2222-3333-4444-555555555555")
+    lst.set_property("ListItemEntityTypeFullName", "SP.Data.MyListListItem")
+
+    item = lst.add_item({"Title": "A1"})
+    ctx.execute_batch()
+
+    assert len(transport.rounds) == 1, transport.rounds
+    assert transport.rounds[0][0].startswith("POST ")
+    assert item.entity_type_name == "SP.Data.MyListListItem"
+    assert "SP.Data.MyListListItem" in transport.payloads[0]
 
 
 def test_document_set_create_drains_all_rounds_async():

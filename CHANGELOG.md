@@ -59,6 +59,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `/_api/$batch` is flagged `batchable = False` and run on its own. Fixes
   `DocumentSet.create(...)` followed by `execute_batch()`
   ([#868](https://github.com/vgrem/office365-rest-python-client/issues/868)).
+- **List item creates in batches:** `ListItem.ensure_type_name` now defers the
+  queued create until `ListItemEntityTypeFullName` is read, so an `add_item` /
+  `update` batched via `execute_batch` is serialized with the correct
+  `SP.Data.<List>ListItem` annotation instead of the open `SP.ListItem` type.
+  Fixes "An open collection property ... was found"
+  ([#717](https://github.com/vgrem/office365-rest-python-client/issues/717)).
 
 ### Internal
 - **Developer onboarding rework:** credentials flow through `tests/settings.py` with
