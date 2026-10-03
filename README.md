@@ -35,7 +35,7 @@ The library ships two clients. Pick the one that matches the API you need.
 
 | | `ClientContext` | `GraphClient` |
 |---|---|---|
-| **Talks to** | SharePoint REST API (`/_api`) | Microsoft Graph (`graph.microsoft.com`) |
+| **Talks to** | SharePoint REST API v1 | Microsoft Graph (`graph.microsoft.com`) |
 | **Entry point** | `ClientContext("https://contoso.sharepoint.com/sites/team")` | `GraphClient(tenant="contoso.onmicrosoft.com")` |
 | **Best for** | SharePoint lists, items, files, folders, search, permissions, site and tenant administration, taxonomy, webhooks | Outlook, OneDrive, Teams, OneNote, Planner, To Do, Entra ID, Intune, Purview, Bookings, reports, security… |
 | **SharePoint** | Full fidelity | Partial — prefer `ClientContext` for SharePoint-only work |
@@ -89,7 +89,7 @@ Modern flows authenticate through **Microsoft Entra ID** using [MSAL](https://le
 | ACS / SAML | On-premises (legacy) | [legacy app-only](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/legacy/with_app_only.py) · [legacy SAML](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/legacy/with_user_credential.py) |
 
 > [!NOTE]
-> SharePoint app-only access requires a **certificate**. A client secret is not accepted by the SharePoint `/_api` endpoints — use `GraphClient` for secret-based app-only. See [why a client secret doesn't work for SharePoint](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/README.md).
+> SharePoint app-only access requires a **certificate**. A client secret is not accepted by SharePoint REST API v1 — use `GraphClient` for secret-based app-only. See [why a client secret doesn't work for SharePoint](https://github.com/vgrem/office365-rest-python-client/blob/master/examples/sharepoint/auth/README.md).
 
 ```python
 from office365.sharepoint.client_context import ClientContext

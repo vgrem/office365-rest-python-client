@@ -81,15 +81,19 @@ uv run python examples/entraid/applications/redirect_uris.py
 
 ### 5. App-only
 
-**a. Certificate (SharePoint)** — SharePoint `/_api` requires a certificate, not a
-secret. Generate it, upload it and grant site access in one command:
+**a. Certificate (Graph + SharePoint)** — the same certificate works for both
+clients; only the permissions differ (SharePoint REST API v1 rejects client
+secrets, Graph accepts them). One command generates a self-signed cert, uploads it
+and prints the values to paste:
 
 ```bash
+# Graph app-only
+uv run python examples/entraid/applications/rotate_cert.py --generate
+
+# SharePoint app-only (also grants access to one site)
 uv run python examples/sharepoint/auth/setup/certificate_auth.py \
     --site https://contoso.sharepoint.com/sites/project
 ```
-
-It prints the value to paste:
 
 ```dotenv
 OFFICE365_CERT_THUMBPRINT=<thumbprint>

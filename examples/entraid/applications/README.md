@@ -13,7 +13,7 @@ Manage app registrations, certificate credentials, and API permissions.
 | **List apps** | [`list.py`](./list.py) | First 100 app registrations |
 | **Create app** | [`create.py`](./create.py) | Register a new app + cleanup |
 | **Get by app ID** | [`get_by_app_id.py`](./get_by_app_id.py) | Find an app registration by its client ID |
-| **Add certificate** | [`rotate_cert.py`](rotate_cert.py) | Upload a certificate to an app |
+| **Add certificate** | [`rotate_cert.py`](rotate_cert.py) | Generate and upload a certificate to an app |
 | **Add password** | [`rotate_secret.py`](rotate_secret.py) | Create a client secret |
 | **Update redirect URIs** | [`redirect_uris.py`](./redirect_uris.py) | Add or update app redirect URIs |
 | **Consolidated credentials report** | [`credentials_report.py`](./credentials_report.py) | All apps with passwords + certs + expiry |

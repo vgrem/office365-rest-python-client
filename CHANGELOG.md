@@ -97,6 +97,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `examples/sharepoint/auth/setup/` scripts. `certificate_auth.py` now prints a
   paste-ready `.env` block, `applications/create.py` gains `--keep`/`--name`, and
   `applications/rotate_cert.py` uploads a configurable public certificate.
+- **Certificate setup for Graph:** `applications/rotate_cert.py` gains
+  `--generate` (creates a self-signed pair with openssl, uploads it and prints a
+  paste-ready `.env` block) and now signs in interactively like the other setup
+  scripts. README-dev presents certificate auth as shared by Graph and SharePoint,
+  and the docs say "SharePoint REST API v1" instead of `/_api`.
 
 ## [3.2.0] - 2026-09-27
 
