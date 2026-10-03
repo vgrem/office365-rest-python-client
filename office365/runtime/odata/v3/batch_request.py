@@ -305,6 +305,10 @@ class ODataBatchV3Request(ODataRequest):
     def _deserialize_response(self, raw_response: Message) -> Response:
         """Deserialize a single sub-response from the batch.
 
+        The body is sliced off the raw bytes at the header/body separator and kept
+        as-is, so binary payloads (e.g. a ``$value`` file download) survive intact
+        instead of being decoded line by line as text.
+
         Args:
             raw_response: The message part containing the HTTP response
 
@@ -313,7 +317,8 @@ class ODataBatchV3Request(ODataRequest):
         """
         payload = raw_response.get_payload(decode=True)
         assert isinstance(payload, bytes)
-        lines = list(filter(None, payload.decode("utf-8").split("\r\n")))
+        head, _, body = payload.partition(b"\r\n\r\n")
+        lines = list(filter(None, head.decode("utf-8", "replace").split("\r\n")))
         response_status_regex = "^HTTP/1\\.\\d (\\d{3}) (.*)$"
         status_result = re.match(response_status_regex, lines[0])
         assert status_result is not None
@@ -321,13 +326,8 @@ class ODataBatchV3Request(ODataRequest):
 
         resp = requests.Response()
         resp.status_code = int(status_info[0])
-        MIN_RESPONSE_LINES = 3
-        if status_info[1] == "No Content" or len(lines) < MIN_RESPONSE_LINES:
-            resp.headers = self._normalize_headers(lines[1:])
-            resp._content = bytes(str("").encode("utf-8"))
-        else:
-            resp._content = bytes(str(lines[-1]).encode("utf-8"))
-            resp.headers = self._normalize_headers(lines[1:-1])
+        resp.headers = self._normalize_headers(lines[1:])
+        resp._content = body
         return resp
 
     @staticmethod

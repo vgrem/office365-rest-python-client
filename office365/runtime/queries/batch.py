@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.queries.client_query import ClientQuery, ReturnT
 from office365.runtime.queries.deferred import DeferredOperationQuery
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 
 
@@ -79,8 +80,15 @@ class BatchQuery(ClientQuery[Any], Generic[ReturnT]):
 
     @property
     def change_sets(self) -> list[ClientQuery[Any]]:
-        """Gets all queries that modify data (non-GET operations)."""
-        return [qry for qry in self._queries if not isinstance(qry, (ReadEntityQuery, DeferredOperationQuery))]
+        """Gets all queries that modify data (non-GET operations).
+
+        ``FunctionQuery`` is a GET (function/$value calls) and therefore runs
+        outside the change set, alongside ``ReadEntityQuery``. Only create,
+        update, delete and service-operation (action) queries are change sets.
+        """
+        return [
+            qry for qry in self._queries if not isinstance(qry, (ReadEntityQuery, FunctionQuery, DeferredOperationQuery))
+        ]
 
     @property
     def queries(self) -> list[ClientQuery[Any]]:
@@ -91,10 +99,10 @@ class BatchQuery(ClientQuery[Any], Generic[ReturnT]):
     def get_queries(self) -> list[ClientQuery[Any]]:
         """Gets all read-only (GET) queries in the batch.
 
-        DeferredOperationQuery placeholders are excluded: they carry no request
-        of their own and resolve as no-ops.
+        Includes ``FunctionQuery`` (function/$value calls are GET). DeferredOperationQuery
+        placeholders are excluded: they carry no request of their own and resolve as no-ops.
         """
-        return [qry for qry in self._queries if isinstance(qry, ReadEntityQuery)]
+        return [qry for qry in self._queries if isinstance(qry, (ReadEntityQuery, FunctionQuery))]
 
     @property
     def has_change_sets(self) -> bool:

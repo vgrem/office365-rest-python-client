@@ -327,6 +327,73 @@ def test_whole_batch_reject_marker_carries_queries_and_cause():
     assert 413 in WHOLE_BATCH_REJECT_CODES  # noqa: PLR2004
 
 
+# ── v3: GETs stay outside change sets (#871) ─────────────────────────────────
+
+
+def test_function_query_get_is_not_a_change_set():
+    """#871: File.get_content() is a GET ($value) and must not be wrapped in a change set."""
+    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx.pending_request().beforeExecute.clear()  # offline: no auth handler
+
+    file = ctx.web.get_file_by_server_relative_path("/sites/x/Shared Documents/a.txt")
+    content = file.get_content()
+
+    batch = BatchQuery(ctx, list(ctx._queries))
+    assert [type(q).__name__ for q in batch.get_queries] == ["FunctionQuery"]
+    assert batch.change_sets == []
+    assert batch.has_change_sets is False
+    assert content in [q.return_type for q in batch.get_queries]
+
+    # A GET-only batch is a plain multipart/mixed request with no change set part.
+    payload = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())._prepare_payload(batch)
+    assert b"changeset" not in payload.lower()
+
+
+def test_mixed_batch_separates_get_from_change_set():
+    """A GET plus an action: only the action is a change set; the GET runs at top level."""
+    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx.pending_request().beforeExecute.clear()
+
+    file = ctx.web.get_file_by_server_relative_path("/sites/x/Shared Documents/a.txt")
+    file.get_content()  # FunctionQuery -> GET
+    file.open_binary_stream()  # ServiceOperationQuery -> POST
+
+    batch = BatchQuery(ctx, list(ctx._queries))
+    assert [type(q).__name__ for q in batch.get_queries] == ["FunctionQuery"]
+    assert [type(q).__name__ for q in batch.change_sets] == ["ServiceOperationQuery"]
+    assert batch.ordered_queries == batch.change_sets + batch.get_queries
+
+    payload = ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat())._prepare_payload(batch)
+    assert b"changeset" in payload.lower()
+
+
+def test_batch_function_query_returns_binary_content():
+    """#871: a batched File.get_content() returns raw bytes, not a decoded text line."""
+    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx.pending_request().beforeExecute.clear()
+
+    file = ctx.web.get_file_by_server_relative_path("/sites/x/Shared Documents/a.bin")
+    content = file.get_content()
+    batch = BatchQuery(ctx, list(ctx._queries))
+
+    binary = b"\x00\x01\n\xff\xfe raw\r\nbytes"
+    body = (
+        b"--batch_response\r\n"
+        b"Content-Type: application/http\r\n"
+        b"Content-Transfer-Encoding: binary\r\n\r\n"
+        b"HTTP/1.1 200 OK\r\n"
+        b"Content-Type: application/octet-stream\r\n\r\n" + binary + b"\r\n--batch_response--\r\n"
+    )
+    response = Response()
+    response.status_code = 200
+    response.headers["Content-Type"] = "multipart/mixed; boundary=batch_response"
+    response._content = body
+
+    ODataBatchV3Request("https://contoso.sharepoint.com", JsonLightFormat()).process_response(response, batch)
+
+    assert content.value == binary
+
+
 # ── Graph dependsOn sequencing (v4) ──────────────────────────────────────────
 
 

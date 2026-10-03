@@ -92,6 +92,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   shared placeholder path, so the `members` navigation resolves to
   `/chats/{id}/members` once the create response assigns the id. Previously it kept
   pointing at `/members` (Graph returned `Resource not found for the segment 'members'`).
+- **Batch GETs after `File.get_content()`:** `BatchQuery` now treats `FunctionQuery`
+  (`$value` and other function calls) as a GET, so it is placed outside the change
+  set. Previously `file.get_content()` was grouped with the change sets and
+  `execute_batch()` failed with `An invalid HTTP method 'GET' was detected for a
+  request in a change set`. The v3 batch response parser now also splits sub-responses
+  at the header/body separator and keeps the body as raw bytes, so binary downloads
+  survive the round-trip instead of being decoded line by line ([#871](https://github.com/vgrem/office365-rest-python-client/issues/871)).
 
 ### Internal
 - **Developer onboarding rework:** test and example credentials now flow through a
