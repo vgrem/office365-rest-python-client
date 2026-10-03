@@ -23,6 +23,30 @@ uv run pytest --offline -q
 
 That is the whole setup for most contributions. Continue only to run against a real tenant.
 
+## Lint, format and git hooks
+
+Install the git hooks once per clone:
+
+```bash
+uv run pre-commit install
+```
+
+That single command registers both stages:
+
+- **commit** — `pyproject-fmt`, `uv lock`, and `ruff check --fix` / `ruff format` on the
+  files you staged (fast).
+- **push** — `pyright` and the offline test suite, `uv run pytest --offline` (slower).
+
+Run everything against the whole tree without committing:
+
+```bash
+uv run pre-commit run --all-files
+uv run pre-commit run --hook-stage pre-push --all-files
+```
+
+The hooks invoke the tools from the locked environment, and CI installs the same
+lockfile, so the versions you run locally match the ones that gate the build.
+
 ---
 
 ## Set up live authentication
@@ -89,7 +113,9 @@ The guided wizard generates `.env` for you. It reads the values already present,
 prompts only for the tenant and sign-in app id when they are missing, signs in,
 reuses or generates one self-signed certificate (valid for both Graph and
 SharePoint), optionally creates a client secret, and derives the SharePoint URLs
-from the tenant name (or the signed-in UPN):
+from the tenant name (or the signed-in UPN). Entra reveals a secret's value only
+at creation, so the wizard asks whether to create one (default no) unless a secret
+is already configured:
 
 ```bash
 uv run python -m tests.setup
@@ -103,6 +129,10 @@ without signing in or writing:
 ```bash
 uv run python -m tests.setup --dry-run
 ```
+
+Pass `--with-secret` to create one without prompting, or `--no-secret` to never
+create one (`--yes` runs default to no). If `OFFICE365_CLIENT_SECRET` is left
+empty, setup prints how to add it later.
 
 Prerequisite: the app allows public client flows and has the delegated
 `Application.ReadWrite.All` permission with admin consent (steps 2–3). Permissions

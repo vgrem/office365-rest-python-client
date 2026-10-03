@@ -135,7 +135,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   prompts only for the tenant and sign-in app id when they are missing, reuses or
   creates app credentials idempotently, derives the SharePoint URLs from the tenant
   name, and writes `.env` (with a `.env.bak` backup and a `--dry-run` preview).
-  Generated certificates are no longer tracked.
+  It now also asks whether to create a client secret (default no; `--with-secret`
+  and `--no-secret` force the choice, and `--yes` keeps it off) so both app-only
+  flows are one keystroke apart, and prints how to add the secret later when
+  `OFFICE365_CLIENT_SECRET` is left empty. Generated certificates are no longer
+  tracked.
 - **Two-user test model:** `OFFICE365_TEST_USER1`/`OFFICE365_TEST_USER2` are replaced
   by `OFFICE365_USERNAME` (primary, also the ROPC account) and the optional
   `OFFICE365_USERNAME_ALT`. `tests/__init__.py` still exposes

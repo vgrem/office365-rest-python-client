@@ -294,6 +294,12 @@ def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: st
         shutil.copy2(ENV_PATH, ENV_BAK)
     ENV_PATH.write_text(text, encoding="utf-8")
     print(f"Wrote {ENV_PATH.relative_to(PROJECT_ROOT)} (backup: {ENV_BAK.name})")
+    if not secret_value:
+        print(
+            "Note: the 'app-only' (client secret) flow is not configured. Create one with\n"
+            "      `python -m tests.setup --with-secret`, or "
+            "examples/entraid/applications/rotate_secret.py."
+        )
     print("Next: python -m tests.doctor")
 
 
@@ -363,7 +369,27 @@ def _resolve_password(args: argparse.Namespace, extras: bool) -> str:
     return settings.password
 
 
-def _resolve_options(args: argparse.Namespace, parser: argparse.ArgumentParser) -> _Options:
+def _resolve_secret(args: argparse.Namespace, existing_values: dict[str, str]) -> bool:
+    """Decide whether to create a client secret alongside the certificate.
+
+    ``--no-secret`` wins, then ``--with-secret`` forces creation. An already
+    configured secret is reused silently. Otherwise the user is asked once;
+    non-interactive runs (``--yes``) default to no, keeping ``.env`` deterministic.
+    """
+    if args.no_secret:
+        return False
+    if args.with_secret:
+        return True
+    if args.yes:
+        return False
+    if existing_values.get("OFFICE365_CLIENT_SECRET") or settings.client_secret:
+        return False
+    return _ask_yes_no("Also create a client secret (enables the app-only flow)?", default=False)
+
+
+def _resolve_options(
+    args: argparse.Namespace, parser: argparse.ArgumentParser, existing_values: dict[str, str]
+) -> _Options:
     tenant, client_id, admin = _resolve_core(args, parser)
     sites_scope, site_urls = _resolve_sites(args)
     extras = _resolve_extras(args)
@@ -377,7 +403,7 @@ def _resolve_options(args: argparse.Namespace, parser: argparse.ArgumentParser) 
         force=args.force,
         generate_cert=args.generate_cert,
         reuse_cert=args.reuse_cert,
-        want_secret=args.with_secret and not args.no_secret,
+        want_secret=_resolve_secret(args, existing_values),
         rotate_secret=args.rotate_secret,
         sites_scope=sites_scope,
         site_urls=site_urls,
@@ -553,8 +579,8 @@ def _dry_run(opts: _Options, existing_values: dict[str, str]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
-    opts = _resolve_options(args, parser)
     existing_values = _read_env_values()
+    opts = _resolve_options(args, parser, existing_values)
 
     _print_readiness()
 
