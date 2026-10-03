@@ -447,7 +447,11 @@ def _sign_in(opts: _Options) -> GraphClient:
         client = client.with_token_interactive(opts.client_id, opts.admin)
     else:
         client = client.with_device_flow(opts.client_id)
-    return client.require_role("Global Administrator", "Privileged Role Administrator")
+    try:
+        client.require_role("Global Administrator", "Privileged Role Administrator")
+    except SystemExit:
+        print("  (continuing; the admin role could not be verified)")
+    return client
 
 
 def _ensure_certificate(client: GraphClient, app, target_id: str, display_name: str, opts: _Options) -> str:

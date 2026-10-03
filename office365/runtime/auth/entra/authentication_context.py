@@ -72,6 +72,13 @@ class AuthenticationContext:
         app = msal.PublicClientApplication(client_id, authority=self.authority_url)
 
         def _acquire_token():
+            # Reuse the signed-in account so only the first request shows a code;
+            # MSAL refreshes the access token in the background when needed.
+            accounts = app.get_accounts()
+            if accounts:
+                result = app.acquire_token_silent(self._scopes, account=accounts[0])
+                if result:
+                    return result
             flow = app.initiate_device_flow(scopes=self._scopes)
             if "user_code" not in flow:
                 raise ValueError(f"Failed to create device flow: {flow}")

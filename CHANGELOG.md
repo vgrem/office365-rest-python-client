@@ -83,6 +83,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   behavior, and surfaces failures as `ClientRequestException`. The sync method
   keeps its deferred builder/terminal form and now shares the chunk-writing loop.
 
+### Fixed
+- **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`
+  now reuses the signed-in account via `acquire_token_silent` before starting a new
+  device flow, matching the interactive and ROPC flows. Previously every Graph
+  request (e.g. each call in `python -m tests.setup`) printed a fresh device code.
+
 ### Internal
 - **Developer onboarding rework:** test and example credentials now flow through a
   single `tests/settings.py` with per-flow readiness checks (`delegated`,
