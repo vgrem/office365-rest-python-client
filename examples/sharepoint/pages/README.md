@@ -53,7 +53,7 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_cer
 )
 
 # List all site pages
-pages = ctx.web.site_pages.pages.get().execute_query()
+pages = ctx.site_pages.pages.get().execute_query()
 for page in pages:
     print(f"  {page.file_name}  : {page.title}")
 ```
