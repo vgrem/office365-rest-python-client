@@ -324,6 +324,43 @@ finally:
     verification, proxies and redirect policy are client-level constructor
     settings; per-request `verify` and `proxies` are not honored.
 
+## Offload executor
+
+With the default `requests` transport, the blocking work behind every `await`
+(request send, streaming reads, `beforeExecute` auth/digest hooks) runs on a
+worker pool owned by the library — not the event loop's shared default executor.
+That keeps heavy HTTP traffic from starving other loop callbacks and lets you
+size the two pools independently.
+
+The pool is created lazily on first use. Tune it *before* the first async
+request:
+
+```python
+from office365.runtime.transport.offload import configure_offload_executor
+
+configure_offload_executor(max_workers=16, thread_name_prefix="o365-http")
+```
+
+- `max_workers=None` (default) uses `min(32, os.cpu_count() + 4)`.
+- Configuring after the pool exists raises `RuntimeError`; call
+  `shutdown_offload_executor()` to release it and restore defaults first.
+- An individual transport can opt out of the shared pool by setting its own
+  executor, e.g. `transport.offload_executor = my_executor`. The executor must
+  outlive the transport.
+- The native-async `httpx` transport does not use this pool: its requests run on
+  the loop.
+
+Each session the default transport creates has its own `requests` connection
+pool. When many requests hit the same host concurrently, size the pool to match:
+
+```python
+ctx.with_transport(pool_connections=10, pool_maxsize=32)
+```
+
+`with_transport` accepts `pool_connections`, `pool_maxsize` and `pool_block`
+(also on `RequestsTransport`). They are ignored when you pass your own
+`session=` — that session's adapters are yours to configure.
+
 ## Notes
 
 - Async support is additive: nothing in the synchronous API changed, and both

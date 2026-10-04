@@ -70,6 +70,7 @@ from office365.runtime.odata.v4.batch_request import DEFAULT_MAX_BATCH_BYTES, OD
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.transport.base import NoTimeoutType
+from office365.runtime.transport.requests_transport import DEFAULT_POOL_CONNECTIONS, DEFAULT_POOL_MAXSIZE
 from office365.search.entity import SearchEntity
 from office365.search.external.connection import ExternalConnection
 from office365.search.external.external import External
@@ -329,6 +330,10 @@ class GraphClient(ClientRuntimeContext):
         verify: bool | str = True,
         timeout: float | tuple[float, float | None] | NoTimeoutType | None = None,
         session: Session | None = None,
+        *,
+        pool_connections: int = DEFAULT_POOL_CONNECTIONS,
+        pool_maxsize: int = DEFAULT_POOL_MAXSIZE,
+        pool_block: bool = False,
     ) -> Self:
         """Configure the HTTP transport (proxy, SSL, timeout, custom session).
 
@@ -346,6 +351,12 @@ class GraphClient(ClientRuntimeContext):
                 :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable.
             session: Custom ``requests.Session`` with pre-configured adapters
                    (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
+            pool_connections: Host connection pools kept per session (ignored
+                when ``session`` is supplied)
+            pool_maxsize: Maximum connections per host pool (ignored when
+                ``session`` is supplied)
+            pool_block: Block when a pool is full instead of discarding the
+                connection (ignored when ``session`` is supplied)
 
         Returns:
             Self: Supports method chaining
@@ -355,6 +366,9 @@ class GraphClient(ClientRuntimeContext):
             verify=verify,
             timeout=timeout,
             session=session,
+            pool_connections=pool_connections,
+            pool_maxsize=pool_maxsize,
+            pool_block=pool_block,
         )
         return self
 

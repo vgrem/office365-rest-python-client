@@ -42,6 +42,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `on_headers`), implemented natively by `HttpxTransport`.
 - **Async streaming downloads:** `File.download_session_async(stream, ...)` with the
   same `chunk_downloaded`/`chunk_size`/`use_path`/`progress` behavior.
+- **Tunable async offload executor:** blocking transport work is offloaded to a
+  dedicated, lazily-created process-wide pool instead of the event loop's shared
+  default executor. Size it with `configure_offload_executor(max_workers=...)`,
+  release it with `shutdown_offload_executor()`, or give a transport its own via
+  `BaseTransport.offload_executor`.
+- **Tunable connection pool:** `with_transport` (Graph and SharePoint) and
+  `RequestsTransport` accept `pool_connections`, `pool_maxsize` and `pool_block`
+  to size each session's `requests` `HTTPAdapter`. Defaults match `requests`;
+  the settings are ignored when a custom `session=` is supplied.
 
 ### Fixed
 - **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`

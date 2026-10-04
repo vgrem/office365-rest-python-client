@@ -21,6 +21,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import NoTimeoutType
+from office365.runtime.transport.requests_transport import DEFAULT_POOL_CONNECTIONS, DEFAULT_POOL_MAXSIZE
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
@@ -187,6 +188,10 @@ class ClientContext(ClientRuntimeContext):
         verify: bool | str = True,
         timeout: float | tuple[float, float | None] | NoTimeoutType | None = None,
         session: requests.Session | None = None,
+        *,
+        pool_connections: int = DEFAULT_POOL_CONNECTIONS,
+        pool_maxsize: int = DEFAULT_POOL_MAXSIZE,
+        pool_block: bool = False,
     ) -> Self:
         """Configure the HTTP transport (proxy, SSL, timeout, custom session).
 
@@ -204,6 +209,12 @@ class ClientContext(ClientRuntimeContext):
                 :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable.
             session: Custom ``requests.Session`` with pre-configured adapters
                    (e.g. for NTLM/SSPI auth, custom TLS, connection pooling)
+            pool_connections: Host connection pools kept per session (ignored
+                when ``session`` is supplied)
+            pool_maxsize: Maximum connections per host pool (ignored when
+                ``session`` is supplied)
+            pool_block: Block when a pool is full instead of discarding the
+                connection (ignored when ``session`` is supplied)
 
         Returns:
             Self: Supports method chaining
@@ -213,6 +224,9 @@ class ClientContext(ClientRuntimeContext):
             verify=verify,
             timeout=timeout,
             session=session,
+            pool_connections=pool_connections,
+            pool_maxsize=pool_maxsize,
+            pool_block=pool_block,
         )
         return self
 

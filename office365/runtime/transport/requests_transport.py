@@ -6,6 +6,7 @@ import threading
 from typing import Any, Optional, Tuple
 
 from requests import Response, Session
+from requests.adapters import HTTPAdapter
 
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.transport.base import (
@@ -20,6 +21,12 @@ from office365.runtime.transport.base import (
 #: uploads/downloads are unaffected. Pass
 #: :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable it.
 DEFAULT_TIMEOUT: Optional[Tuple[float, Optional[float]]] = (DEFAULT_CONNECT_TIMEOUT, None)
+
+#: Default number of host connection pools kept per session (``HTTPAdapter``).
+DEFAULT_POOL_CONNECTIONS = 10
+
+#: Default maximum connections kept per host pool (``HTTPAdapter``).
+DEFAULT_POOL_MAXSIZE = 10
 
 
 class RequestsTransport(BaseTransport):
@@ -38,6 +45,14 @@ class RequestsTransport(BaseTransport):
         session whose adapter is safe for concurrent use if you also call the
         async/parallel APIs.
 
+    Connection pooling:
+        Each lazily-created per-thread session is fitted with an
+        :class:`~requests.adapters.HTTPAdapter` sized by ``pool_connections`` /
+        ``pool_maxsize`` / ``pool_block``. Raise ``pool_maxsize`` when many
+        requests to one host run concurrently; the defaults match
+        ``requests``. These settings are ignored when an explicit ``session``
+        is supplied, since that session's adapters are the caller's.
+
     Args:
         session: Optional external ``Session`` for custom adapters or TLS config.
             When omitted, a session is created per thread on demand.
@@ -46,6 +61,10 @@ class RequestsTransport(BaseTransport):
         timeout: Request timeout — a number or a ``(connect, read)`` tuple. When
             ``None`` the :data:`DEFAULT_TIMEOUT` (10 s connect, unbounded read)
             applies; pass ``NO_TIMEOUT`` to disable timeouts entirely.
+        pool_connections: Number of host connection pools kept per session.
+        pool_maxsize: Maximum connections kept per host pool.
+        pool_block: Whether to block waiting for a free connection instead of
+            discarding it when a pool is full.
     """
 
     def __init__(
@@ -54,10 +73,21 @@ class RequestsTransport(BaseTransport):
         proxies: dict[str, str] | None = None,
         verify: bool | str = True,
         timeout: TimeoutValue | NoTimeoutType | None = None,
+        *,
+        pool_connections: int = DEFAULT_POOL_CONNECTIONS,
+        pool_maxsize: int = DEFAULT_POOL_MAXSIZE,
+        pool_block: bool = False,
     ) -> None:
+        if pool_connections < 1:
+            raise ValueError("pool_connections must be a positive integer")
+        if pool_maxsize < 1:
+            raise ValueError("pool_maxsize must be a positive integer")
         self._proxies = proxies
         self._verify = verify
         self._timeout = self._resolve_timeout(timeout)
+        self._pool_connections = pool_connections
+        self._pool_maxsize = pool_maxsize
+        self._pool_block = pool_block
         # A caller-supplied session is shared verbatim across threads; otherwise
         # one session is created per thread on first use.
         self._explicit_session = session
@@ -70,6 +100,13 @@ class RequestsTransport(BaseTransport):
     def _create_session(self) -> Session:
         """Create and track a new session for the calling thread."""
         session = Session()
+        adapter = HTTPAdapter(
+            pool_connections=self._pool_connections,
+            pool_maxsize=self._pool_maxsize,
+            pool_block=self._pool_block,
+        )
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
         with self._sessions_lock:
             self._sessions.append(session)
         return session
@@ -104,6 +141,21 @@ class RequestsTransport(BaseTransport):
     @property
     def timeout(self) -> Optional[TimeoutValue]:
         return self._timeout
+
+    @property
+    def pool_connections(self) -> int:
+        """Number of host connection pools kept per session."""
+        return self._pool_connections
+
+    @property
+    def pool_maxsize(self) -> int:
+        """Maximum connections kept per host pool."""
+        return self._pool_maxsize
+
+    @property
+    def pool_block(self) -> bool:
+        """Whether a full pool blocks instead of discarding a connection."""
+        return self._pool_block
 
     @property
     def auth(self) -> Any | None:

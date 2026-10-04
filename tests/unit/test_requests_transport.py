@@ -14,10 +14,17 @@ from typing import Any, Callable, TypeVar
 from unittest import mock
 
 import requests
+from office365.graph_client import GraphClient
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.transport.base import NO_TIMEOUT
-from office365.runtime.transport.requests_transport import DEFAULT_TIMEOUT, RequestsTransport
+from office365.runtime.transport.requests_transport import (
+    DEFAULT_POOL_CONNECTIONS,
+    DEFAULT_POOL_MAXSIZE,
+    DEFAULT_TIMEOUT,
+    RequestsTransport,
+)
 from requests import Response
+from requests.adapters import HTTPAdapter
 
 _T = TypeVar("_T")
 
@@ -188,6 +195,65 @@ class TestRequestsTransportTimeout(unittest.TestCase):
         kwargs = session.calls[0][2]
         self.assertEqual(kwargs["timeout"], 9)
         self.assertTrue(kwargs["stream"])
+
+
+class TestRequestsTransportConnectionPool(unittest.TestCase):
+    """Connection-pool sizing of the lazily-created per-thread sessions."""
+
+    def test_defaults_match_requests(self):
+        transport = RequestsTransport()
+
+        self.assertEqual(transport.pool_connections, DEFAULT_POOL_CONNECTIONS)
+        self.assertEqual(transport.pool_maxsize, DEFAULT_POOL_MAXSIZE)
+        self.assertFalse(transport.pool_block)
+
+    def test_configured_pool_applied_to_created_session(self):
+        transport = RequestsTransport(pool_connections=5, pool_maxsize=25, pool_block=True)
+
+        adapter = transport._current_session().get_adapter("https://contoso.sharepoint.com")
+
+        self.assertIsInstance(adapter, HTTPAdapter)
+        self.assertEqual(adapter._pool_connections, 5)
+        self.assertEqual(adapter._pool_maxsize, 25)
+        self.assertTrue(adapter._pool_block)
+
+    def test_pool_applied_to_every_thread_session(self):
+        transport = RequestsTransport(pool_connections=3, pool_maxsize=7)
+
+        with mock.patch("office365.runtime.transport.requests_transport.Session", _RecordingSession):
+            transport.execute(_get())
+            with ThreadPoolExecutor(max_workers=1) as pool:
+                _run_on_worker(pool, transport.execute, _get())
+
+        for session in transport._sessions:
+            adapter = session.get_adapter("https://contoso.sharepoint.com")
+            self.assertEqual(adapter._pool_connections, 3)
+            self.assertEqual(adapter._pool_maxsize, 7)
+
+    def test_explicit_session_keeps_its_own_adapters(self):
+        session = requests.Session()
+        original = session.get_adapter("https://contoso.sharepoint.com")
+
+        transport = RequestsTransport(session=session, pool_maxsize=99)
+
+        self.assertEqual(transport._sessions, [session])
+        self.assertIs(session.get_adapter("https://contoso.sharepoint.com"), original)
+        self.assertEqual(original._pool_maxsize, DEFAULT_POOL_MAXSIZE)
+
+    def test_invalid_pool_sizes_are_rejected(self):
+        with self.assertRaises(ValueError):
+            RequestsTransport(pool_connections=0)
+        with self.assertRaises(ValueError):
+            RequestsTransport(pool_maxsize=0)
+
+    def test_with_transport_forwards_pool_sizing(self):
+        ctx = GraphClient().with_transport(pool_connections=4, pool_maxsize=42, pool_block=True)
+
+        transport = ctx.pending_request().transport
+
+        self.assertEqual(transport.pool_connections, 4)
+        self.assertEqual(transport.pool_maxsize, 42)
+        self.assertTrue(transport.pool_block)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,12 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.throttling import RateLimiter
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.transport.base import BaseTransport, NoTimeoutType
-from office365.runtime.transport.requests_transport import RequestsTransport
+from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.requests_transport import (
+    DEFAULT_POOL_CONNECTIONS,
+    DEFAULT_POOL_MAXSIZE,
+    RequestsTransport,
+)
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
 
@@ -65,6 +70,10 @@ class ClientRequest(ABC):
         verify: bool | str | None = None,
         timeout: float | tuple[float, Optional[float]] | NoTimeoutType | None = None,
         session: requests.Session | None = None,
+        *,
+        pool_connections: int = DEFAULT_POOL_CONNECTIONS,
+        pool_maxsize: int = DEFAULT_POOL_MAXSIZE,
+        pool_block: bool = False,
     ) -> Self:
         """Configure the HTTP transport (proxy, SSL, timeout, custom session).
 
@@ -80,6 +89,12 @@ class ClientRequest(ABC):
                 applies; pass
                 :data:`~office365.runtime.transport.base.NO_TIMEOUT` to disable.
             session: Custom ``requests.Session`` with pre-configured adapters
+            pool_connections: Host connection pools kept per session (ignored
+                when ``session`` is supplied)
+            pool_maxsize: Maximum connections per host pool (ignored when
+                ``session`` is supplied)
+            pool_block: Block when a pool is full instead of discarding the
+                connection (ignored when ``session`` is supplied)
 
         Returns:
             Self: Supports method chaining
@@ -89,6 +104,9 @@ class ClientRequest(ABC):
             proxies=proxies,
             verify=True if verify is None else verify,
             timeout=timeout,
+            pool_connections=pool_connections,
+            pool_maxsize=pool_maxsize,
+            pool_block=pool_block,
         )
         if self._rate_limiter is not None:
             self._transport = ThrottledTransport(self._transport, self._rate_limiter)
@@ -396,7 +414,7 @@ class ClientRequest(ABC):
             request: The request about to be sent.
         """
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self.beforeExecute, request)
+        await loop.run_in_executor(get_offload_executor(), self.beforeExecute, request)
 
     async def execute_request_direct_async(self, request: RequestOptions) -> Response:
         """Execute the client request without blocking the loop.
