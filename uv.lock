@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.8.0"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
@@ -801,14 +801,14 @@ wheels = [
 
 [[package]]
 name = "faker"
-version = "40.39.0"
+version = "40.40.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/62/fea935af7a312f073c99d470b05a7c96650ee8d9562ce82e8cb7ee4c1247/faker-40.39.0.tar.gz", hash = "sha256:52799ad96fcf92aab2fc96a9e03869bbf1a634300f7cd91c38dbfd51f639f6fa", size = 2029463, upload-time = "2026-09-14T16:50:17.939Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/43/7f5870d05331cb1649704040f51332d37f2468ed857de1e226482e2948b0/faker-40.40.0.tar.gz", hash = "sha256:803ee7f920679e7367c3f7b7f97752f5a9780aa5566c71723fbe57d591beafe1", size = 2029985, upload-time = "2026-09-29T00:56:19.983Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/45/c8/901282279841ebb59216433be01aac825fb905e1a597de3b7b5ab8b0c43e/faker-40.39.0-py3-none-any.whl", hash = "sha256:c4c7ec2cddfaf602c5a8a2c960614946aa8c161250bd9d49a8846cd24d1ef028", size = 2066232, upload-time = "2026-09-14T16:50:16.061Z" },
+    { url = "https://files.pythonhosted.org/packages/e1/d2/58beb2b8355f89b483fa21b99fe9934ee7312e3ccf228bb7cefe9e8d979c/faker-40.40.0-py3-none-any.whl", hash = "sha256:cd45ebdd1363f92a45740ac49945e49fa18f7e10771884a83c796a235550d7b7", size = 2066663, upload-time = "2026-09-29T00:56:17.952Z" },
 ]
 
 [[package]]
@@ -2217,7 +2217,7 @@ docs = [
 requires-dist = [
     { name = "azure-storage-blob", marker = "extra == 'azure'", specifier = ">=12.19" },
     { name = "cryptography", marker = "extra == 'azure'", specifier = ">=42" },
-    { name = "duckdb", marker = "extra == 'duckdb'", specifier = ">=1.0" },
+    { name = "duckdb", marker = "extra == 'duckdb'", specifier = ">=1" },
     { name = "faker", marker = "extra == 'examples'" },
     { name = "httpx", marker = "extra == 'httpx'", specifier = ">=0.27,<1" },
     { name = "jinja2", marker = "extra == 'notebooks'" },
@@ -2225,24 +2225,24 @@ requires-dist = [
     { name = "msal", specifier = ">=1.28,<2" },
     { name = "nbformat", marker = "extra == 'notebooks'" },
     { name = "openpyxl", marker = "extra == 'excel'", specifier = ">=3.1" },
-    { name = "pandas", marker = "extra == 'notebooks'", specifier = ">=1.3.0" },
+    { name = "pandas", marker = "extra == 'notebooks'", specifier = ">=1.3" },
     { name = "pandas", marker = "extra == 'pandas'", specifier = ">=1.5" },
     { name = "pyarrow", marker = "extra == 'parquet'", specifier = ">=14" },
     { name = "pytz", specifier = ">=2021.1" },
     { name = "requests", specifier = ">=2.32.4,<3" },
     { name = "requests-ntlm", marker = "extra == 'ntlm'" },
-    { name = "sqlalchemy", marker = "extra == 'sql'", specifier = ">=2.0" },
+    { name = "sqlalchemy", marker = "extra == 'sql'", specifier = ">=2" },
     { name = "typing-extensions", specifier = ">=4.5" },
 ]
-provides-extras = ["azure", "examples", "excel", "httpx", "ntlm", "pandas", "parquet", "duckdb", "sql", "notebooks"]
+provides-extras = ["azure", "duckdb", "examples", "excel", "httpx", "notebooks", "ntlm", "pandas", "parquet", "sql"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "adal", specifier = "~=1.2.4" },
-    { name = "configparser", specifier = ">=5.0.2,<7.3.0" },
-    { name = "cryptography", specifier = ">=44.0.0" },
-    { name = "faker", specifier = ">=4.1.2,<40.40.0" },
-    { name = "pre-commit", specifier = ">=4.0" },
+    { name = "configparser", specifier = ">=5.0.2,<7.3" },
+    { name = "cryptography", specifier = ">=44" },
+    { name = "faker", specifier = ">=4.1.2,<40.41" },
+    { name = "pre-commit", specifier = ">=4" },
     { name = "pyproject-fmt" },
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "pytest" },
@@ -2254,7 +2254,7 @@ docs = [
     { name = "mkdocs-awesome-pages-plugin", marker = "python_full_version >= '3.9'", specifier = "~=2.9" },
     { name = "mkdocs-gen-files", marker = "python_full_version >= '3.9'", specifier = "~=0.5" },
     { name = "mkdocs-material", marker = "python_full_version >= '3.9'", specifier = "~=9.5" },
-    { name = "mkdocstrings", extras = ["python"], marker = "python_full_version >= '3.9'", specifier = ">=0.28,<2.0" },
+    { name = "mkdocstrings", extras = ["python"], marker = "python_full_version >= '3.9'", specifier = ">=0.28,<2" },
     { name = "pygments", marker = "python_full_version >= '3.9'", specifier = ">=2.17" },
 ]
 
