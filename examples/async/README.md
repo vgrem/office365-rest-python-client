@@ -69,6 +69,23 @@ result = op.value
 print(result.success, result.skipped, result.errors, len(result.failures))
 ```
 
+### [Export a large collection while the loop stays responsive](export_users_async.py)
+
+`export_to_async(..., page_size=...)` follows server paging one page at a time
+and projects/writes each page on the worker pool, so memory stays flat and other
+tasks keep running — the example runs a heartbeat beside a nightly tenant export
+to prove the loop never stalls:
+
+```python
+await client.users.select(["id", "displayName", "mail"]).export_to_async("users.csv", page_size=500)
+```
+
+The same call works on any `RecordCollection`, including SharePoint lists:
+
+```python
+await lst.export_to_async("tasks.csv", format="csv", page_size=2000)
+```
+
 ### [Upload a large file with an upload session](upload_large_file_async.py)
 
 Files above 4 MB need an upload session; the awaitable

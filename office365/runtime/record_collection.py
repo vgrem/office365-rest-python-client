@@ -14,6 +14,7 @@ Keyed imports (skip/upsert) are opt-in: a subclass exposes an
 
 from __future__ import annotations
 
+import asyncio
 from os import PathLike
 from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Union
 
@@ -79,13 +80,93 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         state = {"start": 0}
 
         def _on_page(col: ClientObjectCollection) -> None:
-            items = list(col)[state["start"] :]
-            state["start"] = len(col)
+            # Read ``_data`` directly: ``list(col)`` would run the synchronous
+            # ``__iter__`` paging generator and pull every page inside this
+            # callback, defeating the bounded-memory streaming.
+            items = col._data[state["start"] :]
+            state["start"] = len(col._data)
             stream.write(records_from_items(items, col.query_options.select, col.query_options.expand))
             if not col.has_next:
                 stream.close()
 
         self.get_all(page_size=page_size, page_loaded=_on_page)
+        return self
+
+    async def export_to_async(
+        self,
+        target: Any,
+        *,
+        format: str = "csv",  # noqa: A002
+        page_size: Optional[int] = None,
+        **opts: Any,
+    ) -> Self:
+        """Async twin of :meth:`export_to`.
+
+        Pass ``page_size`` to stream an appendable format (CSV/TSV/NDJSON/JSON)
+        page by page: each page is fetched through the server-driven paging and
+        projected/written on the worker pool, so a multi-million-row export stays
+        memory-bounded and never blocks the event loop. Without ``page_size`` the
+        already-loaded items are written in a single pass (also off the loop).
+
+            >>> await client.users.export_to_async("users.csv", page_size=2000)
+            >>> await lst.items.export_to_async("out.ndjson", format="ndjson", page_size=2000)
+        """
+        if page_size:
+            return await self._export_paged_async(target, format, page_size, opts)
+
+        from office365.runtime.transport.offload import get_offload_executor
+
+        writer = registry.writer_for(format)
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(get_offload_executor(), lambda: writer(self, target, **opts))
+        return self
+
+    async def _export_paged_async(self, target: Any, format: str, page_size: int, opts: Dict[str, Any]) -> Self:  # noqa: A002
+        """Page through the collection and append records without blocking the loop."""
+        from office365.runtime.converters import streamers
+        from office365.runtime.converters.records import records_from_items
+        from office365.runtime.transport.offload import get_offload_executor
+
+        loop = asyncio.get_running_loop()
+        executor = get_offload_executor()
+        factory = streamers.streamer_for(format)
+        if factory is None:  # not appendable — write the whole collection at once
+            writer = registry.writer_for(format)
+            await loop.run_in_executor(executor, lambda: writer(self, target, **opts))
+            return self
+
+        stream = await loop.run_in_executor(executor, lambda: factory(target, **opts))
+        start = 0
+        closed = False
+
+        def _project(items: List[Any]) -> None:
+            stream.write(records_from_items(items, self.query_options.select, self.query_options.expand))
+
+        async def _append_page() -> None:
+            nonlocal start
+            # Read ``_data`` directly: ``list(self)`` would run the synchronous
+            # ``__iter__`` paging generator and block the loop.
+            items = self._data[start:]
+            start = len(self._data)
+            await loop.run_in_executor(executor, _project, items)
+
+        async def _close() -> None:
+            nonlocal closed
+            if not closed:
+                closed = True
+                await loop.run_in_executor(executor, stream.close)
+
+        try:
+            self.paged(page_size)
+            self.get()
+            await self.context.execute_query_async()
+            await _append_page()
+            while self.has_next:
+                self._get_next()
+                await self.context.execute_query_async()
+                await _append_page()
+        finally:
+            await _close()
         return self
 
     def to_records(self, raw: bool = False) -> List[Dict[str, Any]]:

@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `progress`.
 - **Async paging:** `ClientObjectCollection.get_all_async(page_size, ...)` and
   `async for item in collection`.
+- **Async streaming export:** `RecordCollection.export_to_async` (and
+  `List.export_to_async`) streams an appendable format (CSV/TSV/NDJSON/JSON) page
+  by page on the worker pool — bounded memory, the loop stays free, and the target
+  is closed on cancellation/failure. Without `page_size` the loaded collection is
+  written in one offloaded pass.
 - **Async pacing parity:** `RateLimiter.acquire_async`/`paced_async` and
   `ThrottledTransport.execute_async`/`aclose`.
 - **Async cancellation cleanup:** an aborted parallel run cancels its in-flight
@@ -108,6 +113,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   transport/session value; a per-request value still wins.
 - **`httpx` per-request `NO_TIMEOUT`:** the sentinel is translated to httpx's
   "no timeout" instead of being forwarded verbatim (which raised `TypeError`).
+- **Streaming export stayed bounded-memory:** `RecordCollection.export_to(...,
+  page_size=...)` iterated the collection while reading each page, which ran the
+  synchronous paging generator and pulled every page inside the first `page_loaded`
+  callback. It now appends only the newly loaded `_data` per page, so the export
+  actually streams instead of materializing the whole collection.
 
 ### Internal
 - **Developer onboarding rework:** credentials flow through `tests/settings.py` with

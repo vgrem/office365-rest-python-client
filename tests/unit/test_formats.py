@@ -6,11 +6,17 @@ streaming — optional formats are skipped when their dependency is absent.
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
 from office365.runtime.converters import registry
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.record_collection import RecordCollection
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.lists.list import List
+from tests._scripted_transport import ScriptedTransport
 
 RECORDS = [
     {"userPrincipalName": "a@contoso.com", "displayName": "A", "accountEnabled": True},
@@ -115,3 +121,115 @@ def test_sql_streaming_and_write():
 
     batches = list(sql_chunks(engine, "SELECT * FROM users", 1))
     assert sum(len(batch) for batch in batches) == len(RECORDS)  # noqa: PLR2004
+
+
+# ── Async streaming export ───────────────────────────────────────
+
+_GRAPH_NEXT = "https://graph.microsoft.com/v1.0/users?$skiptoken=abc"
+
+
+def _sp_page(records):
+    return {"d": {"results": records}}
+
+
+def _list_context(payloads):
+    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport(payloads)
+    ctx.pending_request().transport = transport
+    lst = List(ctx, ResourcePath("Web/Lists/getByTitle('Tasks')"))
+    # `List.items` builds a fresh collection on each access; pin one instance.
+    lst.properties["Items"] = lst.items
+    return lst, transport
+
+
+def test_export_to_streams_pages_sync(tmp_path):
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport(
+        [
+            {"@odata.nextLink": _GRAPH_NEXT, "value": [{"displayName": "A"}, {"displayName": "B"}]},
+            {"value": [{"displayName": "C"}]},
+        ]
+    )
+    ctx.pending_request().transport = transport
+    path = tmp_path / "users_sync.csv"
+
+    ctx.users.export_to(str(path), format="csv", page_size=2).execute_query()
+
+    assert transport.calls == 2  # noqa: PLR2004
+    assert [r["displayName"] for r in registry.reader_for("csv")(str(path))] == ["A", "B", "C"]
+
+
+def test_export_to_async_streams_pages(tmp_path):
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport(
+        [
+            {"@odata.nextLink": _GRAPH_NEXT, "value": [{"displayName": "A"}, {"displayName": "B"}]},
+            {"value": [{"displayName": "C"}]},
+        ]
+    )
+    ctx.pending_request().transport = transport
+    path = tmp_path / "users.csv"
+
+    asyncio.run(ctx.users.export_to_async(str(path), format="csv", page_size=2))
+
+    assert transport.calls == 2  # noqa: PLR2004
+    assert [r["displayName"] for r in registry.reader_for("csv")(str(path))] == ["A", "B", "C"]
+
+
+def test_export_to_async_writes_loaded_collection(tmp_path):
+    path = tmp_path / "loaded.ndjson"
+
+    asyncio.run(_collection(RECORDS).export_to_async(str(path), format="ndjson"))
+
+    lines = path.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == len(RECORDS)
+    assert "A" in lines[0]
+
+
+def test_export_to_async_non_appendable_falls_back(tmp_path):
+    pytest.importorskip("pyarrow")
+    path = tmp_path / "users.parquet"
+
+    # `page_size` with a non-appendable format still writes the whole collection.
+    asyncio.run(_collection(RECORDS).export_to_async(str(path), format="parquet", page_size=1))
+
+    assert [r["displayName"] for r in registry.reader_for("parquet")(str(path))] == ["A", "B"]
+
+
+def test_export_to_async_closes_stream_on_failure(tmp_path):
+    from office365.runtime.client_request_exception import ClientRequestException
+
+    ctx = GraphClient()
+    ctx.pending_request().beforeExecute.clear()
+    transport = ScriptedTransport([{"@odata.nextLink": _GRAPH_NEXT, "value": [{"id": "1"}]}, ("deny", None)])
+    ctx.pending_request().transport = transport
+    path = tmp_path / "partial.csv"
+
+    with pytest.raises(ClientRequestException):
+        asyncio.run(ctx.users.export_to_async(str(path), format="csv", page_size=1))
+
+    # The first page was flushed and the writer closed despite the failure.
+    assert [r["id"] for r in registry.reader_for("csv")(str(path))] == ["1"]
+
+
+def test_list_export_to_async_streams_items(tmp_path):
+    lst, transport = _list_context([_sp_page([{"Title": "A"}]), _sp_page([{"Title": "B"}]), _sp_page([])])
+    path = tmp_path / "items.csv"
+
+    asyncio.run(lst.export_to_async(str(path), page_size=1))
+
+    assert transport.calls == 3  # noqa: PLR2004
+    assert [r["Title"] for r in registry.reader_for("csv")(str(path))] == ["A", "B"]
+
+
+def test_list_export_to_async_writes_loaded_items(tmp_path):
+    lst, transport = _list_context([_sp_page([{"Title": "A"}, {"Title": "B"}])])
+    path = tmp_path / "loaded.csv"
+
+    asyncio.run(lst.export_to_async(str(path)))
+
+    assert transport.calls == 1
+    assert [r["Title"] for r in registry.reader_for("csv")(str(path))] == ["A", "B"]

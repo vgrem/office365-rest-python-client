@@ -370,6 +370,7 @@ optional content — distinct from the record export):
 ```python
 collection.export_to(f, format="csv").execute_query()  # unified record export
 collection.export_to("out.csv", page_size=2000).execute_query()  # streamed (bounded)
+await collection.export_to_async("out.csv", page_size=2000)  # async twin (see docs/async.md)
 collection.from_dataframe(df, key=["id"], on_conflict="upsert")  # unified streaming import
 collection.from_records(batches, checkpoint="run.json")  # stream record batches
 

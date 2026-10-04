@@ -15,6 +15,7 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `result.execute_query_retry()` | `await result.execute_query_async_retry()` |
 | `ctx.execute_request_direct(path)` | `await ctx.execute_request_direct_async(path)` |
 | `collection.get_all()` | `await collection.get_all_async()` |
+| `collection.export_to(path, page_size=n)` | `await collection.export_to_async(path, page_size=n)` |
 | `for item in collection` | `async for item in collection` |
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
 | `file.download_session(stream)` | `await file.download_session_async(stream)` |
@@ -284,6 +285,25 @@ async for file in files:
 Both forms reuse `progress` / `page_loaded` and follow the same server-driven
 paging (`@odata.nextLink`, or the SharePoint `$skip` fallback) as the
 synchronous `for file in collection`.
+
+### Streaming export
+
+`export_to_async()` is the awaitable twin of `export_to()`. With `page_size` it
+streams an appendable format (CSV/TSV/NDJSON/JSON) page by page: each page is
+fetched through the server paging and projected/written on the worker pool, so a
+multi-million-row export stays memory-bounded and the loop stays free. The target
+is flushed and closed even if the export is cancelled or a page fails.
+
+```python
+# SharePoint list
+await ctx.web.lists.get_by_title("Company Tasks").export_to_async("tasks.csv", page_size=2000)
+
+# Graph collection — the same API on any RecordCollection
+await client.users.select(["id", "displayName", "mail"]).export_to_async("users.csv", page_size=500)
+```
+
+Without `page_size` the already-loaded items are written in a single offloaded
+pass; pair it with `await collection.get_all_async()` first.
 
 ### Repeated rows and `$top`
 

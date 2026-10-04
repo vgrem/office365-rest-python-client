@@ -1074,6 +1074,25 @@ class List(SecurableObject):
             self.items.get_all().export_to(target, format=format, **opts)
         return self
 
+    async def export_to_async(self, target, *, format: str = "csv", page_size=None, **opts) -> Self:  # noqa: A002
+        """Async twin of :meth:`export_to`.
+
+        The list's items are paged and written on the worker pool, so the event
+        loop stays free; pass ``page_size`` to stream an appendable format page by
+        page (bounded memory) or omit it to load and write the whole collection.
+
+            >>> await lst.export_to_async("items.csv", page_size=2000)
+        """
+        items = self.items
+        if page_size:
+            await items.export_to_async(target, format=format, page_size=page_size, **opts)
+        else:
+            # `List.items` builds a new collection per access, so keep one
+            # reference: load it, then export the loaded items.
+            await items.get_all_async()
+            await items.export_to_async(target, format=format, **opts)
+        return self
+
     def to_dataframe(self) -> "DataFrameResult":
         """Export this list's items to a pandas DataFrame (deferred result)."""
         return self.items.get_all().to_dataframe()

@@ -134,6 +134,13 @@ lst.export_to("stocks.csv", page_size=2000).execute_query()  # CSV/TSV/NDJSON/JS
 `page_size` streams appendable formats page by page; other formats fall back to a
 whole-collection write.
 
+From `async` code the same export is awaitable — each page is fetched and written
+on the worker pool, so the event loop stays free ([async guide](async.md#streaming-export)):
+
+```python
+await lst.export_to_async("stocks.csv", page_size=2000)
+```
+
 ## Errors & verification
 
 - `on_error="collect"` records a failing chunk and continues. With a
