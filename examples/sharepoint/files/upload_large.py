@@ -1,6 +1,9 @@
 """
 Demonstrates how to upload a large file using chunked upload session.
 
+For async code, ``FileCollection.create_upload_session_async()`` does the same
+without blocking the event loop (see ``examples/async/``).
+
 See https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-folders-and-files-with-rest#working-with-large-files-by-using-rest
 """
 

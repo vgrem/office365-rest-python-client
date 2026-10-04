@@ -48,7 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   read from disk on the offload executor and sent through the async transport, with
   optional `chunk_uploaded`/`progress` reporting. The reusable
   `UploadSessionRequest.execute_query_async` drives the same chunk loop for other
-  upload-session callers.
+  upload-session callers. For SharePoint libraries,
+  `FileCollection.create_upload_session_async(path, size, ...)` is the awaitable
+  twin of `create_upload_session` with the same `chunk_uploaded`/`progress`
+  semantics.
 - **Tunable async offload executor:** blocking transport work is offloaded to a
   dedicated, lazily-created process-wide pool instead of the event loop's shared
   default executor. Size it with `configure_offload_executor(max_workers=...)`,

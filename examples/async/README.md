@@ -80,6 +80,9 @@ item = await drive.root.resumable_upload_async(path, chunk_size=320 * 1024 * 5, 
 print(item.web_url)
 ```
 
+SharePoint libraries use `files.create_upload_session_async(path, size, progress=...)`
+instead — same ordered-chunk loop, same `chunk_uploaded`/`progress` behavior.
+
 ### [Bulk-update list items](bulk_update_async.py)
 
 Queue updates with synchronous builders, then let `execute_batch_async` send the

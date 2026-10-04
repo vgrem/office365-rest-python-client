@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import io
 import os
 import tempfile
 import uuid
+from functools import partial
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
@@ -12,6 +14,7 @@ from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.transport.offload import get_offload_executor
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.creation_information import FileCreationInformation
@@ -203,6 +206,92 @@ class FileCollection(EntityCollection[File]):
             return self.add(file_name, None, True).after_execute(_upload)
         else:
             return self.add(file_name, f.read(), True)
+
+    async def create_upload_session_async(
+        self,
+        file_or_path: IO | str,
+        chunk_size: int,
+        chunk_uploaded: Optional[Callable[[int, Any], None]] = None,
+        progress: Optional[ProgressCallback] = None,
+        file_name: Optional[str] = None,
+        **kwargs: Any,
+    ) -> File:
+        """Awaitable twin of :meth:`create_upload_session` that never blocks the loop.
+
+        Unlike the deferred synchronous form, this is an awaitable coroutine: it
+        creates the file, uploads every chunk and commits the last fragment before
+        it returns. Each chunk is read from the source stream on the shared
+        offload executor and sent through the context's async transport (native
+        with ``httpx``, otherwise a worker thread), so a large upload keeps the
+        event loop free. ``chunk_uploaded`` and ``progress`` behave exactly as on
+        the synchronous twin: invoked with the offset of the chunk about to be
+        sent, then once more with the full size once every range is committed.
+
+        Args:
+            file_or_path: File object or path to upload.
+            chunk_size: Size of upload chunks in bytes.
+            chunk_uploaded: Callback that accepts the current offset and any extra
+                keyword arguments.
+            progress: Optional hook invoked per chunk with a ``Progress`` snapshot
+                (``done`` = bytes uploaded, ``total`` = file size).
+            file_name: Optional name for the uploaded file.
+            **kwargs: Additional arguments passed through to ``chunk_uploaded``.
+
+        Returns:
+            File: The uploaded file.
+        """
+        loop = asyncio.get_running_loop()
+        executor = get_offload_executor()
+
+        auto_close = False
+        if isinstance(file_or_path, str):
+            f: IO = await loop.run_in_executor(executor, partial(open, file_or_path, "rb"))
+            auto_close = True
+        else:
+            f = file_or_path
+
+        file_size = _stream_size(f)
+        if file_name is None:
+            stream_name = getattr(f, "name", None)
+            file_name = os.path.basename(stream_name) if stream_name else None
+        if not file_name:
+            raise ValueError("file_name is required when uploading from an unnamed stream")
+        upload_id = str(uuid.uuid4())
+
+        try:
+            if file_size <= chunk_size:
+                return_type = self.add(file_name, await loop.run_in_executor(executor, f.read), True)
+                await self.context.execute_query_async()
+                return return_type
+
+            return_type = self.add(file_name, None, True)
+            await self.context.execute_query_async()
+
+            uploaded_bytes = 0
+            while uploaded_bytes < file_size:
+                if callable(chunk_uploaded):
+                    chunk_uploaded(uploaded_bytes, **kwargs)  # type: ignore[call-arg]
+                if callable(progress):
+                    progress(Progress(done=uploaded_bytes, total=file_size, stage="uploading"))
+
+                content = await loop.run_in_executor(executor, f.read, chunk_size)
+                if uploaded_bytes == 0:
+                    return_type.start_upload(upload_id, content)
+                elif uploaded_bytes + len(content) < file_size:
+                    return_type.continue_upload(upload_id, uploaded_bytes, content)
+                else:
+                    return_type.finish_upload(upload_id, uploaded_bytes, content)
+                await self.context.execute_query_async()
+                uploaded_bytes += len(content)
+
+            if callable(chunk_uploaded):
+                chunk_uploaded(file_size, **kwargs)  # type: ignore[call-arg]
+            if callable(progress):
+                progress(Progress(done=file_size, total=file_size, stage="uploading"))
+            return return_type
+        finally:
+            if auto_close and not f.closed:
+                f.close()
 
     def add(self, url: str, content: Optional[bytes | str] = None, overwrite=False):
         """Adds a file to the collection based on provided file creation information. A reference to the SP.File that

@@ -20,6 +20,7 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `file.download_session(stream)` | `await file.download_session_async(stream)` |
 | `drive_item.download_session(stream)` | `await drive_item.download_session_async(stream)` |
 | `drive_item.resumable_upload(path)` | `await drive_item.resumable_upload_async(path)` |
+| `files.create_upload_session(path, size)` | `await files.create_upload_session_async(path, size)` |
 | `result.execute_batch()` | `await result.execute_batch_async()` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
@@ -206,6 +207,20 @@ ranges); only the disk read and the HTTP send move off the loop. Both
 `chunk_uploaded(bytes_uploaded)` and `progress` (`stage="uploading"`) are
 supported, and a failure raises the same `ClientRequestException` as the rest of
 the async API (or is dispatched to a registered `onError` handler).
+
+SharePoint document libraries use a different upload-session protocol;
+`FileCollection.create_upload_session_async()` is the awaitable twin of
+`create_upload_session()` and keeps the same `chunk_uploaded`/`progress`
+behavior:
+
+```python
+folder = ctx.web.get_folder_by_server_relative_url("/sites/dev/Shared Documents")
+await folder.files.create_upload_session_async(
+    "/data/big.iso",
+    chunk_size=4 * 1024 * 1024,
+    progress=lambda p: print(f"{p.done}/{p.total}"),
+)
+```
 
 ## Recipes
 
