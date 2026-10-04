@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import uuid
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional
+from typing import Any, Awaitable, Callable, Optional
 
 import requests
 from requests import HTTPError, Response
@@ -23,6 +23,12 @@ from office365.runtime.transport.requests_transport import (
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
 
+#: Private :class:`~office365.runtime.http.request_options.RequestOptions`
+#: attribute marking a request already authenticated by the async path, so the
+#: synchronous auth hook (still run as an offloaded ``beforeExecute`` handler)
+#: does not acquire a second token.
+ASYNC_AUTHENTICATED_FLAG = "_office365_async_authenticated"
+
 
 class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):
@@ -30,6 +36,9 @@ class ClientRequest(ABC):
         self._async_transport: BaseTransport | None = None
         self._rate_limiter: RateLimiter | None = None
         self._client_request_id_enabled = True
+        #: Optional awaitable auth hook (see ``before_execute_async``), used by
+        #: requests whose credentials are supplied as an async token callback.
+        self._async_authenticate: Optional[Callable[[RequestOptions], Awaitable[None]]] = None
         self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
         self.afterExecute: EventHandler[[Response]] = EventHandler()
         self.onError: EventHandler[[ClientRequestException]] = EventHandler()
@@ -411,9 +420,16 @@ class ClientRequest(ABC):
         slow hook cannot stall the loop. Handlers registered ``once`` still run
         exactly once and registration order is preserved.
 
+        When an awaitable auth hook was registered (``_async_authenticate`` —
+        used by async token callbacks), it is awaited on the loop first, so the
+        token can be fetched with genuinely asynchronous I/O. The synchronous
+        auth hook that follows then finds the request already authenticated.
+
         Args:
             request: The request about to be sent.
         """
+        if self._async_authenticate is not None:
+            await self._async_authenticate(request)
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(get_offload_executor(), self.beforeExecute, request)
 

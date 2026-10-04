@@ -510,6 +510,12 @@ class GraphClient(ClientRuntimeContext):
         pending = self.pending_request()
         batch_request = ODataV4BatchRequest("", V4JsonFormat())
         batch_request.beforeExecute += pending.authenticate_request
+        batch_request._async_authenticate = pending._async_authenticate
+        if pending._auth_context.is_async_token_callback:
+            # Batch payloads authenticate each sub-request synchronously during
+            # ``build_request``; acquire (and cache) the token on the loop first so
+            # that build can reuse it.
+            await pending._auth_context.acquire_token_async()
         if pending.has_async_transport:
             batch_request.with_async_transport(pending.async_transport)
         await batch_request.execute_query_with_retry_async(batch_qry)

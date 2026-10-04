@@ -156,6 +156,29 @@ await ctx.execute_batch_async(items_per_batch=100, concurrency=4)
 ctx.pending_request().with_async_transport(HttpxTransport())
 ```
 
+## Credentials
+
+### [Acquire tokens with an async callback](token_callback_async.py)
+
+`with_access_token` accepts an `async def`; the async API awaits it on the loop
+(single-flight, cached until it expires), so a broker reached over async HTTP
+never blocks the event loop:
+
+```python
+async def token_callback() -> dict:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(broker_url) as resp:
+            return await resp.json()
+
+
+client = GraphClient(token_callback=token_callback)
+users = await client.users.top(5).select(["id", "displayName"]).get().execute_query_async()
+```
+
+Pass an `async def` — a plain `lambda` that returns a coroutine is not detected
+as async and would be treated as a synchronous callback. Calling the synchronous
+API while an async callback is configured raises a clear `RuntimeError`.
+
 ## Concurrency & best practices
 
 - **One request per clone.** A context owns a single pending-query queue, so

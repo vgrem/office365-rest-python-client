@@ -5,6 +5,7 @@ from typing import Callable, Dict, Optional
 from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
+from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest
@@ -38,6 +39,7 @@ class GraphRequest(ODataRequest):
         self._environment = environment
         self._auth_context = AuthenticationContext(environment=environment, tenant=tenant, authority=authority)
         self.beforeExecute += self.authenticate_request
+        self._async_authenticate = self.authenticate_request_async
 
     def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> GraphRequest:
         """
@@ -135,8 +137,26 @@ class GraphRequest(ODataRequest):
         Args:
             request: The request to authenticate
         """
+        if getattr(request, ASYNC_AUTHENTICATED_FLAG, False):
+            return  # already authenticated by :meth:`authenticate_request_async`
         token = self._auth_context.acquire_token()
         request.set_header("Authorization", f"Bearer {token.accessToken}")
+
+    async def authenticate_request_async(self, request: RequestOptions) -> None:
+        """Authenticate the request on the event loop.
+
+        A no-op unless the registered token callback is a coroutine function, in
+        which case the token is awaited (single-flight) and the request is
+        flagged so the offloaded synchronous auth hook skips it.
+
+        Args:
+            request: The request to authenticate
+        """
+        if not self._auth_context.is_async_token_callback:
+            return
+        token = await self._auth_context.acquire_token_async()
+        request.set_header("Authorization", f"Bearer {token.accessToken}")
+        setattr(request, ASYNC_AUTHENTICATED_FLAG, True)
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
         request = super().build_request(query)

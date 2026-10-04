@@ -560,6 +560,7 @@ class ClientContext(ClientRuntimeContext):
         batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat(), transport=request.transport)
         batch_request.beforeExecute += request._authenticate_request
         batch_request.beforeExecute += request.ensure_form_digest
+        batch_request._async_authenticate = request._async_authenticate
         if request.has_async_transport:
             batch_request.with_async_transport(request.async_transport)
         await self._run_batch_async(batch_request, batch_qry)

@@ -12,6 +12,7 @@ from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
+from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.url import get_absolute_url
@@ -70,6 +71,7 @@ class SharePointRequest(ODataRequest):
         self._digest_lock = threading.Lock()
         self.beforeExecute += self._authenticate_request
         self.beforeExecute += self.ensure_form_digest
+        self._async_authenticate = self._authenticate_request_async
 
     def _authenticate_request(self, request: RequestOptions) -> None:
         """Authenticate the request, resolving the auth context lazily so it can be
@@ -79,9 +81,22 @@ class SharePointRequest(ODataRequest):
         signs the request itself. Such a session counts as credentials when no
         provider is configured on the auth context.
         """
+        if getattr(request, ASYNC_AUTHENTICATED_FLAG, False):
+            return  # already authenticated by :meth:`_authenticate_request_async`
         if not self._auth_context.is_configured and self._transport.auth is not None:
             return
         self._auth_context.authenticate_request(request)
+
+    async def _authenticate_request_async(self, request: RequestOptions) -> None:
+        """Authenticate the request on the event loop when the token callback is async.
+
+        Synchronous providers are handled by the offloaded
+        :meth:`_authenticate_request` hook instead.
+        """
+        if not self._auth_context.is_async_token_callback:
+            return
+        await self._auth_context.authenticate_request_async(request)
+        setattr(request, ASYNC_AUTHENTICATED_FLAG, True)
 
     def set_base_url(self, url: str) -> Self:
         self._base_url = url
@@ -158,8 +173,11 @@ class SharePointRequest(ODataRequest):
         """Async twin of :meth:`warm_up`: fetch the digest without blocking the loop.
 
         The digest fetch uses blocking HTTP, so it is offloaded to a worker
-        thread while the event loop stays free.
+        thread while the event loop stays free. When the token callback is async,
+        the access token is acquired first so the (blocking) digest request can
+        reuse the cached token through the synchronous auth hook.
         """
+        await self._auth_context.acquire_token_async()
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(get_offload_executor(), self.warm_up)
 

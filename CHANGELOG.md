@@ -61,6 +61,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `RequestsTransport` accept `pool_connections`, `pool_maxsize` and `pool_block`
   to size each session's `requests` `HTTPAdapter`. Defaults match `requests`;
   the settings are ignored when a custom `session=` is supplied.
+- **Async token callbacks:** `with_access_token` (Graph and SharePoint) now accepts
+  an `async def` callback. The async API awaits it on the event loop (single-flight,
+  and cached for its `expiresIn`), so token acquisition can use genuinely
+  asynchronous I/O; the token is primed before an async batch payload is built,
+  whose sub-requests are authenticated synchronously. Requests authenticated this
+  way are marked so the offloaded synchronous auth hook skips them, and the
+  synchronous API raises a clear error instead of failing with an unreadable token.
+  See `docs/async.md`.
 
 ### Fixed
 - **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`

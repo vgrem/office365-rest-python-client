@@ -327,6 +327,31 @@ The retry policy mirrors `execute_query_retry` exactly: transient errors
 jitter. Pass a `failure_callback` (for example returning the server's
 `Retry-After` via `retry_after_delay`) to override the backoff.
 
+## Credentials
+
+A token callback registered with `with_access_token` may be an ordinary function
+or an `async def`. The async API awaits an async callback on the event loop — no
+worker thread, no loop stall — so token acquisition can use genuinely
+asynchronous I/O; synchronous callbacks keep their existing offload behaviour:
+
+```python
+async def token_callback() -> dict:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(token_url) as resp:
+            return await resp.json()
+
+
+ctx = GraphClient(token_callback=token_callback)  # or ctx.with_access_token(...)
+await ctx.me.get().execute_query_async()
+```
+
+Concurrent async requests share one acquisition (single-flight), and the token is
+cached for its `expiresIn`, so the synchronous hooks that build a batch payload can
+reuse it. A request authenticated on the loop is marked, so the offloaded
+synchronous auth hook skips it rather than fetching a second token. Calling the
+**synchronous** API while an async callback is configured raises a clear
+`RuntimeError` instead of failing with an unreadable token.
+
 ## Async context manager
 
 `ClientContext` can be used as an async context manager; on exit the transport is
@@ -411,7 +436,8 @@ ctx.with_transport(pool_connections=10, pool_maxsize=32)
   retries only transiently-failed sub-requests, exactly like the synchronous
   path; it no longer offloads the whole synchronous batch. Blocking
   `beforeExecute` hooks (token acquisition, digest refresh) are offloaded to a
-  worker thread so they cannot stall the loop.
+  worker thread so they cannot stall the loop; an async token callback (see
+  [Credentials](#credentials)) is awaited on the loop instead.
 - If an async parallel run is cancelled, its in-flight sibling requests are
   cancelled too, and the queries that were not applied are put back on the
   context's queue with the current query cleared, so a retry resumes cleanly. A
