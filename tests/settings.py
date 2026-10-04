@@ -107,6 +107,20 @@ def _optional(key: str, default: str = "") -> str:
     return os.environ.get(key, default)
 
 
+def _resolve_path(value: str) -> str:
+    """Resolve a filesystem path for use from any working directory.
+
+    Paths configured in ``.env`` are documented relative to the repository root
+    (e.g. ``OFFICE365_CERT_PATH=tests/selfsigncert.pem``), so a relative value is
+    anchored to :data:`PROJECT_ROOT` instead of the current working directory.
+    Absolute paths and ``~`` are respected as-is.
+    """
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = PROJECT_ROOT / path
+    return str(path)
+
+
 class CredentialsNotConfigured(RuntimeError):
     """Raised when a flow is used while its credentials are not configured."""
 
@@ -154,7 +168,7 @@ class Settings:
             username=_optional("OFFICE365_USERNAME"),
             password=_optional("OFFICE365_PASSWORD"),
             cert_thumbprint=_optional("OFFICE365_CERT_THUMBPRINT"),
-            cert_path=_optional("OFFICE365_CERT_PATH", _DEFAULT_CERT_PATH),
+            cert_path=_resolve_path(_optional("OFFICE365_CERT_PATH", _DEFAULT_CERT_PATH)),
             tenant_prefix=prefix,
             root_site_url=root_site_url,
             site_url=_optional("OFFICE365_SITE_URL", root_site_url),

@@ -70,6 +70,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   and offloaded async requests no longer race on one connection pool.
   `reset_connections()` resets only the calling thread's pool, and `close()`
   releases every session the transport created.
+- **Certificate path from a nested working directory:** `tests/settings.py`
+  resolves a relative `OFFICE365_CERT_PATH` (documented as
+  `tests/selfsigncert.pem`) against the repository root, so examples and tests
+  that use app-only certificate auth run from any directory.
 
 ### Internal
 - **Developer onboarding rework:** credentials flow through `tests/settings.py` with
