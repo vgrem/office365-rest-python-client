@@ -60,6 +60,7 @@ client.me.send_mail(
 | **Mailbox settings (OOF)** | [`messages/mailbox_settings.py`](./messages/mailbox_settings.py) | Enable scheduled automatic replies (Out of Office) |
 | **Mail tips** | [`messages/mail_tips.py`](./messages/mail_tips.py) | Pre-flight check — OOF, moderation, size limits |
 | **Export MIME** | [`messages/export_mime.py`](./messages/export_mime.py) | Download message as .eml for backup or eDiscovery |
+| **Export mail asynchronously** | [`messages/export_mail_async.py`](./messages/export_mail_async.py) | Stream a folder and download each message + attachments concurrently |
 | **Email search** | [`messages/search.py`](./messages/search.py) | Microsoft Search query across mailbox |
 
 ## Mail — Administration & Reporting

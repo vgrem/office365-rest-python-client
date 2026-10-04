@@ -78,6 +78,54 @@ batches in parallel:
 await ctx.execute_batch_async(items_per_batch=100, concurrency=4, success_callback=on_batch)
 ```
 
+### [Import a directory through a bounded pipeline](pipeline_import.py)
+
+A producer feeds a bounded `asyncio.Queue`; worker tasks drain it, so disk reads
+and uploads overlap while memory and connection usage stay flat:
+
+```python
+await queue.put((remote_name, path))  # producer blocks when the queue is full
+clone = ctx.clone(site_url)  # one queue per worker
+folder.upload_file(remote_name, content)
+await clone.execute_query_async()
+```
+
+### [Cancel a parallel run and resume it](cancellation.py)
+
+Cancelling `execute_query_parallel_async` re-queues the unapplied queries, so a
+retry picks the work back up (at-least-once) instead of losing it:
+
+```python
+task.cancel()  # e.g. Ctrl-C or a timeout
+# ... CancelledError ...
+await ctx.execute_query_parallel_async()  # resumes the restored queries
+```
+
+### [Bulk-create under a shared rate limiter](rate_limited_bulk_create.py)
+
+Opt in to fleet-wide pacing before a large write; `Retry-After` / high health
+scores hold every request back as a group:
+
+```python
+ctx.with_rate_limit(health_threshold=80, min_interval=0.1)
+await ctx.execute_batch_async(items_per_batch=50, concurrency=4)
+```
+
+## Integration
+
+### [Bridge the library into FastAPI](fastapi_integration.py)
+
+Await the terminal directly inside an ASGI handler; clone a shared context per
+request so handlers never share a pending-query queue:
+
+```python
+@app.get("/users")
+async def list_users(top: int = 10):
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
+    users = await client.users.top(top).select(["id", "displayName"]).get().execute_query_async()
+    return [{"id": u.id, "display_name": u.display_name} for u in users]
+```
+
 ## Batch
 
 ### [Submit a batch asynchronously](batch_async.py)

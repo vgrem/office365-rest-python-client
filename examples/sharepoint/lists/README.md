@@ -54,6 +54,7 @@ graph TD
 | Get list storage size | [`read_lib_size.py`](./read_lib_size.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Get changes (change log) | [`get_changes.py`](./get_changes.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Get data as stream | [`get_data_as_stream.py`](./get_data_as_stream.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
+| Export a large list to JSONL (async, resumable) | [`export_large_list_async.py`](./export_large_list_async.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Export list metadata (XML) | [`export_list.py`](./export_list.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 | Query a large list (indexed + paged CAML, >5k rows) | [`query_large_list.py`](./query_large_list.py) | Read access | [Lists REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest) |
 
