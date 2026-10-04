@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 from typing import Any, Optional, Tuple
 
 from requests import Response, Session
@@ -24,8 +25,22 @@ DEFAULT_TIMEOUT: Optional[Tuple[float, Optional[float]]] = (DEFAULT_CONNECT_TIME
 class RequestsTransport(BaseTransport):
     """HTTP transport using ``requests.Session`` for connection reuse.
 
+    Thread safety:
+        ``requests.Session`` is not safe to share across threads, so by default
+        the transport keeps one lazily-created session *per thread* (each with
+        its own connection pool and cookie jar). This makes the default
+        transport safe under the parallel/offloaded requests the async runtime
+        dispatches, without any opt-in.
+
+        When the caller supplies an explicit ``session`` (for custom adapters,
+        TLS config or session-level auth), that *single* session is used as-is
+        and its thread safety becomes the caller's responsibility — pass a
+        session whose adapter is safe for concurrent use if you also call the
+        async/parallel APIs.
+
     Args:
-        session: Optional external ``Session`` for custom adapters or TLS config
+        session: Optional external ``Session`` for custom adapters or TLS config.
+            When omitted, a session is created per thread on demand.
         proxies: Transport-level proxy configuration applied to all requests
         verify: SSL verification (``True``, ``False``, or a CA bundle path)
         timeout: Request timeout — a number or a ``(connect, read)`` tuple. When
@@ -40,10 +55,35 @@ class RequestsTransport(BaseTransport):
         verify: bool | str = True,
         timeout: TimeoutValue | NoTimeoutType | None = None,
     ) -> None:
-        self._session = session or Session()
         self._proxies = proxies
         self._verify = verify
         self._timeout = self._resolve_timeout(timeout)
+        # A caller-supplied session is shared verbatim across threads; otherwise
+        # one session is created per thread on first use.
+        self._explicit_session = session
+        self._thread_local: threading.local | None = None if session is not None else threading.local()
+        self._sessions: list[Session] = []
+        self._sessions_lock = threading.Lock()
+        if session is not None:
+            self._sessions.append(session)
+
+    def _create_session(self) -> Session:
+        """Create and track a new session for the calling thread."""
+        session = Session()
+        with self._sessions_lock:
+            self._sessions.append(session)
+        return session
+
+    def _current_session(self) -> Session:
+        """Return the session bound to the calling thread, creating it on demand."""
+        if self._explicit_session is not None:
+            return self._explicit_session
+        assert self._thread_local is not None
+        session = getattr(self._thread_local, "session", None)
+        if session is None:
+            session = self._create_session()
+            self._thread_local.session = session
+        return session
 
     @staticmethod
     def _resolve_timeout(timeout: TimeoutValue | NoTimeoutType | None) -> Optional[TimeoutValue]:
@@ -67,7 +107,11 @@ class RequestsTransport(BaseTransport):
 
     @property
     def auth(self) -> Any | None:
-        return self._session.auth
+        if self._explicit_session is not None:
+            return self._explicit_session.auth
+        assert self._thread_local is not None
+        session = getattr(self._thread_local, "session", None)
+        return session.auth if session is not None else None
 
     def execute(self, request: RequestOptions) -> Response:
         kwargs: dict[str, Any] = {"headers": request.headers}
@@ -92,15 +136,21 @@ class RequestsTransport(BaseTransport):
         elif method == "get":
             kwargs["stream"] = request.stream
 
-        return getattr(self._session, method)(request.url, **kwargs)
+        return getattr(self._current_session(), method)(request.url, **kwargs)
 
     def reset_connections(self) -> None:
-        """Clear the session's connection pools so the retry opens a new socket.
+        """Clear the calling thread's connection pool so the retry opens a new socket.
 
         ``Session.close()`` releases pooled (idle) connections while leaving the
         session usable, so the next request transparently builds a fresh pool.
+        Only the current thread's session is reset: with thread-local sessions a
+        retry on one worker must never close another worker's pool mid-flight.
         """
-        self._session.close()
+        self._current_session().close()
 
     def close(self) -> None:
-        self._session.close()
+        """Close every session this transport created, across all threads."""
+        with self._sessions_lock:
+            sessions = list(self._sessions)
+        for session in sessions:
+            session.close()

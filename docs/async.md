@@ -339,5 +339,10 @@ finally:
   resumes cleanly.
 - `retry_async()` and the async terminals are available from
   `office365.runtime.retry` and the usual query objects.
+- The default `requests` transport is thread-safe: it keeps one `Session` per
+  thread (each with its own connection pool), so parallel and offloaded async
+  requests never share a session. Passing an explicit `session=` to
+  `with_transport(...)` uses that single session as-is, making its thread safety
+  the caller's responsibility.
 
 See the runnable [async examples](products/async/index.md).

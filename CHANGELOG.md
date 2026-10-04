@@ -65,6 +65,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `SP.Data.<List>ListItem` annotation instead of the open `SP.ListItem` type.
   Fixes "An open collection property ... was found"
   ([#717](https://github.com/vgrem/office365-rest-python-client/issues/717)).
+- **Thread-safe default transport:** `RequestsTransport` now keeps one
+  `requests.Session` per thread instead of sharing a single session, so parallel
+  and offloaded async requests no longer race on one connection pool.
+  `reset_connections()` resets only the calling thread's pool, and `close()`
+  releases every session the transport created.
 
 ### Internal
 - **Developer onboarding rework:** credentials flow through `tests/settings.py` with
