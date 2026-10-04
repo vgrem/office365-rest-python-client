@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 from datetime import datetime
 from functools import partial
@@ -66,6 +67,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.transport.offload import get_offload_executor
 from office365.runtime.types.odata_property import odata
 from office365.subscriptions.collection import SubscriptionCollection
 
@@ -542,6 +544,69 @@ class DriveItem(BaseItem):
 
         qry = UploadSessionQuery(return_type, {"item": DriveItemUploadableProperties(name=file_name)})
         self.context.add_query(qry).after_execute(_start_upload)
+        return return_type
+
+    async def resumable_upload_async(
+        self,
+        source_path: str,
+        chunk_size: int = 2000000,
+        chunk_uploaded: Callable[[int], None] | None = None,
+        progress: ProgressCallback | None = None,
+    ) -> DriveItem:
+        """Create an upload session and upload a large file without blocking the loop.
+
+        Async twin of :meth:`resumable_upload` that is an awaitable coroutine: it
+        creates the upload session and sends every chunk before it returns,
+        instead of deferring the work to the next context execution.
+
+        Each chunk is read from disk on the shared offload executor and PUT
+        through the context's async transport (native with ``httpx``, otherwise a
+        worker thread), so a multi-gigabyte upload keeps the event loop free.
+        Chunks are uploaded sequentially, as the service requires.
+
+        Args:
+            source_path (str): Local file path to upload.
+            chunk_size (int): Number of bytes per chunk. Graph requires a
+                multiple of 320 KiB, which the default (2 MB) satisfies.
+            chunk_uploaded: Optional ``(bytes_uploaded) -> None`` callback invoked
+                after each accepted chunk.
+            progress: Optional ``ProgressCallback`` invoked per chunk with a
+                ``Progress`` snapshot (``done`` = bytes uploaded, ``total`` =
+                file size).
+
+        Returns:
+            DriveItem: The uploaded item.
+        """
+        file_name = os.path.basename(source_path)
+        return_type = DriveItem(self.context, UrlPath(file_name, self.resource_path))
+
+        qry = UploadSessionQuery(return_type, {"item": DriveItemUploadableProperties(name=file_name)})
+        self.context.add_query(qry)
+        await self.context.execute_query_async()
+
+        pending = self.context.pending_request()
+        loop = asyncio.get_running_loop()
+        executor = get_offload_executor()
+        file_size = await loop.run_in_executor(executor, os.path.getsize, source_path)
+
+        def _on_chunk(uploaded: int) -> None:
+            if callable(chunk_uploaded):
+                chunk_uploaded(uploaded)
+            emit_progress(progress, done=uploaded, total=file_size, stage="uploading")
+
+        local_file: IO = await loop.run_in_executor(executor, partial(open, source_path, "rb"))
+        try:
+            session_request = UploadSessionRequest(local_file, chunk_size, _on_chunk)
+            session_request.with_async_transport(pending.async_transport)
+            try:
+                await session_request.execute_query_async(qry)
+            except ClientRequestException as e:
+                if pending.onError:
+                    pending.onError(e)
+                    return return_type
+                raise
+        finally:
+            local_file.close()
         return return_type
 
     @require_permission(

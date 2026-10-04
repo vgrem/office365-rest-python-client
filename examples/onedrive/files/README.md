@@ -53,6 +53,9 @@ sessions (`upload_large.py`), reading structured data back
 check-out/check-in (`lifecycle.py`), recover deletions (`recycle_bin.py`),
 share it (`sharing.py`), and keep a local cache in sync (`delta_query.py`).
 
+For async applications, [`upload_large_file_async.py`](../../async/upload_large_file_async.py)
+is the event-loop-friendly twin of `upload_large.py`.
+
 ---
 
 ## Examples

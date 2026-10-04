@@ -43,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `on_headers`), implemented natively by `HttpxTransport`.
 - **Async streaming downloads:** `File.download_session_async(stream, ...)` with the
   same `chunk_downloaded`/`chunk_size`/`use_path`/`progress` behavior.
+- **Async large-file uploads:** `DriveItem.resumable_upload_async(path, ...)` creates
+  the upload session and PUTs every chunk without blocking the loop — each chunk is
+  read from disk on the offload executor and sent through the async transport, with
+  optional `chunk_uploaded`/`progress` reporting. The reusable
+  `UploadSessionRequest.execute_query_async` drives the same chunk loop for other
+  upload-session callers.
 - **Tunable async offload executor:** blocking transport work is offloaded to a
   dedicated, lazily-created process-wide pool instead of the event loop's shared
   default executor. Size it with `configure_offload_executor(max_workers=...)`,

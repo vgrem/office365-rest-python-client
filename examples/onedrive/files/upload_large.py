@@ -4,6 +4,10 @@ Upload a large file using a resumable upload session.
 Reads from disk in chunks with progress reporting — the file is never loaded
 into memory in full. Best for files larger than a few MB.
 
+For async code, ``resumable_upload_async()`` (see
+``examples/async/upload_large_file_async.py``) does the same without blocking the
+event loop.
+
 Requires delegated permission ``Files.ReadWrite``.
 
 https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession

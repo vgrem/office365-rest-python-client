@@ -69,6 +69,17 @@ result = op.value
 print(result.success, result.skipped, result.errors, len(result.failures))
 ```
 
+### [Upload a large file with an upload session](upload_large_file_async.py)
+
+Files above 4 MB need an upload session; the awaitable
+`resumable_upload_async()` creates it and streams ordered chunks, reading each
+from disk on the worker pool, so a multi-gigabyte upload keeps the loop free:
+
+```python
+item = await drive.root.resumable_upload_async(path, chunk_size=320 * 1024 * 5, progress=report)
+print(item.web_url)
+```
+
 ### [Bulk-update list items](bulk_update_async.py)
 
 Queue updates with synchronous builders, then let `execute_batch_async` send the

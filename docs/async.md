@@ -19,6 +19,7 @@ terminal calls that hit the network gain an `_async` twin that you `await`:
 | `folder.download(dir).execute_query()` | `await folder.download(dir).execute_query_async()` |
 | `file.download_session(stream)` | `await file.download_session_async(stream)` |
 | `drive_item.download_session(stream)` | `await drive_item.download_session_async(stream)` |
+| `drive_item.resumable_upload(path)` | `await drive_item.resumable_upload_async(path)` |
 | `result.execute_batch()` | `await result.execute_batch_async()` |
 
 No extra dependency is required. By default the blocking HTTP call is handed to
@@ -180,6 +181,31 @@ The synchronous `file.download_session(stream)` is the twin; both accept
 `chunk_downloaded(bytes_so_far)`, `chunk_size`, `use_path` and `progress`. The
 awaitable form ensures the addressing property is loaded first and raises the
 same `ClientRequestException` on failure as the rest of the async API.
+
+### Uploading large files
+
+For files above the 4 MB simple-upload limit, OneDrive/Graph require an upload
+session. `resumable_upload_async()` is the awaitable twin of
+`resumable_upload()`: it creates the session and sends every chunk before it
+returns, reading each chunk from disk on the offload executor and PUT-ing it
+through the async transport, so a multi-gigabyte upload keeps the event loop
+free:
+
+```python
+folder = client.me.drive.root
+item = await folder.resumable_upload_async(
+    "/data/big.iso",
+    chunk_size=320 * 1024 * 5,  # Graph requires a multiple of 320 KiB
+    progress=lambda p: print(p.percent),
+)
+print(item.web_url)
+```
+
+Chunks are still uploaded **sequentially** (the service requires ordered
+ranges); only the disk read and the HTTP send move off the loop. Both
+`chunk_uploaded(bytes_uploaded)` and `progress` (`stage="uploading"`) are
+supported, and a failure raises the same `ClientRequestException` as the rest of
+the async API (or is dispatched to a registered `onError` handler).
 
 ## Recipes
 
