@@ -21,6 +21,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.transport.offload import get_offload_executor
 from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 
@@ -160,7 +161,7 @@ class SharePointRequest(ODataRequest):
         thread while the event loop stays free.
         """
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self.warm_up)
+        await loop.run_in_executor(get_offload_executor(), self.warm_up)
 
     def invalidate_digest(self) -> None:
         """Drop the cached digest so the next request re-fetches it."""

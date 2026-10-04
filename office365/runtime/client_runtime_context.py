@@ -19,6 +19,7 @@ from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, col
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
+from office365.runtime.transport.offload import get_offload_executor
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
@@ -934,7 +935,7 @@ class ClientRuntimeContext(ABC):
         overlap; a context with a native async batch stack can override this.
         """
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, self._execute_batch, batch_qry)
+        return await loop.run_in_executor(get_offload_executor(), self._execute_batch, batch_qry)
 
     async def _run_batches_async(
         self,

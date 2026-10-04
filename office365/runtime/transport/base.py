@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import asyncio
 from abc import ABC, abstractmethod
+from concurrent.futures import Executor
 from typing import Any, AsyncIterator, Callable, Iterator, Mapping, Optional, Tuple, Union
 
 from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.transport.offload import get_offload_executor
 
 #: Default slice size (bytes) used by the streaming helpers.
 DEFAULT_STREAM_CHUNK_SIZE = 8192
@@ -50,6 +52,17 @@ class BaseTransport(ABC):
     blocking client (e.g. ``requests``) needs no async-specific code.
     """
 
+    #: Optional worker pool for the async offload path. ``None`` (the default)
+    #: uses the process-wide pool from
+    #: :func:`office365.runtime.transport.offload.get_offload_executor`, which
+    #: :func:`...configure_offload_executor` can size. Set it to give this
+    #: transport its own executor; the executor must outlive the transport.
+    offload_executor: Optional[Executor] = None
+
+    def _get_offload_executor(self) -> Executor:
+        """Return the executor backing the default async offload path."""
+        return self.offload_executor or get_offload_executor()
+
     @abstractmethod
     def execute(self, request: RequestOptions) -> Response:
         """Send an HTTP request and return the response."""
@@ -71,7 +84,7 @@ class BaseTransport(ABC):
             The HTTP response.
         """
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, self.execute, request)
+        return await loop.run_in_executor(self._get_offload_executor(), self.execute, request)
 
     def stream(
         self,
@@ -142,14 +155,14 @@ class BaseTransport(ABC):
 
         try:
             while True:
-                chunk = await loop.run_in_executor(None, _next_chunk)
+                chunk = await loop.run_in_executor(self._get_offload_executor(), _next_chunk)
                 if chunk is None:
                     break
                 yield chunk
         finally:
             close = getattr(iterator, "close", None)
             if close is not None:
-                await loop.run_in_executor(None, close)
+                await loop.run_in_executor(self._get_offload_executor(), close)
 
     @property
     def proxies(self) -> dict[str, str] | None:
@@ -190,7 +203,7 @@ class BaseTransport(ABC):
         async transports override this to await their own shutdown.
         """
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self.close)
+        await loop.run_in_executor(self._get_offload_executor(), self.close)
 
     def __enter__(self) -> Self:
         return self
