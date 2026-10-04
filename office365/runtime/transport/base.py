@@ -170,8 +170,8 @@ class BaseTransport(ABC):
         return None
 
     @property
-    def verify(self) -> bool | str:
-        """Transport-level SSL verification."""
+    def verify(self) -> bool | str | None:
+        """Transport-level SSL verification (``None`` defers to the session)."""
         return True
 
     @property

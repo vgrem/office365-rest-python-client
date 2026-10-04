@@ -683,6 +683,66 @@ def test_execute_query_parallel_async_restores_pending_on_cancellation() -> None
     assert ctx._current_query is None
 
 
+def test_execute_query_async_restores_pending_on_cancellation() -> None:
+    """A cancelled sequential drain puts the in-flight query back for a retry."""
+    transport = _CancellingTransport()
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    _queue_loads(ctx, 3)
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(ctx.execute_query_async())
+
+    assert ctx.has_pending_request
+    assert len(ctx._queries) == 3  # noqa: PLR2004
+    assert ctx._current_query is None
+
+
+class _BlockingTransport(AsyncScriptedTransport):
+    """Native-async transport whose requests never settle until cancelled."""
+
+    def __init__(self) -> None:
+        super().__init__([])
+        self.started = 0
+        self.finished = 0
+        self.cancelled = 0
+
+    async def execute_async(self, request):
+        self.started += 1
+        try:
+            await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            self.cancelled += 1
+            raise
+        self.finished += 1
+        return build_response(request, {"d": {}})
+
+
+def test_execute_query_parallel_async_cancels_in_flight_siblings() -> None:
+    """Cancelling a parallel run must not leave sibling requests running."""
+    transport = _BlockingTransport()
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    _queue_loads(ctx, 4)
+
+    async def _scenario() -> None:
+        task = asyncio.ensure_future(ctx.execute_query_parallel_async(concurrency=4))
+        for _ in range(100):  # let all four requests start
+            if transport.started >= 4:  # noqa: PLR2004
+                break
+            await asyncio.sleep(0)
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+
+    asyncio.run(_scenario())
+
+    assert transport.finished == 0
+    assert transport.cancelled == 4  # noqa: PLR2004
+
+
 def test_observe_throttle_prefers_recorded_limiter() -> None:
     """A batch request observes sub-responses via its recorded limiter."""
     ctx = ClientContext(_SITE_URL)

@@ -371,7 +371,15 @@ class ClientRuntimeContext(ABC):
         """
         while self.has_pending_request:
             qry = self._get_next_query()
-            await qry.execute_query_async(self.pending_request())
+            try:
+                await qry.execute_query_async(self.pending_request())
+            except BaseException:
+                # Cancelled/aborted mid-query: put the in-flight query back at
+                # the front and drop the stale cursor, mirroring the parallel
+                # paths, so a later ``execute_query_async`` resumes it.
+                self._queries.appendleft(qry)
+                self._current_query = None
+                raise
         return self
 
     async def execute_query_async_retry(
@@ -704,11 +712,20 @@ class ClientRuntimeContext(ABC):
 
         tasks = [asyncio.ensure_future(_run(index, options)) for index, (_qry, options) in enumerate(prepared)]
         done = 0
-        for coro in asyncio.as_completed(tasks):
-            index = await coro
-            done += 1
-            if callable(progress):
-                progress(Progress(done=done, total=total, stage="parallel", items=[results[index]]))
+        try:
+            for coro in asyncio.as_completed(tasks):
+                index = await coro
+                done += 1
+                if callable(progress):
+                    progress(Progress(done=done, total=total, stage="parallel", items=[results[index]]))
+        finally:
+            # On cancellation/abort, stop the sibling requests still in flight so
+            # they cannot outlive the caller (and keep consuming the connection
+            # pool) after this coroutine unwinds.
+            if not all(task.done() for task in tasks):
+                for task in tasks:
+                    task.cancel()
+                await asyncio.gather(*tasks, return_exceptions=True)
         return results
 
     @staticmethod

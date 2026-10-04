@@ -57,7 +57,10 @@ class RequestsTransport(BaseTransport):
         session: Optional external ``Session`` for custom adapters or TLS config.
             When omitted, a session is created per thread on demand.
         proxies: Transport-level proxy configuration applied to all requests
-        verify: SSL verification (``True``, ``False``, or a CA bundle path)
+        verify: SSL verification (``True``, ``False``, or a CA bundle path).
+            ``None`` (the default) leaves the session/environment value in place,
+            so a custom CA bundle set on a supplied ``session`` is honored.
+            A per-request ``verify`` always wins.
         timeout: Request timeout — a number or a ``(connect, read)`` tuple. When
             ``None`` the :data:`DEFAULT_TIMEOUT` (10 s connect, unbounded read)
             applies; pass ``NO_TIMEOUT`` to disable timeouts entirely.
@@ -71,7 +74,7 @@ class RequestsTransport(BaseTransport):
         self,
         session: Session | None = None,
         proxies: dict[str, str] | None = None,
-        verify: bool | str = True,
+        verify: bool | str | None = None,
         timeout: TimeoutValue | NoTimeoutType | None = None,
         *,
         pool_connections: int = DEFAULT_POOL_CONNECTIONS,
@@ -135,7 +138,7 @@ class RequestsTransport(BaseTransport):
         return self._proxies
 
     @property
-    def verify(self) -> bool | str:
+    def verify(self) -> bool | str | None:
         return self._verify
 
     @property
@@ -167,10 +170,15 @@ class RequestsTransport(BaseTransport):
 
     def execute(self, request: RequestOptions) -> Response:
         kwargs: dict[str, Any] = {"headers": request.headers}
-        if request.verify is not None:
-            kwargs["verify"] = request.verify
-        if request.proxies is not None:
-            kwargs["proxies"] = request.proxies
+        # A per-request value wins; otherwise fall back to the transport-level
+        # one; when neither is set the ``requests`` session/environment default
+        # applies (so a custom CA bundle on the session is preserved).
+        verify = request.verify if request.verify is not None else self._verify
+        if verify is not None:
+            kwargs["verify"] = verify
+        proxies = request.proxies if request.proxies is not None else self._proxies
+        if proxies is not None:
+            kwargs["proxies"] = proxies
         if request.auth is not None:
             kwargs["auth"] = request.auth
         # A per-request timeout wins over the transport-level one; both accept a

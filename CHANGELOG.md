@@ -24,8 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `async for item in collection`.
 - **Async pacing parity:** `RateLimiter.acquire_async`/`paced_async` and
   `ThrottledTransport.execute_async`/`aclose`.
-- **Async cancellation cleanup:** an aborted parallel run restores unapplied queries
-  and clears the current query so a retry can resume.
+- **Async cancellation cleanup:** an aborted parallel run cancels its in-flight
+  sibling requests, and both the parallel and sequential drains restore unapplied
+  queries and clear the current query so a retry can resume.
 - **Async auth offload:** `ClientRequest.before_execute_async` runs `beforeExecute`
   hooks (token/digest/user callbacks) on a worker thread.
 - **Async retry:** `retry_async` in `office365.runtime.retry`.
@@ -83,6 +84,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   resolves a relative `OFFICE365_CERT_PATH` (documented as
   `tests/selfsigncert.pem`) against the repository root, so examples and tests
   that use app-only certificate auth run from any directory.
+- **Transport-level TLS verification and proxies are applied:** `with_transport(
+  verify=False)`, `with_transport(proxies=...)`, and a custom CA bundle set on a
+  supplied `session` now reach `requests`. `RequestOptions.verify` defaults to
+  unset (`None`), so it no longer forces `verify=True` and silently overrides the
+  transport/session value; a per-request value still wins.
+- **`httpx` per-request `NO_TIMEOUT`:** the sentinel is translated to httpx's
+  "no timeout" instead of being forwarded verbatim (which raised `TypeError`).
 
 ### Internal
 - **Developer onboarding rework:** credentials flow through `tests/settings.py` with

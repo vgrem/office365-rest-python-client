@@ -371,9 +371,10 @@ ctx.with_transport(pool_connections=10, pool_maxsize=32)
   path; it no longer offloads the whole synchronous batch. Blocking
   `beforeExecute` hooks (token acquisition, digest refresh) are offloaded to a
   worker thread so they cannot stall the loop.
-- If an async parallel run is cancelled, the queries that were not applied are
-  put back on the context's queue and the current query is cleared, so a retry
-  resumes cleanly.
+- If an async parallel run is cancelled, its in-flight sibling requests are
+  cancelled too, and the queries that were not applied are put back on the
+  context's queue with the current query cleared, so a retry resumes cleanly. A
+  cancelled sequential drain likewise re-queues the in-flight query.
 - `retry_async()` and the async terminals are available from
   `office365.runtime.retry` and the usual query objects.
 - The default `requests` transport is thread-safe: it keeps one `Session` per

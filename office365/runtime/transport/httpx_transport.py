@@ -186,7 +186,10 @@ class HttpxTransport(BaseTransport):
         if request.auth is not None:
             kwargs["auth"] = request.auth
         if request.timeout is not None:
-            kwargs["timeout"] = request.timeout
+            # Translate the ``NO_TIMEOUT`` sentinel to httpx's "no timeout";
+            # numbers and ``(connect, read[, write[, pool]])`` tuples are already
+            # accepted verbatim by httpx.
+            kwargs["timeout"] = None if isinstance(request.timeout, NoTimeoutType) else request.timeout
 
         method = request.method.value.lower()
         if method in ("post", "patch"):

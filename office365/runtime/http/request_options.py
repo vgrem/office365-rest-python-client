@@ -14,9 +14,12 @@ class RequestOptions:
         data: Request payload (bytes, file-like, or dict)
         headers: Request headers
         auth: Authentication handler
-        verify: SSL verification flag
+        verify: SSL verification flag; ``None`` (default) defers to the
+            transport/session value, so it never silently overrides a custom CA
+            bundle configured on the session.
         stream: Streaming response flag
-        proxies: Proxy configuration
+        proxies: Proxy configuration; ``None`` (default) defers to the
+            transport/session value.
     """
 
     url: str
@@ -24,7 +27,7 @@ class RequestOptions:
     data: Optional[Union[str, bytes, BinaryIO, Dict[str, Any], List[Any]]] = None
     headers: Dict[str, str] = field(default_factory=dict)
     auth: Optional[Any] = None
-    verify: bool = True
+    verify: Optional[Union[bool, str]] = None
     stream: bool = False
     proxies: Optional[Dict[str, str]] = None
     timeout: Optional[Union[int, float]] = None

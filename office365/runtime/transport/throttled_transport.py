@@ -69,7 +69,7 @@ class ThrottledTransport(BaseTransport):
         return self._inner.proxies
 
     @property
-    def verify(self) -> bool | str:
+    def verify(self) -> bool | str | None:
         return self._inner.verify
 
     @property

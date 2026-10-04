@@ -185,7 +185,7 @@ class ClientContext(ClientRuntimeContext):
     def with_transport(
         self,
         proxies: dict[str, str] | None = None,
-        verify: bool | str = True,
+        verify: bool | str | None = None,
         timeout: float | tuple[float, float | None] | NoTimeoutType | None = None,
         session: requests.Session | None = None,
         *,
@@ -202,7 +202,8 @@ class ClientContext(ClientRuntimeContext):
 
         Args:
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
-            verify: SSL verification — ``True``, ``False``, or a CA bundle path
+            verify: SSL verification — ``True``, ``False``, or a CA bundle path.
+                ``None`` (default) defers to the session/environment default.
             timeout: Request timeout — a number or a ``(connect, read)`` tuple.
                 When ``None`` the bundled default (10 s connect, unbounded read)
                 applies; pass

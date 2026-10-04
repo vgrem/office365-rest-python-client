@@ -232,3 +232,21 @@ def test_context_execute_query_parallel_async_uses_httpx_transport() -> None:
 
     assert len(seen) == 3  # noqa: PLR2004
     assert ctx.web.properties.get("Title") == "Contoso"
+
+
+def test_per_request_no_timeout_maps_to_http_no_timeout() -> None:
+    """A per-request ``NO_TIMEOUT`` sentinel must not leak into httpx verbatim."""
+    transport = _transport(_json_handler({}))
+    request = RequestOptions(url=_URL)
+    request.timeout = NO_TIMEOUT
+
+    assert transport._build_kwargs(request)["timeout"] is None
+
+
+def test_per_request_tuple_timeout_is_forwarded() -> None:
+    """A requests-style ``(connect, read)`` tuple reaches httpx unchanged."""
+    transport = _transport(_json_handler({}))
+    request = RequestOptions(url=_URL)
+    request.timeout = (5, 30)
+
+    assert transport._build_kwargs(request)["timeout"] == (5, 30)

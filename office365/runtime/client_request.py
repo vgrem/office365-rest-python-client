@@ -83,7 +83,8 @@ class ClientRequest(ABC):
 
         Args:
             proxies: Proxy URLs (e.g. ``{"https": "http://proxy:8080"}``)
-            verify: SSL verification — ``True``, ``False``, or a CA bundle path
+            verify: SSL verification — ``True``, ``False``, or a CA bundle path.
+                ``None`` (default) defers to the session/environment default.
             timeout: Request timeout — a number or a ``(connect, read)`` tuple.
                 When ``None`` the bundled default (10 s connect, unbounded read)
                 applies; pass
@@ -102,7 +103,7 @@ class ClientRequest(ABC):
         self._transport = RequestsTransport(
             session=session,
             proxies=proxies,
-            verify=True if verify is None else verify,
+            verify=verify,
             timeout=timeout,
             pool_connections=pool_connections,
             pool_maxsize=pool_maxsize,

@@ -256,5 +256,67 @@ class TestRequestsTransportConnectionPool(unittest.TestCase):
         self.assertTrue(transport.pool_block)
 
 
+class TestRequestsTransportTlsAndProxy(unittest.TestCase):
+    """Transport-level verify/proxies must actually reach ``requests``.
+
+    Regression coverage: ``RequestOptions.verify`` used to default to ``True``,
+    so ``with_transport(verify=False)`` was silently overridden and a custom CA
+    bundle on a supplied session was clobbered; ``with_transport(proxies=...)``
+    never reached the wire at all.
+    """
+
+    def test_default_verify_defers_to_the_session(self):
+        self.assertIsNone(RequestsTransport().verify)
+
+    def test_transport_verify_is_applied(self):
+        session = _RecordingSession()
+        transport = RequestsTransport(session=session, verify=False, timeout=NO_TIMEOUT)
+
+        transport.execute(_get())
+
+        self.assertFalse(session.calls[0][2]["verify"])
+
+    def test_transport_proxies_are_applied(self):
+        session = _RecordingSession()
+        transport = RequestsTransport(session=session, proxies={"https": "http://proxy:8080"}, timeout=NO_TIMEOUT)
+
+        transport.execute(_get())
+
+        self.assertEqual(session.calls[0][2]["proxies"], {"https": "http://proxy:8080"})
+
+    def test_per_request_verify_overrides_transport(self):
+        session = _RecordingSession()
+        transport = RequestsTransport(session=session, verify=False, timeout=NO_TIMEOUT)
+        request = _get()
+        request.verify = True
+
+        transport.execute(request)
+
+        self.assertTrue(session.calls[0][2]["verify"])
+
+    def test_default_defers_so_a_custom_ca_bundle_survives(self):
+        session = _RecordingSession()
+        session.verify = "/etc/ssl/certs/ca.pem"
+
+        RequestsTransport(session=session, timeout=NO_TIMEOUT).execute(_get())
+
+        self.assertNotIn("verify", session.calls[0][2])
+
+    def test_with_transport_forwards_verify_and_proxies(self):
+        session = _RecordingSession()
+        ctx = GraphClient().with_transport(
+            session=session,
+            verify=False,
+            proxies={"https": "http://proxy:8080"},
+            timeout=NO_TIMEOUT,
+        )
+
+        ctx.pending_request().transport.execute(_get())
+
+        kwargs = session.calls[0][2]
+        self.assertFalse(kwargs["verify"])
+        self.assertEqual(kwargs["proxies"], {"https": "http://proxy:8080"})
+
+
 if __name__ == "__main__":
     unittest.main()
