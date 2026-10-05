@@ -139,9 +139,11 @@ Prerequisite: the app allows public client flows and has the delegated
 are still granted separately (step 3). Prefer the individual scripts?
 
 ```bash
-# Certificate (Graph) and a SharePoint site
+# Certificate (Graph)
 uv run python examples/entraid/applications/rotate_cert.py --generate
-uv run python examples/sharepoint/auth/setup/certificate_auth.py \
+
+# SharePoint app-only, full cycle (cert + Sites.Selected + per-site access + .env)
+uv run python examples/sharepoint/getting-started/setup_sharepoint_app.py \
     --site https://contoso.sharepoint.com/sites/project
 
 # Client secret (Graph only — SharePoint REST API v1 rejects secrets)

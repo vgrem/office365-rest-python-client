@@ -5,6 +5,60 @@ permissions, sites, and managed metadata — as minimal, copy-paste examples.
 
 ---
 
+## Start here
+
+**New to the SharePoint REST API?** Do the [getting-started](getting-started/)
+setup once — register/reuse an app, attach a certificate, grant
+`Sites.Selected` and site access, write `.env` — then make your
+[first call](getting-started/hello_sharepoint.py):
+
+```python
+from office365.sharepoint.client_context import ClientContext
+from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
+
+ctx = ClientContext(site_url).with_client_certificate(
+    tenant=tenant,
+    client_id=client_id,
+    thumbprint=cert_thumbprint,
+    cert_path=cert_path,
+)
+web = ctx.web.get().execute_query()
+print(f"Connected to {web.title} ({web.url})")
+```
+
+Already configured? Jump to the [common tasks](#common-tasks) below or pick a
+folder from the catalog.
+
+## Authentication at a glance
+
+- **Do I need a new app registration?** No — one app covers every SharePoint
+  example. Reuse it and attach the certificate to that app.
+- **How does app-only access work?** SharePoint `/_api` needs a **certificate**
+  (a client secret is rejected). See [getting-started](getting-started/) and the
+  [auth decision guide](auth/).
+- **Which permission?** Grant **`Sites.Selected`** once, then grant the app
+  access to specific sites; use `Sites.FullControl.All` only for tenant-wide
+  tools. See [getting-started](getting-started/).
+
+## Common tasks
+
+| I want to… | Start with |
+|---|---|
+| Create, update, or delete sites | [Sites](sites/), [Webs](webs/) |
+| Read and write list data | [Lists](lists/), [List Items](listitems/) |
+| Work with files and folders | [Files](files/), [Folders](folders/) |
+| Control who can access something | [Permissions](permissions/), [Sharing](sharing/) |
+| Find content across the tenant | [Search](search/) |
+| Manage site users and groups | [Users](users/), [Groups](groups/) |
+| Administer the tenant (sites, quota, sharing) | [Tenant](tenant/) |
+| Migrate content into SharePoint | [Migration](migration/) |
+| Restore deleted items | [Recycle Bin](recyclebin/) |
+
+The sections below are the full catalog. Each folder has a README that lists its
+scripts, the required permissions, and copy-paste snippets.
+
+---
+
 ## Lists & list items
 
 ### [Lists](lists/)

@@ -3,6 +3,12 @@
 `ClientContext` supports multiple authentication flows. Choose based on your
 scenario and environment.
 
+> **Setting up SharePoint access for the first time?** Start with
+> [Getting started](../getting-started/) — one guided script that registers or
+> reuses an app, attaches a certificate, grants `Sites.Selected` with admin
+> consent, grants per-site access, and writes `.env`. This page is the reference
+> for choosing among the flows once you know which one you need.
+
 ---
 
 ## Auth decision flow

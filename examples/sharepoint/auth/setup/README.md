@@ -4,7 +4,14 @@ SharePoint app-only automation authenticates with an **X.509 certificate** — t
 SharePoint REST endpoints (`/_api`) do not accept a **client secret**. This folder
 contains an automated setup script plus the manual steps.
 
-## Automated setup (recommended)
+> **Recommended:** use [Getting started](../../getting-started/) for the full
+> cycle (register/reuse the app, attach the certificate, grant
+> `Sites.Selected` with admin consent, grant site access, and write `.env`).
+> The script here is the narrower **certificate + site grant** path: it assumes
+> the app already has the `Sites.Selected` application permission with admin
+> consent.
+
+## Automated setup
 
 ```bash
 uv run python examples/sharepoint/auth/setup/certificate_auth.py \

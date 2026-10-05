@@ -3,6 +3,11 @@
 Generates tests/selfsigncert.{crt,pem}, uploads to app registration,
 grants Sites.Selected, prints connection details.
 
+Assumes the app already has the ``Sites.Selected`` application permission with
+admin consent. For the full setup cycle — register/reuse the app, grant that
+permission, and write ``.env`` — use
+``examples/sharepoint/getting-started/setup_sharepoint_app.py``.
+
 Usage: python setup/certificate_auth.py --site <url>
 """
 
