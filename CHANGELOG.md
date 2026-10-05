@@ -53,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the settings are ignored when a custom `session=` is supplied.
 
 ### Fixed
+- **Single quotes in OData string literals:** `ODataPathBuilder` doubled a `'` twice
+  (`d'appello` became `d''''appello`), so paths and names containing an apostrophe
+  resolved to the wrong resource. A quote is now doubled once (#1052).
 - **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`
   reuses the account via `acquire_token_silent` before starting a new device flow.
 - **Chat members after creation:** `ChatCollection.add` uses a shared placeholder
