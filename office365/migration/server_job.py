@@ -10,14 +10,18 @@ Status can be read two ways:
   ``monitor`` status source (or :meth:`progress` directly);
 - a caller-supplied ``status_fn`` — e.g. an Azure queue or the Graph
   ``SharePointMigrationJobProgressEvent`` stream.
+
+Every wait has an async twin (:meth:`monitor_async` and friends) so a long
+ingestion job can be polled off the event loop, next to other work.
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 import uuid
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
 
 from office365.runtime.operations import emit_progress
@@ -134,6 +138,13 @@ class MigrationServerJob:
         events = [json.loads(line) for line in (value.Logs or [])]
         return events, value.NextToken or next_token
 
+    async def progress_async(self, job_id: str, next_token: str = "0") -> tuple[list[dict], str]:
+        """Async twin of :meth:`progress` — awaits the progress GET off the loop."""
+        result = await self._site.get_migration_job_progress(job_id, next_token).execute_query_async()
+        value = result.value
+        events = [json.loads(line) for line in (value.Logs or [])]
+        return events, value.NextToken or next_token
+
     def all_events(self, job_id: str) -> list[dict]:
         """All progress events for a job (paged until the token stops advancing).
 
@@ -150,9 +161,25 @@ class MigrationServerJob:
             token = next_token
         return events
 
+    async def all_events_async(self, job_id: str) -> list[dict]:
+        """Async twin of :meth:`all_events` — pages the progress log with awaits."""
+        events: list[dict] = []
+        token = "0"
+        for _ in range(100):  # bound: a page with no new events ends the loop
+            page, next_token = await self.progress_async(job_id, token)
+            events.extend(page)
+            if not page or next_token == token:
+                break
+            token = next_token
+        return events
+
     def errors(self, job_id: str) -> list[dict]:
         """The ``JobError`` events for a job (message, type, url)."""
         return job_errors(self.all_events(job_id))
+
+    async def errors_async(self, job_id: str) -> list[dict]:
+        """Async twin of :meth:`errors` — the ``JobError`` events for a job."""
+        return job_errors(await self.all_events_async(job_id))
 
     def status_fn(self) -> Callable[[str], tuple[str, int, int | None]]:
         """A ``monitor`` status function backed by ``GetMigrationJobProgress``."""
@@ -160,6 +187,18 @@ class MigrationServerJob:
 
         def _status(job_id: str) -> tuple[str, int, int | None]:
             events, token = self.progress(job_id, state["token"])
+            state["token"] = token
+            state["events"].extend(events)
+            return parse_progress_events(state["events"])
+
+        return _status
+
+    def status_fn_async(self) -> Callable[[str], Awaitable[tuple[str, int, int | None]]]:
+        """An awaitable ``monitor_async`` status function backed by ``GetMigrationJobProgress``."""
+        state: dict = {"token": "0", "events": []}
+
+        async def _status(job_id: str) -> tuple[str, int, int | None]:
+            events, token = await self.progress_async(job_id, state["token"])
             state["token"] = token
             state["events"].extend(events)
             return parse_progress_events(state["events"])
@@ -198,5 +237,44 @@ class MigrationServerJob:
             if status.lower() in _TERMINAL:
                 return status
             time.sleep(interval)
+            elapsed += interval
+        raise TimeoutError(f"Migration job {job_id} did not finish within {timeout}s")
+
+    async def monitor_async(
+        self,
+        job_id: str,
+        status_fn: Callable[[str], Awaitable[tuple[str, int, int | None]]] | None = None,
+        interval: float = 5,
+        timeout: float = 1800,
+        progress: Callable[["Progress"], None] | None = None,
+    ) -> str:
+        """Await a job until it reaches a terminal status (async twin of :meth:`monitor`).
+
+        The status GET and the wait between polls run on the event loop, so this
+        can monitor one job while the caller serves other requests, or monitor
+        several jobs concurrently (one :class:`MigrationServerJob` per context).
+
+        Args:
+            job_id: The migration job id.
+            status_fn: Awaitable returning ``(status, done, total)`` for a job id.
+              Defaults to a ``GetMigrationJobProgress``-backed reader.
+            interval: Seconds between polls.
+            timeout: Maximum seconds to wait before raising ``TimeoutError``.
+            progress: Optional hook fired per poll with a ``Progress`` snapshot.
+
+        Returns:
+            The terminal status.
+
+        Raises:
+            TimeoutError: When the job doesn't finish within ``timeout`` seconds.
+        """
+        status_fn = status_fn or self.status_fn_async()
+        elapsed = 0.0
+        while elapsed < timeout:
+            status, done, total = await status_fn(job_id)
+            emit_progress(progress, done=done, total=total, stage="migrating")
+            if status.lower() in _TERMINAL:
+                return status
+            await asyncio.sleep(interval)
             elapsed += interval
         raise TimeoutError(f"Migration job {job_id} did not finish within {timeout}s")

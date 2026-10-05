@@ -307,9 +307,14 @@ End-to-end scripts for the whole surface:
   [clone a team](products/async/wait_team_clone_async.md),
   [workbook operation](products/async/workbook_operation_async.md),
   [resume from a token](products/async/resume_operation_async.md),
+  [durable copy queue](products/async/copy_queue_worker_async.md),
+  [concurrent team provisioning](products/async/provision_teams_async.md),
+  [archive past a retention window](products/async/archive_old_files_async.md),
   [sync copy & wait](products/onedrive/files/copy_and_wait.md),
   [sync team clone](products/teams/wait_for_clone.md),
   [LRO-in-batch guard](products/async/lro_in_batch_guard.md).
+- **SharePoint migration** (poll a server-side ingestion job) —
+  [monitor migration jobs concurrently](products/sharepoint/migration/monitor/monitor_async.md).
 - **Reports** (streamed export) — [async export](products/async/export_report_async.md),
   [usage export](products/reports/export_usage_async.md).
 - **Ergonomics** — [client lifecycle](products/async/client_lifecycle_async.md),

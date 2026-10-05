@@ -260,6 +260,53 @@ Batching is for many short requests. A batched long-running operation loses its
 monitor URL in the batch envelope, so this guard fails loudly instead of letting
 the caller poll nothing — keep LROs out of a batch and await them individually.
 
+### [Run a durable, resumable copy queue](copy_queue_worker_async.py)
+
+The worker pattern behind "copy these 10,000 files": a bounded pool of copies
+whose per-job continuation tokens are written to a JSON state file *before*
+polling. A crash, a Ctrl-C or a deploy resumes the in-flight copies and skips
+the completed ones instead of restarting:
+
+```python
+async with self._submit_lock:  # one request queue per context
+    result = source.copy(name=job.name, parent=dest)
+    await result.execute_query_async()
+poller = result.to_poller()
+await self._mark(job.key, token=poller.to_continuation_token().to_json())
+await poller.wait_async(on_progress=report)  # polls overlap; submits are serialized
+```
+
+### [Provision many teams concurrently](provision_teams_async.py)
+
+Submit every `teamsAsyncOperation`, then poll the whole batch through one bounded
+parallel fan-out — no hand-rolled semaphore, and a bad row fails only its team:
+
+```python
+op.get()  # queue a status GET per unfinished operation
+await client.execute_query_parallel_async(concurrency=8)
+```
+
+### [Archive files past a retention window](archive_old_files_async.py)
+
+A retention job is copy → verify → delete, in that order. This one plans by
+default and only mutates with `--apply`, so the destructive path is opt-in:
+
+```python
+status = await result.to_poller().wait_async()
+copied = await client.me.drive.items[status.resource_id].get().execute_query_async()
+if copied.size == item.size:  # verify before deleting the original
+    await item.delete_object().execute_query_async()
+```
+
+### [Monitor migration jobs concurrently](../sharepoint/migration/monitor/monitor_async.py)
+
+The awaitable twin of the SharePoint migration monitor: each job gets its own
+cloned context, and `monitor_async()` polls the progress API off the loop:
+
+```python
+await asyncio.gather(*(MigrationServerJob(ctx.clone(site_url).site).monitor_async(job_id) for job_id in job_ids))
+```
+
 ## Reports
 
 ### [Stream a report while the loop stays responsive](export_report_async.py)

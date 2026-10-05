@@ -262,6 +262,7 @@ Azure. It is a learning/debugging aid, not a step you must run first.
 |---|---|---|
 | Migrate a tree and write one JSON migration report | [`monitor/export_reports.py`](./monitor/export_reports.py) | none (local) |
 | Monitor a local migration (live progress, Ctrl-C pause, re-run to resume) | [`monitor/monitor.py`](./monitor/monitor.py) | none (local) |
+| Monitor server-side ingestion jobs concurrently (async) | [`monitor/monitor_async.py`](./monitor/monitor_async.py) | SharePoint admin |
 
 ```python
 job.export_reports("reports")  # SummaryReport / ItemReport / FailureReport (CSV + JSON)
@@ -280,6 +281,15 @@ credentials needed):
 
 ```bash
 python monitor/monitor.py --source ./data-a --target ./dst-a
+```
+
+For a **server-side ingestion job** submitted through the SharePoint Migration
+API, `monitor/monitor_async.py` polls `GetMigrationJobProgress` with the
+awaitable `MigrationServerJob.monitor_async()` — watching one or more job ids at
+once and surfacing any `JobError` events:
+
+```bash
+python monitor/monitor_async.py --job-id <job-id> --job-id <job-id>
 ```
 
 ---

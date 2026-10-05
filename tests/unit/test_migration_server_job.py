@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 
 from office365.migration.server_job import MigrationServerJob, job_errors, parse_progress_events
@@ -12,6 +13,9 @@ class _Result:
         self.value = value
 
     def execute_query(self):
+        return self
+
+    async def execute_query_async(self):
         return self
 
 
@@ -131,3 +135,64 @@ def test_all_events_pages_until_the_token_stops():
 def test_errors_returns_job_error_events():
     pages = [([json.dumps({"Event": "JobError", "Message": "boom"})], "1")]
     assert [e["Message"] for e in MigrationServerJob(_Site(pages)).errors("job-1")] == ["boom"]
+
+
+def test_status_fn_async_accumulates_pages():
+    pages = [
+        (
+            [
+                json.dumps({"Event": "JobStart"}),
+                json.dumps({"Event": "JobProgress", "ObjectsProcessed": "2", "TotalExpectedSPObjects": "5"}),
+            ],
+            "1",
+        ),
+        (
+            [
+                json.dumps(
+                    {
+                        "Event": "JobEnd",
+                        "ObjectsProcessed": "5",
+                        "TotalExpectedSPObjects": "5",
+                        "TotalErrors": "0",
+                    }
+                )
+            ],
+            "2",
+        ),
+    ]
+    status = MigrationServerJob(_Site(pages)).status_fn_async()
+
+    async def _run():
+        return await status("job-1"), await status("job-1")
+
+    assert asyncio.run(_run()) == (("processing", 2, 5), ("succeeded", 5, 5))
+
+
+def test_monitor_async_returns_when_terminal():
+    pages = [([json.dumps({"Event": "JobEnd", "TotalErrors": "0"})], "1")]
+
+    async def _run():
+        return await MigrationServerJob(_Site(pages)).monitor_async("job-1", interval=0, timeout=5)
+
+    assert asyncio.run(_run()) == "succeeded"
+
+
+def test_all_events_async_pages_until_the_token_stops():
+    pages = [
+        ([json.dumps({"Event": "JobStart"})], "1"),
+        ([json.dumps({"Event": "JobError", "Message": "boom"})], "1"),
+    ]
+
+    async def _run():
+        return await MigrationServerJob(_Site(pages)).all_events_async("job-1")
+
+    assert [e["Event"] for e in asyncio.run(_run())] == ["JobStart", "JobError"]
+
+
+def test_errors_async_returns_job_error_events():
+    pages = [([json.dumps({"Event": "JobError", "Message": "boom"})], "1")]
+
+    async def _run():
+        return await MigrationServerJob(_Site(pages)).errors_async("job-1")
+
+    assert [e["Message"] for e in asyncio.run(_run())] == ["boom"]
