@@ -1,8 +1,8 @@
 """
 Grant an application permission (app role) to your app via admin consent.
 
-This script checks whether the permission is already granted, and if not,
-prompts an admin to sign in interactively and grant it.
+Idempotent: an already-granted permission is left untouched, so the script is
+safe to re-run. Use ``has_application_perms.py`` to check first.
 
 Requires a Global Administrator or Privileged Role Administrator role.
 
@@ -20,11 +20,5 @@ privileged_client = (
 
 scope = input("Application permission (app role): ")
 
-result = privileged_client.has_application_permissions(scope, test_client_id).execute_query()
-
-if result.value:
-    print(f"Permission '{scope}' is already granted.")
-else:
-    print(f"Permission '{scope}' is not granted.")
-    privileged_client.grant_application_permissions(test_client_id, scope).execute_query()
-    print(f"Permission '{scope}' granted.")
+privileged_client.grant_application_permissions(test_client_id, scope).execute_query()
+print(f"Permission '{scope}' is granted.")
