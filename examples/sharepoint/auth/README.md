@@ -92,6 +92,31 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_interactiv
 )
 ```
 
+### Deriving the thumbprint (no need to look it up)
+
+`thumbprint` is **optional**: pass the **public** certificate instead and the
+client derives its SHA-1 thumbprint — the value Entra stores in
+`keyCredentials.customKeyIdentifier` — locally with the standard library. Handy
+when the thumbprint isn't at hand, or when you'd rather configure a single value:
+
+```python
+ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_certificate(
+    tenant="contoso.onmicrosoft.com",
+    client_id="your_client_id",
+    cert_path="./private.pem",  # PEM private key
+    public_certificate="./public.crt",  # DER/PEM bytes, PEM text, or a path
+)
+```
+
+The same option exists on `GraphClient` / `GraphRequest` as
+`with_certificate(client_id, private_key=..., public_certificate=...)`.
+
+> [!NOTE]
+> Deriving the thumbprint is standard-library only, so **self-signed**
+> certificates keep working. For **subject name/issuer** (SNI) authentication
+> instead — a certificate issued by a trusted CA, with automatic rotation — add
+> `use_sni=True`; that path requires the optional `cryptography` package.
+
 ---
 
 ## Official docs

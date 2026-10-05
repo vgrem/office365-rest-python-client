@@ -148,6 +148,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `Application.certificate_thumbprint(cert_data)` exposes the same upper-case
   hex SHA-1 (the value Entra stores and MSAL expects) so setup scripts no longer
   shell out to `openssl x509 -fingerprint` to read it.
+- **Certificate auth without a thumbprint:** `with_certificate` (Graph) and
+  `with_client_certificate` (SharePoint) now accept an optional
+  `public_certificate` (DER/PEM bytes, inline PEM text, or a file path) and make
+  `thumbprint` optional. When the thumbprint is omitted it is derived from the
+  certificate with stdlib SHA-1 — the same value Entra stores in
+  `keyCredentials.customKeyIdentifier` — so no extra dependency is needed and
+  self-signed certificates keep working. Pass `use_sni=True` to use subject
+  name/issuer authentication instead (PS256 + `x5c`; requires the optional
+  `cryptography` package and a certificate issued by a trusted CA). Existing
+  `thumbprint=...` calls are unchanged.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the

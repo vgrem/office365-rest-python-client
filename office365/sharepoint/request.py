@@ -9,6 +9,7 @@ from typing_extensions import Self
 
 from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.authentication_context import AuthenticationContext
+from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
@@ -263,11 +264,14 @@ class SharePointRequest(ODataRequest):
         self,
         tenant: str,
         client_id: str,
-        thumbprint: str,
+        thumbprint: Optional[str] = None,
         cert_path: Optional[str] = None,
         private_key: Optional[str] = None,
         scopes: Optional[List[str]] = None,
         passphrase: Optional[str] = None,
+        *,
+        public_certificate: Optional[CertificateData] = None,
+        use_sni: bool = False,
     ) -> Self:
         """
         Authenticate using client certificate
@@ -275,17 +279,30 @@ class SharePointRequest(ODataRequest):
         Args:
             tenant: Tenant name
             client_id: Application client ID
-            thumbprint: Certificate thumbprint
-            cert_path: Path to PEM encoded certificate (optional)
+            thumbprint: Certificate thumbprint (optional when ``public_certificate`` is given)
+            cert_path: Path to PEM encoded private key (optional)
             private_key: PEM encoded private key (optional)
             scopes: Requested permission scopes (optional)
             passphrase: Private key passphrase (optional)
+            public_certificate: Certificate (DER/PEM bytes, inline PEM text, or a
+                path) used to derive the thumbprint or, with ``use_sni``, for
+                subject name/issuer authentication (optional)
+            use_sni: Use subject name/issuer authentication (requires the optional
+                ``cryptography`` package)
 
         Returns:
             Self: Supports method chaining
         """
         self._auth_context.with_client_certificate(
-            tenant, client_id, thumbprint, cert_path, private_key, scopes, passphrase
+            tenant,
+            client_id,
+            thumbprint,
+            cert_path,
+            private_key,
+            scopes,
+            passphrase,
+            public_certificate=public_certificate,
+            use_sni=use_sni,
         )
         return self
 

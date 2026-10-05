@@ -14,6 +14,7 @@ from office365.azure_env import (
     get_graph_authority,
     get_login_authority,
 )
+from office365.runtime.auth.certificate import CertificateData, build_client_credential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.transport.offload import get_offload_executor
 
@@ -173,24 +174,43 @@ class AuthenticationContext:
 
         return self.with_access_token(_acquire_token)
 
-    def with_certificate(self, client_id: str, thumbprint: str, private_key: str):
+    def with_certificate(
+        self,
+        client_id: str,
+        thumbprint: str | None = None,
+        private_key: str | None = None,
+        *,
+        public_certificate: CertificateData | None = None,
+        passphrase: str | None = None,
+        use_sni: bool = False,
+    ):
         """Initializes the confidential client with client certificate
 
         Args:
             client_id (str): The OAuth client id of the calling application.
-            thumbprint (str): Thumbprint
+            thumbprint (str): Thumbprint (optional when ``public_certificate`` is given)
             private_key (str): Private key
+            public_certificate: Certificate (DER/PEM bytes, inline PEM text, or a
+                path) used to derive the thumbprint or, with ``use_sni``, for
+                subject name/issuer authentication
+            passphrase (str): Private key passphrase
+            use_sni (bool): Use subject name/issuer authentication (requires the
+                optional ``cryptography`` package)
         """
         self._client_id = client_id
         import msal
 
+        credentials = build_client_credential(
+            thumbprint=thumbprint,
+            private_key=private_key,
+            public_certificate=public_certificate,
+            passphrase=passphrase,
+            use_sni=use_sni,
+        )
         app = msal.ConfidentialClientApplication(
             client_id,
             authority=self.authority_url,
-            client_credential={
-                "thumbprint": thumbprint,
-                "private_key": private_key,
-            },
+            client_credential=credentials,
             token_cache=self._token_cache,  # Default cache is in memory only.
             # You can learn how to use SerializableTokenCache from
             # https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache

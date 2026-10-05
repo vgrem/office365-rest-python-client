@@ -4,6 +4,7 @@ from typing import Callable, Dict, Optional
 
 from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
+from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
 from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
 from office365.runtime.http.http_method import HttpMethod
@@ -54,19 +55,41 @@ class GraphRequest(ODataRequest):
         self._auth_context.with_access_token(token_callback)
         return self
 
-    def with_certificate(self, client_id: str, thumbprint: str, private_key: str) -> GraphRequest:
+    def with_certificate(
+        self,
+        client_id: str,
+        thumbprint: str | None = None,
+        private_key: str | None = None,
+        *,
+        public_certificate: CertificateData | None = None,
+        passphrase: str | None = None,
+        use_sni: bool = False,
+    ) -> GraphRequest:
         """
         Initialize with client certificate authentication.
 
         Args:
             client_id: The OAuth client ID of the calling application
-            thumbprint: Certificate thumbprint
+            thumbprint: Certificate thumbprint (optional when ``public_certificate`` is given)
             private_key: Private key content
+            public_certificate: Certificate (DER/PEM bytes, inline PEM text, or a
+                path) used to derive the thumbprint or, with ``use_sni``, for
+                subject name/issuer authentication
+            passphrase: Private key passphrase
+            use_sni: Use subject name/issuer authentication (requires the optional
+                ``cryptography`` package)
 
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_certificate(client_id, thumbprint, private_key)
+        self._auth_context.with_certificate(
+            client_id,
+            thumbprint,
+            private_key,
+            public_certificate=public_certificate,
+            passphrase=passphrase,
+            use_sni=use_sni,
+        )
         return self
 
     def with_client_secret(self, client_id: str, client_secret: str) -> GraphRequest:

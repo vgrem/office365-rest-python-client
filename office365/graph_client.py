@@ -64,6 +64,7 @@ from office365.outlook.calendar.place import Place
 from office365.outlook.calendar.rooms.list import RoomList
 from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
+from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.v4.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataV4BatchRequest
@@ -128,19 +129,41 @@ class GraphClient(ClientRuntimeContext):
         self._directory: Optional[Directory] = None
         self._authority = authority
 
-    def with_certificate(self, client_id: str, thumbprint: str, private_key: str) -> Self:
+    def with_certificate(
+        self,
+        client_id: str,
+        thumbprint: str | None = None,
+        private_key: str | None = None,
+        *,
+        public_certificate: CertificateData | None = None,
+        passphrase: str | None = None,
+        use_sni: bool = False,
+    ) -> Self:
         """
         Initialize with client certificate authentication
 
         Args:
             client_id: Application client ID
-            thumbprint: Certificate thumbprint
+            thumbprint: Certificate thumbprint (optional when ``public_certificate`` is given)
             private_key: Private key content
+            public_certificate: Certificate (DER/PEM bytes, inline PEM text, or a
+                path) used to derive the thumbprint or, with ``use_sni``, for
+                subject name/issuer authentication
+            passphrase: Private key passphrase
+            use_sni: Use subject name/issuer authentication (requires the optional
+                ``cryptography`` package)
 
         Returns:
             self: Supports method chaining
         """
-        self.pending_request().with_certificate(client_id, thumbprint, private_key)
+        self.pending_request().with_certificate(
+            client_id,
+            thumbprint,
+            private_key,
+            public_certificate=public_certificate,
+            passphrase=passphrase,
+            use_sni=use_sni,
+        )
         return self
 
     def with_client_secret(self, client_id: str, client_secret: str) -> Self:

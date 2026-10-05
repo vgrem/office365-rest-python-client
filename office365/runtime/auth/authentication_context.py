@@ -11,6 +11,7 @@ from typing import Any, Callable, Dict, List, Union
 from typing_extensions import Self
 
 from office365.azure_env import AzureEnvironment, get_login_authority
+from office365.runtime.auth.certificate import CertificateData, build_client_credential
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
 from office365.runtime.auth.providers.cookie_provider import CookieAuthProvider
@@ -119,11 +120,14 @@ class AuthenticationContext:
         self,
         tenant: str,
         client_id: str,
-        thumbprint: str,
+        thumbprint: str | None = None,
         cert_path: str | None = None,
         private_key: str | None = None,
         scopes: List[str] | None = None,
         passphrase: str | None = None,
+        *,
+        public_certificate: CertificateData | None = None,
+        use_sni: bool = False,
     ) -> Self:
         """
         Authenticate using client certificate
@@ -131,11 +135,16 @@ class AuthenticationContext:
         Args:
             tenant: Tenant name (e.g., "contoso.onmicrosoft.com")
             client_id: Application client ID
-            thumbprint: Certificate thumbprint
-            cert_path: Path to PEM encoded certificate (optional)
+            thumbprint: Certificate thumbprint (optional when ``public_certificate`` is given)
+            cert_path: Path to PEM encoded private key (optional)
             private_key: PEM encoded private key (optional)
             scopes: Requested permission scopes (optional)
             passphrase: Private key passphrase (optional)
+            public_certificate: Certificate (DER/PEM bytes, inline PEM text, or a
+                path) used to derive the thumbprint or, with ``use_sni``, for
+                subject name/issuer authentication (optional)
+            use_sni: Use subject name/issuer authentication (requires the optional
+                ``cryptography`` package)
 
         Returns:
             Self: Supports method chaining
@@ -151,11 +160,13 @@ class AuthenticationContext:
 
         def _acquire_token():
             authority_url = self._get_authority_url(tenant)
-            credentials = {
-                "thumbprint": thumbprint,
-                "private_key": private_key,
-                "passphrase": passphrase,
-            }
+            credentials = build_client_credential(
+                thumbprint=thumbprint,
+                private_key=private_key,
+                public_certificate=public_certificate,
+                passphrase=passphrase,
+                use_sni=use_sni,
+            )
             import msal
 
             app = msal.ConfidentialClientApplication(

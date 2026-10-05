@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import base64
-import hashlib
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Optional
 from uuid import UUID
 
@@ -35,6 +33,8 @@ from office365.directory.policies.token_issuance import TokenIssuancePolicy
 from office365.directory.serviceprincipals.lockconfiguration import ServicePrincipalLockConfiguration
 from office365.directory.synchronization.synchronization import Synchronization
 from office365.entity_collection import EntityCollection
+from office365.runtime.auth.certificate import certificate_der as _certificate_der
+from office365.runtime.auth.certificate import certificate_thumbprint as _certificate_thumbprint
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -42,36 +42,6 @@ from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
-
-
-def _read_certificate(cert_data: bytes | bytearray | str | os.PathLike[str]) -> bytes:
-    """Return the raw certificate bytes.
-
-    Accepts DER/PEM bytes, inline PEM text, or a path to a certificate file.
-    """
-    if isinstance(cert_data, (bytes, bytearray)):
-        return bytes(cert_data)
-    if isinstance(cert_data, str) and "-----BEGIN" in cert_data:
-        return cert_data.encode("utf-8")
-    return Path(cert_data).read_bytes()
-
-
-def _certificate_der(cert_data: bytes | bytearray | str | os.PathLike[str]) -> bytes:
-    """Normalise a certificate to DER, as Entra expects for ``keyCredentials.key``."""
-    raw = _read_certificate(cert_data)
-    if raw.lstrip().startswith(b"-----BEGIN"):
-        import ssl
-
-        return ssl.PEM_cert_to_DER_cert(raw.decode("ascii"))
-    return raw
-
-
-def _certificate_thumbprint(cert_data: bytes | bytearray | str | os.PathLike[str]) -> str:
-    """Compute the SHA-1 thumbprint in the upper-case hex form Entra uses.
-
-    Entra stores this value in ``keyCredential.customKeyIdentifier``.
-    """
-    return hashlib.sha1(_certificate_der(cert_data)).hexdigest().upper()
 
 
 class Application(DirectoryObject):
