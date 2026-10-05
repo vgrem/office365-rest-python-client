@@ -39,6 +39,7 @@ from typing import TYPE_CHECKING, Any, Awaitable, Callable
 from requests import Response
 
 from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.retry import response_retry_after
@@ -486,3 +487,99 @@ class OperationPoller:
         if raise_on_failure and status.is_failure:
             raise OperationFailedError(status)
         return status
+
+
+class LongRunningOperationResult(ClientResult[str]):
+    """A long-running operation accepted by the service and tracked by a monitor URL.
+
+    Returned by actions such as Microsoft Graph ``driveItem.copy``: after
+    ``execute_query()`` the result value holds the monitor URL from the
+    ``Location`` header, and :meth:`wait` / :meth:`wait_async` poll it to
+    completion::
+
+        result = source_item.copy(name="report (copy).xlsx", parent=dest).execute_query()
+        status = result.wait()  # or: status = await result.wait_async()
+
+    Unlike the raw :class:`OperationPoller`, credentials are attached by default
+    because Microsoft Graph hands back authenticated monitor URLs (often on the
+    tenant's SharePoint host) for its long-running actions.
+    """
+
+    def __init__(
+        self,
+        context: "ClientRuntimeContext",
+        default_value: str | None = None,
+        *,
+        authenticate: bool = True,
+        final_state_via: str = "auto",
+    ) -> None:
+        super().__init__(context, str() if default_value is None else default_value)
+        self._authenticate = authenticate
+        self._final_state_via = final_state_via
+        self._last_status: OperationStatus | None = None
+
+    @property
+    def monitor_url(self) -> str:
+        """The operation-status URL (the result value)."""
+        return self.value
+
+    @property
+    def last_status(self) -> OperationStatus | None:
+        """The most recent snapshot, or ``None`` before the first poll."""
+        return self._last_status
+
+    @property
+    def resource_id(self) -> str | None:
+        """Identifier of the resource produced by the last poll, when reported."""
+        return self._last_status.resource_id if self._last_status is not None else None
+
+    @property
+    def resource_location(self) -> str | None:
+        """URL of the resource produced by the last poll, when reported."""
+        return self._last_status.resource_location if self._last_status is not None else None
+
+    def to_poller(
+        self,
+        *,
+        interval: float = 5.0,
+        timeout: float = 1800.0,
+        on_progress: OperationCallback | None = None,
+    ) -> OperationPoller:
+        """Build a poller for this operation's monitor URL."""
+        if not self.value:
+            raise ValueError("The operation has no monitor URL yet — run execute_query() before wait().")
+        return OperationPoller(
+            self._context,
+            self.value,
+            final_state_via=self._final_state_via,
+            interval=interval,
+            timeout=timeout,
+            authenticate=self._authenticate,
+            on_progress=on_progress,
+        )
+
+    def wait(
+        self,
+        *,
+        interval: float = 5.0,
+        timeout: float = 1800.0,
+        on_progress: OperationCallback | None = None,
+        raise_on_failure: bool = True,
+    ) -> OperationStatus:
+        """Poll (blocking) until the operation is terminal and return the status."""
+        poller = self.to_poller(interval=interval, timeout=timeout, on_progress=on_progress)
+        self._last_status = poller.wait(on_progress=on_progress, raise_on_failure=raise_on_failure)
+        return self._last_status
+
+    async def wait_async(
+        self,
+        *,
+        interval: float = 5.0,
+        timeout: float = 1800.0,
+        on_progress: OperationCallback | None = None,
+        raise_on_failure: bool = True,
+    ) -> OperationStatus:
+        """Await the operation to completion and return the terminal status."""
+        poller = self.to_poller(interval=interval, timeout=timeout, on_progress=on_progress)
+        self._last_status = await poller.wait_async(on_progress=on_progress, raise_on_failure=raise_on_failure)
+        return self._last_status

@@ -4,9 +4,10 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.operations.longrunningoperationstatus import LongRunningOperationStatus
+from office365.runtime.pollable import PollableOperation
 
 
-class TelephoneNumberLongRunningOperation(Entity):
+class TelephoneNumberLongRunningOperation(PollableOperation, Entity):
     @property
     def created_date_time(self) -> Optional[str]:
         """Gets the createdDateTime property"""

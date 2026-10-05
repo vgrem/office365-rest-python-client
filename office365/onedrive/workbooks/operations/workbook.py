@@ -2,9 +2,10 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.operations.error import WorkbookOperationError
+from office365.runtime.pollable import PollableOperation
 
 
-class WorkbookOperation(Entity):
+class WorkbookOperation(PollableOperation, Entity):
     """Represents the status of a long-running workbook operation"""
 
     @property

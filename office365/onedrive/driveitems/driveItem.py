@@ -22,6 +22,7 @@ from office365.onedrive.analytics.item_analytics import ItemAnalytics
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.driveitems.audio import Audio
 from office365.onedrive.driveitems.conflict_behavior import ConflictBehavior
+from office365.onedrive.driveitems.copy_result import DriveItemCopyResult
 from office365.onedrive.driveitems.geo_coordinates import GeoCoordinates
 from office365.onedrive.driveitems.image import Image
 from office365.onedrive.driveitems.item_preview_info import ItemPreviewInfo
@@ -917,9 +918,15 @@ class DriveItem(BaseItem):
         name: str | None = None,
         parent: ItemReference | DriveItem | None = None,
         conflict_behavior: ConflictBehavior = ConflictBehavior.Fail,
-    ) -> ClientResult[str]:
+    ) -> DriveItemCopyResult:
         """Asynchronously creates a copy of an driveItem (including any children), under a new parent item or with a
         new name.
+
+        Microsoft Graph accepts this action with ``202 Accepted`` and returns the
+        URL of an operation-status (monitor) resource. The returned
+        :class:`~office365.onedrive.driveitems.copy_result.DriveItemCopyResult`
+        exposes it as ``monitor_url``; use ``wait_for_item()`` /
+        ``wait_for_item_async()`` to poll to completion and get the new item.
 
         Args:
             name (str or None): The new name for the copy. If this isn't provided, the same name will be used as the
@@ -928,10 +935,16 @@ class DriveItem(BaseItem):
               to the parent item the copy will be created in.
             conflict_behavior (str): query parameter to customize the behavior when a conflict occurs.
               Returns location for details about how to monitor the progress of the copy, upon accepting the request.
+
+        Returns:
+            The monitor result; call ``execute_query()`` to start the copy, then
+            ``wait_for_item()`` / ``wait_for_item_async()`` for the new item.
         """
-        return_type = ClientResult(self.context, str())
+        return_type = DriveItemCopyResult(self.context, self)
 
         def _copy(parent_reference: ItemReference) -> None:
+            return_type.destination_drive_id = parent_reference.driveId
+
             def _create_request(request: RequestOptions) -> None:
                 request.url += f"?@microsoft.graph.conflictBehavior={conflict_behavior.value}"
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import time
 from collections.abc import Callable
 from datetime import datetime
@@ -7,6 +8,14 @@ from datetime import datetime
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.pollable import (
+    PollableOperation,
+    is_transient_poll_error,
+    next_poll_delay,
+    normalize_status,
+    reload_operation_async,
+)
 from office365.runtime.types.odata_property import odata
 from office365.teams.operations.async_status import TeamsAsyncOperationStatus
 from office365.teams.operations.error import OperationError
@@ -47,7 +56,45 @@ def wait_for_operation(
     )
 
 
-class TeamsAsyncOperation(Entity):
+async def wait_for_operation_async(
+    operation: "TeamsAsyncOperation",
+    *,
+    success_callback: Callable[["TeamsAsyncOperation"], None] | None = None,
+    timeout_sec: int = 180,
+    interval: int = 15,
+) -> "TeamsAsyncOperation":
+    """Await an async operation until ``succeeded``.
+
+    The awaitable twin of :func:`wait_for_operation`: each status GET yields to
+    the event loop, so other tasks keep running while the (often minutes-long)
+    Teams operation completes.
+
+    Args:
+        operation: The async operation to poll.
+        success_callback: Called with the populated operation once succeeded.
+        timeout_sec: Maximum seconds to wait.
+        interval: Seconds between status polls.
+
+    Returns:
+        The populated operation (``succeeded``).
+
+    Raises:
+        RuntimeError: When the operation fails or times out.
+    """
+
+    def _on_failed(op) -> None:
+        raise RuntimeError(f"Async operation failed: {op.status}")
+
+    return await operation.poll_for_status_async(
+        TeamsAsyncOperationStatus.succeeded,
+        timeout_sec=timeout_sec,
+        polling_interval=interval,
+        success_callback=success_callback,
+        failure_callback=_on_failed,
+    )
+
+
+class TeamsAsyncOperation(PollableOperation, Entity):
     """
     A Microsoft Teams async operation is an operation that transcends the lifetime of a single API request.
     These operations are long-running or too expensive to complete within the timeframe of their originating request.
@@ -118,6 +165,60 @@ class TeamsAsyncOperation(Entity):
 
         _poll()
         return self
+
+    async def poll_for_status_async(
+        self,
+        status_type: TeamsAsyncOperationStatus = TeamsAsyncOperationStatus.succeeded,
+        timeout_sec: int = 180,
+        polling_interval: int = 15,
+        success_callback: Callable[[TeamsAsyncOperation], None] | None = None,
+        failure_callback: Callable[[TeamsAsyncOperation], None] | None = None,
+    ) -> Self:
+        """Async twin of :meth:`poll_for_status`, driven by ``await`` (no blocking).
+
+        Performs the status ``GET`` and the delay between polls on the event
+        loop, honoring ``Retry-After`` and treating a transient ``404`` as a
+        polling gap. Callbacks receive the populated operation, exactly like the
+        synchronous version.
+
+        Args:
+            status_type: The status to wait for (default ``succeeded``).
+            timeout_sec: Maximum seconds to wait (default 180).
+            polling_interval: Seconds between polls when no ``Retry-After`` is
+                sent (default 15).
+            success_callback: Called on success with the populated operation.
+            failure_callback: Called on timeout or failed status.
+        """
+        target = normalize_status(status_type)
+        failed = normalize_status(TeamsAsyncOperationStatus.failed)
+        deadline = time.monotonic() + timeout_sec
+
+        def _fail() -> None:
+            if callable(failure_callback):
+                failure_callback(self)
+
+        while True:
+            try:
+                response = await reload_operation_async(self)
+            except ClientRequestException as ex:
+                if is_transient_poll_error(ex) and time.monotonic() < deadline:
+                    await asyncio.sleep(next_poll_delay(ex.response, polling_interval))
+                    continue
+                _fail()
+                return self
+            current = normalize_status(self.operation_status)
+            if current == target:
+                if callable(success_callback):
+                    success_callback(self)
+                return self
+            if current == failed:
+                if callable(failure_callback):
+                    failure_callback(self)
+                return self
+            if time.monotonic() >= deadline:
+                _fail()
+                return self
+            await asyncio.sleep(next_poll_delay(response, polling_interval))
 
     @odata(name="attemptsCount")
     @property

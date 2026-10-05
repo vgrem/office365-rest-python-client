@@ -18,6 +18,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   an operation in a later call or process. Monitor URLs are polled without
   credentials by default (Graph monitor URLs are unauthenticated and may be
   cross-host); pass `authenticate=True` for services that require it.
+- **Waitable Graph long-running operations:** `LongRunningOperationResult`
+  (`office365.runtime.lro`) wraps an action's monitor URL with blocking `wait()` /
+  awaitable `wait_async()`, and `DriveItem.copy()` now returns a
+  `DriveItemCopyResult` whose `wait_for_item()` / `wait_for_item_async()` poll the
+  copy to completion and return the new `DriveItem`.
+- **Waitable operation entities:** a `PollableOperation` mixin
+  (`office365.runtime.pollable`) gives `RichLongRunningOperation`,
+  `WorkbookOperation`, `TelephoneNumberLongRunningOperation` and
+  `TeamsAsyncOperation` direct `wait()` / `wait_async()` polling, honoring
+  `Retry-After`, treating a transient `404` as a "not created yet" gap, and
+  raising `OperationTimeoutError` / `OperationFailedError` on failure.
+- **Async Teams operation polling:** `TeamsAsyncOperation.poll_for_status_async`
+  and `wait_for_operation_async` await an operation on the event loop (no
+  blocking), with `Retry-After` pacing and the same `404`-gap tolerance.
 - **Async/await support:** async twins of the terminal query API —
   `ClientRuntimeContext.execute_query_async`, `ClientObject.execute_query_async`,
   `ClientResult.execute_query_async`, `execute_query_async_retry`, and

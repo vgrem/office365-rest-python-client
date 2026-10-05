@@ -1,9 +1,10 @@
 from typing import Optional
 
 from office365.onedrive.operations.long_running import LongRunningOperation
+from office365.runtime.pollable import PollableOperation
 
 
-class RichLongRunningOperation(LongRunningOperation):
+class RichLongRunningOperation(PollableOperation, LongRunningOperation):
     """Represents the status of a long-running operation on a site or a list."""
 
     @property
