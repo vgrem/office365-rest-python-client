@@ -1,0 +1,488 @@
+"""First-class polling for long-running operations (LRO).
+
+Microsoft Graph and several Microsoft 365 services model long-running work with
+the async pattern described in
+`Working with long-running actions <https://learn.microsoft.com/en-us/graph/long-running-actions-overview>`_:
+the initial request is accepted with ``202 Accepted`` and a header pointing at an
+*operation status* URL; the client polls that URL, honoring ``Retry-After``,
+until the operation reaches a terminal status, then reads the result (often via
+``resourceId`` / ``resourceLocation``).
+
+This module provides a transport-agnostic poller usable from both the
+synchronous and asynchronous APIs::
+
+    op = OperationPoller.from_response(context, response)
+    status = op.wait()  # blocking
+    status = await op.wait_async()  # non-blocking
+
+The design mirrors ``azure-core``'s ``LROPoller`` / ``AsyncLROPoller``: pluggable
+poll-URL resolution (``Operation-Location`` / ``Azure-AsyncOperation`` /
+``Location``), ``Retry-After``-driven pacing, terminal-state detection, an
+optional progress hook, and continuation tokens so a long job can be resumed in
+a later call or process.
+
+The monitor URL returned by Microsoft Graph is short-lived, unique to the
+original caller and **does not require authentication**; it can even live on a
+different host (e.g. ``api.onedrive.com``). The poller therefore does not attach
+credentials by default — pass ``authenticate=True`` for services such as Azure
+that do require them.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import time
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Awaitable, Callable
+
+from requests import Response
+
+from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.retry import response_retry_after
+
+if TYPE_CHECKING:
+    from office365.runtime.client_request import ClientRequest
+    from office365.runtime.client_runtime_context import ClientRuntimeContext
+    from office365.runtime.transport.base import BaseTransport
+
+#: Response headers that may carry the operation-status URL, in resolution order.
+POLL_URL_HEADERS = ("Operation-Location", "Azure-AsyncOperation", "Location")
+
+_HEADER_BY_FINAL_STATE = {
+    "location": "Location",
+    "operation-location": "Operation-Location",
+    "azure-async-operation": "Azure-AsyncOperation",
+}
+
+#: Operation statuses that mean the work finished successfully.
+SUCCESS_STATUSES = frozenset({"completed", "succeeded", "success", "finished"})
+
+#: Operation statuses that mean the work finished with a failure.
+FAILURE_STATUSES = frozenset({"failed", "failure", "cancelled", "canceled", "error"})
+
+_PENDING_HTTP = 202
+
+#: HTTP statuses that ask the client to back off and poll again (throttling).
+_RETRYABLE_HTTP = frozenset({429, 503})
+
+#: Callback invoked with the latest :class:`OperationStatus` on every poll.
+OperationCallback = Callable[["OperationStatus"], None]
+
+
+def _parse_json(response: Response) -> Any:
+    """Parse ``response`` as JSON, returning ``None`` when it isn't JSON."""
+    content_type = (getattr(response, "headers", None) or {}).get("Content-Type", "")
+    if "json" not in content_type.lower():
+        return None
+    try:
+        return response.json()
+    except (TypeError, ValueError):
+        return None
+
+
+def _first(data: Any, *keys: str) -> Any:
+    """Return the first present, non-null value among ``keys`` of a mapping."""
+    if not isinstance(data, dict):
+        return None
+    for key in keys:
+        value = data.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def _percentage(data: Any) -> float | None:
+    """Read ``percentageComplete`` (Graph) / ``percentComplete`` (Azure)."""
+    value = _first(data, "percentageComplete", "percentComplete")
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+@dataclass
+class OperationStatus:
+    """A single snapshot of a long-running operation.
+
+    Attributes:
+        status: Server-reported status (``inProgress``, ``completed`` ...), or
+            ``None`` when the response carries no status body.
+        http_status: HTTP status of the poll response.
+        percentage_complete: Completion percentage (0-100) when reported.
+        resource_id: Identifier of the produced/modified resource, when reported.
+        resource_location: URL of the produced/modified resource (or final result).
+        error: Error payload when the operation failed.
+        response: The raw terminal/poll response (carries the result body, e.g. a
+            report export), excluded from ``repr``.
+    """
+
+    status: str | None = None
+    http_status: int = 0
+    percentage_complete: float | None = None
+    resource_id: str | None = None
+    resource_location: str | None = None
+    error: Any = None
+    response: Response | None = field(default=None, repr=False)
+
+    @classmethod
+    def from_response(cls, response: Response) -> "OperationStatus":
+        """Build a snapshot from a poll response."""
+        data = _parse_json(response)
+        return cls(
+            status=_first(data, "status", "operationStatus"),
+            http_status=int(getattr(response, "status_code", 0) or 0),
+            percentage_complete=_percentage(data),
+            resource_id=_first(data, "resourceId"),
+            resource_location=_first(data, "resourceLocation", "targetResourceLocation"),
+            error=_first(data, "error"),
+            response=response,
+        )
+
+    @property
+    def _status_key(self) -> str | None:
+        """Lower-cased status, so Graph (``completed``) and Azure (``Succeeded``) both match."""
+        return self.status.strip().lower() if isinstance(self.status, str) else None
+
+    @property
+    def is_success(self) -> bool:
+        """Whether the operation finished successfully."""
+        key = self._status_key
+        if key is not None:
+            return key in SUCCESS_STATUSES
+        return self.http_status != _PENDING_HTTP and 200 <= self.http_status < 300  # noqa: PLR2004
+
+    @property
+    def is_failure(self) -> bool:
+        """Whether the operation finished with a failure."""
+        key = self._status_key
+        if key is not None:
+            return key in FAILURE_STATUSES
+        return self.http_status >= 400  # noqa: PLR2004
+
+    @property
+    def is_terminal(self) -> bool:
+        """Whether no further polling is needed.
+
+        A ``3xx`` (redirect to the final result), a known success/failure status,
+        or a non-``202`` response without a status body is terminal; a ``202``
+        with an in-progress/unknown status is not.
+        """
+        if 300 <= self.http_status < 400:  # noqa: PLR2004
+            return True
+        key = self._status_key
+        if key is not None:
+            return key in SUCCESS_STATUSES or key in FAILURE_STATUSES
+        return self.http_status != _PENDING_HTTP
+
+
+def resolve_poll_url(
+    response: Response,
+    *,
+    final_state_via: str = "auto",
+    original_url: str | None = None,
+) -> str | None:
+    """Resolve the operation-status (monitor) URL from a ``202`` response.
+
+    ``final_state_via="auto"`` (default) returns the first header present among
+    :data:`POLL_URL_HEADERS`. The explicit values select a single header, mirroring
+    ``azure-core``; ``"original-url"`` polls the original request URL instead
+    (pass it as ``original_url``).
+    """
+    if final_state_via == "original-url":
+        return original_url
+    headers = getattr(response, "headers", None) or {}
+    if final_state_via != "auto":
+        header = _HEADER_BY_FINAL_STATE.get(final_state_via)
+        if header is None:
+            raise ValueError(f"Unknown final_state_via: {final_state_via!r}")
+        return headers.get(header)
+    for header in POLL_URL_HEADERS:
+        value = headers.get(header)
+        if value:
+            return value
+    return None
+
+
+@dataclass
+class ContinuationToken:
+    """Serializable pointer that lets an operation be resumed later.
+
+    Captures the monitor URL and the poll-URL resolution mode so a restarted
+    process (or a later call) can continue polling the same operation with
+    :meth:`OperationPoller.from_continuation_token`.
+    """
+
+    poll_url: str
+    final_state_via: str = "auto"
+    status: str | None = None
+
+    def to_json(self) -> str:
+        """Serialize the token to JSON."""
+        return json.dumps({"poll_url": self.poll_url, "final_state_via": self.final_state_via, "status": self.status})
+
+    @classmethod
+    def from_json(cls, value: str | bytes | dict[str, Any]) -> "ContinuationToken":
+        """Rebuild a token from :meth:`to_json` output (or an equivalent mapping)."""
+        data = json.loads(value) if isinstance(value, (str, bytes)) else value
+        if not isinstance(data, dict) or not data.get("poll_url"):
+            raise ValueError("Invalid continuation token")
+        return cls(
+            poll_url=str(data["poll_url"]),
+            final_state_via=str(data.get("final_state_via", "auto")),
+            status=data.get("status"),
+        )
+
+
+class OperationError(Exception):
+    """Base class for long-running-operation polling errors."""
+
+
+class OperationFailedError(OperationError):
+    """Raised when a polled operation reaches a failed terminal status."""
+
+    def __init__(self, status: OperationStatus) -> None:
+        self.status = status
+        super().__init__(f"Long-running operation failed: status={status.status!r}, error={status.error!r}")
+
+
+class OperationTimeoutError(OperationError, TimeoutError):
+    """Raised when an operation does not finish before the timeout."""
+
+    def __init__(self, timeout: float) -> None:
+        self.timeout = timeout
+        super().__init__(f"Timed out after {timeout}s waiting for the long-running operation")
+
+
+class OperationPoller:
+    """Polls a long-running-operation monitor URL until it reaches a terminal state.
+
+    Build it from the initial ``202`` response (:meth:`from_response`), a known
+    monitor URL, or a resumed :class:`ContinuationToken`
+    (:meth:`from_continuation_token`), then block with :meth:`wait` or await
+    :meth:`wait_async`.
+
+    Args:
+        context: The client context whose request/transport is used to poll.
+        poll_url: Absolute operation-status URL (may be cross-host).
+        final_state_via: How the poll URL was selected (kept for continuation).
+        interval: Seconds between polls when the server sends no ``Retry-After``.
+        timeout: Maximum seconds to wait before raising
+            :class:`OperationTimeoutError` (default 30 minutes).
+        authenticate: Attach the context's credentials to each poll. Default
+            ``False`` — Graph monitor URLs are unauthenticated and may be on a
+            different host.
+        on_progress: Optional default callback invoked with each
+            :class:`OperationStatus` snapshot.
+        transport: Override the synchronous transport used by :meth:`wait`.
+        async_transport: Override the transport used by :meth:`wait_async`.
+        clock: Injectable monotonic clock (tests).
+        sleep: Injectable synchronous sleep (tests).
+        async_sleep: Injectable asynchronous sleep (tests).
+    """
+
+    def __init__(
+        self,
+        context: "ClientRuntimeContext",
+        poll_url: str,
+        *,
+        final_state_via: str = "auto",
+        interval: float = 5.0,
+        timeout: float = 1800.0,
+        authenticate: bool = False,
+        on_progress: OperationCallback | None = None,
+        transport: "BaseTransport | None" = None,
+        async_transport: "BaseTransport | None" = None,
+        clock: Callable[[], float] = time.monotonic,
+        sleep: Callable[[float], None] = time.sleep,
+        async_sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
+    ) -> None:
+        self._context = context
+        self._poll_url = poll_url
+        self._final_state_via = final_state_via
+        self._interval = interval
+        self._timeout = timeout
+        self._authenticate = authenticate
+        self._on_progress = on_progress
+        self._transport = transport
+        self._async_transport = async_transport
+        self._clock = clock
+        self._sleep = sleep
+        self._async_sleep = async_sleep
+        self._status: OperationStatus | None = None
+
+    @classmethod
+    def from_response(
+        cls,
+        context: "ClientRuntimeContext",
+        response: Response,
+        *,
+        final_state_via: str = "auto",
+        original_url: str | None = None,
+        **options: Any,
+    ) -> "OperationPoller":
+        """Create a poller from a ``202 Accepted`` response.
+
+        Raises:
+            ValueError: When no monitor URL header is present (the response is
+                not an accepted long-running operation).
+        """
+        poll_url = resolve_poll_url(response, final_state_via=final_state_via, original_url=original_url)
+        if poll_url is None:
+            raise ValueError(
+                "No long-running-operation monitor URL found (looked for "
+                f"{', '.join(POLL_URL_HEADERS)}); the response is not an accepted async operation."
+            )
+        return cls(context, poll_url, final_state_via=final_state_via, **options)
+
+    @classmethod
+    def from_continuation_token(
+        cls,
+        context: "ClientRuntimeContext",
+        token: ContinuationToken | str | bytes | dict[str, Any],
+        **options: Any,
+    ) -> "OperationPoller":
+        """Resume a poller from a previously emitted :class:`ContinuationToken`."""
+        if isinstance(token, (str, bytes)):
+            token = ContinuationToken.from_json(token)
+        elif isinstance(token, dict):
+            token = ContinuationToken.from_json(token)
+        options.setdefault("final_state_via", token.final_state_via)
+        return cls(context, token.poll_url, **options)
+
+    @property
+    def poll_url(self) -> str:
+        """The operation-status URL being polled."""
+        return self._poll_url
+
+    @property
+    def final_state_via(self) -> str:
+        """How the poll URL was selected (``auto`` / ``location`` / ...)."""
+        return self._final_state_via
+
+    @property
+    def last_status(self) -> OperationStatus | None:
+        """The most recent snapshot, or ``None`` before the first poll."""
+        return self._status
+
+    def to_continuation_token(self) -> ContinuationToken:
+        """Snapshot the poller so the operation can be resumed later."""
+        return ContinuationToken(
+            poll_url=self._poll_url,
+            final_state_via=self._final_state_via,
+            status=self._status.status if self._status is not None else None,
+        )
+
+    def wait(
+        self,
+        *,
+        timeout: float | None = None,
+        on_progress: OperationCallback | None = None,
+        raise_on_failure: bool = True,
+    ) -> OperationStatus:
+        """Poll (blocking) until the operation is terminal.
+
+        Args:
+            timeout: Override the instance timeout for this call.
+            on_progress: Override the instance progress callback.
+            raise_on_failure: Raise :class:`OperationFailedError` on a failed
+                terminal status (default); pass ``False`` to return it instead.
+
+        Returns:
+            The terminal :class:`OperationStatus`.
+        """
+        client_request = self._context.pending_request()
+        transport = self._transport or client_request.transport
+        effective_timeout = self._timeout if timeout is None else timeout
+        deadline = self._clock() + effective_timeout
+        while True:
+            status = self._poll_sync(client_request, transport)
+            self._record(status, on_progress)
+            if status.http_status not in _RETRYABLE_HTTP and status.is_terminal:
+                return self._finish(status, raise_on_failure)
+            self._pause(status, deadline, effective_timeout)
+
+    async def wait_async(
+        self,
+        *,
+        timeout: float | None = None,
+        on_progress: OperationCallback | None = None,
+        raise_on_failure: bool = True,
+    ) -> OperationStatus:
+        """Await polling until the operation is terminal, without blocking the loop.
+
+        Async twin of :meth:`wait`; the wait between polls yields to the event
+        loop so concurrently-running tasks keep making progress.
+        """
+        client_request = self._context.pending_request()
+        transport = self._async_transport or client_request.async_transport
+        effective_timeout = self._timeout if timeout is None else timeout
+        deadline = self._clock() + effective_timeout
+        while True:
+            status = await self._poll_async(client_request, transport)
+            self._record(status, on_progress)
+            if status.http_status not in _RETRYABLE_HTTP and status.is_terminal:
+                return self._finish(status, raise_on_failure)
+            await self._pause_async(status, deadline, effective_timeout)
+
+    # -- internals ---------------------------------------------------------
+
+    def _build_request(self) -> RequestOptions:
+        return RequestOptions(url=self._poll_url, method=HttpMethod.Get)
+
+    def _poll_sync(self, client_request: "ClientRequest", transport: "BaseTransport") -> OperationStatus:
+        request = self._build_request()
+        if self._authenticate:
+            client_request.beforeExecute(request)
+        client_request.apply_client_request_id(request)
+        return self._to_status(transport.execute(request))
+
+    async def _poll_async(self, client_request: "ClientRequest", transport: "BaseTransport") -> OperationStatus:
+        request = self._build_request()
+        if self._authenticate:
+            await client_request.before_execute_async(request)
+        client_request.apply_client_request_id(request)
+        return self._to_status(await transport.execute_async(request))
+
+    @staticmethod
+    def _to_status(response: Response) -> OperationStatus:
+        """Classify a poll response, raising for permanent HTTP failures."""
+        status = OperationStatus.from_response(response)
+        if status.http_status not in _RETRYABLE_HTTP and status.http_status >= 400:  # noqa: PLR2004
+            raise ClientRequestException.from_response(response)
+        return status
+
+    def _record(self, status: OperationStatus, on_progress: OperationCallback | None) -> None:
+        self._status = status
+        callback = on_progress or self._on_progress
+        if callable(callback):
+            callback(status)
+
+    def _delay(self, status: OperationStatus) -> float:
+        """Seconds to wait before the next poll (server ``Retry-After`` wins)."""
+        retry_after = response_retry_after(status.response) if status.response is not None else None
+        if retry_after is not None:
+            return float(retry_after)
+        return max(0.0, float(self._interval))
+
+    def _pause(self, status: OperationStatus, deadline: float, timeout: float) -> None:
+        delay = self._delay(status)
+        if self._clock() + delay > deadline:
+            raise OperationTimeoutError(timeout)
+        self._sleep(delay)
+
+    async def _pause_async(self, status: OperationStatus, deadline: float, timeout: float) -> None:
+        delay = self._delay(status)
+        if self._clock() + delay > deadline:
+            raise OperationTimeoutError(timeout)
+        await self._async_sleep(delay)
+
+    @staticmethod
+    def _finish(status: OperationStatus, raise_on_failure: bool) -> OperationStatus:
+        if raise_on_failure and status.is_failure:
+            raise OperationFailedError(status)
+        return status

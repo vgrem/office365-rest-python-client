@@ -8,6 +8,10 @@ Payload forms handled by both transports:
 - ``{"status": int, "retry_after": int, "health_score": int, "body": dict|bytes}``
   -> status + throttling headers + body (``bytes`` bodies are octet-stream,
   which lets a test script a ``206`` partial-content range response)
+- ``{"http_status": int, "headers": dict, "body": dict|bytes}`` -> an arbitrary
+  status + custom headers + JSON/octet-stream body, used to script 202
+  long-running-operation poll responses (``headers`` carries
+  ``Location``/``Operation-Location``/``Retry-After``)
 
 :class:`ScriptedTransport` returns payloads in call order;
 :class:`RoutingTransport` picks the first route whose URL substring matches;
@@ -44,6 +48,18 @@ def build_response(request, payload: Any) -> Response:
         resp.status_code = 403
         resp.headers.update({"Content-Type": "application/json"})
         resp._content = _json.dumps(_DENIED).encode("utf-8")
+    elif isinstance(payload, dict) and "http_status" in payload:
+        resp.status_code = int(payload["http_status"])
+        resp.headers.update(payload.get("headers") or {})
+        body = payload.get("body")
+        if body is None:
+            resp._content = b""
+        elif isinstance(body, (bytes, bytearray)):
+            resp.headers.setdefault("Content-Type", "application/octet-stream")
+            resp._content = bytes(body)
+        else:
+            resp.headers.setdefault("Content-Type", "application/json")
+            resp._content = _json.dumps(body).encode("utf-8")
     elif isinstance(payload, dict) and "status" in payload:
         resp.status_code = int(payload["status"])
         body = payload.get("body", {"d": {"results": []}})

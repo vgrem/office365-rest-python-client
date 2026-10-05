@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Long-running operations (LRO):** a first-class, transport-agnostic
+  `OperationPoller` (`office365.runtime.lro`) for the Microsoft Graph async
+  pattern — `OperationPoller.from_response(...)` plus blocking `wait()` and
+  awaitable `wait_async()`, poll-URL resolution (`Operation-Location` /
+  `Azure-AsyncOperation` / `Location` / `original-url`), `Retry-After`-driven
+  pacing with automatic `429`/`503` back-off, terminal-state detection, an
+  `on_progress` snapshot hook, and serializable `ContinuationToken`s that resume
+  an operation in a later call or process. Monitor URLs are polled without
+  credentials by default (Graph monitor URLs are unauthenticated and may be
+  cross-host); pass `authenticate=True` for services that require it.
 - **Async/await support:** async twins of the terminal query API —
   `ClientRuntimeContext.execute_query_async`, `ClientObject.execute_query_async`,
   `ClientResult.execute_query_async`, `execute_query_async_retry`, and
