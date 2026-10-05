@@ -2,8 +2,8 @@
 
 Covers ``ServicePrincipal.grant_application_permissions`` (grant an app role to a
 client app on a resource, re-run safe) and the app-centric
-``Application.grant_application_permissions`` that resolves the resource service
-principal and delegates to it.
+``Application.grant_permissions`` / ``Application.revoke_permissions`` that resolve
+the resource service principal and delegate to it.
 """
 
 from __future__ import annotations
@@ -19,6 +19,8 @@ CLIENT_SP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 SHAREPOINT_APP_ID = "00000003-0000-0ff1-ce00-000000000000"
 SHAREPOINT_SP_ID = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
 ROLE_ID = "cccccccc-cccc-cccc-cccc-cccccccccccc"
+OTHER_ROLE_ID = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+ASSIGNMENT_ID = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
 
 APP = {"id": CLIENT_OBJECT_ID, "appId": CLIENT_APP_ID, "displayName": "my-app"}
 CLIENT_SP = {"id": CLIENT_SP_ID, "appId": CLIENT_APP_ID}
@@ -30,7 +32,7 @@ SHAREPOINT_SP = {
 }
 GRANTED_SP = {
     **SHAREPOINT_SP,
-    "appRoleAssignedTo": [{"appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID}],
+    "appRoleAssignedTo": [{"id": ASSIGNMENT_ID, "appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID}],
 }
 
 
@@ -86,7 +88,7 @@ def test_application_grant_resolves_resource_by_app_id():
     client, transport = _client([APP, SHAREPOINT_SP, CLIENT_SP, {"id": "assignment"}])
     app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
 
-    app.grant_application_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
+    app.grant_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
 
     assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Post]
     assert transport.requests[-1].url.endswith("appRoleAssignedTo")
@@ -97,7 +99,7 @@ def test_application_grant_resolves_resource_by_name():
     client, transport = _client([APP, {"value": [SHAREPOINT_SP]}, CLIENT_SP, {"id": "assignment"}])
     app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
 
-    app.grant_application_permissions("Sites.Selected", ResourceName.SharePoint).execute_query()
+    app.grant_permissions("Sites.Selected", ResourceName.SharePoint).execute_query()
 
     assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Post]
     assert "$filter=displayName eq 'Office 365 SharePoint Online'" in transport.requests[1].url
@@ -107,6 +109,49 @@ def test_application_grant_is_idempotent():
     client, transport = _client([APP, GRANTED_SP, CLIENT_SP])
     app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
 
-    app.grant_application_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
+    app.grant_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
 
     assert HttpMethod.Post not in _methods(transport)
+
+
+def test_application_revoke_permissions_deletes_the_assignment():
+    client, transport = _client([APP, GRANTED_SP, CLIENT_SP, {"http_status": 204}])
+    app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
+
+    app.revoke_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
+
+    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Delete]
+    assert transport.requests[-1].url.endswith(f"appRoleAssignedTo/{ASSIGNMENT_ID}")
+
+
+def test_service_principal_revoke_only_removes_the_requested_role():
+    resource = {
+        **SHAREPOINT_SP,
+        "appRoles": [
+            {"id": ROLE_ID, "value": "Sites.Selected"},
+            {"id": OTHER_ROLE_ID, "value": "Sites.Read.All"},
+        ],
+        "appRoleAssignedTo": [
+            {"id": "assignment-selected", "appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID},
+            {"id": "assignment-read", "appRoleId": OTHER_ROLE_ID, "principalId": CLIENT_SP_ID},
+        ],
+    }
+    client, transport = _client([resource, CLIENT_SP, {"http_status": 204}])
+
+    client.service_principals.get_by_app_id(SHAREPOINT_APP_ID).revoke_application_permissions(
+        CLIENT_APP_ID, "Sites.Selected"
+    ).execute_query()
+
+    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Delete]
+    assert transport.requests[-1].url.endswith("appRoleAssignedTo/assignment-selected")
+    assert all("assignment-read" not in request.url for request in transport.requests)
+
+
+def test_service_principal_revoke_is_a_noop_when_role_absent():
+    client, transport = _client([SHAREPOINT_SP, CLIENT_SP])
+
+    client.service_principals.get_by_app_id(SHAREPOINT_APP_ID).revoke_application_permissions(
+        CLIENT_APP_ID, "Sites.Selected"
+    ).execute_query()
+
+    assert HttpMethod.Delete not in _methods(transport)

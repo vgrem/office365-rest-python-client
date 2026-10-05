@@ -508,14 +508,12 @@ def _ensure_secret(
 
 
 def _configure_credentials(client: GraphClient, opts: _Options, existing_values: dict[str, str]) -> tuple[str, str, str]:
-    app = client.applications.ensure(
-        opts.app_name,
-        None if opts.create_new else opts.client_id,
-        create_service_principal=True,
-    ).execute_query()
-    target_id = app.app_id
     if opts.create_new:
-        print(f"Created app '{app.display_name}' ({target_id})")
+        app = client.applications.ensure(opts.app_name, create_service_principal=True).execute_query()
+        print(f"Created app '{app.display_name}' ({app.app_id})")
+    else:
+        app = client.applications.ensure(opts.app_name, opts.client_id, create_service_principal=True).execute_query()
+    target_id = app.app_id
 
     display_name = getattr(app, "display_name", None) or opts.app_name
     thumbprint = _ensure_certificate(client, app, target_id, display_name, opts)

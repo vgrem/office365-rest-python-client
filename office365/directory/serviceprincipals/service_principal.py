@@ -211,15 +211,23 @@ class ServicePrincipal(DirectoryObject):
         return self
 
     def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
-        """Revokes an app role assignment from a client service principal"""
+        """Revokes an app role assignment from a client service principal.
+
+        Only the assignment whose role matches ``app_role`` is removed, so a
+        client that holds several roles on this resource keeps the others.
+
+        Args:
+            app_id: Application (client) ID of the client app that holds the role.
+            app_role: The role to revoke, as an ``AppRole`` or its name.
+        """
 
         def _revoke(principal_id: str | None, app_role_id: str | None) -> None:
             assert principal_id is not None
-            app_role_to_revoke = [item for item in self.app_role_assigned_to if item.principal_id == principal_id]
-            if len(app_role_to_revoke) > 0:
-                item_id = app_role_to_revoke[0].id
-                assert item_id is not None
-                self.app_role_assigned_to[item_id].delete_object()
+            assert app_role_id is not None
+            for item in self.app_role_assigned_to:
+                if item.principal_id == principal_id and item.app_role_id == app_role_id:
+                    assert item.id is not None
+                    self.app_role_assigned_to[item.id].delete_object()
 
         def _ensure_app_role(sp: ServicePrincipal) -> None:
             assert sp.id is not None

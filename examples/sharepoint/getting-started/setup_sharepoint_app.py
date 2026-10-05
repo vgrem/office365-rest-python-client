@@ -81,12 +81,11 @@ def _sign_in(tenant: str, client_id: str, admin: str, interactive: bool) -> Grap
 
 
 def _ensure_app(client: GraphClient, client_id: str, app_name: str, new_app: bool) -> Application:
-    app = client.applications.ensure(
-        app_name, None if new_app else client_id, create_service_principal=True
-    ).execute_query()
     if new_app:
+        app = client.applications.ensure(app_name, create_service_principal=True).execute_query()
         print(f"Created app '{app.display_name}' ({app.app_id})")
-    return app
+        return app
+    return client.applications.ensure(app_name, client_id, create_service_principal=True).execute_query()
 
 
 def _ensure_certificate(app, app_name: str, force: bool) -> str:
@@ -141,12 +140,12 @@ def main() -> int:
     thumbprint = _ensure_certificate(app, args.app_name, args.force_cert)
 
     scope = SITES_FULL_CONTROL if args.scope == "all" else SITES_SELECTED
-    app.grant_application_permissions(scope, MsAppIds.Office_365_SharePoint_Online).execute_query()
+    app.grant_permissions(scope, MsAppIds.Office_365_SharePoint_Online).execute_query()
     print(f"Ensured '{scope}' with admin consent.")
     if args.scope == "selected":
         for site_url in args.site:
             site = client.sites.get_by_url(site_url).get().execute_query()
-            site.grant_app_access(app.app_id, args.role).execute_query()
+            site.grant_app_access(app, args.role).execute_query()
             print(f"Granted '{args.role}' to the app on {site_url}.")
 
     _write_env(tenant, app.app_id, thumbprint, args.site, not args.no_write)

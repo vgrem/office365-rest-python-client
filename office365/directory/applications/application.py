@@ -152,7 +152,7 @@ class Application(DirectoryObject):
         delegated=["AppRoleAssignment.ReadWrite.All"],
         application=["AppRoleAssignment.ReadWrite.All"],
     )
-    def grant_application_permissions(
+    def grant_permissions(
         self,
         scope: str,
         resource: str | ResourceName = ResourceName.Graph,
@@ -165,9 +165,7 @@ class Application(DirectoryObject):
         Deferred; resolve with ``execute_query()``:
 
             app = client.applications.ensure("my-app", app_id).execute_query()
-            app.grant_application_permissions(
-                "Sites.Selected", MsAppIds.Office_365_SharePoint_Online
-            ).execute_query()
+            app.grant_permissions("Sites.Selected", MsAppIds.Office_365_SharePoint_Online).execute_query()
 
         Args:
             scope: The app role (permission) name, e.g. ``"Sites.Selected"``.
@@ -182,6 +180,39 @@ class Application(DirectoryObject):
             resource_sp.grant_application_permissions(self.app_id, scope)
 
         self.ensure_property("appId").after_execute(_grant)
+        return self
+
+    @require_permission(
+        delegated=["AppRoleAssignment.ReadWrite.All"],
+        application=["AppRoleAssignment.ReadWrite.All"],
+    )
+    def revoke_permissions(
+        self,
+        scope: str,
+        resource: str | ResourceName = ResourceName.Graph,
+    ) -> Self:
+        """Revoke a previously granted application permission (app role) from this application.
+
+        A no-op when the permission is not assigned, so it is safe to re-run. The
+        app role assignment lives on the resource's service principal, so
+        ``AppRoleAssignment.ReadWrite.All`` (with admin consent) is required.
+        Deferred; resolve with ``execute_query()``:
+
+            app.revoke_permissions("Sites.Selected", MsAppIds.Office_365_SharePoint_Online).execute_query()
+
+        Args:
+            scope: The app role (permission) name, e.g. ``"Sites.Selected"``.
+            resource: The resource application that exposes the role, identified
+                by application (client) ID (e.g. ``MsAppIds.Office_365_SharePoint_Online``)
+                or display name (e.g. ``ResourceName.SharePoint``).
+        """
+        resource_sp = self._resolve_resource_sp(resource)
+
+        def _revoke(_: Any) -> None:
+            assert self.app_id is not None
+            resource_sp.revoke_application_permissions(self.app_id, scope)
+
+        self.ensure_property("appId").after_execute(_revoke)
         return self
 
     def _resolve_resource_sp(self, resource: str | ResourceName) -> ServicePrincipal:
