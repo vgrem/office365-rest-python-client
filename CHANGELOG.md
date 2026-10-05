@@ -137,6 +137,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   object ID). `examples/sharepoint/getting-started/`,
   `examples/sharepoint/auth/setup/certificate_auth.py`, and
   `examples/entraid/applications/grant_site_selected_permission.py` now use them.
+- **Idempotent app certificates:** `Application.ensure_certificate(cert_data, display_name)`
+  attaches a certificate only when it is not already present — it compares the
+  certificate's SHA-1 thumbprint against `keyCredentials.customKeyIdentifier` —
+  and accepts DER/PEM bytes, inline PEM text, or a file path.
+  `Application.add_certificate` now normalises PEM input to DER (what Entra
+  expects in `keyCredentials.key`) and accepts the same forms, so
+  `examples/sharepoint/getting-started/setup_sharepoint_app.py` collapses its
+  certificate step to `app.ensure_certificate(CERT_PUBLIC, name)`.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the
@@ -164,6 +172,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (start here → common tasks → full catalog), and the auth pages cross-link it.
 
 ### Fixed
+- **Certificate reuse detection:** the SharePoint setup scripts compared a
+  **base64**-encoded SHA-1 thumbprint against Entra's **hex**
+  `customKeyIdentifier`, so an already-attached certificate was treated as
+  missing and re-uploaded on every run. `Application.ensure_certificate` and
+  `tests/setup.py` now compare the upper-case hex form.
 - **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`
   reuses the account via `acquire_token_silent` before starting a new device flow.
 - **Chat members after creation:** `ChatCollection.add` uses a shared placeholder

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import base64
+import hashlib
+import os
 from datetime import datetime, timedelta
-from typing import Optional
+from pathlib import Path
+from typing import Any, Optional
 from uuid import UUID
 
 from typing_extensions import Self
@@ -41,6 +44,36 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
 
 
+def _read_certificate(cert_data: bytes | bytearray | str | os.PathLike[str]) -> bytes:
+    """Return the raw certificate bytes.
+
+    Accepts DER/PEM bytes, inline PEM text, or a path to a certificate file.
+    """
+    if isinstance(cert_data, (bytes, bytearray)):
+        return bytes(cert_data)
+    if isinstance(cert_data, str) and "-----BEGIN" in cert_data:
+        return cert_data.encode("utf-8")
+    return Path(cert_data).read_bytes()
+
+
+def _certificate_der(cert_data: bytes | bytearray | str | os.PathLike[str]) -> bytes:
+    """Normalise a certificate to DER, as Entra expects for ``keyCredentials.key``."""
+    raw = _read_certificate(cert_data)
+    if raw.lstrip().startswith(b"-----BEGIN"):
+        import ssl
+
+        return ssl.PEM_cert_to_DER_cert(raw.decode("ascii"))
+    return raw
+
+
+def _certificate_thumbprint(cert_data: bytes | bytearray | str | os.PathLike[str]) -> str:
+    """Compute the SHA-1 thumbprint in the upper-case hex form Entra uses.
+
+    Entra stores this value in ``keyCredential.customKeyIdentifier``.
+    """
+    return hashlib.sha1(_certificate_der(cert_data)).hexdigest().upper()
+
+
 class Application(DirectoryObject):
     """
     Represents an application. Any application that outsources authentication to Azure Active Directory (Azure AD)
@@ -59,7 +92,7 @@ class Application(DirectoryObject):
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_certificate(
         self,
-        cert_data: bytes,
+        cert_data: bytes | bytearray | str | os.PathLike[str],
         display_name: str,
         start_datetime: datetime | None = None,
         end_datetime: datetime | None = None,
@@ -67,8 +100,8 @@ class Application(DirectoryObject):
         """Adds a certificate to an application.
 
         Args:
+            cert_data: The certificate's raw DER/PEM bytes, inline PEM text, or a file path.
             display_name (str): Friendly name for the key.
-            cert_data (bytes): The certificate's raw data or path.
             start_datetime (datetime.datetime): The date and time at which the credential becomes valid. Default: now
             end_datetime (datetime.datetime): The date and time at which the credential expires. Default: now + 180days
         """
@@ -81,11 +114,42 @@ class Application(DirectoryObject):
             type="AsymmetricX509Cert",
             startDateTime=start_datetime,
             endDateTime=end_datetime,
-            key=base64.b64encode(cert_data).decode("utf-8"),
+            key=base64.b64encode(_certificate_der(cert_data)).decode("utf-8"),
             displayName=f"CN={display_name}",
         )
         self.key_credentials.add(params)
         self.update()
+        return self
+
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
+    def ensure_certificate(
+        self,
+        cert_data: bytes | bytearray | str | os.PathLike[str],
+        display_name: str,
+        start_datetime: datetime | None = None,
+        end_datetime: datetime | None = None,
+    ) -> Self:
+        """Attaches a certificate to an application unless it is already attached.
+
+        The certificate may be supplied as raw DER/PEM bytes, inline PEM text, or a
+        file path. Its SHA-1 thumbprint is compared against the application's
+        existing ``keyCredentials`` so that repeating a setup run does not add
+        duplicate credentials. Requires ``Application.ReadWrite.All``.
+
+        Args:
+            cert_data: The certificate's raw DER/PEM bytes, inline PEM text, or a file path.
+            display_name (str): Friendly name for the key.
+            start_datetime (datetime.datetime): The date and time at which the credential becomes valid. Default: now
+            end_datetime (datetime.datetime): The date and time at which the credential expires. Default: now + 180days
+        """
+        thumbprint = _certificate_thumbprint(cert_data)
+
+        def _attach(_: Any) -> None:
+            attached = {c.customKeyIdentifier.upper() for c in self.key_credentials if c.customKeyIdentifier}
+            if thumbprint not in attached:
+                self.add_certificate(cert_data, display_name, start_datetime, end_datetime)
+
+        self.ensure_property("keyCredentials").after_execute(_attach)
         return self
 
     def remove_certificate(self, thumbprint: str) -> Self:

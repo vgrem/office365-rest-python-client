@@ -15,7 +15,6 @@ https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-appo
 from __future__ import annotations
 
 import argparse
-import base64
 import shutil
 import sys
 
@@ -71,11 +70,6 @@ def _require_openssl() -> None:
         sys.exit("openssl is required to generate the certificate; install it and retry.")
 
 
-def _thumbprint_b64(thumbprint: str) -> str:
-    """The certificate thumbprint as Entra stores it in ``customKeyIdentifier``."""
-    return base64.b64encode(bytes.fromhex(thumbprint)).decode()
-
-
 def _sign_in(tenant: str, client_id: str, admin: str, interactive: bool) -> GraphClient:
     client = GraphClient(tenant=tenant)
     client = client.with_token_interactive(client_id, admin) if interactive else client.with_device_flow(client_id)
@@ -100,14 +94,9 @@ def _ensure_certificate(app, app_name: str, force: bool) -> str:
         _require_openssl()
         generate_certificate(app_name)
         print(f"Generated {CERT_PUBLIC.relative_to(PROJECT_ROOT)}")
-    thumbprint = cert_thumbprint()
-    attached = {key.customKeyIdentifier for key in app.key_credentials if key.customKeyIdentifier}
-    if _thumbprint_b64(thumbprint) in attached:
-        print("Certificate already attached to the app.")
-    else:
-        app.add_certificate(CERT_PUBLIC.read_bytes(), app_name).execute_query()
-        print(f"Attached the certificate to app {app.app_id}.")
-    return thumbprint
+    app.ensure_certificate(CERT_PUBLIC, app_name).execute_query()
+    print(f"Ensured the certificate on app {app.app_id}.")
+    return cert_thumbprint()
 
 
 def _grant_app_permission(client: GraphClient, app_id: str, scope: str) -> None:

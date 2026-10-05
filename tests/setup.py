@@ -26,7 +26,6 @@ Examples::
 from __future__ import annotations
 
 import argparse
-import base64
 import getpass
 import shutil
 import subprocess
@@ -160,11 +159,6 @@ def cert_thumbprint() -> str:
         check=True,
     )
     return result.stdout.strip().split("=", 1)[1].replace(":", "")
-
-
-def _cert_thumbprint_b64() -> str:
-    """The certificate thumbprint as Entra stores it in ``customKeyIdentifier``."""
-    return base64.b64encode(bytes.fromhex(cert_thumbprint())).decode()
 
 
 def _tenant_prefix(tenant: str, upn: str = "") -> str:
@@ -482,9 +476,9 @@ def _sign_in(opts: _Options) -> GraphClient:
 
 def _ensure_certificate(client: GraphClient, app, target_id: str, display_name: str, opts: _Options) -> str:
     local_exists = CERT_PUBLIC.is_file() and CERT_PRIVATE.is_file()
-    existing_keys = {key.customKeyIdentifier for key in app.key_credentials if key.customKeyIdentifier}
-    local_thumb_b64 = _cert_thumbprint_b64() if local_exists else ""
-    already_uploaded = bool(local_thumb_b64) and local_thumb_b64 in existing_keys
+    existing_keys = {key.customKeyIdentifier.upper() for key in app.key_credentials if key.customKeyIdentifier}
+    local_thumb = cert_thumbprint().upper() if local_exists else ""
+    already_uploaded = bool(local_thumb) and local_thumb in existing_keys
 
     if opts.reuse_cert and local_exists and already_uploaded and not opts.force and not opts.generate_cert:
         print("Certificate already uploaded; reusing.")
@@ -496,7 +490,7 @@ def _ensure_certificate(client: GraphClient, app, target_id: str, display_name: 
         print(f"Generated {CERT_PUBLIC.relative_to(PROJECT_ROOT)}")
     else:
         print("Uploading the existing local certificate.")
-    client.applications.get_by_app_id(target_id).add_certificate(CERT_PUBLIC.read_bytes(), display_name).execute_query()
+    client.applications.get_by_app_id(target_id).ensure_certificate(CERT_PUBLIC, display_name).execute_query()
     return cert_thumbprint()
 
 
