@@ -99,17 +99,6 @@ def _ensure_certificate(app, app_name: str, force: bool) -> str:
     return Application.certificate_thumbprint(CERT_PUBLIC)
 
 
-def _grant_app_permission(client: GraphClient, app_id: str, scope: str) -> None:
-    resource = client.service_principals.get_by_app_id(MsAppIds.Office_365_SharePoint_Online)
-    granted = resource.get_application_permissions(app_id).execute_query().value
-    if any(role.value == scope for role in granted):
-        print(f"'{scope}' is already granted.")
-        return
-    resource.grant_application_permissions(app_id, scope)
-    client.execute_query()
-    print(f"Granted '{scope}' with admin consent.")
-
-
 def _write_env(tenant: str, app_id: str, thumbprint: str, sites: list[str], write: bool) -> None:
     overrides = {
         "OFFICE365_TENANT": tenant,
@@ -152,7 +141,8 @@ def main() -> int:
     thumbprint = _ensure_certificate(app, args.app_name, args.force_cert)
 
     scope = SITES_FULL_CONTROL if args.scope == "all" else SITES_SELECTED
-    _grant_app_permission(client, app.app_id, scope)
+    app.grant_application_permissions(scope, MsAppIds.Office_365_SharePoint_Online).execute_query()
+    print(f"Ensured '{scope}' with admin consent.")
     if args.scope == "selected":
         for site_url in args.site:
             site = client.sites.get_by_url(site_url).get().execute_query()

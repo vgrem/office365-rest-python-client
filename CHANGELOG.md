@@ -169,6 +169,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   The Entra `Request_ResourceNotFound` code now classifies as
   `ObjectNotFoundException`, so the get-or-create detects a missing service
   principal reliably.
+- **Idempotent application-permission grants:**
+  `Application.grant_application_permissions(scope, resource=ResourceName.Graph)`
+  grants this app an app role on a resource — `resource` is an application
+  (client) ID such as `MsAppIds.Office_365_SharePoint_Online` or a display name
+  such as `ResourceName.SharePoint`. `ServicePrincipal.grant_application_permissions`
+  now skips the write when the client already holds the role, so both are safe to
+  re-run and `setup_sharepoint_app.py` grants `Sites.Selected` in a single call.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the

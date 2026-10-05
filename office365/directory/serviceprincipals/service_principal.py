@@ -181,25 +181,33 @@ class ServicePrincipal(DirectoryObject):
         return return_type
 
     def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
-        """Grants an app role assignment to a client service principal"""
+        """Grants an app role assignment to a client service principal.
 
-        def _grant(principal_id: str | None, app_role_id: str | None) -> None:
-            assert principal_id is not None
+        Idempotent: when the client already holds the app role on this resource
+        the call is a no-op, so setup code can be safely re-run.
+
+        Args:
+            app_id: Application (client) ID of the client app that receives the role.
+            app_role: The role to grant, as an ``AppRole`` or its name.
+        """
+
+        def _grant(sp: ServicePrincipal, app_role_id: str | None) -> None:
+            assert sp.id is not None
             assert app_role_id is not None
-            self.app_role_assigned_to.add(principalId=principal_id, resourceId=self.id, appRoleId=app_role_id)
+            already = any(a.app_role_id == app_role_id and a.principal_id == sp.id for a in self.app_role_assigned_to)
+            if not already:
+                self.app_role_assigned_to.add(principalId=sp.id, resourceId=self.id, appRoleId=app_role_id)
 
-        def _ensure_resource():
-            assert self.id is not None
-
-            def _after(sp: ServicePrincipal):
+        def _ensure_client():
+            def _after(sp: ServicePrincipal) -> None:
                 if isinstance(app_role, AppRole):
-                    _grant(sp.id, app_role.id)
+                    _grant(sp, app_role.id)
                 else:
-                    _grant(sp.id, self.app_roles[app_role].id)
+                    _grant(sp, self.app_roles[app_role].id)
 
             self.context.service_principals.get_by_app_id(app_id).get().after_execute(_after)
 
-        self.ensure_properties(["id", "appRoles"]).after_execute(lambda _: _ensure_resource())
+        self.ensure_properties(["id", "appRoles", "appRoleAssignedTo"]).after_execute(lambda _: _ensure_client())
         return self
 
     def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:

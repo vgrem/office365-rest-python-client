@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import os
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID
 
 from typing_extensions import Self
@@ -29,6 +29,7 @@ from office365.directory.objects.informationalurl import InformationalUrl
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.permissions.require_permission import require_permission
+from office365.directory.permissions.resource_name import ResourceName
 from office365.directory.policies.token_issuance import TokenIssuancePolicy
 from office365.directory.serviceprincipals.lockconfiguration import ServicePrincipalLockConfiguration
 from office365.directory.synchronization.synchronization import Synchronization
@@ -42,6 +43,9 @@ from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 
 
 class Application(DirectoryObject):
@@ -143,6 +147,51 @@ class Application(DirectoryObject):
             thumbprint (str): The unique identifier for the password.
         """
         raise NotImplementedError("remove_certificate")
+
+    @require_permission(
+        delegated=["AppRoleAssignment.ReadWrite.All"],
+        application=["AppRoleAssignment.ReadWrite.All"],
+    )
+    def grant_application_permissions(
+        self,
+        scope: str,
+        resource: str | ResourceName = ResourceName.Graph,
+    ) -> Self:
+        """Grant this application an application permission (app role) on a resource.
+
+        Idempotent — re-running once the permission is granted is a no-op. The
+        app role assignment is created on the resource's service principal, so
+        ``AppRoleAssignment.ReadWrite.All`` (with admin consent) is required.
+        Deferred; resolve with ``execute_query()``:
+
+            app = client.applications.ensure("my-app", app_id).execute_query()
+            app.grant_application_permissions(
+                "Sites.Selected", MsAppIds.Office_365_SharePoint_Online
+            ).execute_query()
+
+        Args:
+            scope: The app role (permission) name, e.g. ``"Sites.Selected"``.
+            resource: The resource application that exposes the role, identified
+                by application (client) ID (e.g. ``MsAppIds.Office_365_SharePoint_Online``)
+                or display name (e.g. ``ResourceName.SharePoint``).
+        """
+        resource_sp = self._resolve_resource_sp(resource)
+
+        def _grant(_: Any) -> None:
+            assert self.app_id is not None
+            resource_sp.grant_application_permissions(self.app_id, scope)
+
+        self.ensure_property("appId").after_execute(_grant)
+        return self
+
+    def _resolve_resource_sp(self, resource: str | ResourceName) -> ServicePrincipal:
+        """Resolve a resource app's service principal from a client ID or display name."""
+        value = str(resource)
+        try:
+            UUID(value)
+        except (TypeError, ValueError):
+            return self.context.service_principals.get_by_name(value)
+        return self.context.service_principals.get_by_app_id(value)
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_password(self, display_name: str) -> ClientResult[PasswordCredential]:
