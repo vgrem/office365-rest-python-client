@@ -206,6 +206,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (start here → common tasks → full catalog), and the auth pages cross-link it.
 
 ### Fixed
+- **Single quotes in OData string literals:** `ODataPathBuilder` doubled a `'` twice
+  (`d'appello` became `d''''appello`), so paths and names containing an apostrophe
+  resolved to the wrong resource. A quote is now doubled once (#1052).
 - **Certificate reuse detection:** the SharePoint setup scripts compared a
   **base64**-encoded SHA-1 thumbprint against Entra's **hex**
   `customKeyIdentifier`, so an already-attached certificate was treated as

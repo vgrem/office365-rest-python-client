@@ -127,10 +127,8 @@ class ODataPathBuilder:
         Returns:
             str: The encoded string
         """
-        # First handle SQL-style escaping for single quotes
-        value = value.replace("'", "''")
-
-        # Handle other special characters
+        # _SPECIAL_CHARS also covers the single quote ("'" -> "''"); escaping it
+        # separately here would double it twice.
         for char, replacement in ODataPathBuilder._SPECIAL_CHARS.items():
             value = value.replace(char, replacement)
 
