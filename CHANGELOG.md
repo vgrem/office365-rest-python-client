@@ -85,6 +85,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `on_headers`), implemented natively by `HttpxTransport`.
 - **Async streaming downloads:** `File.download_session_async(stream, ...)` with the
   same `chunk_downloaded`/`chunk_size`/`use_path`/`progress` behavior.
+- **Async content streams and lifecycle:** `DriveItem.get_content_stream_async` /
+  `File.get_content_stream_async` yield the file body chunk by chunk for piping to
+  any destination (socket, second upload, hash) with an optional `on_headers`
+  callback, and close the HTTP response on early exit/cancellation;
+  `ClientContext.close()` / `await ClientContext.aclose()` release the transport
+  when not using `with` / `async with`.
 - **Async large-file uploads:** `DriveItem.resumable_upload_async(path, ...)` creates
   the upload session and PUTs every chunk without blocking the loop — each chunk is
   read from disk on the offload executor and sent through the async transport, with

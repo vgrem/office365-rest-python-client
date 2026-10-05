@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from http import HTTPStatus
 from pathlib import Path
-from typing import IO, TYPE_CHECKING, AnyStr, Callable, Optional, Union, cast, overload
+from typing import IO, TYPE_CHECKING, AnyStr, AsyncIterator, Callable, Optional, Union, cast, overload
 from urllib.parse import quote, unquote
 
 import requests
@@ -20,6 +20,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.transport.base import HeadersCallback
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.activities.capabilities import ActivityCapabilities
 from office365.sharepoint.entity import Entity
@@ -985,6 +986,58 @@ class File(AbstractFile):
                 return self
             raise error from e
         return self
+
+    async def get_content_stream_async(
+        self,
+        chunk_size: int = 1024 * 1024,
+        use_path: bool = True,
+        on_headers: Optional[HeadersCallback] = None,
+    ) -> AsyncIterator[bytes]:
+        """Yield the file body in chunks without buffering it in memory.
+
+        The streaming primitive behind :meth:`download_session_async`: it ensures
+        the required address property is loaded (draining any pending queries),
+        sends the ``$value`` request through the configured async transport and
+        yields the body as it arrives, so the bytes can be piped straight to
+        another destination without opening a local file or materialising the
+        content::
+
+            async for chunk in file.get_content_stream_async():
+                await sink.send(chunk)
+
+        Args:
+            chunk_size: Number of bytes per yielded chunk.
+            use_path: Address the file by ``ServerRelativePath`` (default) rather
+                than ``ServerRelativeUrl``.
+            on_headers: Optional callback invoked once with the response headers
+                before the first chunk (e.g. to read ``Content-Length``).
+
+        Yields:
+            Successive slices of the file body.
+
+        Raises:
+            ClientRequestException: When the service returns an error status.
+        """
+        pending = self.context.pending_request()
+        self.ensure_property("ServerRelativePath" if use_path else "ServerRelativeUrl")
+        if self.context.has_pending_request:
+            await self.context.execute_query_async()
+        qry = ServiceOperationQuery(self, "$value")
+        request = pending.build_request(qry)
+        request.stream = True
+        request.method = HttpMethod.Get
+        await pending.before_execute_async(request)
+        stream = pending.async_transport.stream_async(request, chunk_size=chunk_size, on_headers=on_headers)
+        try:
+            async for chunk in stream:
+                yield chunk
+        except requests.HTTPError as e:
+            raise ClientRequestException.from_response(e.response) from e
+        finally:
+            # Close the response when the consumer stops early (break/cancel).
+            aclose = getattr(stream, "aclose", None)
+            if aclose is not None:
+                await aclose()
 
     def rename(self, new_file_name: str) -> Self:
         """Rename a file

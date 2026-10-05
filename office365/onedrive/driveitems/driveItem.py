@@ -7,7 +7,7 @@ from functools import partial
 from io import IOBase
 from os import PathLike
 from os.path import isfile, join
-from typing import IO, AnyStr, Callable, Optional
+from typing import IO, AnyStr, AsyncIterator, Callable, Optional
 
 import requests
 from requests import Response
@@ -68,6 +68,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.transport.base import HeadersCallback
 from office365.runtime.transport.offload import get_offload_executor
 from office365.runtime.types.odata_property import odata
 from office365.subscriptions.collection import SubscriptionCollection
@@ -699,6 +700,55 @@ class DriveItem(BaseItem):
         qry = FunctionQuery(self, action_name, None, return_type, return_raw_content=True)
         self.context.add_query(qry)
         return return_type
+
+    async def get_content_stream_async(
+        self,
+        chunk_size: int = 1024 * 1024,
+        format_name: str | None = None,
+        on_headers: HeadersCallback | None = None,
+    ) -> AsyncIterator[bytes]:
+        """Yield the file body in chunks without buffering it in memory.
+
+        The streaming primitive behind :meth:`download_session_async`: it sends
+        the same ``/content`` request (auth, pacing and the configured async
+        transport all apply) and yields the body as it arrives, so the bytes can
+        be piped straight to another destination — a socket, an upload, a hash —
+        without opening a local file or materialising the whole content::
+
+            async for chunk in item.get_content_stream_async():
+                await sink.send(chunk)
+
+        Args:
+            chunk_size: Number of bytes per yielded chunk.
+            format_name: Optional conversion format (e.g. ``"pdf"``) requested via
+                the ``/content?format=`` endpoint.
+            on_headers: Optional callback invoked once with the response headers
+                before the first chunk (e.g. to read ``Content-Length``).
+
+        Yields:
+            Successive slices of the file body.
+
+        Raises:
+            ClientRequestException: When the service returns an error status.
+        """
+        pending = self.context.pending_request()
+        action_name = "content" if format_name is None else f"content?format={format_name}"
+        qry = FunctionQuery(self, action_name, None, None, return_raw_content=True)
+        request = pending.build_request(qry)
+        request.stream = True
+        request.method = HttpMethod.Get
+        await pending.before_execute_async(request)
+        stream = pending.async_transport.stream_async(request, chunk_size=chunk_size, on_headers=on_headers)
+        try:
+            async for chunk in stream:
+                yield chunk
+        except requests.HTTPError as e:
+            raise ClientRequestException.from_response(e.response) from e
+        finally:
+            # Close the response when the consumer stops early (break/cancel).
+            aclose = getattr(stream, "aclose", None)
+            if aclose is not None:
+                await aclose()
 
     @require_permission(
         delegated=[

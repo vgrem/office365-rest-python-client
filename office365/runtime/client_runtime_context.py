@@ -174,14 +174,32 @@ class ClientRuntimeContext(ABC):
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, *args) -> None:
+    def close(self) -> None:
+        """Release the transport's pooled connections.
+
+        Equivalent to leaving a ``with`` block; call it explicitly when the
+        context is created and disposed without the context-manager protocol.
+        """
         self.pending_request().transport.close()
+
+    async def aclose(self) -> None:
+        """Async twin of :meth:`close`.
+
+        Awaited by ``async with`` on exit; call it explicitly when shutting the
+        client down outside the context-manager protocol. Native async
+        transports release their own resources here (otherwise the synchronous
+        :meth:`BaseTransport.close` is run in a worker thread).
+        """
+        await self.pending_request().async_transport.aclose()
+
+    def __exit__(self, *args) -> None:
+        self.close()
 
     async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(self, *args) -> None:
-        await self.pending_request().async_transport.aclose()
+        await self.aclose()
 
     @abstractmethod
     def pending_request(self) -> ClientRequest:

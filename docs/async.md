@@ -184,6 +184,24 @@ The synchronous `file.download_session(stream)` is the twin; both accept
 awaitable form ensures the addressing property is loaded first and raises the
 same `ClientRequestException` on failure as the rest of the async API.
 
+When the body is going somewhere other than a local file — a second upload, a
+`socket`, a hash — use the async generator `get_content_stream_async()`. It
+yields the same stream chunk by chunk and closes the HTTP response when you stop
+early:
+
+```python
+import hashlib
+
+digest = hashlib.sha256()
+async for chunk in item.get_content_stream_async(chunk_size=1024 * 1024):
+    digest.update(chunk)
+print(digest.hexdigest())
+```
+
+Graph `DriveItem` and SharePoint `File` both expose it (`File` also takes
+`use_path=`); an optional `on_headers=` callback receives the response headers
+before the first chunk, e.g. to read `Content-Length`.
+
 ### Uploading large files
 
 For files above the 4 MB simple-upload limit, OneDrive/Graph require an upload
@@ -258,6 +276,31 @@ exactly as the synchronous method:
 ```python
 await client.execute_batch_async(items_per_batch=20, sequential=True)
 ```
+
+### Batch vs long-running operations
+
+Two different ideas, easy to confuse:
+
+- **Batch** packs many independent short requests into one HTTP round-trip
+  (SharePoint `$batch` / Graph JSON batch). It is about *how many requests* travel
+  together — use it for bulk creates, updates and deletes.
+- **Long-running operations (LRO)** are a *single* request the service accepts
+  with `202 Accepted` and finishes later — copying a large drive item, cloning a
+  team, a workbook recalculation. The response carries a monitor URL that you poll
+  with `wait()` / `wait_async()` (or an operation entity you `await` directly).
+
+Batching an LRO does **not** wait for it: the `202` comes back inside the batch
+and you still have to poll. Keep LROs out of a batch and await them individually:
+
+```python
+result = source.copy(name="copy.xlsx", parent=dest).execute_query()
+status = await result.wait_async()  # polls the monitor URL off the loop
+```
+
+`wait_async()` is the event-loop twin of `wait()`; both honor the server's
+`Retry-After`, back off on `429`/`503`, and support restartable continuation
+tokens. See the long-running-operations guide for the poller, the
+`Prefer: respond-async` submissions and the Graph operation entities.
 
 ## Paging
 
@@ -380,6 +423,43 @@ closed without blocking the loop:
 ```python
 async with ctx:
     web = await ctx.web.get().execute_query_async()
+```
+
+`__aexit__` awaits `ctx.aclose()`. If you don't use the context-manager form,
+call the lifecycle methods yourself — `ctx.close()` for the synchronous transport
+and `await ctx.aclose()` for the async one — so pooled connections are released
+promptly instead of at interpreter shutdown:
+
+```python
+ctx = GraphClient(credentials)
+try:
+    ...
+finally:
+    await ctx.aclose()
+```
+
+## Cancellation
+
+`await`s are cancellable: cancelling the task raises `asyncio.CancelledError`
+into the awaiting coroutine. The async terminals leave the context consistent:
+
+- `execute_query_parallel_async()` cancels its in-flight siblings and re-queues
+  the queries that were not applied with the current cursor cleared, so a retry
+  resumes cleanly.
+- `get_content_stream_async()` and the streaming downloads close the HTTP
+  response when the consumer breaks out of the loop or the task is cancelled, so
+  the connection is not leaked.
+- A streamed `export_to_async()` flushes and closes its target even on
+  cancellation.
+
+Wrap long transfers in a timeout when you want a hard bound (`asyncio.wait_for`
+keeps a Python 3.8 floor):
+
+```python
+try:
+    await asyncio.wait_for(file.download_session_async(stream), timeout=30)
+except asyncio.TimeoutError:
+    ...  # the response was closed for you
 ```
 
 ## Optional native-async transport
