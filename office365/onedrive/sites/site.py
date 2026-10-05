@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
@@ -30,6 +30,10 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.applications.application import Application
+    from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 
 
 def _permission_identity_ids(permission: Permission) -> set[str]:
@@ -118,6 +122,17 @@ class Site(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    def _app_service_principal(self, app: Application | str) -> ServicePrincipal:
+        """Resolve an ``Application`` entity or application (client) ID to its service principal.
+
+        The service principal is returned *deferred*; it is loaded lazily when the
+        grant/revoke query runs.
+        """
+        app_id = app if isinstance(app, str) else app.app_id
+        if not app_id:
+            raise ValueError("An application (client) ID is required to resolve the service principal.")
+        return self.context.service_principals.get_by_app_id(app_id)
+
     def grant_access(
         self, identity: Union[Entity, str], roles: Union[str, list[str]], identity_type: str | None = None
     ) -> Permission:
@@ -125,12 +140,18 @@ class Site(BaseItem):
 
         A thin, discoverable wrapper around
         :meth:`~office365.onedrive.permissions.collection.PermissionCollection.add`,
-        so callers can read ``site.grant_access(app, "write")``. The request is
+        so callers can read ``site.grant_access(sp, "write")``. The request is
         queued and sent on ``execute_query``.
+
+        An :class:`~office365.directory.applications.application.Application` is
+        resolved to its **service principal** first, because site permissions
+        reference the service principal object ID (not the application object ID).
+        To pass an application (client) ID as a string, use :meth:`grant_app_access`.
 
         Args:
             identity: A loaded principal (for example a
-                :class:`~office365.directory.serviceprincipals.ServicePrincipal`)
+                :class:`~office365.directory.serviceprincipals.ServicePrincipal`
+                or an :class:`~office365.directory.applications.application.Application`),
                 or the **object ID** of the principal.
             roles: A role (``"read"``, ``"write"``, ``"owner"``) or a list of roles.
             identity_type: Required only when ``identity`` is a string object ID
@@ -139,15 +160,38 @@ class Site(BaseItem):
         Returns:
             The created :class:`~office365.onedrive.permissions.permission.Permission`.
         """
+        from office365.directory.applications.application import Application
+
+        if isinstance(identity, Application):
+            identity = self._app_service_principal(identity)
         role_list = [roles] if isinstance(roles, str) else list(roles)
         return self.permissions.add(roles=role_list, identity=identity, identity_type=identity_type)
+
+    def grant_app_access(self, app: Application | str, roles: Union[str, list[str]]) -> Permission:
+        """Grant a registered application access to this site.
+
+        Accepts an :class:`~office365.directory.applications.application.Application`
+        entity or an application (client) ID string and resolves the matching
+        **service principal** internally, so callers do not have to look it up::
+
+            site.grant_app_access(OFFICE365_CLIENT_ID, "write").execute_query()
+
+        Args:
+            app: An ``Application`` entity or its application (client) ID.
+            roles: A role (``"read"``, ``"write"``, ``"owner"``) or a list of roles.
+
+        Returns:
+            The created :class:`~office365.onedrive.permissions.permission.Permission`.
+        """
+        return self.grant_access(self._app_service_principal(app), roles)
 
     def revoke_access(self, identity: Union[Entity, str]) -> Self:
         """Revoke the access previously granted to a principal on this site.
 
         Loads the site permissions and deletes every entry whose grantee matches
         ``identity`` by object ID. The requests are queued and sent on
-        ``execute_query``.
+        ``execute_query``. An entity identity is loaded first, so a deferred
+        principal (for example a freshly addressed service principal) works too.
 
         Args:
             identity: A loaded principal or its object ID.
@@ -155,15 +199,36 @@ class Site(BaseItem):
         Returns:
             Self: The site instance for method chaining.
         """
-        identity_id = identity.id if isinstance(identity, Entity) else identity
 
         def _revoke(permissions: PermissionCollection) -> None:
+            identity_id = identity.id if isinstance(identity, Entity) else identity
             for permission in permissions:
                 if identity_id in _permission_identity_ids(permission):
                     permission.delete_object()
 
-        self.permissions.get().after_execute(_revoke)
+        def _load_permissions() -> None:
+            self.permissions.get().after_execute(_revoke)
+
+        if isinstance(identity, Entity):
+            identity.ensure_properties(["id", "displayName"]).after_execute(lambda _: _load_permissions())
+        else:
+            _load_permissions()
         return self
+
+    def revoke_app_access(self, app: Application | str) -> Self:
+        """Revoke the access previously granted to a registered application.
+
+        Accepts an :class:`~office365.directory.applications.application.Application`
+        entity or an application (client) ID string and resolves the matching
+        service principal internally.
+
+        Args:
+            app: An ``Application`` entity or its application (client) ID.
+
+        Returns:
+            Self: The site instance for method chaining.
+        """
+        return self.revoke_access(self._app_service_principal(app))
 
     @odata(name="siteCollection")
     @property

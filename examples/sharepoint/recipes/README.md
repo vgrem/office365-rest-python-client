@@ -25,7 +25,7 @@ these recipes show how they fit together for a realistic task.
 |---|---|---|
 | [`provision_project_workspace.py`](provision_project_workspace.py) | sites, lists, fields, views, list items | Idempotently creates a document library with typed columns, a task list with a view, and starter rows. |
 | [`upload_folder_with_metadata.py`](upload_folder_with_metadata.py) | folders, files, fields, list items | Mirrors a local folder into a library, chunk-uploading large files and stamping metadata; skips unchanged files. |
-| [`grant_app_site_access.py`](grant_app_site_access.py) | permissions, tenant, Entra apps | Bulk grants or revokes an app's `Sites.Selected` access across several sites via `Site.grant_access` / `revoke_access`. |
+| [`grant_app_site_access.py`](grant_app_site_access.py) | permissions, tenant, Entra apps | Bulk grants or revokes an app's `Sites.Selected` access across several sites via `Site.grant_app_access` / `revoke_app_access`. |
 | [`search_content_inventory.py`](search_content_inventory.py) | search, files, tenant | Pages a search query into a CSV inventory, grouped by site and type, with a stale-document count. |
 
 ---

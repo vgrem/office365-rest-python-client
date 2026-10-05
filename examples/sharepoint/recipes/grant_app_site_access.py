@@ -66,16 +66,13 @@ def main() -> None:
     private_key = Path(args.private_key).expanduser().read_text(encoding="utf-8")
     client = GraphClient(tenant=tenant).with_certificate(client_id, cert_thumbprint, private_key)
 
-    sp = client.service_principals.get_by_app_id(args.app_id).get().execute_query()
-    print(f"\nService principal: {sp.display_name} ({sp.id})")
-
     for url in sites:
         site = client.sites.get_by_url(url).get().execute_query()
         if args.revoke:
-            site.revoke_access(sp).execute_query()
+            site.revoke_app_access(args.app_id).execute_query()
             print(f"  revoked  {url}")
         else:
-            site.grant_access(sp, args.role).execute_query()
+            site.grant_app_access(args.app_id, args.role).execute_query()
             print(f"  granted  {url}")
 
     print(f"\nDone: {len(sites)} site(s).")

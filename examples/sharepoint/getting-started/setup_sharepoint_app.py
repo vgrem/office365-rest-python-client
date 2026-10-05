@@ -121,13 +121,6 @@ def _grant_app_permission(client: GraphClient, app_id: str, scope: str) -> None:
     print(f"Granted '{scope}' with admin consent.")
 
 
-def _grant_site_access(client: GraphClient, app_id: str, site_url: str, role: str) -> None:
-    sp = client.service_principals.get_by_app_id(app_id).get().execute_query()
-    site = client.sites.get_by_url(site_url).get().execute_query()
-    site.grant_access(sp, role).execute_query()
-    print(f"Granted '{role}' to the app on {site_url}.")
-
-
 def _write_env(tenant: str, app_id: str, thumbprint: str, sites: list[str], write: bool) -> None:
     overrides = {
         "OFFICE365_TENANT": tenant,
@@ -173,7 +166,9 @@ def main() -> int:
     _grant_app_permission(client, app.app_id, scope)
     if args.scope == "selected":
         for site_url in args.site:
-            _grant_site_access(client, app.app_id, site_url, args.role)
+            site = client.sites.get_by_url(site_url).get().execute_query()
+            site.grant_app_access(app.app_id, args.role).execute_query()
+            print(f"Granted '{args.role}' to the app on {site_url}.")
 
     _write_env(tenant, app.app_id, thumbprint, args.site, not args.no_write)
     return 0

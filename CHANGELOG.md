@@ -126,8 +126,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   collection so least-privilege, per-site app access reads as
   `site.grant_access(sp, "write").execute_query()`. Both queue their requests and
   resolve on `execute_query`; `revoke_access` removes every permission whose
-  grantee matches the given principal. `examples/sharepoint/getting-started/` and
-  `examples/sharepoint/auth/setup/certificate_auth.py` now use them.
+  grantee matches the given principal, loading an entity identity first so a
+  deferred principal works too. App-aware twins `Site.grant_app_access(app, roles)`
+  and `Site.revoke_app_access(app)` accept an `Application` entity or an
+  application (client) ID and resolve the matching **service principal**
+  internally, so the common case is the one-liner
+  `site.grant_app_access(client_id, "write").execute_query()`;
+  `grant_access` likewise accepts an `Application` and resolves it (site
+  permissions reference the service principal object ID, not the application
+  object ID). `examples/sharepoint/getting-started/`,
+  `examples/sharepoint/auth/setup/certificate_auth.py`, and
+  `examples/entraid/applications/grant_site_selected_permission.py` now use them.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the

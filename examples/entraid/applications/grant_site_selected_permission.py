@@ -20,12 +20,9 @@ privileged_client = (
     .require_role("Global Administrator", "Privileged Role Administrator")
 )
 
-# Get the service principal for this app
-sp = privileged_client.service_principals.get_by_app_id(test_client_id).get().execute_query()
-
 # Get the target site
 site = privileged_client.sites.get_by_url(test_team_site_url).get().execute_query()
 
-# Grant write access using the service principal entity directly
-permission = site.grant_access(sp, "write").execute_query()
+# Grant write access; the app (client) ID is resolved to its service principal internally
+permission = site.grant_app_access(test_client_id, "write").execute_query()
 print(f"Granted {permission.roles} to app {test_client_id} on site {test_team_site_url}")

@@ -1,12 +1,16 @@
-"""Offline tests for ``Site.grant_access`` and ``Site.revoke_access``.
+"""Offline tests for ``Site.grant_access`` / ``Site.revoke_access`` and their app-aware twins.
 
 Covers the request shape of the site-permission convenience wrappers: the
 ``POST /sites/{id}/permissions`` body for entity and object-ID identities, role
-normalisation, and the identity-matched deletes issued by ``revoke_access``.
+normalisation, the identity-matched deletes issued by ``revoke_access``, and the
+application (client) ID / ``Application`` entity forms that resolve the service
+principal internally.
 """
 
 from __future__ import annotations
 
+import pytest
+from office365.directory.applications.application import Application
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
@@ -14,6 +18,8 @@ from tests._scripted_transport import RoutingTransport
 
 SITE_ID = "contoso.sharepoint.com,site-guid,web-guid"
 APP_ID = "11111111-1111-1111-1111-111111111111"
+SP_OBJECT_ID = "22222222-2222-2222-2222-222222222222"
+APPLICATION_OBJECT_ID = "33333333-3333-3333-3333-333333333333"
 
 
 def _client(transport: RoutingTransport) -> GraphClient:
@@ -91,3 +97,73 @@ def test_revoke_access_accepts_entity():
 
     deletes = [r.url.rsplit("/", 1)[-1] for r in transport.requests if r.method == HttpMethod.Delete]
     assert deletes == ["perm-1"]
+
+
+def test_grant_app_access_accepts_client_id_string():
+    transport = RoutingTransport(
+        [
+            ("servicePrincipals", {"id": SP_OBJECT_ID, "displayName": "Contoso App"}),
+            ("permissions", {}),
+        ]
+    )
+    client = _client(transport)
+
+    _site(client).grant_app_access(APP_ID, "write").execute_query()
+
+    gets = [r.url for r in transport.requests if r.method == HttpMethod.Get]
+    assert any("servicePrincipals" in url for url in gets)
+    request = transport.requests[-1]
+    assert request.method == HttpMethod.Post
+    assert request.url.endswith(f"/sites/{SITE_ID}/permissions")
+    assert request.data["roles"] == ["write"]
+    # the resolved service principal object ID is used, not the application (client) ID
+    assert request.data["grantedToIdentities"][0]["application"]["id"] == SP_OBJECT_ID
+
+
+def test_grant_access_with_application_entity_resolves_service_principal():
+    transport = RoutingTransport(
+        [
+            ("servicePrincipals", {"id": SP_OBJECT_ID, "displayName": "Contoso App"}),
+            ("permissions", {}),
+        ]
+    )
+    client = _client(transport)
+    app = Application(client)
+    app.set_property("appId", APP_ID)
+    app.set_property("id", APPLICATION_OBJECT_ID)
+
+    _site(client).grant_access(app, "write").execute_query()
+
+    request = transport.requests[-1]
+    assert request.method == HttpMethod.Post
+    # the service principal object ID is used, not the application registration's
+    assert request.data["grantedToIdentities"][0]["application"]["id"] == SP_OBJECT_ID
+
+
+def test_revoke_app_access_resolves_service_principal_and_deletes():
+    payload = {
+        "value": [
+            {"id": "perm-1", "roles": ["write"], "grantedToIdentitiesV2": [{"application": {"id": SP_OBJECT_ID}}]},
+            {"id": "perm-2", "roles": ["read"], "grantedToIdentitiesV2": [{"application": {"id": "someone-else"}}]},
+        ]
+    }
+    transport = RoutingTransport(
+        [
+            ("servicePrincipals", {"id": SP_OBJECT_ID, "displayName": "Contoso App"}),
+            ("permissions", payload),
+        ]
+    )
+    client = _client(transport)
+
+    _site(client).revoke_app_access(APP_ID).execute_query()
+
+    deletes = [r.url.rsplit("/", 1)[-1] for r in transport.requests if r.method == HttpMethod.Delete]
+    assert deletes == ["perm-1"]
+
+
+def test_app_access_without_app_id_raises():
+    client = _client(RoutingTransport([("permissions", {})]))
+    app = Application(client)
+
+    with pytest.raises(ValueError, match="application"):
+        _site(client).grant_app_access(app, "write")
