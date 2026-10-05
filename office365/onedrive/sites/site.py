@@ -3,6 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional, Union
 
+from typing_extensions import Self
+
+from office365.directory.permissions.identity_set import IdentitySet
+from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
@@ -15,6 +19,7 @@ from office365.onedrive.lists.collection import ListCollection
 from office365.onedrive.lists.list import List
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
 from office365.onedrive.permissions.collection import PermissionCollection
+from office365.onedrive.permissions.permission import Permission
 from office365.onedrive.root import Root
 from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.onedrive.sitepages.collection import SitePageCollection
@@ -25,6 +30,20 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+
+def _permission_identity_ids(permission: Permission) -> set[str]:
+    """The object IDs of every principal a site permission was granted to."""
+    identity_sets: list[IdentitySet] = [permission.granted_to_v2, permission.granted_to]
+    identity_sets += list(permission.granted_to_identities_v2)
+    identity_sets += list(permission.granted_to_identities)
+    ids: set[str] = set()
+    for identity_set in identity_sets:
+        for _, identity in identity_set:
+            principal_id = getattr(identity, "id", None)
+            if principal_id:
+                ids.add(principal_id)
+    return ids
 
 
 class Site(BaseItem):
@@ -98,6 +117,53 @@ class Site(BaseItem):
         qry = FunctionQuery(self, "getActivitiesByInterval", params, return_type)
         self.context.add_query(qry)
         return return_type
+
+    def grant_access(
+        self, identity: Union[Entity, str], roles: Union[str, list[str]], identity_type: str | None = None
+    ) -> Permission:
+        """Grant a principal (user, group, or application) access to this site.
+
+        A thin, discoverable wrapper around
+        :meth:`~office365.onedrive.permissions.collection.PermissionCollection.add`,
+        so callers can read ``site.grant_access(app, "write")``. The request is
+        queued and sent on ``execute_query``.
+
+        Args:
+            identity: A loaded principal (for example a
+                :class:`~office365.directory.serviceprincipals.ServicePrincipal`)
+                or the **object ID** of the principal.
+            roles: A role (``"read"``, ``"write"``, ``"owner"``) or a list of roles.
+            identity_type: Required only when ``identity`` is a string object ID
+                (for example ``"application"``); inferred from an entity.
+
+        Returns:
+            The created :class:`~office365.onedrive.permissions.permission.Permission`.
+        """
+        role_list = [roles] if isinstance(roles, str) else list(roles)
+        return self.permissions.add(roles=role_list, identity=identity, identity_type=identity_type)
+
+    def revoke_access(self, identity: Union[Entity, str]) -> Self:
+        """Revoke the access previously granted to a principal on this site.
+
+        Loads the site permissions and deletes every entry whose grantee matches
+        ``identity`` by object ID. The requests are queued and sent on
+        ``execute_query``.
+
+        Args:
+            identity: A loaded principal or its object ID.
+
+        Returns:
+            Self: The site instance for method chaining.
+        """
+        identity_id = identity.id if isinstance(identity, Entity) else identity
+
+        def _revoke(permissions: PermissionCollection) -> None:
+            for permission in permissions:
+                if identity_id in _permission_identity_ids(permission):
+                    permission.delete_object()
+
+        self.permissions.get().after_execute(_revoke)
+        return self
 
     @odata(name="siteCollection")
     @property

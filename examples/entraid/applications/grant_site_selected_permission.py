@@ -27,8 +27,5 @@ sp = privileged_client.service_principals.get_by_app_id(test_client_id).get().ex
 site = privileged_client.sites.get_by_url(test_team_site_url).get().execute_query()
 
 # Grant write access using the service principal entity directly
-permission = site.permissions.add(
-    roles=["write"],
-    identity=sp,
-).execute_query()
+permission = site.grant_access(sp, "write").execute_query()
 print(f"Granted {permission.roles} to app {test_client_id} on site {test_team_site_url}")

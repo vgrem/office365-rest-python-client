@@ -121,6 +121,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   twins `progress_async` / `all_events_async` / `errors_async` / `status_fn_async`
   / `monitor_async`, so a `GetMigrationJobProgress` ingestion job can be polled
   off the event loop — and several jobs watched concurrently.
+- **`Sites.Selected` site access helpers:** `Site.grant_access(identity, roles)`
+  and `Site.revoke_access(identity)` (Graph sites) wrap the site `permissions`
+  collection so least-privilege, per-site app access reads as
+  `site.grant_access(sp, "write").execute_query()`. Both queue their requests and
+  resolve on `execute_query`; `revoke_access` removes every permission whose
+  grantee matches the given principal. `examples/sharepoint/getting-started/` and
+  `examples/sharepoint/auth/setup/certificate_auth.py` now use them.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the

@@ -124,7 +124,7 @@ def _grant_app_permission(client: GraphClient, app_id: str, scope: str) -> None:
 def _grant_site_access(client: GraphClient, app_id: str, site_url: str, role: str) -> None:
     sp = client.service_principals.get_by_app_id(app_id).get().execute_query()
     site = client.sites.get_by_url(site_url).get().execute_query()
-    site.permissions.add(roles=[role], identity=sp).execute_query()
+    site.grant_access(sp, role).execute_query()
     print(f"Granted '{role}' to the app on {site_url}.")
 
 

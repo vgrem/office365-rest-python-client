@@ -54,7 +54,7 @@ def upload_certificate(client: GraphClient, display_name: str) -> None:
 def grant_site_access(client: GraphClient, site_url: str) -> None:
     sp = client.service_principals.get_by_app_id(client_id).get().execute_query()
     site = client.sites.get_by_url(site_url).get().execute_query()
-    site.permissions.add(roles=["write"], identity=sp).execute_query()
+    site.grant_access(sp, "write").execute_query()
 
 
 def get_thumbprint() -> str:
