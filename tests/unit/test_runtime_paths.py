@@ -129,6 +129,27 @@ def test_odata_literal_keeps_slashes():
     assert path in str(resource_path)
 
 
+def test_odata_literal_escapes_single_quote_once():
+    """A single quote is doubled exactly once in an OData string literal (#1052)."""
+    assert ODataPathBuilder._encode_string("d'appello") == "'d''appello'"
+    assert ODataPathBuilder._encode_string("it's 'x'") == "'it''s ''x'''"
+
+
+def test_odata_literal_escapes_quote_in_file_path():
+    ctx = ClientContext(test_site_url)
+    path = "/sites/x/Shared Documents/d'appello.docx"
+
+    resource_path = ctx.web.get_file_by_server_relative_path(path).resource_path
+
+    assert "d''appello.docx" in str(resource_path)
+    assert "''''" not in str(resource_path)
+
+
+def test_odata_literal_encodes_special_chars_once():
+    """Replacement text is not re-encoded: '%' becomes %25 and '+' stays %2B."""
+    assert ODataPathBuilder._encode_string("50% + 1 & #2?*") == "'50%25 %2B 1 %26 %232%3F%2A'"
+
+
 def test_move_file_by_path_sends_paths_in_body():
     """MoveCopyUtil.MoveFileByPath carries both paths in the request body, not the URL."""
     from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
