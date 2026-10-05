@@ -32,6 +32,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Async Teams operation polling:** `TeamsAsyncOperation.poll_for_status_async`
   and `wait_for_operation_async` await an operation on the event loop (no
   blocking), with `Retry-After` pacing and the same `404`-gap tolerance.
+- **`Prefer: respond-async` submissions:** `office365.runtime.http.prefer`
+  (`RESPOND_ASYNC`, `prefer_respond_async`) and `RespondAsyncRequest`
+  (`office365.runtime.respond_async`) submit a query with the OData
+  `respond-async` preference (as used by the Excel workbook APIs) and bridge the
+  outcome onto the LRO poller — a `202 Accepted` becomes a waitable
+  `LongRunningOperationResult`, while a synchronous response fills the query's
+  regular result. Sync and async (`execute` / `execute_async`) entry points.
+- **Streamed report export:** `ReportRoot.download_report` /
+  `download_report_async` (and `office365.reports.report_export`) follow the
+  reports API's `302` redirect straight to the pre-authenticated download URL and
+  stream the CSV/JSON chunk-by-chunk into a path or binary stream — no full-report
+  buffering — returning a `ReportExportResult` with the bytes written and the
+  server's `Content-Disposition` file name. `progress` reports bytes as they land.
 - **Async/await support:** async twins of the terminal query API —
   `ClientRuntimeContext.execute_query_async`, `ClientObject.execute_query_async`,
   `ClientResult.execute_query_async`, `execute_query_async_retry`, and

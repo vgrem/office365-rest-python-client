@@ -13,15 +13,64 @@ from office365.reports.internal.queries.create_report_query import (
 from office365.reports.print_usage_by_printer import PrintUsageByPrinter
 from office365.reports.print_usage_by_user import PrintUsageByUser
 from office365.reports.report import Report
+from office365.reports.report_export import (
+    ReportExportResult,
+    ReportTarget,
+    download_report,
+    download_report_async,
+)
 from office365.reports.security.root import SecurityReportsRoot
 from office365.runtime.client_result import ClientResult
+from office365.runtime.operations import ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.transport.base import DEFAULT_STREAM_CHUNK_SIZE
 from office365.runtime.types.odata_property import odata
 
 
 class ReportRoot(Entity):
     """Represents a container for Azure Active Directory (Azure AD) reporting resources."""
+
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
+    def download_report(
+        self,
+        report_name: str,
+        target: ReportTarget,
+        period: Optional[str] = None,
+        *,
+        chunk_size: int = DEFAULT_STREAM_CHUNK_SIZE,
+        progress: Optional[ProgressCallback] = None,
+    ) -> ReportExportResult:
+        """Stream a usage report to ``target`` without buffering it in memory.
+
+        The Graph reports API answers with a ``302`` to a pre-authenticated
+        download URL; this helper follows it through the normal transport and
+        writes the CSV (or JSON) to a path or an already-open binary stream,
+        returning the bytes written and the server's file name.
+
+        Args:
+            report_name: The Graph function name, e.g.
+                ``"getTeamsUserActivityUserDetail"``. ``*UserDetail`` reports
+                also need ``period``.
+            target: A filesystem path or a writable binary stream.
+            period: Aggregation period (``D7``, ``D30``, ``D90``, ``D180``).
+            chunk_size: Number of bytes read per chunk.
+            progress: Optional ``ProgressCallback`` invoked per chunk.
+        """
+        return download_report(self, report_name, target, period, chunk_size=chunk_size, progress=progress)
+
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
+    async def download_report_async(
+        self,
+        report_name: str,
+        target: ReportTarget,
+        period: Optional[str] = None,
+        *,
+        chunk_size: int = DEFAULT_STREAM_CHUNK_SIZE,
+        progress: Optional[ProgressCallback] = None,
+    ) -> ReportExportResult:
+        """Async twin of :meth:`download_report` that never blocks the loop."""
+        return await download_report_async(self, report_name, target, period, chunk_size=chunk_size, progress=progress)
 
     @require_permission(
         delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"]
