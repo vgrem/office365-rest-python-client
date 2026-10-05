@@ -15,7 +15,6 @@ import ssl
 from office365.directory.applications.application import (
     Application,
     _certificate_der,
-    _certificate_thumbprint,
 )
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
@@ -61,12 +60,12 @@ def test_certificate_der_accepts_pem_bytes_and_path(tmp_path):
 
 def test_certificate_thumbprint_is_upper_case_hex():
     expected = hashlib.sha1(DER).hexdigest().upper()
-    assert _certificate_thumbprint(DER) == expected  # type: ignore[arg-type]
-    assert _certificate_thumbprint(ssl.DER_cert_to_PEM_cert(DER)) == expected
+    assert Application.certificate_thumbprint(DER) == expected  # type: ignore[arg-type]
+    assert Application.certificate_thumbprint(ssl.DER_cert_to_PEM_cert(DER)) == expected
 
 
 def test_ensure_certificate_skips_update_when_already_attached():
-    thumbprint = hashlib.sha1(DER).hexdigest().upper()
+    thumbprint = Application.certificate_thumbprint(DER)  # type: ignore[arg-type]
     transport = RoutingTransport(
         [
             ("keyCredentials", _key_credentials_response(thumbprint)),

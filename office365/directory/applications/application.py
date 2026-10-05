@@ -89,6 +89,20 @@ class Application(DirectoryObject):
     def __str__(self):
         return self.display_name or self.app_id or self.entity_type_name
 
+    @staticmethod
+    def certificate_thumbprint(cert_data: bytes | bytearray | str | os.PathLike[str]) -> str:
+        """Compute the SHA-1 thumbprint of a certificate.
+
+        Returns the upper-case hex string that Entra stores in
+        ``keyCredential.customKeyIdentifier`` and that MSAL expects for
+        certificate authentication. The certificate may be supplied as raw
+        DER/PEM bytes, inline PEM text, or a file path.
+
+        Args:
+            cert_data: The certificate's raw DER/PEM bytes, inline PEM text, or a file path.
+        """
+        return _certificate_thumbprint(cert_data)
+
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_certificate(
         self,

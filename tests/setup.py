@@ -33,6 +33,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, TypeVar
 
+from office365.directory.applications.application import Application
 from office365.graph_client import GraphClient
 
 from tests.settings import FLOWS, settings
@@ -152,13 +153,8 @@ def generate_certificate(common_name: str) -> None:
 
 
 def cert_thumbprint() -> str:
-    result = subprocess.run(
-        ["openssl", "x509", "-in", str(CERT_PUBLIC), "-noout", "-fingerprint", "-sha1"],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return result.stdout.strip().split("=", 1)[1].replace(":", "")
+    """Hex SHA-1 thumbprint of the local certificate (same value Entra stores)."""
+    return Application.certificate_thumbprint(CERT_PUBLIC)
 
 
 def _tenant_prefix(tenant: str, upn: str = "") -> str:

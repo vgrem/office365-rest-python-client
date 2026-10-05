@@ -19,6 +19,7 @@ import shutil
 import sys
 
 from office365.directory.applications.app_ids import MsAppIds
+from office365.directory.applications.application import Application
 from office365.graph_client import GraphClient
 from tests.settings import settings
 from tests.setup import (
@@ -27,7 +28,6 @@ from tests.setup import (
     ENV_BAK,
     ENV_PATH,
     PROJECT_ROOT,
-    cert_thumbprint,
     generate_certificate,
     merge_env,
 )
@@ -96,7 +96,7 @@ def _ensure_certificate(app, app_name: str, force: bool) -> str:
         print(f"Generated {CERT_PUBLIC.relative_to(PROJECT_ROOT)}")
     app.ensure_certificate(CERT_PUBLIC, app_name).execute_query()
     print(f"Ensured the certificate on app {app.app_id}.")
-    return cert_thumbprint()
+    return Application.certificate_thumbprint(CERT_PUBLIC)
 
 
 def _grant_app_permission(client: GraphClient, app_id: str, scope: str) -> None:

@@ -145,6 +145,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   expects in `keyCredentials.key`) and accepts the same forms, so
   `examples/sharepoint/getting-started/setup_sharepoint_app.py` collapses its
   certificate step to `app.ensure_certificate(CERT_PUBLIC, name)`.
+  `Application.certificate_thumbprint(cert_data)` exposes the same upper-case
+  hex SHA-1 (the value Entra stores and MSAL expects) so setup scripts no longer
+  shell out to `openssl x509 -fingerprint` to read it.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the
