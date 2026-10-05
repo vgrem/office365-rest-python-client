@@ -54,6 +54,20 @@ folder from the catalog.
 | Migrate content into SharePoint | [Migration](migration/) |
 | Restore deleted items | [Recycle Bin](recyclebin/) |
 
+## Recipes
+
+Cross-domain, end-to-end workflows that combine several areas in one runnable
+script. Start with [getting-started](getting-started/) once, then pick a recipe.
+
+| Recipe | What it does |
+|---|---|
+| [Provision a project workspace](recipes/provision_project_workspace.py) | Library + typed columns + task list + view + starter rows, idempotently. |
+| [Upload a folder with metadata](recipes/upload_folder_with_metadata.py) | Mirror a local folder into a library, chunk-upload large files, stamp metadata. |
+| [Grant app site access](recipes/grant_app_site_access.py) | Bulk grant or revoke an app's `Sites.Selected` access across sites. |
+| [Search content inventory](recipes/search_content_inventory.py) | Page a search query into a CSV inventory with a stale-document count. |
+
+See all [recipes](recipes/) for prerequisites and examples.
+
 The sections below are the full catalog. Each folder has a README that lists its
 scripts, the required permissions, and copy-paste snippets.
 

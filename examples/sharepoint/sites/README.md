@@ -78,6 +78,13 @@ print(f"{web.title}  {web.url}  ({web.web_template})")
 
 ---
 
+## Related recipes
+
+- [Provision a project workspace](../recipes/provision_project_workspace.py) — create a document library, typed columns, a task list, and a view in one pass.
+- [Grant app site access](../recipes/grant_app_site_access.py) — bulk grant or revoke an app's access to specific sites.
+
+---
+
 ## API reference
 
 - [Site creation REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/site-creation-rest)

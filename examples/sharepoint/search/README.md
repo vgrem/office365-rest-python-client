@@ -94,6 +94,12 @@ for row in rows:
 
 ---
 
+## Related recipes
+
+- [Search content inventory](../recipes/search_content_inventory.py) — page a query into a CSV inventory grouped by site and file type.
+
+---
+
 ## API reference
 
 - [SharePoint search REST API overview](https://learn.microsoft.com/en-us/sharepoint/dev/general-development/sharepoint-search-rest-api-overview)

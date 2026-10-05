@@ -238,6 +238,12 @@ list, and delete operations.
 
 ---
 
+## Related recipes
+
+- [Upload a folder with metadata](../recipes/upload_folder_with_metadata.py) — mirror a local folder into a library, chunk-upload large files, and stamp metadata.
+
+---
+
 ## API reference
 
 - [SharePoint files REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)

@@ -85,6 +85,13 @@ for site in sites:
 
 ---
 
+## Related recipes
+
+- [Grant app site access](../recipes/grant_app_site_access.py) — bulk grant or revoke an app's `Sites.Selected` access across sites.
+- [Search content inventory](../recipes/search_content_inventory.py) — tenant-wide content inventory with a stale-document count.
+
+---
+
 ## API reference
 
 - [SharePoint tenant administration REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api)

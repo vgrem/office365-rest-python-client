@@ -111,6 +111,12 @@ target_list.add_role_assignment("user@contoso.com", RoleType.Contributor).execut
 
 ---
 
+## Related recipes
+
+- [Grant app site access](../recipes/grant_app_site_access.py) — bulk grant or revoke an app's `Sites.Selected` access across sites.
+
+---
+
 ## API reference
 
 - [SharePoint permissions REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/permissions-api-reference)

@@ -106,6 +106,12 @@ print(f"Items: {target.item_count}, Fields: {len(target.fields)}")
 
 ---
 
+## Related recipes
+
+- [Provision a project workspace](../recipes/provision_project_workspace.py) — a document library with typed columns plus a task list and starter rows.
+
+---
+
 ## API reference
 
 - [Working with lists, SharePoint REST API](https://learn.microsoft.com/en-us/sharepoint/dev/sp-add-ins/working-with-lists-and-list-items-with-rest)
