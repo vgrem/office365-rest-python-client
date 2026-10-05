@@ -5,7 +5,7 @@ by ``setup_sharepoint_app.py``, read the web properties, and list the document
 libraries on the site.
 
 Run ``setup_sharepoint_app.py`` once first: it creates the certificate, grants
-``Sites.Selected`` and site access, and writes the values ``.env`` reads.
+``Sites.Selected`` and site access, and prints the values ``.env`` reads.
 """
 
 from office365.sharepoint.client_context import ClientContext

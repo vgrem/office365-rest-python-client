@@ -200,7 +200,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **SharePoint getting-started onboarding:** `examples/sharepoint/getting-started/`
   adds a full-cycle `setup_sharepoint_app.py` (reuse/create the app registration,
   attach a self-signed certificate, grant `Sites.Selected` with admin consent,
-  grant per-site access, write `.env`) plus a first-call `hello_sharepoint.py`
+  grant per-site access, print the connection values) plus a first-call `hello_sharepoint.py`
   and a walkthrough that answers the app-registration, certificate, and
   permission-scope questions. The SharePoint product README is now a guided hub
   (start here → common tasks → full catalog), and the auth pages cross-link it.

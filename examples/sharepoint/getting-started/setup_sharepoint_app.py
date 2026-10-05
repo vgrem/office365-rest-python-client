@@ -2,13 +2,13 @@
 
 Provisions (or reuses) an app registration named ``--app-name``, attaches a
 self-signed certificate, grants the SharePoint **application permission** with
-admin consent, grants the app access to each target site, and writes the
-connection values to ``.env``.
+admin consent, grants the app access to each target site, and prints the
+connection values to add to ``.env``.
 
 Requires Global Administrator or Privileged Role Administrator, plus the
 delegated ``Application.ReadWrite.All`` permission on the sign-in app. The app
 you sign in with is ``--client-id`` / ``OFFICE365_SETUP_CLIENT_ID`` (falling back
-to ``OFFICE365_CLIENT_ID``); the provisioned app is written back to
+to ``OFFICE365_CLIENT_ID``); the provisioned app is printed as
 ``OFFICE365_CLIENT_ID``. The full walkthrough is in ``getting-started/README.md``.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
@@ -27,11 +27,8 @@ from tests.settings import settings
 from tests.setup import (
     CERT_PRIVATE,
     CERT_PUBLIC,
-    ENV_BAK,
-    ENV_PATH,
     PROJECT_ROOT,
     generate_certificate,
-    merge_env,
 )
 
 SITES_SELECTED = "Sites.Selected"
@@ -59,7 +56,6 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--app-name", default="sharepoint-app", help="display name of the app to provision or reuse")
     parser.add_argument("--force-cert", action="store_true", help="regenerate the local certificate even if one exists")
     parser.add_argument("--interactive", action="store_true", help="browser sign-in instead of the device code flow")
-    parser.add_argument("--no-write", action="store_true", help="print the connection values but do not touch .env")
     parser.add_argument("--tenant", help="tenant domain or id (default: OFFICE365_TENANT)")
     parser.add_argument(
         "--client-id",
@@ -95,29 +91,17 @@ def _ensure_certificate(app, app_name: str, force: bool) -> str:
     return Application.certificate_thumbprint(CERT_PUBLIC)
 
 
-def _write_env(tenant: str, setup_client_id: str, app_id: str, thumbprint: str, sites: list[str], write: bool) -> None:
-    overrides = {
+def _print_connection_values(tenant: str, setup_client_id: str, app_id: str, thumbprint: str) -> None:
+    values = {
         "OFFICE365_TENANT": tenant,
         "OFFICE365_CLIENT_ID": app_id,
         "OFFICE365_SETUP_CLIENT_ID": setup_client_id,
         "OFFICE365_CERT_THUMBPRINT": thumbprint,
         "OFFICE365_CERT_PATH": CERT_PRIVATE.relative_to(PROJECT_ROOT).as_posix(),
     }
-    defaults: dict[str, str] = {}
-    if sites:
-        defaults["OFFICE365_SITE_URL"] = sites[0]
-        defaults["OFFICE365_TEAM_SITE_URL"] = sites[0]
-    print()
-    print("Connection values:")
-    for key, value in overrides.items():
+    print("\nConnection values (add to .env):")
+    for key, value in values.items():
         print(f"  {key}={value}")
-    if not write:
-        print("\n(.env not updated; re-run without --no-write to apply)")
-        return
-    if ENV_PATH.is_file():
-        shutil.copy2(ENV_PATH, ENV_BAK)
-    ENV_PATH.write_text(merge_env(overrides, defaults), encoding="utf-8")
-    print(f"\nUpdated {ENV_PATH.relative_to(PROJECT_ROOT)}")
 
 
 def main() -> int:
@@ -148,7 +132,7 @@ def main() -> int:
             site.grant_app_access(app, args.role).execute_query()
             print(f"Granted '{args.role}' to the app on {site_url}.")
 
-    _write_env(tenant, client_id, app.app_id, thumbprint, args.site, not args.no_write)
+    _print_connection_values(tenant, client_id, app.app_id, thumbprint)
     return 0
 
 

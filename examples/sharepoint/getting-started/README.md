@@ -7,7 +7,7 @@ first call. By the end of this page you will have:
 - a **certificate** attached to it,
 - the **`Sites.Selected`** application permission consented,
 - access to the **specific site(s)** you choose,
-- and a populated `.env` so every example under `examples/` runs.
+- and the connection values to add to `.env` so every example under `examples/` runs.
 
 > The SharePoint REST API (`/_api`) app-only model **requires a certificate**.
 > A client secret works for Microsoft Graph, but not for SharePoint — see
@@ -54,7 +54,7 @@ Administrator**.
 > **Sign-in app vs. provisioned app.** The script signs in with `--client-id`,
 > `OFFICE365_SETUP_CLIENT_ID`, or `OFFICE365_CLIENT_ID` (in that order), then
 > provisions or reuses a dedicated app named `--app-name` for app-only access. It
-> writes the provisioned app to `OFFICE365_CLIENT_ID` and the sign-in app to
+> prints the provisioned app as `OFFICE365_CLIENT_ID` and the sign-in app as
 > `OFFICE365_SETUP_CLIENT_ID`, so your delegated admin app stays separate from
 > the app that receives SharePoint permissions — and re-runs keep working.
 
@@ -73,7 +73,7 @@ The script walks the whole cycle in one command and tells you what it did:
 | Certificate | Generates `tests/selfsigncert.{crt,pem}` and attaches the public part to the app |
 | Permission | Grants **`Sites.Selected`** to the app with admin consent |
 | Site access | Grants the app `write` on each `--site` |
-| `.env` | Writes `OFFICE365_CLIENT_ID` (provisioned app), `OFFICE365_SETUP_CLIENT_ID` (sign-in app) and the cert values (backup: `.env.bak`) |
+| Output | Prints the connection values to add to `.env` (`OFFICE365_CLIENT_ID`, `OFFICE365_SETUP_CLIENT_ID`, certificate thumbprint/path) |
 
 Useful flags:
 
@@ -84,7 +84,6 @@ Useful flags:
 | `--scope all` | Grant tenant-wide `Sites.FullControl.All` instead of per-site grants |
 | `--app-name NAME` | App to provision or reuse (default `sharepoint-app`) |
 | `--interactive` | Browser sign-in instead of the device code flow |
-| `--no-write` | Print the connection values without touching `.env` |
 
 Re-running is safe: an already-attached certificate and an already-granted
 permission are detected and skipped.
