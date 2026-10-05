@@ -94,7 +94,7 @@ dev = [
   "pytest",
   # Ruff is pinned once, here, and installed from this lockfile in CI
   # (see .github/workflows/ci.yml), so local hooks and CI cannot drift.
-  "ruff==0.16.9",
+  "ruff==0.16.10",
   "types-requests",
 ]
 docs = [
