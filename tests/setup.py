@@ -509,11 +509,12 @@ def _ensure_secret(
 
 def _configure_credentials(client: GraphClient, opts: _Options, existing_values: dict[str, str]) -> tuple[str, str, str]:
     if opts.create_new:
-        app = client.applications.ensure(opts.app_name, create_service_principal=True).execute_query()
-        print(f"Created app '{app.display_name}' ({app.app_id})")
+        app = client.applications.ensure(opts.app_name).execute_query()
+        print(f"Ensured app '{app.display_name}' ({app.app_id})")
     else:
-        app = client.applications.ensure(opts.app_name, opts.client_id, create_service_principal=True).execute_query()
+        app = client.applications.get_by_app_id(opts.client_id).get().execute_query()
     target_id = app.app_id
+    client.service_principals.ensure(target_id).execute_query()
 
     display_name = getattr(app, "display_name", None) or opts.app_name
     thumbprint = _ensure_certificate(client, app, target_id, display_name, opts)
@@ -530,8 +531,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--client-id", dest="client_id", help="app id used to sign in (and, by default, configure)")
     parser.add_argument("--admin", help="admin UPN (interactive sign-in and .env)")
     parser.add_argument("--interactive", action="store_true", help="browser sign-in instead of the device code flow")
-    parser.add_argument("--new-app", action="store_true", help="create a new app registration")
-    parser.add_argument("--app-name", help="display name for --new-app / certificate")
+    parser.add_argument("--new-app", action="store_true", help="provision or reuse a dedicated app (by --app-name)")
+    parser.add_argument("--app-name", help="display name for the dedicated app (--new-app) / certificate")
     parser.add_argument("--reuse-cert", action="store_true", help="keep the existing local certificate")
     parser.add_argument("--generate-cert", action="store_true", help="generate a new certificate")
     parser.add_argument("--force", action="store_true", help="regenerate and re-upload the certificate")

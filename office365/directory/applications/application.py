@@ -164,7 +164,7 @@ class Application(DirectoryObject):
         ``AppRoleAssignment.ReadWrite.All`` (with admin consent) is required.
         Deferred; resolve with ``execute_query()``:
 
-            app = client.applications.ensure("my-app", app_id).execute_query()
+            app = client.applications.ensure("my-app").execute_query()
             app.grant_permissions("Sites.Selected", MsAppIds.Office_365_SharePoint_Online).execute_query()
 
         Args:

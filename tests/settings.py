@@ -140,6 +140,7 @@ class Settings:
 
     tenant: str = ""
     client_id: str = ""
+    setup_client_id: str = ""
     client_secret: str = ""
     username: str = ""
     password: str = ""
@@ -164,6 +165,7 @@ class Settings:
         return cls(
             tenant=tenant,
             client_id=_optional("OFFICE365_CLIENT_ID"),
+            setup_client_id=_optional("OFFICE365_SETUP_CLIENT_ID"),
             client_secret=_optional("OFFICE365_CLIENT_SECRET"),
             username=_optional("OFFICE365_USERNAME"),
             password=_optional("OFFICE365_PASSWORD"),
@@ -220,6 +222,7 @@ settings = Settings.from_env()
 # Backwards-compatible module-level aliases (imported by tests and examples).
 tenant = settings.tenant
 client_id = settings.client_id
+setup_client_id = settings.setup_client_id
 client_secret = settings.client_secret
 username = settings.username
 password = settings.password

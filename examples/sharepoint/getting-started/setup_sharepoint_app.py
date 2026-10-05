@@ -1,13 +1,15 @@
 """Set up certificate (app-only) access to SharePoint Online, end to end.
 
-Reuses an existing app registration (or creates one with ``--new-app``), attaches
-a self-signed certificate, grants the SharePoint **application permission** with
+Provisions (or reuses) an app registration named ``--app-name``, attaches a
+self-signed certificate, grants the SharePoint **application permission** with
 admin consent, grants the app access to each target site, and writes the
 connection values to ``.env``.
 
 Requires Global Administrator or Privileged Role Administrator, plus the
-delegated ``Application.ReadWrite.All`` permission on the sign-in app. The full
-walkthrough is in ``getting-started/README.md``.
+delegated ``Application.ReadWrite.All`` permission on the sign-in app. The app
+you sign in with is ``--client-id`` / ``OFFICE365_SETUP_CLIENT_ID`` (falling back
+to ``OFFICE365_CLIENT_ID``); the provisioned app is written back to
+``OFFICE365_CLIENT_ID``. The full walkthrough is in ``getting-started/README.md``.
 
 https://learn.microsoft.com/en-us/sharepoint/dev/solution-guidance/security-apponly-azuread
 """
@@ -54,13 +56,16 @@ def _parse_args() -> argparse.Namespace:
         default="write",
         help="per-site role for '--scope selected' (default: write)",
     )
-    parser.add_argument("--new-app", action="store_true", help="create an app instead of reusing OFFICE365_CLIENT_ID")
-    parser.add_argument("--app-name", default="sharepoint-app", help="display name for --new-app and the certificate")
+    parser.add_argument("--app-name", default="sharepoint-app", help="display name of the app to provision or reuse")
     parser.add_argument("--force-cert", action="store_true", help="regenerate the local certificate even if one exists")
     parser.add_argument("--interactive", action="store_true", help="browser sign-in instead of the device code flow")
     parser.add_argument("--no-write", action="store_true", help="print the connection values but do not touch .env")
     parser.add_argument("--tenant", help="tenant domain or id (default: OFFICE365_TENANT)")
-    parser.add_argument("--client-id", dest="client_id", help="sign-in / target app id (default: OFFICE365_CLIENT_ID)")
+    parser.add_argument(
+        "--client-id",
+        dest="client_id",
+        help="sign-in app id (default: OFFICE365_SETUP_CLIENT_ID, then OFFICE365_CLIENT_ID)",
+    )
     parser.add_argument("--admin", help="admin UPN for interactive sign-in (default: OFFICE365_ADMIN_USERNAME)")
     return parser.parse_args()
 
@@ -80,14 +85,6 @@ def _sign_in(tenant: str, client_id: str, admin: str, interactive: bool) -> Grap
     return client
 
 
-def _ensure_app(client: GraphClient, client_id: str, app_name: str, new_app: bool) -> Application:
-    if new_app:
-        app = client.applications.ensure(app_name, create_service_principal=True).execute_query()
-        print(f"Created app '{app.display_name}' ({app.app_id})")
-        return app
-    return client.applications.ensure(app_name, client_id, create_service_principal=True).execute_query()
-
-
 def _ensure_certificate(app, app_name: str, force: bool) -> str:
     if force or not (CERT_PUBLIC.is_file() and CERT_PRIVATE.is_file()):
         _require_openssl()
@@ -98,10 +95,11 @@ def _ensure_certificate(app, app_name: str, force: bool) -> str:
     return Application.certificate_thumbprint(CERT_PUBLIC)
 
 
-def _write_env(tenant: str, app_id: str, thumbprint: str, sites: list[str], write: bool) -> None:
+def _write_env(tenant: str, setup_client_id: str, app_id: str, thumbprint: str, sites: list[str], write: bool) -> None:
     overrides = {
         "OFFICE365_TENANT": tenant,
         "OFFICE365_CLIENT_ID": app_id,
+        "OFFICE365_SETUP_CLIENT_ID": setup_client_id,
         "OFFICE365_CERT_THUMBPRINT": thumbprint,
         "OFFICE365_CERT_PATH": CERT_PRIVATE.relative_to(PROJECT_ROOT).as_posix(),
     }
@@ -125,7 +123,7 @@ def _write_env(tenant: str, app_id: str, thumbprint: str, sites: list[str], writ
 def main() -> int:
     args = _parse_args()
     tenant = args.tenant or settings.tenant
-    client_id = args.client_id or settings.client_id
+    client_id = args.client_id or settings.setup_client_id or settings.client_id
     admin = args.admin or settings.admin_username
 
     if not tenant or not client_id:
@@ -136,7 +134,9 @@ def main() -> int:
         sys.exit("Pass at least one --site (or use --scope all for a tenant-wide grant).")
 
     client = _sign_in(tenant, client_id, admin, args.interactive)
-    app = _ensure_app(client, client_id, args.app_name, args.new_app)
+    app = client.applications.ensure(args.app_name).execute_query()
+    client.service_principals.ensure(app.app_id).execute_query()
+    print(f"Ensured app '{app.display_name}' ({app.app_id}).")
     thumbprint = _ensure_certificate(app, args.app_name, args.force_cert)
 
     scope = SITES_FULL_CONTROL if args.scope == "all" else SITES_SELECTED
@@ -148,7 +148,7 @@ def main() -> int:
             site.grant_app_access(app, args.role).execute_query()
             print(f"Granted '{args.role}' to the app on {site_url}.")
 
-    _write_env(tenant, app.app_id, thumbprint, args.site, not args.no_write)
+    _write_env(tenant, client_id, app.app_id, thumbprint, args.site, not args.no_write)
     return 0
 
 

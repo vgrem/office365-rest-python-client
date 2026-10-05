@@ -32,7 +32,8 @@ folder from the catalog.
 ## Authentication at a glance
 
 - **Do I need a new app registration?** No — one app covers every SharePoint
-  example. Reuse it and attach the certificate to that app.
+  example. The setup script provisions (or reuses) one by name and attaches the
+  certificate to it.
 - **How does app-only access work?** SharePoint `/_api` needs a **certificate**
   (a client secret is rejected). See [getting-started](getting-started/) and the
   [auth decision guide](auth/).

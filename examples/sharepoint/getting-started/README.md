@@ -3,7 +3,7 @@
 Connect to SharePoint Online, grant the **least access you need**, and make your
 first call. By the end of this page you will have:
 
-- one **app registration** (reused or newly created),
+- one **app registration** (provisioned or reused by name),
 - a **certificate** attached to it,
 - the **`Sites.Selected`** application permission consented,
 - access to the **specific site(s)** you choose,
@@ -17,9 +17,10 @@ first call. By the end of this page you will have:
 
 ## The three questions
 
-1. **Do I need a new app registration?** Usually no. One app is enough for all
-   SharePoint examples. The setup script **reuses** `OFFICE365_CLIENT_ID` by
-   default; pass `--new-app` only when you want a dedicated app.
+1. **Do I need a new app registration?** Usually no — one app covers every
+   SharePoint example. The setup script **provisions or reuses** an app named
+   `--app-name` (default `sharepoint-app`); re-running reuses it. Keep the admin
+   app you sign in with in `OFFICE365_SETUP_CLIENT_ID`.
 2. **How does the certificate get attached?** The script generates a self-signed
    certificate and uploads its **public** part to the app. The **private** key
    stays local as `tests/selfsigncert.pem` and is what the client signs with.
@@ -47,8 +48,15 @@ script.
    OFFICE365_ADMIN_USERNAME=admin@contoso.onmicrosoft.com
    ```
 
-An existing app is reused. The admin you sign in with needs **Global
-Administrator** or **Privileged Role Administrator**.
+The admin you sign in with needs **Global Administrator** or **Privileged Role
+Administrator**.
+
+> **Sign-in app vs. provisioned app.** The script signs in with `--client-id`,
+> `OFFICE365_SETUP_CLIENT_ID`, or `OFFICE365_CLIENT_ID` (in that order), then
+> provisions or reuses a dedicated app named `--app-name` for app-only access. It
+> writes the provisioned app to `OFFICE365_CLIENT_ID` and the sign-in app to
+> `OFFICE365_SETUP_CLIENT_ID`, so your delegated admin app stays separate from
+> the app that receives SharePoint permissions — and re-runs keep working.
 
 ## Step 2 — Run the full-cycle setup
 
@@ -61,11 +69,11 @@ The script walks the whole cycle in one command and tells you what it did:
 
 | Step | What happens |
 |---|---|
-| App | Reuses `OFFICE365_CLIENT_ID` (or `--new-app` creates one) |
+| App | Provisions or reuses the app named `--app-name` (default `sharepoint-app`) and its service principal |
 | Certificate | Generates `tests/selfsigncert.{crt,pem}` and attaches the public part to the app |
 | Permission | Grants **`Sites.Selected`** to the app with admin consent |
 | Site access | Grants the app `write` on each `--site` |
-| `.env` | Writes `OFFICE365_CERT_THUMBPRINT` and `OFFICE365_CERT_PATH` (backup: `.env.bak`) |
+| `.env` | Writes `OFFICE365_CLIENT_ID` (provisioned app), `OFFICE365_SETUP_CLIENT_ID` (sign-in app) and the cert values (backup: `.env.bak`) |
 
 Useful flags:
 
@@ -74,7 +82,7 @@ Useful flags:
 | `--site URL` | Site to grant access to; repeat for several sites |
 | `--role read\|write\|manage\|fullcontrol` | Per-site role with `Sites.Selected` (default `write`) |
 | `--scope all` | Grant tenant-wide `Sites.FullControl.All` instead of per-site grants |
-| `--new-app --app-name my-app` | Create a dedicated app registration |
+| `--app-name NAME` | App to provision or reuse (default `sharepoint-app`) |
 | `--interactive` | Browser sign-in instead of the device code flow |
 | `--no-write` | Print the connection values without touching `.env` |
 

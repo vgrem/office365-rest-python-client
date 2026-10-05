@@ -1,7 +1,8 @@
 """Offline tests for the ``applications.ensure`` / ``service_principals.ensure`` setup helpers.
 
-Covers the reuse-or-create semantics of ``ApplicationCollection.ensure`` (and its
-``create_service_principal`` follow-up), the get-or-create behaviour of
+Covers the get-by-display-name-or-create semantics of
+``ApplicationCollection.ensure`` (and the explicit
+``service_principals.ensure`` follow-up), the get-or-create behaviour of
 ``ServicePrincipalCollection.ensure``, and the Entra ``Request_ResourceNotFound``
 classification the latter relies on.
 """
@@ -29,6 +30,8 @@ _NOT_FOUND = {
     },
 }
 
+_APP = {"id": APP_OBJECT_ID, "appId": APP_ID, "displayName": "my-app"}
+
 
 class _RecordingTransport(ScriptedTransport):
     """Scripted transport that also records the requests it received."""
@@ -53,60 +56,57 @@ def _methods(transport: _RecordingTransport) -> list[str]:
     return [request.method for request in transport.requests]
 
 
-def test_ensure_creates_app_when_no_app_id():
-    transport = _RecordingTransport([{"id": APP_OBJECT_ID, "appId": APP_ID, "displayName": "my-app"}])
+def test_ensure_reuses_app_by_name():
+    transport = _RecordingTransport([{"value": [_APP]}])
     client = _client(transport)
 
     app = client.applications.ensure("my-app").execute_query()
 
     assert app.app_id == APP_ID
-    assert _methods(transport) == [HttpMethod.Post]
-    assert transport.requests[0].url.endswith("/applications")
-    assert transport.requests[0].data["displayName"] == "my-app"
+    assert _methods(transport) == [HttpMethod.Get]
+    assert "displayName eq 'my-app'" in transport.requests[0].url
 
 
-def test_ensure_reuses_app_by_app_id():
-    transport = _RecordingTransport([{"id": APP_OBJECT_ID, "appId": APP_ID, "displayName": "my-app"}])
+def test_ensure_creates_app_when_missing():
+    transport = _RecordingTransport([{"value": []}, _APP])
     client = _client(transport)
 
-    app = client.applications.ensure("my-app", APP_ID).execute_query()
+    app = client.applications.ensure("my-app").execute_query()
 
     assert app.app_id == APP_ID
-    assert _methods(transport) == [HttpMethod.Get]
-    assert f"applications(appId='{APP_ID}')" in transport.requests[0].url
+    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Post]
+    assert transport.requests[-1].url.endswith("/applications")
+    assert transport.requests[-1].data["displayName"] == "my-app"
+    assert transport.requests[-1].data["signInAudience"] == "AzureADMyOrg"
 
 
-def test_ensure_creates_service_principal_for_new_app():
+def test_ensure_passes_sign_in_audience_when_creating():
+    transport = _RecordingTransport([{"value": []}, _APP])
+    client = _client(transport)
+
+    client.applications.ensure("my-app", sign_in_audience="AzureADMultipleOrgs").execute_query()
+
+    assert transport.requests[-1].data["signInAudience"] == "AzureADMultipleOrgs"
+
+
+def test_ensure_app_then_service_principal_provisions_both():
     transport = _RecordingTransport(
         [
-            {"id": APP_OBJECT_ID, "appId": APP_ID, "displayName": "my-app"},  # POST applications
+            {"value": [_APP]},  # GET applications?$filter=displayName...
             _NOT_FOUND,  # GET servicePrincipals(appId=...) -> missing
             {"id": SP_OBJECT_ID, "appId": APP_ID},  # POST servicePrincipals
         ]
     )
     client = _client(transport)
 
-    app = client.applications.ensure("my-app", create_service_principal=True).execute_query()
+    app = client.applications.ensure("my-app").execute_query()
+    sp = client.service_principals.ensure(app.app_id).execute_query()
 
     assert app.app_id == APP_ID
-    assert _methods(transport) == [HttpMethod.Post, HttpMethod.Get, HttpMethod.Post]
+    assert sp.id == SP_OBJECT_ID
+    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Post]
     assert transport.requests[-1].url.endswith("/servicePrincipals")
     assert transport.requests[-1].data["appId"] == APP_ID
-
-
-def test_ensure_skips_service_principal_when_it_exists():
-    transport = _RecordingTransport(
-        [
-            {"id": APP_OBJECT_ID, "appId": APP_ID, "displayName": "my-app"},  # GET applications
-            {"id": SP_OBJECT_ID, "appId": APP_ID},  # GET servicePrincipals -> found
-        ]
-    )
-    client = _client(transport)
-
-    app = client.applications.ensure("my-app", APP_ID, create_service_principal=True).execute_query()
-
-    assert app.app_id == APP_ID
-    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get]
 
 
 def test_service_principal_ensure_creates_when_missing():

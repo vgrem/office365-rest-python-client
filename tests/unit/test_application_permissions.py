@@ -23,6 +23,7 @@ OTHER_ROLE_ID = "ffffffff-ffff-ffff-ffff-ffffffffffff"
 ASSIGNMENT_ID = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
 
 APP = {"id": CLIENT_OBJECT_ID, "appId": CLIENT_APP_ID, "displayName": "my-app"}
+APP_LIST = {"value": [APP]}
 CLIENT_SP = {"id": CLIENT_SP_ID, "appId": CLIENT_APP_ID}
 SHAREPOINT_SP = {
     "id": SHAREPOINT_SP_ID,
@@ -85,8 +86,8 @@ def test_service_principal_grant_is_idempotent():
 
 
 def test_application_grant_resolves_resource_by_app_id():
-    client, transport = _client([APP, SHAREPOINT_SP, CLIENT_SP, {"id": "assignment"}])
-    app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
+    client, transport = _client([APP_LIST, SHAREPOINT_SP, CLIENT_SP, {"id": "assignment"}])
+    app = client.applications.ensure("my-app").execute_query()
 
     app.grant_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
 
@@ -96,8 +97,8 @@ def test_application_grant_resolves_resource_by_app_id():
 
 
 def test_application_grant_resolves_resource_by_name():
-    client, transport = _client([APP, {"value": [SHAREPOINT_SP]}, CLIENT_SP, {"id": "assignment"}])
-    app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
+    client, transport = _client([APP_LIST, {"value": [SHAREPOINT_SP]}, CLIENT_SP, {"id": "assignment"}])
+    app = client.applications.ensure("my-app").execute_query()
 
     app.grant_permissions("Sites.Selected", ResourceName.SharePoint).execute_query()
 
@@ -106,8 +107,8 @@ def test_application_grant_resolves_resource_by_name():
 
 
 def test_application_grant_is_idempotent():
-    client, transport = _client([APP, GRANTED_SP, CLIENT_SP])
-    app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
+    client, transport = _client([APP_LIST, GRANTED_SP, CLIENT_SP])
+    app = client.applications.ensure("my-app").execute_query()
 
     app.grant_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
 
@@ -115,8 +116,8 @@ def test_application_grant_is_idempotent():
 
 
 def test_application_revoke_permissions_deletes_the_assignment():
-    client, transport = _client([APP, GRANTED_SP, CLIENT_SP, {"http_status": 204}])
-    app = client.applications.ensure("my-app", CLIENT_APP_ID).execute_query()
+    client, transport = _client([APP_LIST, GRANTED_SP, CLIENT_SP, {"http_status": 204}])
+    app = client.applications.ensure("my-app").execute_query()
 
     app.revoke_permissions("Sites.Selected", SHAREPOINT_APP_ID).execute_query()
 
