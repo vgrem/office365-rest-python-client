@@ -30,3 +30,31 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
     def get_by_name(self, name: str) -> ServicePrincipal:
         """Retrieves the service principal using displayName."""
         return self.single(f"displayName eq '{name}'")
+
+    def ensure(self, app_id: str) -> ServicePrincipal:
+        """Return the service principal for ``app_id``, creating it when absent.
+
+        Idempotent and deferred — resolve with ``execute_query()``. App-only
+        (client-credentials) flows attach permissions and site grants to the
+        service principal, not the application registration, so use this to make
+        a freshly created app usable:
+
+            client.service_principals.ensure(app.app_id).execute_query()
+
+        Args:
+            app_id: The application (client) ID of the app registration.
+
+        Returns:
+            ServicePrincipal: The existing or newly created service principal.
+        """
+        from office365.runtime.paths.v4.entity import EntityPath
+        from office365.runtime.queries.create_entity import CreateEntityQuery
+        from office365.runtime.queries.get_or_create import get_or_create
+
+        return_type = self.create_typed_object({"appId": app_id}, EntityPath(None, self.resource_path))
+        self.add_child(return_type)
+        return get_or_create(
+            find=lambda: self.get_by_app_id(app_id).get(),
+            create_query=lambda: CreateEntityQuery(self, return_type, return_type),
+            return_type=return_type,
+        )

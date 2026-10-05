@@ -508,13 +508,14 @@ def _ensure_secret(
 
 
 def _configure_credentials(client: GraphClient, opts: _Options, existing_values: dict[str, str]) -> tuple[str, str, str]:
+    app = client.applications.ensure(
+        opts.app_name,
+        None if opts.create_new else opts.client_id,
+        create_service_principal=True,
+    ).execute_query()
+    target_id = app.app_id
     if opts.create_new:
-        app = client.applications.add(opts.app_name, signInAudience="AzureADMyOrg").execute_query()
-        target_id = app.app_id
         print(f"Created app '{app.display_name}' ({target_id})")
-    else:
-        target_id = opts.client_id
-        app = client.applications.get_by_app_id(target_id).get().execute_query()
 
     display_name = getattr(app, "display_name", None) or opts.app_name
     thumbprint = _ensure_certificate(client, app, target_id, display_name, opts)

@@ -158,6 +158,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   name/issuer authentication instead (PS256 + `x5c`; requires the optional
   `cryptography` package and a certificate issued by a trusted CA). Existing
   `thumbprint=...` calls are unchanged.
+- **Idempotent app + service-principal setup:**
+  `ApplicationCollection.ensure(display_name, app_id=None, *,
+  create_service_principal=False)` returns an existing app (`app_id` given) or
+  creates one (omitted), optionally ensuring its service principal in the same
+  `execute_query()`; `ServicePrincipalCollection.ensure(app_id)` is a
+  get-or-create keyed on the application (client) ID. Together they collapse the
+  reuse-or-create dance in `tests/setup.py` and
+  `examples/sharepoint/getting-started/setup_sharepoint_app.py` to a single call.
+  The Entra `Request_ResourceNotFound` code now classifies as
+  `ObjectNotFoundException`, so the get-or-create detects a missing service
+  principal reliably.
 
 ### Documentation
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the

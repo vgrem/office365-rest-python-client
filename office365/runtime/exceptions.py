@@ -40,7 +40,7 @@ class ObjectNotFoundException(ClientRequestException):
     """Raised when a requested object is not found (HTTP 404 or ResourceNotFound code)."""
 
     MATCH_PRIORITY = 10
-    _CODES = frozenset({"itemnotfound", "resourcenotfound", "notfound"})
+    _CODES = frozenset({"itemnotfound", "resourcenotfound", "notfound", "request_resourcenotfound"})
     _TYPE_NAMES = ("FileNotFoundException", "DirectoryNotFoundException", "ResourceNotFoundException")
 
     @classmethod

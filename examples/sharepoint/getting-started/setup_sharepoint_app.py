@@ -80,13 +80,13 @@ def _sign_in(tenant: str, client_id: str, admin: str, interactive: bool) -> Grap
     return client
 
 
-def _ensure_app(client: GraphClient, client_id: str, app_name: str, new_app: bool):
+def _ensure_app(client: GraphClient, client_id: str, app_name: str, new_app: bool) -> Application:
+    app = client.applications.ensure(
+        app_name, None if new_app else client_id, create_service_principal=True
+    ).execute_query()
     if new_app:
-        app = client.applications.add(app_name, signInAudience="AzureADMyOrg").execute_query()
-        client.service_principals.add(app.app_id).execute_query()
         print(f"Created app '{app.display_name}' ({app.app_id})")
-        return app
-    return client.applications.get_by_app_id(client_id).get().execute_query()
+    return app
 
 
 def _ensure_certificate(app, app_name: str, force: bool) -> str:
