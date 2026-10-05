@@ -299,8 +299,8 @@ status = await result.wait_async()  # polls the monitor URL off the loop
 
 `wait_async()` is the event-loop twin of `wait()`; both honor the server's
 `Retry-After`, back off on `429`/`503`, and support restartable continuation
-tokens. See the long-running-operations guide for the poller, the
-`Prefer: respond-async` submissions and the Graph operation entities.
+tokens. See [Long-running operations](long-running-operations.md) for the poller,
+the `Prefer: respond-async` submissions and the Graph operation entities.
 
 ## Paging
 

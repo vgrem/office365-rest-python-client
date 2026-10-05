@@ -208,6 +208,16 @@ for row in rows[:10]:
     print(dict(row))
 ```
 
+### [Download several reports concurrently](export_usage_async.py)
+
+`reports.download_report_async()` streams each CSV through the async transport, so
+independent reports overlap instead of running one after another — the nightly
+compliance drop in one pass:
+
+```python
+result = await client.reports.download_report_async(name, out_dir / f"{name}.csv", period, progress=report)
+```
+
 
 ---
 

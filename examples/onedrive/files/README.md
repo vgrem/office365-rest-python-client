@@ -67,6 +67,7 @@ is the event-loop-friendly twin of `upload_large.py`.
 | Download and read a JSON file | [`download_json.py`](./download_json.py) | `Files.ReadWrite` | [get content](https://learn.microsoft.com/en-us/graph/api/driveitem-get-content) |
 | Upload a large file (resumable session) | [`upload_large.py`](./upload_large.py) | `Files.ReadWrite` | [create upload session](https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsession) |
 | Copy, rename, move, versions, delete | [`manage.py`](./manage.py) | `Files.ReadWrite` | [copy](https://learn.microsoft.com/en-us/graph/api/driveitem-copy) |
+| Copy a large file and wait for the server-side copy | [`copy_and_wait.py`](./copy_and_wait.py) | `Files.ReadWrite` | [copy](https://learn.microsoft.com/en-us/graph/api/driveitem-copy) |
 | Check out, edit, check in (versioning) | [`lifecycle.py`](./lifecycle.py) | `Files.ReadWrite` | [checkout](https://learn.microsoft.com/en-us/graph/api/driveitem-checkout) |
 | Recycle bin — restore and purge | [`recycle_bin.py`](./recycle_bin.py) | `Files.ReadWrite.All` | [recycleBin](https://learn.microsoft.com/en-us/graph/api/resources/recyclebin) |
 | Sharing links and invitations | [`sharing.py`](./sharing.py) | `Files.ReadWrite` | [create link](https://learn.microsoft.com/en-us/graph/api/driveitem-createlink) |

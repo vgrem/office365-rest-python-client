@@ -58,6 +58,7 @@ flowchart LR
 | Upload a large file (resumable session) | [`files/upload_large.py`](./files/upload_large.py) | `Files.ReadWrite` |
 | Download and read a JSON file | [`files/download_json.py`](./files/download_json.py) | `Files.ReadWrite` |
 | Copy, rename, move, versions, delete | [`files/manage.py`](./files/manage.py) | `Files.ReadWrite` |
+| Copy a large file and wait for the server-side copy | [`files/copy_and_wait.py`](./files/copy_and_wait.py) | `Files.ReadWrite` |
 | Check out, edit, check in (versioning) | [`files/lifecycle.py`](./files/lifecycle.py) | `Files.ReadWrite` |
 | Sharing links and invitations | [`files/sharing.py`](./files/sharing.py) | `Files.ReadWrite` |
 | Recycle bin — restore and purge | [`files/recycle_bin.py`](./files/recycle_bin.py) | `Files.ReadWrite.All` |

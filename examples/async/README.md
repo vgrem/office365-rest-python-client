@@ -196,6 +196,166 @@ Pass an `async def` — a plain `lambda` that returns a coroutine is not detecte
 as async and would be treated as a synchronous callback. Calling the synchronous
 API while an async callback is configured raises a clear `RuntimeError`.
 
+## Long-running operations
+
+Graph finishes some calls later: the request is accepted with `202 Accepted` and
+a monitor URL you poll until the work reaches a terminal status. Every wait has
+an async twin that yields to the loop between polls, so a copy or a team clone
+never freezes concurrent tasks. See the **Long-running operations** page under
+Guides for the full story.
+
+### [Copy a large file and await it](copy_drive_item_async.py)
+
+`copy()` returns a result that captures the monitor URL; `wait_for_item_async()`
+polls it and resolves the new item:
+
+```python
+result = source.copy(name="big (copy).xlsx", parent=dest)
+await result.execute_query_async()
+copied = await result.wait_for_item_async(on_progress=lambda status: print(status.percentage_complete))
+```
+
+### [Clone a team and await provisioning](wait_team_clone_async.py)
+
+`clone()` returns a `teamsAsyncOperation`; poll it off the loop, treating a
+transient `404` as "not ready yet":
+
+```python
+operation = await source.clone(
+    mail_nickname="clone1",
+    display_name="Falcon",
+    parts_to_clone=ClonableTeamParts.settings,
+    visibility=TeamVisibilityType.private,
+).execute_query_async()
+await operation.poll_for_status_async(timeout_sec=600, polling_interval=15)
+```
+
+### [Poll a workbook operation](workbook_operation_async.py)
+
+Opt into the async pattern with `Prefer: respond-async`; when the service accepts,
+the result is awaitable, otherwise the query holds the synchronous answer:
+
+```python
+operation = await RespondAsyncRequest(ctx, query, wait=5).execute_async()
+if operation is not None:
+    await operation.wait_async()
+```
+
+### [Resume an operation from a continuation token](resume_operation_async.py)
+
+The monitor URL is the only state needed to resume, so persist it and pick the
+operation back up in a later process:
+
+```python
+token = result.to_poller().to_continuation_token()
+save(token.to_json())
+# ... later, in another process ...
+poller = OperationPoller.from_continuation_token(client, ContinuationToken.from_json(load()))
+await poller.wait_async()
+```
+
+### [Guard against batching an LRO](lro_in_batch_guard.py)
+
+Batching is for many short requests. A batched long-running operation loses its
+monitor URL in the batch envelope, so this guard fails loudly instead of letting
+the caller poll nothing — keep LROs out of a batch and await them individually.
+
+## Reports
+
+### [Stream a report while the loop stays responsive](export_report_async.py)
+
+`reports.download_report_async()` follows the report's pre-authenticated URL
+through the async transport and writes the CSV in chunks — never buffering it in
+memory, never blocking the loop:
+
+```python
+result = await client.reports.download_report_async("getTeamsUserActivityUserDetail", "team.csv", "D30", progress=report)
+```
+
+## Streaming
+
+### [Stream a file's content and hash it](stream_download_async.py)
+
+`get_content_stream_async()` yields the body in chunks, so bytes go straight to a
+hash, a socket or another upload; `on_headers` sees the response headers first:
+
+```python
+async for chunk in item.get_content_stream_async(chunk_size=1 << 20, on_headers=capture):
+    hasher.update(chunk)
+```
+
+## Lifecycle & tuning
+
+### [Manage the async client's lifecycle](client_lifecycle_async.py)
+
+An async client owns a connection pool; the `async with` form awaits `aclose()` on
+every exit path, and a long-lived client closes in `finally`:
+
+```python
+async with GraphClient(tenant=tenant).with_client_secret(client_id, client_secret) as client:
+    users = await client.users.get_all_async(page_size=500)
+```
+
+### [Tune the offload executor](tune_offload_executor.py)
+
+With the default `requests` transport, blocking sends run on a library-owned
+thread pool. Size it *before* the first async request; afterwards
+`configure_offload_executor()` raises `RuntimeError`:
+
+```python
+configure_offload_executor(max_workers=16, thread_name_prefix="o365-http")
+# ... run work ...
+shutdown_offload_executor()
+```
+
+### [Retry transient failures](retry_async.py)
+
+`execute_query_async_retry()` retries the pending queries with jittered backoff
+(honoring `Retry-After`); `retry_async()` wraps any awaitable that rebuilds its
+query per attempt:
+
+```python
+users.get()
+await client.execute_query_async_retry(max_retry=5, timeout_secs=2)
+```
+
+### [Page a large collection](page_users_async.py)
+
+`get_all_async(page_size=...)` follows `@odata.nextLink` one page at a time:
+
+```python
+users = await client.users.select(["id", "displayName"]).get_all_async(page_size=500)
+```
+
+### [Sync incrementally with a delta token](delta_sync_async.py)
+
+The delta feed returns only what changed since a cursor you persist:
+
+```python
+query = client.me.drive.root.delta
+query = query.token(token) if token else query
+changes = await query.get_all_async()
+token = changes.delta_token
+```
+
+### [Upload a large file to SharePoint](upload_large_file_sp_async.py)
+
+The awaitable `create_upload_session_async()` creates the file, uploads every
+chunk and commits the last fragment before it returns:
+
+```python
+uploaded = await target.files.create_upload_session_async(path, chunk_size, progress=report)
+```
+
+### [Reuse an Entra ID token cache](entra_token_cache_async.py)
+
+Hand `GraphClient` an MSAL `SerializableTokenCache` and persist it across runs so
+repeat starts skip the full token exchange:
+
+```python
+client = GraphClient(tenant=tenant, token_cache=cache).with_client_secret(client_id, client_secret)
+```
+
 ## Concurrency & best practices
 
 - **One request per clone.** A context owns a single pending-query queue, so

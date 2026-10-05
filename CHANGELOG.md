@@ -118,6 +118,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   synchronous API raises a clear error instead of failing with an unreadable token.
   See `docs/async.md`.
 
+### Documentation
+- **Long-running-operations guide** (`docs/long-running-operations.md`): the
+  end-to-end story for the Graph async pattern — the raw `OperationPoller`,
+  waitable results and operation entities, `Prefer: respond-async`, the status
+  vocabulary, continuation tokens, batch-vs-LRO guidance, and the out-of-band
+  pattern for SharePoint work that has no REST status endpoint.
+- **Async example catalog:** practical scripts across the whole surface —
+  `examples/async/` `copy_drive_item_async.py`, `wait_team_clone_async.py`,
+  `workbook_operation_async.py`, `resume_operation_async.py`,
+  `lro_in_batch_guard.py`, `export_report_async.py`, `stream_download_async.py`,
+  `client_lifecycle_async.py`, `tune_offload_executor.py`, `retry_async.py`,
+  `page_users_async.py`, `delta_sync_async.py`, `upload_large_file_sp_async.py`
+  and `entra_token_cache_async.py`, plus `examples/reports/export_usage_async.py`,
+  `examples/onedrive/files/copy_and_wait.py` and `examples/teams/wait_for_clone.py`.
+
 ### Fixed
 - **Graph device-flow sign-in prompts once:** `AuthenticationContext.with_device_flow`
   reuses the account via `acquire_token_silent` before starting a new device flow.
