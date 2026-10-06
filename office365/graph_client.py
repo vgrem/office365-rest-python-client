@@ -31,7 +31,7 @@ from office365.directory.identities.provider import IdentityProvider
 from office365.directory.identitygovernance.governance import IdentityGovernance
 from office365.directory.internal.paths.me import MePath
 from office365.directory.invitations.collection import InvitationCollection
-from office365.directory.licenses.subscribed_sku import SubscribedSku
+from office365.directory.licenses.collection import SubscribedSkuCollection
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.permissions.grants.oauth2_collection import OAuth2PermissionGrantCollection
 from office365.directory.permissions.grants.resource_specific import (
@@ -725,9 +725,9 @@ class GraphClient(ClientRuntimeContext):
         return EntityCollection(self, Organization, ResourcePath("organization"))
 
     @property
-    def subscribed_skus(self) -> EntityCollection[SubscribedSku]:
+    def subscribed_skus(self) -> SubscribedSkuCollection:
         """Get the list of commercial subscriptions that an organization has acquired"""
-        return EntityCollection(self, SubscribedSku, ResourcePath("subscribedSkus"))
+        return SubscribedSkuCollection(self, ResourcePath("subscribedSkus"))
 
     @property
     def group_lifecycle_policies(self) -> EntityCollection[GroupLifecyclePolicy]:

@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `SimpleDataRow.get()` / `as_dict()` flatten SharePoint search results; and
   `office365.runtime.progress.progress_bar(description)` is the shared optional
   tqdm hook for long-running operations (a no-op when tqdm is not installed).
+- **Tolerant Graph lookups:** deferred, non-raising resolvers built on
+  `first_or_none` — `UserCollection.get_by_mail(mail)`,
+  `TeamCollection.get_by_name(display_name)` (resolved through
+  `/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')`, since
+  `GET /teams` does not support `$filter`), `BookingBusinessCollection.get_by_name(display_name)`
+  (matched client-side, as the Bookings API supports no `$filter`),
+  `ManagedDeviceCollection.get_by_name(device_name)` (server-side `$filter` on
+  `deviceName`), and `SubscribedSkuCollection.get_by_part_number(sku_part_number)`
+  (client-side, case-insensitive). Each returns the entity itself and leaves it
+  uninitialized on a miss (check `is_loaded`); `GraphClient.subscribed_skus` and
+  `DeviceManagement.managed_devices` now expose these typed collections.
 - **Long-running operations (LRO):** a first-class, transport-agnostic
   `OperationPoller` (`office365.runtime.lro`) for the Microsoft Graph async
   pattern — `OperationPoller.from_response(...)` plus blocking `wait()` and

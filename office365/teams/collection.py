@@ -6,6 +6,7 @@ import requests
 from typing_extensions import Self
 
 from office365.directory.groups.collection import GroupCollection
+from office365.directory.groups.group import Group
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
@@ -47,6 +48,37 @@ class TeamCollection(EntityCollection[Team]):
             page_size, page_loaded=_init_teams, progress=progress, dedupe_by=dedupe_by
         )
         return self
+
+    def get_by_name(self, display_name: str) -> Team:
+        """Queue a lookup of a team by its ``displayName``.
+
+        A team is backed by a Microsoft 365 group and ``GET /teams`` does not
+        support ``$filter``, so the lookup goes through
+        ``GET /groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team') and displayName eq '...'``
+        — the approach Microsoft documents for listing teams. Deferred — run
+        with ``execute_query()``; the returned team is left uninitialized when
+        no team has that name (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`).
+
+        Args:
+            display_name (str): The team (group) display name
+        """
+        return_type = Team(self.context)
+        self.add_child(return_type)
+
+        escaped = display_name.replace("'", "''")
+        group = self.context.groups.first_or_none(
+            f"resourceProvisioningOptions/Any(x:x eq 'Team') and displayName eq '{escaped}'"
+        )
+
+        def _populate(group: Group) -> None:
+            # copy_from sets the id property, which anchors the team's resource
+            # path at /teams/{id} (see Entity.set_property).
+            if group.is_loaded:
+                return_type.copy_from(group)
+
+        group.after_execute(_populate)
+        return return_type
 
     def get_all_messages(self) -> ChatMessageCollection:
         """Export every channel message across all teams (``GET /teams/getAllMessages``).

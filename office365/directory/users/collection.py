@@ -22,6 +22,22 @@ class UserCollection(CountCollection[User]):
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
+    def get_by_mail(self, user_mail: str) -> User:
+        """Queue a lookup of a user by their ``mail`` address.
+
+        Unlike :meth:`get_by_principal_name` (which addresses the user directly
+        and raises on a 404), this filters ``GET /users?$filter=mail eq '...'``
+        and tolerates a missing address. Deferred — run with
+        ``execute_query()``; the returned user is left uninitialized when no
+        user has that mail (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`).
+
+        Args:
+            user_mail (str): The user's ``mail`` address
+        """
+        escaped = user_mail.replace("'", "''")
+        return self.first_or_none(f"mail eq '{escaped}'")
+
     def get_unlicensed(self) -> Self:
         """Get users with no assigned licenses (client-side filter)."""
 

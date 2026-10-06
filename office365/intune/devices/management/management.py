@@ -7,7 +7,7 @@ from office365.intune.devices.category import DeviceCategory
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
 )
-from office365.intune.devices.management.managed.managed import ManagedDevice
+from office365.intune.devices.management.managed.collection import ManagedDeviceCollection
 from office365.intune.devices.management.reports.reports import DeviceManagementReports
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
 from office365.intune.devices.management.virtualendpoint.virtual_endpoint import VirtualEndpoint
@@ -97,13 +97,12 @@ class DeviceManagement(Entity):
 
     @odata(name="managedDevices")
     @property
-    def managed_devices(self) -> EntityCollection[ManagedDevice]:
+    def managed_devices(self) -> ManagedDeviceCollection:
         """"""
         return self.properties.get(
             "managedDevices",
-            EntityCollection(
+            ManagedDeviceCollection(
                 self.context,
-                ManagedDevice,
                 ResourcePath("managedDevices", self.resource_path),
             ),
         )
