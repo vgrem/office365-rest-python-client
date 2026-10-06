@@ -25,7 +25,7 @@ def main():
     )
 
     site_url = args.site_url.strip()
-    site = client.sites.get_by_url(site_url).get().execute_query()
+    site = client.sites.get_by_url(site_url).execute_query()
 
     content_types = site.content_types.get().execute_query()
     print(f"Content types on {site.display_name} ({len(content_types)}):")

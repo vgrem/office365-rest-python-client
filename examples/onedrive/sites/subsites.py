@@ -23,7 +23,7 @@ def main():
         .require_application_permission("Sites.Read.All")
     )
 
-    site = client.sites.get_by_url(args.site_url).get().execute_query()
+    site = client.sites.get_by_url(args.site_url).execute_query()
     subsites = site.sites.get().execute_query()
     print(f"Subsites of {site.display_name} ({len(subsites)}):")
     for s in subsites:

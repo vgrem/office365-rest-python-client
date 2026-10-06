@@ -25,7 +25,7 @@ def main():
         .require_application_permission("Sites.Read.All")
     )
 
-    site = client.sites.get_by_url(args.site_url).get().execute_query()
+    site = client.sites.get_by_url(args.site_url).execute_query()
 
     end = datetime.now(timezone.utc)
     start = end - timedelta(days=args.days)

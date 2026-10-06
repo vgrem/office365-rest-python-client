@@ -67,7 +67,7 @@ def main() -> None:
     client = GraphClient(tenant=tenant).with_certificate(client_id, cert_thumbprint, private_key)
 
     for url in sites:
-        site = client.sites.get_by_url(url).get().execute_query()
+        site = client.sites.get_by_url(url).execute_query()
         if args.revoke:
             site.revoke_app_access(args.app_id).execute_query()
             print(f"  revoked  {url}")

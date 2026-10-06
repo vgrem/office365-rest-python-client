@@ -32,7 +32,7 @@ def main():
     print(f"Root site: {root.display_name}  ({root.web_url})")
 
     # 2. Get site by URL
-    site = client.sites.get_by_url(args.site_url).get().execute_query()
+    site = client.sites.get_by_url(args.site_url).execute_query()
     print(f"Team site: {site.display_name}  (id: {site.id})")
 
     # 3. Followed sites

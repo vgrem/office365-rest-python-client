@@ -20,7 +20,7 @@ def main():
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     site_url = args.site_url.strip()
-    site = client.sites.get_by_url(site_url).get().execute_query()
+    site = client.sites.get_by_url(site_url).execute_query()
     client.me.unfollow_site(site).execute_query()
     print(f"Unfollowed {site.display_name}.")
 

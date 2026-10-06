@@ -21,7 +21,7 @@ def main():
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     user = client.users.get_by_principal_name(args.user_principal)
-    site = client.sites.get_by_url(args.site_url).get().execute_query()
+    site = client.sites.get_by_url(args.site_url).execute_query()
     permission = site.permissions.add(roles=["owner"], identity=user).execute_query()
     print(f"Created sharing link: {permission.link.webUrl}")
 

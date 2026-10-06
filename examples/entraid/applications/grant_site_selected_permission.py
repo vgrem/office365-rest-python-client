@@ -21,7 +21,7 @@ privileged_client = (
 )
 
 # Get the target site
-site = privileged_client.sites.get_by_url(test_team_site_url).get().execute_query()
+site = privileged_client.sites.get_by_url(test_team_site_url).execute_query()
 
 # Grant write access; the app (client) ID is resolved to its service principal internally
 permission = site.grant_app_access(test_client_id, "write").execute_query()

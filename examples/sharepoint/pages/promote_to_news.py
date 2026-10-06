@@ -18,7 +18,7 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    page = ctx.site_pages.pages.get_by_name(args.file_name).get().execute_query()
+    page = ctx.site_pages.pages.get_by_name(args.file_name).execute_query()
 
     if args.demote:
         page.demote_from_news().execute_query()

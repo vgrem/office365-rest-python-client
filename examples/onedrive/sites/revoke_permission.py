@@ -21,7 +21,7 @@ def main():
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     site_url = args.site_url.strip()
-    site = client.sites.get_by_url(site_url).get().execute_query()
+    site = client.sites.get_by_url(site_url).execute_query()
 
     permissions = site.permissions.get().execute_query()
     print(f"Permissions on {site.display_name}:")

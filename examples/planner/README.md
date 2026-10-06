@@ -66,7 +66,7 @@ from office365.graph_client import GraphClient
 
 client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
-group = client.groups.get_by_name("My Team").get().execute_query()
+group = client.groups.get_by_name("My Team").execute_query()
 plan = client.planner.plans.add("My Plan", group).execute_query()
 bucket = plan.buckets.add("To do").execute_query()
 task = client.planner.tasks.add("Write docs", plan.id, bucket.id).execute_query()
