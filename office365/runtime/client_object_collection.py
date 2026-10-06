@@ -578,6 +578,9 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Returns:
             The single matching item
 
+        The query is bounded to ``$top=2``: enough to detect an ambiguous match
+        without downloading every matching item just to reject it.
+
         Raises:
             NotFoundException: If no items match
             ValueError: If multiple items match
@@ -593,7 +596,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             for k, v in col[0].properties.items():
                 return_type.set_property(k, v, False)
 
-        self.get().filter(expression).after_execute(_after_loaded)
+        self.get().filter(expression).top(2).after_execute(_after_loaded)
         return return_type
 
     @property
