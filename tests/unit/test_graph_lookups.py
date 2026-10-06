@@ -180,3 +180,17 @@ def test_subscribed_sku_get_by_part_number_uninitialized_when_absent():
     sku = client.subscribed_skus.get_by_part_number("NOT_A_SKU").execute_query()
 
     assert not sku.is_loaded
+
+
+def test_managed_device_first_or_none_contains_filter_runs_server_side():
+    """The managed-device examples match a device-name substring via ``contains``."""
+    client, transport = _client([{"value": [DEVICE]}])
+
+    device = client.device_management.managed_devices.first_or_none("contains(deviceName, 'DESK')").execute_query()
+
+    assert device.is_loaded
+    assert device.get_property("id") == "d1"
+    url = unquote_plus(transport.urls[0])
+    assert "/deviceManagement/managedDevices" in url
+    assert "contains(deviceName, 'DESK')" in url
+    assert "$top=1" in url

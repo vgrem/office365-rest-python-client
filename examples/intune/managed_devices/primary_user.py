@@ -32,9 +32,9 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-    devices = client.device_management.managed_devices.get().execute_query()
-    target = next((d for d in devices if d.device_name and args.device_name.upper() in d.device_name.upper()), None)
-    if target is None:
+    name = args.device_name.replace("'", "''")
+    target = client.device_management.managed_devices.first_or_none(f"contains(deviceName, '{name}')").execute_query()
+    if not target.is_loaded:
         sys.exit(f"No device matching '{args.device_name}' found.")
 
     print(f"Target device: {target.device_name}  (compliance: {target.compliance_state})\n")
