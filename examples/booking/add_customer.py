@@ -21,9 +21,8 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    businesses = client.solutions.booking_businesses.get().execute_query()
-    biz = next((b for b in businesses if b.id == args.id), None)
-    if biz is None:
+    biz = client.solutions.booking_businesses[args.id].get_or_none().execute_query()
+    if not biz.is_loaded:
         sys.exit(f"No booking business with id: {args.id}")
 
     customer = biz.customers.add(displayName=args.name, emailAddress=args.email).execute_query()

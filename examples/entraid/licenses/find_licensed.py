@@ -13,9 +13,8 @@ client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. Find the target SKU
 sku_part = input("SKU part number (e.g. SPE_E5): ").strip()
-skus = client.subscribed_skus.get().execute_query()
-sku = next((s for s in skus if s.sku_part_number == sku_part), None)
-if not sku:
+sku = client.subscribed_skus.get_by_part_number(sku_part).execute_query()
+if not sku.is_loaded:
     raise SystemExit(f"SKU '{sku_part}' not found.")
 
 # 2. Find all users and filter by assigned SKU

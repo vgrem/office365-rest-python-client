@@ -14,7 +14,6 @@ import sys
 
 from office365.graph_client import GraphClient
 from office365.runtime.exceptions import DuplicatedObjectException
-from office365.runtime.types.exceptions import NotFoundException
 from tests.settings import client_id, client_secret, tenant
 
 
@@ -32,9 +31,8 @@ def main():
     except DuplicatedObjectException:
         pass
 
-    try:
-        role = client.directory_roles.get_by_name(args.role).get().execute_query()
-    except NotFoundException:
+    role = client.directory_roles.first_or_none(f"displayName eq '{args.role}'").execute_query()
+    if not role.is_loaded:
         print(f"❌ Role '{args.role}' not found after activation.")
         sys.exit(1)
 

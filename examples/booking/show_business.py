@@ -14,11 +14,10 @@ from tests.settings import client_id, client_secret, tenant
 
 
 def _get_business(client: GraphClient, business_id: str):
-    businesses = client.solutions.booking_businesses.get().execute_query()
-    match = next((b for b in businesses if b.id == business_id), None)
-    if match is None:
+    biz = client.solutions.booking_businesses[business_id].get_or_none().execute_query()
+    if not biz.is_loaded:
         sys.exit(f"No booking business with id: {business_id}")
-    return match
+    return biz
 
 
 def main():

@@ -25,13 +25,13 @@ def main():
     user_email = args.user_email.strip()
     role = args.role.strip().lower()
 
-    site = client.sites.get_by_url(site_url).get().execute_query()
-    users = client.users.filter(f"mail eq '{user_email}'").get().execute_query()
-    if not users:
+    site = client.sites.get_by_url(site_url).execute_query()
+    user = client.users.get_by_mail(user_email).execute_query()
+    if not user.is_loaded:
         print(f"User '{user_email}' not found.")
         return
 
-    site.permissions.add(roles=[role], identity=users[0]).execute_query()
+    site.permissions.add(roles=[role], identity=user).execute_query()
     print(f"Granted '{role}' on {site.display_name} to {user_email}")
 
 
