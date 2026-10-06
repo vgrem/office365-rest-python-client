@@ -58,15 +58,6 @@ def ensure_fields(lst, spec: dict) -> list[str]:
     return [f.internal_name for f in fields]
 
 
-def ensure_view(lst, title: str, columns: list[str]) -> str:
-    """Create a view named ``title`` unless one already exists; return its title."""
-    existing = {v.title for v in lst.views.get().execute_query()}
-    if title in existing:
-        return title
-    lst.views.create(title=title, fields=columns).execute_query()
-    return title
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Provision a project workspace (library, task list, views, seed rows)")
     parser.add_argument("--doc-library", default="Project Files", help="document library title")
@@ -87,8 +78,8 @@ def main() -> None:
         on_conflict="update",
     ).execute_query()
     doc_fields = ensure_fields(library, DOC_LIBRARY_FIELDS)
-    doc_view = ensure_view(library, "By stage", ["Title", "ProjectStage", "ClientDueDate", "Budget"])
-    print(f"Library  : {library.title}  (columns: {', '.join(doc_fields)}, view: {doc_view})")
+    library.views.ensure_view("By stage", fields=["Title", "ProjectStage", "ClientDueDate", "Budget"]).execute_query()
+    print(f"Library  : {library.title}  (columns: {', '.join(doc_fields)}, view: By stage)")
 
     # 2. Task list with typed columns and a view.
     tasks = ctx.web.lists.ensure_list(
@@ -98,8 +89,8 @@ def main() -> None:
         on_conflict="update",
     ).execute_query()
     task_fields = ensure_fields(tasks, TASK_FIELDS)
-    task_view = ensure_view(tasks, "Open tasks", ["Title", "Status", "Owner", "DueDate"])
-    print(f"Task list: {tasks.title}  (columns: {', '.join(task_fields)}, view: {task_view})")
+    tasks.views.ensure_view("Open tasks", fields=["Title", "Status", "Owner", "DueDate"]).execute_query()
+    print(f"Task list: {tasks.title}  (columns: {', '.join(task_fields)}, view: Open tasks)")
 
     # 3. Seed starter rows once, so re-runs stay idempotent.
     if not tasks.items.get().execute_query():

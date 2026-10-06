@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Tolerant writes:** `Entity.delete_object(ignore_missing=True)` and
+  `Folder` / `File` / `List` / `ListItem.recycle(ignore_missing=True)` treat a
+  missing object (HTTP 404) as success — making cleanup re-runs idempotent —
+  while every other failure still propagates. `ViewCollection.ensure_view(...)`
+  is the deferred get-or-create counterpart for list views (matched by title;
+  `on_conflict="update"` reconciles scalar settings), replacing the hand-rolled
+  enumerate-then-create idiom.
 - **SharePoint securable-object resolution:** `Web.get_securable_object(scope, *,
   list_title=None, url=None)` resolves, in one deferred call, the web
   (`"web"`/`"site"`), a list (`"list"`), or the list-item facet behind a folder

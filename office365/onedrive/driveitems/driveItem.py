@@ -432,7 +432,7 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
-    def delete_object(self, bypass_shared_lock: bool = False) -> Self:
+    def delete_object(self, bypass_shared_lock: bool = False, ignore_missing: bool = False) -> Self:
         """Deletes the driveItem.
 
         Args:
@@ -440,8 +440,10 @@ class DriveItem(BaseItem):
                 succeeds even when the item is open for editing. Without it the
                 server rejects the request with
                 :class:`~office365.runtime.exceptions.FileLockedException` (HTTP 423).
+            ignore_missing: When ``True``, deleting an item that no longer exists
+                (HTTP 404) succeeds instead of raising.
         """
-        super().delete_object()
+        super().delete_object(ignore_missing)
         if bypass_shared_lock:
             from office365.runtime.http.prefer import prefer_bypass_shared_lock
 

@@ -1,4 +1,7 @@
-"""Demonstrates how to delete a SharePoint list
+"""Delete a SharePoint list by title (idempotently).
+
+Re-running is safe: ``delete_object(ignore_missing=True)`` treats an already-absent
+list as success instead of raising.
 
 Official documentation: https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api/navigation/list-operations
 """
@@ -17,8 +20,7 @@ def main():
     ctx = ClientContext(team_site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    list_to_del = ctx.web.lists.get_by_title(args.list_title)
-    list_to_del.delete_object().execute_query()
+    ctx.web.lists.get_by_title(args.list_title).delete_object(ignore_missing=True).execute_query()
     print(f"List '{args.list_title}' has been deleted")
 
 

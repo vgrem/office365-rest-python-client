@@ -414,11 +414,17 @@ class Folder(Entity):
         """
         return self.list_item_all_fields.unshare_link(link_kind, share_id)  # type: ignore[returnType]
 
-    def recycle(self) -> ClientResult[str]:
-        """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
+    def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
+        """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item.
+
+        Args:
+            ignore_missing (bool): When True, recycling a folder that no longer
+                exists (HTTP 404) succeeds instead of raising.
+        """
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
+        self._tolerate_missing(ignore_missing)
         return return_type
 
     def recycle_with_parameters(self, parameters: FolderDeleteParameters) -> ClientResult[str]:

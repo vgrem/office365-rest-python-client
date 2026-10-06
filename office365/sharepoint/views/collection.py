@@ -33,11 +33,35 @@ class ViewCollection(EntityCollection[View]):
             information: The view properties to create.
         """
         return_type = View(self.context, None, self.parent_list)  # type: ignore[arg-type]
+        self.context.add_query(self._build_add_query(information, return_type))
+        return return_type
+
+    def _build_add_query(self, information: ViewCreationInformation, return_type: View) -> ServiceOperationQuery:
+        """Build (but do not queue) an ``Add`` query for the given view."""
         self.add_child(return_type)
         payload = {"parameters": information}
-        qry = ServiceOperationQuery(self, "Add", None, payload, None, return_type)
-        self.context.add_query(qry)
-        return return_type
+        return ServiceOperationQuery(self, "Add", None, payload, None, return_type)
+
+    @staticmethod
+    def _creation_info(
+        title: str,
+        fields: list[str] | None,
+        row_limit: int | None,
+        view_type: int | None,
+        paged: bool | None,
+        personal_view: bool | None,
+        **kwargs: Any,
+    ) -> ViewCreationInformation:
+        """Build a :class:`ViewCreationInformation` from the create/ensure parameters."""
+        return ViewCreationInformation(
+            Title=title,
+            ViewFields=StringCollection(fields),
+            RowLimit=row_limit,
+            ViewTypeKind=view_type,
+            Paged=paged,
+            PersonalView=personal_view,
+            **kwargs,
+        )
 
     def get_by_title(self, view_title: str) -> View:
         """Get a view by title.
@@ -92,16 +116,76 @@ class ViewCollection(EntityCollection[View]):
         Returns:
             The new ``View`` (not yet executed).
         """
-        info = ViewCreationInformation(
-            Title=title,
-            ViewFields=StringCollection(fields),
-            RowLimit=row_limit,
-            ViewTypeKind=view_type,
-            Paged=paged,
-            PersonalView=personal_view,
-            **kwargs,
-        )
+        info = self._creation_info(title, fields, row_limit, view_type, paged, personal_view, **kwargs)
         return self.add(info)
+
+    def ensure_view(
+        self,
+        title: str,
+        fields: list[str] | None = None,
+        row_limit: int | None = None,
+        view_type: int | None = None,
+        paged: bool | None = None,
+        personal_view: bool | None = None,
+        *,
+        on_conflict: str = "skip",
+        **kwargs: Any,
+    ) -> View:
+        """Ensure a list view exists, creating it when missing (idempotent).
+
+        The view is matched by title (via :meth:`get_by_title`). Fully deferred:
+        run the returned chain with ``execute_query()``. When the view already
+        exists it is reused; with ``on_conflict="update"`` the scalar view
+        settings (``row_limit``, ``view_type``, ``paged``, ``personal_view``) are
+        reconciled. View fields are applied only when the view is created, so a
+        re-run never rewrites an existing view's columns.
+
+        Args:
+            title: The display name of the view (the match key).
+            fields: Internal names of fields to include when creating the view.
+            row_limit: Maximum number of items per page.
+            view_type: View kind (``"HTML"``, ``"Grid"``, ``"Calendar"``).
+            paged: Whether the view supports paging.
+            personal_view: If True, creates a personal (user-specific) view.
+            on_conflict: ``"skip"`` (keep the existing view) or ``"update"``
+                (reconcile its scalar settings).
+            **kwargs: Additional ``ViewCreationInformation`` properties (create only).
+
+        Returns:
+            The existing or newly created ``View``.
+
+        Example:
+            >>> view = lst.views.ensure_view("Active", fields=["Title", "Modified"]).execute_query()
+        """
+        from office365.runtime.queries.get_or_create import get_or_create
+
+        info = self._creation_info(title, fields, row_limit, view_type, paged, personal_view, **kwargs)
+        return_type = self.get_by_title(title)
+
+        def _reconcile(view: View) -> None:
+            changed = False
+            if row_limit is not None and view.row_limit != row_limit:
+                view.row_limit = row_limit
+                changed = True
+            if view_type is not None and view.view_type != view_type:
+                view.set_property("ViewType", view_type)
+                changed = True
+            if paged is not None and view.paged != paged:
+                view.set_property("Paged", paged)
+                changed = True
+            if personal_view is not None and view.personal_view != personal_view:
+                view.set_property("PersonalView", personal_view)
+                changed = True
+            if changed:
+                view.update()
+
+        return get_or_create(
+            find=return_type.get,
+            create_query=lambda: self._build_add_query(info, return_type),
+            return_type=return_type,
+            on_conflict=on_conflict,
+            reconcile=_reconcile,
+        )
 
     @property
     def parent_list(self) -> List:

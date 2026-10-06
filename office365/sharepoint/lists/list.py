@@ -438,11 +438,17 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    def recycle(self) -> ClientResult[str]:
-        """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
+    def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
+        """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item.
+
+        Args:
+            ignore_missing (bool): When True, recycling a list that no longer
+                exists (HTTP 404) succeeds instead of raising.
+        """
         return_type = ClientResult[str](self.context)
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
+        self._tolerate_missing(ignore_missing)
         return return_type
 
     def start_recycle(self) -> ClientResult[str]:

@@ -512,18 +512,20 @@ class User(DirectoryObject):
         return return_type
 
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
-    def delete_object(self, permanent_delete: bool = False) -> Self:
+    def delete_object(self, permanent_delete: bool = False, ignore_missing: bool = False) -> Self:
         """Args:
         permanent_delete (bool): Permanently deletes the user from directory
+        ignore_missing (bool): Treat deleting a missing user as success
         """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
+        self._tolerate_missing(ignore_missing)
         if self._parent_collection is not None:
             self._parent_collection.remove_child(self)
         if permanent_delete:
             assert self.id is not None
             deleted_user = self.context.directory.deleted_users[self.id]
-            deleted_user.delete_object()
+            deleted_user.delete_object(ignore_missing)
         return self
 
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])

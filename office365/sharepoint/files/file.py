@@ -354,11 +354,17 @@ class File(AbstractFile):
             self.context.before_execute(prefer_bypass_shared_lock, once=True)
         return self
 
-    def recycle(self) -> ClientResult[str]:
-        """Moves the file to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
+    def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
+        """Moves the file to the Recycle Bin and returns the identifier of the new Recycle Bin item.
+
+        Args:
+            ignore_missing (bool): When True, recycling a file that no longer
+                exists (HTTP 404) succeeds instead of raising.
+        """
         return_type = ClientResult(self.context, str())
         qry = ServiceOperationQuery(self, "Recycle", None, None, None, return_type)
         self.context.add_query(qry)
+        self._tolerate_missing(ignore_missing)
         return return_type
 
     def approve(self, comment: str) -> Self:

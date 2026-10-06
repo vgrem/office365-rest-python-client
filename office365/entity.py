@@ -32,19 +32,25 @@ class Entity(ClientObject):
         self.context.add_query(qry)
         return self
 
-    def delete_object(self) -> Self:
+    def delete_object(self, ignore_missing: bool = False) -> Self:
         """Deletes the entity from Microsoft Graph.
+
+        Args:
+            ignore_missing: When ``True``, deleting an entity that no longer
+                exists (HTTP 404) succeeds instead of raising
+                :class:`~office365.runtime.exceptions.ObjectNotFoundException`,
+                which makes cleanup idempotent.
 
         Returns:
             Self: The entity instance for method chaining
 
         Example:
             >>> client = GraphClient()
-            >>> user = client.me
-            >>> user.delete_object().execute_query()
+            >>> client.users["mark@contoso.com"].delete_object(ignore_missing=True).execute_query()
         """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
+        self._tolerate_missing(ignore_missing)
         self.remove_from_parent_collection()
         return self
 

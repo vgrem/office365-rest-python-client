@@ -32,6 +32,15 @@ if TYPE_CHECKING:
 ClientObjectT = TypeVar("ClientObjectT", bound="ClientObject")
 
 
+def _swallow_object_not_found(error: ClientRequestException) -> None:
+    """Error handler that suppresses a 404 (:class:`ObjectNotFoundException`).
+
+    Any other failure is re-raised so it still propagates to the caller.
+    """
+    if not isinstance(error, ObjectNotFoundException):
+        raise error
+
+
 class ClientObject:
     """Base client object which defines named properties and relationships of an entity."""
 
@@ -298,12 +307,22 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
+        self.get().on_error(_swallow_object_not_found)
+        return self
 
-        def _on_missing(error: ClientRequestException) -> None:
-            if not isinstance(error, ObjectNotFoundException):
-                raise error
+    def _tolerate_missing(self, enabled: bool = True) -> Self:
+        """Mark the most recently queued query as tolerating a 404 (one-shot).
 
-        self.get().on_error(_on_missing)
+        Shared by the ``ignore_missing`` write helpers (``delete_object`` /
+        ``recycle``): the error is swallowed only when it is an
+        :class:`ObjectNotFoundException`; any other failure propagates.
+
+        Args:
+            enabled: When ``False`` this is a no-op, so callers can forward the
+                flag unconditionally.
+        """
+        if enabled:
+            self.on_error(_swallow_object_not_found)
         return self
 
     @property

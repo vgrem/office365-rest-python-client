@@ -178,15 +178,22 @@ class Entity(ClientObject):
         self.context.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
-    def delete_object(self) -> Self:
+    def delete_object(self, ignore_missing: bool = False) -> Self:
         """
         Delete the SharePoint entity
+
+        Args:
+            ignore_missing (bool): When True, deleting an object that no longer
+                exists (HTTP 404) succeeds instead of raising
+                :class:`~office365.runtime.exceptions.ObjectNotFoundException`,
+                which makes cleanup idempotent.
 
         Returns:
             self: Supports method chaining
         """
         qry = DeleteEntityQuery(self)
         self.context.add_query(qry)
+        self._tolerate_missing(ignore_missing)
         self.remove_from_parent_collection()
         return self
 

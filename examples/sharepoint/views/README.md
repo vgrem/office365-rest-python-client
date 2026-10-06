@@ -39,6 +39,7 @@ graph TD
 | Operation | File | Required role | API reference |
 |---|---|---|---|
 | Create a custom view | [`create_view.py`](./create_view.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
+| Ensure a custom view exists (idempotent) | [`provision_project_workspace.py`](../recipes/provision_project_workspace.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | Read items from the default or a custom view | [`read_items.py`](./read_items.py) | Read access | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | Update a view (rename, default, hidden) + render as HTML | [`update_view.py`](./update_view.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
 | Add / remove / reorder view columns | [`view_columns.py`](./view_columns.py) | Member on list | [Views REST API](https://learn.microsoft.com/en-us/sharepoint/dev/apis/rest-api) |
@@ -67,6 +68,9 @@ print(f"Default view: {default_view.title}  (type: {default_view.view_type})")
 views = target_list.views.get().execute_query()
 for v in views:
     print(f"  {v.title}  {'[default]' if v.default_view else ''}")
+
+# Ensure a view exists (create on first run, reuse afterwards) — no duplicate on re-runs
+target_list.views.ensure_view("Active", fields=["Title", "Modified"]).execute_query()
 ```
 
 ---
