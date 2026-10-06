@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Idempotent lookups & result helpers:** `ClientObject.get_or_none()` and
+  `ClientObjectCollection.first_or_none(expression=None)` queue a deferred read
+  (run with `execute_query()`) that returns the entity itself instead of raising
+  when it is missing — the object is left uninitialized, which the new
+  `ClientObject.is_loaded` property (and any typed property being `None`) reports;
+  `ClientResult.to_bytes()` / `Report.to_bytes()` normalize binary
+  report payloads; `SearchResult.rows` / `RelevantResults.rows` plus
+  `SimpleDataRow.get()` / `as_dict()` flatten SharePoint search results; and
+  `office365.runtime.progress.progress_bar(description)` is the shared optional
+  tqdm hook for long-running operations (a no-op when tqdm is not installed).
 - **Long-running operations (LRO):** a first-class, transport-agnostic
   `OperationPoller` (`office365.runtime.lro`) for the Microsoft Graph async
   pattern — `OperationPoller.from_response(...)` plus blocking `wait()` and
@@ -206,6 +216,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (start here → common tasks → full catalog), and the auth pages cross-link it.
 
 ### Fixed
+- **`single()` no longer downloads every match:** the bounded lookup now sends
+  `$top=2` (previously unbounded), so an ambiguous match is rejected after two
+  rows instead of materializing the entire result set.
 - **Single quotes in OData string literals:** `ODataPathBuilder` doubled a `'` twice
   (`d'appello` became `d''''appello`), so paths and names containing an apostrophe
   resolved to the wrong resource. A quote is now doubled once (#1052).

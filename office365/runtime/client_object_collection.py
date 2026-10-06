@@ -569,6 +569,38 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.get().filter(expression).top(1).after_execute(_after_loaded)
         return return_type
 
+    def first_or_none(self, expression: str | None = None) -> ClientObjectT:
+        """Queue a read for the first item matching ``expression``.
+
+        Deferred exactly like :meth:`first`: nothing is sent until the caller runs
+        ``execute_query()``. When an item matches it is copied into the returned
+        object; when nothing matches the object is left uninitialized instead of
+        raising — detect that with :attr:`ClientObject.is_loaded`:
+
+            item = col.first_or_none("displayName eq 'X'").execute_query()
+            if item.is_loaded:
+                ...
+
+        Args:
+            expression: Optional OData filter expression
+
+        Returns:
+            The first matching item, or an uninitialized object when there is none
+        """
+        return_type = self.create_typed_object()
+        self.add_child(return_type)
+
+        def _after_loaded(col: ClientObjectCollection) -> None:
+            if len(col) > 0:
+                for k, v in col[0].properties.items():
+                    return_type.set_property(k, v, False)
+
+        query = self.get().top(1)
+        if expression:
+            query = query.filter(expression)
+        query.after_execute(_after_loaded)
+        return return_type
+
     def single(self, expression: str) -> ClientObjectT:
         """Get exactly one item matching the filter criteria.
 

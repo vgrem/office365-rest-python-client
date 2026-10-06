@@ -16,6 +16,7 @@ from typing_extensions import Self
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.converters.value import _add_type_metadata, declared_type, deserialize_value, serialize_value
+from office365.runtime.exceptions import ObjectNotFoundException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.odata.json_format import ODataJsonFormat
@@ -277,6 +278,43 @@ class ClientObject:
         """
         self.context.load(self)
         return self
+
+    def get_or_none(self) -> Self:
+        """Queue a read that tolerates a missing entity.
+
+        Deferred exactly like :meth:`get`: nothing is sent until the caller runs
+        ``execute_query()``. When the entity exists the object is populated; when
+        the server reports it missing (HTTP 404, classified as
+        :class:`~office365.runtime.exceptions.ObjectNotFoundException`) the error
+        is swallowed and the object is left uninitialized — detect that with
+        :attr:`is_loaded` (or a typed property being ``None``):
+
+            user = client.users["missing@contoso.com"].get_or_none().execute_query()
+            if not user.is_loaded:
+                ...
+
+        Any other failure (authentication, throttling, ...) still propagates.
+
+        Returns:
+            The current instance for method chaining
+        """
+
+        def _on_missing(error: ClientRequestException) -> None:
+            if not isinstance(error, ObjectNotFoundException):
+                raise error
+
+        self.get().on_error(_on_missing)
+        return self
+
+    @property
+    def is_loaded(self) -> bool:
+        """Whether the object carries data (from a read or a local property set).
+
+        An object that was never initialized — e.g. a lookup that tolerated a 404
+        via :meth:`get_or_none` or an empty :meth:`ClientObjectCollection.first_or_none`
+        — has no properties and reports ``False``.
+        """
+        return len(self._properties) > 0
 
     def is_property_available(self, name: str) -> bool:
         """

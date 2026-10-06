@@ -14,3 +14,7 @@ class Report(ClientValue):
     """
 
     content: bytes | None = None
+
+    def to_bytes(self) -> bytes:
+        """Returns the report content as bytes (``b""`` when empty)."""
+        return self.content or b""

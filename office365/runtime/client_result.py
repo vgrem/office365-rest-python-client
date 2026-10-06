@@ -67,6 +67,26 @@ class ClientResult(Generic[ClientValueT]):
         assert self._value is not None
         return self._value
 
+    def to_bytes(self) -> bytes:
+        """Returns the response payload as bytes.
+
+        Normalizes the shapes binary endpoints return — raw ``bytes`` /
+        ``bytearray``, a ``str``, or an object exposing a ``content`` attribute
+        (e.g. :class:`~office365.reports.report.Report`). Anything else yields
+        ``b""``.
+        """
+        value: Any = self._value
+        if isinstance(value, (bytes, bytearray)):
+            return bytes(value)
+        if isinstance(value, str):
+            return value.encode("utf-8")
+        content = getattr(value, "content", None)
+        if isinstance(content, (bytes, bytearray)):
+            return bytes(content)
+        if isinstance(content, str):
+            return content.encode("utf-8")
+        return b""
+
     def execute_query(self) -> ClientResult[ClientValueT]:
         """Submit request(s) to the server"""
         self._context.execute_query()

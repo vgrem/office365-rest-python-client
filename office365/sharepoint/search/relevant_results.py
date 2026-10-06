@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.keyvalue import parse_key_value_collection
+from office365.sharepoint.search.simple_data_row import SimpleDataRow
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
 
@@ -30,6 +32,11 @@ class RelevantResults(ClientValue):
             v = parse_key_value_collection(v)
         super().set_property(k, v, persist_changes)
         return self
+
+    @property
+    def rows(self) -> ClientValueCollection[SimpleDataRow]:
+        """The result rows carried by this table."""
+        return self.Table.Rows
 
     @property
     def entity_type_name(self):

@@ -6,10 +6,12 @@ without downloading every matching item, while ``first`` stays at ``$top=1``.
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 from office365.graph_client import GraphClient
 from office365.runtime.types.exceptions import NotFoundException
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport
 
 GROUP = {"id": "g1", "displayName": "Group One"}
 
@@ -80,3 +82,68 @@ def test_first_bounds_query_with_top_1():
 
     assert len(transport.urls) == 1
     assert "$top=1" in transport.urls[0]
+
+
+def test_first_or_none_defers_until_execute():
+    client, transport = _client([{"value": [GROUP]}])
+
+    group = client.groups.first_or_none("displayName eq 'Group One'")
+
+    # a deferred builder must not hit the wire on its own
+    assert transport.urls == []
+    assert not group.is_loaded
+
+    group.execute_query()
+
+    assert len(transport.urls) == 1
+    assert group.is_loaded
+    assert group.get_property("id") == "g1"
+    assert "$top=1" in transport.urls[0]
+
+
+def test_first_or_none_returns_the_match():
+    client, transport = _client([{"value": [GROUP]}])
+
+    group = client.groups.first_or_none("displayName eq 'Group One'").execute_query()
+
+    assert group.is_loaded
+    assert group.get_property("id") == "g1"
+    assert "$top=1" in transport.urls[0]
+
+
+def test_first_or_none_leaves_object_uninitialized_when_no_match():
+    client, _ = _client([{"value": []}])
+
+    group = client.groups.first_or_none("displayName eq 'Missing'").execute_query()
+
+    assert not group.is_loaded
+    assert group.get_property("id") is None
+
+
+def test_first_or_none_without_expression_queries_first_item():
+    client, transport = _client([{"value": [GROUP]}])
+
+    group = client.groups.first_or_none().execute_query()
+
+    assert group.is_loaded
+    assert "$top=1" in transport.urls[0]
+    assert "$filter" not in transport.urls[0]
+
+
+def test_first_or_none_async_defers_until_execute():
+    transport = AsyncScriptedTransport([{"value": [GROUP]}])
+    client = GraphClient()
+    client.pending_request().beforeExecute.clear()
+    client.pending_request()._async_transport = transport
+
+    async def _run():
+        group = client.groups.first_or_none("displayName eq 'Group One'")
+        assert transport.calls == 0
+        await group.execute_query_async()
+        return group
+
+    group = asyncio.run(_run())
+
+    assert group.is_loaded
+    assert group.get_property("id") == "g1"
+    assert transport.calls == 1

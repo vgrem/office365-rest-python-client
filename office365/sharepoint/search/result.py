@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.keyvalue import parse_key_value_collection
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.search.query_result import QueryResult
+from office365.sharepoint.search.simple_data_row import SimpleDataRow
 
 
 @dataclass
@@ -34,6 +35,11 @@ class SearchResult(ClientValue):
             v = parse_key_value_collection(v)
         super().set_property(k, v, persist_changes)
         return self
+
+    @property
+    def rows(self) -> ClientValueCollection[SimpleDataRow]:
+        """The primary query's result rows."""
+        return self.PrimaryQueryResult.RelevantResults.Table.Rows
 
     @property
     def entity_type_name(self):
