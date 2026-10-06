@@ -1,11 +1,12 @@
 """
 Mirror a local folder into a document library, attaching metadata.
 
-Walks a source directory, recreates the folder tree, uploads every file (simple
-upload below the chunk threshold, a resumable upload session above it), stamps
-the list item ``Title`` and any ``--field NAME=VALUE`` metadata, and prints a
-summary. Re-running skips files that already exist with the same size and path,
-so the same command doubles as a lightweight folder sync.
+Walks a source directory, recreates the folder tree, uploads every file with
+``FileCollection.upload_file`` (a simple request below the chunk threshold, a
+resumable upload session above it), stamps the list item ``Title`` and any
+``--field NAME=VALUE`` metadata, and prints a summary. Re-running skips files
+that already exist with the same size and path, so the same command doubles as a
+lightweight folder sync.
 
     python upload_folder_with_metadata.py --source ./reports --library "Project Files"
     python upload_folder_with_metadata.py --source ./reports --field ProjectStage=Review --dry-run
@@ -95,10 +96,7 @@ def main() -> None:
 
         parent_rel = Path(rel).parent.as_posix()
         target = root if parent_rel == "." else root.ensure_folder(parent_rel)
-        if size > args.chunk_size:
-            file = target.files.create_upload_session(str(path), args.chunk_size, file_name=path.name).execute_query()
-        else:
-            file = target.files.upload_content(path.read_bytes(), path.name, args.chunk_size).execute_query()
+        file = target.files.upload_file(path, chunk_size=args.chunk_size).execute_query()
 
         item = file.listItemAllFields
         item.set_property("Title", path.stem)

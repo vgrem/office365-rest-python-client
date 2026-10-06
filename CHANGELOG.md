@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **SharePoint upload parity:** `Folder.ensure_file(relative_path, content, *,
+  on_conflict="skip", chunk_size=...)` is the deferred get-or-upload counterpart
+  of `Folder.upload_file` — it creates missing parent folders, then reuses the
+  file when it exists (`"skip"`, the default, so a re-run is a no-op) or
+  overwrites it (`"replace"`), dispatching to a resumable upload session for
+  content above the chunk threshold and returning the file addressed by name.
+  `FileCollection.upload_file(path_or_file, file_name=None, *, chunk_size=...,
+  progress=...)` uploads a local path (`str`/`os.PathLike` or an open stream) with
+  the same size-based dispatch, replacing the manual
+  `create_upload_session` / `upload_content` branching.
 - **Tolerant writes:** `Entity.delete_object(ignore_missing=True)` and
   `Folder` / `File` / `List` / `ListItem.recycle(ignore_missing=True)` treat a
   missing object (HTTP 404) as success — making cleanup re-runs idempotent —

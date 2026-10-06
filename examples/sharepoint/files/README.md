@@ -67,10 +67,27 @@ print(f"Downloaded: {len(downloaded.content)} bytes")
 |------|------|-------|
 | Upload a small file | [`upload.py`](./upload.py) | File < 4 MB |
 | Upload a large file | [`upload_large.py`](./upload_large.py) | Chunked upload session |
+| Upload a path or stream | `FileCollection.upload_file` | Simple request or resumable session, picked by size |
+| Ensure a file exists | `Folder.ensure_file` | Deferred get-or-upload; re-runs are no-ops |
 | Upload with checksum | [`upload_with_checksum.py`](./upload_with_checksum.py) | MD5 verification |
 | Upload CSV data | [`upload_csv.py`](./upload_csv.py) | Data files |
 | Upload JSON data | [`upload_json.py`](./upload_json.py) | Data files |
 | Replace content | [`replace.py`](./replace.py) | Overwrite via binary stream |
+
+`FileCollection.upload_file` takes a local path or an open stream and picks the
+transport for you (single request at or below `chunk_size`, a resumable session
+above it). `Folder.ensure_file` is the idempotent counterpart of
+`Folder.upload_file`: it creates missing parent folders, then reuses the file if
+it already exists (`on_conflict="skip"`, the default) or overwrites it
+(`on_conflict="replace"`).
+
+```python
+# One call, sized automatically — queues the right upload for the file's size
+file = target_folder.files.upload_file("./archive/big.mp4").execute_query()
+
+# Get-or-upload: parent folders are created; a re-run is a no-op
+file = target_folder.ensure_file("2026/Q1/report.txt", "hello").execute_query()
+```
 
 ## Download
 

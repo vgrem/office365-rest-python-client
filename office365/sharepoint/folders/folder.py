@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 from datetime import datetime
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Callable, Iterable, List, Optional, Tuple, Union
@@ -510,6 +511,67 @@ class Folder(Entity):
         if len(parts) > 1:
             folder = self.ensure_folder("/".join(parts[:-1]))
         return folder.files.upload_content(content, parts[-1], chunk_size, progress)
+
+    def ensure_file(
+        self,
+        relative_path: str,
+        content: Union[str, bytes] = b"",
+        *,
+        on_conflict: str = "skip",
+        chunk_size: int = _DEFAULT_CHUNK_SIZE,
+    ) -> File:
+        """Ensure a file exists under this folder, uploading content when needed.
+
+        The file counterpart of :meth:`ensure_folder`: missing parent folders are
+        created (via :meth:`ensure_folder`), then the leaf file is resolved —
+        reusing the existing file or uploading ``content`` when absent. Fully
+        deferred; run the chain with ``execute_query()`` and the returned file
+        addresses the target:
+
+            >>> folder.ensure_file("2026/Q1/report.txt", "hello").execute_query()
+
+        Args:
+            relative_path (str): File name, or a path relative to this folder,
+              e.g. ``"report.txt"`` or ``"2026/Q1/report.txt"``.
+            content (str or bytes): File content; ``str`` is encoded as UTF-8.
+            on_conflict (str): Behaviour when the file already exists. ``"skip"``
+              (default) keeps it untouched, so a re-run is a no-op and
+              ``content`` is never sent; ``"replace"`` overwrites it.
+            chunk_size (int): Simple-upload threshold / session chunk size (bytes).
+
+        Returns:
+            File: The target file (existing or newly uploaded).
+        """
+        from office365.runtime.paths.v3.entity import EntityPath
+        from office365.runtime.queries.get_or_create import get_or_create
+        from office365.sharepoint.files.file import File
+
+        if on_conflict not in ("skip", "replace"):
+            raise ValueError(f"on_conflict must be 'skip' or 'replace', got {on_conflict!r}")
+        parts = [part for part in relative_path.replace("\\", "/").split("/") if part]
+        if not parts:
+            raise ValueError("Path is empty")
+        name = parts[-1]
+        data = content.encode("utf-8") if isinstance(content, str) else content
+        parent = self.ensure_folder("/".join(parts[:-1])) if len(parts) > 1 else self
+        files = parent.files
+        return_type = File(self.context, EntityPath(name, files.resource_path))
+
+        def _create_query():
+            if len(data) <= chunk_size:
+                return files._build_upload_query(return_type, name, data, overwrite=True)
+            return files._build_upload_session_query(return_type, name, io.BytesIO(data), len(data), chunk_size)
+
+        if on_conflict == "replace":
+            self.context.add_query(_create_query())
+            return return_type
+        get_or_create(
+            find=return_type.get,
+            create_query=_create_query,
+            return_type=return_type,
+            on_conflict="skip",
+        )
+        return return_type
 
     def write_dataframe(
         self,
