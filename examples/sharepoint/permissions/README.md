@@ -106,7 +106,11 @@ for level in result.value.permission_levels:
     print(f"Permission: {level}")
 
 # Grant a user Contributor access
-target_list.add_role_assignment("user@contoso.com", RoleType.Contributor).execute_query()
+target_list.grant_access("user@contoso.com", RoleType.Contributor).execute_query()
+
+# Address any scope with one call, then grant on it
+folder = ctx.web.get_securable_object("folder", url="/sites/team/Shared Documents/Reports")
+folder.grant_access("user@contoso.com", RoleType.Reader).execute_query()
 ```
 
 ---

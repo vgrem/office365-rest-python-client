@@ -577,7 +577,7 @@ for level in result.value.permission_levels:
     print(f"Permission: {level}")
 
 # Grant a user Contributor access
-target_list.add_role_assignment("user@contoso.com", RoleType.Contributor).execute_query()
+target_list.grant_access("user@contoso.com", RoleType.Contributor).execute_query()
 ```
 
 ---

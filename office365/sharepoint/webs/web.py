@@ -1727,6 +1727,61 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListItemUsingPath", params, self.resource_path),
         )
 
+    def get_securable_object(
+        self,
+        scope: str,
+        *,
+        list_title: Optional[str] = None,
+        url: Optional[str] = None,
+    ) -> SecurableObject:
+        """Resolves a securable object in this web by ``scope``.
+
+        A single, discoverable entry point for addressing something permissions
+        can be assigned to, so callers can write::
+
+            ctx.web.get_securable_object("list", list_title="Documents").grant_access(
+                "user@contoso.com", RoleType.Contributor
+            ).execute_query()
+
+        Args:
+            scope (str): The scope to resolve, case-insensitive:
+                ``"web"`` (alias ``"site"``) for the web itself; ``"list"`` for a
+                list; ``"folder"`` for a folder; ``"item"`` (alias ``"file"``)
+                for a document.
+            list_title (str): The display title of the list, required for
+                ``scope="list"``.
+            url (str): The server-relative URL of the folder or document,
+                required for ``scope="folder"`` or ``scope="item"``. Names
+                containing ``%`` or ``#`` are supported.
+
+        Returns:
+            SecurableObject: The web, the addressed
+            :class:`~office365.sharepoint.lists.list.List`, or the
+            :class:`~office365.sharepoint.listitems.listitem.ListItem` behind a
+            folder/document. Resolution is *deferred* (no request is sent);
+            run ``execute_query()`` before reading role assignments.
+
+        Raises:
+            ValueError: If ``scope`` is unknown, or the argument required by the
+                scope (``list_title`` or ``url``) is missing.
+        """
+        normalized_scope = scope.strip().lower() if isinstance(scope, str) else ""
+        if normalized_scope in ("web", "site"):
+            return self
+        if normalized_scope == "list":
+            if not list_title:
+                raise ValueError("list_title is required for scope 'list'")
+            return self.lists.get_by_title(list_title)
+        if normalized_scope == "folder":
+            if not url:
+                raise ValueError("url is required for scope 'folder'")
+            return self.get_folder_by_server_relative_path(url).list_item_all_fields
+        if normalized_scope in ("item", "file"):
+            if not url:
+                raise ValueError(f"url is required for scope '{normalized_scope}'")
+            return self.get_file_by_server_relative_path(url).listItemAllFields
+        raise ValueError(f"Unsupported scope: {scope!r}")
+
     def get_catalog(self, type_catalog: Union[int, ListTemplateType]) -> List:
         """Gets the list template gallery, site template gallery, or Web Part gallery for the Web site.
 

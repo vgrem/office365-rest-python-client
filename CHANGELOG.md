@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **SharePoint securable-object resolution:** `Web.get_securable_object(scope, *,
+  list_title=None, url=None)` resolves, in one deferred call, the web
+  (`"web"`/`"site"`), a list (`"list"`), or the list-item facet behind a folder
+  (`"folder"`) or document (`"item"`/`"file"`) — raising `ValueError` when the
+  scope's required argument is missing. `SecurableObject.grant_access(principal,
+  role)` and `revoke_access(principal, role)` are discoverable, chainable wrappers
+  over `add_role_assignment` / `remove_role_assignment`.
 - **Idempotent lookups & result helpers:** `ClientObject.get_or_none()` and
   `ClientObjectCollection.first_or_none(expression=None)` queue a deferred read
   (run with `execute_query()`) that returns the entity itself instead of raising

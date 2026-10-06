@@ -24,21 +24,10 @@ ROLES = {
 
 
 def _resolve_scope(ctx: ClientContext, args: argparse.Namespace) -> SecurableObject:
-    if args.scope == "site":
-        return ctx.web
-    if args.scope == "list":
-        if not args.list_title:
-            sys.exit("--list <title> is required for --scope list")
-        return ctx.web.lists.get_by_title(args.list_title)
-    if args.scope == "folder":
-        if not args.url:
-            sys.exit("--url <server-relative-url> is required for --scope folder")
-        return ctx.web.get_folder_by_server_relative_url(args.url).list_item_all_fields
-    if args.scope == "file":
-        if not args.url:
-            sys.exit("--url <server-relative-url> is required for --scope file")
-        return ctx.web.get_file_by_server_relative_url(args.url).listItemAllFields
-    sys.exit(f"Unsupported scope: {args.scope}")
+    try:
+        return ctx.web.get_securable_object(args.scope, list_title=args.list_title, url=args.url)
+    except ValueError as e:
+        sys.exit(str(e))
 
 
 def main():
@@ -59,7 +48,7 @@ def main():
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
     target = _resolve_scope(ctx, args)
-    target.add_role_assignment(args.principal, ROLES[args.role]).execute_query()
+    target.grant_access(args.principal, ROLES[args.role]).execute_query()
     print(f"✓ Granted '{args.role}' to {args.principal} on {args.scope}")
 
 

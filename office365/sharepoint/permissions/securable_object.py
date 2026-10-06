@@ -85,6 +85,43 @@ class SecurableObject(Entity):
         principal.ensure_property("Id").after_execute(lambda _: _ensure_role_def())
         return self
 
+    def grant_access(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
+        """Grants a role to a user or group on this securable object.
+
+        A discoverable wrapper around :meth:`add_role_assignment`, reads as
+        ``target.grant_access("user@contoso.com", RoleType.Contributor)``. The
+        principal and role are resolved lazily and the request is queued; run
+        ``execute_query()`` to send it.
+
+        Args:
+            principal (Principal or str): A user/group login name, or a
+                :class:`~office365.sharepoint.principal.principal.Principal`
+                (for example :class:`~office365.sharepoint.principal.users.user.User`).
+            role (RoleDefinition or RoleType): The role to grant.
+
+        Returns:
+            Self: The securable object for method chaining.
+        """
+        return self.add_role_assignment(principal, role)
+
+    def revoke_access(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
+        """Revokes a role previously granted to a user or group on this securable object.
+
+        A discoverable wrapper around :meth:`remove_role_assignment`, reads as
+        ``target.revoke_access("user@contoso.com", RoleType.Contributor)``. The
+        request is queued; run ``execute_query()`` to send it.
+
+        Args:
+            principal (Principal or str): A user/group login name, or a
+                :class:`~office365.sharepoint.principal.principal.Principal`
+                (for example :class:`~office365.sharepoint.principal.users.user.User`).
+            role (RoleDefinition or RoleType): The role to revoke.
+
+        Returns:
+            Self: The securable object for method chaining.
+        """
+        return self.remove_role_assignment(principal, role)
+
     def break_role_inheritance(self, copy_role_assignments=True, clear_sub_scopes=True):
         """Creates unique role assignments for the securable object. If the securable object already has
         unique role assignments, the protocol server MUST NOT alter any role assignments.
