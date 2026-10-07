@@ -14,7 +14,6 @@ Keyed imports (skip/upsert) are opt-in: a subclass exposes an
 
 from __future__ import annotations
 
-import asyncio
 from os import PathLike
 from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Union
 
@@ -114,28 +113,26 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         if page_size:
             return await self._export_paged_async(target, format, page_size, opts)
 
-        from office365.runtime.transport.offload import get_offload_executor
+        from office365.runtime.transport.offload import run_offloaded
 
         writer = registry.writer_for(format)
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(get_offload_executor(), lambda: writer(self, target, **opts))
+        await run_offloaded(writer, self, target, **opts)
         return self
 
     async def _export_paged_async(self, target: Any, format: str, page_size: int, opts: Dict[str, Any]) -> Self:  # noqa: A002
         """Page through the collection and append records without blocking the loop."""
         from office365.runtime.converters import streamers
         from office365.runtime.converters.records import records_from_items
-        from office365.runtime.transport.offload import get_offload_executor
+        from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 
-        loop = asyncio.get_running_loop()
         executor = get_offload_executor()
         factory = streamers.streamer_for(format)
         if factory is None:  # not appendable — write the whole collection at once
             writer = registry.writer_for(format)
-            await loop.run_in_executor(executor, lambda: writer(self, target, **opts))
+            await run_offloaded(writer, self, target, executor=executor, **opts)
             return self
 
-        stream = await loop.run_in_executor(executor, lambda: factory(target, **opts))
+        stream = await run_offloaded(factory, target, executor=executor, **opts)
         start = 0
         closed = False
 
@@ -148,13 +145,13 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             # ``__iter__`` paging generator and block the loop.
             items = self._data[start:]
             start = len(self._data)
-            await loop.run_in_executor(executor, _project, items)
+            await run_offloaded(_project, items, executor=executor)
 
         async def _close() -> None:
             nonlocal closed
             if not closed:
                 closed = True
-                await loop.run_in_executor(executor, stream.close)
+                await run_offloaded(stream.close, executor=executor)
 
         try:
             self.paged(page_size)

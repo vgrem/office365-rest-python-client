@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from abc import ABC, abstractmethod
 from concurrent.futures import Executor
 from typing import Any, AsyncIterator, Callable, Iterator, Mapping, Optional, Tuple, Union
@@ -11,7 +10,7 @@ from requests import Response
 from typing_extensions import Self
 
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 
 #: Default slice size (bytes) used by the streaming helpers.
 DEFAULT_STREAM_CHUNK_SIZE = 8192
@@ -83,8 +82,7 @@ class BaseTransport(ABC):
         Returns:
             The HTTP response.
         """
-        loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(self._get_offload_executor(), self.execute, request)
+        return await run_offloaded(self.execute, request, executor=self._get_offload_executor())
 
     def stream(
         self,
@@ -144,7 +142,6 @@ class BaseTransport(ABC):
         Yields:
             The response body in ``chunk_size`` slices.
         """
-        loop = asyncio.get_running_loop()
         iterator = self.stream(request, chunk_size=chunk_size, on_headers=on_headers)
 
         def _next_chunk() -> Optional[bytes]:
@@ -155,14 +152,14 @@ class BaseTransport(ABC):
 
         try:
             while True:
-                chunk = await loop.run_in_executor(self._get_offload_executor(), _next_chunk)
+                chunk = await run_offloaded(_next_chunk, executor=self._get_offload_executor())
                 if chunk is None:
                     break
                 yield chunk
         finally:
             close = getattr(iterator, "close", None)
             if close is not None:
-                await loop.run_in_executor(self._get_offload_executor(), close)
+                await run_offloaded(close, executor=self._get_offload_executor())
 
     @property
     def proxies(self) -> dict[str, str] | None:
@@ -202,8 +199,7 @@ class BaseTransport(ABC):
         Default: run the synchronous :meth:`close` in a worker thread. Native
         async transports override this to await their own shutdown.
         """
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(self._get_offload_executor(), self.close)
+        await run_offloaded(self.close, executor=self._get_offload_executor())
 
     def __enter__(self) -> Self:
         return self

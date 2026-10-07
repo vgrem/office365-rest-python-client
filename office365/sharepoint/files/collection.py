@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import asyncio
 import hashlib
 import io
 import os
 import tempfile
 import uuid
-from functools import partial
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
@@ -14,7 +12,7 @@ from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.creation_information import FileCreationInformation
@@ -335,12 +333,11 @@ class FileCollection(EntityCollection[File]):
         Returns:
             File: The uploaded file.
         """
-        loop = asyncio.get_running_loop()
         executor = get_offload_executor()
 
         auto_close = False
         if isinstance(file_or_path, str):
-            f: IO = await loop.run_in_executor(executor, partial(open, file_or_path, "rb"))
+            f: IO[bytes] = await run_offloaded(open, file_or_path, "rb", executor=executor)
             auto_close = True
         else:
             f = file_or_path
@@ -355,7 +352,7 @@ class FileCollection(EntityCollection[File]):
 
         try:
             if file_size <= chunk_size:
-                return_type = self.add(file_name, await loop.run_in_executor(executor, f.read), True)
+                return_type = self.add(file_name, await run_offloaded(f.read, executor=executor), True)
                 await self.context.execute_query_async()
                 return return_type
 
@@ -369,7 +366,7 @@ class FileCollection(EntityCollection[File]):
                 if callable(progress):
                     progress(Progress(done=uploaded_bytes, total=file_size, stage="uploading"))
 
-                content = await loop.run_in_executor(executor, f.read, chunk_size)
+                content = await run_offloaded(f.read, chunk_size, executor=executor)
                 if uploaded_bytes == 0:
                     return_type.start_upload(upload_id, content)
                 elif uploaded_bytes + len(content) < file_size:

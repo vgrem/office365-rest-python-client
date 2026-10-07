@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import threading
 from typing import Callable, List, Optional, Union
 
@@ -23,7 +22,7 @@ from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import run_offloaded
 from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.webs.context_web_information import ContextWebInformation
 
@@ -179,8 +178,7 @@ class SharePointRequest(ODataRequest):
         reuse the cached token through the synchronous auth hook.
         """
         await self._auth_context.acquire_token_async()
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(get_offload_executor(), self.warm_up)
+        await run_offloaded(self.warm_up)
 
     def invalidate_digest(self) -> None:
         """Drop the cached digest so the next request re-fetches it."""

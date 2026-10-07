@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import os
 from datetime import datetime
 from functools import partial
@@ -69,7 +68,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.upload_session import UploadSessionQuery
 from office365.runtime.transport.base import HeadersCallback
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 from office365.runtime.types.odata_property import odata
 from office365.subscriptions.collection import SubscriptionCollection
 
@@ -589,16 +588,15 @@ class DriveItem(BaseItem):
         await self.context.execute_query_async()
 
         pending = self.context.pending_request()
-        loop = asyncio.get_running_loop()
         executor = get_offload_executor()
-        file_size = await loop.run_in_executor(executor, os.path.getsize, source_path)
+        file_size = await run_offloaded(os.path.getsize, source_path, executor=executor)
 
         def _on_chunk(uploaded: int) -> None:
             if callable(chunk_uploaded):
                 chunk_uploaded(uploaded)
             emit_progress(progress, done=uploaded, total=file_size, stage="uploading")
 
-        local_file: IO = await loop.run_in_executor(executor, partial(open, source_path, "rb"))
+        local_file: IO = await run_offloaded(open, source_path, "rb", executor=executor)
         try:
             session_request = UploadSessionRequest(local_file, chunk_size, _on_chunk)
             session_request.with_async_transport(pending.async_transport)

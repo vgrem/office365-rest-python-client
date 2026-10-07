@@ -16,7 +16,7 @@ from office365.azure_env import (
 )
 from office365.runtime.auth.certificate import CertificateData, build_client_credential
 from office365.runtime.auth.token_response import TokenResponse
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import run_offloaded
 
 #: Fallback lifetime for an async-acquired token whose response carries no
 #: ``expiresIn``. It only needs to outlive the batch payload build that reuses it.
@@ -104,8 +104,7 @@ class AuthenticationContext:
                 token = TokenResponse.from_json(await self._token_callback())
                 self._store_cached_token(token)
                 return token
-        loop = asyncio.get_running_loop()
-        token_resp = await loop.run_in_executor(get_offload_executor(), self._token_callback)
+        token_resp = await run_offloaded(self._token_callback)
         return TokenResponse.from_json(token_resp)
 
     def _get_cached_token(self) -> Optional[TokenResponse]:

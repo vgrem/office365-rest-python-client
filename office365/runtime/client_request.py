@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import uuid
 from abc import ABC, abstractmethod
 from typing import Any, Awaitable, Callable, Optional
@@ -14,7 +13,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.throttling import RateLimiter
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.transport.base import BaseTransport, NoTimeoutType
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import run_offloaded
 from office365.runtime.transport.requests_transport import (
     DEFAULT_POOL_CONNECTIONS,
     DEFAULT_POOL_MAXSIZE,
@@ -430,8 +429,7 @@ class ClientRequest(ABC):
         """
         if self._async_authenticate is not None:
             await self._async_authenticate(request)
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(get_offload_executor(), self.beforeExecute, request)
+        await run_offloaded(self.beforeExecute, request)
 
     async def execute_request_direct_async(self, request: RequestOptions) -> Response:
         """Execute the client request without blocking the loop.

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import os
 from typing import IO, Callable, Optional
 
@@ -10,7 +9,7 @@ from office365.runtime.client_request import ClientRequest
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
-from office365.runtime.transport.offload import get_offload_executor
+from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 
 
 class UploadSessionRequest(ClientRequest):
@@ -85,10 +84,9 @@ class UploadSessionRequest(ClientRequest):
         loop. Chunks are still uploaded sequentially, in order, as the service
         requires.
         """
-        loop = asyncio.get_running_loop()
         executor = get_offload_executor()
         while True:
-            chunk_data = await loop.run_in_executor(executor, self._file_object.read, self._chunk_size)
+            chunk_data = await run_offloaded(self._file_object.read, self._chunk_size, executor=executor)
             if not chunk_data:
                 break
             self._range_data = chunk_data
