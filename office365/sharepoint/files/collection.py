@@ -221,7 +221,7 @@ class FileCollection(EntityCollection[File]):
         def _upload(_: Any) -> None:
             uploaded_bytes = stream.tell()
             if callable(chunk_uploaded):
-                chunk_uploaded(uploaded_bytes, **kwargs)
+                chunk_uploaded(uploaded_bytes, **kwargs)  # type: ignore[call-arg]
             if callable(progress):
                 progress(Progress(done=uploaded_bytes, total=file_size, stage="uploading"))
 

@@ -1,5 +1,7 @@
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -25,11 +27,11 @@ class PlannerPlan(Entity):
     def __repr__(self):
         return self.id or self.entity_type_name
 
-    def delete_object(self):
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         def _construct_request(request: RequestOptions) -> None:
             request.set_header("If-Match", self.properties.get("__etag"))
 
-        return super().delete_object().before_execute(_construct_request)
+        return super().delete_object(ignore_missing=ignore_missing).before_execute(_construct_request)
 
     @property
     def container(self) -> PlannerPlanContainer:

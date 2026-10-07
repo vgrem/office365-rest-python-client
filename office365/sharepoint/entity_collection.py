@@ -81,9 +81,10 @@ class EntityCollection(RecordCollection[ClientObjectT]):
             self: Supports method chaining.
         """
         for item in self._select(where):
+            entity = cast(Entity, item)
             for name, value in properties.items():
-                item.set_property(name, value(item) if callable(value) else value)
-            item.update()
+                entity.set_property(name, value(entity) if callable(value) else value)
+            entity.update()
         return self
 
     def delete_all(
@@ -117,7 +118,7 @@ class EntityCollection(RecordCollection[ClientObjectT]):
             self: Supports method chaining.
         """
         for item in self._select(where):
-            item.delete_object(ignore_missing=ignore_missing)
+            cast(Entity, item).delete_object(ignore_missing=ignore_missing)
         return self
 
     def _select(self, where: Optional[Callable[[ClientObjectT], bool]]) -> List[ClientObjectT]:

@@ -707,9 +707,12 @@ class _BlockingTransport(AsyncScriptedTransport):
         self.started = 0
         self.finished = 0
         self.cancelled = 0
+        self.all_started: asyncio.Event | None = None
 
     async def execute_async(self, request):
         self.started += 1
+        if self.started >= 4 and self.all_started is not None:  # noqa: PLR2004
+            self.all_started.set()
         try:
             await asyncio.sleep(3600)
         except asyncio.CancelledError:
@@ -728,11 +731,12 @@ def test_execute_query_parallel_async_cancels_in_flight_siblings() -> None:
     _queue_loads(ctx, 4)
 
     async def _scenario() -> None:
+        # ``before_execute_async`` offloads hooks to a worker thread, so the
+        # requests only start once the pool schedules them: wait on an event the
+        # transport sets, not a fixed number of event-loop turns.
+        transport.all_started = asyncio.Event()
         task = asyncio.ensure_future(ctx.execute_query_parallel_async(concurrency=4))
-        for _ in range(100):  # let all four requests start
-            if transport.started >= 4:  # noqa: PLR2004
-                break
-            await asyncio.sleep(0)
+        await asyncio.wait_for(transport.all_started.wait(), timeout=5)
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task

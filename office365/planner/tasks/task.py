@@ -20,13 +20,13 @@ class PlannerTask(Entity):
     See overview for more information regarding relationships between group, plan and task.
     """
 
-    def delete_object(self) -> Self:
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         def _construct_request(request: RequestOptions) -> None:
             etag = self.properties.get("__etag")
             if etag:
                 request.set_header("If-Match", etag)
 
-        super().delete_object().before_execute(_construct_request)
+        super().delete_object(ignore_missing=ignore_missing).before_execute(_construct_request)
         return self
 
     def update(self) -> Self:

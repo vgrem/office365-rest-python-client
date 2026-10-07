@@ -55,7 +55,7 @@ class Entity(ClientObject):
             self.set_property(name, value)
         return self.update()
 
-    def delete_object(self, ignore_missing: bool = False) -> Self:
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         """Deletes the entity from Microsoft Graph.
 
         Args:

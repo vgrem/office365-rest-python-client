@@ -44,14 +44,14 @@ class Team(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
-    def delete_object(self, permanent_delete=False):
+    def delete_object(self, permanent_delete: bool = False, *, ignore_missing: bool = False) -> Self:
         """Deletes a team"""
 
         def _delete_object():
             assert self.id is not None
             group = self.context.groups[self.id]
             self.context.groups.add_child(group)
-            group.delete_object(permanent_delete)
+            group.delete_object(permanent_delete, ignore_missing=ignore_missing)
 
         self.ensure_property("id").after_execute(lambda _: _delete_object())
         return self

@@ -22,16 +22,16 @@ class Set(Entity):
     def __repr__(self):
         return repr(self.localized_names)
 
-    def delete_object(self) -> Self:
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         def _delete_set():
-            super(Set, self).delete_object()
+            super(Set, self).delete_object(ignore_missing=ignore_missing)
 
         def _on_terms_loaded(terms: TermCollection):
             if len(terms) == 0:
                 _delete_set()
             else:
                 for t in terms:
-                    t.delete_object()
+                    t.delete_object(ignore_missing=ignore_missing)
                 self.after_execute(lambda _: _delete_set())
 
         self.children.expand(["children"]).get().after_execute(_on_terms_loaded)

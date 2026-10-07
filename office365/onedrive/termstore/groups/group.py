@@ -15,16 +15,16 @@ class Group(Entity):
         """Gets existing set by name or creates a new one (idempotent)."""
         return self.sets.ensure_set(name)
 
-    def delete_object(self) -> Self:
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         def _delete_group():
-            super(Group, self).delete_object()
+            super(Group, self).delete_object(ignore_missing=ignore_missing)
 
         def _on_sets_loaded(sets: SetCollection):
             if len(sets) == 0:
                 _delete_group()
             else:
                 for s in sets:
-                    s.delete_object()
+                    s.delete_object(ignore_missing=ignore_missing)
                 self.after_execute(lambda _: _delete_group())
 
         self.sets.get().after_execute(_on_sets_loaded)

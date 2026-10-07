@@ -76,11 +76,28 @@ class AttachmentCollection(EntityCollection[Attachment]):
         self.add_child(return_type)
         return return_type
 
-    def delete_all(self):
-        """Deletes all attachments"""
+    def delete_all(
+        self,
+        *,
+        where: Optional[Callable[[Attachment], bool]] = None,
+        ignore_missing: bool = False,
+    ) -> Self:
+        """Deletes all attachments (optionally filtered).
+
+        Loads the collection, then queues one delete per matching attachment.
+        Nothing is sent until the caller executes the query.
+
+        Args:
+            where: Optional client-side predicate; only the attachments it
+                accepts are deleted. Omit to delete every attachment.
+            ignore_missing: When ``True``, deleting an attachment that no longer
+                exists (HTTP 404) succeeds instead of raising.
+        """
 
         def _delete_all(return_type: "AttachmentCollection") -> None:
-            [a.delete_object() for a in return_type]
+            for attachment in return_type:
+                if where is None or where(attachment):
+                    attachment.delete_object(ignore_missing=ignore_missing)
 
         self.get().after_execute(_delete_all)
         return self

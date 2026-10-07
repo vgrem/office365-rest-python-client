@@ -125,18 +125,18 @@ class Group(DirectoryObject):
         return self.team
 
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
-    def delete_object(self, permanent_delete: bool = False, ignore_missing: bool = False) -> Self:
+    def delete_object(self, permanent_delete: bool = False, *, ignore_missing: bool = False) -> Self:
         """Args:
         permanent_delete (bool): Permanently deletes the group from directory
         ignore_missing (bool): Treat deleting a missing group as success
         """
-        super().delete_object(ignore_missing)
+        super().delete_object(ignore_missing=ignore_missing)
         deleted_group = DirectoryObject(
             self.context, EntityPath(self.id, self.context.directory.deleted_groups.resource_path)
         )
         self.context.directory.deleted_groups.add_child(deleted_group)
         if permanent_delete:
-            deleted_group.delete_object(ignore_missing)
+            deleted_group.delete_object(ignore_missing=ignore_missing)
         return self
 
     @odata(name="assignedLabels")

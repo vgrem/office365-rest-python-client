@@ -23,7 +23,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         """Gets the file version with the specified Label."""
         return self.single(f"VersionLabel eq '{label}'")
 
-    def delete_all(self) -> Self:
+    def delete_all(self) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Deletes all the file version objects in the collection."""
         qry = ServiceOperationQuery(self, "DeleteAll")
         self.context.add_query(qry)

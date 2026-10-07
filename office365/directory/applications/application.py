@@ -249,17 +249,18 @@ class Application(DirectoryObject):
         return self
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
-    def delete_object(self, permanent_delete: bool = False) -> Self:
+    def delete_object(self, permanent_delete: bool = False, *, ignore_missing: bool = False) -> Self:
         """Args:
         permanent_delete (bool): Permanently deletes the application from directory
+        ignore_missing (bool): Treat deleting a missing application as success
         """
-        super().delete_object()
+        super().delete_object(ignore_missing=ignore_missing)
         deleted_app = DirectoryObject(
             self.context, EntityPath(self.id, self.context.directory.deleted_applications.resource_path)
         )
         self.context.directory.deleted_applications.add_child(deleted_app)
         if permanent_delete:
-            deleted_app.delete_object()
+            deleted_app.delete_object(ignore_missing=ignore_missing)
         return self
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])

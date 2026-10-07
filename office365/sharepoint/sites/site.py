@@ -273,7 +273,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def delete_object(self):
+    def delete_object(self):  # type: ignore[reportIncompatibleMethodOverride]
         """Deletes a site"""
 
         def _delete_object():

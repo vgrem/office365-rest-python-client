@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class Group(Principal):
     """Represents a collection of members in a SharePoint site. A group is a type of SP.Principal."""
 
-    def delete_object(self) -> Self:
+    def delete_object(self) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """
         Deletes the group
         A custom operation since the default type SP.Group does not support HTTP DELETE method.

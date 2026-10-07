@@ -33,7 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   requests. Each accepts an optional client-side `where` predicate, and `update_all`
   also accepts a callable property value derived from each entity (e.g.
   `items.update_all(Title=lambda i: f"{i.properties['Title']} (archived)")`).
-  `List.clear()` now delegates to `delete_all()`.
+  `List.clear()` now delegates to `delete_all()`. Collections whose server API
+  already exposes a one-shot `DeleteAll` (comments, file versions, recycle bin)
+  keep that behavior; the generic per-item method applies to collections such as
+  list items and attachments.
 - **Property-bag updates:** `Entity.update_properties(**values)` is sugar over
   repeated `set_property` calls followed by `update()` — it coerces each value
   the same way, queues a single update, and returns the entity for chaining. The

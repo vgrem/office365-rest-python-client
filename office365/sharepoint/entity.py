@@ -178,7 +178,7 @@ class Entity(ClientObject):
         self.context.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
-    def delete_object(self, ignore_missing: bool = False) -> Self:
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         """
         Delete the SharePoint entity
 

@@ -69,7 +69,7 @@ class RecycleBinItemCollection(EntityCollection[RecycleBinItem]):
             ServiceOperationPath("GetById", [recycle_bin_id], self.resource_path),
         )
 
-    def delete_all(self) -> Self:
+    def delete_all(self) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Permanently deletes all Recycle Bin items."""
         qry = ServiceOperationQuery(self, "DeleteAll")
         self.context.add_query(qry)
