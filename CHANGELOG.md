@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   also accepts a callable property value derived from each entity (e.g.
   `items.update_all(Title=lambda i: f"{i.properties['Title']} (archived)")`).
   `List.clear()` now delegates to `delete_all()`.
+- **Property-bag updates:** `Entity.update_properties(**values)` is sugar over
+  repeated `set_property` calls followed by `update()` — it coerces each value
+  the same way, queues a single update, and returns the entity for chaining. The
+  request stays deferred until `execute_query()`. It is available on both the
+  Graph and SharePoint entity bases.
 - **Rich field provisioning:** `List.ensure_field(...)` and `ensure_fields(...)`
   now accept a populated `FieldCreationInformation` (or a mix of column names and
   specs), so rich columns — `Choices` for Choice/MultiChoice, `Formula` for

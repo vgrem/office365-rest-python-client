@@ -208,6 +208,26 @@ class Entity(ClientObject):
         self.context.add_query(qry)
         return self
 
+    def update_properties(self, **properties: Any) -> Self:
+        """
+        Set one or more properties and update the SharePoint entity
+
+        Sugar over repeated :meth:`set_property` calls followed by :meth:`update`:
+        the values are coerced exactly as :meth:`set_property` does, and the
+        request stays deferred until ``execute_query()`` runs.
+
+        Args:
+            **properties: Property names mapped to their new values. Use
+                :meth:`set_property` instead for names that are not valid
+                Python identifiers.
+
+        Returns:
+            self: Supports method chaining
+        """
+        for name, value in properties.items():
+            self.set_property(name, value)
+        return self.update()
+
     @property
     def context(self) -> ClientContext:
         """Gets the client context associated with this object."""

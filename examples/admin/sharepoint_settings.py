@@ -24,11 +24,12 @@ def main():
     settings = client.admin.sharepoint.settings
 
     if args.set_legacy_auth or args.set_page_commenting:
+        changes = {}
         if args.set_legacy_auth:
-            settings.set_property("isLegacyAuthProtocolsEnabled", args.set_legacy_auth == "on")
+            changes["isLegacyAuthProtocolsEnabled"] = args.set_legacy_auth == "on"
         if args.set_page_commenting:
-            settings.set_property("isCommentingOnSitePagesEnabled", args.set_page_commenting == "on")
-        settings.update().execute_query()
+            changes["isCommentingOnSitePagesEnabled"] = args.set_page_commenting == "on"
+        settings.update_properties(**changes).execute_query()
         print("SharePoint settings updated.\n")
 
     settings.get().execute_query()

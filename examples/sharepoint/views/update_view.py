@@ -23,13 +23,14 @@ def main():
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
     view = ctx.web.lists.get_by_title(args.list_title).views.get_by_title(args.view)
+    changes = {}
     if args.new_title:
-        view.set_property("Title", args.new_title)
+        changes["Title"] = args.new_title
     if args.make_default:
-        view.set_property("DefaultView", True)
+        changes["DefaultView"] = True
     if args.hide:
-        view.set_property("Hidden", True)
-    view.update().execute_query()
+        changes["Hidden"] = True
+    view.update_properties(**changes).execute_query()
     print(f"View updated: {view.title}")
 
     html = view.render_as_html().execute_query()

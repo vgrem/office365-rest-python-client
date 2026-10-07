@@ -22,11 +22,12 @@ def main():
         tenant=tenant, client_id=client_id, username=username, password=password
     )
     web = ctx.web.get().execute_query()
+    changes = {}
     if args.title:
-        web.set_property("Title", args.title)
+        changes["Title"] = args.title
     if args.description is not None:
-        web.set_property("Description", args.description)
-    web.update().execute_query()
+        changes["Description"] = args.description
+    web.update_properties(**changes).execute_query()
     print(f"✓ Site updated: {web.title}")
 
 

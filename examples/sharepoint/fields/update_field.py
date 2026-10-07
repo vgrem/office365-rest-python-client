@@ -26,17 +26,18 @@ def main():
     )
     field = ctx.web.lists.get_by_title(args.list_title).fields.get_by_internal_name_or_title(args.field)
 
+    changes = {}
     if args.title:
-        field.set_property("Title", args.title)
+        changes["Title"] = args.title
     if args.required:
-        field.set_property("Required", True)
+        changes["Required"] = True
     if args.hidden:
-        field.set_property("Hidden", True)
+        changes["Hidden"] = True
     if args.group:
-        field.set_property("Group", args.group)
+        changes["Group"] = args.group
     if args.description:
-        field.set_property("Description", args.description)
-    field.update().execute_query()
+        changes["Description"] = args.description
+    field.update_properties(**changes).execute_query()
 
     # Form visibility (show in display form, hide from new/edit forms)
     field.set_show_in_new_form(False)

@@ -21,14 +21,15 @@ def main():
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     group = client.groups.find_by_name(args.group, required=True).execute_query()
 
+    changes = {}
     if args.display_name:
-        group.set_property("displayName", args.display_name)
+        changes["displayName"] = args.display_name
     if args.description:
-        group.set_property("description", args.description)
+        changes["description"] = args.description
     if args.visibility:
-        group.set_property("visibility", args.visibility)
+        changes["visibility"] = args.visibility
 
-    group.update().execute_query()
+    group.update_properties(**changes).execute_query()
     print(f"✓ Updated '{group.display_name}'")
 
 

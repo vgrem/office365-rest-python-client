@@ -32,6 +32,29 @@ class Entity(ClientObject):
         self.context.add_query(qry)
         return self
 
+    def update_properties(self, **properties: Any) -> Self:
+        """Sets one or more properties and updates the entity in a single call.
+
+        Sugar over repeated :meth:`set_property` calls followed by :meth:`update`:
+        the values are coerced exactly as :meth:`set_property` does, and the
+        request stays deferred until ``execute_query()`` runs.
+
+        Args:
+            **properties: Property names mapped to their new values. Use
+                :meth:`set_property` instead for names that are not valid
+                Python identifiers.
+
+        Returns:
+            Self: The entity instance for method chaining
+
+        Example:
+            >>> client = GraphClient()
+            >>> client.me.update_properties(displayName="Jane", jobTitle="PM").execute_query()
+        """
+        for name, value in properties.items():
+            self.set_property(name, value)
+        return self.update()
+
     def delete_object(self, ignore_missing: bool = False) -> Self:
         """Deletes the entity from Microsoft Graph.
 
