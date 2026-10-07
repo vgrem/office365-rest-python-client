@@ -24,7 +24,7 @@ class Field(Entity):
         return self.internal_name or self.id or self.entity_type_name
 
     @staticmethod
-    def resolve_field_type(type_id_or_name: Union[str, int]) -> Type[Field]:
+    def resolve_field_type(type_id_or_name: Union[str, int, FieldType]) -> Type[Field]:
         from office365.sharepoint.fields.calculated import FieldCalculated
         from office365.sharepoint.fields.choice import FieldChoice
         from office365.sharepoint.fields.computed import FieldComputed
@@ -53,6 +53,8 @@ class Field(Entity):
             FieldType.Note: FieldMultiLineText,
             FieldType.DateTime: FieldDateTime,
         }
+        if isinstance(type_id_or_name, FieldType):
+            return field_known_types.get(type_id_or_name, Field)
         if isinstance(type_id_or_name, int):
             type_enum = parse_enum(FieldType, type_id_or_name)
             if type_enum is not None:

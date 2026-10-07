@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union, cast
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.fields.calculated import FieldCalculated
 from office365.sharepoint.fields.choice import FieldChoice
@@ -104,10 +105,22 @@ class FieldCollection(EntityCollection[Field]):
         return fields
 
     def ensure(self, parameters: FieldCreationInformation, *, on_conflict: str = "skip") -> Field:
-        """Ensure the field exists (get-or-create); ``on_conflict="update"`` reconciles it."""
+        """Ensure the field exists (get-or-create); ``on_conflict="update"`` reconciles it.
+
+        Rich columns are supported: populate ``FieldCreationInformation`` with
+        ``Choices`` (Choice/MultiChoice), ``Formula`` (Calculated), ``Required``,
+        or ``LookupListId``/``LookupFieldName`` (Lookup). With
+        ``on_conflict="update"`` the field kind, description, choices and formula
+        are reconciled, and ``Required`` is turned on when requested — a lookup's
+        target list is create-only and is never retargeted on a re-run.
+
+        ``Choices``/``Formula`` are reconciled only when set, and ``Required`` is
+        only turned on (never off), so a bare ``ensure`` never silently relaxes an
+        existing column. Deferred — run with ``execute_query()``.
+        """
         from office365.runtime.queries.get_or_create import get_or_create
 
-        return_type = Field(self.context)
+        return_type = self.get_by_title(parameters.Title)
 
         def _reconcile(field: Field) -> None:
             changed = False
@@ -117,11 +130,22 @@ class FieldCollection(EntityCollection[Field]):
             if parameters.Description is not None and field.properties.get("Description") != parameters.Description:
                 field.set_property("Description", parameters.Description)
                 changed = True
+            if parameters.Choices is not None and list(field.properties.get("Choices") or []) != list(
+                parameters.Choices
+            ):
+                field.set_property("Choices", StringCollection(list(parameters.Choices)))
+                changed = True
+            if parameters.Formula is not None and field.properties.get("Formula") != parameters.Formula:
+                field.set_property("Formula", parameters.Formula)
+                changed = True
+            if parameters.Required and field.properties.get("Required") is not True:
+                field.set_property("Required", True)
+                changed = True
             if changed:
                 field.update()
 
         return get_or_create(
-            find=lambda: self.get_by_title(parameters.Title).get(),
+            find=return_type.get,
             create_query=lambda: self._build_add_field_query(parameters, return_type),
             return_type=return_type,
             on_conflict=on_conflict,

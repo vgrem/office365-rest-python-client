@@ -25,37 +25,33 @@ from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
-#: Library column -> (type, choices) — choices only for Choice fields.
-DOC_LIBRARY_FIELDS = {
-    "ProjectStage": (FieldType.Choice, ["Discovery", "In Progress", "Review", "Done"]),
-    "Budget": (FieldType.Number, None),
-    "ClientDueDate": (FieldType.DateTime, None),
-}
+#: Document library columns — declared as rich field specs.
+DOC_LIBRARY_FIELDS = [
+    FieldCreationInformation(
+        Title="ProjectStage",
+        FieldTypeKind=FieldType.Choice,
+        Choices=["Discovery", "In Progress", "Review", "Done"],
+    ),
+    FieldCreationInformation(Title="Budget", FieldTypeKind=FieldType.Number),
+    FieldCreationInformation(Title="ClientDueDate", FieldTypeKind=FieldType.DateTime),
+]
 
-#: Task list column -> (type, choices).
-TASK_FIELDS = {
-    "Status": (FieldType.Choice, ["Not Started", "In Progress", "Blocked", "Done"]),
-    "Owner": (FieldType.Text, None),
-    "DueDate": (FieldType.DateTime, None),
-}
+#: Task list columns.
+TASK_FIELDS = [
+    FieldCreationInformation(
+        Title="Status",
+        FieldTypeKind=FieldType.Choice,
+        Choices=["Not Started", "In Progress", "Blocked", "Done"],
+    ),
+    FieldCreationInformation(Title="Owner", FieldTypeKind=FieldType.Text),
+    FieldCreationInformation(Title="DueDate", FieldTypeKind=FieldType.DateTime),
+]
 
 SEED_TASKS = [
     {"Title": "Kickoff and scope", "Status": "Done", "Owner": "PM"},
     {"Title": "Collect requirements", "Status": "In Progress", "Owner": "BA"},
     {"Title": "Draft solution design", "Status": "Not Started", "Owner": "Architect"},
 ]
-
-
-def ensure_fields(lst, spec: dict) -> list[str]:
-    """Ensure every typed column in ``spec`` exists on ``lst``; return internal names."""
-    fields = []
-    for title, (field_type, choices) in spec.items():
-        info = FieldCreationInformation(Title=title, FieldTypeKind=field_type)
-        if choices:
-            info.Choices = list(choices)
-        fields.append(lst.fields.ensure(info))
-    lst.context.execute_query()
-    return [f.internal_name for f in fields]
 
 
 def main() -> None:
@@ -77,9 +73,10 @@ def main() -> None:
         template_type=ListTemplateType.DocumentLibrary,
         on_conflict="update",
     ).execute_query()
-    doc_fields = ensure_fields(library, DOC_LIBRARY_FIELDS)
+    doc_fields = library.ensure_fields(DOC_LIBRARY_FIELDS)
+    ctx.execute_query()
     library.views.ensure_view("By stage", fields=["Title", "ProjectStage", "ClientDueDate", "Budget"]).execute_query()
-    print(f"Library  : {library.title}  (columns: {', '.join(doc_fields)}, view: By stage)")
+    print(f"Library  : {library.title}  (columns: {', '.join(f.internal_name for f in doc_fields)}, view: By stage)")
 
     # 2. Task list with typed columns and a view.
     tasks = ctx.web.lists.ensure_list(
@@ -88,9 +85,10 @@ def main() -> None:
         template_type=ListTemplateType.GenericList,
         on_conflict="update",
     ).execute_query()
-    task_fields = ensure_fields(tasks, TASK_FIELDS)
+    task_fields = tasks.ensure_fields(TASK_FIELDS)
+    ctx.execute_query()
     tasks.views.ensure_view("Open tasks", fields=["Title", "Status", "Owner", "DueDate"]).execute_query()
-    print(f"Task list: {tasks.title}  (columns: {', '.join(task_fields)}, view: Open tasks)")
+    print(f"Task list: {tasks.title}  (columns: {', '.join(f.internal_name for f in task_fields)}, view: Open tasks)")
 
     # 3. Seed starter rows once, so re-runs stay idempotent.
     if not tasks.items.get().execute_query():

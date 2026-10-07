@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping, Sequence
 from datetime import datetime
 from typing import IO, TYPE_CHECKING, Any, AnyStr, Callable, Dict, Optional, Union, cast
 
@@ -772,7 +773,7 @@ class List(SecurableObject):
 
     def ensure_field(
         self,
-        name: str,
+        name: "str | FieldCreationInformation",
         field_type: FieldType = FieldType.Text,
         description: str | None = None,
         *,
@@ -780,43 +781,62 @@ class List(SecurableObject):
     ) -> Field:
         """Ensure a single column exists on the list, creating it if missing.
 
+        Pass a column ``name`` for a basic column — with an optional ``field_type``
+        and ``description`` — or a populated :class:`FieldCreationInformation` for
+        a rich one (``Choices`` for Choice/MultiChoice, ``Formula`` for Calculated,
+        ``Required``, ``LookupListId``/``LookupFieldName`` for Lookup, ...)::
+
+            lst.ensure_field("Status", FieldType.Choice)
+            lst.ensure_field(
+                FieldCreationInformation(Title="Status", FieldTypeKind=FieldType.Choice, Choices=["A", "B"])
+            )
+
         The check is deferred — the column is looked up and created when the
         caller executes the query (e.g. ``list.ensure_field("Status").execute_query()``).
-        With ``on_conflict="update"`` an existing column's type/description is
-        reconciled.
+        With ``on_conflict="update"`` an existing column's type/description and rich
+        settings (choices, formula, required) are reconciled.
 
         Args:
-            name: The column title
-            field_type: The field type to create it with if missing (Text by default)
-            description: The description of the column
+            name: The column title, or a ``FieldCreationInformation`` describing it.
+            field_type: The field type to create it with if missing (Text by default).
+            description: The description of the column.
             on_conflict: ``"skip"`` (default) or ``"update"``.
 
         Returns:
             Field: The existing or newly created field.
         """
-        return self.fields.ensure(
-            FieldCreationInformation(Title=name, FieldTypeKind=field_type, Description=description),
-            on_conflict=on_conflict,
-        )
+        if isinstance(name, FieldCreationInformation):
+            info = name
+        else:
+            info = FieldCreationInformation(Title=name, FieldTypeKind=field_type, Description=description)
+        return self.fields.ensure(info, on_conflict=on_conflict)
 
-    def ensure_fields(self, columns: "Dict[str, FieldType] | list[str]", *, on_conflict: str = "skip") -> list[Field]:
+    def ensure_fields(
+        self,
+        columns: "Mapping[str, FieldType] | Sequence[str | FieldCreationInformation]",
+        *,
+        on_conflict: str = "skip",
+    ) -> list[Field]:
         """Ensure the specified columns exist on the list, creating missing ones.
 
         Reconciles the source schema with the target list before data import:
         existing fields are kept (or reconciled with ``on_conflict="update"``),
-        missing ones are created with the given type (Text by default). Deferred —
-        execute the query after.
+        missing ones are created (Text by default). Deferred — execute the query
+        after.
 
         Args:
-            columns: Either a list of field names (created as Text) or a mapping
-                of field name -> FieldType
+            columns: A mapping of field name -> :class:`FieldType` (basic columns),
+                or a sequence of names (created as Text) and/or
+                :class:`FieldCreationInformation` specs for rich columns
+                (choice/lookup/calculated/...).
             on_conflict: ``"skip"`` (default) or ``"update"``.
 
         Returns:
             list[Field]: The existing or newly created fields.
         """
-        spec = columns.items() if isinstance(columns, dict) else ((c, FieldType.Text) for c in columns)
-        return [self.ensure_field(name, field_type, on_conflict=on_conflict) for name, field_type in spec]
+        if isinstance(columns, Mapping):
+            return [self.ensure_field(name, field_type, on_conflict=on_conflict) for name, field_type in columns.items()]
+        return [self.ensure_field(column, on_conflict=on_conflict) for column in columns]
 
     def ensure_indexed(self, name: str) -> Field:
         """Enable the index on an existing column (idempotent, deferred).

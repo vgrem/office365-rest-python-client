@@ -34,6 +34,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   also accepts a callable property value derived from each entity (e.g.
   `items.update_all(Title=lambda i: f"{i.properties['Title']} (archived)")`).
   `List.clear()` now delegates to `delete_all()`.
+- **Rich field provisioning:** `List.ensure_field(...)` and `ensure_fields(...)`
+  now accept a populated `FieldCreationInformation` (or a mix of column names and
+  specs), so rich columns — `Choices` for Choice/MultiChoice, `Formula` for
+  Calculated, a lookup target, `Required` — are provisioned declaratively and
+  idempotently in one deferred pass. `FieldCollection.ensure(...,
+  on_conflict="update")` reconciles those rich settings (choices and formula only
+  when set; `Required` is only turned on, never off) alongside the field kind and
+  description, and now patches the field entity itself rather than an unresolved
+  URL. Ensured fields also keep their concrete type (`FieldChoice`,
+  `FieldCalculated`, ...), since `Field.resolve_field_type` accepts a `FieldType`
+  enum.
 - **SharePoint securable-object resolution:** `Web.get_securable_object(scope, *,
   list_title=None, url=None)` resolves, in one deferred call, the web
   (`"web"`/`"site"`), a list (`"list"`), or the list-item facet behind a folder
