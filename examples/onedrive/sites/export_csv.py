@@ -58,17 +58,10 @@ def main():
     )
     admin = Tenant(client)
 
-    # Deferred: load sites, then write the CSV after execute_query().
     with open(args.output, "w", newline="") as f:
         sites = admin.get_site_properties_from_sharepoint().select(COLUMNS).to_csv(f).execute_query()
 
     print(f"✓ Exported {len(sites)} sites to {args.output}\n")
-    for site in sites:
-        title = site.get_property("Title") or "(untitled)"
-        usage = site.get_property("StorageUsageCurrent") or 0
-        quota = site.get_property("StorageQuota") or 0
-        pct = round((usage / quota) * 100, 1) if quota > 0 else 0
-        print(f"  {title[:40]:40s}  {format_mb(usage):>10s} / {format_mb(quota):>10s}  ({pct}%)")
 
 
 if __name__ == "__main__":

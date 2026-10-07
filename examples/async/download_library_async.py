@@ -29,7 +29,7 @@ from tests.settings import client_id, password, site_url, tenant, username
 async def main() -> None:
     parser = argparse.ArgumentParser(description="Download a SharePoint library concurrently")
     parser.add_argument("--list-title", default="Documents", help="document library title")
-    parser.add_argument("--output-dir", default=None, help="local output directory (default: temp)")
+    parser.add_argument("--output-dir", default="/tmp", help="local output directory (default: temp)")
     parser.add_argument("--concurrency", type=int, default=6, help="max in-flight downloads (default: 6)")
     args = parser.parse_args()
 

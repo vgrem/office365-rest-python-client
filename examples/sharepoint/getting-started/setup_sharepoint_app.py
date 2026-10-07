@@ -107,7 +107,7 @@ def _print_connection_values(tenant: str, setup_client_id: str, app_id: str, thu
 def main() -> int:
     args = _parse_args()
     tenant = args.tenant or settings.tenant
-    client_id = args.client_id or settings.setup_client_id or settings.client_id
+    client_id = args.client_id or settings.client_id
     admin = args.admin or settings.admin_username
 
     if not tenant or not client_id:

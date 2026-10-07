@@ -1424,6 +1424,15 @@
          <Annotations Target="microsoft.graph.applePushNotificationCertificate/certificateSerialNumber">
             <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
          </Annotations>
+         <Annotations Target="microsoft.graph.security.auditLogQuery/approximateReturnedRecordCount">
+            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.security.auditLogQuery/isRecordCountLimitExceeded">
+            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
+         </Annotations>
+         <Annotations Target="microsoft.graph.security.auditLogQuery/recordCountLimit">
+            <Annotation Term="Org.OData.Core.V1.Computed" Bool="true"/>
+         </Annotations>
          <Annotations Target="microsoft.graph.security.alert/category">
             <Annotation Term="Org.OData.Core.V1.Revisions">
                <Collection>
@@ -16007,6 +16016,7 @@
          </EntityType>
          <ComplexType Name="fileStorageContainerCustomPropertyDictionary" BaseType="graph.Dictionary" OpenType="true"/>
          <ComplexType Name="fileStorageContainerCustomPropertyValue">
+            <Property Name="isPatternToken" Type="Edm.Boolean"/>
             <Property Name="isSearchable" Type="Edm.Boolean"/>
             <Property Name="value" Type="Edm.String" Nullable="false"/>
          </ComplexType>
@@ -23075,6 +23085,11 @@
             <Property Name="objectId" Type="Edm.String" Nullable="false"/>
             <Property Name="requiredResourceAccesses" Type="Collection(graph.applicationsRequiredResourceAccess)" Nullable="false"/>
          </ComplexType>
+         <ComplexType Name="relatedTenantsRefreshStatus">
+            <Property Name="isFirstRefresh" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="mostRecentRefreshDateTime" Type="Edm.DateTimeOffset" Nullable="false"/>
+            <Property Name="mostRecentRefreshRequestStatus" Type="Edm.String" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="relationshipPolicy">
             <Property Name="delegatedAdministrationRoleAssignments" Type="Collection(graph.delegatedAdministrationRoleAssignmentSnapshot)" Nullable="false"/>
             <Property Name="governedTenantCanTerminate" Type="Edm.Boolean" Nullable="false"/>
@@ -29905,6 +29920,10 @@
          <Action Name="enableRelatedTenants" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.tenantGovernanceSetting"/>
          </Action>
+         <Function Name="refreshStatus" IsBound="true">
+            <Parameter Name="bindingParameter" Type="Collection(graph.relatedTenant)"/>
+            <ReturnType Type="graph.relatedTenantsRefreshStatus"/>
+         </Function>
          <Action Name="setCurrentLocation" IsBound="true">
             <Parameter Name="bindingParameter" Type="Collection(graph.workPlanOccurrence)"/>
             <Parameter Name="updateScope" Type="graph.workLocationUpdateScope"/>
@@ -32161,13 +32180,16 @@
          <ComplexType Name="yammerUserHidingAuditRecord" BaseType="self.auditData" OpenType="true"/>
          <EntityType Name="auditLogQuery" BaseType="graph.entity">
             <Property Name="administrativeUnitIdFilters" Type="Collection(Edm.String)"/>
+            <Property Name="approximateReturnedRecordCount" Type="Edm.Int64"/>
             <Property Name="displayName" Type="Edm.String"/>
             <Property Name="filterEndDateTime" Type="Edm.DateTimeOffset"/>
             <Property Name="filterStartDateTime" Type="Edm.DateTimeOffset"/>
             <Property Name="ipAddressFilters" Type="Collection(Edm.String)"/>
+            <Property Name="isRecordCountLimitExceeded" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="keywordFilter" Type="Edm.String"/>
             <Property Name="objectIdFilters" Type="Collection(Edm.String)"/>
             <Property Name="operationFilters" Type="Collection(Edm.String)"/>
+            <Property Name="recordCountLimit" Type="Edm.Int64"/>
             <Property Name="recordTypeFilters" Type="Collection(self.auditLogRecordType)"/>
             <Property Name="serviceFilters" Type="Collection(Edm.String)"/>
             <Property Name="status" Type="self.auditLogQueryStatus"/>
