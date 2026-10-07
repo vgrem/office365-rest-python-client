@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    group = client.groups.get_by_name(args.group).execute_query()
+    group = client.groups.find_by_name(args.group, required=True).execute_query()
     user = client.users.get_by_principal_name(args.user)
 
     group.owners.add(user).execute_query()

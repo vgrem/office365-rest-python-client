@@ -24,9 +24,11 @@ def main():
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
     if args.list_title:
-        content_type = ctx.web.lists.get_by_title(args.list_title).content_types.get_by_name(args.content_type)
+        content_type = ctx.web.lists.get_by_title(args.list_title).content_types.find_by_name(
+            args.content_type, required=True
+        )
     else:
-        content_type = ctx.web.content_types.get_by_name(args.content_type)
+        content_type = ctx.web.content_types.find_by_name(args.content_type, required=True)
     field = ctx.web.fields.get_by_internal_name_or_title(args.field)
 
     content_type.field_links.add(field).execute_query()

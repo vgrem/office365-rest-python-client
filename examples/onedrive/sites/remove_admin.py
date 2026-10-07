@@ -24,7 +24,7 @@ def main():
     user_email = args.user_email.strip()
 
     site = client.sites.get_by_url(site_url).execute_query()
-    user = client.users.get_by_mail(user_email).execute_query()
+    user = client.users.find_by_mail(user_email).execute_query()
     if not user.is_loaded:
         print(f"User '{user_email}' not found.")
         return

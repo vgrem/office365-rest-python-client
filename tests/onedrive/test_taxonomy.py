@@ -61,7 +61,7 @@ class TestTermStore(GraphDelegatedTestCase):
         name = name.display_name
         assert name is not None
         assert self.target_store is not None
-        group = self.target_store.groups.get_by_name(name).get().execute_query()
+        group = self.target_store.groups.find_by_name(name, required=True).execute_query()
         self.assertIsNotNone(group.resource_path)
 
     @requires_delegated(

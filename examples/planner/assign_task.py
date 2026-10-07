@@ -22,7 +22,7 @@ client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_
 # Resolve user by email to get their ID
 user = client.users.get_by_principal_name(test_user_principal_name).get().execute_query()
 
-group = client.groups.get_by_name("My Sample Team").execute_query()
+group = client.groups.find_by_name("My Sample Team", required=True).execute_query()
 plans = group.planner.plans.get().execute_query()
 if len(plans) == 0:
     sys.exit("No plans were found")

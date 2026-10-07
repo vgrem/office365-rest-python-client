@@ -18,7 +18,7 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    ct = ctx.web.content_types.get_by_name(args.name).execute_query()
+    ct = ctx.web.content_types.find_by_name(args.name, required=True).execute_query()
     ct.delete_object().execute_query()
     print(f"Content type deleted: {args.name}")
 

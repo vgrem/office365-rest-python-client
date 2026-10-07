@@ -31,7 +31,7 @@ def main():
     print(f"Page created: '{page.title}'")
 
     # -- Step 2: find it back by title --
-    found = site.pages.get_by_title(page_name).get().execute_query()
+    found = site.pages.find_by_title(page_name, required=True).execute_query()
     print(f"  Found by title: '{found.title}'")
 
     # -- Step 3: update page properties --

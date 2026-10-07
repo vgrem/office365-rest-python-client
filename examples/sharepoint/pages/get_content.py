@@ -24,7 +24,7 @@ def main():
     ctx = ClientContext(team_site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    page = ctx.site_pages.pages.get_by_name(args.file_name).execute_query()
+    page = ctx.site_pages.pages.find_by_name(args.file_name, required=True).execute_query()
 
     canvas = page.canvas_content or ""
     layout = page.layout_web_parts_content or ""

@@ -19,7 +19,7 @@ def main():
     ctx = ClientContext(team_site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    term_group = ctx.taxonomy.term_store.term_groups.get_by_name(args.group_name)
+    term_group = ctx.taxonomy.term_store.term_groups.find_by_name(args.group_name, required=True)
     term_sets = term_group.get_term_sets_by_name(args.term_set_name).execute_query()
     for ts in term_sets:
         print(ts)

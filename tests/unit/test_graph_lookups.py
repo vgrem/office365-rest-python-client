@@ -1,19 +1,22 @@
-"""Offline tests for the Phase 2 Graph lookup helpers.
+"""Offline tests for the Graph ``find_by_*`` lookup helpers.
 
 Every lookup is *deferred* (nothing hits the wire until ``execute_query()``) and
-*tolerant*: a miss leaves the returned entity uninitialized instead of raising,
-detected via ``is_loaded``.
+*tolerant* by default: a miss leaves the returned entity uninitialized instead
+of raising, detected via ``is_loaded``. Pass ``required=True`` for the strict
+``single`` semantics.
 """
 
 from __future__ import annotations
 
 from urllib.parse import unquote_plus
 
+import pytest
 from office365.booking.business.business import BookingBusiness
 from office365.directory.licenses.subscribed_sku import SubscribedSku
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
 from office365.intune.devices.management.managed.managed import ManagedDevice
+from office365.runtime.types.exceptions import NotFoundException
 from office365.teams.team import Team
 from tests._scripted_transport import ScriptedTransport
 
@@ -44,10 +47,10 @@ def _client(payloads):
     return client, transport
 
 
-def test_get_by_mail_defers_and_returns_match():
+def test_find_by_mail_defers_and_returns_match():
     client, transport = _client([{"value": [USER]}])
 
-    user = client.users.get_by_mail("ada@contoso.com")
+    user = client.users.find_by_mail("ada@contoso.com")
 
     assert transport.urls == []
     assert not user.is_loaded
@@ -62,19 +65,19 @@ def test_get_by_mail_defers_and_returns_match():
     assert "mail eq 'ada@contoso.com'" in unquote_plus(transport.urls[0])
 
 
-def test_get_by_mail_uninitialized_when_absent():
+def test_find_by_mail_uninitialized_when_absent():
     client, _ = _client([{"value": []}])
 
-    user = client.users.get_by_mail("nobody@contoso.com").execute_query()
+    user = client.users.find_by_mail("nobody@contoso.com").execute_query()
 
     assert not user.is_loaded
     assert user.get_property("id") is None
 
 
-def test_team_get_by_name_defers_and_returns_team():
+def test_team_find_by_name_defers_and_returns_team():
     client, transport = _client([{"value": [TEAM]}])
 
-    team = client.teams.get_by_name("Team One")
+    team = client.teams.find_by_name("Team One")
 
     assert transport.urls == []
     assert not team.is_loaded
@@ -90,27 +93,36 @@ def test_team_get_by_name_defers_and_returns_team():
     assert "displayName eq 'Team One'" in url
 
 
-def test_team_get_by_name_miss_is_uninitialized():
+def test_team_find_by_name_miss_is_uninitialized():
     client, _ = _client([{"value": []}])
 
-    team = client.teams.get_by_name("Missing Team").execute_query()
+    team = client.teams.find_by_name("Missing Team").execute_query()
 
     assert not team.is_loaded
     assert team.get_property("id") is None
 
 
-def test_team_get_by_name_sets_entity_path_from_group_id():
+def test_team_find_by_name_required_raises_on_miss():
+    client, _ = _client([{"value": []}])
+
+    client.teams.find_by_name("Missing Team", required=True)
+
+    with pytest.raises(NotFoundException):
+        client.execute_query()
+
+
+def test_team_find_by_name_sets_entity_path_from_group_id():
     client, _ = _client([{"value": [TEAM]}])
 
-    team = client.teams.get_by_name("Team One").execute_query()
+    team = client.teams.find_by_name("Team One").execute_query()
 
     assert team.resource_url.endswith("/teams/g1")
 
 
-def test_booking_get_by_name_matches_client_side():
+def test_booking_find_by_name_matches_client_side():
     client, transport = _client([{"value": [{"id": "b0", "displayName": "Other"}, BUSINESS]}])
 
-    business = client.solutions.booking_businesses.get_by_name("Contoso Bookings")
+    business = client.solutions.booking_businesses.find_by_name("Contoso Bookings")
 
     assert transport.urls == []
     assert not business.is_loaded
@@ -124,18 +136,18 @@ def test_booking_get_by_name_matches_client_side():
     assert "$filter" not in transport.urls[0]
 
 
-def test_booking_get_by_name_uninitialized_when_absent():
+def test_booking_find_by_name_uninitialized_when_absent():
     client, _ = _client([{"value": [{"id": "b0", "displayName": "Other"}]}])
 
-    business = client.solutions.booking_businesses.get_by_name("Missing").execute_query()
+    business = client.solutions.booking_businesses.find_by_name("Missing").execute_query()
 
     assert not business.is_loaded
 
 
-def test_managed_device_get_by_name_defers_and_returns_device():
+def test_managed_device_find_by_name_defers_and_returns_device():
     client, transport = _client([{"value": [DEVICE]}])
 
-    device = client.device_management.managed_devices.get_by_name("DESKTOP-1")
+    device = client.device_management.managed_devices.find_by_name("DESKTOP-1")
 
     assert transport.urls == []
     assert not device.is_loaded
@@ -150,18 +162,18 @@ def test_managed_device_get_by_name_defers_and_returns_device():
     assert "deviceName eq 'DESKTOP-1'" in url
 
 
-def test_managed_device_get_by_name_uninitialized_when_absent():
+def test_managed_device_find_by_name_uninitialized_when_absent():
     client, _ = _client([{"value": []}])
 
-    device = client.device_management.managed_devices.get_by_name("NOPE").execute_query()
+    device = client.device_management.managed_devices.find_by_name("NOPE").execute_query()
 
     assert not device.is_loaded
 
 
-def test_subscribed_sku_get_by_part_number_is_case_insensitive():
+def test_subscribed_sku_find_by_part_number_is_case_insensitive():
     client, transport = _client([{"value": [SKU]}])
 
-    sku = client.subscribed_skus.get_by_part_number("enterprisepack")
+    sku = client.subscribed_skus.find_by_part_number("enterprisepack")
 
     assert transport.urls == []
     assert not sku.is_loaded
@@ -174,12 +186,21 @@ def test_subscribed_sku_get_by_part_number_is_case_insensitive():
     assert "/subscribedSkus" in transport.urls[0]
 
 
-def test_subscribed_sku_get_by_part_number_uninitialized_when_absent():
+def test_subscribed_sku_find_by_part_number_uninitialized_when_absent():
     client, _ = _client([{"value": [SKU]}])
 
-    sku = client.subscribed_skus.get_by_part_number("NOT_A_SKU").execute_query()
+    sku = client.subscribed_skus.find_by_part_number("NOT_A_SKU").execute_query()
 
     assert not sku.is_loaded
+
+
+def test_find_by_mail_escapes_single_quote():
+    """An embedded apostrophe is doubled inside the OData string literal."""
+    client, transport = _client([{"value": []}])
+
+    client.users.find_by_mail("o'brien@contoso.com").execute_query()
+
+    assert "mail eq 'o''brien@contoso.com'" in unquote_plus(transport.urls[0])
 
 
 def test_managed_device_first_or_none_contains_filter_runs_server_side():

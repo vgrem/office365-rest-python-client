@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    group = client.groups.get_by_name(args.group).execute_query()
+    group = client.groups.find_by_name(args.group, required=True).execute_query()
 
     if args.display_name:
         group.set_property("displayName", args.display_name)

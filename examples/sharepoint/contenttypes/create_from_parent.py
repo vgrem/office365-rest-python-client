@@ -21,7 +21,7 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    parent_ct = ctx.web.content_types.get_by_name(args.parent)
+    parent_ct = ctx.web.content_types.find_by_name(args.parent, required=True)
     ct = ctx.web.content_types.create(
         name=args.name,
         description=args.description,

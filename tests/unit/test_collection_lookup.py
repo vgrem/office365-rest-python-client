@@ -149,8 +149,8 @@ def test_first_or_none_async_defers_until_execute():
     assert transport.calls == 1
 
 
-def test_get_by_name_already_queues_the_read():
-    """``get_by_name`` delegates to ``single``, so it queues its own read.
+def test_find_by_name_queues_a_tolerant_read():
+    """``find_by_name`` is tolerant by default and queues its own read.
 
     The match is copied into the returned object and its path is anchored at
     ``/groups/{id}``; a trailing ``.get()`` would therefore issue a redundant
@@ -158,12 +158,70 @@ def test_get_by_name_already_queues_the_read():
     """
     client, transport = _client([{"value": [GROUP]}])
 
-    group = client.groups.get_by_name("Group One").execute_query()
+    group = client.groups.find_by_name("Group One").execute_query()
 
     assert len(transport.urls) == 1
     assert "$filter=displayName eq 'Group One'" in transport.urls[0]
     assert group.is_loaded
     assert str(group.resource_path) == "/groups/g1"
+
+
+def test_find_by_name_is_tolerant_on_miss():
+    client, _ = _client([{"value": []}])
+
+    group = client.groups.find_by_name("Missing").execute_query()
+
+    assert not group.is_loaded
+    assert group.get_property("id") is None
+
+
+def test_find_by_name_required_raises_on_miss():
+    client, _ = _client([{"value": []}])
+
+    client.groups.find_by_name("Missing", required=True)
+
+    with pytest.raises(NotFoundException):
+        client.execute_query()
+
+
+def test_find_by_name_required_raises_on_ambiguous():
+    client, _ = _client([{"value": [GROUP, {"id": "g2", "displayName": "Group One"}]}])
+
+    client.groups.find_by_name("Group One", required=True)
+
+    with pytest.raises(ValueError):
+        client.execute_query()
+
+
+def test_find_by_name_escapes_single_quote():
+    """An embedded apostrophe is doubled inside the OData string literal."""
+    client, transport = _client([{"value": []}])
+
+    client.groups.find_by_name("O'Brien").execute_query()
+
+    assert "$filter=displayName eq 'O''Brien'" in transport.urls[0]
+
+
+def test_deprecated_get_by_name_warns_and_is_strict():
+    """``get_by_name`` stays available as a strict alias but warns.
+
+    It delegates to ``find_by_name(..., required=True)``, so a miss still
+    raises ``NotFoundException``.
+    """
+    client, transport = _client([{"value": [GROUP]}])
+
+    with pytest.warns(FutureWarning, match="find_by_name"):
+        group = client.groups.get_by_name("Group One").execute_query()
+
+    assert group.is_loaded
+    assert len(transport.urls) == 1
+
+    client, _ = _client([{"value": []}])
+    with pytest.warns(FutureWarning):
+        client.groups.get_by_name("Missing")
+
+    with pytest.raises(NotFoundException):
+        client.execute_query()
 
 
 def test_get_by_url_already_queues_the_read():

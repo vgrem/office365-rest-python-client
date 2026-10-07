@@ -43,7 +43,7 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    role = client.directory_roles.get_by_name(args.role).execute_query()
+    role = client.directory_roles.find_by_name(args.role, required=True).execute_query()
     members = role.members.get().execute_query()
     print(f"Members of '{role.get_property('displayName')}' ({len(members)}):")
     for member in members:

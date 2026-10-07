@@ -64,7 +64,7 @@ def cmd_create(client: GraphClient, args: argparse.Namespace) -> None:
     print(f"✓ Channel shared with: {guest.display_name}")
 
     if args.member:
-        user = client.users.get_by_mail(args.member).execute_query()
+        user = client.users.find_by_mail(args.member).execute_query()
         if not user.is_loaded:
             sys.exit(f"User not found: {args.member}")
         member = AadUserConversationMember(host.context)
@@ -95,7 +95,7 @@ def cmd_list(client: GraphClient, args: argparse.Namespace) -> None:
 def cmd_has_access(client: GraphClient, args: argparse.Namespace) -> None:
     team = _get_team(client, args.team_id, args.team_name)
     channel = _get_channel(team, args.channel_id)
-    user = client.users.get_by_mail(args.user).execute_query()
+    user = client.users.find_by_mail(args.user).execute_query()
     if not user.is_loaded:
         sys.exit(f"User not found: {args.user}")
     result = channel.does_user_have_access(user_principal_name=args.user).execute_query()

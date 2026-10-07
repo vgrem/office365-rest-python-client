@@ -285,7 +285,7 @@ print(user.display_name)
 ### Planner
 
 ```python
-group = client.groups.get_by_name("My Sample Team").execute_query()
+group = client.groups.find_by_name("My Sample Team", required=True).execute_query()
 plans = group.planner.plans.get().execute_query()
 task = client.planner.tasks.add("Update client list", plans[0].id).execute_query()
 print(task.title)

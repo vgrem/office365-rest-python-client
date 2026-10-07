@@ -18,7 +18,7 @@ client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
 
 # 1. Find target SKU by part number (e.g. "SPE_E3", "SPE_E5", "ENTERPRISEPACK")
 sku_part = input("SKU part number (e.g. SPE_E5): ").strip()
-sku = client.subscribed_skus.get_by_part_number(sku_part).execute_query()
+sku = client.subscribed_skus.find_by_part_number(sku_part).execute_query()
 if not sku.is_loaded:
     raise SystemExit(f"SKU '{sku_part}' not found in tenant.")
 

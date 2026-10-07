@@ -27,7 +27,11 @@ def main():
     ctx = ClientContext(site_url).with_client_certificate(
         tenant, client_id=client_id, thumbprint=cert_thumbprint, cert_path=cert_path
     )
-    ct = ctx.web.content_types.get_by_name(args.name) if args.name else ctx.web.content_types.get_by_id(args.string_id)
+    ct = (
+        ctx.web.content_types.find_by_name(args.name, required=True)
+        if args.name
+        else ctx.web.content_types.get_by_id(args.string_id)
+    )
     ctx.load(ct, ["Name", "StringId"]).execute_query()
     print(f"Scanning lists for '{ct.name}' ({ct.string_id})...\n")
 

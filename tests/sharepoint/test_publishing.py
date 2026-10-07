@@ -44,7 +44,7 @@ class TestPublishing(SPTestCase):
 
     def test_06_get_page_by_name(self):
         """Get a site page by name."""
-        page = self.client.site_pages.pages.get_by_name("Home.aspx").get().execute_query()
+        page = self.client.site_pages.pages.find_by_name("Home.aspx", required=True).execute_query()
         self.assertIsNotNone(page.resource_path)
 
     def test_07_can_create_page(self):
@@ -64,7 +64,7 @@ class TestPublishing(SPTestCase):
 
     def test_10_checkout_page(self):
         """Check out a site page."""
-        page = self.client.site_pages.pages.get_by_name("Home.aspx")
+        page = self.client.site_pages.pages.find_by_name("Home.aspx", required=True)
         page.checkout_page().execute_query()
         self.assertIsNotNone(page.resource_path)
         self.assertTrue(page.is_page_checked_out_to_current_user)
@@ -77,7 +77,7 @@ class TestPublishing(SPTestCase):
 
     def test_12_discard_page(self):
         """Discard check-out on a site page."""
-        page = self.client.site_pages.pages.get_by_name("Home.aspx")
+        page = self.client.site_pages.pages.find_by_name("Home.aspx", required=True)
         page.discard_page().execute_query()
         self.assertFalse(
             page.is_page_checked_out_to_current_user,

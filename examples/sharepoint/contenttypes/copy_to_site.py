@@ -27,7 +27,7 @@ def make_ctx(url: str) -> ClientContext:
 def _create_content_type(target: ClientContext, name: str, description: str, group: str, parent_name: Optional[str]):
     parent = None
     if parent_name:
-        parent = target.web.content_types.get_by_name(parent_name)
+        parent = target.web.content_types.find_by_name(parent_name, required=True)
         parent.execute_query()
     if parent is not None:
         ct = target.web.content_types.create(
@@ -51,7 +51,7 @@ def main():
     args = parser.parse_args()
 
     source = make_ctx(args.source)
-    source_ct = source.web.content_types.get_by_name(args.name)
+    source_ct = source.web.content_types.find_by_name(args.name, required=True)
     source.load(source_ct, ["Name", "Description", "Group", "StringId", "Parent/Name"]).execute_query()
     if source_ct.name is None:
         raise SystemExit(f"Content type '{args.name}' not found in the source site.")

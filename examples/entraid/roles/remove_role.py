@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    role = client.directory_roles.get_by_name(args.role).execute_query()
+    role = client.directory_roles.find_by_name(args.role, required=True).execute_query()
     role.remove_member(args.user).execute_query()
     print(f"✓ Removed {args.user} from role '{role.display_name}'")
 
