@@ -27,6 +27,8 @@ To-Do, Bookings, Entra ID, OneDrive, and SharePoint.
   server-driven paging, and `get_all()` for entire collections.
 - **Deferred execution** — chain calls and send them all in one round-trip with
   `execute_query()`.
+- **Async-ready** — every terminal has an `await ..._async()` twin, with no extra
+  dependency required.
 - **Ready-to-run examples** — every gallery script is a copy-paste starting
   point, organized by product.
 
@@ -36,6 +38,7 @@ To-Do, Bookings, Entra ID, OneDrive, and SharePoint.
 |---|---|
 | [Installation](installation.md) | `pip install` and requirements |
 | [Getting Started](getting-started.md) | pick your client, authenticate, first query |
+| [Async / await](async.md) | run the same fluent API from `async` code |
 | [Authentication](auth/index.md) | every auth flow, side by side |
 | [Products](products/index.md) | the example gallery per Microsoft 365 service |
 | [API Reference](api.md) | query patterns and power-user features |

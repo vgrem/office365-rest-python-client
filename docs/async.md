@@ -1,5 +1,11 @@
 # Async / await
 
+!!! note "Sync by default, async opt-in"
+
+    The synchronous API is the default and is unchanged; async is additive and
+    shares the same context. Lifecycle hooks (`before_execute`, `after_execute`,
+    `on_error`) are synchronous — do the work after `await`ing the terminal.
+
 Run the same fluent API from `async` code. Builders stay synchronous — only the
 terminal calls that hit the network gain an `_async` twin that you `await`:
 

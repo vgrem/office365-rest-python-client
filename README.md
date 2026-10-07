@@ -25,6 +25,7 @@
 - [Quick start](#quick-start)
 - [Examples by product](#examples-by-product)
 - [Common patterns](#common-patterns)
+- [Async / await](#async--await)
 - [Dependencies](#dependencies)
 - [Contributing](#contributing)
 - [Support](#support)
@@ -478,6 +479,24 @@ lst = ctx.web.lists.ensure_list("Orders").execute_query()
 df = lst.to_dataframe().execute_query().value
 lst.from_dataframe(df, chunksize=100).execute_query()
 ```
+
+## Async / await
+
+Every call that reaches the network has an `await` twin. Builders stay synchronous — only the terminal call changes. No extra dependency is required: by default the blocking HTTP call is handed to a worker thread, so the event loop stays free.
+
+```python
+import asyncio
+
+
+async def main() -> None:
+    web = await ctx.web.get().execute_query_async()
+    print(web.title)
+
+
+asyncio.run(main())
+```
+
+`execute_query_async()`, `execute_batch_async()`, `get_all_async()`, `execute_query_parallel_async()`, streaming downloads/exports and long-running-operation polling all have async twins, and collections support `async for`. See the [async guide](https://vgrem.github.io/office365-rest-python-client/async/).
 
 ## Dependencies
 
