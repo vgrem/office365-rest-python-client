@@ -47,6 +47,24 @@ def _client(payloads):
     return client, transport
 
 
+@pytest.mark.parametrize(
+    ("lookup", "key", "payload"),
+    [
+        (lambda client: client.users.find_by_mail, "nobody@contoso.com", {"value": []}),
+        (lambda client: client.teams.find_by_name, "Missing Team", {"value": []}),
+        (lambda client: client.device_management.managed_devices.find_by_name, "NOPE", {"value": []}),
+        (lambda client: client.subscribed_skus.find_by_part_number, "NOT_A_SKU", {"value": [SKU]}),
+    ],
+)
+def test_lookup_miss_leaves_entity_uninitialized(lookup, key, payload):
+    client, _ = _client([payload])
+
+    entity = lookup(client)(key).execute_query()
+
+    assert not entity.is_loaded
+    assert entity.get_property("id") is None
+
+
 def test_find_by_mail_defers_and_returns_match():
     client, transport = _client([{"value": [USER]}])
 
@@ -63,15 +81,6 @@ def test_find_by_mail_defers_and_returns_match():
     assert len(transport.urls) == 1
     assert "/users" in transport.urls[0]
     assert "mail eq 'ada@contoso.com'" in unquote_plus(transport.urls[0])
-
-
-def test_find_by_mail_uninitialized_when_absent():
-    client, _ = _client([{"value": []}])
-
-    user = client.users.find_by_mail("nobody@contoso.com").execute_query()
-
-    assert not user.is_loaded
-    assert user.get_property("id") is None
 
 
 def test_team_find_by_name_defers_and_returns_team():
@@ -91,15 +100,6 @@ def test_team_find_by_name_defers_and_returns_team():
     assert "/groups" in url
     assert "resourceProvisioningOptions/Any(x:x eq 'Team')" in url
     assert "displayName eq 'Team One'" in url
-
-
-def test_team_find_by_name_miss_is_uninitialized():
-    client, _ = _client([{"value": []}])
-
-    team = client.teams.find_by_name("Missing Team").execute_query()
-
-    assert not team.is_loaded
-    assert team.get_property("id") is None
 
 
 def test_team_find_by_name_required_raises_on_miss():
@@ -162,14 +162,6 @@ def test_managed_device_find_by_name_defers_and_returns_device():
     assert "deviceName eq 'DESKTOP-1'" in url
 
 
-def test_managed_device_find_by_name_uninitialized_when_absent():
-    client, _ = _client([{"value": []}])
-
-    device = client.device_management.managed_devices.find_by_name("NOPE").execute_query()
-
-    assert not device.is_loaded
-
-
 def test_subscribed_sku_find_by_part_number_is_case_insensitive():
     client, transport = _client([{"value": [SKU]}])
 
@@ -184,14 +176,6 @@ def test_subscribed_sku_find_by_part_number_is_case_insensitive():
     assert sku.is_loaded
     assert sku.get_property("id") == "s1"
     assert "/subscribedSkus" in transport.urls[0]
-
-
-def test_subscribed_sku_find_by_part_number_uninitialized_when_absent():
-    client, _ = _client([{"value": [SKU]}])
-
-    sku = client.subscribed_skus.find_by_part_number("NOT_A_SKU").execute_query()
-
-    assert not sku.is_loaded
 
 
 def test_find_by_mail_escapes_single_quote():

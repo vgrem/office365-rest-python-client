@@ -111,10 +111,11 @@ def test_first_or_none_returns_the_match():
     assert "$top=1" in transport.urls[0]
 
 
-def test_first_or_none_leaves_object_uninitialized_when_no_match():
+@pytest.mark.parametrize("lookup", ["first_or_none", "find_by_name"])
+def test_group_lookup_miss_leaves_object_uninitialized(lookup):
     client, _ = _client([{"value": []}])
 
-    group = client.groups.first_or_none("displayName eq 'Missing'").execute_query()
+    group = getattr(client.groups, lookup)("Missing").execute_query()
 
     assert not group.is_loaded
     assert group.get_property("id") is None
@@ -164,15 +165,6 @@ def test_find_by_name_queues_a_tolerant_read():
     assert "$filter=displayName eq 'Group One'" in transport.urls[0]
     assert group.is_loaded
     assert str(group.resource_path) == "/groups/g1"
-
-
-def test_find_by_name_is_tolerant_on_miss():
-    client, _ = _client([{"value": []}])
-
-    group = client.groups.find_by_name("Missing").execute_query()
-
-    assert not group.is_loaded
-    assert group.get_property("id") is None
 
 
 def test_find_by_name_required_raises_on_miss():

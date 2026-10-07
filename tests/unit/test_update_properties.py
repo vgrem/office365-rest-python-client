@@ -8,6 +8,7 @@ entity bases.
 
 from __future__ import annotations
 
+import pytest
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
 from office365.sharepoint.client_context import ClientContext
@@ -43,55 +44,70 @@ def _sp(payloads):
     return ctx, transport
 
 
+def _graph_user(payloads):
+    client, transport = _graph(payloads)
+    return client, transport, client.users["jdoe@contoso.com"]
+
+
+def _sp_web(payloads):
+    ctx, transport = _sp(payloads)
+    return ctx, transport, ctx.web
+
+
 # --- deferred, single request -------------------------------------------------
 
 
-def test_graph_update_properties_is_deferred_and_returns_self():
-    client, transport = _graph([])
-    user = client.users["jdoe@contoso.com"]
+@pytest.mark.parametrize(
+    ("factory", "values", "reader", "expected"),
+    [
+        (_graph_user, {"displayName": "John Doe", "jobTitle": "Engineer"}, lambda e: e.display_name, "John Doe"),
+        (_sp_web, {"Title": "Contoso"}, lambda e: e.title, "Contoso"),
+    ],
+)
+def test_update_properties_is_deferred_and_returns_self(factory, values, reader, expected):
+    context, transport, entity = factory([])
 
-    returned = user.update_properties(displayName="John Doe", jobTitle="Engineer")
+    returned = entity.update_properties(**values)
 
     assert transport.calls == 0
-    assert returned is user
-    assert len(client._queries) == 1
+    assert returned is entity
+    assert len(context._queries) == 1
     # values are readable through the typed accessors, exactly like set_property
-    assert user.display_name == "John Doe"
+    assert reader(entity) == expected
 
 
-def test_graph_update_properties_sends_single_patch():
-    client, transport = _graph([{"id": "1"}])
-    user = client.users["jdoe@contoso.com"]
+@pytest.mark.parametrize(
+    ("factory", "payloads", "values", "method", "header", "url_suffix"),
+    [
+        (
+            _graph_user,
+            [{"id": "1"}],
+            {"displayName": "John Doe", "jobTitle": "Engineer"},
+            HttpMethod.Patch,
+            None,
+            None,
+        ),
+        (
+            _sp_web,
+            [{"d": {}}],
+            {"Title": "Contoso", "Description": "Team site"},
+            HttpMethod.Post,
+            "MERGE",
+            "/Web",
+        ),
+    ],
+)
+def test_update_properties_sends_a_single_request(factory, payloads, values, method, header, url_suffix):
+    _context, transport, entity = factory(payloads)
 
-    user.update_properties(displayName="John Doe", jobTitle="Engineer").execute_query()
-
-    assert transport.calls == 1
-    request = transport.requests[0]
-    assert request.method == HttpMethod.Patch
-    assert request.data["displayName"] == "John Doe"
-    assert request.data["jobTitle"] == "Engineer"
-
-
-def test_sharepoint_update_properties_is_deferred():
-    ctx, transport = _sp([])
-    web = ctx.web
-
-    web.update_properties(Title="Contoso")
-
-    assert transport.calls == 0
-    assert len(ctx._queries) == 1
-    assert web.title == "Contoso"
-
-
-def test_sharepoint_update_properties_sends_single_merge():
-    ctx, transport = _sp([{"d": {}}])
-
-    ctx.web.update_properties(Title="Contoso", Description="Team site").execute_query()
+    entity.update_properties(**values).execute_query()
 
     assert transport.calls == 1
     request = transport.requests[0]
-    assert request.method == HttpMethod.Post
-    assert request.headers.get("X-HTTP-Method") == "MERGE"
-    assert request.url.endswith("/Web")
-    assert request.data["Title"] == "Contoso"
-    assert request.data["Description"] == "Team site"
+    assert request.method == method
+    if header is not None:
+        assert request.headers.get("X-HTTP-Method") == header
+    if url_suffix is not None:
+        assert request.url.endswith(url_suffix)
+    for name, value in values.items():
+        assert request.data[name] == value

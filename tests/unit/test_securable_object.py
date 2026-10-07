@@ -39,16 +39,11 @@ def _ctx() -> ClientContext:
 # --- Web.get_securable_object -------------------------------------------------
 
 
-def test_scope_web_returns_the_web_itself():
+@pytest.mark.parametrize("scope", ["web", "site"])
+def test_scope_web_and_site_return_the_web(scope):
     ctx = _ctx()
 
-    assert ctx.web.get_securable_object("web") is ctx.web
-
-
-def test_scope_site_is_an_alias_for_web():
-    ctx = _ctx()
-
-    assert ctx.web.get_securable_object("site") is ctx.web
+    assert ctx.web.get_securable_object(scope) is ctx.web
 
 
 def test_scope_is_case_insensitive():
@@ -96,26 +91,18 @@ def test_scope_folder_requires_a_url():
         ctx.web.get_securable_object("folder")
 
 
-def test_scope_item_returns_the_documents_list_item():
+@pytest.mark.parametrize("scope", ["item", "file"])
+def test_scope_item_and_file_return_the_files_list_item(scope):
     ctx = _ctx()
     path = "/sites/x/Shared Documents/report.docx"
 
-    target = ctx.web.get_securable_object("item", url=path)
+    target = ctx.web.get_securable_object(scope, url=path)
 
     assert isinstance(target, ListItem)
     resource_path = str(target.resource_path)
     assert "getFileByServerRelativePath" in resource_path
     assert "listItemAllFields" in resource_path
     assert path in resource_path
-
-
-def test_scope_file_is_an_alias_for_item():
-    ctx = _ctx()
-
-    target = ctx.web.get_securable_object("file", url="/sites/x/Shared Documents/report.docx")
-
-    assert isinstance(target, ListItem)
-    assert "getFileByServerRelativePath" in str(target.resource_path)
 
 
 def test_scope_item_requires_a_url():
