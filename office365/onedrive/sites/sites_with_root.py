@@ -24,7 +24,17 @@ class SitesWithRoot(DeltaCollection[Site]):
         return return_type
 
     def get_by_path(self, path: str) -> Site:
-        """Address Site resource by server relative path."""
+        """Address a Site resource by server-relative path and queue its read.
+
+        Documented exception to the lookup conventions: unlike the lazy
+        ``get_by_*`` addressing helpers (which only build a path) and the
+        tolerant ``find_by_*`` lookups, this queues a ``ReadEntityQuery``
+        immediately, so a trailing ``.get()`` would issue a redundant second
+        request. The name and eager behavior are kept for backward compatibility.
+
+        Args:
+            path (str): The server-relative path of the site (e.g. ``/sites/team``).
+        """
         tenant_name = self.context.tenant_name
         assert tenant_name is not None
         tenant_part = tenant_name.split(".")[0]
@@ -36,7 +46,16 @@ class SitesWithRoot(DeltaCollection[Site]):
         return return_type
 
     def get_by_url(self, url: str) -> Site:
-        """Address Site resource by absolute url."""
+        """Address a Site resource by absolute URL and queue its read.
+
+        Like :meth:`get_by_path` — and unlike the lazy ``get_by_*`` addressing
+        helpers and the tolerant ``find_by_*`` lookups — this queues a
+        ``ReadEntityQuery`` immediately; do not chain a trailing ``.get()``.
+        The name and eager behavior are kept for backward compatibility.
+
+        Args:
+            url (str): The absolute site URL (e.g. ``https://contoso.sharepoint.com/sites/team``).
+        """
         return_type = Site(self.context, SitePath.from_url(url, self.resource_path))
         qry = ReadEntityQuery(return_type)
         self.context.add_query(qry)
