@@ -5,7 +5,9 @@ from typing_extensions import Self
 from office365.delta_collection import DeltaCollection
 from office365.directory.permissions.require_permission import require_permission
 from office365.onedrive.listitems.list_item import ListItem
+from office365.runtime.decorators import deprecated
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:
@@ -79,8 +81,35 @@ class ListItemCollection(DeltaCollection[ListItem]):
 
         return super().get().before_execute(_construct_request)
 
+    def find_by_name(self, name: str, *, required: bool = False) -> ListItem:
+        """Look up a list item by its file name.
+
+        Deferred — run with ``execute_query()``. Tolerant by default: when no
+        item matches, the returned object is left uninitialized (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`). Pass
+        ``required=True`` to raise instead (or on an ambiguous match).
+
+        Args:
+            name: The file name (e.g., "Document.docx")
+            required (bool): Raise on a missing or ambiguous match when ``True``
+        """
+        return self._find_by_filter(f"fields/FileLeafRef eq '{escape_odata_string(name)}'", required=required)
+
+    def find_by_path(self, path: str, *, required: bool = False) -> ListItem:
+        """Look up a list item by its server-relative path.
+
+        Deferred — run with ``execute_query()``. Tolerant by default; pass
+        ``required=True`` to raise on a missing or ambiguous match.
+
+        Args:
+            path: The server-relative path (e.g., "/sites/documents/Document.docx")
+            required (bool): Raise on a missing or ambiguous match when ``True``
+        """
+        return self._find_by_filter(f"fields/FileRef eq '{escape_odata_string(path)}'", required=required)
+
+    @deprecated("Use find_by_name() instead.", version="4.0")
     def get_by_name(self, name: str) -> ListItem:
-        """Gets a list item by its file name.
+        """Deprecated alias of :meth:`find_by_name` (strict).
 
         Args:
             name: The file name (e.g., "Document.docx")
@@ -88,10 +117,11 @@ class ListItemCollection(DeltaCollection[ListItem]):
         Returns:
             ListItem: The requested list item (not yet executed)
         """
-        return self.single(f"fields/FileLeafRef eq '{name}'")
+        return self.find_by_name(name, required=True)
 
+    @deprecated("Use find_by_path() instead.", version="4.0")
     def get_by_path(self, path: str) -> ListItem:
-        """Gets a list item by its server-relative path.
+        """Deprecated alias of :meth:`find_by_path` (strict).
 
         Args:
             path: The server-relative path (e.g., "/sites/documents/Document.docx")
@@ -99,4 +129,4 @@ class ListItemCollection(DeltaCollection[ListItem]):
         Returns:
             ListItem: The requested list item (not yet executed)
         """
-        return self.single(f"fields/FileRef eq '{path}'")
+        return self.find_by_path(path, required=True)

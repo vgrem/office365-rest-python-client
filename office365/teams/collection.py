@@ -8,11 +8,13 @@ from typing_extensions import Self
 from office365.directory.groups.collection import GroupCollection
 from office365.directory.groups.group import Group
 from office365.entity_collection import EntityCollection
+from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.exceptions import NotFoundException
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.operations.async_operation import TeamsAsyncOperation, wait_for_operation
 from office365.teams.team import Team
@@ -49,8 +51,8 @@ class TeamCollection(EntityCollection[Team]):
         )
         return self
 
-    def get_by_name(self, display_name: str) -> Team:
-        """Queue a lookup of a team by its ``displayName``.
+    def find_by_name(self, display_name: str, *, required: bool = False) -> Team:
+        """Look up a team by its ``displayName``.
 
         A team is backed by a Microsoft 365 group and ``GET /teams`` does not
         support ``$filter``, so the lookup goes through
@@ -58,24 +60,28 @@ class TeamCollection(EntityCollection[Team]):
         — the approach Microsoft documents for listing teams. Deferred — run
         with ``execute_query()``; the returned team is left uninitialized when
         no team has that name (check
-        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`).
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`). Pass
+        ``required=True`` to raise instead.
 
         Args:
             display_name (str): The team (group) display name
+            required (bool): Raise ``NotFoundException`` on a miss when ``True``
         """
         return_type = Team(self.context)
         self.add_child(return_type)
 
-        escaped = display_name.replace("'", "''")
-        group = self.context.groups.first_or_none(
-            f"resourceProvisioningOptions/Any(x:x eq 'Team') and displayName eq '{escaped}'"
+        expression = (
+            f"resourceProvisioningOptions/Any(x:x eq 'Team') and displayName eq '{escape_odata_string(display_name)}'"
         )
+        group = self.context.groups.first_or_none(expression)
 
         def _populate(group: Group) -> None:
             # copy_from sets the id property, which anchors the team's resource
             # path at /teams/{id} (see Entity.set_property).
             if group.is_loaded:
                 return_type.copy_from(group)
+            elif required:
+                raise NotFoundException(return_type, expression)
 
         group.after_execute(_populate)
         return return_type

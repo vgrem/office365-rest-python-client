@@ -221,7 +221,7 @@ class Application(DirectoryObject):
         try:
             UUID(value)
         except (TypeError, ValueError):
-            return self.context.service_principals.get_by_name(value)
+            return self.context.service_principals.find_by_name(value, required=True)
         return self.context.service_principals.get_by_app_id(value)
 
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])

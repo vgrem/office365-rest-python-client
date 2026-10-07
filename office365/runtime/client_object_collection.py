@@ -631,6 +631,51 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.get().filter(expression).top(2).after_execute(_after_loaded)
         return return_type
 
+    def _find_by_filter(self, expression: str, *, required: bool = False) -> ClientObjectT:
+        """Shared implementation behind the typed ``find_by_*`` lookups.
+
+        Tolerant by default: a miss leaves the returned object uninitialized
+        (``is_loaded`` is ``False``) instead of raising. Pass ``required=True``
+        for the strict :meth:`single` semantics — a miss raises
+        :class:`~office365.runtime.types.exceptions.NotFoundException` and an
+        ambiguous match raises :class:`ValueError`.
+        """
+        if required:
+            return self.single(expression)
+        return self.first_or_none(expression)
+
+    def _find_by_predicate(
+        self,
+        predicate: Callable[[ClientObjectT], bool],
+        description: str,
+        *,
+        required: bool = False,
+    ) -> ClientObjectT:
+        """Client-side twin of :meth:`_find_by_filter` for endpoints without ``$filter``.
+
+        The collection is fetched and the first item satisfying ``predicate`` is
+        copied into a fresh object, leaving it uninitialized when nothing matches.
+        ``required=True`` raises
+        :class:`~office365.runtime.types.exceptions.NotFoundException` on a miss
+        and :class:`ValueError` on an ambiguous match, mirroring :meth:`single`.
+        """
+        return_type = self.create_typed_object()
+        self.add_child(return_type)
+
+        def _after_loaded(col: ClientObjectCollection) -> None:
+            matches = [item for item in col if predicate(item)]
+            if not matches:
+                if required:
+                    raise NotFoundException(return_type, description)
+                return
+            if required and len(matches) > 1:
+                raise ValueError(f"Ambiguous match found for filter: {description}")
+            for k, v in matches[0].properties.items():
+                return_type.set_property(k, v, False)
+
+        self.get().after_execute(_after_loaded)
+        return return_type
+
     @property
     def parent(self) -> ClientObject | None:
         """Get the parent object that owns this collection."""

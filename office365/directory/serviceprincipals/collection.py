@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from office365.count_collection import CountCollection
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
+from office365.runtime.decorators import deprecated
+from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.appid import AppIdPath
 
 
@@ -27,9 +29,24 @@ class ServicePrincipalCollection(CountCollection[ServicePrincipal]):
         """
         return ServicePrincipal(self.context, AppIdPath(app_id, self.resource_path))
 
+    def find_by_name(self, name: str, *, required: bool = False) -> ServicePrincipal:
+        """Look up a service principal by its ``displayName``.
+
+        Deferred — run with ``execute_query()``. Tolerant by default: when no
+        principal matches, the returned object is left uninitialized (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`). Pass
+        ``required=True`` to raise instead (or on an ambiguous match).
+
+        Args:
+            name (str): The service principal display name
+            required (bool): Raise on a missing or ambiguous match when ``True``
+        """
+        return self._find_by_filter(f"displayName eq '{escape_odata_string(name)}'", required=required)
+
+    @deprecated("Use find_by_name() instead.", version="4.0")
     def get_by_name(self, name: str) -> ServicePrincipal:
-        """Retrieves the service principal using displayName."""
-        return self.single(f"displayName eq '{name}'")
+        """Deprecated alias of :meth:`find_by_name` (strict)."""
+        return self.find_by_name(name, required=True)
 
     def ensure(self, app_id: str) -> ServicePrincipal:
         """Return the service principal for ``app_id``, creating it when absent.

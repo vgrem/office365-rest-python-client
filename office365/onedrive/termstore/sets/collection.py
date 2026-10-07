@@ -7,6 +7,7 @@ from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.decorators import deprecated
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -27,20 +28,34 @@ class SetCollection(EntityCollection[Set]):
         application=["TermStore.Read.All", "TermStore.ReadWrite.All"],
         notes="Get term set by name",
     )
+    def find_by_name(self, name: str, *, required: bool = False) -> Set:
+        """Look up a term set by its localized ``displayName``.
+
+        Term sets expose their name through ``localizedNames`` rather than a
+        filterable property, so the collection is fetched and matched
+        client-side. Deferred — run with ``execute_query()``. Tolerant by
+        default: when no set matches, the returned object is left uninitialized
+        (check :attr:`~office365.runtime.client_object.ClientObject.is_loaded`).
+        Pass ``required=True`` to raise instead (or on an ambiguous match).
+
+        Args:
+            name (str): The term set name (in en-US localization)
+            required (bool): Raise on a missing or ambiguous match when ``True``
+        """
+        return self._find_by_predicate(
+            lambda s: s.display_name == name,
+            f"displayName eq '{name}'",
+            required=required,
+        )
+
+    @deprecated("Use find_by_name() instead.", version="4.0")
     def get_by_name(self, name: str) -> Set:
-        """Returns the TermSet specified by its name."""
-        return_type = Set(self.context)
-        self.add_child(return_type)
+        """Deprecated alias of :meth:`find_by_name` (tolerant).
 
-        def _after_loaded(sets: SetCollection):
-            for s in sets:
-                if s.display_name == name:
-                    return_type.copy_from(s)
-                    return
-
-        self.get().after_execute(_after_loaded)
-
-        return return_type
+        Args:
+            name (str): The term set name (in en-US localization)
+        """
+        return self.find_by_name(name)
 
     @require_permission(
         delegated=["TermStore.ReadWrite.All"],
@@ -77,4 +92,4 @@ class SetCollection(EntityCollection[Set]):
         """Gets existing set by name or creates a new one (idempotent)."""
         from office365.runtime.queries.get_or_create import create_or_get
 
-        return create_or_get(create=lambda: self.add(name), find=lambda: self.get_by_name(name))
+        return create_or_get(create=lambda: self.add(name), find=lambda: self.find_by_name(name))

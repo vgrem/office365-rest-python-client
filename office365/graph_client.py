@@ -931,7 +931,9 @@ class GraphClient(ClientRuntimeContext):
         """
         from office365.directory.permissions.resource_name import ResourceName
 
-        self.service_principals.get_by_name(ResourceName.Graph).grant_delegated_permissions(app_id, scope)
+        self.service_principals.find_by_name(ResourceName.Graph, required=True).grant_delegated_permissions(
+            app_id, scope
+        )
         return self
 
     def get_delegated_permissions(self, app_id: str) -> ClientResult[StringCollection]:
@@ -942,7 +944,7 @@ class GraphClient(ClientRuntimeContext):
         """
         from office365.directory.permissions.resource_name import ResourceName
 
-        return self.service_principals.get_by_name(ResourceName.Graph).get_delegated_permissions(app_id)
+        return self.service_principals.find_by_name(ResourceName.Graph, required=True).get_delegated_permissions(app_id)
 
     def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Grants an application permission on Microsoft Graph.
@@ -953,7 +955,9 @@ class GraphClient(ClientRuntimeContext):
         """
         from office365.directory.permissions.resource_name import ResourceName
 
-        self.service_principals.get_by_name(ResourceName.Graph).grant_application_permissions(app_id, app_role)
+        self.service_principals.find_by_name(ResourceName.Graph, required=True).grant_application_permissions(
+            app_id, app_role
+        )
         return self
 
     def get_application_permissions(self, app_id: str) -> ClientResult[AppRoleCollection]:
@@ -964,7 +968,9 @@ class GraphClient(ClientRuntimeContext):
         """
         from office365.directory.permissions.resource_name import ResourceName
 
-        return self.service_principals.get_by_name(ResourceName.Graph).get_application_permissions(app_id)
+        return self.service_principals.find_by_name(ResourceName.Graph, required=True).get_application_permissions(
+            app_id
+        )
 
     def revoke_delegated_permissions(self, client_id: str, scope: str) -> Self:
         """Revokes a delegated permission on Microsoft Graph.
@@ -975,7 +981,9 @@ class GraphClient(ClientRuntimeContext):
         """
         from office365.directory.permissions.resource_name import ResourceName
 
-        self.service_principals.get_by_name(ResourceName.Graph).revoke_delegated_permissions(client_id, scope)
+        self.service_principals.find_by_name(ResourceName.Graph, required=True).revoke_delegated_permissions(
+            client_id, scope
+        )
         return self
 
     def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
@@ -987,5 +995,7 @@ class GraphClient(ClientRuntimeContext):
         """
         from office365.directory.permissions.resource_name import ResourceName
 
-        self.service_principals.get_by_name(ResourceName.Graph).revoke_application_permissions(app_id, app_role)
+        self.service_principals.find_by_name(ResourceName.Graph, required=True).revoke_application_permissions(
+            app_id, app_role
+        )
         return self

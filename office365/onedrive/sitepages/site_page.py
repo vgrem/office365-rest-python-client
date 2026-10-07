@@ -62,7 +62,7 @@ class SitePage(BaseSitePage):
 
         def _checkin(name: str | None):
             assert name is not None
-            list_item = self._pages_list.items.get_by_name(name)
+            list_item = self._pages_list.items.find_by_name(name, required=True)
             list_item.drive_item.checkin(message)
 
         self.ensure_property("name").after_execute(lambda _: _checkin(self.name))

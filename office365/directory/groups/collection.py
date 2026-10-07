@@ -4,6 +4,8 @@ from office365.count_collection import CountCollection
 from office365.directory.groups.group import Group
 from office365.directory.groups.profile import GroupProfile
 from office365.directory.permissions.require_permission import require_permission
+from office365.runtime.decorators import deprecated
+from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.types.collections import StringCollection
 
@@ -97,6 +99,21 @@ class GroupCollection(CountCollection[Group]):
 
         return self.create_m365(group_name).after_execute(_after_group_created)
 
+    def find_by_name(self, name: str, *, required: bool = False) -> Group:
+        """Look up a group by its ``displayName``.
+
+        Deferred — run with ``execute_query()``. Tolerant by default: when no
+        group matches, the returned object is left uninitialized (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`). Pass
+        ``required=True`` to raise instead (or on an ambiguous match).
+
+        Args:
+            name (str): The group display name
+            required (bool): Raise on a missing or ambiguous match when ``True``
+        """
+        return self._find_by_filter(f"displayName eq '{escape_odata_string(name)}'", required=required)
+
+    @deprecated("Use find_by_name() instead.", version="4.0")
     def get_by_name(self, name: str) -> Group:
-        """Retrieves group by displayName"""
-        return self.single(f"displayName eq '{name}'")
+        """Deprecated alias of :meth:`find_by_name` (strict)."""
+        return self.find_by_name(name, required=True)

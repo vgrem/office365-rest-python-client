@@ -4,6 +4,7 @@ from office365.count_collection import CountCollection
 from office365.directory.permissions.require_permission import require_permission
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
+from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -22,21 +23,21 @@ class UserCollection(CountCollection[User]):
         """
         return User(self.context, ResourcePath(name, self.resource_path))
 
-    def get_by_mail(self, user_mail: str) -> User:
-        """Queue a lookup of a user by their ``mail`` address.
+    def find_by_mail(self, user_mail: str, *, required: bool = False) -> User:
+        """Look up a user by their ``mail`` address.
 
         Unlike :meth:`get_by_principal_name` (which addresses the user directly
-        and raises on a 404), this filters ``GET /users?$filter=mail eq '...'``
-        and tolerates a missing address. Deferred — run with
-        ``execute_query()``; the returned user is left uninitialized when no
-        user has that mail (check
-        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`).
+        and raises on a 404), this filters ``GET /users?$filter=mail eq '...'``.
+        Deferred — run with ``execute_query()``. Tolerant by default: the
+        returned user is left uninitialized when no user has that mail (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`). Pass
+        ``required=True`` to raise instead (or on an ambiguous match).
 
         Args:
             user_mail (str): The user's ``mail`` address
+            required (bool): Raise on a missing or ambiguous match when ``True``
         """
-        escaped = user_mail.replace("'", "''")
-        return self.first_or_none(f"mail eq '{escaped}'")
+        return self._find_by_filter(f"mail eq '{escape_odata_string(user_mail)}'", required=required)
 
     def get_unlicensed(self) -> Self:
         """Get users with no assigned licenses (client-side filter)."""

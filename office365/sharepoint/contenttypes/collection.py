@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Dict, Optional, cast
 
+from office365.runtime.decorators import deprecated
+from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -19,13 +21,28 @@ class ContentTypeCollection(EntityCollection[ContentType]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, ContentType, resource_path, parent)
 
+    def find_by_name(self, name: str, *, required: bool = False) -> ContentType:
+        """Look up the content type with the given name from the collection.
+
+        Deferred — run with ``execute_query()``. Tolerant by default: when no
+        content type matches, the returned object is left uninitialized (check
+        :attr:`~office365.runtime.client_object.ClientObject.is_loaded`). Pass
+        ``required=True`` to raise instead (or on an ambiguous match).
+
+        Args:
+            name (str): Content type name
+            required (bool): Raise on a missing or ambiguous match when ``True``
+        """
+        return self._find_by_filter(f"Name eq '{escape_odata_string(name)}'", required=required)
+
+    @deprecated("Use find_by_name() instead.", version="4.0")
     def get_by_name(self, name: str) -> ContentType:
-        """Returns the content type with the given name from the collection.
+        """Deprecated alias of :meth:`find_by_name` (strict).
 
         Args:
             name (str): Content type name
         """
-        return self.single(f"Name eq '{name}'")
+        return self.find_by_name(name, required=True)
 
     def get_by_id(self, content_type_id: str) -> ContentType:
         """Returns the content type with the given identifier from the collection.
@@ -70,7 +87,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
 
         return create_or_get(
             create=lambda: self.add(info),
-            find=lambda: self.get_by_name(name),
+            find=lambda: self.find_by_name(name, required=True),
             on_conflict=on_conflict,
             reconcile=_reconcile,
         )
