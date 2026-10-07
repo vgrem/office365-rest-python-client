@@ -25,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   is the deferred get-or-create counterpart for list views (matched by title;
   `on_conflict="update"` reconciles scalar settings), replacing the hand-rolled
   enumerate-then-create idiom.
+- **Bulk collection writes:** `EntityCollection.update_all(*, where=None, **properties)`
+  sets properties on every loaded entity and queues one update each;
+  `EntityCollection.delete_all(*, where=None, ignore_missing=False)` queues one
+  delete each. Both are deferred — load the collection first, then run the queue
+  with `execute_query()` or `execute_batch()` to send the writes as `$batch`
+  requests. Each accepts an optional client-side `where` predicate, and `update_all`
+  also accepts a callable property value derived from each entity (e.g.
+  `items.update_all(Title=lambda i: f"{i.properties['Title']} (archived)")`).
+  `List.clear()` now delegates to `delete_all()`.
 - **SharePoint securable-object resolution:** `Web.get_securable_object(scope, *,
   list_title=None, url=None)` resolves, in one deferred call, the web
   (`"web"`/`"site"`), a list (`"list"`), or the list-item facet behind a folder

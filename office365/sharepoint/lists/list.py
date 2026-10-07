@@ -158,13 +158,7 @@ class List(SecurableObject):
 
             >>> target_list.clear().execute_batch()
         """
-
-        def _delete_all(items) -> None:
-            # snapshot: delete_object removes items from the collection while iterating
-            [item.delete_object() for item in list(items)]
-
-        items = self.items.select(["Id"]).get_all().execute_query()
-        _delete_all(items)
+        self.items.select(["Id"]).get_all().execute_query().delete_all()
         return self
 
     def create_document_set(self, name: str) -> DocumentSet:
