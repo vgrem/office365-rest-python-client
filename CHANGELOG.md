@@ -276,6 +276,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `find_by_name`. These names keep working unchanged otherwise.
 
 ### Documentation
+- **Async discoverability:** the README now has an "Async / await" section and
+  table-of-contents entry, the docs landing page lists the async guide in its
+  reading path and *What you get*, and `docs/async.md` opens with a note that sync
+  is the default and lifecycle hooks are synchronous.
 - **Long-running-operations guide** (`docs/long-running-operations.md`): the
   end-to-end story for the Graph async pattern — the raw `OperationPoller`,
   waitable results and operation entities, `Prefer: respond-async`, the status
@@ -301,6 +305,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (start here → common tasks → full catalog), and the auth pages cross-link it.
 
 ### Fixed
+- **Contextvars preserved across offloaded async work:** every blocking call
+  handed to the offload pool (transport sends, streaming reads, `beforeExecute`
+  hooks, batch execution, file I/O, exports and uploads) now runs inside the
+  caller's `contextvars` context, so tenant/correlation ids and logging filters
+  survive the thread hop instead of silently disappearing.
 - **`single()` no longer downloads every match:** the bounded lookup now sends
   `$top=2` (previously unbounded), so an ambiguous match is rejected after two
   rows instead of materializing the entire result set.
