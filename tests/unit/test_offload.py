@@ -10,6 +10,7 @@ lifecycle, the configure/shutdown API and the per-transport override.
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
@@ -20,12 +21,16 @@ from office365.runtime.transport.base import BaseTransport
 from office365.runtime.transport.offload import (
     configure_offload_executor,
     get_offload_executor,
+    run_offloaded,
     shutdown_offload_executor,
 )
 from tests._scripted_transport import build_response
 
 _URL = "https://contoso.example.com/_api/web"
 _SHARED_PREFIX = "office365-offload"
+
+#: Context variable used to prove propagation/isolations across the thread hop.
+_REQUEST_ID: contextvars.ContextVar[str | None] = contextvars.ContextVar("request_id", default=None)
 
 
 @pytest.fixture(autouse=True)
@@ -120,3 +125,50 @@ def test_shutdown_drops_pool_and_restores_defaults() -> None:
     transport = _ThreadNameTransport()
     asyncio.run(transport.execute_async(RequestOptions(url=_URL)))
     assert transport.thread_names[0].startswith(_SHARED_PREFIX)
+
+
+def test_run_offloaded_propagates_contextvars() -> None:
+    """A context var set on the loop is visible inside the offloaded callable."""
+
+    async def _capture() -> str | None:
+        token = _REQUEST_ID.set("abc")
+        try:
+            return await run_offloaded(_REQUEST_ID.get)
+        finally:
+            _REQUEST_ID.reset(token)
+
+    assert asyncio.run(_capture()) == "abc"
+
+
+def test_run_offloaded_does_not_leak_context() -> None:
+    """A context var set inside the worker does not leak back to the caller."""
+
+    async def _run() -> None:
+        await run_offloaded(_REQUEST_ID.set, "worker")
+        assert _REQUEST_ID.get() is None
+
+    asyncio.run(_run())
+
+
+def test_run_offloaded_passes_args_and_returns_value() -> None:
+    def _scaled(a: int, b: int, *, scale: int = 1) -> int:
+        return (a + b) * scale
+
+    expected = 50
+    assert asyncio.run(run_offloaded(_scaled, 2, 3, scale=10)) == expected
+
+
+def test_run_offloaded_propagates_exception() -> None:
+    def _boom() -> None:
+        raise ValueError("boom")
+
+    with pytest.raises(ValueError, match="boom"):
+        asyncio.run(run_offloaded(_boom))
+
+
+def test_run_offloaded_uses_given_executor() -> None:
+    def _thread_name() -> str:
+        return threading.current_thread().name
+
+    with ThreadPoolExecutor(max_workers=1, thread_name_prefix="ctx-pool") as pool:
+        assert asyncio.run(run_offloaded(_thread_name, executor=pool)) == "ctx-pool_0"

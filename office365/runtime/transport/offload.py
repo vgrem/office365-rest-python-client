@@ -20,9 +20,14 @@ A transport can bypass the shared pool with its own executor by setting
 
 from __future__ import annotations
 
+import asyncio
+import contextvars
+import functools
 import threading
 from concurrent.futures import Executor, ThreadPoolExecutor
-from typing import Optional
+from typing import Callable, Optional, TypeVar
+
+T = TypeVar("T")
 
 #: Default worker-thread name prefix for the shared offload pool.
 _DEFAULT_THREAD_NAME_PREFIX = "office365-offload"
@@ -104,6 +109,38 @@ def configure_offload_executor(
 def get_offload_executor() -> Executor:
     """Return the process-wide offload executor, creating it on first use."""
     return _pool.get()
+
+
+async def run_offloaded(
+    fn: Callable[..., T],
+    *args: object,
+    executor: Optional[Executor] = None,
+    **kwargs: object,
+) -> T:
+    """Run blocking ``fn`` on the offload pool, propagating contextvars.
+
+    ``loop.run_in_executor`` does not copy the caller's :mod:`contextvars`
+    context (unlike :func:`asyncio.to_thread`), so tenant/correlation ids and
+    logging filters set on the event loop would be invisible on the worker
+    thread. This snapshots the context in the async task and runs ``fn`` inside
+    it. Prefer it over ``loop.run_in_executor`` at offload sites that must
+    observe the caller's context (transport sends, streaming reads, auth hooks,
+    blocking file I/O).
+
+    Args:
+        fn: The blocking callable to run on the pool.
+        *args: Positional arguments for ``fn``.
+        executor: Optional executor; defaults to the process-wide offload pool
+            from :func:`get_offload_executor`.
+        **kwargs: Keyword arguments for ``fn``.
+
+    Returns:
+        Whatever ``fn`` returns.
+    """
+    loop = asyncio.get_running_loop()
+    ctx = contextvars.copy_context()
+    call = functools.partial(ctx.run, fn, *args, **kwargs)
+    return await loop.run_in_executor(executor or get_offload_executor(), call)
 
 
 def shutdown_offload_executor(wait: bool = True) -> None:
