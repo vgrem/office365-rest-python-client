@@ -16,3 +16,8 @@ class Audit(Entity):
         to determine the behavior for the current user. The default, if not disabled on the Web application, is "true".
         """
         return self.properties.get("AllowDesigner", None)
+
+    @property
+    def audit_flags(self) -> Optional[int]:
+        """Gets the AuditFlags property"""
+        return self.properties.get("AuditFlags", None)
