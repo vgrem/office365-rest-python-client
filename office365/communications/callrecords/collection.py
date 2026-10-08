@@ -11,8 +11,16 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.query_capabilities import query_capabilities
+
+_DOC = "https://learn.microsoft.com/en-us/graph/api/callrecords-callrecord-list"
 
 
+@query_capabilities(
+    unsupported={"top"},
+    doc=_DOC,
+    note="the callRecords feed rejects $top",
+)
 class CallRecordCollection(EntityCollection[CallRecord]):
     """Represents a collection of direct routing call records."""
 

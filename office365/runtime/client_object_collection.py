@@ -23,6 +23,12 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.json_format import ODataJsonFormat
 from office365.runtime.operations import Progress
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.query_capabilities import (
+    QueryCapability,
+    QueryOptionNotSupportedError,
+    hint,
+    query_capabilities_of,
+)
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.types.exceptions import NotFoundException
 
@@ -47,6 +53,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
 
     _list_view_threshold: int | None = None
     _truncation_hint: str = "page it with get_all(page_size=2000)"
+    #: OData query options this collection's endpoint rejects (or the exact set
+    #: it allows). Declared with
+    #: :func:`~office365.runtime.query_capabilities.query_capabilities`.
+    _query_capability_decl: Optional[QueryCapability] = None
 
     def __init__(
         self,
@@ -287,6 +297,36 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """
         return [cast(Dict[str, Any], item.to_json(json_format)) for item in self._data]
 
+    def _ensure_query_option(self, option: str) -> bool:
+        """Whether ``option`` may be applied to this collection's endpoint.
+
+        Collections declare this with
+        :func:`~office365.runtime.query_capabilities.query_capabilities` — e.g. the
+        ``callRecords`` feed rejects ``$top``. Raises
+        :class:`QueryOptionNotSupportedError` by default, or warns and returns
+        ``False`` (so the option is ignored) when the declaration uses
+        ``on_unsupported="warn"``.
+        """
+        capability = query_capabilities_of(type(self))
+        if capability is None or capability.supports(option):
+            return True
+        if capability.on_unsupported == "warn":
+            warnings.warn(hint(type(self), option, capability), UserWarning, stacklevel=3)
+            return False
+        raise QueryOptionNotSupportedError(type(self), option, capability)
+
+    def select(self, names: List[str]) -> Self:
+        """Include specific properties in the query (``$select``)."""
+        if self._ensure_query_option("select"):
+            super().select(names)
+        return self
+
+    def expand(self, names: List[str]) -> Self:
+        """Include related resources in the query (``$expand``)."""
+        if self._ensure_query_option("expand"):
+            super().expand(names)
+        return self
+
     def filter(self, expression: str) -> Self:
         """
         Get the first item matching the filter criteria.
@@ -300,7 +340,8 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Raises:
             ValueError: If no matching items found
         """
-        self.query_options.filter = expression
+        if self._ensure_query_option("filter"):
+            self.query_options.filter = expression
         return self
 
     def order_by(self, value: str) -> Self:
@@ -313,7 +354,8 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Returns:
             self: Supports fluent method chaining
         """
-        self.query_options.order_by = value
+        if self._ensure_query_option("order_by"):
+            self.query_options.order_by = value
         return self
 
     def skip(self, value: int) -> Self:
@@ -326,7 +368,8 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Returns:
             self: Supports fluent method chaining
         """
-        self.query_options.skip = value
+        if self._ensure_query_option("skip"):
+            self.query_options.skip = value
         return self
 
     def top(self, value: int) -> Self:
@@ -339,7 +382,8 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         Returns:
             self: Supports fluent method chaining
         """
-        self.query_options.top = value
+        if self._ensure_query_option("top"):
+            self.query_options.top = value
         return self
 
     def paged(self, page_size: int | None = None, page_loaded: Callable[[Self], None] | None = None) -> Self:

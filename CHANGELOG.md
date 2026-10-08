@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Declarative OData query-option capabilities:** `@query_capabilities(...)` on a
+  `ClientObjectCollection` subclass declares the query options an endpoint rejects
+  (or the exact set it allows). The fluent setters — `top`, `skip`, `order_by`,
+  `filter`, `select`, `expand`, and therefore `paged` / `get_all` — raise
+  `QueryOptionNotSupportedError` for an unsupported option, or warn and ignore it
+  with `on_unsupported="warn"`. Applied to `CallRecordCollection`, whose feed
+  rejects `$top`, so the `call_records` example no longer sends it. Mirrors the
+  `@odata` / `@limit` / `@require_permission` declare-collect-enforce family.
 - **SharePoint upload parity:** `Folder.ensure_file(relative_path, content, *,
   on_conflict="skip", chunk_size=...)` is the deferred get-or-upload counterpart
   of `Folder.upload_file` — it creates missing parent folders, then reuses the
