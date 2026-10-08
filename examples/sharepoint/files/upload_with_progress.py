@@ -2,31 +2,18 @@
 Upload a large file with a tqdm progress bar.
 
 Demonstrates the typed ``progress`` hook: the library only requires a
-``Callable[[Progress], None]`` — wire tqdm yourself with the small helper below
-(or use ``rich``/``logging``/any callback). tqdm is optional.
+``Callable[[Progress], None]``. ``progress_bar`` is the optional tqdm adapter
+from ``office365.runtime.progress`` (install
+``office365-rest-python-client[progress]``); without tqdm it is a no-op, so the
+example still runs (or use ``rich``/``logging``/any callback).
 """
 
 import argparse
 import os
 
+from office365.runtime.progress import progress_bar
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, site_url, tenant, username
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p):
-        if p.total is not None and bar.total is None:
-            bar.total = p.total
-        bar.update(p.done - bar.n)
-        if p.total is not None and p.done >= p.total:
-            bar.close()
-
-    return hook
 
 
 def main():

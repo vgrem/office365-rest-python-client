@@ -46,5 +46,7 @@ def progress_bar(description: str, *, total: Optional[int] = None) -> ProgressCa
         if progress.total is not None and bar.total != progress.total:
             bar.total = progress.total
         bar.update(progress.done - bar.n)
+        if progress.total is not None and progress.done >= progress.total:
+            bar.close()
 
     return hook

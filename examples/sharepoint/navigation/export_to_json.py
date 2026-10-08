@@ -15,22 +15,9 @@ https://learn.microsoft.com/en-us/sharepoint/dev/apis/navigation-api-reference
 import argparse
 import json
 
-from office365.runtime.operations import Progress
+from office365.runtime.progress import progress_bar
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.navigation.nodes.node import NavigationNode
 from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p: Progress[NavigationNode]) -> None:
-        bar.update(p.done - bar.n)
-
-    return hook
 
 
 def main():

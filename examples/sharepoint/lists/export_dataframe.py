@@ -12,6 +12,7 @@ Requires: pip install office365-rest-python-client[pandas]
 
 import argparse
 
+from office365.runtime.progress import progress_bar
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
@@ -23,22 +24,6 @@ def _page_loaded(col) -> None:
     print how far the read has progressed.
     """
     print(f"  loaded {len(col)} items so far")
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p):
-        if p.total is not None and bar.total is None:
-            bar.total = p.total
-        bar.update(p.done - bar.n)
-        if p.total is not None and p.done >= p.total:
-            bar.close()
-
-    return hook
 
 
 def main():

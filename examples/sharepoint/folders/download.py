@@ -13,10 +13,14 @@ from tests.settings import client_id, password, team_site_url, tenant, username
 
 
 def download_files(source_folder, download_path: str) -> None:
-    from tqdm import tqdm
+    try:
+        from tqdm import tqdm
+    except ImportError:  # tqdm is optional
+        tqdm = None
 
     files = source_folder.files.get().execute_query()
-    for file in tqdm(files, desc="Downloading"):
+    iterable = tqdm(files, desc="Downloading") if tqdm else files
+    for file in iterable:
         file_name = file.name or file.properties.get("LeafName") or "download.bin"
         local_file_path = os.path.join(download_path, str(file_name))
         with open(local_file_path, "wb") as local_file:

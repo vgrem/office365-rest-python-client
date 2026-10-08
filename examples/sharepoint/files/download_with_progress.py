@@ -2,32 +2,18 @@
 Download a folder into a zip archive with a tqdm progress bar.
 
 Demonstrates the typed ``progress`` hook on ``download_folder`` (one hook call
-per downloaded file). The library only requires a ``Callable[[Progress], None]``
-— wire tqdm yourself with the small helper below.
+per downloaded file). ``progress_bar`` is the optional tqdm adapter from
+``office365.runtime.progress`` (install ``office365-rest-python-client[progress]``);
+without tqdm it is a no-op, so the example still runs.
 """
 
 import argparse
 import os
 import tempfile
 
+from office365.runtime.progress import progress_bar
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, site_url, tenant, username
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p):
-        if p.total is not None and bar.total is None:
-            bar.total = p.total
-        bar.update(p.done - bar.n)
-        if p.total is not None and p.done >= p.total:
-            bar.close()
-
-    return hook
 
 
 def main():

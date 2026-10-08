@@ -17,7 +17,7 @@ import csv
 
 from office365.graph_client import GraphClient
 from office365.outlook.calendar.email_address import EmailAddress
-from office365.runtime.operations import Progress
+from office365.runtime.progress import progress_bar
 from tests.settings import client_id, password, tenant, username
 
 
@@ -32,22 +32,6 @@ def build_records(path: str) -> list[dict]:
                 record["emailAddresses"] = [EmailAddress(address=e) for e in emails]
             records.append(record)
     return records
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p: Progress) -> None:
-        if p.total is not None and bar.total is None:
-            bar.total = p.total
-        bar.update(p.done - bar.n)
-        if p.total is not None and p.done >= p.total:
-            bar.close()
-
-    return hook
 
 
 def main():

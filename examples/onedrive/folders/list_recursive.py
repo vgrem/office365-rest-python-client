@@ -12,21 +12,8 @@ https://learn.microsoft.com/en-us/graph/api/driveitem-list-children
 import argparse
 
 from office365.graph_client import GraphClient
-from office365.onedrive.driveitems.driveItem import DriveItem
-from office365.runtime.operations import Progress
+from office365.runtime.progress import progress_bar
 from tests.settings import client_id, password, tenant, username
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p: Progress[DriveItem]) -> None:
-        bar.update(p.done - bar.n)
-
-    return hook
 
 
 def main():

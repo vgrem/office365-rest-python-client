@@ -54,6 +54,7 @@ optional-dependencies.duckdb = [
 ]
 optional-dependencies.examples = [
   "faker",
+  "tqdm>=4.60,<5",
 ]
 optional-dependencies.excel = [
   "openpyxl>=3.1",
@@ -75,6 +76,9 @@ optional-dependencies.pandas = [
 ]
 optional-dependencies.parquet = [
   "pyarrow>=14",
+]
+optional-dependencies.progress = [
+  "tqdm>=4.60,<5",
 ]
 optional-dependencies.sql = [
   "sqlalchemy>=2",

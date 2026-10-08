@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.8.0"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
@@ -2162,6 +2162,7 @@ duckdb = [
 ]
 examples = [
     { name = "faker" },
+    { name = "tqdm" },
 ]
 excel = [
     { name = "openpyxl" },
@@ -2185,6 +2186,9 @@ pandas = [
 ]
 parquet = [
     { name = "pyarrow" },
+]
+progress = [
+    { name = "tqdm" },
 ]
 sql = [
     { name = "sqlalchemy", version = "2.0.54", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -2232,9 +2236,11 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.4,<3" },
     { name = "requests-ntlm", marker = "extra == 'ntlm'" },
     { name = "sqlalchemy", marker = "extra == 'sql'", specifier = ">=2" },
+    { name = "tqdm", marker = "extra == 'examples'", specifier = ">=4.60,<5" },
+    { name = "tqdm", marker = "extra == 'progress'", specifier = ">=4.60,<5" },
     { name = "typing-extensions", specifier = ">=4.5" },
 ]
-provides-extras = ["azure", "duckdb", "examples", "excel", "httpx", "notebooks", "ntlm", "pandas", "parquet", "sql"]
+provides-extras = ["azure", "duckdb", "examples", "excel", "httpx", "notebooks", "ntlm", "pandas", "parquet", "progress", "sql"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -3727,6 +3733,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/56/ae/047938e828cafc8eca4c908fafb6588fee944e3af39a0af9d7b602499ae5/tornado-6.5.10-cp39-abi3-win32.whl", hash = "sha256:302eb1e0e3e159314eb591920529fdea80acca92df5510a2cec5bbd4f099ec72", size = 468387, upload-time = "2026-09-15T13:47:44.556Z" },
     { url = "https://files.pythonhosted.org/packages/d8/d4/5901517f05affd752490f6a654ba31b7474664e8dd80bd045a00c220bd88/tornado-6.5.10-cp39-abi3-win_amd64.whl", hash = "sha256:37ae8f150cecfdbf747fc4e12f5e9a97ecd8cf1d4cdb3f119e2de84b11196918", size = 468828, upload-time = "2026-09-15T13:47:45.961Z" },
     { url = "https://files.pythonhosted.org/packages/f3/1a/fd497f3a7f7b74bb04f4b94536b5c9f80742b5d50501fd27977652ddec16/tornado-6.5.10-cp39-abi3-win_arm64.whl", hash = "sha256:ce045d3c298fddd30e89a2777f97039d1b641eb9518ac7b26a4721903539c694", size = 467847, upload-time = "2026-09-15T13:47:47.283Z" },
+]
+
+[[package]]
+name = "tqdm"
+version = "4.70.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0d/ea/b2a5bd54b28a324dae8211928b2d730b6547500342c7e6c6dea08bd0a485/tqdm-4.70.1.tar.gz", hash = "sha256:cefd0eca11b2a37a3aee776544d4f4ae913f02688135b5556b8788dfa474afc4", size = 171846, upload-time = "2026-09-11T07:25:16.601Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a7/03/921a3d3c75785aca9ebfbfcabfbc3a1be12e2ab5265deb026d55a5a3f83e/tqdm-4.70.1-py3-none-any.whl", hash = "sha256:c293e525e6fef9c20e8728fd4612df02a0aa31bb5fe91ecd93e123b1b7bffa73", size = 80199, upload-time = "2026-09-11T07:25:14.599Z" },
 ]
 
 [[package]]

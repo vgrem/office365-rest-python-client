@@ -16,6 +16,7 @@ import tempfile
 
 from faker import Faker
 from office365.runtime.converters.csv_reader import read_csv_records
+from office365.runtime.progress import progress_bar
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, password, team_site_url, tenant, username
 
@@ -40,22 +41,6 @@ def make_source_csv(path: str, amount: int) -> None:
                     "WorkCountry": fake.country(),
                 }
             )
-
-
-def progress_bar(description: str):
-    """tqdm-backed hook — the library only needs a ``Callable[[Progress], None]``."""
-    from tqdm import tqdm
-
-    bar = tqdm(desc=description)
-
-    def hook(p):
-        if p.total is not None and bar.total is None:
-            bar.total = p.total
-        bar.update(p.done - bar.n)
-        if p.total is not None and p.done >= p.total:
-            bar.close()
-
-    return hook
 
 
 def main():

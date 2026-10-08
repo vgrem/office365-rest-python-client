@@ -15,6 +15,39 @@ _SECOND_DONE = 10
 _ADOPTED_TOTAL = 12
 
 
+class _FakeBar:
+    """Minimal stand-in for ``tqdm.tqdm`` recording updates and closes."""
+
+    def __init__(self, desc=None, total=None):
+        self.desc = desc
+        self.total = total
+        self.n = 0
+        self.closed = False
+        self.updates: list[int] = []
+
+    def update(self, n):
+        self.n += n
+        self.updates.append(n)
+
+    def close(self):
+        self.closed = True
+
+
+def _install_fake_tqdm(monkeypatch) -> list[_FakeBar]:
+    """Register a fake ``tqdm`` module and return every bar it creates."""
+    instances: list[_FakeBar] = []
+
+    class FakeBar(_FakeBar):
+        def __init__(self, desc=None, total=None):
+            super().__init__(desc=desc, total=total)
+            instances.append(self)
+
+    fake = types.ModuleType("tqdm")
+    fake.tqdm = FakeBar
+    monkeypatch.setitem(sys.modules, "tqdm", fake)
+    return instances
+
+
 def test_progress_bar_without_tqdm_is_a_noop(monkeypatch):
     real_import = builtins.__import__
 
@@ -31,23 +64,7 @@ def test_progress_bar_without_tqdm_is_a_noop(monkeypatch):
 
 
 def test_progress_bar_advances_a_fake_tqdm(monkeypatch):
-    instances: list = []
-
-    class FakeBar:
-        def __init__(self, desc=None, total=None):
-            self.desc = desc
-            self.total = total
-            self.n = 0
-            self.updates: list[int] = []
-            instances.append(self)
-
-        def update(self, n):
-            self.n += n
-            self.updates.append(n)
-
-    fake = types.ModuleType("tqdm")
-    fake.tqdm = FakeBar
-    monkeypatch.setitem(sys.modules, "tqdm", fake)
+    instances = _install_fake_tqdm(monkeypatch)
 
     hook = progress_bar("scan", total=_TOTAL)
     hook(Progress(done=_FIRST_DONE, total=_TOTAL))
@@ -58,3 +75,13 @@ def test_progress_bar_advances_a_fake_tqdm(monkeypatch):
     assert bar.updates == [_FIRST_DONE, _SECOND_DONE - _FIRST_DONE]
     assert bar.n == _SECOND_DONE
     assert bar.total == _ADOPTED_TOTAL
+    assert bar.closed is False
+
+
+def test_progress_bar_closes_when_complete(monkeypatch):
+    instances = _install_fake_tqdm(monkeypatch)
+
+    hook = progress_bar("scan", total=_TOTAL)
+    hook(Progress(done=_TOTAL, total=_TOTAL))
+
+    assert instances[0].closed is True

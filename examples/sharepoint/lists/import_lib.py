@@ -22,28 +22,16 @@ import argparse
 import zipfile
 from pathlib import Path
 
+from office365.runtime.progress import progress_bar
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from tests.settings import client_id, password, team_site_url, tenant, username
-from tqdm import tqdm
 
 
 def zip_file_count(zip_path: Path) -> int:
     """Number of file entries in a zip (directory entries are skipped)."""
     with zipfile.ZipFile(zip_path) as zf:
         return sum(1 for name in zf.namelist() if not name.endswith("/"))
-
-
-def progress_bar(total: int):
-    """Compact tqdm progress hook for the upload."""
-    bar = tqdm(total=total, desc="Uploading")
-
-    def hook(p) -> None:
-        bar.update(p.done - bar.n)
-        if p.done >= p.total:
-            bar.close()
-
-    return hook
 
 
 def main():
@@ -65,7 +53,7 @@ def main():
     ).execute_query()
 
     total = zip_file_count(zip_path)
-    hook = progress_bar(total) if not args.no_progress else None
+    hook = progress_bar("Uploading", total=total) if not args.no_progress else None
     lib.root_folder.upload_folder_from_zip(zip_path, progress=hook).execute_query()
     print(f"Imported {total} files from '{zip_path}' into '{lib.title}'")
 
