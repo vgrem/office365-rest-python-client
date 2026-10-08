@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import keyword
 from typing import TYPE_CHECKING
 
 from generator.odata.member import MemberInformation
@@ -32,7 +33,7 @@ class MemberBuilder:
 
     @property
     def name(self):
-        if self.schema.Name in ["import", "None", "or", "and", "global"]:
+        if keyword.iskeyword(self.schema.Name):
             return f"{self.schema.Name}_"
         return self.schema.Name
 

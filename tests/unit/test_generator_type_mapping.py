@@ -4,38 +4,38 @@ from __future__ import annotations
 
 import datetime
 
-from generator.builders import type_mapping
+import pytest
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.property import PropertyBuilder
-from generator.builders.type_resolver import ClientTypeResolver
+from generator.builders.type_registry import TypeRegistry, item_name, python_name
 from generator.odata.property import PropertyInformation
 from office365.runtime.odata.type import ODataType
 
 
 def test_primitive_type_name_formatting():
-    assert type_mapping.client_type_name("Edm.String") == "str"
-    assert type_mapping.client_type_name("Edm.Int32") == "int"
-    assert type_mapping.client_type_name("Edm.Guid") == "UUID"
-    assert type_mapping.client_type_name("Edm.DateTimeOffset") == "datetime"
-    assert type_mapping.client_type_name("Edm.Stream") == "bytes"
+    assert python_name("Edm.String") == "str"
+    assert python_name("Edm.Int32") == "int"
+    assert python_name("Edm.Guid") == "UUID"
+    assert python_name("Edm.DateTimeOffset") == "datetime"
+    assert python_name("Edm.Stream") == "bytes"
 
 
 def test_collection_type_name_formatting():
-    assert type_mapping.client_type_name("Collection(Edm.String)") == "StringCollection"
-    assert type_mapping.client_type_name("Collection(Edm.Int32)") == "ClientValueCollection"
-    assert type_mapping.client_type_name("Collection(SP.Web)") == "ClientValueCollection[Web]"
-    assert type_mapping.client_type_name("Collection(SP.Web)", is_object_type=True) == "EntityCollection[Web]"
+    assert python_name("Collection(Edm.String)") == "StringCollection"
+    assert python_name("Collection(Edm.Int32)") == "ClientValueCollection"
+    assert python_name("Collection(SP.Web)") == "ClientValueCollection[Web]"
+    assert python_name("Collection(SP.Web)", is_object_type=True) == "EntityCollection[Web]"
 
 
 def test_entity_and_complex_type_name_formatting():
-    assert type_mapping.client_type_name("SP.Web") == "Web"
-    assert type_mapping.client_type_name("microsoft.graph.user") == "User"
-    assert type_mapping.client_type_name(None) == ""
+    assert python_name("SP.Web") == "Web"
+    assert python_name("microsoft.graph.user") == "User"
+    assert python_name(None) == ""
 
 
 def test_item_type_name_formatting():
-    assert type_mapping.item_client_type_name("Collection(SP.Web)") == "Web"
-    assert type_mapping.item_client_type_name("SP.Web") == "Web"
+    assert item_name("Collection(SP.Web)") == "Web"
+    assert item_name("SP.Web") == "Web"
 
 
 def test_primitive_and_collection_lookups():
@@ -50,11 +50,26 @@ def test_primitive_and_collection_lookups():
 
 def test_odata_v3_time_primitive():
     # Edm.Time is the OData v3 name for a time-of-day (v4: Edm.TimeOfDay)
-    assert type_mapping.client_type_name("Edm.Time") == "time"
+    assert python_name("Edm.Time") == "time"
     assert ODataType.is_primitive_name("Edm.Time") is True
     assert ODataType.primitive_type_for("Edm.Time") is datetime.time
     # reverse lookup keeps returning the v4 name
     assert ODataType.resolve_type_name(datetime.time) == "Edm.TimeOfDay"
+
+
+def test_odata_v3_numeric_primitives():
+    assert python_name("Edm.Byte") == "int"
+    assert python_name("Edm.Int16") == "int"
+    assert python_name("Edm.Decimal") == "float"
+    assert ODataType.primitive_type_for("Edm.Byte") is int
+    assert ODataType.primitive_type_for("Edm.Decimal") is float
+
+
+def test_unmapped_edm_primitive_raises():
+    with pytest.raises(ValueError):
+        python_name("Edm.Unknown")
+    with pytest.raises(ValueError):
+        python_name("Collection(Edm.Unknown)")
 
 
 def test_runtime_type_utility_is_pure():
@@ -65,26 +80,37 @@ def test_runtime_type_utility_is_pure():
 
 
 def test_resolver_finds_generated_class_and_caches():
-    resolver = ClientTypeResolver(["office365.sharepoint"])
+    resolver = TypeRegistry(["office365.sharepoint"])
     resolved = resolver.resolve("SP.Web")
     assert resolved is not None
     assert resolved.__name__ == "Web"
     assert resolver.resolve("SP.Web") is resolved
     assert resolver.resolve("SP.Unknown") is None
-    ClientTypeResolver.cache_clear()
+    TypeRegistry.cache_clear()
+
+
+def test_ambiguous_short_names_resolve_by_entity_type_name():
+    """``SP.User`` and ``SP.Directory.User`` are distinct classes named ``User``."""
+    resolver = TypeRegistry(["office365.sharepoint"], namespace="SP")
+    assert resolver.module_for("SP.User") == "office365.sharepoint.principal.users.user"
+    assert resolver.module_for("SP.Directory.User") == "office365.sharepoint.directory.users.user"
+    assert resolver.module_for("SP.Group") == "office365.sharepoint.principal.groups.group"
+    assert resolver.module_for("SP.Directory.Group") == "office365.sharepoint.directory.groups.group"
+    TypeRegistry.cache_clear()
 
 
 def test_property_builder_uses_injected_resolver():
-    resolver = ClientTypeResolver(["office365.sharepoint"])
+    resolver = TypeRegistry(["office365.sharepoint"])
     prop = PropertyBuilder(PropertyInformation(Name="Web", TypeName="SP.Web"), resolver=resolver)
     assert prop.client_type_name == "Web"
     assert prop.resolve_client_type() is not None
 
 
 def test_collector_resolves_property_imports():
-    resolver = ClientTypeResolver(["office365.sharepoint"])
+    resolver = TypeRegistry(["office365.sharepoint"])
     prop = PropertyBuilder(PropertyInformation(Name="Web", TypeName="SP.Web"), resolver=resolver)
     collector = TypeReferenceCollector(resolver)
     collector.add(prop.client_type_name)
     collector.add_custom(prop)
-    assert collector._entries["Web"] == "office365.sharepoint.webs.web"
+    # annotation-only imports live under TYPE_CHECKING (runtime via the getter)
+    assert collector._type_checking["Web"] == "office365.sharepoint.webs.web"

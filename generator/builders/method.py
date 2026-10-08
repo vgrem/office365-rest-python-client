@@ -3,12 +3,11 @@ from __future__ import annotations
 import ast
 from typing import TYPE_CHECKING, List, Optional
 
-from generator.builders import type_mapping
 from generator.builders.naming import to_snake_case
-from generator.builders.type_descriptor import ParameterType, ReturnType
+from generator.builders.type_registry import ParameterType, ReturnType, TypeKind, item_name, python_name
 
 if TYPE_CHECKING:
-    from generator.builders.type_resolver import ClientTypeResolver
+    from generator.builders.type_registry import TypeRegistry
     from generator.odata.method import MethodInformation
 
 
@@ -24,11 +23,12 @@ class MethodBuilder:
         self,
         schema: MethodInformation,
         status: str = "detached",
-        resolver: Optional["ClientTypeResolver"] = None,
+        resolver: Optional["TypeRegistry"] = None,
     ):
         self.schema = schema
         self.status = status
         self.docstring: Optional[str] = None
+        self._resolver = resolver
         self._return_type = ReturnType(schema.ReturnTypeFullName, resolver)
 
     def build(self, context_type: str = "ClientContext") -> List[ast.stmt]:
@@ -38,12 +38,42 @@ class MethodBuilder:
         schema = self.schema
         params = self._params()
         is_static = bool(schema.IsStatic)
-        receiver = f"{type_mapping.client_type_name(schema.BindingTypeFullName)}(context)" if is_static else "self"
+        receiver = f"{python_name(schema.BindingTypeFullName)}(context)" if is_static else "self"
         context_expr = "context" if is_static else "self.context"
         signature = self._signature(context_type, params, is_static)
         body = self._body(receiver, context_expr, params, is_static)
+        imports = self.runtime_imports()
+        if imports:
+            body = "\n".join(imports) + "\n" + body
         prefix = "@staticmethod\n" if is_static else ""
         return f"{prefix}def {signature}:\n{self._indent(self._docstring(params))}\n{self._indent(body)}\n"
+
+    def runtime_imports(self) -> List[str]:
+        """Local imports for types the method constructs at runtime (cycle-safe)."""
+        if self._resolver is None:
+            return []
+        imports = []
+        for name in self._runtime_type_names():
+            module = self._resolver.module_for(name)
+            if module:
+                imports.append(f"from {module} import {name}")
+        return sorted(set(imports))
+
+    def _runtime_type_names(self) -> List[str]:
+        """Python type names referenced inside the method body."""
+        schema = self.schema
+        names: List[str] = []
+        if schema.IsStatic and schema.BindingTypeFullName:
+            names.append(python_name(schema.BindingTypeFullName))
+        non_scalar = (
+            TypeKind.ENTITY,
+            TypeKind.ENTITY_COLLECTION,
+            TypeKind.CLIENT_VALUE,
+            TypeKind.CLIENT_VALUE_COLLECTION,
+        )
+        if schema.ReturnTypeFullName and self._return_type.kind in non_scalar:
+            names.append(item_name(schema.ReturnTypeFullName))
+        return [name for name in names if name]
 
     def _signature(self, context_type: str, params: list, is_static: bool) -> str:
         first = f"context: {context_type}" if is_static else "self"

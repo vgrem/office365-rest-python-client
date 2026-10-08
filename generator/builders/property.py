@@ -6,24 +6,39 @@ from typing import TYPE_CHECKING, List, Optional
 
 from office365.runtime.odata.type import ODataType
 
-from generator.builders import type_mapping
 from generator.builders.naming import to_snake_case
+from generator.builders.type_registry import item_name, python_name
+
+#: Python names that never need an import (builtins / stdlib shorthands).
+_SCALAR_TYPE_NAMES = {
+    "str",
+    "int",
+    "bool",
+    "float",
+    "bytes",
+    "date",
+    "time",
+    "datetime",
+    "dict",
+    "list",
+    "UUID",
+}
 
 if TYPE_CHECKING:
     from generator.builders.template_context import TemplateContext
-    from generator.builders.type_resolver import ClientTypeResolver
+    from generator.builders.type_registry import TypeRegistry
     from generator.odata.property import PropertyInformation
 
 
 class PropertyBuilder:
-    def __init__(self, schema: PropertyInformation, status="detached", resolver: Optional["ClientTypeResolver"] = None):
+    def __init__(self, schema: PropertyInformation, status="detached", resolver: Optional["TypeRegistry"] = None):
         self.schema = schema
         self.status = status
         self.docstring: Optional[str] = None
         self._resolver = resolver
 
     def build(self, template: TemplateContext) -> List[ast.stmt]:
-        getter_node = template.build_get_property(self)
+        getter_node = template.build_get_property(self, runtime_import=self.runtime_import())
 
         # Add docstring if available
         if self.docstring and getter_node.body:
@@ -33,6 +48,22 @@ class PropertyBuilder:
         # setter = self.build_set_property(self)
 
         return [getter_node]
+
+    def runtime_import(self) -> Optional[str]:
+        """Local import for the type the getter constructs at runtime.
+
+        Entity/complex types (and collection item types) are imported lazily so a
+        cyclic navigation annotation doesn't force a module-level cycle.
+        """
+        if self._resolver is None:
+            return None
+        name = self.client_item_type_name if self.is_collection_type else self.client_type_name
+        if not name or name in _SCALAR_TYPE_NAMES:
+            return None
+        module = self._resolver.module_for(self.schema.TypeName)
+        if not module:
+            return None
+        return f"from {module} import {name}"
 
     def build_param(self):
         """Build an ast.arg parameter"""
@@ -131,11 +162,11 @@ class PropertyBuilder:
 
     @property
     def client_type_name(self) -> str:
-        return type_mapping.client_type_name(self.schema.TypeName, self.is_object_type)
+        return python_name(self.schema.TypeName, self.is_object_type)
 
     @property
     def client_item_type_name(self) -> str:
-        return type_mapping.item_client_type_name(self.schema.TypeName, self.is_object_type)
+        return item_name(self.schema.TypeName, self.is_object_type)
 
     @property
     def is_collection_type(self) -> bool:

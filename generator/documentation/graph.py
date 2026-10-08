@@ -1,25 +1,28 @@
+"""
+Microsoft Graph documentation: injects descriptions from the OpenAPI spec.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
 
 from generator.builders.type import TypeBuilder
-from generator.documentation.baseservice import BaseDocumentationService
+from generator.documentation.base import DocumentationProvider
 
 
-class GraphOpenService(BaseDocumentationService):
-    """Microsoft Graph Documentation Service using OpenAPI specification.
+class GraphDocumentation(DocumentationProvider):
+    """Injects property and member descriptions from the Graph OpenAPI YAML.
 
-    Injects property and member descriptions from the Graph OpenAPI YAML as
-    docstrings on generated types, properties, and enum members.
+    Descriptions become docstrings on generated types, properties and enum
+    members.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self) -> None:
         self._schemas = self._load_schemas()
 
     def _load_schemas(self) -> dict[str, Any]:
-        """Load the components/schemas section from the OpenAPI YAML."""
+        """Load the ``components/schemas`` section from the OpenAPI YAML."""
         try:
             import yaml
 
@@ -38,21 +41,17 @@ class GraphOpenService(BaseDocumentationService):
 
     def build_documentation(self, type_builder: TypeBuilder) -> None:
         """Inject descriptions from the OpenAPI spec into the type builder."""
-        type_name = type_builder.entity_type_name
-        schema = self._schemas.get(type_name)
+        schema = self._schemas.get(type_builder.entity_type_name)
         if schema is None:
             return
-
         type_info = self._extract_type_info(schema)
         if type_info is None:
             return
 
-        # Inject type-level description
-        desc = type_info.get("description") or schema.get("description")
-        if desc:
-            type_builder._docstring = desc
+        description = type_info.get("description") or schema.get("description")
+        if description:
+            type_builder._docstring = description
 
-        # Inject property-level descriptions
         props = type_info.get("properties", {})
         for prop in type_builder.properties:
             prop_schema = props.get(prop.schema.Name)
@@ -61,13 +60,11 @@ class GraphOpenService(BaseDocumentationService):
 
     @staticmethod
     def _extract_type_info(schema: dict[str, Any]) -> dict[str, Any] | None:
-        """Extract the type's properties and descriptions from its schema.
+        """Extract the type's properties from its schema.
 
-        Handles both flat schemas and the allOf pattern used by Graph:
-          allOf:
-            - $ref: ...           # parent type
-            - title: ...
-              properties: ...     # ← this is what we need
+        Handles both flat schemas and the ``allOf`` pattern used by Graph:
+        ``allOf: [$ref parent, {title, properties}]`` — the second entry holds
+        this type's own properties.
         """
         all_of = schema.get("allOf")
         if all_of and len(all_of) > 1:

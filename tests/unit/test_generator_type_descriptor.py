@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from generator.builders.type_descriptor import ReturnType, TypeKind
-from generator.builders.type_resolver import ClientTypeResolver
+from generator.builders.type_registry import ReturnType, TypeKind, TypeRegistry
 
 
-def _resolver() -> ClientTypeResolver:
-    return ClientTypeResolver(["office365.sharepoint"])
+def _resolver() -> TypeRegistry:
+    return TypeRegistry(["office365.sharepoint"])
 
 
 def test_void_type():
@@ -33,6 +32,13 @@ def test_time_primitive():
     assert time_type.kind is TypeKind.PRIMITIVE
     assert time_type.annotation == "ClientResult[time]"
     assert time_type.default("self.context") == "ClientResult(self.context, time.min)"
+
+
+def test_guid_primitive_default_uses_imported_uuid():
+    guid = ReturnType("Edm.Guid")
+    assert guid.kind is TypeKind.PRIMITIVE
+    assert guid.annotation == "ClientResult[UUID]"
+    assert guid.default("context") == "ClientResult(context, UUID(int=0))"
 
 
 def test_entity_and_client_value():

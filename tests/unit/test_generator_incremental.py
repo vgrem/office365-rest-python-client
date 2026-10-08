@@ -1,0 +1,120 @@
+"""Offline tests for incremental/idempotent generation and class invariants."""
+
+from __future__ import annotations
+
+import ast
+from pathlib import Path
+
+import pytest
+from generator.builders.type import TypeBuilder
+from generator.builders.type_registry import TypeRegistry
+from generator.odata.method import MethodInformation
+from generator.odata.property import PropertyInformation
+from generator.odata.type_information import TypeInformation
+from generator.validation import ValidationError
+
+_TEMPLATES = Path(__file__).resolve().parents[2] / "generator" / "templates" / "sharepoint"
+
+
+class _StubResolver:
+    """Marks the type attached and reports its existing members (no real index)."""
+
+    def __init__(self, module: str = "stub.module", members: set[str] | None = None) -> None:
+        self._module = module
+        self._members = members or set()
+
+    def resolve(self, type_name):
+        return None
+
+    def module_for(self, type_name):
+        return self._module
+
+    def members_of(self, type_name):
+        return set(self._members)
+
+
+def _schema() -> TypeInformation:
+    schema = TypeInformation(BaseTypeFullName="EntityType", FullName="SP.TestThing", IsValueObject=False)
+    schema.add_property(PropertyInformation(Name="Title", TypeName="Edm.String"))
+    return schema
+
+
+def _options(tmp_path: Path) -> dict:
+    return {"template_path": str(_TEMPLATES), "output_path": str(tmp_path), "modules": "office365.sharepoint"}
+
+
+def test_build_is_idempotent(tmp_path: Path, monkeypatch):
+    """A second run over an already-generated class produces no change."""
+    target = tmp_path / "test_thing.py"
+    target.write_text("class TestThing:\n    pass\n", encoding="utf8")
+    monkeypatch.setattr(TypeBuilder, "_module_file", staticmethod(lambda name: str(target)))
+
+    first = TypeBuilder(_schema(), _options(tmp_path), resolver=_StubResolver())
+    first.build()
+    first.save()
+    assert "def title" in target.read_text(encoding="utf8")
+
+    second = TypeBuilder(_schema(), _options(tmp_path), resolver=_StubResolver())
+    second.build()
+    assert second.status is None  # nothing left to add
+    assert second.render() == target.read_text(encoding="utf8")
+
+
+def test_inherited_members_are_not_redeclared(tmp_path: Path, monkeypatch):
+    """A property already present on the base class is skipped."""
+    target = tmp_path / "test_thing.py"
+    target.write_text("class TestThing:\n    pass\n", encoding="utf8")
+    monkeypatch.setattr(TypeBuilder, "_module_file", staticmethod(lambda name: str(target)))
+
+    # ``title`` is reported as already existing (e.g. inherited) -> not generated
+    builder = TypeBuilder(_schema(), _options(tmp_path), resolver=_StubResolver(members={"title"}))
+    builder.build()
+    assert builder.status is None
+
+
+def test_rejects_duplicate_top_level_class():
+    builder = TypeBuilder(_schema(), {"modules": "office365.sharepoint"}, resolver=_StubResolver())
+    builder._type_info = {"state": "attached", "file": "x.py"}
+    module = ast.parse("class TestThing:\n    pass\n\n\nclass TestThing:\n    pass\n")
+    with pytest.raises(ValidationError):
+        builder._process(module)
+
+
+def test_static_members_include_inherited_members():
+    resolver = TypeRegistry(["office365.sharepoint"])
+    members = resolver.members_of("SP.File")
+    assert {"name", "server_relative_url", "length", "versions"} <= members
+
+
+def test_property_and_method_with_same_name_are_deduplicated(tmp_path: Path):
+    """An OData property and bound function sharing a name generate one member."""
+    schema = TypeInformation(BaseTypeFullName="EntityType", FullName="SP.TestThing", IsValueObject=False)
+    schema.add_property(PropertyInformation(Name="Settings", TypeName="Edm.String"))
+    schema.add_method(
+        MethodInformation(
+            Name="Settings",
+            ReturnTypeFullName="Edm.String",
+            IsBound=True,
+            IsStatic=False,
+            Kind="function",
+        )
+    )
+    options = {**_options(tmp_path), "generate_methods": "true"}
+    builder = TypeBuilder(schema, options, resolver=_StubResolver())
+    builder.build()
+    source = builder.render()
+    ast.parse(source)
+    assert source.count("def settings") == 1
+
+
+def test_keyword_field_names_are_sanitized(tmp_path: Path):
+    """OData fields that are Python keywords get a trailing underscore."""
+    schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="microsoft.graph.TestValue", IsValueObject=True)
+    schema.add_property(PropertyInformation(Name="class", TypeName="Edm.String"))
+    schema.add_property(PropertyInformation(Name="from", TypeName="Edm.String"))
+    builder = TypeBuilder(schema, _options(tmp_path), resolver=_StubResolver())
+    builder.build()
+    source = builder.render()
+    ast.parse(source)
+    assert "class_: str | None" in source
+    assert "from_: str | None" in source

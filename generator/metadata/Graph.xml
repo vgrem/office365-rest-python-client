@@ -3209,7 +3209,8 @@
             <Member Name="ios" Value="1"/>
             <Member Name="android" Value="2"/>
             <Member Name="mac" Value="4"/>
-            <Member Name="unknownFutureValue" Value="8"/>
+            <Member Name="unknownFutureValue" Value="16"/>
+            <Member Name="linux" Value="8"/>
          </EnumType>
          <EnumType Name="templateApplicationLevel" IsFlags="true">
             <Member Name="none" Value="0"/>
@@ -23578,6 +23579,10 @@
             <Property Name="status" Type="graph.snapshotJobStatus" Nullable="false"/>
             <Property Name="tenantId" Type="Edm.String" Nullable="false"/>
          </EntityType>
+         <ComplexType Name="provisionResponse">
+            <Property Name="challenge" Type="Edm.String" Nullable="false"/>
+            <Property Name="deviceId" Type="Edm.String" Nullable="false"/>
+         </ComplexType>
          <Term Name="licenseRequired" Type="Edm.String" AppliesTo="microsoft.graph.applicationTemplate)"/>
          <Term Name="legacyName" Type="Edm.String" AppliesTo="microsoft.graph.identitySet"/>
          <Term Name="downloadUrl" Type="Edm.String" AppliesTo="microsoft.graph.driveItem"/>
@@ -24880,6 +24885,11 @@
             <Parameter Name="bindingParameter" Type="graph.certificateBasedAuthPki" Nullable="false"/>
             <Parameter Name="uploadUrl" Type="Edm.String" Nullable="false" Unicode="false"/>
             <Parameter Name="sha256FileHash" Type="Edm.String" Nullable="false" Unicode="false"/>
+         </Action>
+         <Action Name="provision" IsBound="true">
+            <Parameter Name="bindingParameter" Type="Collection(graph.device)" Nullable="false"/>
+            <Parameter Name="provisioningBlob" Type="Edm.String" Nullable="false" Unicode="false"/>
+            <ReturnType Type="graph.provisionResponse" Nullable="false"/>
          </Action>
          <Action Name="activate" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.educationAssignment"/>
@@ -28215,6 +28225,11 @@
             <Parameter Name="roles" Type="Collection(Edm.String)" Unicode="false"/>
             <Parameter Name="recipients" Type="Collection(graph.driveRecipient)"/>
             <ReturnType Type="Collection(graph.permission)"/>
+         </Action>
+         <Action Name="revokeGrants" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.permission"/>
+            <Parameter Name="grantees" Type="Collection(graph.driveRecipient)"/>
+            <ReturnType Type="graph.permission"/>
          </Action>
          <Action Name="restoreVersion" IsBound="true">
             <Parameter Name="bindingParameter" Type="graph.driveItemVersion"/>

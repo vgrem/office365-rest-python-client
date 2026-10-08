@@ -1,5 +1,7 @@
 import ast
+import importlib.util
 import inspect
+import keyword
 import os
 from _ast import Module
 from enum import Enum
@@ -10,16 +12,17 @@ from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from typing_extensions import Self
 
-from generator.builders import type_mapping
 from generator.builders.collector import TypeReferenceCollector
 from generator.builders.member import MemberBuilder
 from generator.builders.method import MethodBuilder
 from generator.builders.naming import to_snake_case
 from generator.builders.property import PropertyBuilder
+from generator.builders.render import normalize_quotes
 from generator.builders.template_context import TemplateContext
-from generator.builders.type_resolver import ClientTypeResolver
-from generator.documentation.baseservice import BaseDocumentationService
+from generator.builders.type_registry import TypeRegistry, python_name
+from generator.documentation.base import DocumentationProvider
 from generator.odata.type_information import TypeInformation
+from generator.validation import ValidationError
 
 # Base model members that generated operation methods must not shadow.
 _RESERVED_METHOD_NAMES = (
@@ -37,7 +40,8 @@ class TypeBuilder(ast.NodeTransformer):
         self,
         type_schema: TypeInformation,
         options: Optional[Dict[str, str]] = None,
-        docs_service: Optional[BaseDocumentationService] = None,
+        docs_service: Optional[DocumentationProvider] = None,
+        resolver: Optional[TypeRegistry] = None,
     ):
         self._schema = type_schema
         self._options = options
@@ -52,31 +56,30 @@ class TypeBuilder(ast.NodeTransformer):
         self._changes: List[str] = []
         self._docstring: Optional[str] = None
         self._entity_type_name_exists: bool = False
-        self._resolver = ClientTypeResolver((options or {}).get("modules", "").split(","))
+        self._resolver = resolver or TypeRegistry(
+            (options or {}).get("modules", "").split(","),
+            namespace=(options or {}).get("namespace", ""),
+        )
 
-    def visit_ClassDef(self, node: ast.ClassDef):
-        if self._schema:
-            node.name = self.client_type_name
+    def _process(self, module: ast.Module) -> None:
+        """Process the single target class of the module (fail on ambiguity)."""
+        classes = [node for node in module.body if isinstance(node, ast.ClassDef)]
+        if not classes:
+            return
+        if self.state == "attached":
+            targets = [node for node in classes if node.name == self.client_type_name]
+            if len(targets) != 1:
+                raise ValidationError(
+                    f"{self.client_type_name}: expected exactly one top-level class, found {len(targets)}"
+                )
+        else:
+            targets = classes[:1]
+        node = targets[0]
+        node.name = self.client_type_name
+        self._collect_schema_members()
+        self._process_class(node)
 
-        options = self._options or {}
-        [
-            self._properties.append(PropertyBuilder(prop_schema, resolver=self._resolver))
-            for name, prop_schema in self._schema.Properties.items()
-            if name not in options.get("ignored_properties", []) and to_snake_case(name) not in _RESERVED_PROPERTY_NAMES
-        ]
-
-        [self._members.append(MemberBuilder(member_schema)) for _, member_schema in self._schema.Members.items()]
-
-        ignored_methods = set(options.get("ignored_methods", []))
-        self._methods = [
-            MethodBuilder(method_schema, resolver=self._resolver)
-            for method_name, method_schema in self._schema.Methods.items()
-            if method_name not in ignored_methods and to_snake_case(method_name) not in _RESERVED_METHOD_NAMES
-        ]
-
-        if self._docs_service:
-            self._docs_service.build_documentation(self)
-
+    def _process_class(self, node: ast.ClassDef) -> None:
         self.generic_visit(node)
 
         if self._schema.BaseTypeFullName == "ComplexType":
@@ -89,7 +92,44 @@ class TypeBuilder(ast.NodeTransformer):
         self._build_post(node)
         self._build_methods(node)
 
-        return node
+    def _collect_schema_members(self) -> None:
+        """Collect the schema members that are missing from the class (once).
+
+        Names are de-duplicated by their Python (snake_case) form: an OData type
+        can expose both a property and a bound function with the same name (e.g.
+        ``Settings``), which would otherwise generate two identical members.
+        """
+        options = self._options or {}
+        reserved_props = self._reserved_names(_RESERVED_PROPERTY_NAMES)
+        ignored_properties = set(options.get("ignored_properties", []))
+        self._properties = []
+        seen_props: set[str] = set()
+        for name, prop_schema in self._schema.Properties.items():
+            snake = to_snake_case(name)
+            if name in ignored_properties or snake in reserved_props or snake in seen_props:
+                continue
+            self._properties.append(PropertyBuilder(prop_schema, resolver=self._resolver))
+            seen_props.add(snake)
+
+        self._members = [MemberBuilder(member_schema) for _, member_schema in self._schema.Members.items()]
+
+        ignored_methods = set(options.get("ignored_methods", []))
+        reserved_methods = self._reserved_names(_RESERVED_METHOD_NAMES) | seen_props
+        self._methods = []
+        seen_methods: set[str] = set()
+        for method_name, method_schema in self._schema.Methods.items():
+            snake = to_snake_case(method_name)
+            if method_name in ignored_methods or snake in reserved_methods or snake in seen_methods:
+                continue
+            self._methods.append(MethodBuilder(method_schema, resolver=self._resolver))
+            seen_methods.add(snake)
+
+        if self._docs_service:
+            self._docs_service.build_documentation(self)
+
+    def _reserved_names(self, base: set[str]) -> set[str]:
+        """Base names plus every member the generated class already declares (incl. inherited)."""
+        return set(base) | self._resolver.members_of(self._schema.FullName)
 
     def visit_FunctionDef(self, node):
         if node.name == "__init__":
@@ -146,7 +186,7 @@ class TypeBuilder(ast.NodeTransformer):
         else:
             self._source_tree = self._template.load()
             self._status = "created"
-        self.visit(self._source_tree)
+        self._process(self._source_tree)
         self._build_imports(self._source_tree)
 
         if self._status == "updated" and len(self._changes) == 0:
@@ -154,7 +194,7 @@ class TypeBuilder(ast.NodeTransformer):
         return self
 
     def _build_imports(self, module: ast.Module):
-        """Build missing imports using TypeReferenceCollector."""
+        """Build missing imports using TypeReferenceCollector (deduplicated)."""
         assert self._template is not None
         assert self._options is not None
         collector = TypeReferenceCollector(self._resolver)
@@ -174,12 +214,52 @@ class TypeBuilder(ast.NodeTransformer):
             for method in self._methods:
                 collector.add_method(method, context_type)
 
-        imports = self._template.build_references(collector)
-        existing_imports = [n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))]
-        insert_index = len(existing_imports)
-        for imp in imports:
-            module.body.insert(insert_index, imp)
-            insert_index += 1
+        existing = self._existing_import_names(module)
+        insert_index = len([n for n in module.body if isinstance(n, (ast.Import, ast.ImportFrom))])
+        for imp in self._template.build_references(collector):
+            if self._insert_import(module, imp, existing, insert_index):
+                insert_index += 1
+
+    def _insert_import(self, module: ast.Module, imp: ast.stmt, existing: set, index: int) -> bool:
+        """Insert an import (or ``TYPE_CHECKING`` block) with only the missing names."""
+        if isinstance(imp, ast.If):
+            body = []
+            for child in imp.body:
+                kept = [alias.name for alias in child.names if (child.module, alias.name) not in existing]
+                if kept:
+                    body.append(self._make_import(child.module, kept))
+                    existing.update((child.module, name) for name in kept)
+            if not body:
+                return False
+            imp.body = body
+        else:
+            kept = [alias.name for alias in imp.names if (imp.module, alias.name) not in existing]
+            if not kept:
+                return False
+            imp.names = [ast.alias(name=name, asname=None) for name in kept]
+            existing.update((imp.module, name) for name in kept)
+        module.body.insert(index, imp)
+        return True
+
+    @staticmethod
+    def _make_import(module_name: str, names: list) -> ast.ImportFrom:
+        return ast.ImportFrom(
+            module=module_name, names=[ast.alias(name=name, asname=None) for name in sorted(names)], level=0
+        )
+
+    @staticmethod
+    def _existing_import_names(module: ast.Module) -> set:
+        names: set = set()
+        for node in module.body:
+            if isinstance(node, ast.ImportFrom):
+                names.update((node.module, alias.name) for alias in node.names)
+            elif isinstance(node, ast.Import):
+                names.update((alias.name, None) for alias in node.names)
+            elif isinstance(node, ast.If) and isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
+                for child in node.body:
+                    if isinstance(child, ast.ImportFrom):
+                        names.update((child.module, alias.name) for alias in child.names)
+        return names
 
     def _build_members(self, class_node: ast.ClassDef):
         if not self._members:
@@ -220,7 +300,7 @@ class TypeBuilder(ast.NodeTransformer):
             insert_pos = len(class_node.body) - 1
 
         for prop in self._properties:
-            if prop.schema.Name in existing_anns:
+            if self._safe_member_name(prop.schema.Name) in existing_anns:
                 continue
             if prop.docstring:
                 doc = prop.docstring.replace("\\n", "\n")
@@ -277,11 +357,16 @@ class TypeBuilder(ast.NodeTransformer):
                         )
 
         return ast.AnnAssign(
-            target=ast.Name(id=prop.schema.Name, ctx=ast.Store()),
+            target=ast.Name(id=self._safe_member_name(prop.schema.Name), ctx=ast.Store()),
             annotation=annotation,
             value=default,
             simple=1,
         )
+
+    @staticmethod
+    def _safe_member_name(name: str) -> str:
+        """A valid Python identifier for an OData field name (``class`` -> ``class_``)."""
+        return f"{name}_" if keyword.iskeyword(name) else name
 
     def _build_object_properties(self, class_node: ast.ClassDef):
         """Build missing properties"""
@@ -300,6 +385,7 @@ class TypeBuilder(ast.NodeTransformer):
                 for method in property_methods:
                     class_node.body.insert(insert_pos, method)
                     insert_pos += 1
+                self._changes.append(f"property: {prop.name}")
 
     def _generate_methods_enabled(self) -> bool:
         """Whether operation method generation is enabled via config."""
@@ -343,10 +429,14 @@ class TypeBuilder(ast.NodeTransformer):
 
         self._ensure_entity_type_name(class_node)
 
-    def save(self):
+    def render(self) -> str:
+        """Return the generated module source without writing it."""
         assert self._source_tree is not None
         ast.fix_missing_locations(self._source_tree)
-        code = ast.unparse(self._source_tree)
+        return normalize_quotes(ast.unparse(self._source_tree))
+
+    def save(self):
+        code = self.render()
 
         os.makedirs(os.path.dirname(self.file) or ".", exist_ok=True)
         with open(self.file, "w", encoding="utf-8") as f:
@@ -405,14 +495,25 @@ class TypeBuilder(ast.NodeTransformer):
         """Convert PascalCase or UpperCamelCase to snake_case."""
         return to_snake_case(name, avoid_keywords=False)
 
+    @staticmethod
+    def _module_file(module_name: str) -> Optional[str]:
+        """The source file for a module, resolved without executing it."""
+        try:
+            spec = importlib.util.find_spec(module_name)
+        except (ImportError, ValueError):
+            return None
+        origin = getattr(spec, "origin", None)
+        return origin if origin and origin.endswith(".py") else None
+
     def _resolve_type(self) -> Dict[str, str]:
         type_info: Dict[str, str] = {}
 
         assert self._options is not None
-        cls = self._resolver.resolve(self._schema.FullName)
-        if cls is not None:
+        module_name = self._resolver.module_for(self._schema.FullName)
+        origin = self._module_file(module_name) if module_name else None
+        if origin is not None:
             type_info["state"] = "attached"
-            type_info["file"] = inspect.getsourcefile(cls) or ""
+            type_info["file"] = origin
         else:
             type_info["state"] = "detached"
             namespace = ".".join(self._schema.FullName.split(".")[:-1])
@@ -482,7 +583,7 @@ class TypeBuilder(ast.NodeTransformer):
 
     @property
     def client_type_name(self):
-        return type_mapping.client_type_name(self._schema.FullName, self._schema.IsValueObject or False)
+        return python_name(self._schema.FullName, self._schema.IsValueObject or False)
 
     @property
     def properties(self) -> List[PropertyBuilder]:

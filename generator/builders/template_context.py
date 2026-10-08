@@ -59,8 +59,12 @@ class TemplateContext:
 
         return existing_members
 
-    def build_get_property(self, builder: PropertyBuilder) -> ast.FunctionDef:
-        """Build the getter property method"""
+    def build_get_property(self, builder: PropertyBuilder, runtime_import: str | None = None) -> ast.FunctionDef:
+        """Build the getter property method.
+
+        ``runtime_import`` is a function-local import (e.g. a cyclic navigation
+        type) placed at the top of the getter body.
+        """
         docstring = f"Gets the {builder.schema.Name} property"
         method_name = builder.name
         prop_name = builder.schema.Name
@@ -98,12 +102,11 @@ class TemplateContext:
                 elif not ODataType.is_primitive_name(builder.schema.TypeName):
                     default_value = f"{prop_type_name}()"
 
-        property_code = f'''
-@property
-def {method_name}(self) -> {type_annotation}:
-    """{docstring}"""
-    return self.properties.get("{prop_name}", {default_value})
-'''
+        body_lines = [f'    """{docstring}"""']
+        if runtime_import:
+            body_lines.append(f"    {runtime_import}")
+        body_lines.append(f'    return self.properties.get("{prop_name}", {default_value})')
+        property_code = "@property\n" + f"def {method_name}(self) -> {type_annotation}:\n" + "\n".join(body_lines)
 
-        parsed = ast.parse(property_code.strip())
+        parsed = ast.parse(property_code)
         return cast(ast.FunctionDef, parsed.body[0])
