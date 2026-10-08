@@ -18,7 +18,9 @@ def main():
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    records = client.communications.call_records.top(args.limit).get().execute_query()
+    # The callRecords feed rejects $top (server OData query validation), so fetch
+    # the page and bound the output client-side instead of using ``.top()``.
+    records = list(client.communications.call_records.get().execute_query())[: args.limit]
     print(f"Call records ({len(records)}):\n")
     for r in records:
         props = r.properties
