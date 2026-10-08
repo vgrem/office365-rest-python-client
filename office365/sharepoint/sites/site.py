@@ -273,7 +273,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    def delete_object(self):  # type: ignore[reportIncompatibleMethodOverride]
+    def delete_object(self, *, ignore_missing: bool = False) -> Self:
         """Deletes a site"""
 
         def _delete_object():
@@ -285,6 +285,7 @@ class Site(Entity):
                 self.context.group_site_manager.delete(self.url)
 
         self.ensure_properties(["Url", "GroupId", "Id"]).after_execute(lambda _: _delete_object())
+        self._tolerate_missing(ignore_missing)
         return self
 
     def check_is_deletable(self) -> ClientResult[bool]:
@@ -564,7 +565,7 @@ class Site(Entity):
             stop_redirect (bool):
             web_id (str):
         """
-        return_type = ClientResult(context)
+        return_type = ClientResult[str](context)
         payload = {"id": site_id, "stopRedirect": stop_redirect, "webId": web_id}
         qry = ServiceOperationQuery(context.site, "GetUrlByIdForWeb", None, payload, None, return_type)
         qry.static = True
@@ -1240,6 +1241,11 @@ class Site(Entity):
             "HubSiteSynchronizableVisitorGroup",
             Group(self.context, ResourcePath("HubSiteSynchronizableVisitorGroup", self.resource_path)),
         )
+
+    @property
+    def copilot_search_opt_out(self) -> Optional[bool]:
+        """Gets the CopilotSearchOptOut property"""
+        return self.properties.get("CopilotSearchOptOut", None)
 
     def get_property(self, name, default_value=None):
         if default_value is None:
