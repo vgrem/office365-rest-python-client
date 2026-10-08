@@ -305,6 +305,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (start here → common tasks → full catalog), and the auth pages cross-link it.
 
 ### Fixed
+- **Nested OneDrive folder addressing:** `ChildrenPath.collection` returned
+  `None` for an item addressed by id (`EntityPath(id, items)`), so the next
+  `/children` segment collapsed a grandchild to a bare `/{id}`. Nested
+  `get_folders` / `get_files` (`recursive=True`), `download_folder` and any
+  `items[id].children` chain now keep the canonical `/items/{id}` parents.
+- **`DriveItem.ensure_folder` / `ensure_file` on a folder addressed by id:** the
+  get-or-create walk used path-based addressing (`/items/{id}:/name:/`) for its
+  existence reads, which Microsoft Graph rejects (`Resource not found for the
+  segment`). Folder levels and the file leaf are now resolved through the
+  parent's `children` collection (`$filter=name eq '...'`), so the ensure
+  helpers work whether they start from the drive root or a folder by id.
+- **Examples no longer require tqdm:** gallery scripts now use
+  `office365.runtime.progress.progress_bar` instead of an unguarded
+  `from tqdm import tqdm`, so they run (just without a bar) when tqdm is absent.
+  A new `progress` extra installs it, and it is also included in `examples`.
 - **Contextvars preserved across offloaded async work:** every blocking call
   handed to the offload pool (transport sends, streaming reads, `beforeExecute`
   hooks, batch execution, file I/O, exports and uploads) now runs inside the
