@@ -313,6 +313,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (start here → common tasks → full catalog), and the auth pages cross-link it.
 
 ### Fixed
+- **`Group.created_datetime` returns `None` when absent:** it previously returned
+  the `datetime.min` sentinel (a naive year-1 datetime), which silently corrupted
+  age comparisons and formatting. It is now `Optional[datetime]` — `None` when the
+  group carries no timestamp, an aware UTC `datetime` otherwise — matching the
+  timestamp accessors that already return `None`. Example code can now compare
+  `group.created_datetime` directly without a sentinel guard.
 - **Nested OneDrive folder addressing:** `ChildrenPath.collection` returned
   `None` for an item addressed by id (`EntityPath(id, items)`), so the next
   `/children` segment collapsed a grandchild to a bare `/{id}`. Nested

@@ -248,9 +248,9 @@ class Group(DirectoryObject):
 
     @odata(name="createdDateTime")
     @property
-    def created_datetime(self) -> datetime:
-        """Timestamp of when the group was created."""
-        return self.properties.get("createdDateTime", datetime.min)
+    def created_datetime(self) -> Optional[datetime]:
+        """Timestamp of when the group was created (``None`` when absent)."""
+        return self.properties.get("createdDateTime")
 
     @property
     def extensions(self) -> EntityCollection[Extension]:
