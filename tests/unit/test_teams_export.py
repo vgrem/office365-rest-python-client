@@ -11,6 +11,8 @@ from office365.graph_client import GraphClient
 from office365.migration import MigrationJob
 from office365.migration.base import MigrationItem
 from office365.migration.teams import TeamsArchiveSource, TeamsArchiveTarget, TeamsExportOptions
+from office365.onedrive.driveitems.driveItem import DriveItem
+from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.transport.base import BaseTransport
 from office365.teams.chats.messages.hosted_content import ChatMessageHostedContent
 from requests import Response
@@ -200,10 +202,6 @@ def _item(item_id: str, name: str) -> dict:
     return {"id": item_id, "name": name, "folder": {}, "@odata.type": "#microsoft.graph.driveItem"}
 
 
-def _not_found() -> dict:
-    return {"error": {"code": "itemNotFound", "message": "Item not found"}}
-
-
 class driveitemensurefolder__CaptureTransport(BaseTransport):
     def __init__(self, responses: list[tuple[int, dict]]):
         super().__init__()
@@ -222,21 +220,18 @@ class driveitemensurefolder__CaptureTransport(BaseTransport):
 
 
 class TestDriveItemEnsureFolder(unittest.TestCase):
-    def _client(self) -> tuple[GraphClient, driveitemensurefolder__CaptureTransport]:
+    def _client(self, responses=None) -> tuple[GraphClient, driveitemensurefolder__CaptureTransport]:
         client = GraphClient()
-        transport = driveitemensurefolder__CaptureTransport(
-            [
-                (404, _not_found()),  # GET a
+        if responses is None:
+            responses = [
+                (200, {"value": []}),  # GET root children (a) — miss
                 (201, _item("a1", "a")),  # POST a
-                (200, _item("a1", "a")),  # GET a (reload)
-                (404, _not_found()),  # GET a/b
+                (200, {"value": []}),  # GET /items/a1/children (b) — miss
                 (201, _item("b2", "b")),  # POST b
-                (200, _item("b2", "b")),  # GET a/b (reload)
-                (404, _not_found()),  # GET a/b/c
+                (200, {"value": []}),  # GET /items/b2/children (c) — miss
                 (201, _item("c3", "c")),  # POST c
-                (200, _item("c3", "c")),  # GET a/b/c (reload)
             ]
-        )
+        transport = driveitemensurefolder__CaptureTransport(responses)
         client.pending_request().beforeExecute.clear()
         client.pending_request().transport = transport
         return client, transport
@@ -247,10 +242,34 @@ class TestDriveItemEnsureFolder(unittest.TestCase):
         target = client.me.drive.root.ensure_folder("a/b/c")
         client.execute_query()
 
-        posts = [url for url in transport.urls if "children" in url]
-        self.assertEqual(len(posts), 3)  # noqa: PLR2004
         self.assertEqual(target.get_property("id"), "c3")
         self.assertEqual(target.get_property("name"), "c")
+        self.assertEqual(len(transport.urls), 6)  # 3 children lookups + 3 creates
+        self.assertIn("/me/drive/root/children", transport.urls[0])
+        self.assertIn("/me/drive/items/a1/children", transport.urls[2])
+        self.assertIn("/me/drive/items/b2/children", transport.urls[4])
+        # Reads must never use path-addressing on an id (``/items/{id}:/...``).
+        paths = [url.split("graph.microsoft.com", 1)[-1] for url in transport.urls]
+        self.assertFalse(any(":/" in path for path in paths))
+
+    def test_ensure_folder_on_id_addressed_base(self):
+        """A base addressed by id resolves children (the ``create_nested`` scenario)."""
+        client, transport = self._client(
+            [
+                (200, {"value": []}),  # GET /items/BASEID/children (a) — miss
+                (201, _item("a1", "a")),  # POST a
+                (200, {"value": []}),  # GET /items/a1/children (b) — miss
+                (201, _item("b2", "b")),  # POST b
+            ]
+        )
+        base = DriveItem(client, EntityPath("BASEID", client.me.drive.items.resource_path))
+        target = base.ensure_folder("a/b")
+        client.execute_query()
+
+        self.assertEqual(target.get_property("id"), "b2")
+        self.assertIn("/me/drive/items/BASEID/children", transport.urls[0])
+        paths = [url.split("graph.microsoft.com", 1)[-1] for url in transport.urls]
+        self.assertFalse(any(":/" in path for path in paths))
 
 
 def _file_item(item_id: str, name: str) -> dict:
@@ -283,7 +302,7 @@ class TestDriveItemEnsureFile(unittest.TestCase):
         return client, transport
 
     def test_reuses_existing_file(self):
-        client, transport = self._client([(200, _file_item("f1", "f.txt"))])
+        client, transport = self._client([(200, {"value": [_file_item("f1", "f.txt")]})])
 
         target = client.me.drive.root.ensure_file("f.txt", b"hi")
         client.execute_query()
@@ -291,11 +310,12 @@ class TestDriveItemEnsureFile(unittest.TestCase):
         self.assertEqual(len(transport.calls), 1)
         method, url, _ = transport.calls[0]
         self.assertEqual(method, "GET")
-        self.assertIn(":/f.txt:", url)
+        self.assertIn("children", url)
+        self.assertIn("f.txt", url)
         self.assertEqual(target.get_property("id"), "f1")
 
     def test_uploads_when_missing(self):
-        client, transport = self._client([(404, _not_found()), (201, _file_item("f2", "f.txt"))])
+        client, transport = self._client([(200, {"value": []}), (201, _file_item("f2", "f.txt"))])
 
         target = client.me.drive.root.ensure_file("f.txt", b"hi")
         client.execute_query()
@@ -322,14 +342,12 @@ class TestDriveItemEnsureFile(unittest.TestCase):
     def test_uploads_into_nested_folder(self):
         client, transport = self._client(
             [
-                (404, _not_found()),  # GET a
+                (200, {"value": []}),  # GET /root/children (a) — miss
                 (201, _item("a1", "a")),  # POST a
-                (200, _item("a1", "a")),  # GET a (reload)
-                (404, _not_found()),  # GET a/b
+                (200, {"value": []}),  # GET /items/a1/children (b) — miss
                 (201, _item("b2", "b")),  # POST b
-                (200, _item("b2", "b")),  # GET a/b (reload)
-                (404, _not_found()),  # GET a/b:/f.txt:
-                (201, _file_item("f4", "f.txt")),  # PUT a/b:/f.txt:/content
+                (200, {"value": []}),  # GET /items/b2/children (f.txt) — miss
+                (201, _file_item("f4", "f.txt")),  # PUT /items/b2:/f.txt:/content
             ]
         )
 

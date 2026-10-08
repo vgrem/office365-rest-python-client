@@ -273,40 +273,37 @@ class DriveItem(BaseItem):
     def _resolve_path(self, names: list[str], on_resolved: Callable[[DriveItem], None]) -> None:
         """Walk and create the folders in ``names``, then call ``on_resolved`` with the resolved folder.
 
-        Reuses an existing folder per level or creates the missing one. The
-        callback receives a query-bound parent entity, so callers can queue
-        further work (e.g. a file upload) that depends on the parent id. With no
-        names the callback runs synchronously against ``self``.
+        Each level is resolved with a children lookup
+        (``.../children?$filter=name eq '...'``) rather than path-based addressing,
+        because Graph supports ``root:/path:/`` addressing but *not*
+        ``items/{id}:/path:/`` for a read. Creation goes through the parent's
+        ``children`` collection, so the walk works both from the drive root and
+        from a folder addressed by id. The callback receives the resolved folder
+        (existing or created); with no names it runs synchronously against
+        ``self``.
 
         Args:
             names (list[str]): Folder names, relative to this item.
             on_resolved (Callable[[DriveItem], None]): Invoked with the resolved folder.
         """
-        from office365.runtime.exceptions import ObjectNotFoundException
 
         def _walk(parent: DriveItem, idx: int) -> None:
             if idx == len(names):
                 on_resolved(parent)
                 return
 
-            child = parent.get_by_path(names[idx])
+            name = names[idx]
+            escaped = name.replace("'", "''")
+            existing = parent.children.first_or_none(f"name eq '{escaped}'")
 
-            def _on_found(_) -> None:
-                _walk(child, idx + 1)
+            def _on_checked(_) -> None:
+                if existing.is_loaded:
+                    _walk(existing, idx + 1)
+                else:
+                    created = parent.create_folder(name)
+                    created.after_execute(lambda _: _walk(created, idx + 1))
 
-            def _on_missing(error) -> None:
-                if not isinstance(error, ObjectNotFoundException):
-                    raise error
-                created = parent.create_folder(names[idx])
-                created.after_execute(lambda _: _reload(idx))
-
-            child.get().after_execute(_on_found).on_error(_on_missing)
-
-        def _reload(idx: int) -> None:
-            # Re-resolve the freshly created folder by path so the next level has
-            # a stable, addressable parent entity.
-            prefix = "/".join(names[: idx + 1])
-            self.get_by_path(prefix).get().after_execute(lambda resolved: _walk(resolved, idx + 1))
+            parent.children.after_execute(_on_checked)
 
         _walk(self, 0)
 
@@ -338,8 +335,6 @@ class DriveItem(BaseItem):
         Returns:
             DriveItem: The target file (existing or newly uploaded).
         """
-        from office365.runtime.queries.get_or_create import get_or_create
-
         if on_conflict not in ("skip", "replace"):
             raise ValueError(f"on_conflict must be 'skip' or 'replace', got {on_conflict!r}")
         names = self._split_path(relative_path)
@@ -350,16 +345,24 @@ class DriveItem(BaseItem):
         return_type = DriveItem(self.context)
 
         def _on_resolved(parent_item: DriveItem) -> None:
+            # ``items/{parent-id}:/{name}:/content`` is a valid *upload* target, so
+            # the path-addressed item is fine for the PUT; only the existence read
+            # must avoid ``:/`` (see ``_resolve_path``) and go through ``children``.
             return_type._resource_path = parent_item.get_by_path(name)._resource_path
             if on_conflict == "replace":
                 parent_item.context.add_query(parent_item._build_upload_query(return_type, data))
                 return
-            get_or_create(
-                find=lambda: parent_item.get_by_path(name).get(),
-                create_query=lambda: parent_item._build_upload_query(return_type, data),
-                return_type=return_type,
-                on_conflict="skip",
-            )
+
+            escaped = name.replace("'", "''")
+            existing = parent_item.children.first_or_none(f"name eq '{escaped}'")
+
+            def _on_checked(_) -> None:
+                if existing.is_loaded:
+                    return_type.copy_from(existing)
+                else:
+                    parent_item.context.add_query(parent_item._build_upload_query(return_type, data))
+
+            parent_item.children.after_execute(_on_checked)
 
         self._resolve_path(names[:-1], _on_resolved)
         return return_type
@@ -627,8 +630,8 @@ class DriveItem(BaseItem):
     def _build_upload_query(self, item: DriveItem, content: bytes | None) -> ServiceOperationQuery[DriveItem]:
         """Build (but do not queue) the ``PUT .../content`` query for ``item``.
 
-        Shared by :meth:`upload` and :meth:`ensure_file` — the latter needs a
-        query it can hand to ``get_or_create``'s deferred create slot.
+        Shared by :meth:`upload` and :meth:`ensure_file` — the latter only queues
+        it when the leaf file is missing.
 
         Args:
             item (DriveItem): The file that receives the content.

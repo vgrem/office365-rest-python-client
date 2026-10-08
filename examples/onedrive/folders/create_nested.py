@@ -24,14 +24,11 @@ def main():
 
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
+    drive_root = client.me.drive.root
     root_name = create_unique_name("Archive")
-    root = client.me.drive.root.create_folder(root_name).execute_query()
+    root = drive_root.create_folder(root_name).execute_query()
     reports = root.ensure_folder("2024/Q1/Reports").execute_query()
     print(f"Created '{reports.name}' under '{root.name}'")
-
-    # Resolve the same path again to confirm it now exists
-    same = root.get_by_path("2024/Q1/Reports").get().execute_query()
-    print(f"Resolved again: {same.name} (id: {same.id})")
 
     if not args.keep:
         root.delete_object().execute_query()

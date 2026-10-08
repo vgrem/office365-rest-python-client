@@ -11,7 +11,7 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RoutingTransport, ScriptedTransport
 
 
 class TestGraphPathBuilding(unittest.TestCase):
@@ -44,6 +44,35 @@ class TestGraphPathBuilding(unittest.TestCase):
         item_id = uuid.uuid4().hex
         path.set_segment(item_id)
         self.assertEqual(f"/me/drive/items/{item_id}", str(path))
+
+    def test_resolve_nested_drive_children_path(self):
+        """A grandchild under a nested ``children`` keeps the canonical /items parents."""
+        first_id = uuid.uuid4().hex
+        grandchild_id = uuid.uuid4().hex
+        nested_path = self.client.sites.root.drive.items[first_id].children.resource_path
+        assert nested_path is not None
+        nested_path.set_segment(grandchild_id)
+        self.assertEqual(f"/sites/root/drive/items/{grandchild_id}", str(nested_path))
+
+    def test_recursive_children_requests_parent_collection(self):
+        """Recursing into a child folder requests ``/items/{id}/children`` (not a bare id)."""
+        transport = RoutingTransport(
+            [
+                ("/items/F1/children", {"value": [{"id": "F2", "name": "f2", "folder": {"childCount": 0}}]}),
+                (
+                    "/children",
+                    {"value": [{"id": "F1", "name": "f1", "folder": {"childCount": 1}}]},
+                ),
+            ]
+        )
+        client = GraphClient()
+        client.pending_request().beforeExecute.clear()
+        client.pending_request().transport = transport
+
+        client.me.drive.root.get_folders(recursive=True).execute_query()
+
+        assert "/me/drive/root/children" in transport.calls[0]
+        assert any("/me/drive/items/F1/children" in url for url in transport.calls), transport.calls
 
     def test_resolve_term_children_path(self):
         group_id = uuid.uuid4().hex
