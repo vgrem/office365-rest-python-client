@@ -95,9 +95,8 @@ tenant-level policies, and audit logs.
 | Add/remove group owners | [`groups/add_owner.py`](./groups/add_owner.py) | `Group.ReadWrite.All` | [group owners](https://learn.microsoft.com/en-us/graph/api/group-post-owners) |
 | List group owners | [`groups/list_owners.py`](./groups/list_owners.py) | `Group.Read.All` | [list owners](https://learn.microsoft.com/en-us/graph/api/group-list-owners) |
 | Delete groups by name | [`groups/delete_groups.py`](./groups/delete_groups.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
-| Delete groups in batch | [`groups/delete_batch.py`](./groups/delete_batch.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
+| Preview & bulk-delete retired groups | [`groups/delete_batch.py`](./groups/delete_batch.py) | `Group.ReadWrite.All` | [delete group](https://learn.microsoft.com/en-us/graph/api/group-delete) |
 | Export groups to CSV | [`groups/export_csv.py`](./groups/export_csv.py) | `Group.Read.All` | [list groups](https://learn.microsoft.com/en-us/graph/api/group-list) |
-| Group lifecycle — owners, members, orphans | [`groups/manage.py`](./groups/manage.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
 | Find orphaned groups — no owners or members | [`groups/find_orphans.py`](./groups/find_orphans.py) | `Group.Read.All`, `User.Read.All` | [group list](https://learn.microsoft.com/en-us/graph/api/group-list) |
 | Group lifecycle policies | [`groups/lifecycle_policies.py`](./groups/lifecycle_policies.py) | `GroupLifecyclePolicy.ReadWrite.All` | [lifecycle policy](https://learn.microsoft.com/en-us/graph/api/resources/grouplifecyclepolicy) |
 | Group membership changes audit — who was added/removed | [`audit/group_membership_changes.py`](./audit/group_membership_changes.py) | `AuditLog.Read.All` | [directory audit](https://learn.microsoft.com/en-us/graph/api/resources/directoryaudit) |

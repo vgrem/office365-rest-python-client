@@ -1,17 +1,33 @@
 """
-List groups.
+Group inventory — every group with its type and mail address.
 
-https://learn.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
+Requires application permission ``Group.Read.All``.
 
-https://learn.microsoft.com/en-us/graph/api/resources/group
-
-Requires delegated permission ``Group.ReadWrite.All``.
+https://learn.microsoft.com/en-us/graph/api/group-list
 """
 
 from office365.graph_client import GraphClient
-from tests import test_client_id, test_client_secret, test_tenant
+from tests.settings import client_id, client_secret, tenant
 
-client = GraphClient(tenant=test_tenant).with_client_secret(test_client_id, test_client_secret)
-groups = client.groups.get().top(100).execute_query()
-for grp in groups:
-    print(grp)
+
+def main():
+    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    groups = client.groups.get_all().execute_query()
+
+    counts: dict[str, int] = {}
+    for group in groups:
+        if group.group_types:
+            kind = "Microsoft 365"
+        elif group.mail_enabled:
+            kind = "Distribution"
+        else:
+            kind = "Security"
+        counts[kind] = counts.get(kind, 0) + 1
+        print(f"{group.display_name:45s}  {kind:15s}  {group.mail or '-'}")
+
+    summary = ", ".join(f"{kind}: {count}" for kind, count in sorted(counts.items()))
+    print(f"\nTotal {len(groups)} group(s) — {summary}")
+
+
+if __name__ == "__main__":
+    main()

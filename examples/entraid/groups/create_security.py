@@ -1,34 +1,30 @@
 """
-Create a security group.
+Create a security group (no mailbox or calendar).
 
-Unlike Microsoft 365 groups, security groups are used for managing
-access to resources (apps, SharePoint sites, devices, etc.) and
-do not have a mailbox or calendar.
-
-https://learn.microsoft.com/en-us/graph/api/group-post-groups
-
-https://learn.microsoft.com/en-us/graph/api/resources/groups-overview
+Security groups control access to resources; Microsoft 365 groups add a
+mailbox, calendar, and Teams.
 
 Requires delegated permission ``Group.ReadWrite.All``.
+
+https://learn.microsoft.com/en-us/graph/api/group-post-groups
 """
 
 from office365.graph_client import GraphClient
-from tests import (
-    create_unique_name,
-    test_client_id,
-    test_password,
-    test_tenant,
-    test_username,
-)
+from tests import create_unique_name
+from tests.settings import client_id, password, tenant, username
 
-client = GraphClient(tenant=test_tenant).with_username_and_password(test_client_id, test_username, test_password)
 
-group = client.groups.create_security(
-    create_unique_name("SecurityGroup"),
-    description="Access control for Project Alpha",
-).execute_query()
-print(f"Security group created: {group.display_name} (id: {group.id})")
+def main():
+    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
+    group = client.groups.create_security(
+        create_unique_name("SecurityGroup"),
+        description="Access control for Project Alpha",
+    ).execute_query()
+    print(f"Created: {group.display_name} ({group.id})")
 
-# clean up
-group.delete_object(True).execute_query()
-print("Group cleaned up.")
+    group.delete_object(permanent_delete=True).execute_query()
+    print("Removed.")
+
+
+if __name__ == "__main__":
+    main()
