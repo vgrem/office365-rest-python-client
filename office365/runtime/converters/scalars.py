@@ -192,3 +192,23 @@ def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
         return datetime.fromisoformat(value)
     except ValueError:
         return None
+
+
+def wall_clock(value: Any) -> Optional[datetime]:
+    """A Graph date-time as a naive *wall clock*, or ``None``.
+
+    A Graph ``dateTime`` is paired with its zone in a separate ``timeZone`` property, so the
+    literal is the wall clock: any offset it carries is dropped, not converted (``09:00+02:00``
+    and ``09:00`` with ``timeZone: "Europe/Helsinki"`` are the same appointment). A date-only
+    literal -- a recurrence ``endDate``, a birthday -- names no moment and answers ``None``.
+
+    The parsing itself is :func:`parse_datetime`, which settles the fraction width and the
+    formats; the two callers that need a wall clock (``Compare(format="wall-clock")`` for a
+    digest, the ``.ics`` writer for ``DTSTART``/``DTEND``/``UNTIL``) format this value their
+    own way.
+    """
+    text = str(value or "").strip()
+    if "T" not in text:
+        return None
+    parsed = parse_datetime(text)
+    return parsed.replace(tzinfo=None) if parsed else None

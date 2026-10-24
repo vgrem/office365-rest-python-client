@@ -17,7 +17,7 @@ from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.records import iter_records
-from office365.runtime.converters.scalars import parse_datetime, parse_int
+from office365.runtime.converters.scalars import parse_datetime, parse_int, wall_clock
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
@@ -39,6 +39,15 @@ class TestScalarConverters(unittest.TestCase):
         assert parsed is not None
         self.assertEqual(parsed, datetime(2026, 10, 21, 9, 5, 30, tzinfo=timezone(timedelta(hours=2))))
         self.assertEqual(parse_datetime("2026-10-21T09:05:30.1234567Z").microsecond, 123456)
+
+    def test_wall_clock_keeps_the_literal_not_the_instant(self):
+        """A Graph ``dateTime`` is read with its ``timeZone``, so an offset is dropped, not converted."""
+        self.assertEqual(wall_clock("2026-10-21T09:05:30.0000000+02:00"), datetime(2026, 10, 21, 9, 5, 30))
+        self.assertEqual(wall_clock("2026-10-21T09:05:30Z"), wall_clock("2026-10-21T09:05:30+02:00"))
+        # A date names no moment: a recurrence endDate is not midnight.
+        self.assertIsNone(wall_clock("2026-10-21"))
+        self.assertIsNone(wall_clock(None))
+        self.assertIsNone(wall_clock("not a date"))
 
 
 def _new_user(properties: dict) -> User:

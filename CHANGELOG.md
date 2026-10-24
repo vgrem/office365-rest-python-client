@@ -11,6 +11,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 **Model metadata**
 
+- **Breaking:** the Teams export archive is the model's own JSON. `TeamRecord`,
+  `ChannelRecord`, `MemberRecord`, `TabRecord` and `AppRecord` (and the field-by-field
+  extractor behind them) are removed; `team.json` is `team.to_json()` with `members`,
+  `installedApps` and `channels` (each with `members` and `tabs`) attached, so its keys are
+  Graph's (`displayName`, `mailNickname`, `installedApps`, ...) and every returned property
+  is kept. `messages.ndjson` lines are `message.to_json()` plus `channel_id`: `from`,
+  `mentions`, `reactions` and `body` are JSON where they used to be the `repr` of a typed
+  object. `TeamsExportOptions` is unchanged and now lives in `migration.teams.adapters`.
+
+- A field declares what the service treats as the same value:
+  `@odata(name="birthday", compare=Compare(format="date"))`
+  (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`, `default`,
+  `unordered`, `format`, `ignore`, `key`). `entity.to_json(CANONICAL)`
+  (`office365.runtime.odata.canonical`) spells a model in that comparable form, so two
+  copies that differ only by what the service rewrites (an address-only email named after
+  itself, a birthday's time of day, the order of a label set, the width of a fractional
+  second, the markup around a body) compare equal and a real difference does not. It is
+  one more `JsonProfile`; `V4JsonFormat` output is unchanged. Declared on `EmailAddress`,
+  `Recipient`, `AttendeeBase`, `Attendee`, `DateTimeTimeZone`, `ItemBody`, `Location` and
+  the Outlook `Contact`/`Event`/item properties. The Outlook migration verifies imports
+  through it: the contact and calendar digests are now digests of that form, so a run
+  resumed across this change re-verifies its items once, and `calendar_profile` lost its
+  hand-written comparison helpers.
+
+- `hydrate(payload, profile=None)` is the one in-place reading verb on `ClientObject`,
+  `ClientValue` and `ClientResult` (and so both collections) and answers `self`, so it
+  chains: `Event(context).hydrate(payload)`. `profile=None` reads what `to_json()` writes
+  with no profile; a payload off the wire still takes its own. `from_json` stays the
+  data-pipeline streaming entry (`from_csv`, `from_ndjson`, ...).
+  `JsonProfile.scoped(Model, only=...,
+  without=...)` narrows any profile to some properties of one model (attribute names,
+  checked against its declarations; a nested value that shares a wire name is untouched).
+  `ClientObject.to_json` is typed `Dict[str, Any]` (a collection's list form is its own
+  override), so entity callers no longer cast.
+
+- One serialization contract for the model types (`office365.runtime.serialization`:
+  `JsonSerializable.to_json(profile=None)` and `PropertyReceiver.set_property(name, value,
+  persist_changes)`, structural, nothing inherits from them). `ClientResult` gained
+  `to_json` and `hydrate`, `ClientValue` gained `hydrate`,
+  `ClientValue.to_json` is typed `Dict[str, Any]`, and `set_property` names its first two
+  parameters `name, value` everywhere (the eight overrides that spelled them `k, v` or
+  `key` followed). `persist_changes` stays `True` for models and `False` for the
+  response sinks (results, collections), and the protocol says why.
+
 - Generated Graph getters now declare their OData wire name in place
   (`@odata(name="iCalUId")`, `office365.runtime.types.odata_property`), so nothing
   spells a wire name twice and the awkward ones resolve:

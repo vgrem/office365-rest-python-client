@@ -8,8 +8,8 @@ what one particular export happened to write:
   stops matching;
 * the tables that are meant to be complete cover their enum, so a value the service gains
   cannot quietly render as nothing;
-* :data:`COMPARED` decides what a digest sees — a field's gate keeps it out of the
-  verification when the import declines to restore it.
+* what a digest sees is the model's own comparable form (``to_json(CANONICAL)``), and an
+  option keeps a field out of the verification when the import declines to restore it.
 
 The golden document is the codec's whole contract in one assertion: line order, folding
 at 75 octets, and which token each Graph word became.
@@ -162,7 +162,18 @@ def test_the_frequency_table_spells_every_pattern_the_service_sends(pattern, exp
 
 def test_the_digest_is_stable_across_the_split():
     """A sidecar's digest is computed by both sides of an import, so it must not drift."""
-    assert event_digest(SIDECAR) == "4a8cc8de9a99d71953700f67e72cb593"
+    assert event_digest(SIDECAR) == "79a81fa4bdc5daa7465a055d8f0c8a59"
+
+
+def test_the_comparable_form_is_what_the_sender_stated():
+    form = event_canonical(SIDECAR, CalendarImportOptions(restore_attendees=True))
+    assert form["start"] == {"dateTime": "2026-03-02T09:00:00", "timeZone": "Europe/Kiev"}
+    assert form["body"] == {"content": "Agenda: Q1"}
+    assert form["attendees"] == [
+        {"emailAddress": {"address": "bob@contoso.com", "name": "Bob"}, "type": "required"},
+        {"emailAddress": {"address": "carol@contoso.com", "name": "carol@contoso.com"}, "type": "optional"},
+    ]
+    assert not {"id", "iCalUId", "organizer", "webLink", "ics_path"} & form.keys()
 
 
 def test_a_gated_field_leaves_the_digest_when_the_import_declines_to_restore_it():

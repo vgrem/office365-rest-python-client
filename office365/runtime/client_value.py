@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, ClassVar, Dict, Iterator, List, Optional, Tuple
+from typing import Any, ClassVar, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self
 
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
-from office365.runtime.odata.json_format import JsonProfile
+from office365.runtime.odata.json_format import JsonProfile, as_held
 from office365.runtime.types.odata_property import field_declarations
 
 
@@ -52,12 +52,24 @@ class ClientValue:
     def __format__(self, format_spec: str) -> str:
         return format(str(self), format_spec)
 
-    def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
-        k = str(k)
-        if v is None:
-            setattr(self, k, None)
+    def hydrate(self, payload: Any, profile: Optional[JsonProfile] = None) -> Self:
+        """Read this value's content from a payload: the mirror of :meth:`to_json`.
+
+        ``profile=None`` is the spelling :meth:`to_json` writes with no profile, so a value
+        round-trips through it; a wire payload needs its own profile (see
+        :meth:`ClientObject.hydrate`). Returns this value, so ``Cls().hydrate(payload)`` chains.
+        """
+        (profile or as_held()).hydrate(self, payload, persist_changes=True)
+        return self
+
+    def set_property(self, name: str | int, value: Any, persist_changes: bool = True) -> Self:
+        key = str(name)
+        if value is None:
+            setattr(self, key, None)
             return self
-        setattr(self, k, coerce_value(declared_type(type(self), k), v, getattr(self, k, None), persist_changes))
+        setattr(
+            self, key, coerce_value(declared_type(type(self), key), value, getattr(self, key, None), persist_changes)
+        )
         return self
 
     def get_property(self, name: str, default_value: Any = None) -> Any:
@@ -76,7 +88,7 @@ class ClientValue:
         for n, v in vars(self).items():
             yield n, v
 
-    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any] | List[Any]:
+    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any]:
         """Serializes the ClientValue to JSON format.
 
         Args:
@@ -84,8 +96,8 @@ class ClientValue:
                 model holds it, including the fields a request would leave out.
 
         Returns:
-            Dictionary (or list, for collection values) representing the
-            JSON-serialized object
+            Dictionary representing the JSON-serialized value (a collection value
+            overrides this to answer the list of its members)
         """
 
         def _is_valid_value(val):
@@ -111,10 +123,14 @@ class ClientValue:
             meta = by_attr.get(attr)
             if attr.startswith("__") or not _is_valid_value(value):
                 continue
-            if meta is not None and meta.readonly and profile is not None:
+            if profile is not None and (
+                (meta is not None and meta.readonly) or not profile.includes(self, meta, attr, True)
+            ):
                 continue
             result[meta.name if meta is not None else attr] = serialize_value(value, profile)
-        return result if profile is None else profile.wrap(self, result)
+        if profile is None:
+            return result
+        return profile.wrap(self, profile.refine(result, by_attr.values()))
 
     @property
     def entity_type_name(self) -> Optional[str]:

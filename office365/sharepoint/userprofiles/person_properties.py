@@ -87,10 +87,10 @@ class PersonProperties(Entity):
     def entity_type_name(self):
         return "SP.UserProfiles.PersonProperties"
 
-    def set_property(self, k, v, persist_changes=True):  # type: ignore[override]
-        if k == "UserProfileProperties":
-            v = parse_key_value_collection(v)
-        super().set_property(k, v)
+    def set_property(self, name, value, persist_changes=True):  # type: ignore[override]
+        if name == "UserProfileProperties":
+            value = parse_key_value_collection(value)
+        super().set_property(name, value)
         return self
 
     @property

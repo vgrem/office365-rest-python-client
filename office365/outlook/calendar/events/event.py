@@ -39,7 +39,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import Compare, odata
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.events.event import Event
@@ -402,7 +402,7 @@ class Event(OutlookItem):
 
         return self.properties.get("calendar", Calendar(self.context, ResourcePath("calendar", self.resource_path)))
 
-    @odata(name="attendees")
+    @odata(name="attendees", compare=Compare(unordered=True))
     @property
     def attendees(self) -> ClientValueCollection[Attendee]:
         """The collection of attendees for the event."""
@@ -442,7 +442,7 @@ class Event(OutlookItem):
         """Gets the cancelledOccurrences property"""
         return self.properties.get("cancelledOccurrences", StringCollection(None))
 
-    @odata(name="locations")
+    @odata(name="locations", compare=Compare(unordered=True))
     @property
     def locations(self) -> ClientValueCollection[Location]:
         """Gets the locations property"""

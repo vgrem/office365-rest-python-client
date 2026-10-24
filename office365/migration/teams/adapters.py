@@ -26,27 +26,38 @@ from __future__ import annotations
 import hashlib
 import json
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
-from office365.migration.adapters import DataSource, DataTarget
+from office365.graph_client import GraphClient
+from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
 from office365.migration.base import MigrationItem
-from office365.migration.teams._extract import (
-    channel_messages,
-    message_to_record,
-    read_team,
-)
-from office365.migration.teams.models import TeamsExportOptions
+from office365.teams.channels.channel import Channel
+from office365.teams.chats.messages.message import ChatMessage
+
+
+@dataclass
+class TeamsExportOptions:
+    """What to include in a Teams export archive."""
+
+    include_members: bool = True
+    include_channel_members: bool = True
+    include_tabs: bool = True
+    include_apps: bool = True
+    include_messages: bool = True
+    include_files: bool = False
+    include_hosted_contents: bool = True
 
 
 def encode_json(payload: Any) -> bytes:
     """Canonical JSON encoding used by both the source checksum and target write."""
-    return json.dumps(payload, indent=2, default=str).encode()
+    return json.dumps(payload, indent=2).encode()
 
 
 def encode_ndjson(records: list[dict[str, Any]]) -> bytes:
     """Canonical NDJSON encoding (one record per line)."""
-    return "".join(json.dumps(record, default=str) + "\n" for record in records).encode()
+    return "".join(json.dumps(record) + "\n" for record in records).encode()
 
 
 def _checksum(data: bytes) -> str:
@@ -66,7 +77,7 @@ class TeamsArchiveSource(DataSource):
 
     def __init__(
         self,
-        client,
+        client: GraphClient,
         team_ids: list[str] | None = None,
         options: TeamsExportOptions | None = None,
     ) -> None:
@@ -77,24 +88,53 @@ class TeamsArchiveSource(DataSource):
 
     def _ids(self) -> list[str]:
         if self._team_ids is None:
-            self._team_ids = [t.id for t in self._client.teams.get_all().select(["id"]).execute_query()]
+            self._team_ids = [t.id for t in self._client.teams.get_all().select(["id"]).execute_query() if t.id]
         return self._team_ids
+
+    def _export_channel(self, channel: Channel) -> dict[str, Any]:
+        """A channel as the model spells it, with the related collections the options ask for."""
+        options = self._options
+        body = channel.to_json()
+        if options.include_members and options.include_channel_members:
+            body["members"] = channel.members.get().execute_query().to_json()
+        if options.include_tabs:
+            body["tabs"] = channel.tabs.expand(["teamsApp"]).get().execute_query().to_json()
+        return body
+
+    def _export_team(self, team_id: str, channels: Iterable[Channel]) -> dict[str, Any]:
+        """A team's structure: the team as the model spells it, with members, apps and channels attached."""
+        options = self._options
+        team = self._client.teams[team_id].get().execute_query()
+        body = team.to_json()
+        if options.include_members:
+            body["members"] = team.members.get().execute_query().to_json()
+        if options.include_apps:
+            body["installedApps"] = team.installed_apps.expand(["teamsAppDefinition"]).get().execute_query().to_json()
+        body["channels"] = [self._export_channel(channel) for channel in channels]
+        return body
+
+    def _export_channel_messages(self, channel: Channel) -> list[ChatMessage]:
+        """Root messages plus their replies for a channel (entities, for content access)."""
+        messages = list(channel.messages.get().execute_query())
+        for message in list(messages):
+            messages.extend(message.replies.get().execute_query())
+        return messages
 
     def _data(self, team_id: str) -> dict[str, Any]:
         if team_id in self._cache:
             return self._cache[team_id]
         channels = self._client.teams[team_id].channels.get().execute_query()
         records: list[dict[str, Any]] = []
-        messages: list[tuple[str, Any]] = []
+        messages: list[tuple[str | None, ChatMessage]] = []
         if self._options.include_messages or self._options.include_hosted_contents:
             for channel in channels:
-                for message in channel_messages(channel):
-                    records.append(message_to_record(message, channel.id))
+                for message in self._export_channel_messages(channel):
+                    records.append({**message.to_json(), "channel_id": channel.id})
                     messages.append((channel.id, message))
         self._cache[team_id] = {"channels": channels, "records": records, "messages": messages}
         return self._cache[team_id]
 
-    def list_items(self, progress=None) -> list[MigrationItem]:
+    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         options = self._options
         items: list[MigrationItem] = []
         for team_id in self._ids():
@@ -130,7 +170,7 @@ class TeamsArchiveSource(DataSource):
         team_id, _, remainder = item.source_path.partition("/")
         data = self._data(team_id)
         if item.item_type == "structure":
-            return read_team(self._client, team_id, self._options, channels=data["channels"]).to_dict()
+            return self._export_team(team_id, data["channels"])
         if item.item_type == "messages":
             return data["records"]
         if item.item_type == "attachment":
@@ -147,7 +187,7 @@ class TeamsArchiveSource(DataSource):
             return self._download_channel_zip(channel)
         raise ValueError(f"Unknown item type: {item.item_type}")
 
-    def _download_channel_zip(self, channel) -> bytes:
+    def _download_channel_zip(self, channel: Channel) -> bytes:
         folder = channel.files_folder.get().execute_query()
         with tempfile.NamedTemporaryFile(suffix=".zip") as tmp:
             folder.download_folder(tmp).execute_query()
@@ -185,6 +225,7 @@ class TeamsArchiveTarget(DataTarget):
 __all__ = [
     "TeamsArchiveSource",
     "TeamsArchiveTarget",
+    "TeamsExportOptions",
     "encode_json",
     "encode_ndjson",
 ]

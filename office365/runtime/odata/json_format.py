@@ -14,14 +14,23 @@ dialect is a new table row, not a new branch.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Iterable, Iterator, Optional, Tuple, Union
 
 from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.dialect import BY_LEVEL, JsonDialect
+from office365.runtime.serialization import PropertyReceiver
+from office365.runtime.types.odata_property import ODataPropertyMeta
 
 if TYPE_CHECKING:
     from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
     from office365.runtime.odata.v4.metadata_level import ODataV4MetadataLevel
+
+
+def as_held() -> JsonProfile:
+    """The profile that reads what ``to_json()`` writes with no profile: OData V4, no control information."""
+    from office365.runtime.odata.v4.json_format import V4JsonFormat  # local: the profile imports this module
+
+    return V4JsonFormat("none")
 
 
 class JsonProfile:
@@ -135,6 +144,32 @@ class JsonProfile:
             payload[self.dialect.type_marker] = {"type": name} if self.dialect.type_wrapped else "#" + name
         return payload
 
+    def includes(self, owner: Any, declared: Optional[ODataPropertyMeta], name: str, changed: bool) -> bool:
+        """Whether a property of ``owner`` enters a payload this profile spells.
+
+        A request carries what its sender changed (or what a type always sends); a profile
+        that spells something else, such as a comparable form, decides for itself.
+        """
+        return changed
+
+    def scoped(self, model: Any, *, only: Optional[Iterable[str]] = None, without: Iterable[str] = ()) -> JsonProfile:
+        """This profile, narrowed for one model to some of its properties.
+
+        ``only`` and ``without`` name Python attributes of ``model``, resolved through its
+        declarations so a misspelling raises. The narrowing applies to ``model`` itself,
+        never to a nested value that happens to share a wire name (an ``EmailAddress``
+        keeps its ``name`` when a contact leaves out its own).
+        """
+        return ScopedProfile(self, model, only, without)
+
+    def refine(self, spelled: Dict[str, Any], declarations: Iterable[ODataPropertyMeta]) -> Dict[str, Any]:
+        """The last word on the fields of one value, after each was spelled.
+
+        ``declarations`` are the ``@odata`` rows of the value's type. A request leaves
+        the fields as they were spelled.
+        """
+        return spelled
+
     def build_payload(self, source: Any) -> Any:
         """Serialize a query's parameters into the body the service will read.
 
@@ -157,7 +192,9 @@ class JsonProfile:
             return [self.build_payload(item) for item in source]
         return serialize_value(source, self)
 
-    def hydrate(self, target: Any, payload: Any, wrapper: Optional[str] = None, persist_changes: bool = False) -> None:
+    def hydrate(
+        self, target: PropertyReceiver, payload: Any, wrapper: Optional[str] = None, persist_changes: bool = False
+    ) -> None:
         """Ingest ``payload`` into ``target`` through this dialect.
 
         Args:
@@ -218,6 +255,40 @@ class JsonProfile:
         alias = self.dialect.alias(name)
         if alias is not None and isinstance(value, str):
             yield alias, value
+
+
+class ScopedProfile(JsonProfile):
+    """A profile that leaves some properties of one model out of what it spells."""
+
+    def __init__(
+        self, base: JsonProfile, model: Any, only: Optional[Iterable[str]] = None, without: Iterable[str] = ()
+    ) -> None:
+        super().__init__(base.metadata_level)
+        self._base = base
+        self._model = model
+        self._only = None if only is None else frozenset(model.wire_name(attr) for attr in only)
+        self._without = frozenset(model.wire_name(attr) for attr in without)
+
+    @property
+    def dialect(self) -> JsonDialect:
+        return self._base.dialect
+
+    @property
+    def media_type(self) -> str:
+        return self._base.media_type
+
+    def includes(self, owner: Any, declared: Optional[ODataPropertyMeta], name: str, changed: bool) -> bool:
+        if isinstance(owner, self._model) and (
+            name in self._without or (self._only is not None and name not in self._only)
+        ):
+            return False
+        return self._base.includes(owner, declared, name, changed)
+
+    def refine(self, spelled: Dict[str, Any], declarations: Iterable[ODataPropertyMeta]) -> Dict[str, Any]:
+        return self._base.refine(spelled, declarations)
+
+    def wrap(self, obj: Any, payload: Any) -> Any:
+        return self._base.wrap(obj, payload)
 
 
 ODataJsonFormat = JsonProfile

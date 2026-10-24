@@ -21,11 +21,11 @@ class PlannerChecklistItems(ClientValue):
 
     _item_type = PlannerChecklistItem
 
-    def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
+    def set_property(self, name: str | int, value: Any, persist_changes: bool = True) -> Self:
         # Map raw JSON objects onto the typed item so reads stay strongly typed.
-        if isinstance(v, dict):
-            v = coerce_value(self._item_type, v, None, persist_changes)
-        return super().set_property(k, v, persist_changes)
+        if isinstance(value, dict):
+            value = coerce_value(self._item_type, value, None, persist_changes)
+        return super().set_property(name, value, persist_changes)
 
     def add(self, title: str, *, is_checked: bool = False, order_hint: str = " !") -> str:
         """Adds a checklist item and returns its generated id.

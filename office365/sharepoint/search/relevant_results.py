@@ -27,10 +27,10 @@ class RelevantResults(ClientValue):
     TotalRows: int | None = None
     TotalRowsIncludingDuplicates: int | None = None
 
-    def set_property(self, k, v, persist_changes=True):
-        if k == "Properties":
-            v = parse_key_value_collection(v)
-        super().set_property(k, v, persist_changes)
+    def set_property(self, name, value, persist_changes=True):
+        if name == "Properties":
+            value = parse_key_value_collection(value)
+        super().set_property(name, value, persist_changes)
         return self
 
     @property

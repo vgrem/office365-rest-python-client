@@ -315,7 +315,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         """Get an item by its index position."""
         return self._data[index]
 
-    def to_json(self, profile: Optional[JsonProfile] = None) -> list[dict[str, Any]]:
+    def to_json(self, profile: Optional[JsonProfile] = None) -> list[dict[str, Any]]:  # type: ignore[override]
         """
         Serialize the collection to OData JSON format.
 

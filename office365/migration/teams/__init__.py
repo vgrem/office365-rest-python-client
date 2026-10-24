@@ -7,22 +7,9 @@ job = MigrationJob(TeamsArchiveSource(client, ["<team-id>"]), TeamsArchiveTarget
 job.plan(); job.run(); job.verify()
 """
 
-from office365.migration.teams.adapters import TeamsArchiveSource, TeamsArchiveTarget
-from office365.migration.teams.models import (
-    AppRecord,
-    ChannelRecord,
-    MemberRecord,
-    TabRecord,
-    TeamRecord,
-    TeamsExportOptions,
-)
+from office365.migration.teams.adapters import TeamsArchiveSource, TeamsArchiveTarget, TeamsExportOptions
 
 __all__ = [
-    "AppRecord",
-    "ChannelRecord",
-    "MemberRecord",
-    "TabRecord",
-    "TeamRecord",
     "TeamsArchiveSource",
     "TeamsArchiveTarget",
     "TeamsExportOptions",

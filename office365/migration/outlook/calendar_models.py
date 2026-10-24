@@ -31,14 +31,17 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, Mapping, cast
+from typing import Any, Mapping
 
 from office365.migration.outlook.calendar_codec import MAX_LINE_OCTETS, encode
-from office365.migration.outlook.calendar_profile import COMPARED, wall_clock
 from office365.migration.outlook.models import mail_slug
+from office365.migration.outlook.offline import offline_context
+from office365.migration.outlook.restore import restores, withheld
+from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.events.event import Event
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.converters.value import serialize_value
+from office365.runtime.odata.canonical import CANONICAL
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 
 #: Graph event properties an export reads: every column the model declares.
@@ -98,9 +101,9 @@ class CalendarImportOptions:
     #: does not suppress it) — so a historical import would spam colleagues with
     #: meetings they already had. With it off the attendees stay in the sidecar and
     #: the run reports how many were dropped.
-    restore_attendees: bool = False
+    restore_attendees: bool = restores("attendees", default=False)
     #: Re-apply the category labels.
-    restore_categories: bool = True
+    restore_categories: bool = restores("categories", default=True)
     #: Give every created event a deterministic ``transactionId``, so two concurrent
     #: runs of the same import collide on the server rather than both writing.
     use_transaction_ids: bool = True
@@ -163,7 +166,7 @@ def event_envelope(
     rather than a second spelling this package would have to keep in step — and an
     import posts it back verbatim, which is what makes the round trip exact.
     """
-    envelope = cast(Dict[str, Any], event.to_json())
+    envelope = event.to_json()
     envelope["calendar_path"] = calendar_path
     envelope["calendar_display_path"] = display_path or calendar_path
     envelope["ics_path"] = event_dest_path(event, calendar_path)
@@ -210,8 +213,8 @@ def event_create_payload(
     options = options or CalendarImportOptions()
     _model_spelling(envelope)
 
-    event = Event(context).hydrate(envelope, V4JsonFormat())
-    spelled = cast(Dict[str, Any], event.to_json(V4JsonFormat("none")))
+    event = Event(context).hydrate(envelope)
+    spelled = event.to_json(V4JsonFormat("none").scoped(Event, without=withheld(options)))
     body: dict[str, Any] = {
         name: value
         for name, value in spelled.items()
@@ -237,29 +240,47 @@ def event_create_payload(
         # Graph is case-insensitive here (measured); ``HTML``/``Text`` is what an import has
         # always sent, so the model's ``html`` is re-cased rather than the wire moving silently.
         content["contentType"] = "HTML" if str(content.get("contentType")).lower() == "html" else "Text"
-    if not options.restore_attendees:
-        body.pop("attendees", None)
-    else:
-        # ``status`` is the attendee's own reply, which Exchange assigns: an import sends the
-        # people, not the answers. Dropped here until a live create probe says otherwise.
-        for attendee in body["attendees"]:
-            attendee.pop("status", None)
-    if not options.restore_categories:
-        body.pop("categories", None)
+    # ``status`` is the attendee's own reply, which Exchange assigns: an import sends the
+    # people, not the answers. Dropped here until a live create probe says otherwise.
+    for attendee in body.get("attendees", ()):
+        attendee.pop("status", None)
     if options.use_transaction_ids:
         body["transactionId"] = event_transaction_id(envelope)
     return body
 
 
-def event_canonical(envelope: Mapping[str, Any], options: CalendarImportOptions | None = None) -> dict[str, Any]:
-    """The restored fields in comparable form, one profile row per field.
+#: What verifies an import: the event as its sender stated it. The other writable columns
+#: (``transactionId``, ``isOnlineMeeting``, ``hideAttendees``) legitimately differ after a create.
+_VERIFIED = (
+    "subject",
+    "start",
+    "end",
+    "is_all_day",
+    "location",
+    "locations",
+    "show_as",
+    "sensitivity",
+    "importance",
+    "is_reminder_on",
+    "reminder_minutes_before_start",
+    "recurrence",
+    "body",
+    "attendees",
+    "categories",
+)
+assert all(Event.wire_name(attr) for attr in _VERIFIED)  # a misspelt name fails here, not at the first digest
 
-    A field the import declines to restore (``restore_attendees``,
-    ``restore_categories``) leaves the canonical form, which is why the source and the
-    target of one job must share the options object.
+
+def event_canonical(envelope: Mapping[str, Any], options: CalendarImportOptions | None = None) -> dict[str, Any]:
+    """The restored fields in the form the model says the service treats as equal.
+
+    A field the import declines to restore (``restore_attendees``, ``restore_categories``)
+    leaves the canonical form, which is why the source and the target of one job must
+    share the options object.
     """
     options = options or CalendarImportOptions()
-    return {rule.key: rule.normalise(envelope) for rule in COMPARED if not rule.gate or getattr(options, rule.gate)}
+    event = Event(offline_context()).hydrate(envelope)
+    return event.to_json(CANONICAL.scoped(Event, only=_VERIFIED, without=withheld(options)))
 
 
 def event_digest(envelope: Mapping[str, Any], options: CalendarImportOptions | None = None) -> str:
@@ -268,8 +289,8 @@ def event_digest(envelope: Mapping[str, Any], options: CalendarImportOptions | N
     Not the ``.ics`` bytes: the other side of an import is Exchange, which re-serializes
     the body and assigns the meeting metadata, so the comparable artefact is the *event*.
     Which fields take part — and what each is normalised to — is
-    :data:`calendar_profile.COMPARED`, so a field the sidecar gains is a row there rather
-    than a line in this function.
+    :data:`_VERIFIED`, so a field the sidecar gains is a name there rather than a line in
+    this function.
     """
     _model_spelling(envelope)
     canonical = json.dumps(event_canonical(envelope, options), sort_keys=True, default=str)
@@ -283,8 +304,7 @@ def event_dropped_attendees(envelope: Mapping[str, Any], options: CalendarImport
     which is why replaying the list is opt-in; the count is what the run reports so the
     omission is a number rather than a silence.
     """
-    options = options or CalendarImportOptions()
-    if options.restore_attendees:
+    if "attendees" not in withheld(options or CalendarImportOptions()):
         return 0
     return sum(1 for item in envelope.get("attendees") or [] if (item.get("emailAddress") or {}).get("address"))
 
@@ -296,8 +316,9 @@ def event_dedup_key(envelope: Mapping[str, Any]) -> tuple[str, str | None, str |
     of the source's identities survives the import — subject plus wall clock (and the
     zone it is in) is what is left to recognise a re-run's own work by.
     """
-    wall, zone = wall_clock(envelope.get("start"))
-    return (str(envelope.get("subject") or ""), wall, zone)
+    start = DateTimeTimeZone.parse(envelope.get("start"))
+    moment = start.to_json(CANONICAL) if start else {}
+    return (str(envelope.get("subject") or ""), moment.get("dateTime"), moment.get("timeZone"))
 
 
 def event_transaction_id(envelope: Mapping[str, Any]) -> str:

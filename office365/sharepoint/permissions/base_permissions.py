@@ -70,9 +70,9 @@ class BasePermissions(ClientValue):
     def to_json(self, profile=None):
         return {"Low": str(self.Low), "High": str(self.High)}
 
-    def set_property(self, k: str | int, v: Any, persist_changes: bool = True) -> Self:
-        if k in ("Low", "High"):
-            setattr(self, k, int(v))
+    def set_property(self, name: str | int, value: Any, persist_changes: bool = True) -> Self:
+        if name in ("Low", "High"):
+            setattr(self, str(name), int(value))
         return self
 
     @property

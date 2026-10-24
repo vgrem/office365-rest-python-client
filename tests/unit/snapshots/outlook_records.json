@@ -1,0 +1,2348 @@
+{
+ "contact.comma_category.c0.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.comma_category.c1.payload": {
+  "ValueError": "a contact category cannot contain a comma: 'a,b'"
+ },
+ "contact.comma_category.dedup": [
+  "alice example",
+  "alice@contoso.com"
+ ],
+ "contact.comma_category.restored": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [
+   "a,b"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homeAddress": {},
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.comma_category.vcard": "73b5360f308ee2322e899e242ff5aaf0c40f25c2dbff7d6139691b582cc6f573",
+ "contact.full.c0.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.full.c1.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [
+   "Finance",
+   "Board quarterly"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.full.dedup": [
+  "alice example",
+  "alice@contoso.com"
+ ],
+ "contact.full.restored": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [
+   "Finance",
+   "Board quarterly"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homeAddress": {},
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.full.vcard": "623be4c3fce36cfc9fc6a14a208d461b40e85f32952a4a330daa34c55382adeb",
+ "contact.minimal.c0.payload": {
+  "displayName": "Bob Example",
+  "emailAddresses": [
+   {
+    "address": "bob@contoso.com"
+   }
+  ]
+ },
+ "contact.minimal.c1.payload": {
+  "displayName": "Bob Example",
+  "emailAddresses": [
+   {
+    "address": "bob@contoso.com"
+   }
+  ]
+ },
+ "contact.minimal.dedup": [
+  "bob example",
+  "bob@contoso.com"
+ ],
+ "contact.minimal.restored": {
+  "displayName": "Bob Example",
+  "emailAddresses": [
+   {
+    "address": "bob@contoso.com"
+   }
+  ]
+ },
+ "contact.minimal.vcard": "d7e75180f406d677ad8f6bfb92c021a2fb57497cba14f97ecfe19713e526c460",
+ "contact.no_categories.c0.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.no_categories.c1.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.no_categories.dedup": [
+  "alice example",
+  "alice@contoso.com"
+ ],
+ "contact.no_categories.restored": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homeAddress": {},
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.no_categories.vcard": "d2d0afe75e339f8716dd78264b32a36b6dcfc391afb81b7998b2af2b2ac9a065",
+ "contact.twin.c0.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Twin, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.twin.c1.payload": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [
+   "Finance",
+   "Board quarterly"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Twin, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.twin.dedup": [
+  "alice example",
+  "alice@contoso.com"
+ ],
+ "contact.twin.restored": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [
+   "Finance",
+   "Board quarterly"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "Alice Example",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Twin, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homeAddress": {},
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.twin.vcard": "cb38f5c3212518a65a7514cbf34ad9a9733bdbc3ed9904acd7d972d491ca3ad2",
+ "contact.unnamed.c0.payload": {
+  "ValueError": "the sidecar record has no display name: Exchange rejects a contact without one"
+ },
+ "contact.unnamed.c1.payload": {
+  "ValueError": "the sidecar record has no display name: Exchange rejects a contact without one"
+ },
+ "contact.unnamed.dedup": [
+  "",
+  "alice@contoso.com"
+ ],
+ "contact.unnamed.restored": {
+  "assistantName": "Cara Help",
+  "birthday": "1953-05-01T11:59:00+00:00",
+  "businessAddress": {
+   "city": "Springfield",
+   "countryOrRegion": "USA",
+   "postalCode": "62701",
+   "state": "IL",
+   "street": "1 Main St"
+  },
+  "businessHomePage": "https://contoso.example/alice",
+  "businessPhones": [
+   "+1 555 0100"
+  ],
+  "categories": [
+   "Finance",
+   "Board quarterly"
+  ],
+  "children": [
+   "Kim"
+  ],
+  "companyName": "Contoso",
+  "department": "Finance",
+  "displayName": "  ",
+  "emailAddresses": [
+   {
+    "address": "alice@contoso.com",
+    "name": "Alice Example"
+   },
+   {
+    "address": "alice@contoso.example",
+    "name": "alice@contoso.example"
+   }
+  ],
+  "fileAs": "Example, Alice",
+  "generation": "Jr.",
+  "givenName": "Alice",
+  "homeAddress": {},
+  "homePhones": [
+   "+1 555 0199"
+  ],
+  "imAddresses": [
+   "sip:alice@contoso.com"
+  ],
+  "initials": "AB",
+  "jobTitle": "Controller",
+  "manager": "Bob Boss",
+  "middleName": "B",
+  "mobilePhone": "+1 555 0150",
+  "nickName": "Al",
+  "officeLocation": "HQ 3",
+  "otherAddress": {
+   "city": "Kyiv",
+   "countryOrRegion": "Ukraine"
+  },
+  "personalNotes": "Line one\nLine two",
+  "profession": "Accountant",
+  "spouseName": "Sam Example",
+  "surname": "Example",
+  "title": "Dr."
+ },
+ "contact.unnamed.vcard": "f9f1475fc8fa241c870b6ab697bb85a51197e7caddc3e2811b379b90f6a7b4da",
+ "event.empty_body.a0c0t0.dropped": 2,
+ "event.empty_body.a0c0t0.payload": {
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.empty_body.a0c0t1.dropped": 2,
+ "event.empty_body.a0c0t1.payload": {
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.empty_body.a0c1t0.dropped": 2,
+ "event.empty_body.a0c1t0.payload": {
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.empty_body.a0c1t1.dropped": 2,
+ "event.empty_body.a0c1t1.payload": {
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.empty_body.a1c0t0.dropped": 0,
+ "event.empty_body.a1c0t0.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.empty_body.a1c0t1.dropped": 0,
+ "event.empty_body.a1c0t1.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.empty_body.a1c1t0.dropped": 0,
+ "event.empty_body.a1c1t0.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.empty_body.a1c1t1.dropped": 0,
+ "event.empty_body.a1c1t1.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.empty_body.ics": "97ea110e588a35dc831720766cee29e9f415823758781f28ef35eeef6dd61950",
+ "event.no_attendees.a0c0t0.dropped": 0,
+ "event.no_attendees.a0c0t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.no_attendees.a0c0t1.dropped": 0,
+ "event.no_attendees.a0c0t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.no_attendees.a0c1t0.dropped": 0,
+ "event.no_attendees.a0c1t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.no_attendees.a0c1t1.dropped": 0,
+ "event.no_attendees.a0c1t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.no_attendees.a1c0t0.dropped": 0,
+ "event.no_attendees.a1c0t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.no_attendees.a1c0t1.dropped": 0,
+ "event.no_attendees.a1c0t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.no_attendees.a1c1t0.dropped": 0,
+ "event.no_attendees.a1c1t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.no_attendees.a1c1t1.dropped": 0,
+ "event.no_attendees.a1c1t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.no_attendees.ics": "ac636c7df3f0f4913cc54733789b0d95b248b474e1f62170365f561985bbfcef",
+ "event.no_time.a0c0t0.dropped": 2,
+ "event.no_time.a0c0t0.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a0c0t1.dropped": 2,
+ "event.no_time.a0c0t1.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a0c1t0.dropped": 2,
+ "event.no_time.a0c1t0.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a0c1t1.dropped": 2,
+ "event.no_time.a0c1t1.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a1c0t0.dropped": 0,
+ "event.no_time.a1c0t0.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a1c0t1.dropped": 0,
+ "event.no_time.a1c0t1.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a1c1t0.dropped": 0,
+ "event.no_time.a1c1t0.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.a1c1t1.dropped": 0,
+ "event.no_time.a1c1t1.payload": {
+  "ValueError": "the sidecar has no start/end dateTime: an event cannot be created without a time range"
+ },
+ "event.no_time.ics": "3d268dce5dd1cf0493c9ac60cc20134ffb3bf814fbcc6c5539f4b2b672639784",
+ "event.plain_body.a0c0t0.dropped": 2,
+ "event.plain_body.a0c0t0.payload": {
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.plain_body.a0c0t1.dropped": 2,
+ "event.plain_body.a0c0t1.payload": {
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.plain_body.a0c1t0.dropped": 2,
+ "event.plain_body.a0c1t0.payload": {
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.plain_body.a0c1t1.dropped": 2,
+ "event.plain_body.a0c1t1.payload": {
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.plain_body.a1c0t0.dropped": 0,
+ "event.plain_body.a1c0t0.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.plain_body.a1c0t1.dropped": 0,
+ "event.plain_body.a1c0t1.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.plain_body.a1c1t0.dropped": 0,
+ "event.plain_body.a1c1t0.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.plain_body.a1c1t1.dropped": 0,
+ "event.plain_body.a1c1t1.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "hello",
+   "contentType": "Text"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.plain_body.ics": "9cf7fb4605e8c2c9621ebd1f55909a876df582d54faeb040f0f61e42465253ed",
+ "event.recurrence_text.a0c0t0.dropped": 2,
+ "event.recurrence_text.a0c0t0.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a0c0t1.dropped": 2,
+ "event.recurrence_text.a0c0t1.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a0c1t0.dropped": 2,
+ "event.recurrence_text.a0c1t0.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a0c1t1.dropped": 2,
+ "event.recurrence_text.a0c1t1.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a1c0t0.dropped": 0,
+ "event.recurrence_text.a1c0t0.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a1c0t1.dropped": 0,
+ "event.recurrence_text.a1c0t1.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a1c1t0.dropped": 0,
+ "event.recurrence_text.a1c1t0.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.recurrence_text.a1c1t1.dropped": 0,
+ "event.recurrence_text.a1c1t1.payload": {
+  "ValueError": "the sidecar records the recurrence as text ('PatternedRecurrence(...)'): it was written by a version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be replayed \u2014 re-export the calendar and import that tree"
+ },
+ "event.series.a0c0t0.dropped": 0,
+ "event.series.a0c0t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup"
+ },
+ "event.series.a0c0t1.dropped": 0,
+ "event.series.a0c0t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup",
+  "transactionId": "mig-0e647f28da2af6b6f4a51e217990dd1c"
+ },
+ "event.series.a0c1t0.dropped": 0,
+ "event.series.a0c1t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup"
+ },
+ "event.series.a0c1t1.dropped": 0,
+ "event.series.a0c1t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup",
+  "transactionId": "mig-0e647f28da2af6b6f4a51e217990dd1c"
+ },
+ "event.series.a1c0t0.dropped": 0,
+ "event.series.a1c0t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup"
+ },
+ "event.series.a1c0t1.dropped": 0,
+ "event.series.a1c0t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup",
+  "transactionId": "mig-0e647f28da2af6b6f4a51e217990dd1c"
+ },
+ "event.series.a1c1t0.dropped": 0,
+ "event.series.a1c1t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup"
+ },
+ "event.series.a1c1t1.dropped": 0,
+ "event.series.a1c1t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-09T09:15:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "recurrence": {
+   "pattern": {
+    "daysOfWeek": [
+     "monday"
+    ],
+    "firstDayOfWeek": "monday",
+    "interval": 1,
+    "type": "weekly"
+   },
+   "range": {
+    "numberOfOccurrences": 6,
+    "startDate": "2026-03-09",
+    "type": "numbered"
+   }
+  },
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-09T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Weekly standup",
+  "transactionId": "mig-0e647f28da2af6b6f4a51e217990dd1c"
+ },
+ "event.series.ics": "cbf004c26fc30f43088698eca1cd66f427a631144de3d61d73cbf8bbef351113",
+ "event.single.a0c0t0.dropped": 2,
+ "event.single.a0c0t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.single.a0c0t1.dropped": 2,
+ "event.single.a0c0t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.single.a0c1t0.dropped": 2,
+ "event.single.a0c1t0.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.single.a0c1t1.dropped": 2,
+ "event.single.a0c1t1.payload": {
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.single.a1c0t0.dropped": 0,
+ "event.single.a1c0t0.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.single.a1c0t1.dropped": 0,
+ "event.single.a1c0t1.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.single.a1c1t0.dropped": 0,
+ "event.single.a1c1t0.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review"
+ },
+ "event.single.a1c1t1.dropped": 0,
+ "event.single.a1c1t1.payload": {
+  "attendees": [
+   {
+    "emailAddress": {
+     "address": "bob@contoso.com",
+     "name": "Bob"
+    },
+    "type": "required"
+   },
+   {
+    "emailAddress": {
+     "address": "carol@contoso.com"
+    },
+    "type": "optional"
+   }
+  ],
+  "body": {
+   "content": "<p>Agenda: <b>Q1</b></p>",
+   "contentType": "HTML"
+  },
+  "categories": [
+   "Finance",
+   "Q1"
+  ],
+  "end": {
+   "dateTime": "2026-03-02T10:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "importance": "high",
+  "isAllDay": false,
+  "isOnlineMeeting": false,
+  "isReminderOn": true,
+  "location": {
+   "displayName": "Room 1"
+  },
+  "locations": [
+   {
+    "displayName": "Room 1"
+   }
+  ],
+  "reminderMinutesBeforeStart": 15,
+  "sensitivity": "private",
+  "showAs": "tentative",
+  "start": {
+   "dateTime": "2026-03-02T09:00:00.0000000",
+   "timeZone": "Europe/Kiev"
+  },
+  "subject": "Quarterly review",
+  "transactionId": "mig-84896d3e067884621c0f54334b8d8409"
+ },
+ "event.single.ics": "f5f27a5eccb13799758d57095cee9cc28540937e045e2d952d2dc4175aaa4882"
+}

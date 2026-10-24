@@ -18,7 +18,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import Compare, odata
 
 
 class Contact(OutlookItem):
@@ -83,7 +83,7 @@ class Contact(OutlookItem):
         """The contact's home address."""
         return self.properties.get("homeAddress", PhysicalAddress())
 
-    @odata(name="emailAddresses")
+    @odata(name="emailAddresses", compare=Compare(unordered=True))
     @property
     def email_addresses(self) -> ClientValueCollection[EmailAddress]:
         """The contact's email addresses."""
@@ -135,7 +135,7 @@ class Contact(OutlookItem):
         """Gets the assistantName property"""
         return self.properties.get("assistantName", None)
 
-    @odata(name="birthday")
+    @odata(name="birthday", compare=Compare(format="date"))
     @property
     def birthday(self) -> datetime:
         """Gets the birthday property"""
@@ -153,7 +153,7 @@ class Contact(OutlookItem):
         """Gets the businessHomePage property"""
         return self.properties.get("businessHomePage", None)
 
-    @odata(name="children")
+    @odata(name="children", compare=Compare(unordered=True))
     @property
     def children(self) -> StringCollection:
         """Gets the children property"""
@@ -195,7 +195,7 @@ class Contact(OutlookItem):
         """Gets the homePhones property"""
         return self.properties.get("homePhones", StringCollection(None))
 
-    @odata(name="imAddresses")
+    @odata(name="imAddresses", compare=Compare(unordered=True))
     @property
     def im_addresses(self) -> StringCollection:
         """Gets the imAddresses property"""

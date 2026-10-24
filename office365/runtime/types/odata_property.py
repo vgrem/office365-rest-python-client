@@ -1,12 +1,46 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, is_dataclass
-from typing import Dict, TypeVar
+from typing import Any, Dict, Optional, TypeVar
 
 _ODATA_MARKER = "__odata__"
 _T = TypeVar("_T")
 
 _FIELD_DECLARATIONS: Dict[type, Dict[str, "ODataPropertyMeta"]] = {}
+
+
+@dataclass(frozen=True)
+class Compare:
+    """What the service treats as the same value, declared where the field is.
+
+    A response and the payload that created it seldom agree byte for byte: the service
+    fills a name in from an address, stores a birthday at a time of day nobody set,
+    keeps a list of labels as a set. Each of those is a fact about one field, so it is
+    stated on that field and applied by one profile
+    (:data:`office365.runtime.odata.canonical.CANONICAL`), instead of being re-derived
+    by every caller that has to compare two spellings.
+    """
+
+    #: A collection the service keeps as a set: the same members are the same value.
+    unordered: bool = False
+    #: Text the service treats case-insensitively.
+    casefold: bool = False
+    #: The sibling field the service fills this one in from when it is unset.
+    fallback: Optional[str] = None
+    #: What an unset value means (an attendee with no ``type`` is a required one).
+    default: Any = None
+    #: A named reduction of the spelled value: ``"date"``, ``"wall-clock"`` or ``"text"``.
+    format: Optional[str] = None
+    #: Owned by someone else (the service, the attendee): not part of the sender's value.
+    ignore: bool = False
+    #: What identifies the value: with this field empty the value is nobody, and says nothing.
+    key: bool = False
+
+    def __post_init__(self) -> None:
+        from office365.runtime.odata.canonical import FORMATS
+
+        if self.format is not None and self.format not in FORMATS:
+            raise ValueError(f"unknown comparison format {self.format!r}; known: {', '.join(sorted(FORMATS))}")
 
 
 @dataclass
@@ -26,6 +60,7 @@ class ODataPropertyMeta:
     nullable: bool = True
     sortable: bool = False
     searchable: bool = False
+    compare: Optional[Compare] = None
     description: str = ""
 
 
@@ -55,7 +90,7 @@ class odata(dict):
 
     meta: ODataPropertyMeta
 
-    def __init__(self, name: str, **attrs: bool | str) -> None:
+    def __init__(self, name: str, **attrs: bool | str | Compare) -> None:
         self.meta = ODataPropertyMeta(name=name, **attrs)  # type: ignore[arg-type]
         super().__init__({_ODATA_MARKER: self.meta})
 

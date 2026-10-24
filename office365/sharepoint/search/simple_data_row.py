@@ -20,6 +20,6 @@ class SimpleDataRow(ClientValue):
         """Return the row's cells as a plain ``dict``."""
         return dict(self.Cells)
 
-    def set_property(self, k, v, persist_changes=True):
-        self.Cells = parse_key_value_collection(v)
+    def set_property(self, name, value, persist_changes=True):
+        self.Cells = parse_key_value_collection(value)
         return self

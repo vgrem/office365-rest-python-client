@@ -21,7 +21,7 @@ quick inventory, and this toolkit when you need a portable, verifiable archive.
 ```text
 <output>/
   <team-id>/
-    team.json                        # metadata, members, channels, tabs, apps
+    team.json                        # the team as Graph spells it, with members, installedApps, channels (members, tabs)
     messages.ndjson                  # one message/reply per line
     attachments/<channel>/<msg>_<content>.<ext>
     files/<channel>.zip              # --files

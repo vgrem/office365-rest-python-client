@@ -55,7 +55,7 @@ import hashlib
 import json
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
 from office365.migration.base import MigrationItem
@@ -69,6 +69,7 @@ from office365.migration.outlook.contacts_models import (
 from office365.migration.outlook.eml_import import SIDECAR_SUFFIX
 from office365.migration.outlook.fidelity import CONTACTS_EXPORT_DIMENSIONS, CONTACTS_IMPORT_DIMENSIONS
 from office365.migration.outlook.models import mail_slug
+from office365.migration.outlook.restore import withheld
 from office365.outlook.contacts.contact import Contact
 from office365.outlook.contacts.folders.collection import ContactFolderCollection
 from office365.outlook.contacts.folders.folder import ContactFolder
@@ -365,7 +366,7 @@ class ContactTarget(DataTarget):
         contact = collection.create_typed_object()
         collection.context.add_query(CreateEntityQuery(collection, body, contact))
         collection.context.execute_query()
-        if not self._options.restore_categories and record.to_json().get("categories"):
+        if "categories" in withheld(self._options) and record.to_json().get("categories"):
             self._categories_dropped += 1
         self._present[item.dest_path] = contact
         key = record.dedup_key
@@ -411,7 +412,7 @@ class ContactTarget(DataTarget):
         if cached is None:
             index: dict[tuple[str, str], list[Contact]] = {}
             for contact in folder.contacts.select(_EXISTING_COLUMNS).get_all().execute_query():
-                key = ContactRecord.from_json(cast("dict[str, Any]", contact.to_json())).dedup_key
+                key = ContactRecord.from_json(contact.to_json()).dedup_key
                 index.setdefault(key, []).append(contact)
             self._indexed[directory] = index
             cached = index

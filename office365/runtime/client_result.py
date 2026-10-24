@@ -8,12 +8,14 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, TypeVar
 from typing_extensions import Self
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.converters.value import coerce_value
+from office365.runtime.converters.value import coerce_value, serialize_value
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.odata.json_format import as_held
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext
+    from office365.runtime.odata.json_format import JsonProfile
 
 ClientValueT = TypeVar("ClientValueT", bound=object)
 
@@ -47,7 +49,20 @@ class ClientResult(Generic[ClientValueT]):
         self._context.after_execute(action, execute_first, include_response)
         return self
 
-    def set_property(self, key: str, value: Any, persist_changes: bool = False) -> Self:
+    def hydrate(self, payload: Any, profile: Optional[JsonProfile] = None) -> Self:
+        """Fill this result from a payload: what a query does when it completes.
+
+        What arrives is as received, not a change, so nothing is marked for persistence.
+        """
+        (profile or as_held()).hydrate(self, payload, persist_changes=False)
+        return self
+
+    def to_json(self, profile: Optional[JsonProfile] = None) -> Any:
+        """The wrapped value as JSON: a result is serializable like the value it carries."""
+        return serialize_value(self._value, profile)
+
+    def set_property(self, name: str, value: Any, persist_changes: bool = False) -> Self:
+        key = name
         if key == "__value":
             # A raw/scalar payload (non-JSON responses, e.g. report CSVs) carries
             # the result's value. A model that represents raw content (``Report``)

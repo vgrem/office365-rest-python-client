@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from office365.entity import Entity
 from office365.runtime.converters.scalars import iso_z, parse_datetime
@@ -90,7 +90,7 @@ class Subscription(Entity):
         """Set the subscription expiry."""
         self.set_property("expirationDateTime", value)
 
-    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any] | List[Any]:
+    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any]:  # type: ignore[override]
         """Serialize the subscription, emitting ``expirationDateTime`` as UTC ``Z``.
 
         Microsoft Graph subscriptions expect a UTC timestamp ending in ``Z``;

@@ -145,7 +145,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
 
         return describe_collection(self._data, max_items=max_items, max_column_width=None)
 
-    def to_json(self, profile: JsonProfile | None = None) -> list[Any] | dict[str, Any]:
+    def to_json(self, profile: JsonProfile | None = None) -> list[Any] | dict[str, Any]:  # type: ignore[override]
         """Serializes the collection to OData JSON format.
 
         Args:

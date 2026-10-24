@@ -41,10 +41,12 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any, Dict, List, Mapping, Tuple
 
+from office365.migration.outlook.offline import offline_context
+from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.contacts.contact import Contact
+from office365.runtime.odata.canonical import CANONICAL, FORMATS
 
 #: Graph contact properties an export reads: every column the model declares. Derived
 #: rather than listed, for the reason the calendar projection is: a hand-kept list drifts
@@ -73,65 +75,6 @@ assert not set(_PROVENANCE) & frozenset(CONTACT_COLUMNS), "a provenance key coll
 _ADR_PARTS = ("street", "city", "state", "postalCode", "countryOrRegion")
 _ADDRESS_KEYS = ("businessAddress", "homeAddress", "otherAddress")
 
-
-def _as_is(value: Any) -> Any:
-    """A column with no declared rule compares as it stands."""
-    return value
-
-
-def _by_date(value: Any) -> str:
-    """The ``YYYY-MM-DD`` a birthday falls on, whatever time of day is attached.
-
-    Exchange normalises a birthday to 11:59 in the mailbox's zone and reads it back
-    that way (measured — both ``T00:00:00Z`` and ``T11:59:00+00:00`` come back as
-    ``… 11:59:00+00:00``), so comparing the instant would fail every round trip over
-    a time of day the user never set.
-    """
-    if isinstance(value, datetime):
-        return str(value)[:10]
-    match = re.match(r"^(\d{4})-(\d{2})-(\d{2})", str(value or "").strip())
-    return "-".join(match.groups()) if match else str(value or "").strip()
-
-
-def _unordered(value: Any) -> List[str]:
-    """A label a service keeps unordered compares as a set."""
-    return sorted(str(item).strip() for item in value or [])
-
-
-def _email_pairs(value: Any) -> List[Tuple[str, str]]:
-    """An address book entry compares as ``(address, name or address)``.
-
-    Exchange fills a missing ``name`` in from the address (measured), so comparing the
-    raw pair would report every imported contact as a mismatch.
-    """
-    pairs = []
-    for entry in value or []:
-        address = str((entry or {}).get("address") or "").strip().lower()
-        if address:
-            pairs.append((address, str(entry.get("name") or "").strip() or address))
-    return sorted(pairs)
-
-
-def _address(value: Any) -> Dict[str, str]:
-    """A partial address is the whole answer, so the parts it omits are not a difference."""
-    return {part: text for part, text in (value or {}).items() if text}
-
-
-#: How two values of a column are equivalent, by attribute name. A column not named here
-#: compares as it stands. The wire spellings are resolved from the model's own getters,
-#: so this table cannot drift from the declarations that fill the payload.
-_RULES = (
-    ("birthday", _by_date),
-    ("categories", _unordered),
-    ("children", _unordered),
-    ("im_addresses", _unordered),
-    ("email_addresses", _email_pairs),
-    ("business_address", _address),
-    ("home_address", _address),
-    ("other_address", _address),
-)
-assert all(hasattr(Contact, attr) for attr, _ in _RULES), "a rule names an attribute the model does not declare"
-_COMPARE: Dict[str, Any] = {Contact.wire_name(attr): rule for attr, rule in _RULES}
 
 #: RFC 6350 §3.1 caps a content line at 75 octets; a continuation starts with a space.
 _MAX_LINE_OCTETS = 75
@@ -168,7 +111,12 @@ class ContactImportOptions:
     """
 
     #: Re-apply the category labels.
-    restore_categories: bool = True
+    restore_categories: bool = restores("categories", default=True)
+
+
+def _address_of(entry: Any) -> str:
+    """The lower-cased address of a sidecar's email entry, or ``""``."""
+    return str((entry or {}).get("address") or "").strip().lower()
 
 
 class ContactRecord:
@@ -253,17 +201,9 @@ class ContactRecord:
         Matching on the name alone would merge two different people who happen to share
         one, and nothing else survives the create.
         """
-        pairs = self.email_pairs
-        return (str(self._json.get("displayName") or "").strip().lower(), pairs[0][0] if pairs else "")
-
-    @property
-    def email_pairs(self) -> List[Tuple[str, str]]:
-        """``[(address, name or address)]``, lower-cased and sorted.
-
-        Exchange fills in a missing ``name`` from the address (measured), so comparing
-        the raw pair would report every imported contact as a mismatch.
-        """
-        return _email_pairs(self._json.get("emailAddresses"))
+        entries = self._json.get("emailAddresses") or []
+        addresses = sorted(address for address in (_address_of(entry) for entry in entries) if address)
+        return (str(self._json.get("displayName") or "").strip().lower(), addresses[0] if addresses else "")
 
     def restored(self) -> Dict[str, Any]:
         """The fields an import replays: the model's payload minus what Exchange assigns."""
@@ -276,23 +216,21 @@ class ContactRecord:
         dedupe index rather than by the service.
         """
         options = options or ContactImportOptions()
-        body = {key: value for key, value in self.restored().items() if value}
+        left_out = {Contact.wire_name(attr) for attr in withheld(options)}
+        body = {key: value for key, value in self.restored().items() if value and key not in left_out}
         display_name = str(body.get("displayName") or "").strip()
         if not display_name:
             raise ValueError("the sidecar record has no display name: Exchange rejects a contact without one")
         # Mandatory, and the sidecar may hold it unstripped — set last, from the value
         # this method validated.
         body["displayName"] = display_name
-        if options.restore_categories:
-            # Measured: Exchange rejects the whole contact (``ErrorPropertyUpdate``,
-            # "Property update did not succeed.") when one category carries a comma — the
-            # vCard separates categories with it. Refuse with the offending name instead
-            # of failing opaquely, and let the runner count this item as an error.
-            bad = [name for name in body.get("categories") or [] if "," in str(name)]
-            if bad:
-                raise ValueError(f"a contact category cannot contain a comma: {bad[0]!r}")
-        else:
-            body.pop("categories", None)
+        # Measured: Exchange rejects the whole contact (``ErrorPropertyUpdate``, "Property
+        # update did not succeed.") when one category carries a comma — the vCard separates
+        # categories with it. Refuse with the offending name instead of failing opaquely,
+        # and let the runner count this item as an error.
+        bad = [name for name in body.get("categories") or [] if "," in str(name)]
+        if bad:
+            raise ValueError(f"a contact category cannot contain a comma: {bad[0]!r}")
         return body
 
     def digest(self, options: ContactImportOptions | None = None) -> str:
@@ -307,21 +245,18 @@ class ContactRecord:
         return hashlib.md5(canonical).hexdigest()
 
     def canonical(self, options: ContactImportOptions | None = None) -> Dict[str, Any]:
-        """The restored fields in comparable form: one rule per column, no field-by-field code.
+        """The restored fields in comparable form: what the model says the service treats as equal.
 
         Only the fields the model declares take part, so a sidecar's own keys (the folder
         it came from, its ``.vcf``, a manifest's size) cannot make an export disagree with
         the import that replays it.
         """
         options = options or ContactImportOptions()
-        restored = self.restored()
-        if not options.restore_categories:
-            restored.pop("categories", None)
-        # A field the sidecar omits and a field Exchange answers empty are the same
-        # statement, so empties leave the canonical form — which is what lets one digest
-        # span "not recorded" and "recorded as nothing".
-        restored = {key: value for key, value in restored.items() if value not in ("", [], {})}
-        return {key: _COMPARE.get(key, _as_is)(value) for key, value in restored.items()}
+        return (
+            Contact(offline_context())
+            .hydrate(self.restored())
+            .to_json(CANONICAL.scoped(Contact, without=withheld(options)))
+        )
 
     def vcard(self) -> bytes:
         """The contact as a vCard 3.0 document.
@@ -365,7 +300,7 @@ class ContactRecord:
                 # Graph does not model.
                 adr = ["", ""] + [_vcard_escape(address.get(part)) for part in _ADR_PARTS]
                 lines.append(f"ADR;TYPE={kind}:" + ";".join(adr))
-        birthday = _by_date(contact.get("birthday"))
+        birthday = FORMATS["date"](str(contact.get("birthday") or "").strip())
         if birthday:
             lines.append("BDAY:" + birthday)
         if contact.get("personalNotes"):

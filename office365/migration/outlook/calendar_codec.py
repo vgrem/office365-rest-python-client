@@ -19,7 +19,8 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from office365.migration.outlook.calendar_profile import ICALENDAR, IcsProfile, display_name, parse_wall_clock
+from office365.migration.outlook.calendar_profile import ICALENDAR, IcsProfile, display_name
+from office365.runtime.converters.scalars import wall_clock
 
 #: RFC 5545 §3.1 caps a content line at 75 octets; a continuation starts with a space.
 MAX_LINE_OCTETS = 75
@@ -57,7 +58,7 @@ def fold_line(line: str) -> str:
 
 def date_time_line(name: str, value: Mapping[str, Any], is_all_day: bool) -> str | None:
     """A ``DTSTART``/``DTEND`` line: a date for an all-day event, else zoned or UTC."""
-    moment = parse_wall_clock(value.get("dateTime"))
+    moment = wall_clock(value.get("dateTime"))
     if moment is None:
         return None
     if is_all_day:
@@ -104,7 +105,7 @@ def rrule(recurrence: Any, profile: IcsProfile = ICALENDAR) -> str | None:
     if window.get("type") == "numbered" and isinstance(occurrences, int) and occurrences > 0:
         parts.append(f"COUNT={occurrences}")
     elif window.get("type") == "endDate":
-        until = parse_wall_clock(window.get("endDate"))
+        until = wall_clock(window.get("endDate"))
         if until is not None:
             parts.append(f"UNTIL={until.strftime('%Y%m%dT%H%M%S')}Z")
     return ";".join(parts)
@@ -142,9 +143,7 @@ def encode(envelope: Mapping[str, Any], profile: IcsProfile = ICALENDAR) -> byte
     ]
     uid = envelope.get("iCalUId") or envelope.get("id") or ""
     lines.append(f"UID:{escape_text(uid)}")
-    stamp = parse_wall_clock(envelope.get("lastModifiedDateTime")) or parse_wall_clock(
-        (envelope.get("start") or {}).get("dateTime")
-    )
+    stamp = wall_clock(envelope.get("lastModifiedDateTime")) or wall_clock((envelope.get("start") or {}).get("dateTime"))
     if stamp is not None:
         lines.append(f"DTSTAMP:{stamp.strftime('%Y%m%dT%H%M%S')}Z")
     for name, key in (("DTSTART", "start"), ("DTEND", "end")):

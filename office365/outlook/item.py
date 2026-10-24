@@ -3,7 +3,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import Compare, odata
 
 
 class OutlookItem(Entity):
@@ -16,7 +16,7 @@ class OutlookItem(Entity):
         """
         return self.properties.get("changeKey", None)
 
-    @odata(name="categories")
+    @odata(name="categories", compare=Compare(unordered=True))
     @property
     def categories(self) -> StringCollection:
         """The categories associated with the item"""

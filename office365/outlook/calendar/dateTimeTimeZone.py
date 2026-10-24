@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import overload
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import parse_datetime
+from office365.runtime.types.odata_property import Compare, odata
 
 
 def _zone_name(tzinfo: object) -> str | None:
@@ -32,7 +33,7 @@ class DateTimeTimeZone(ClientValue):
         timeZone (str | None): Represents a time zone, for example, "Pacific Standard Time" or "Europe/Kyiv".
     """
 
-    dateTime: str | None = None
+    dateTime: str | None = field(default=None, metadata=odata("dateTime", compare=Compare(format="wall-clock")))
     timeZone: str | None = None
 
     def __repr__(self):

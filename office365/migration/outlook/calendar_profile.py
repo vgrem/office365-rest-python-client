@@ -12,28 +12,15 @@ a word the service never sends is a lie. ``transp`` and ``status`` are deliberat
 those are what a reader assumes by default, so their incompleteness is the spelling
 rather than an omission.
 
-:data:`COMPARED` is the *comparison* spelling: one :class:`FieldRule` per sidecar field a
-digest takes part in, carrying the normalisation Exchange forces on a round trip (a body
-comes back re-wrapped in HTML, a wall clock comes back with a different fraction of a
-second) and the import option that can decline to restore the field at all. A field the
-sidecar gains is therefore a row here, not a line in a hand-built dict.
-
-The envelope these rules read is the event as the model serializes it
-(``Event.to_json()``), so the keys are Graph's own — ``isAllDay``, ``showAs``, a
-``{"displayName": …}`` location, an attendee's ``emailAddress`` and ``status.response``.
-Nothing here re-spells them.
+What a digest compares is not spelled here: the model declares what the service treats as
+the same value (``Compare`` on the field) and ``to_json(CANONICAL)`` applies it.
 """
 
 from __future__ import annotations
 
-import html
-import re
 from dataclasses import dataclass
-from datetime import datetime
 from types import MappingProxyType
-from typing import Any, Callable, Mapping, Sequence
-
-from office365.runtime.converters.scalars import parse_datetime
+from typing import Any, Mapping
 
 
 @dataclass(frozen=True)
@@ -110,145 +97,13 @@ ICALENDAR = IcsProfile(
 )
 
 
-def parse_wall_clock(value: Any) -> datetime | None:
-    """A Graph date-time literal as a *naive wall clock*, or ``None``.
-
-    The parsing itself is the library's (``parse_datetime`` normalises any
-    fractional-second width — Graph sends seven digits and ``%f`` reads six). What is
-    decided here is this package's own semantics: values are compared and formatted as
-    wall clocks (the zone travels separately in ``timeZone``), so an offset is dropped,
-    and a date-only literal — which a recurrence ``endDate`` is — is not a moment.
-    """
-    text = str(value or "").strip()
-    if "T" not in text:
-        return None
-    parsed = parse_datetime(text)
-    return parsed.replace(tzinfo=None) if parsed else None
-
-
-#: Markup whose text is not content, and comments — dropped before a body is reduced
-#: to text. Exchange wraps every body it accepts in its own ``<html><head>…<style>…``.
-_MARKUP_BLOCK = re.compile(r"<(head|style|script)\b.*?</\1\s*>", re.IGNORECASE | re.DOTALL)
-_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
-_TAG = re.compile(r"<[^>]+>")
-_SPACE = re.compile(r"\s+")
-
-
-def text(value: Any) -> str:
-    """A sidecar value as the comparable text an empty value and ``None`` share."""
-    return str(value or "")
-
-
-def wall_clock(pair: Any) -> tuple[str | None, str | None]:
-    """A Graph ``{dateTime, timeZone}`` pair as a comparable ``(wall clock, zone)``.
-
-    Graph varies the fractional-second width between what is sent and what comes back,
-    so the fraction is dropped rather than compared.
-    """
-    moment = pair or {}
-    parsed = parse_wall_clock(moment.get("dateTime"))
-    zone = moment.get("timeZone")
-    return (parsed.strftime("%Y-%m-%dT%H:%M:%S") if parsed else None, str(zone) if zone else None)
-
-
-def names(value: Sequence[Any] | None) -> list[str]:
-    """A label list a service keeps unordered compares as a sorted set, empties dropped."""
-    return sorted(str(name) for name in value or [] if name)
-
-
 def display_name(value: Mapping[str, Any] | None) -> str:
     """A Graph ``{"displayName": …}`` object as the text it carries (a location)."""
-    return text((value or {}).get("displayName"))
-
-
-def display_names(value: Sequence[Mapping[str, Any]] | None) -> list[str]:
-    """A list of such objects, ordered, the nameless dropped."""
-    return sorted(name for name in (display_name(item) for item in value or []) if name)
-
-
-def _email_address(attendee: Mapping[str, Any]) -> Mapping[str, Any]:
-    """The address part of an attendee/recipient, which is where a person is."""
-    return attendee.get("emailAddress") or {}
-
-
-def attendee_pairs(value: Sequence[Mapping[str, Any]] | None) -> list[tuple[str, str]]:
-    """An attendee list as ``(address, type)``: an entry without an address is nobody."""
-    return sorted(
-        (str(_email_address(item).get("address") or "").lower(), str(item.get("type") or "required"))
-        for item in value or []
-        if _email_address(item).get("address")
-    )
-
-
-def body_text(value: Any) -> str:
-    """A body reduced to its text, for comparison only.
-
-    Exchange re-serializes every body it accepts: a plain-text body comes back wrapped
-    in HTML, and an HTML body gains a ``<head>`` with a generated ``<style>`` block.
-    The markup is therefore not comparable — the text is.
-    """
-    content = (value or {}).get("content")
-    if not content:
-        return ""
-    stripped = _COMMENT.sub("", str(content))
-    stripped = _MARKUP_BLOCK.sub("", stripped)
-    stripped = _TAG.sub(" ", stripped)
-    return _SPACE.sub(" ", html.unescape(stripped)).strip()
-
-
-@dataclass(frozen=True)
-class FieldRule:
-    """One sidecar field as a digest compares it.
-
-    ``gate`` names the :class:`CalendarImportOptions` attribute that decides whether an
-    import restores the field at all: a source and a target of one job must agree on the
-    options, so a field the import declines to replay stays out of the digest that
-    verifies the replay.
-    """
-
-    #: The key this field takes in the canonical form.
-    key: str
-    #: The sidecar envelope → the comparable value.
-    normalise: Callable[[Mapping[str, Any]], Any]
-    #: The import option that decides whether the field is restored, if any.
-    gate: str | None = None
-
-
-#: Every sidecar field a digest compares, in canonical order. The sidecar's own
-#: bookkeeping (the Graph id, the ``.ics`` path, the calendar it came from) is absent by
-#: construction: it is provenance, not content, and an import never replays it.
-COMPARED: tuple[FieldRule, ...] = (
-    FieldRule("subject", lambda envelope: text(envelope.get("subject"))),
-    FieldRule("start", lambda envelope: wall_clock(envelope.get("start"))),
-    FieldRule("end", lambda envelope: wall_clock(envelope.get("end"))),
-    FieldRule("all_day", lambda envelope: bool(envelope.get("isAllDay"))),
-    FieldRule("location", lambda envelope: display_name(envelope.get("location"))),
-    FieldRule("locations", lambda envelope: display_names(envelope.get("locations"))),
-    FieldRule("show_as", lambda envelope: envelope.get("showAs")),
-    FieldRule("sensitivity", lambda envelope: envelope.get("sensitivity")),
-    FieldRule("importance", lambda envelope: envelope.get("importance")),
-    FieldRule(
-        "reminder",
-        lambda envelope: (bool(envelope.get("isReminderOn")), envelope.get("reminderMinutesBeforeStart") or 0),
-    ),
-    FieldRule("recurrence", lambda envelope: envelope.get("recurrence")),
-    FieldRule("body", lambda envelope: body_text(envelope.get("body"))),
-    FieldRule("attendees", lambda envelope: attendee_pairs(envelope.get("attendees")), gate="restore_attendees"),
-    FieldRule("categories", lambda envelope: names(envelope.get("categories")), gate="restore_categories"),
-)
+    return str((value or {}).get("displayName") or "")
 
 
 __all__ = [
-    "COMPARED",
     "ICALENDAR",
-    "FieldRule",
     "IcsProfile",
-    "attendee_pairs",
-    "body_text",
     "display_name",
-    "display_names",
-    "names",
-    "parse_wall_clock",
-    "text",
-    "wall_clock",
 ]

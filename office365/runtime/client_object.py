@@ -26,7 +26,7 @@ from office365.runtime.converters.value import (
 from office365.runtime.exceptions import ObjectNotFoundException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import Limit
-from office365.runtime.odata.json_format import JsonProfile
+from office365.runtime.odata.json_format import JsonProfile, as_held
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
@@ -584,35 +584,37 @@ class ClientObject:
         """
         return self._parent_collection
 
-    def hydrate(self, payload: Any, profile: JsonProfile) -> Self:
+    def hydrate(self, payload: Any, profile: Optional[JsonProfile] = None) -> Self:
         """Read this object's content from a payload: the mirror of :meth:`to_json`.
 
         One direction spells, the other reads, and neither is a procedure: the object
         knows its declarations, the profile knows the dialect, and the payload is all
-        that is left over.
+        that is left over. The object is bound to its context before it is filled, so
+        ``Event(context).hydrate(payload)`` reads and chains, and a client with no
+        credentials is enough to do it offline.
 
-        ``profile`` is required here although :meth:`to_json` takes it optionally, and
-        the asymmetry is the point. An object with no profile writes itself exactly as it
-        holds it — a response, or a sidecar — while a payload cannot be read without
-        knowing how it was spelled: JSON Light wraps an entity in ``d``, OData V4 does
-        not, and guessing is how a reader quietly returns an empty object.
+        ``profile=None`` is the spelling :meth:`to_json` writes with no profile (a
+        sidecar: no control information), so ``x.hydrate(y.to_json())`` round-trips.
+        A payload that came off the wire needs its own profile: JSON Light wraps an
+        entity in ``d``, OData V4 does not, and a wrapped payload read in the wrong
+        dialect quietly yields an empty object.
 
         Everything the payload says becomes this object's own content
         (``persist_changes``): content meant to be posted, not a response that happened
-        to arrive. A response is filled the other way — ``profile.hydrate(self, payload)``
-        — because what a service said is not what a caller changed.
+        to arrive. A response is filled the other way, by ``profile.hydrate(self, payload)``,
+        because what a service said is not what a caller changed.
 
         Args:
             payload: The payload to read (an entity, or a list of them)
-            profile: The profile that spells the payload
+            profile: The profile that spells the payload; ``None`` for what ``to_json()`` wrote
 
         Returns:
             This object, so reading and spelling chain.
         """
-        profile.hydrate(self, payload, persist_changes=True)
+        (profile or as_held()).hydrate(self, payload, persist_changes=True)
         return self
 
-    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any] | List[Any]:
+    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any]:
         """
         Serializes the client object to a JSON-compatible dictionary.
 
@@ -622,16 +624,19 @@ class ClientObject:
                 dropped and nothing is wrapped.
 
         Returns:
-            Dictionary (or list, for collections) representing the serialized object
+            Dictionary representing the serialized object (a collection overrides this to
+            answer the list of its members)
         """
         if profile is None:
             json = {k: self.get_property(k) for k in self._properties}
         else:
             persistable, readonly = self._schema.persistable, self._schema.readonly
+            declared = self._schema.properties
             json = {
                 k: self.get_property(k)
                 for k in self._properties
-                if (k in self._changes or k in persistable) and k not in readonly
+                if k not in readonly
+                and profile.includes(self, declared.get(k), k, k in self._changes or k in persistable)
             }
         # ``__``-prefixed keys are this client's own bookkeeping, ingested from a
         # response (``__etag`` for ``If-Match``, ``__odata_type``, ``__deferred``):
@@ -639,4 +644,4 @@ class ClientObject:
         # A dialect's control marker (``__metadata``) is added *after* this filter.
         json = {k: serialize_value(v, profile) for k, v in json.items() if not k.startswith("__")}
 
-        return json if profile is None else profile.wrap(self, json)
+        return json if profile is None else profile.wrap(self, profile.refine(json, self._schema.properties.values()))

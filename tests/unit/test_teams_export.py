@@ -71,7 +71,7 @@ def test_archive_job_round_trip(tmp_path: Path):
     assert stats.success == 2  # noqa: PLR2004
     assert report.ok
     team = json.loads((tmp_path / "t1" / "team.json").read_text())
-    assert team["display_name"] == "Alpha"
+    assert team["displayName"] == "Alpha"
     lines = (tmp_path / "t1" / "messages.ndjson").read_text().strip().splitlines()
     assert json.loads(lines[0])["channel_id"] == "c1"
 
@@ -279,3 +279,36 @@ class TestDriveItemEnsureFile(unittest.TestCase):
         self.assertTrue(url.endswith("/items/b2:/f.txt:/content"))
         self.assertEqual(data, b"hi")
         self.assertEqual(target.get_property("id"), "f4")
+
+
+def test_archive_keeps_what_the_model_spells_and_not_a_copy_of_it(tmp_path: Path):
+    message = {**_MESSAGE, "id": "msg1"}
+    payloads = [
+        ("json", _CHANNELS),  # plan: channels
+        ("json", {"value": [message]}),  # plan: messages
+        ("json", _REPLIES),  # plan: replies
+        ("json", _TEAM),  # run: the team
+        ("json", {"value": [{"id": "m1", "displayName": "Alice", "roles": ["owner"], "email": "a@x.com"}]}),
+        ("json", {"value": [{"id": "app1", "teamsAppDefinition": {"teamsAppId": "ta1", "displayName": "Planner"}}]}),
+        ("json", {"value": [{"id": "cm1", "displayName": "Bob", "roles": []}]}),  # the channel's members
+        ("json", {"value": [{"id": "tab1", "displayName": "Wiki", "teamsApp": {"id": "wiki"}}]}),
+    ]
+    client = _client(_Transport(payloads))
+    options = TeamsExportOptions(include_hosted_contents=False)
+    job = MigrationJob(TeamsArchiveSource(client, ["t1"], options), TeamsArchiveTarget(tmp_path))
+    job.plan()
+    job.run()
+
+    team = json.loads((tmp_path / "t1" / "team.json").read_text())
+    assert team["displayName"] == "Alpha"
+    assert team["members"][0]["roles"] == ["owner"]
+    assert team["installedApps"][0]["teamsAppDefinition"]["teamsAppId"] == "ta1"
+    channel = team["channels"][0]
+    assert channel["displayName"] == "General"
+    assert channel["members"][0]["displayName"] == "Bob"
+    assert channel["tabs"][0]["teamsApp"]["id"] == "wiki"
+
+    line = json.loads((tmp_path / "t1" / "messages.ndjson").read_text().splitlines()[0])
+    assert line["channel_id"] == "c1"
+    assert line["from"]["user"]["displayName"] == "Alice"  # JSON, not the repr of a typed object
+    assert line["mentions"][0]["mentionText"] == "@Bob"
