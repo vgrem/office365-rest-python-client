@@ -1,4 +1,4 @@
-"""``to_json(CANONICAL)``: two spellings of one value share a form, a real change does not.
+"""``to_json(COMPARABLE)``: two spellings of one value share a form, a real change does not.
 
 Each rule is a fact the service was measured to apply, declared on the field it is about
 (``Compare``); these tests read it back through the one profile that applies them.
@@ -15,7 +15,7 @@ from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.contacts.contact import Contact
 from office365.outlook.mail.location import Location
-from office365.runtime.odata.canonical import CANONICAL
+from office365.runtime.odata.comparable import COMPARABLE
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.odata_property import Compare
 
@@ -24,7 +24,7 @@ def _contact(**payload) -> dict:
     return (
         Contact(GraphClient(lambda: {"access_token": "-", "token_type": "Bearer"}))
         .hydrate({"displayName": "A", **payload}, V4JsonFormat())
-        .to_json(CANONICAL)
+        .to_json(COMPARABLE)
     )
 
 
@@ -32,7 +32,7 @@ def _event(**payload) -> dict:
     return (
         Event(GraphClient(lambda: {"access_token": "-", "token_type": "Bearer"}))
         .hydrate(payload, V4JsonFormat())
-        .to_json(CANONICAL)
+        .to_json(COMPARABLE)
     )
 
 
@@ -66,7 +66,7 @@ def test_the_comparable_form_is_not_a_request():
 
 
 def test_an_entry_with_no_address_is_nobody():
-    assert EmailAddress().to_json(CANONICAL) == {}
+    assert EmailAddress().to_json(COMPARABLE) == {}
     assert _contact(emailAddresses=[{"name": ""}]) == _contact()
 
 
@@ -93,6 +93,12 @@ def test_the_wall_clock_has_no_fraction_width():
     assert sent != _event(start={"dateTime": "2026-03-02T09:30:00.0000000", "timeZone": "UTC"})
 
 
+def test_a_literal_the_rule_cannot_read_is_compared_as_it_stands():
+    # A date with no time of day names no moment, so it cannot be reduced -- and emptying it
+    # would make every such literal the same statement as every other one.
+    assert _event(start={"dateTime": "2026-03-02"}) != _event(start={"dateTime": "2026-03-03"})
+
+
 def test_a_body_is_its_text_not_its_markup():
     plain = _event(body={"contentType": "text", "content": "Agenda"})
     wrapped = _event(body={"contentType": "html", "content": "<html><head><style>p{}</style></head><body>Agenda</body>"})
@@ -111,7 +117,7 @@ def test_an_attendee_with_no_type_is_a_required_one_and_its_answer_is_not_the_se
 
 def test_an_attendee_with_no_address_is_nobody_whatever_its_default():
     assert _event(attendees=[{"type": "optional"}]) == _event()
-    assert Attendee().to_json(CANONICAL) == {}
+    assert Attendee().to_json(COMPARABLE) == {}
 
 
 def test_a_location_is_its_name():
@@ -146,7 +152,7 @@ def test_a_format_nobody_defined_is_refused_when_the_field_is_declared():
 
 
 def test_the_location_type_declares_what_the_service_resolves():
-    assert Location(displayName="Room 1", uniqueId="x").to_json(CANONICAL) == {"displayName": "Room 1"}
+    assert Location(displayName="Room 1", uniqueId="x").to_json(COMPARABLE) == {"displayName": "Room 1"}
 
 
 # -- hydrate: the counterpart of to_json -------------------------------------
@@ -180,7 +186,7 @@ def test_an_object_round_trips_through_hydrate(model, payload):
     context = GraphClient(lambda: {"access_token": "-", "token_type": "Bearer"})
     held = model(context).hydrate(payload).to_json()
     assert held == model(context).hydrate(held).to_json()
-    for profile in (V4JsonFormat("none"), CANONICAL):
+    for profile in (V4JsonFormat("none"), COMPARABLE):
         spelled = model(context).hydrate(payload).to_json(profile)
         assert model(context).hydrate(spelled, profile).to_json(profile) == spelled
 
@@ -201,7 +207,21 @@ def test_a_scoped_profile_narrows_the_model_it_names_and_not_a_nested_value_shar
     )
     spelled = contact.to_json(V4JsonFormat("none").scoped(Contact, without=("display_name", "categories")))
     assert spelled == {"emailAddresses": [{"address": "a@x.com", "name": "A"}]}
-    assert contact.to_json(CANONICAL.scoped(Contact, only=("categories",))) == {"categories": ["x"]}
+    assert contact.to_json(COMPARABLE.scoped(Contact, only=("categories",))) == {"categories": ["x"]}
+
+
+def test_a_scoped_profile_narrows_a_value_as_well_as_an_object():
+    # ``name`` is filled back in from ``address`` by a rule, after the scope dropped it;
+    # a field the caller left out stays out, so the scope has the last word.
+    email = EmailAddress("a@x.com", "A")
+    assert email.to_json(COMPARABLE) == {"address": "a@x.com", "name": "A"}
+    assert email.to_json(COMPARABLE.scoped(EmailAddress, only=("address",))) == {"address": "a@x.com"}
+
+
+def test_a_contact_is_not_identified_by_its_email_addresses():
+    # A ``key`` here would erase every email-less contact: measured on the dev tenant, 1 of
+    # 10 contacts has no address at all and still has a name worth comparing.
+    assert _contact(emailAddresses=[], displayName="Ada") == {"displayName": "Ada"}
 
 
 def test_a_scoped_profile_refuses_a_name_the_model_does_not_declare():

@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Dict, Iterable, Iterator, Optio
 from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.dialect import BY_LEVEL, JsonDialect
 from office365.runtime.serialization import PropertyReceiver
-from office365.runtime.types.odata_property import ODataPropertyMeta
+from office365.runtime.types.odata_property import ODataPropertyMeta, field_declarations
 
 if TYPE_CHECKING:
     from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
@@ -127,8 +127,10 @@ class JsonProfile:
     def includes(self, owner: Any, declared: Optional[ODataPropertyMeta], name: str, changed: bool) -> bool:
         """Whether a property of ``owner`` enters a payload this profile spells.
 
-        A request carries what its sender changed (or what a type always sends); a profile
-        that spells something else, such as a comparable form, decides for itself.
+        ``name`` is the property's *spelled* name (the OData one), whether ``owner`` holds
+        it as a wire key or declares it on a Python attribute. A request carries what its
+        sender changed (or what a type always sends); a profile that spells something else,
+        such as a comparable form, decides for itself.
         """
         return changed
 
@@ -237,6 +239,12 @@ class JsonProfile:
             yield alias, value
 
 
+def _declared_fields(model: Any) -> Iterable[ODataPropertyMeta]:
+    """The declarations of a model type: an object's schema, or a value's dataclass fields."""
+    schema = getattr(model, "_schema", None)
+    return schema.properties.values() if schema is not None else field_declarations(model).values()
+
+
 class ScopedProfile(JsonProfile):
     """A profile that leaves some properties of one model out of what it spells."""
 
@@ -248,6 +256,10 @@ class ScopedProfile(JsonProfile):
         self._model = model
         self._only = None if only is None else frozenset(model.wire_name(attr) for attr in only)
         self._without = frozenset(model.wire_name(attr) for attr in without)
+        # ``refine`` is not told which type it is refining, so the narrowing is applied to
+        # the one call that was handed exactly this model's own declarations. That is what
+        # keeps a nested value sharing a wire name untouched.
+        self._own = frozenset(map(id, _declared_fields(model)))
 
     @property
     def dialect(self) -> JsonDialect:
@@ -265,7 +277,16 @@ class ScopedProfile(JsonProfile):
         return self._base.includes(owner, declared, name, changed)
 
     def refine(self, spelled: Dict[str, Any], declarations: Iterable[ODataPropertyMeta]) -> Dict[str, Any]:
-        return self._base.refine(spelled, declarations)
+        form = self._base.refine(spelled, declarations)
+        if frozenset(map(id, declarations)) != self._own:
+            return form
+        # Last word, after the base profile refined: a rule that fills a field in from a
+        # sibling must not resurrect one this scope left out.
+        return {
+            name: value
+            for name, value in form.items()
+            if name not in self._without and (self._only is None or name in self._only)
+        }
 
     def wrap(self, obj: Any, payload: Any) -> Any:
         return self._base.wrap(obj, payload)

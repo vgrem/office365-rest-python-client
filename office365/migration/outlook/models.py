@@ -23,7 +23,7 @@ from typing import Any, cast
 
 from office365.migration.outlook.records import SidecarRecord
 from office365.outlook.mail.messages.message import Message
-from office365.runtime.odata.canonical import digest
+from office365.runtime.odata.comparable import digest
 
 
 @dataclass
@@ -104,7 +104,7 @@ def mime_digest(data: bytes) -> str:
     payloads and semantic headers instead, and an imported copy can be compared with the
     ``.eml`` it came from.
 
-    Built here rather than through :data:`CANONICAL` because the input is not a model: the
+    Built here rather than through :data:`COMPARABLE` because the input is not a model: the
     ``.eml`` arrives as bytes from ``$value``, so RFC 822 has no declarations to apply.
     Empty for an unparsable message, which verification reports as unverifiable rather
     than as a mismatch.

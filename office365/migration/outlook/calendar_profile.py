@@ -13,7 +13,7 @@ those are what a reader assumes by default, so their incompleteness is the spell
 rather than an omission.
 
 What a digest compares is not spelled here: the model declares what the service treats as
-the same value (``Compare`` on the field) and ``to_json(CANONICAL)`` applies it.
+the same value (``Compare`` on the field) and ``to_json(COMPARABLE)`` applies it.
 """
 
 from __future__ import annotations

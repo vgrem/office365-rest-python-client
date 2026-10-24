@@ -46,7 +46,7 @@ from typing import Any, Dict, List, Tuple
 from office365.migration.outlook.records import SidecarRecord
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.contacts.contact import Contact
-from office365.runtime.odata.canonical import FORMATS
+from office365.runtime.odata.comparable import FORMATS
 
 #: Graph contact properties an export reads: every column the model declares. Derived
 #: rather than listed, for the reason the calendar projection is: a hand-kept list drifts

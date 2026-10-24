@@ -1,6 +1,6 @@
 """A lint for ``Compare`` declarations: do they say something the field's type can bear?
 
-A rule is declared on a field and read by ``CANONICAL`` as already-spelled JSON, so a rule
+A rule is declared on a field and read by ``COMPARABLE`` as already-spelled JSON, so a rule
 on the wrong kind of field does not fail, it silently does nothing (``unordered`` on a
 string, ``format="date"`` on a number). Checking at class creation is not possible
 (a ``TYPE_CHECKING``-only annotation resolves to ``None`` there), so the check is a function

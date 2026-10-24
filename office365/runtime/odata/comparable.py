@@ -1,6 +1,6 @@
 """The comparable spelling of a model: what two spellings of one value have in common.
 
-``entity.to_json(CANONICAL)`` is the same walk as any other ``to_json``, with one more
+``entity.to_json(COMPARABLE)`` is the same walk as any other ``to_json``, with one more
 reader of the declarations: each field's :class:`~office365.runtime.types.odata_property.Compare`
 says what the service treats as the same value, and this profile applies it. A digest of
 the result is a digest of the meaning, so a copy the service rewrote (an address-only
@@ -17,6 +17,12 @@ sender never wrote -- ``Compare.fallback`` names a sibling, ``Compare.default`` 
 value -- because a digest is of the meaning. A request may not: a create body still sends
 an address-only attendee with no name. Anything that leaves the process takes a payload
 profile (``V4JsonFormat("none")``), never this one.
+
+It is deliberately **not** a canonical form: a canonical form is one representative per
+equivalence class that can be turned back into a member of it, and this one is lossy by
+construction -- ``Compare.fallback`` and ``Compare.default`` invent values, empty fields
+go, lists are sorted. Two different items are *meant* to share one. Hence
+``COMPARABLE`` rather than ``CANONICAL``.
 """
 
 from __future__ import annotations
@@ -48,9 +54,14 @@ def _date(value: str) -> str:
 
 def _wall_clock(value: str) -> str:
     """The wall clock to the second: the width of the fraction (and any offset) varies
-    between what is sent and what comes back. A date with no time of day names no moment."""
+    between what is sent and what comes back.
+
+    A literal with no time of day names no moment, so it cannot be reduced -- and it is
+    left as it stands rather than emptied, because two different literals that this rule
+    cannot read are still two different statements.
+    """
     moment = wall_clock(value)
-    return moment.strftime("%Y-%m-%dT%H:%M:%S") if moment else ""
+    return moment.strftime("%Y-%m-%dT%H:%M:%S") if moment else value
 
 
 def _text(value: str) -> str:
@@ -67,7 +78,7 @@ def _order(item: Any) -> str:
     return json.dumps(item, sort_keys=True, default=str)
 
 
-class CanonicalProfile(JsonProfile):
+class ComparableProfile(JsonProfile):
     """Spells a model in its comparable form; see the module docstring."""
 
     _default_dialect = V4_NO_METADATA
@@ -117,13 +128,13 @@ class CanonicalProfile(JsonProfile):
                 value = value.casefold()
             return FORMATS[rule.format](value) if rule is not None and rule.format else value
         if isinstance(value, list):
-            items: List[Any] = [item for item in (CanonicalProfile._reduce(item, rule) for item in value) if item]
+            items: List[Any] = [item for item in (ComparableProfile._reduce(item, rule) for item in value) if item]
             return sorted(items, key=_order) if rule is not None and rule.unordered else items
         return value
 
 
-#: The comparable form: ``entity.to_json(CANONICAL)``.
-CANONICAL = CanonicalProfile()
+#: The comparable form: ``entity.to_json(COMPARABLE)``.
+COMPARABLE = ComparableProfile()
 
 
 def digest(form: Any) -> str:

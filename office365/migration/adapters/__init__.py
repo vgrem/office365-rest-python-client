@@ -29,7 +29,7 @@ def checksum(data: bytes) -> str:
     resumed run has to recognise the file it wrote, and a verification has to notice a
     changed one. Every adapter that checksums bytes asks the same question, so it is one
     function here rather than one per product (a digest of *meaning* is
-    :func:`office365.runtime.odata.canonical.digest`).
+    :func:`office365.runtime.odata.comparable.digest`).
     """
     return hashlib.md5(data).hexdigest()
 

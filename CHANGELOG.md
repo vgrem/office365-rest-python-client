@@ -23,8 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - A field declares what the service treats as the same value:
   `@odata(name="birthday", compare=Compare(format="date"))`
   (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`, `default`,
-  `unordered`, `format`, `ignore`, `key`). `entity.to_json(CANONICAL)`
-  (`office365.runtime.odata.canonical`) spells a model in that comparable form, so two
+  `unordered`, `format`, `ignore`, `key`). `entity.to_json(COMPARABLE)`
+  (`office365.runtime.odata.comparable`) spells a model in that comparable form, so two
   copies that differ only by what the service rewrites (an address-only email named after
   itself, a birthday's time of day, the order of a label set, the width of a fractional
   second, the markup around a body) compare equal and a real difference does not. It is
@@ -33,7 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the Outlook `Contact`/`Event`/item properties. The Outlook migration verifies imports
   through it: the contact and calendar digests are now digests of that form, so a run
   resumed across this change re-verifies its items once, and `calendar_profile` lost its
-  hand-written comparison helpers.
+  hand-written comparison helpers. A literal a `format` reduction cannot read (a date with
+  no time of day) is compared as it stands, not emptied into every other unreadable one.
 
 - `hydrate(payload, profile=None)` is the one in-place reading verb on `ClientObject`,
   `ClientValue` and `ClientResult` (and so both collections) and answers `self`, so it
@@ -42,7 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   data-pipeline streaming entry (`from_csv`, `from_ndjson`, ...).
   `JsonProfile.scoped(Model, only=...,
   without=...)` narrows any profile to some properties of one model (attribute names,
-  checked against its declarations; a nested value that shares a wire name is untouched).
+  checked against its declarations; a nested value that shares a wire name is untouched,
+  and a field the scope left out is not filled back in by a comparison rule).
+  `ClientValue.wire_name` is the mirror of `ClientObject.wire_name`, so a scope narrows a
+  value (`EmailAddress`) as well as an entity.
   `ClientObject.to_json` is typed `Dict[str, Any]` (a collection's list form is its own
   override), so entity callers no longer cast.
 
@@ -512,7 +516,7 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   `collection_next`, `etag`); each re-exported a dialect field that `to_json` reads from
   the dialect itself.
 - One byte-identity helper: `checksum(data)` in `migration.adapters` replaced four private
-  `_md5`/`_checksum` copies, and `digest()` in `runtime.odata.canonical` replaced three
+  `_md5`/`_checksum` copies, and `digest()` in `runtime.odata.comparable` replaced three
   hand-written hashers. Two digests, two jobs: `checksum()` is of the bytes,
   `digest()` is of the meaning.
 

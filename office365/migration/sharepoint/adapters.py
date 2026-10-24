@@ -30,7 +30,7 @@ from office365.migration.sharepoint.transfer import Failure
 from office365.runtime.converters.records import records_from_items
 from office365.runtime.converters.scalars import iso_or_none, parse_datetime, parse_int
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
-from office365.runtime.odata.canonical import digest
+from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.user_value import FieldUserValue

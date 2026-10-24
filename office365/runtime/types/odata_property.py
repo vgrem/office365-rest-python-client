@@ -17,7 +17,7 @@ class Compare:
     fills a name in from an address, stores a birthday at a time of day nobody set,
     keeps a list of labels as a set. Each of those is a fact about one field, so it is
     stated on that field and applied by one profile
-    (:data:`office365.runtime.odata.canonical.CANONICAL`), instead of being re-derived
+    (:data:`office365.runtime.odata.comparable.COMPARABLE`), instead of being re-derived
     by every caller that has to compare two spellings.
     """
 
@@ -37,7 +37,7 @@ class Compare:
     key: bool = False
 
     def __post_init__(self) -> None:
-        from office365.runtime.odata.canonical import FORMATS
+        from office365.runtime.odata.comparable import FORMATS
 
         if self.format is not None and self.format not in FORMATS:
             raise ValueError(f"unknown comparison format {self.format!r}; known: {', '.join(sorted(FORMATS))}")

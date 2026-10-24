@@ -2,22 +2,35 @@
 
 from __future__ import annotations
 
+import importlib
+import pkgutil
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
-import pytest
-from office365.outlook.calendar.events.event import Event
-from office365.outlook.contacts.contact import Contact
-from office365.outlook.mail.messages.message import Message
+import office365
+from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
-from office365.runtime.compare_check import compare_problems
+from office365.runtime.compare_check import _fields, compare_problems
 from office365.runtime.types.odata_property import Compare, odata
 
 
-@pytest.mark.parametrize("model", [Event, Contact, Message], ids=lambda model: model.__name__)
-def test_every_declared_compare_rule_fits_its_field(model):
-    assert compare_problems(model) == []
+def _package_models() -> list:
+    """Every model the package defines, imported: the hand-written ones and the generated ones."""
+    found: Dict[type, None] = {}
+    for module in pkgutil.walk_packages(office365.__path__, "office365."):
+        for member in vars(importlib.import_module(module.name)).values():
+            if isinstance(member, type) and issubclass(member, (ClientObject, ClientValue)):
+                found[member] = None
+    return list(found)
+
+
+def test_every_compare_rule_in_the_package_fits_its_field():
+    # Three models declare these rules by hand today; naming them would let the fourth
+    # escape, so the walk is the gate and a rule is found by the declaration itself.
+    declaring = [model for model in _package_models() if any(meta.compare for _, meta, _ in _fields(model))]
+    assert declaring, "the walk found no declaring model, so it proves nothing"
+    assert [problem for model in declaring for problem in compare_problems(model)] == []
 
 
 def _problems(**declared) -> list:

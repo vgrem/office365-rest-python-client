@@ -1964,6 +1964,52 @@ print(report.to_dict())  # JSON-serializable evidence
 assert report.complete
 ```
 
+### What a verification compares
+
+A migrated item is never read back byte-for-byte: Exchange and Graph re-spell what they
+store — an address-only attendee comes back named after its address, a `dateTime`
+fraction goes from seven digits to six, a label list keeps no order. So a verification
+compares **meaning**, and what counts as the same meaning is declared on the field it is
+about, as a `Compare` rule:
+
+| Declaration | Says |
+|---|---|
+| `Compare(casefold=True)` | the service does not distinguish `Bob@x` from `bob@x` |
+| `Compare(fallback="address")` | a name the sender left out reads back as the address |
+| `Compare(default="required")` | an absent `type` *is* `required` |
+| `Compare(ignore=True)` | a field the service owns, not the migration |
+| `Compare(unordered=True)` | a list whose order means nothing |
+| `Compare(format="date")` / `"wall-clock"` / `"text"` | the reduction that makes two spellings one value |
+| `Compare(key=True)` | a value with this field empty is nobody: it drops out of the list |
+
+`to_json(COMPARABLE)` applies those rules and the one further reduction every field shares
+(unset, empty, zero and false say nothing, so they go), and a digest of the result is a
+digest of the meaning. The same three operations spell every payload a migration writes or
+reads, whichever family it is in:
+
+```python
+from office365.runtime.odata.comparable import COMPARABLE, digest
+from office365.runtime.odata.v4.json_format import V4JsonFormat
+
+body = event.to_json(V4JsonFormat("none"))  # a request: what the sender changed
+state = event.to_json()  # a response or a sidecar: as the model holds it
+same = event.to_json(COMPARABLE)  # the meaning, for comparing
+digest(same)  # ... hashed: the value a verification records
+
+copy = Event(context).hydrate(state)  # and back: a model from what was written
+```
+
+A profile can be narrowed to the fields one run is responsible for, naming Python
+attributes so that a misspelling raises instead of quietly spelling nothing:
+
+```python
+COMPARABLE.scoped(Contact, only=("email_addresses",), without=("categories",))
+```
+
+`COMPARABLE` is **never** a request. A `Compare` rule may synthesize a value the sender
+never wrote (`fallback`, `default`), because a digest is of the meaning; a create body may
+not. That is the only reason two profiles exist rather than one.
+
 ### Verifying list structure
 
 Content validation never looks at the *container*. To confirm that a target list

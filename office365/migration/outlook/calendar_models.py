@@ -37,7 +37,7 @@ from office365.migration.outlook.calendar_codec import MAX_LINE_OCTETS, encode
 from office365.migration.outlook.records import SidecarRecord
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.calendar.events.event import Event
-from office365.runtime.odata.canonical import CANONICAL
+from office365.runtime.odata.comparable import COMPARABLE
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 
 #: Graph event properties an export reads: every column the model declares.
@@ -218,7 +218,7 @@ class EventRecord(SidecarRecord):
         zone it is in) is what is left to recognise a re-run's own work by.
         """
         start = self.event.start
-        moment = start.to_json(CANONICAL) if start else {}
+        moment = start.to_json(COMPARABLE) if start else {}
         return (str(self.event.subject or ""), moment.get("dateTime"), moment.get("timeZone"))
 
     @property

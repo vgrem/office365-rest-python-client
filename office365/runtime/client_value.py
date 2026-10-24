@@ -123,14 +123,35 @@ class ClientValue:
             meta = by_attr.get(attr)
             if attr.startswith("__") or not _is_valid_value(value):
                 continue
+            spelled = meta.name if meta is not None else attr
             if profile is not None and (
-                (meta is not None and meta.readonly) or not profile.includes(self, meta, attr, True)
+                (meta is not None and meta.readonly) or not profile.includes(self, meta, spelled, True)
             ):
                 continue
-            result[meta.name if meta is not None else attr] = serialize_value(value, profile)
+            result[spelled] = serialize_value(value, profile)
         if profile is None:
             return result
         return profile.wrap(self, profile.refine(result, by_attr.values()))
+
+    @classmethod
+    def wire_name(cls, attr: str) -> str:
+        """The OData name of a declared field, given its Python attribute name.
+
+        The mirror of :meth:`ClientObject.wire_name`, so a profile that narrows a type can
+        resolve a name without knowing which of the two kinds of model it was handed.
+
+        Raises:
+            AttributeError: when the attribute carries no declaration, naming the
+                declared attributes so a typo fails here rather than as ``None``
+                further down the read path.
+        """
+        declared = field_declarations(cls)
+        meta = declared.get(attr)
+        if meta is not None:
+            return meta.name
+        raise AttributeError(
+            f"{cls.__name__}.{attr} is not a declared property; declared: {', '.join(sorted(declared))}"
+        )
 
     @property
     def entity_type_name(self) -> Optional[str]:

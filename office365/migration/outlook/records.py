@@ -40,7 +40,7 @@ from office365.migration.outlook.restore import withheld
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.value import serialize_value
-from office365.runtime.odata.canonical import CANONICAL, digest
+from office365.runtime.odata.comparable import COMPARABLE, digest
 
 #: A record of a specific family, so ``EventRecord.from_json(...)`` answers an ``EventRecord``.
 _Record = TypeVar("_Record", bound="SidecarRecord")
@@ -249,7 +249,7 @@ class SidecarRecord:
         share the options object.
         """
         options = self.options_class() if options is None else options
-        return self._entity.to_json(CANONICAL.scoped(self.model, only=self.verified or None, without=withheld(options)))
+        return self._entity.to_json(COMPARABLE.scoped(self.model, only=self.verified or None, without=withheld(options)))
 
     def digest(self, options: Any = None) -> str:
         """A digest of the fields an import restores, for verifying that it did.

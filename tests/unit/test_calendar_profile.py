@@ -8,7 +8,7 @@ what one particular export happened to write:
   stops matching;
 * the tables that are meant to be complete cover their enum, so a value the service gains
   cannot quietly render as nothing;
-* what a digest sees is the model's own comparable form (``to_json(CANONICAL)``), and an
+* what a digest sees is the model's own comparable form (``to_json(COMPARABLE)``), and an
   option keeps a field out of the verification when the import declines to restore it.
 
 The golden document is the codec's whole contract in one assertion: line order, folding
