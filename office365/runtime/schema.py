@@ -103,11 +103,24 @@ class TypeSchema:
         )
 
     def declared_limits(self) -> Tuple[Limit, ...]:
-        """Every limit the type is subject to: its own, then its members'."""
-        return (
+        """Every limit the type is subject to: its own, then its members'.
+
+        A row declared on two members (``sessions`` and ``participants_v2`` share the
+        per-record ceiling) is one limit, not two, so the rows come back de-duplicated
+        by identity — the tuple answers "what caps this type", not "where is it written".
+        """
+        rows = (
             *(decl.limit for decl in self.class_limits),
             *(decl.limit for decls in self.member_limits.values() for decl in decls),
         )
+        seen: set[int] = set()
+        result: list[Limit] = []
+        for row in rows:
+            if id(row) in seen:
+                continue
+            seen.add(id(row))
+            result.append(row)
+        return tuple(result)
 
 
 #: The schema of a type that declares nothing.

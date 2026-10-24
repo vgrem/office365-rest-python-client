@@ -22,7 +22,8 @@ def test_identity_on_subscribed_sku_and_domain():
     assert any(limit.name == "identity" for limit in Domain.declared_limits())
 
 
-def test_call_records_quotas_on_call_record():
+def test_call_record_limits_name_every_scope_that_applies():
+    # The type answers with its own budgets *and* the ceiling its navigations carry:
+    # three budgets on the resource family, one per-record ceiling on the children.
     limits = CallRecord.declared_limits()
-    assert any(limit.name == "call records" and limit.scope == "resource" for limit in limits)
-    assert any(limit.name == "call records" and limit.scope == "app+tenant" for limit in limits)
+    assert {limit.scope for limit in limits} == {"app", "tenant", "app+tenant", "call record"}

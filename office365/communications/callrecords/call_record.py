@@ -7,7 +7,7 @@ from office365.communications.callrecords.session import Session
 from office365.communications.callrecords.type import CallType
 from office365.communications.calls.organizer import Organizer
 from office365.communications.calls.participant import Participant
-from office365.communications.quotas import CALL_RECORD_QUOTAS
+from office365.communications.quotas import CALL_RECORD_BUDGETS, CALL_RECORD_RESOURCE_QUOTA
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from office365.communications.callrecords.modality import Modality
 
 
-@limit(*CALL_RECORD_QUOTAS)
+@limit(*CALL_RECORD_BUDGETS)
 class CallRecord(Entity):
     """Represents a single peer-to-peer call or a group call between multiple participants,
     sometimes referred to as an online meeting."""
@@ -35,6 +35,7 @@ class CallRecord(Entity):
         return self.properties.get("organizer", IdentitySet())
 
     @property
+    @limit(CALL_RECORD_RESOURCE_QUOTA)
     def sessions(self) -> EntityCollection[Session]:
         """
         List of sessions involved in the call. Peer-to-peer calls typically only have one session, whereas group
@@ -82,6 +83,7 @@ class CallRecord(Entity):
         )
 
     @property
+    @limit(CALL_RECORD_RESOURCE_QUOTA)
     def participants_v2(self) -> EntityCollection[Participant]:
         """Gets the participants_v2 property"""
         return self.properties.get(

@@ -284,10 +284,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `Workbook` carried their own inline `@limit(Limit(...))` declarations, which is the
   same fact written twice and — for the four `CallRecord` rows — a fact that lived in
   no catalog at all (`catalog()` grew by six unnamed rows merely because a model
-  module got imported). They now declare `@limit(*CALL_RECORD_QUOTAS)` and
-  `@limit(*EXCEL_QUOTAS)`, and importing `office365.graph_client`,
-  `onedrive.workbooks.workbook` or `sharepoint.client_context` leaves the registry
-  byte-identical: a row lives in a catalog, a model points at it.
+  module got imported). They now reference `CALL_RECORD_QUOTAS` and `EXCEL_QUOTAS`,
+  and importing `office365.graph_client`, `onedrive.workbooks.workbook` or
+  `sharepoint.client_context` leaves the registry byte-identical: a row lives in a
+  catalog, a model points at it.
+- A quota is bound **where the request is made**, not on the type whose name it
+  mentions. The call-record page states three budget rows for the *resources*
+  `callRecord`, `participant` and `session`, then a **40 / 20 s ceiling per call
+  record**, a separate **40 / 20 s ceiling for listing call records**, and a PSTN
+  table limited **per collection**. `CallRecord` now carries the three budgets, the
+  per-record ceiling moved onto the navigations that read a record's children
+  (`CallRecord.sessions`, `CallRecord.participants_v2`), listing got its own row on
+  `CallRecordCollection`, and `PSTN_RECORD_QUOTAS` (**1,000 / 60 s per tenant**,
+  **200 / 60 s per app per tenant**, **50 / 60 s per collection**) are declared on
+  `get_direct_routing_calls`, the only operation that reads those log rows. Two row
+  groups that had never been catalogued at all — *list call records* and the PSTN
+  table — are published now, and the Service limits page shows the binding
+  (`CallRecord.sessions`, `CallRecordCollection.get_direct_routing_calls`) instead of
+  a bare class name.
+- `@limit` **composes**: a second decorator on the same target adds its rows instead of
+  silently replacing the first (the marker was overwritten while the docstring
+  documented both, so `declared_limits()` and `help()` disagreed — the natural
+  spelling of "these budgets also apply here" would have lost a fact). Stacked
+  declarations also share a single `Limits:` docstring section now. `declared_limits()`
+  answers each row once even when two navigations share it, and
+  `collect_class_limits()` reads the `@limit` markers off the MRO instead of reading
+  back the `_schema` snapshot it had just filled — which counted every class-level row
+  twice.
 - Importing `office365.limits` **imports every catalog** (ten modules, ~3 ms), so
   discovery does not depend on which product the caller happened to touch first; the
   four SharePoint rows that had no `doc` now cite the limits page they come from, and

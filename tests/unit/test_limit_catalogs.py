@@ -3,13 +3,23 @@ import sys
 import unittest
 
 from office365.communications import quotas as communications_quotas
+from office365.communications.callrecords.call_record import CallRecord
+from office365.communications.callrecords.collection import CallRecordCollection
 from office365.directory import quotas as directory_quotas
 from office365.onedrive import quotas as files_quotas
 from office365.onedrive.workbooks import quotas as excel_quotas
 from office365.outlook import quotas as outlook_quotas
 from office365.reports import quotas as reports_quotas
 from office365.runtime import limits as limits_module
-from office365.runtime.limits import Limit, LimitKind, catalog, register_catalog
+from office365.runtime.limits import (
+    Limit,
+    LimitKind,
+    catalog,
+    collect_class_limits,
+    limit,
+    limits_of,
+    register_catalog,
+)
 from office365.security import quotas as security_quotas
 from office365.sharepoint import thresholds as sharepoint_limits
 from office365.teams import quotas as teams_quotas
@@ -178,6 +188,72 @@ class TestTeamsQuotas(unittest.TestCase):
             row for row in self.rows if row.note == "GET /teams/{id}/channels" and row.scope == "team, channel or chat"
         )
         self.assertEqual((channel.value, channel.window_seconds), (4, 1))
+
+
+class TestCallRecordBindings(unittest.TestCase):
+    """A quota is declared where the request is made, not on the entity that owns the name.
+
+    The call-record page is the sharpest case: three budget rows framed as "the limits
+    apply to the following *resources*", a 40/20s ceiling **per call record**, a separate
+    40/20s ceiling for **listing** call records, and a PSTN table limited **per
+    collection**. Declaring all of it on ``CallRecord`` said the session navigation spends
+    a 15,000/20s app budget (it does not spend it alone) and said
+    ``getDirectRoutingCalls`` has no special ceiling (it has three).
+    """
+
+    def test_the_entity_carries_the_budgets_and_nothing_narrower(self):
+        declared = [decl.limit for decl in collect_class_limits(CallRecord)]
+        self.assertEqual([id(row) for row in declared], [id(row) for row in communications_quotas.CALL_RECORD_BUDGETS])
+
+    def test_the_per_record_ceiling_is_bound_to_the_navigations_that_read_the_record(self):
+        ceiling = communications_quotas.CALL_RECORD_RESOURCE_QUOTA
+        for name in ("sessions", "participants_v2"):
+            with self.subTest(navigation=name):
+                self.assertEqual([decl.limit for decl in limits_of(getattr(CallRecord, name))], [ceiling])
+
+    def test_listing_call_records_has_its_own_row(self):
+        declared = [decl.limit for decl in collect_class_limits(CallRecordCollection)]
+        self.assertEqual([id(row) for row in declared], [id(communications_quotas.CALL_RECORD_FEED_QUOTA)])
+
+    def test_the_direct_routing_log_carries_the_pstn_rows(self):
+        declared = [decl.limit for decl in limits_of(CallRecordCollection.get_direct_routing_calls)]
+        self.assertEqual([id(row) for row in declared], [id(row) for row in communications_quotas.PSTN_RECORD_QUOTAS])
+
+    def test_every_published_call_record_row_is_bound_somewhere(self):
+        bound = {id(decl.limit) for decl in collect_class_limits(CallRecord)}
+        bound |= {id(decl.limit) for decl in collect_class_limits(CallRecordCollection)}
+        for target in (CallRecord.sessions, CallRecord.participants_v2, CallRecordCollection.get_direct_routing_calls):
+            bound |= {id(decl.limit) for decl in limits_of(target)}
+        published = (*communications_quotas.CALL_RECORD_QUOTAS, *communications_quotas.PSTN_RECORD_QUOTAS)
+        self.assertEqual([row.name for row in published if id(row) not in bound], [])
+
+    def test_a_row_bound_to_two_members_is_still_one_limit(self):
+        # `sessions` and `participants_v2` share the 40/20s per-record ceiling.
+        self.assertEqual(len(CallRecord.declared_limits()), len({id(row) for row in CallRecord.declared_limits()}))
+
+
+class TestComposableDeclarations(unittest.TestCase):
+    """``@limit`` composes: two decorators declare two facts, not the last one."""
+
+    def test_a_second_decorator_adds_its_rows(self):
+        budgets, ceiling = communications_quotas.CALL_RECORD_BUDGETS[0], communications_quotas.CALL_RECORD_RESOURCE_QUOTA
+
+        @limit(budgets)
+        @limit(ceiling)
+        def read():
+            """Read the record."""
+
+        self.assertEqual([decl.limit for decl in limits_of(read)], [ceiling, budgets])
+
+    def test_the_documentation_of_a_stacked_declaration_stays_one_section(self):
+        @limit(communications_quotas.CALL_RECORD_BUDGETS[0])
+        @limit(communications_quotas.CALL_RECORD_RESOURCE_QUOTA)
+        def read():
+            """Read the record."""
+
+        self.assertEqual(read.__doc__.count("Limits:"), 1)
+        for row in (communications_quotas.CALL_RECORD_BUDGETS[0], communications_quotas.CALL_RECORD_RESOURCE_QUOTA):
+            self.assertIn(row.name, read.__doc__)
 
 
 class TestGlobalQuota(unittest.TestCase):

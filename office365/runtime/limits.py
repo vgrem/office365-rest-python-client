@@ -186,13 +186,23 @@ class LimitDecl:
     clamp: bool = False
 
 
+_LIMITS_DOC = "\n    Limits:\n"
+
+
 def _append_doc(target: Callable[..., Any], decls: Tuple[LimitDecl, ...]) -> None:
+    """Append the declaration lines to the docstring, extending one ``Limits:`` block.
+
+    ``@limit`` composes, so a second decorator adds its rows to the section the first
+    one opened instead of opening a second section of the same name.
+    """
     lines: list[str] = []
     for decl in decls:
         bound = f" (<= {decl.limit})" if decl.arg else ""
         lines.append(f"      {decl.limit.name}: {decl.limit}{bound}")
-    if lines:
-        target.__doc__ = (target.__doc__ or "") + "\n    Limits:\n" + "\n".join(lines)
+    if not lines:
+        return
+    doc = target.__doc__ or ""
+    target.__doc__ = doc + ("\n" if _LIMITS_DOC in doc else _LIMITS_DOC) + "\n".join(lines)
 
 
 @overload
@@ -223,7 +233,8 @@ def limit(
 
     Metadata-only by default (like ``@odata`` / ``@require_permission``): the
     declared :class:`Limit` values are stamped on the target and appended to its
-    docstring, then collected into the model's schema.
+    docstring, then collected into the model's schema. Declarations compose: a second
+    decorator on the same target adds its rows to the first.
     Pass ``arg`` to also enforce that argument against the (single) limit — warn
     by default, ``on_exceed="raise"`` to raise, or ``clamp=True`` to lower it
     (methods only).
@@ -299,8 +310,18 @@ def limit(
 
 
 def _stamp(target: Any, decls: Tuple[LimitDecl, ...]) -> None:
-    setattr(target, _LIMIT_MARKER, decls)
-    _append_doc(target, decls)
+    """Record declarations on the target; ``@limit`` composes rather than replaces.
+
+    Two decorators on one method is the natural way to say "these quotas also apply
+    here" — a second ``@limit`` for the budgets a feed shares with the entity it lists.
+    Replacing the marker silently kept the last decorator's rows while the docstring
+    documented both, so ``declared_limits()`` and the doc disagreed.
+    """
+    existing: Tuple[LimitDecl, ...] = getattr(target, _LIMIT_MARKER, ())
+    seen = {(id(decl.limit), decl.arg) for decl in existing}
+    added = tuple(decl for decl in decls if (id(decl.limit), decl.arg) not in seen)
+    setattr(target, _LIMIT_MARKER, (*existing, *added))
+    _append_doc(target, added)
 
 
 _limit = limit  # module alias (the ``bounded`` param name shadows ``limit`` below)
@@ -396,14 +417,17 @@ def catalog_products() -> list[str]:
 def collect_class_limits(cls: type) -> Tuple[LimitDecl, ...]:
     """The class-level ``@limit`` declarations of ``cls``.
 
-    Accumulates up the hierarchy: the base class's declarations plus the class's
-    own (a subclass is subject to both).
+    Accumulates up the hierarchy: the base classes' declarations first, then the class's
+    own (a subclass is subject to both). The markers are read off each class in the MRO
+    rather than through ``_schema`` — the schema is a snapshot that already contains them,
+    so reading it back added every row a second time.
     """
-    inherited = getattr(getattr(cls, "_schema", None), "class_limits", ())
-    own = cls.__dict__.get(_LIMIT_MARKER)
-    if own is None:
-        return inherited
-    return (*inherited, *own)
+    decls: list[LimitDecl] = []
+    for klass in reversed(cls.__mro__):
+        own = klass.__dict__.get(_LIMIT_MARKER)
+        if own:
+            decls.extend(own)
+    return tuple(decls)
 
 
 def limits_of(target: Any) -> Tuple[LimitDecl, ...]:

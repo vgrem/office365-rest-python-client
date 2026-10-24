@@ -6,10 +6,12 @@ from office365.communications.callrecords.call_record import CallRecord
 from office365.communications.callrecords.direct_routing_log_row import (
     DirectRoutingLogRow,
 )
+from office365.communications.quotas import CALL_RECORD_FEED_QUOTA, PSTN_RECORD_QUOTAS
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.limits import limit
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.query_capabilities import query_capabilities
 
@@ -21,12 +23,14 @@ _DOC = "https://learn.microsoft.com/en-us/graph/api/callrecords-callrecord-list"
     doc=_DOC,
     note="the callRecords feed rejects $top",
 )
+@limit(CALL_RECORD_FEED_QUOTA)
 class CallRecordCollection(EntityCollection[CallRecord]):
     """Represents a collection of direct routing call records."""
 
     def __init__(self, context, resource_path=None):
         super().__init__(context, CallRecord, resource_path)
 
+    @limit(*PSTN_RECORD_QUOTAS)
     def get_direct_routing_calls(
         self, from_datetime: datetime | None = None, to_datetime: datetime | None = None
     ) -> ClientResult[ClientValueCollection[DirectRoutingLogRow]]:

@@ -245,8 +245,10 @@ catalog("outlook")  # ... and every Outlook throttling quota
 - **Catalogs** — `sharepoint.thresholds.Limits` for boundaries and thresholds, and
   one `quotas` module per Graph product (`outlook`, `teams`, `reports`, `security`,
   `onedrive`, `onedrive.workbooks`, `directory`, `communications`) for throttling
-  quotas. A model references a catalog row (`@limit(*CALL_RECORD_QUOTAS)`) rather
-  than re-spelling it. Graph quotas are reference data: the library reads the server
+  quotas. A model references a catalog row rather than re-spelling it, and it does so
+  **where the request is made**: `@limit(*CALL_QUOTAS)` on `Call`, `@limit(*CALL_RECORD_BUDGETS)`
+  on `CallRecord`, `@limit(CALL_RECORD_RESOURCE_QUOTA)` on `CallRecord.sessions` and
+  `@limit(*PSTN_RECORD_QUOTAS)` on `CallRecordCollection.get_direct_routing_calls`. Graph quotas are reference data: the library reads the server
   signals (`Retry-After`, `x-ms-throttle-*`, `RateLimit-*`) and never simulates the
   token bucket.
 - **Registry** — products register their catalogs (`register_catalog`); `@limit`
