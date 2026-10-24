@@ -22,6 +22,7 @@ shared `send_mail` / draft idioms.
 | Export a folder to CSV | [`export_folder_csv.py`](./export_folder_csv.py) | Data pipeline |
 | Export a folder to JSON | [`export_json.py`](./export_json.py) | Data pipeline |
 | Export MIME (`.eml`) | [`export_mime.py`](./export_mime.py) | One message |
+| Import MIME (`.eml`) | [`import_mime.py`](./import_mime.py) | Draft from a saved file |
 | Export attachments | [`export_attachments.py`](./export_attachments.py) | Folder → local disk |
 | Export a folder concurrently | [`export_mail_async.py`](./export_mail_async.py) | Async |
 | Archive old messages | [`archive_old.py`](./archive_old.py) | Moves into "Archive" |

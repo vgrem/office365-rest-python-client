@@ -12,10 +12,11 @@ mailbox into a portable ``.eml`` tree, this one puts the tree into a mailbox::
     job.run()
     print(job.verify().summary())
 
-The mailbox is written through Graph's MIME import (``POST <folder>/messages`` with
-a base64 RFC 822 body), so attachments, encodings and nested bodies need no
-translation. Three things that import cannot carry over, all of them Exchange's
-choice rather than the adapter's:
+The mailbox is written through Graph's MIME import
+(:meth:`~office365.outlook.mail.messages.collection.MessageCollection.add_from_mime` — a
+``POST <folder>/messages`` with a base64 RFC 822 body), so attachments, encodings and
+nested bodies need no translation. Three things that import cannot carry over, all of
+them Exchange's choice rather than the adapter's:
 
 * **An imported message is a draft.** Graph creates it with ``isDraft: true`` and
   ignores a PATCH that tries to clear it; only a real delivery (Exchange migration
@@ -31,8 +32,7 @@ compares what a message *says* rather than the bytes Exchange re-serialized.
 
 from __future__ import annotations
 
-import base64
-from typing import Any, Iterable, cast
+from typing import Any, Iterable
 
 from office365.migration.adapters import DataTarget
 from office365.migration.base import MigrationItem
@@ -42,17 +42,10 @@ from office365.migration.outlook.models import MAX_IMPORT_MIME_BYTES, MailImport
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.messages.collection import MessageCollection
 from office365.outlook.mail.messages.message import Message
-from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.v4.entity import EntityPath
-from office365.runtime.queries.create_entity import CreateEntityQuery
 
 #: The id properties an import needs to recognise a message it already delivered.
 _ID_COLUMNS = ["id", "internetMessageId"]
-
-
-def _post_as_mime(request: RequestOptions) -> None:
-    """Send the base64 MIME body as ``text/plain`` — Graph's MIME import contract."""
-    request.set_header("Content-Type", "text/plain")
 
 
 class EmlTreeSource(SidecarTreeSource[MessageRecord]):
@@ -164,13 +157,7 @@ class MailboxTarget(DataTarget):
             )
         directory, folder = self._folder(item)
         collection = folder.messages
-        message = collection.create_typed_object()
-        collection.add_child(message)
-        # The query builder passes raw bytes through untouched; the JSON serializer
-        # would otherwise expect a ClientObject/dict for the parameters.
-        query = CreateEntityQuery(collection, cast("Any", base64.b64encode(data)), message)
-        query.before_execute(_post_as_mime)
-        collection.context.add_query(query)
+        message = collection.add_from_mime(data)
         collection.context.execute_query()
         self._present[item.dest_path] = message
         if message.internet_message_id:

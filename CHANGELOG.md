@@ -93,6 +93,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   failure instead of swallowing every exception, and a test fails if any `$select` column of a
   served package stops declaring its type.
 
+**Outlook mail**
+
+- `MessageCollection.add_from_mime(data)` creates a draft from an RFC 822 document — an
+  `.eml` file, bytes as they are on disk. Graph's MIME import is the one create whose body
+  *is* the message: the bytes are base64-encoded and posted as `text/plain`, and the
+  headers supply the recipients, subject, date and attachments, so nothing is translated.
+  `CreateEntityQuery` now types a raw `str`/`bytes` body as legal (a `cast` used to smuggle
+  it past the annotation), and the mail migration target calls the method instead of
+  building the request by hand — `migration/outlook/eml_import.py` lost its local MIME hook
+  and four imports.
+
 **Migration (identity)**
 
 - `IdentityMap` (`office365.migration`) maps source principals onto target
@@ -123,7 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   source MIME. `MailExportOptions` controls subfolders, drafts and extra
   projection properties.
 - `EmlTreeSource` + `MailboxTarget` import that tree back into a mailbox folder
-  through Graph's MIME import, recreating the folder chain with the exported
+  through `MessageCollection.add_from_mime`, recreating the folder chain with the exported
   names, skipping messages the folder already has (matched by
   `internetMessageId`) and replaying read state, categories and importance with
   one `PATCH` per message (`MailImportOptions` turns that off). Verification uses
