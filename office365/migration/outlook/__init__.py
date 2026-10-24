@@ -24,15 +24,7 @@ from office365.migration.outlook.calendar_models import (
     EVENT_COLUMNS,
     CalendarExportOptions,
     CalendarImportOptions,
-    event_create_payload,
-    event_dedup_key,
-    event_dest_path,
-    event_digest,
-    event_dropped_attendees,
-    event_envelope,
-    event_ics,
-    event_key,
-    event_transaction_id,
+    EventRecord,
 )
 from office365.migration.outlook.contacts_adapters import (
     ContactSource,
@@ -48,23 +40,21 @@ from office365.migration.outlook.contacts_models import (
 )
 from office365.migration.outlook.eml_import import EmlTreeSource, MailboxTarget
 from office365.migration.outlook.models import (
-    MAIL,
+    MAX_IMPORT_MIME_BYTES,
     MailExportOptions,
     MailImportOptions,
-    MailProfile,
-    dest_path,
-    mail_envelope,
-    mail_slug,
+    MessageRecord,
     mime_digest,
 )
+from office365.migration.outlook.records import SidecarRecord, dest_path, refuse_legacy_sidecar, slug
 from office365.migration.outlook.registry import OUTLOOK_SCANS, outlook_scan_pairs
 from office365.migration.outlook.scanner import MailboxFolderRecord, MailboxFolderScan, MailFolderData, OutlookOptions
 
 __all__ = [
     "CONTACT_COLUMNS",
     "EVENT_COLUMNS",
-    "MAIL",
     "MANIFEST_NAME",
+    "MAX_IMPORT_MIME_BYTES",
     "OUTLOOK_SCANS",
     "CalendarExportOptions",
     "CalendarImportOptions",
@@ -76,6 +66,7 @@ __all__ = [
     "ContactSource",
     "ContactTarget",
     "EmlTreeSource",
+    "EventRecord",
     "IcsExportTarget",
     "IcsTreeSource",
     "MailExportOptions",
@@ -83,26 +74,18 @@ __all__ = [
     "MailFolderData",
     "MailFolderSource",
     "MailImportOptions",
-    "MailProfile",
     "MailboxAssessor",
     "MailboxFolderRecord",
     "MailboxFolderScan",
     "MailboxTarget",
+    "MessageRecord",
     "OutlookOptions",
+    "SidecarRecord",
     "VcfExportTarget",
     "VcfTreeSource",
     "dest_path",
-    "event_create_payload",
-    "event_dedup_key",
-    "event_dest_path",
-    "event_digest",
-    "event_dropped_attendees",
-    "event_envelope",
-    "event_ics",
-    "event_key",
-    "event_transaction_id",
-    "mail_envelope",
-    "mail_slug",
     "mime_digest",
     "outlook_scan_pairs",
+    "refuse_legacy_sidecar",
+    "slug",
 ]

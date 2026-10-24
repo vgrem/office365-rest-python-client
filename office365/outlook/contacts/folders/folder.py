@@ -11,7 +11,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    pass
+    from office365.outlook.contacts.folders.collection import ContactFolderCollection
 
 
 class ContactFolder(Entity):
@@ -28,11 +28,13 @@ class ContactFolder(Entity):
 
     @odata(name="childFolders", navigation=True)
     @property
-    def child_folders(self) -> EntityCollection["ContactFolder"]:
+    def child_folders(self) -> "ContactFolderCollection":
         """The collection of child folders in the folder. Navigation property. Read-only. Nullable."""
+        from office365.outlook.contacts.folders.collection import ContactFolderCollection
+
         return self.properties.get(
             "childFolders",
-            EntityCollection(self.context, ContactFolder, ResourcePath("childFolders", self.resource_path)),
+            ContactFolderCollection(self.context, ResourcePath("childFolders", self.resource_path)),
         )
 
     @odata(name="multiValueExtendedProperties", navigation=True)

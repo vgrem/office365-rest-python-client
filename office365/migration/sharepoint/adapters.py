@@ -10,16 +10,14 @@ Lazy imports keep the migration core client-agnostic.
 
 from __future__ import annotations
 
-import hashlib
 import io
-import json
 from collections.abc import Callable
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypeAlias
 
-from office365.migration.adapters import MigrationProgress
+from office365.migration.adapters import MigrationProgress, checksum
 from office365.migration.base import (
     MigrationItem,
     PermissionEntry,
@@ -32,6 +30,7 @@ from office365.migration.sharepoint.transfer import Failure
 from office365.runtime.converters.records import records_from_items
 from office365.runtime.converters.scalars import iso_or_none, parse_datetime, parse_int
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
+from office365.runtime.odata.canonical import digest
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.user_value import FieldUserValue
@@ -304,8 +303,7 @@ def _content_checksum(record: dict, extra_excluded: "frozenset[str]" = frozenset
         mapping = _scalar_mapping(value)
         if mapping is not None:
             content[key] = mapping
-    payload = json.dumps(content, sort_keys=True, default=str)
-    return hashlib.md5(payload.encode("utf-8")).hexdigest()
+    return digest(content)
 
 
 def _folder_record_values(record: dict) -> dict:
@@ -1505,7 +1503,7 @@ class SharePointListSource:
 
     def checksum(self, item: MigrationItem) -> str:
         if item.item_type == "attachment":
-            return hashlib.md5(self._attachment_content(item)).hexdigest()
+            return checksum(self._attachment_content(item))
         return _content_checksum(_canonicalize_taxonomy_record(self._records.get(item.dest_path, {})))
 
     def read_metadata(self, item: MigrationItem) -> dict | None:
@@ -2367,7 +2365,7 @@ class SharePointListTarget:
             data = parent.attachment_files.get_by_filename(filename).get_content().execute_query().value
         except Exception:  # noqa: BLE001 — a missing/unreadable attachment is unverifiable
             return ""
-        return hashlib.md5(data).hexdigest() if data else ""
+        return checksum(data) if data else ""
 
     def commit(self, options=None) -> None:
         """Flush any remaining queued record writes through an OData batch."""
@@ -2769,7 +2767,7 @@ class SharePointLibrarySource:
     def checksum(self, item: MigrationItem) -> str:
         if item.item_type == "folder":
             return _content_checksum(_canonicalize_taxonomy_record(self._folder_values(item)))
-        return hashlib.md5(cast(bytes, self.read(item))).hexdigest()
+        return checksum(cast(bytes, self.read(item)))
 
     def _folder_values(self, item: MigrationItem) -> dict:
         """The source folder's column values (empty when it carries none)."""
@@ -3263,7 +3261,7 @@ class SharePointLibraryTarget:
             if values is None or self._list_target is None:
                 return ""
             return self._list_target.content_checksum(values)
-        return hashlib.md5(self.read(item)).hexdigest()
+        return checksum(self.read(item))
 
     def _target_folder_values(self, item: MigrationItem) -> dict | None:
         """The target folder's column values as they read back (``None`` if unknown)."""

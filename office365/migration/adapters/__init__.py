@@ -8,6 +8,7 @@ SharePoint, the filesystem, and (later) S3 / PostgreSQL / Kafka all plug in here
 
 from __future__ import annotations
 
+import hashlib
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Callable, Optional
@@ -19,6 +20,18 @@ if TYPE_CHECKING:
 
 # NOTE: runtime-evaluated alias, so keep Optional (the ``|`` operator is 3.10+).
 MigrationProgress = Optional[Callable[["Progress"], None]]
+
+
+def checksum(data: bytes) -> str:
+    """The checksum of an item's *bytes* — an identity for content, not a signature.
+
+    md5 because both sides of a migration are this toolkit comparing its own reads: a
+    resumed run has to recognise the file it wrote, and a verification has to notice a
+    changed one. Every adapter that checksums bytes asks the same question, so it is one
+    function here rather than one per product (a digest of *meaning* is
+    :func:`office365.runtime.odata.canonical.digest`).
+    """
+    return hashlib.md5(data).hexdigest()
 
 
 class DataSource(ABC):

@@ -10,10 +10,12 @@ serialiser. This module therefore owns no field list. It owns three things:
   date, an address-only email reads back named after itself);
 * **the artefacts** — a POST body, a digest, a vCard.
 
-A record is built *from* a model (``ContactRecord.of(contact, folder)``) but never holds
-one: the payload is the contract, so a record can be re-read from disk with no client,
-no context and no entity — which is what lets an import verify a sidecar against a
-contact the service returned, on two machines, with the same code.
+A record is built *from* a model (``ContactRecord.of(contact, folder)``) or read back
+from a sidecar (``ContactRecord.from_json(payload)``); either way the payload is the
+contract, so a record can be re-read from disk with no client — which is what lets an
+import verify a sidecar against a contact the service returned, on two machines, with
+the same code. The convention itself is
+:class:`office365.migration.outlook.records.SidecarRecord`, shared with the other families.
 
 Three Exchange behaviours are measured, not assumed:
 
@@ -37,17 +39,14 @@ contact in a run that may have thousands.
 
 from __future__ import annotations
 
-import hashlib
-import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Mapping, Tuple
+from typing import Any, Dict, List, Tuple
 
-from office365.migration.outlook.models import dest_path
-from office365.migration.outlook.offline import offline_context
+from office365.migration.outlook.records import SidecarRecord
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.contacts.contact import Contact
-from office365.runtime.odata.canonical import CANONICAL, FORMATS
+from office365.runtime.odata.canonical import FORMATS
 
 #: Graph contact properties an export reads: every column the model declares. Derived
 #: rather than listed, for the reason the calendar projection is: a hand-kept list drifts
@@ -62,13 +61,6 @@ CONTACT_COLUMNS = Contact.select_all()
 #: model gains is exported, replayed and verified without a function here changing, and the
 #: export's own bookkeeping is excluded for the same reason: not being declared.
 _RESTORED = frozenset(CONTACT_COLUMNS) - Contact._schema.readonly
-
-#: The keys this module adds to the model's payload — the only vocabulary it owns.
-_FOLDER_KEY = "folder_path"
-_DISPLAY_KEY = "folder_display_path"
-_VCF_KEY = "vcf_path"
-_PROVENANCE = (_FOLDER_KEY, _DISPLAY_KEY, _VCF_KEY)
-assert not set(_PROVENANCE) & frozenset(CONTACT_COLUMNS), "a provenance key collides with a declared column"
 
 #: The five components of a Graph ``physicalAddress`` in the order a vCard ``ADR`` line
 #: renders them — ``pobox;extended;street;locality;region;code;country`` has two empty
@@ -120,91 +112,39 @@ def _address_of(entry: Any) -> str:
     return str((entry or {}).get("address") or "").strip().lower()
 
 
-class ContactRecord:
-    """One contact as the export records it: Graph's payload plus where it came from.
+class ContactRecord(SidecarRecord):
+    """One contact as the export records it: Graph's payload, where it came from, its artefacts.
 
-    ``payload`` is the sidecar contract — the model's ``to_json()`` output, so a column
-    the model gains is exported, replayed and verified with nothing here edited. Build
-    one from a loaded contact with :meth:`of`, or from a sidecar on disk with
-    :meth:`from_json`; either way the record needs no client and no context.
+    ``payload`` is the create body an import posts, ``digest`` what a verification compares
+    on either side, and ``vcard`` the portable document. Built from a loaded contact with
+    :meth:`~office365.migration.outlook.records.SidecarRecord.of`, or from a sidecar on disk
+    with :meth:`~office365.migration.outlook.records.SidecarRecord.from_json`.
     """
 
-    __slots__ = ("_json",)
-
-    def __init__(self, payload: Mapping[str, Any], folder_path: str = "", display_path: str | None = None) -> None:
-        self._json: Dict[str, Any] = dict(payload, **{_FOLDER_KEY: folder_path})
-        self._json[_DISPLAY_KEY] = display_path or folder_path
-        self._json.setdefault(_VCF_KEY, self.dest_path)
-
-    @classmethod
-    def of(
-        cls,
-        contact: Contact,
-        folder_path: str = "",
-        extra_properties: List[str] | None = None,
-        display_path: str | None = None,
-    ) -> ContactRecord:
-        """The record for a contact read from the service: its payload, plus provenance.
-
-        Nothing is copied field by field, so a column the model gains is exported and
-        replayed without this method changing. All values are JSON-safe *by construction*
-        — they came from a JSON response and went through ``to_json()`` — and none is
-        rescued by ``json.dumps(..., default=str)``, which is what would otherwise write a
-        ``PhysicalAddress(city=…)`` repr.
-        """
-        payload = dict(contact.to_json())
-        for name in extra_properties or []:
-            payload[name] = contact.get_property(name)
-        return cls(payload, folder_path, display_path)
-
-    @classmethod
-    def from_json(cls, payload: Mapping[str, Any]) -> ContactRecord:
-        """The record a sidecar file holds: read back verbatim, no entity involved."""
-        return cls(payload, str(payload.get(_FOLDER_KEY) or ""), payload.get(_DISPLAY_KEY))
-
-    def to_json(self) -> Dict[str, Any]:
-        """The sidecar as it is written to disk."""
-        return dict(self._json)
-
-    @property
-    def folder_path(self) -> str:
-        return str(self._json.get(_FOLDER_KEY) or "")
-
-    @property
-    def id(self) -> str:
-        """The Graph id this record is keyed by — the only identity a contact has.
-
-        Nothing else the source knows survives the create: Exchange assigns no
-        ``internetMessageId``/``iCalUid`` equivalent, and the id is stable for the
-        contact's life in its folder, so a re-run finds the record it wrote.
-        """
-        return str(self._json.get("id") or "")
-
-    @property
-    def dest_path(self) -> str:
-        """``<folder>/<name slug>_<id digest>.vcf``: deterministic, so a re-run finds it.
-
-        The name is the display name rather than a date: a contact has no meaningful
-        instant to sort by (the created stamp is Exchange's), and a human browsing the
-        tree expects to find people by name. The shape itself is
-        :func:`office365.migration.outlook.models.dest_path`, shared with the other families.
-        """
-        return dest_path(self.id, self.folder_path, ".vcf", label=self._json.get("displayName"))
+    model = Contact
+    item_type = "contact"
+    content_suffix = ".vcf"
+    provenance = ("folder_path", "folder_display_path", "vcf_path")
+    label = "display_name"
+    created_from = ("created_date_time", "last_modified_date_time")
+    columns = CONTACT_COLUMNS
+    options_class = ContactImportOptions
 
     @property
     def dedup_key(self) -> Tuple[str, str]:
         """Display name and first address: what a target recognises a re-run's work by.
 
         Matching on the name alone would merge two different people who happen to share
-        one, and nothing else survives the create.
+        one, and nothing else survives the create: Exchange assigns no
+        ``internetMessageId``/``iCalUid`` equivalent, and a created contact's id is new.
         """
-        entries = self._json.get("emailAddresses") or []
+        entries = self._written(("email_addresses",)) or []
         addresses = sorted(address for address in (_address_of(entry) for entry in entries) if address)
-        return (str(self._json.get("displayName") or "").strip().lower(), addresses[0] if addresses else "")
+        return (str(self._written((self.label,)) or "").strip().lower(), addresses[0] if addresses else "")
 
     def restored(self) -> Dict[str, Any]:
         """The fields an import replays: the model's payload minus what Exchange assigns."""
-        return {key: value for key, value in self._json.items() if key in _RESTORED}
+        return {key: value for key, value in self.envelope.items() if key in _RESTORED}
 
     def payload(self, options: ContactImportOptions | None = None) -> Dict[str, Any]:
         """The Graph ``POST /contacts`` body for this record.
@@ -212,7 +152,7 @@ class ContactRecord:
         A contact has no ``transactionId``, so concurrency is handled by the target's own
         dedupe index rather than by the service.
         """
-        options = options or ContactImportOptions()
+        options = self.options_class() if options is None else options
         left_out = {Contact.wire_name(attr) for attr in withheld(options)}
         body = {key: value for key, value in self.restored().items() if value and key not in left_out}
         display_name = str(body.get("displayName") or "").strip()
@@ -230,31 +170,6 @@ class ContactRecord:
             raise ValueError(f"a contact category cannot contain a comma: {bad[0]!r}")
         return body
 
-    def digest(self, options: ContactImportOptions | None = None) -> str:
-        """A digest of the fields an import restores, for verifying that it did.
-
-        Not the ``.vcf`` bytes: the other side of an import is Exchange, which assigns the
-        identifiers and reformats what it is given, so the comparable artefact is the
-        *contact* — the record an import replays, which is the sidecar minus what the
-        service owns.
-        """
-        canonical = json.dumps(self.canonical(options), sort_keys=True).encode("utf-8")
-        return hashlib.md5(canonical).hexdigest()
-
-    def canonical(self, options: ContactImportOptions | None = None) -> Dict[str, Any]:
-        """The restored fields in comparable form: what the model says the service treats as equal.
-
-        Only the fields the model declares take part, so a sidecar's own keys (the folder
-        it came from, its ``.vcf``, a manifest's size) cannot make an export disagree with
-        the import that replays it.
-        """
-        options = options or ContactImportOptions()
-        return (
-            Contact(offline_context())
-            .hydrate(self.restored())
-            .to_json(CANONICAL.scoped(Contact, without=withheld(options)))
-        )
-
     def vcard(self) -> bytes:
         """The contact as a vCard 3.0 document.
 
@@ -263,7 +178,7 @@ class ContactRecord:
         itself an export *can* be verified by them (unlike a mail import, where Exchange
         re-serialises everything it accepts).
         """
-        contact = self._json
+        contact = self.envelope
         name = [contact.get(part) for part in ("surname", "givenName", "middleName", "title", "generation")]
         lines = [
             "BEGIN:VCARD",

@@ -60,36 +60,19 @@ Six honest limits, all measured against Exchange:
 
 from __future__ import annotations
 
-import hashlib
-import json
 from collections.abc import Callable, Iterable
-from pathlib import Path
 from typing import Any
 
-from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
+from office365.migration.adapters import DataTarget, MigrationProgress, checksum
 from office365.migration.base import MigrationItem
-from office365.migration.outlook.adapters import SidecarTreeTarget
-from office365.migration.outlook.calendar_models import (
-    EVENT_COLUMNS,
-    STANDALONE_EVENT_TYPES,
-    CalendarExportOptions,
-    CalendarImportOptions,
-    event_create_payload,
-    event_dedup_key,
-    event_digest,
-    event_dropped_attendees,
-    event_envelope,
-    event_ics,
-    event_key,
-    event_kind,
-)
-from office365.migration.outlook.eml_import import SIDECAR_SUFFIX
+from office365.migration.outlook.adapters import ServiceSource, SidecarTreeSource, SidecarTreeTarget
+from office365.migration.outlook.calendar_models import CalendarExportOptions, CalendarImportOptions, EventRecord
 from office365.migration.outlook.fidelity import CALENDAR_EXPORT_DIMENSIONS, CALENDAR_IMPORT_DIMENSIONS
-from office365.migration.outlook.models import mail_slug
+from office365.migration.outlook.records import slug
 from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.calendar.events.event import Event
+from office365.outlook.mail.messages.eventtype import EventType
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.runtime.converters.scalars import iso_or_none
 from office365.runtime.http.prefer import prefer_outlook_timezone
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.operations import emit_progress
@@ -97,7 +80,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 
 #: The narrow read an import uses to recognise its own work: identity, name, and the
 #: wall clock the key is built from. Spelled through the model, so a rename cannot
-#: leave it stale — and deliberately narrower than ``EVENT_COLUMNS``, because this
+#: leave it stale — and deliberately narrower than ``EventRecord.columns``, because this
 #: one runs per item during a dedupe pass.
 _EXISTING_COLUMNS = [Event.wire_name(attr) for attr in ("id", "subject", "start", "ical_uid")]
 
@@ -105,11 +88,7 @@ _EXISTING_COLUMNS = [Event.wire_name(attr) for attr in ("id", "subject", "start"
 _DUPLICATE_TRANSACTION = "ErrorDuplicateTransactionId"
 
 
-def _md5(data: bytes) -> str:
-    return hashlib.md5(data).hexdigest()
-
-
-class CalendarSource(DataSource):
+class CalendarSource(ServiceSource[Event]):
     """Enumerates one Graph calendar as one item per event.
 
     Each item carries its envelope in ``metadata``, so the export's index is written
@@ -120,162 +99,94 @@ class CalendarSource(DataSource):
     fidelity_dimensions = CALENDAR_EXPORT_DIMENSIONS
 
     def __init__(self, calendar: Calendar, options: CalendarExportOptions | None = None) -> None:
+        super().__init__()
         self._calendar = calendar
         self._options = options or CalendarExportOptions()
-        self._events: dict[str, Event] = {}  # dest path -> event handle
-        self._enumerated = False
 
     def label(self) -> str:
         name = self._options.root_name or getattr(self._calendar, "name", None) or self._calendar.id
         return f"calendar:{name}"
 
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
-        root = self._options.root_name or mail_slug(getattr(self._calendar, "name", None)) or "calendar"
+        root = self._options.root_name or slug(getattr(self._calendar, "name", None)) or "calendar"
         display = getattr(self._calendar, "name", None) or root
         items: list[MigrationItem] = []
-        for event in self._calendar.events.select(EVENT_COLUMNS).get_all().execute_query():
+        for event in self._calendar.events.select(list(EventRecord.columns)).get_all().execute_query():
             if not self._include(event):
                 continue
             item = self._item(event, root, display)
-            self._events[item.dest_path] = event
+            self._remember(item, event)
             items.append(item)
             emit_progress(progress, done=len(items), stage="planning", items=[item])
         self._enumerated = True
         return items
 
     def _include(self, event: Event) -> bool:
-        """Whether an event is exported on its own (a series master, not an instance)."""
+        """Whether an event is exported on its own (a series master, not an instance).
+
+        An event that is neither a single instance nor a series master is an occurrence or
+        an exception of a series, which the series already carries.
+        """
         if event.is_cancelled and not self._options.include_cancelled:
             return False
-        if event_kind(event) in (None, *STANDALONE_EVENT_TYPES):
+        if event.type_ in (EventType.singleInstance, EventType.seriesMaster):
             return True
         return self._options.include_recurring_instances
 
     def _item(self, event: Event, path: str, display: str) -> MigrationItem:
-        envelope = event_envelope(event, path, self._options.extra_properties, display)
+        record = EventRecord.of(event, path, display, self._options.extra_properties)
         return MigrationItem(
-            source_path=envelope["ics_path"],
-            dest_path=envelope["ics_path"],
+            source_path=record.dest_path,
+            dest_path=record.dest_path,
             # An event has no byte size until its ``.ics`` is rendered; ``read()`` fills it.
             size_bytes=0,
-            item_type="event",
-            modified=iso_or_none(event.last_modified_date_time),
-            created=iso_or_none(event.created_datetime),
-            source_id=event_key(envelope),
-            metadata=envelope,
+            item_type=EventRecord.item_type,
+            modified=record.modified,
+            created=record.created,
+            source_id=record.source_id,
+            metadata=record.to_json(),
         )
 
-    def _handle(self, item: MigrationItem) -> Event:
-        """The event for an item, enumerating once if the plan came from disk."""
-        event = self._events.get(item.dest_path)
-        if event is None and not self._enumerated:
-            self.list_items()
-            event = self._events.get(item.dest_path)
-        if event is None:
-            raise KeyError(f"{item.dest_path!r} was not enumerated by this source — re-plan the job")
-        return event
-
     def read(self, item: MigrationItem) -> bytes:
-        """The event's ``.ics`` document, rendered from the envelope in ``metadata``."""
-        data = event_ics(item.metadata or {})
+        """The event's ``.ics`` document, rendered from the record in ``metadata``."""
+        data = EventRecord.from_json(item.metadata or {}).ics()
         item.size_bytes = len(data)
         return data
 
     def checksum(self, item: MigrationItem) -> str:
-        return _md5(self.read(item))
+        return checksum(self.read(item))
 
 
 class IcsExportTarget(SidecarTreeTarget):
     """Writes a portable ICS tree: one ``.ics`` plus one JSON sidecar per event."""
 
     fidelity_dimensions = CALENDAR_EXPORT_DIMENSIONS
-    content_suffix = ".ics"
-    payload_key = "ics_path"
+    record = EventRecord
 
 
-class IcsTreeSource(DataSource):
+class IcsTreeSource(SidecarTreeSource[EventRecord]):
     """Reads an exported calendar tree back as migration items.
 
-    The ``.ics`` is the payload (what another client would open); the JSON sidecar is
-    the record the import replays, and it is **required** — an ``.ics`` alone cannot
-    express Graph's recurrence object, and reading a calendar back out of iCalendar
-    would invent an import that silently turns every series into a single meeting.
+    The ``.ics`` is the payload (what another client would open); the JSON sidecar is the
+    record the import replays, and it is **required** — an ``.ics`` alone cannot express
+    Graph's recurrence object, and reading a calendar back out of iCalendar would invent an
+    import that silently turns every series into a single meeting.
     """
 
     #: What a calendar import preserves; see ``outlook.fidelity``.
     fidelity_dimensions = CALENDAR_IMPORT_DIMENSIONS
-
-    def __init__(self, root: str | Path, options: CalendarImportOptions | None = None) -> None:
-        self._root = Path(root)
-        self._options = options or CalendarImportOptions()
-        self._items: dict[str, MigrationItem] = {}
-
-    @property
-    def root(self) -> Path:
-        return self._root
-
-    def label(self) -> str:
-        return f"ics:{self._root}"
-
-    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
-        if not self._root.is_dir():
-            raise FileNotFoundError(f"{self._root} is not a directory of exported .ics files")
-        items: list[MigrationItem] = []
-        for path in sorted(self._root.rglob("*.ics")):
-            item = self._item(path)
-            self._items[item.dest_path] = item
-            items.append(item)
-            emit_progress(progress, done=len(items), stage="planning", items=[item])
-        return items
-
-    def _item(self, path: Path) -> MigrationItem:
-        dest = path.relative_to(self._root).as_posix()
-        envelope = self._sidecar(path)
-        return MigrationItem(
-            source_path=dest,
-            dest_path=dest,
-            size_bytes=path.stat().st_size,
-            item_type="event",
-            modified=envelope.get("lastModifiedDateTime"),
-            created=envelope.get("createdDateTime") or envelope.get("lastModifiedDateTime"),
-            source_id=event_key(envelope),
-            metadata=envelope,
-        )
-
-    def _sidecar(self, path: Path) -> dict[str, Any]:
-        sidecar = path.with_suffix(SIDECAR_SUFFIX)
-        if not sidecar.exists():
-            raise FileNotFoundError(
-                f"{sidecar} is missing: the sidecar is the import contract (the .ics cannot carry the recurrence"
-                " object Exchange needs), so the tree has to come from a calendar export"
-            )
-        return json.loads(sidecar.read_text(encoding="utf-8"))
-
-    def _path(self, item: MigrationItem) -> Path:
-        path = self._root / item.dest_path
-        if self._root.resolve() not in path.resolve().parents:
-            raise ValueError(f"{item.dest_path!r} escapes the export tree")
-        return path
-
-    def read(self, item: MigrationItem) -> bytes:
-        """The event's ``.ics`` document."""
-        return self._path(item).read_bytes()
-
-    def checksum(self, item: MigrationItem) -> str:
-        """The digest a calendar target can also compute, not the ``.ics`` bytes.
-
-        The target is Exchange, which re-serializes the body and assigns the meeting
-        metadata, so there is nothing on the other side to compare the bytes with;
-        the event's restorable fields are what both sides can hold.
-        """
-        return event_digest(item.metadata or {}, self._options)
+    record = EventRecord
+    sidecar_note = (
+        "the sidecar is the import contract (the .ics cannot carry the recurrence object Exchange needs), so the"
+        " tree has to come from a calendar export"
+    )
 
 
 class CalendarTarget(DataTarget):
     """Recreates exported events in a Graph calendar.
 
     The source of truth is the sidecar, not the ``.ics``: Graph's request body is
-    posted verbatim (:func:`event_create_payload`), because the typed helpers
+    posted verbatim (:meth:`EventRecord.payload`), because the typed helpers
     mangle the time zone and drop the ``transactionId``.
     """
 
@@ -312,7 +223,7 @@ class CalendarTarget(DataTarget):
         """
         if item.dest_path in self._present:
             return True
-        key = event_dedup_key(item.metadata or {})
+        key = EventRecord.from_json(item.metadata or {}).dedup_key
         candidates = self._target_index().get(key) or []
         claimed = self._claimed.get(key, 0)
         if claimed >= len(candidates):
@@ -330,9 +241,10 @@ class CalendarTarget(DataTarget):
         """
         if item.item_type != "event":
             raise ValueError(f"a calendar imports events, not {item.item_type!r} ({item.dest_path})")
+        record = EventRecord.from_json(item.metadata or {})
         collection = self._calendar.events
         try:
-            body = event_create_payload(item.metadata or {}, self._options, context=collection.context)
+            body = record.payload(self._options)
         except ValueError as e:
             raise ValueError(f"{item.dest_path}: {e}") from None
         event = collection.create_typed_object()
@@ -345,9 +257,9 @@ class CalendarTarget(DataTarget):
                 raise
             self._present[item.dest_path] = adopted
             return
-        self._attendees_dropped += event_dropped_attendees(item.metadata or {}, self._options)
+        self._attendees_dropped += record.dropped_attendees(self._options)
         self._present[item.dest_path] = event
-        key = event_dedup_key(item.metadata or {})
+        key = record.dedup_key
         self._target_index().setdefault(key, []).append(event)
         self._claimed[key] = self._claimed.get(key, 0) + 1
 
@@ -374,12 +286,12 @@ class CalendarTarget(DataTarget):
         if event is None or not event.id:
             return ""
         read = self._calendar.events[event.id]
-        read.select(EVENT_COLUMNS).get()
+        read.select(list(EventRecord.columns)).get()
         zone = ((item.metadata or {}).get("start") or {}).get("timeZone")
         if zone:
             read.before_execute(_prefer_zone(zone))
         self._calendar.context.execute_query()
-        return event_digest(event_envelope(read), self._options)
+        return EventRecord.of(read).digest(self._options)
 
     def commit(self, options: Any = None) -> None:  # noqa: ARG002 — runner hook signature
         """Report once what the run deliberately did not restore."""
@@ -397,12 +309,7 @@ class CalendarTarget(DataTarget):
         if self._index is None:
             index: dict[tuple[str, str | None, str | None], list[Event]] = {}
             for event in self._calendar.events.select(_EXISTING_COLUMNS).get_all().execute_query():
-                # The key is read off the envelope, so hand it the wire form of the start
-                # (a fetched event carries a typed ``DateTimeTimeZone``).
-                key = event_dedup_key(
-                    {"subject": event.subject, "start": event.start.to_json() if event.start else None}
-                )
-                index.setdefault(key, []).append(event)
+                index.setdefault(EventRecord.of(event).dedup_key, []).append(event)
             self._index = index
         return self._index
 
@@ -416,7 +323,7 @@ class CalendarTarget(DataTarget):
         if _DUPLICATE_TRANSACTION not in str(error):
             return None
         self._index = None
-        candidates = self._target_index().get(event_dedup_key(item.metadata or {})) or []
+        candidates = self._target_index().get(EventRecord.from_json(item.metadata or {}).dedup_key) or []
         return candidates[-1] if candidates else None
 
 

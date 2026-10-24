@@ -25,7 +25,7 @@ from office365.migration.outlook import (
     CalendarSource,
     IcsExportTarget,
 )
-from office365.migration.outlook.calendar_models import EVENT_COLUMNS, event_ics
+from office365.migration.outlook.calendar_models import EventRecord
 from office365.outlook.calendar.events.event import Event
 from tests._scripted_transport import MethodRoutingTransport
 
@@ -232,7 +232,7 @@ def test_ics_renders_time_ranges_attendees_and_reminders():
     transport = _transport()
     item = CalendarSource(_calendar(_client(transport))).list_items()[0]
 
-    text = event_ics(item.metadata).decode("utf-8")
+    text = EventRecord.from_json(item.metadata).ics().decode("utf-8")
     unfolded = text.replace("\r\n ", "")  # a long content line is folded per RFC 5545
 
     assert "BEGIN:VEVENT\r\n" in text
@@ -319,7 +319,7 @@ def test_export_verifies_by_checksum(tmp_path: Path):
 
 
 def test_the_export_projection_is_the_model_projection():
-    """``EVENT_COLUMNS`` is derived from the model, not kept beside it.
+    """``EventRecord.columns`` is derived from the model, not kept beside it.
 
     It used to be a hand-kept list and had drifted: it named 33 columns and omitted
     ``isCancelled``, which the export filters on. A real ``$select`` answers only the
@@ -328,6 +328,6 @@ def test_the_export_projection_is_the_model_projection():
     projection makes that class of omission unrepresentable, and the navigation
     properties stay out of it automatically — ``$select`` rejects them.
     """
-    assert EVENT_COLUMNS == Event.select_all()
-    assert "isCancelled" in EVENT_COLUMNS
-    assert not set(EVENT_COLUMNS) & set(Event.expandable())
+    assert list(EventRecord.columns) == Event.select_all()
+    assert "isCancelled" in EventRecord.columns
+    assert not set(EventRecord.columns) & set(Event.expandable())

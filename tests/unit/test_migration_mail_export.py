@@ -6,9 +6,7 @@ folder, a folder tree of `childFolders`, and RFC 822 bytes on `/$value`.
 
 from __future__ import annotations
 
-import ast
 import hashlib
-import importlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,9 +18,11 @@ from office365.migration.outlook import (
     MailExportOptions,
     MailExportTarget,
     MailFolderSource,
-    mail_slug,
+    MessageRecord,
+    slug,
 )
-from office365.migration.outlook.models import MAX_SLUG_LENGTH, MailProfile
+from office365.migration.outlook.offline import offline_context
+from office365.migration.outlook.records import MAX_SLUG_LENGTH
 from office365.outlook.mail.messages.message import Message
 from tests._scripted_transport import MethodRoutingTransport
 
@@ -156,20 +156,24 @@ def test_source_enumerates_a_folder_tree_into_eml_items():
     assert items[0].dest_path != items[1].dest_path
 
 
-def test_source_records_the_envelope_that_mime_cannot_carry():
+def test_the_sidecar_is_the_models_own_json_plus_provenance():
     client = _client(_transport())
     source = MailFolderSource(_folder(client))
 
     first = source.list_items()[0]
 
     assert first.source_id == "<m1@contoso.com>"
+    # Graph's spelling throughout: the sidecar is the model's JSON, so a column the model
+    # gains is exported without this package learning a second name for it.
     assert first.metadata["subject"] == "Quarterly report: Q1"
-    assert first.metadata["sender"] == "Alice <alice@contoso.com>"
-    assert first.metadata["to"] == ["Bob <bob@contoso.com>"]
+    assert first.metadata["from"] == {"emailAddress": {"name": "Alice", "address": "alice@contoso.com"}}
+    assert first.metadata["toRecipients"] == [{"emailAddress": {"name": "Bob", "address": "bob@contoso.com"}}]
     assert first.metadata["categories"] == ["Finance", "Q1"]
-    assert first.metadata["is_read"] is True
-    assert first.metadata["conversation_id"] == "c1"
+    assert first.metadata["isRead"] is True
+    assert first.metadata["conversationId"] == "c1"
+    # ...and the provenance MIME cannot carry is added beside it.
     assert first.metadata["eml_path"] == first.dest_path
+    assert first.metadata["folder_path"] == first.dest_path.rsplit("/", 1)[0]
     assert first.created == "2024-03-01T09:15:00+00:00"
     # Exchange will not project `size`, so the plan carries no byte count...
     assert first.size_bytes == 0
@@ -189,53 +193,34 @@ def test_source_reads_rfc822_bytes_and_checksums_them():
     assert source.checksum(items[0]) == hashlib.md5(_MIME["m1"]).hexdigest()  # noqa: S324 - the toolkit's checksum
 
 
-def _message_attributes_read_by(module: str, function: str) -> set[str]:
-    """Attribute names one function reads off its ``message`` argument.
-
-    Read off the source rather than re-listed, because a re-listed set is a third
-    spelling of the same fact — and the first one to rot is the copy nobody runs.
-    ``get_property`` is a method, not a column: ``extra_properties`` names are
-    caller-supplied and cannot be projected from here.
-    """
-    source = Path(importlib.import_module(module).__file__).read_text(encoding="utf-8")
-    tree = ast.parse(source)
-    found = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == function)
-    scanned = {
-        node.attr
-        for node in ast.walk(found)
-        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == "message"
-    }
-    return scanned - {"get_property"}
-
-
-def test_the_projection_selects_exactly_what_the_export_reads():
+def test_the_projection_selects_exactly_what_the_export_records():
     """A ``$select`` that omits a column is indistinguishable from a message that has
     no value for it — the class of bug behind ``size`` being unselectable and behind
-    the calendar's ``iCalUid`` spelling trap. So the two halves are pinned together:
-    every attribute the export reads is a selected column, and every selected column
-    is a declared Graph property.
-
-    Adding a sidecar key without its column now fails here rather than exporting
-    ``None`` for every message in a real mailbox.
+    the calendar's ``iCalUid`` spelling trap. Three facts are pinned together: the
+    sidecar carries exactly the selected columns (plus provenance), every attribute the
+    record names as a fact about the item is one of them, and every one of them is a
+    declared Graph property. Adding a column without its ``$select`` now fails here
+    rather than exporting ``None`` for every message in a real mailbox.
     """
-    profile = MailProfile()
     read = (
-        _message_attributes_read_by("office365.migration.outlook.models", "mail_envelope")
-        | _message_attributes_read_by("office365.migration.outlook.adapters", "_item")
-        | set(profile.identity)
-        | set(profile.stamp)
-        | {profile.label}
+        set(MessageRecord.identity)
+        | set(MessageRecord.file_stamp_from)
+        | set(MessageRecord.modified_from)
+        | set(MessageRecord.created_from)
+        | {MessageRecord.label}
     )
+    recorded = MessageRecord.of(Message(offline_context()).hydrate(_INBOX[0]), "Inbox").to_json()
 
-    assert {Message.wire_name(attribute) for attribute in read} <= set(profile.columns)
-    assert set(profile.columns) <= set(Message.select_all())
+    assert {Message.wire_name(attribute) for attribute in read} <= set(MessageRecord.columns)
+    assert set(recorded) - set(MessageRecord.provenance) == set(MessageRecord.columns)
+    assert set(MessageRecord.columns) <= set(Message.select_all())
 
 
 def test_dest_paths_are_safe_and_bounded():
-    assert mail_slug('a/b\\c:d*e?f"g<h>i|j') == "a-b-c-d-e-f-g-h-i-j"
-    assert mail_slug("Über 日本語 report") == "Uber-report"
-    assert len(mail_slug("x" * 500)) == MAX_SLUG_LENGTH
-    assert mail_slug(None) == ""
+    assert slug('a/b\\c:d*e?f"g<h>i|j') == "a-b-c-d-e-f-g-h-i-j"
+    assert slug("Über 日本語 report") == "Uber-report"
+    assert len(slug("x" * 500)) == MAX_SLUG_LENGTH
+    assert slug(None) == ""
 
 
 def test_target_writes_eml_a_sidecar_and_the_index(tmp_path: Path):
@@ -254,6 +239,8 @@ def test_target_writes_eml_a_sidecar_and_the_index(tmp_path: Path):
     sidecar = json.loads(eml.with_suffix(".json").read_text())
     assert sidecar["categories"] == ["Finance", "Q1"]
     assert sidecar["eml_path"] == items[0].dest_path
+    # The file carries what the import reads: Graph's spelling, not a copy of it.
+    assert {"internetMessageId", "isRead", "receivedDateTime"} <= set(sidecar)
     index = [json.loads(line) for line in (tmp_path / MANIFEST_NAME).read_text().splitlines()]
     assert {record["eml_path"] for record in index} == set(target.list_paths())
 

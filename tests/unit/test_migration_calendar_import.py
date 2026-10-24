@@ -19,18 +19,17 @@ import pytest
 from office365.graph_client import GraphClient
 from office365.migration import MigrationJob
 from office365.migration.base import MigrationItem
-from office365.migration.outlook import (
-    CalendarImportOptions,
-    CalendarTarget,
-    IcsTreeSource,
-    event_create_payload,
-    event_dedup_key,
-    event_digest,
-)
-from office365.migration.outlook.calendar_models import event_transaction_id
+from office365.migration.outlook import CalendarImportOptions, CalendarTarget, IcsTreeSource
+from office365.migration.outlook.calendar_models import EventRecord
 from tests._scripted_transport import MethodRoutingTransport
 
 _CALENDAR = {"id": "cal-2", "name": "Imported"}
+
+
+def _record(envelope) -> EventRecord:
+    """An envelope read back the way an import reads it: through the record."""
+    return EventRecord.from_json(envelope)
+
 
 #: The exchange-side wrapper Exchange puts around every body it accepts.
 _WRAPPER = (
@@ -279,7 +278,7 @@ def test_source_reads_the_sidecar_tree(tmp_path: Path):
 def test_source_checksum_is_the_digest_the_target_can_compute(tmp_path: Path):
     item = IcsTreeSource(_root(tmp_path)).list_items()[0]
 
-    assert IcsTreeSource(_root(tmp_path)).checksum(item) == event_digest(_envelope())
+    assert IcsTreeSource(_root(tmp_path)).checksum(item) == _record(_envelope()).digest()
 
 
 def test_source_refuses_an_ics_without_a_sidecar(tmp_path: Path):
@@ -294,18 +293,18 @@ def test_source_refuses_an_ics_without_a_sidecar(tmp_path: Path):
 
 
 def test_payload_keeps_the_wall_clock_zone_and_the_recurrence():
-    payload = event_create_payload(_SERIES, context=GraphClient())
+    payload = _record(_SERIES).payload()
 
     assert payload["start"] == {"dateTime": "2026-03-09T09:00:00.0000000", "timeZone": "Europe/Kiev"}
     assert payload["recurrence"] == _SERIES["recurrence"]
-    assert payload["transactionId"] == event_transaction_id(_SERIES)
+    assert payload["transactionId"] == _record(_SERIES).transaction_id
     # Server-assigned: sending them back is at best ignored (measured on iCalUId).
     for owned in ("iCalUId", "organizer", "attendees", "createdDateTime"):
         assert owned not in payload, owned
 
 
 def test_payload_carries_the_event_attributes_an_import_restores():
-    payload = event_create_payload(_envelope(), context=GraphClient())
+    payload = _record(_envelope()).payload()
 
     assert payload["showAs"] == "tentative"
     assert payload["sensitivity"] == "private"
@@ -322,7 +321,7 @@ def test_payload_refuses_a_recurrence_an_older_export_wrote_as_text():
     broken = _envelope(recurrence="PatternedRecurrence(pattern=RecurrencePattern(interval=1), range=…)")
 
     with pytest.raises(ValueError, match="re-export the calendar"):
-        event_create_payload(broken, context=GraphClient())
+        _record(broken).payload()
 
 
 # -- the target ----------------------------------------------------------------
@@ -439,19 +438,19 @@ def test_digest_ignores_what_the_service_owns():
         organizer={"emailAddress": {"name": "Marta Doe", "address": "mdoe@microsoft.com"}}, iCalUId="ABC"
     )
 
-    assert event_digest(restored, CalendarImportOptions()) == event_digest(_envelope(), CalendarImportOptions())
+    assert _record(restored).digest(CalendarImportOptions()) == _record(_envelope()).digest(CalendarImportOptions())
 
 
 def test_digest_ignores_the_markup_exchange_adds():
     wrapped = _envelope(body={"contentType": "html", "content": _WRAPPER + "<p>Agenda: <b>Q1</b></p></body></html>"})
 
-    assert event_digest(wrapped, CalendarImportOptions()) == event_digest(_envelope(), CalendarImportOptions())
+    assert _record(wrapped).digest(CalendarImportOptions()) == _record(_envelope()).digest(CalendarImportOptions())
 
 
 def test_digest_notices_a_real_change():
     changed = _envelope(subject="Quarterly review (moved)")
 
-    assert event_digest(changed, CalendarImportOptions()) != event_digest(_envelope(), CalendarImportOptions())
+    assert _record(changed).digest(CalendarImportOptions()) != _record(_envelope()).digest(CalendarImportOptions())
 
 
 def test_digest_follows_the_options_for_attendees_and_categories():
@@ -461,11 +460,11 @@ def test_digest_follows_the_options_for_attendees_and_categories():
 
     # Each option decides whether its field is compared — attendees off, categories on by
     # default — so both sides of a job must agree on the options object.
-    assert event_digest(without, silent) == event_digest(_envelope(), silent)
-    assert event_digest(without, CalendarImportOptions()) != event_digest(_envelope(), CalendarImportOptions())
-    assert event_digest(without, strict) != event_digest(_envelope(), strict)
+    assert _record(without).digest(silent) == _record(_envelope()).digest(silent)
+    assert _record(without).digest(CalendarImportOptions()) != _record(_envelope()).digest(CalendarImportOptions())
+    assert _record(without).digest(strict) != _record(_envelope()).digest(strict)
 
 
 def test_dedup_key_is_subject_and_start():
-    assert event_dedup_key(_envelope()) == ("Quarterly review", "2026-03-02T09:00:00", "Europe/Kiev")
-    assert event_dedup_key(_envelope(start=None)) == ("Quarterly review", None, None)
+    assert _record(_envelope()).dedup_key == ("Quarterly review", "2026-03-02T09:00:00", "Europe/Kiev")
+    assert _record(_envelope(start=None)).dedup_key == ("Quarterly review", None, None)

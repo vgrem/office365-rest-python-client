@@ -32,24 +32,19 @@ compares what a message *says* rather than the bytes Exchange re-serialized.
 from __future__ import annotations
 
 import base64
-import json
-from pathlib import Path
 from typing import Any, Iterable, cast
 
-from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
+from office365.migration.adapters import DataTarget
 from office365.migration.base import MigrationItem
+from office365.migration.outlook.adapters import SIDECAR_SUFFIX, SidecarTreeSource
 from office365.migration.outlook.fidelity import MAIL_IMPORT_DIMENSIONS
-from office365.migration.outlook.models import MAX_IMPORT_MIME_BYTES, MailImportOptions, mime_digest
+from office365.migration.outlook.models import MAX_IMPORT_MIME_BYTES, MailImportOptions, MessageRecord, mime_digest
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.messages.collection import MessageCollection
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.operations import emit_progress
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
-
-#: Sidecar suffix — the export writes ``<stem>.json`` next to ``<stem>.eml``.
-SIDECAR_SUFFIX = ".json"
 
 #: The id properties an import needs to recognise a message it already delivered.
 _ID_COLUMNS = ["id", "internetMessageId"]
@@ -60,72 +55,19 @@ def _post_as_mime(request: RequestOptions) -> None:
     request.set_header("Content-Type", "text/plain")
 
 
-class EmlTreeSource(DataSource):
+class EmlTreeSource(SidecarTreeSource[MessageRecord]):
     """Reads an exported ``.eml`` tree back as migration items.
 
-    Each item's envelope is the JSON sidecar the export wrote beside the message, so
-    folder names, categories and read state survive into the import plan.
+    Each item's envelope is the JSON sidecar the export wrote beside the message, so folder
+    names, categories and read state survive into the import plan — and it is *optional*:
+    the RFC 822 bytes are complete on their own, so a bare tree of ``.eml`` files still
+    imports, with no flags to replay.
     """
 
     #: What a mailbox import preserves; see ``outlook.fidelity``.
     fidelity_dimensions = MAIL_IMPORT_DIMENSIONS
-
-    def __init__(self, root: str | Path) -> None:
-        self._root = Path(root)
-        self._items: dict[str, MigrationItem] = {}
-
-    @property
-    def root(self) -> Path:
-        return self._root
-
-    def label(self) -> str:
-        return f"eml:{self._root}"
-
-    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
-        if not self._root.is_dir():
-            raise FileNotFoundError(f"{self._root} is not a directory of exported .eml files")
-        items: list[MigrationItem] = []
-        for path in sorted(self._root.rglob("*.eml")):
-            item = self._item(path)
-            self._items[item.dest_path] = item
-            items.append(item)
-            emit_progress(progress, done=len(items), stage="planning", items=[item])
-        return items
-
-    def _item(self, path: Path) -> MigrationItem:
-        dest = path.relative_to(self._root).as_posix()
-        envelope = self._sidecar(path)
-        received = envelope.get("received")
-        created = received or envelope.get("sent")
-        return MigrationItem(
-            source_path=dest,
-            dest_path=dest,
-            size_bytes=path.stat().st_size,
-            item_type="file",
-            modified=envelope.get("received") or envelope.get("sent"),
-            created=created,
-            source_id=envelope.get("internet_message_id") or envelope.get("graph_id"),
-            metadata=envelope or None,
-        )
-
-    def _sidecar(self, path: Path) -> dict[str, Any]:
-        sidecar = path.with_suffix(SIDECAR_SUFFIX)
-        if not sidecar.exists():
-            return {}
-        return json.loads(sidecar.read_text(encoding="utf-8"))
-
-    def _path(self, item: MigrationItem) -> Path:
-        path = self._root / item.dest_path
-        if self._root.resolve() not in path.resolve().parents:
-            raise ValueError(f"{item.dest_path!r} escapes the export tree")
-        return path
-
-    def read(self, item: MigrationItem) -> bytes:
-        """The message's RFC 822 bytes."""
-        return self._path(item).read_bytes()
-
-    def checksum(self, item: MigrationItem) -> str:
-        return mime_digest(self.read(item))
+    record = MessageRecord
+    sidecar_required = False
 
 
 class MailboxTarget(DataTarget):
@@ -198,7 +140,7 @@ class MailboxTarget(DataTarget):
         if item.dest_path in self._present:
             return True
         directory, folder = self._folder(item)
-        key = (item.metadata or {}).get("internet_message_id") or (item.metadata or {}).get("graph_id")
+        key = (item.metadata or {}).get("internetMessageId") or (item.metadata or {}).get("id")
         if not key:
             return False
         delivered = self._delivered.get(directory)
@@ -262,7 +204,7 @@ class MailboxTarget(DataTarget):
         ``microsoft.graph.attachment``: ``UnprocessableType``).
         """
         properties: dict[str, Any] = {}
-        if self._options.restore_read_state and envelope.get("is_read") is False:
+        if self._options.restore_read_state and envelope.get("isRead") is False:
             properties["isRead"] = False
         if self._options.restore_categories:
             categories = [category for category in envelope.get("categories") or [] if category]

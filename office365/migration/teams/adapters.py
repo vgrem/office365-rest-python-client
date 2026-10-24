@@ -23,7 +23,6 @@ Archive layout (target convention)::
 
 from __future__ import annotations
 
-import hashlib
 import json
 import tempfile
 from dataclasses import dataclass
@@ -31,7 +30,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from office365.graph_client import GraphClient
-from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
+from office365.migration.adapters import DataSource, DataTarget, MigrationProgress, checksum
 from office365.migration.base import MigrationItem
 from office365.teams.channels.channel import Channel
 from office365.teams.chats.messages.message import ChatMessage
@@ -58,10 +57,6 @@ def encode_json(payload: Any) -> bytes:
 def encode_ndjson(records: list[dict[str, Any]]) -> bytes:
     """Canonical NDJSON encoding (one record per line)."""
     return "".join(json.dumps(record) + "\n" for record in records).encode()
-
-
-def _checksum(data: bytes) -> str:
-    return hashlib.md5(data).hexdigest()
 
 
 def _encode_payload(item: MigrationItem, payload: Any) -> bytes:
@@ -194,7 +189,7 @@ class TeamsArchiveSource(DataSource):
             return Path(tmp.name).read_bytes()
 
     def checksum(self, item: MigrationItem) -> str:
-        return _checksum(_encode_payload(item, self.read(item)))
+        return checksum(_encode_payload(item, self.read(item)))
 
 
 class TeamsArchiveTarget(DataTarget):
@@ -219,7 +214,7 @@ class TeamsArchiveTarget(DataTarget):
         return (p.relative_to(self._root).as_posix() for p in self._root.rglob("*") if p.is_file())
 
     def checksum(self, item: MigrationItem) -> str:
-        return _checksum(self._path(item).read_bytes())
+        return checksum(self._path(item).read_bytes())
 
 
 __all__ = [

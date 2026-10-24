@@ -17,6 +17,7 @@ from email.policy import SMTP
 from pathlib import Path
 from typing import Any
 
+import pytest
 from office365.graph_client import GraphClient
 from office365.migration import MigrationJob
 from office365.migration.outlook import EmlTreeSource, MailboxTarget, mime_digest
@@ -70,11 +71,13 @@ def _write_tree(root: Path, files: dict[str, bytes], display_paths: dict[str, st
         path.write_bytes(payload)
         parsed = _parse(payload)
         envelope: dict[str, Any] = {
-            "internet_message_id": parsed["Message-ID"],
+            "id": f"AAMk-{relative}",
+            "internetMessageId": parsed["Message-ID"],
             "subject": parsed["Subject"],
-            "received": "2024-03-04T09:15:00+00:00",
+            "receivedDateTime": "2024-03-04T09:15:00Z",
+            "sentDateTime": "2024-03-04T09:14:00Z",
             "categories": ["Finance"],
-            "is_read": False,
+            "isRead": False,
             "importance": "normal",
         }
         display = (display_paths or {}).get(relative)
@@ -194,8 +197,21 @@ def test_source_reads_the_exported_tree(tmp_path: Path):
     assert [item.dest_path for item in items] == ["Inbox/Archive/m2.eml", "Inbox/m1.eml"]
     assert all(item.item_type == "file" for item in items)
     assert items[0].metadata["categories"] == ["Finance"]
-    assert items[0].metadata["is_read"] is False
-    assert items[0].created == "2024-03-04T09:15:00+00:00"
+    assert items[0].metadata["isRead"] is False
+    assert items[0].created == "2024-03-04T09:15:00Z"
+
+
+def test_a_sidecar_from_an_older_exporter_is_refused(tmp_path: Path):
+    """The envelope became the model's own JSON, so an older tree addresses keys nothing reads.
+
+    Silently importing it would deliver every message with no read state and no identity,
+    which a run cannot tell from a mailbox that simply had nothing to say.
+    """
+    root = _tree(tmp_path)
+    (root / "Inbox/m1.json").write_text(json.dumps({"graph_id": "AAMk", "is_read": False}), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="older exporter"):
+        EmlTreeSource(root).list_items()
 
 
 def test_source_digests_what_the_message_says(tmp_path: Path):

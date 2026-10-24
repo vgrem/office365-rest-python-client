@@ -4,7 +4,7 @@ Nothing here decides *when* a token is written — that is the codec's job — a
 here knows about a client: these are tables, so the answer to "what does a
 tentatively-accepted attendee look like in an ``.ics``" is a row, not a branch.
 
-:class:`IcsProfile` is the ``.ics`` spelling: one table per generated Graph enum the
+:class:`IcsDialect` is the ``.ics`` spelling: one table per generated Graph enum the
 writer speaks. Each is checked against its enum by ``tests/unit/test_calendar_profile.py``
 — a row naming a member the model does not declare fails the suite, because a token for
 a word the service never sends is a lie. ``transp`` and ``status`` are deliberately
@@ -24,7 +24,7 @@ from typing import Any, Mapping
 
 
 @dataclass(frozen=True)
-class IcsProfile:
+class IcsDialect:
     """How one calendar dialect spells Graph's words — RFC 5545 names, by table."""
 
     #: Graph ``showAs`` → ``TRANSP``: only a free event is transparent.
@@ -51,7 +51,7 @@ class IcsProfile:
 
 #: The dialect this writer speaks. A second dialect — ``METHOD:REQUEST`` for an
 #: invitation, a different ``PARTSTAT`` default — is another row, not another writer.
-ICALENDAR = IcsProfile(
+ICALENDAR = IcsDialect(
     transp=MappingProxyType({"free": "TRANSPARENT"}),
     status=MappingProxyType({"tentative": "TENTATIVE"}),
     classification=MappingProxyType(
@@ -104,6 +104,6 @@ def display_name(value: Mapping[str, Any] | None) -> str:
 
 __all__ = [
     "ICALENDAR",
-    "IcsProfile",
+    "IcsDialect",
     "display_name",
 ]

@@ -9,8 +9,7 @@ from __future__ import annotations
 import pytest
 from office365.graph_client import GraphClient
 from office365.migration.outlook import CalendarImportOptions
-from office365.migration.outlook.calendar_models import event_canonical, event_create_payload
-from office365.migration.outlook.offline import offline_context
+from office365.migration.outlook.calendar_models import EventRecord
 from office365.outlook.calendar.attendees.attendee import Attendee
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.event import Event
@@ -58,10 +57,10 @@ def test_the_comparable_form_is_not_a_request():
         "attendees": [{"emailAddress": {"address": "Bob@Contoso.com"}, "type": "required"}],
     }
     options = CalendarImportOptions(restore_attendees=True)
-    assert event_create_payload(envelope, options, context=offline_context())["attendees"] == [
+    assert EventRecord.from_json(envelope).payload(options)["attendees"] == [
         {"emailAddress": {"address": "Bob@Contoso.com"}, "type": "required"}
     ]
-    assert event_canonical(envelope, options)["attendees"] == [
+    assert EventRecord.from_json(envelope).canonical(options)["attendees"] == [
         {"emailAddress": {"address": "bob@contoso.com", "name": "bob@contoso.com"}, "type": "required"}
     ]
 

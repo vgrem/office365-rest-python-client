@@ -51,31 +51,23 @@ Four honest limits, all measured against Exchange:
 
 from __future__ import annotations
 
-import hashlib
-import json
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Any
 
-from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
+from office365.migration.adapters import DataTarget, MigrationProgress, checksum
 from office365.migration.base import MigrationItem
-from office365.migration.outlook.adapters import SidecarTreeTarget
+from office365.migration.outlook.adapters import ServiceSource, SidecarTreeSource, SidecarTreeTarget
 from office365.migration.outlook.contacts_models import (
-    CONTACT_COLUMNS,
     ContactExportOptions,
     ContactImportOptions,
     ContactRecord,
 )
-from office365.migration.outlook.eml_import import SIDECAR_SUFFIX
 from office365.migration.outlook.fidelity import CONTACTS_EXPORT_DIMENSIONS, CONTACTS_IMPORT_DIMENSIONS
-from office365.migration.outlook.models import mail_slug
+from office365.migration.outlook.records import slug
 from office365.migration.outlook.restore import withheld
 from office365.outlook.contacts.contact import Contact
-from office365.outlook.contacts.folders.collection import ContactFolderCollection
 from office365.outlook.contacts.folders.folder import ContactFolder
-from office365.runtime.converters.scalars import iso_or_none
 from office365.runtime.operations import emit_progress
-from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 #: The properties an import reads back to recognise a contact it already created.
@@ -85,24 +77,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 _EXISTING_COLUMNS = [Contact.wire_name(attr) for attr in ("id", "display_name", "email_addresses")]
 
 
-def _md5(data: bytes) -> str:
-    return hashlib.md5(data).hexdigest()
-
-
-def _ensure_child(folder: ContactFolder, name: str) -> ContactFolder:
-    """An idempotent child folder under ``folder``.
-
-    ``ContactFolder.child_folders`` is the generated plain ``EntityCollection``, which
-    has no ``ensure``; the specialised collection knows how to look the name up before
-    creating it, so a re-run does not leave a duplicate folder behind.
-    """
-    collection = folder.properties.get("childFolders")
-    if collection is None or not hasattr(collection, "ensure"):
-        collection = ContactFolderCollection(folder.context, ResourcePath("childFolders", folder.resource_path))
-    return collection.ensure(name).execute_query()
-
-
-class ContactSource(DataSource):
+class ContactSource(ServiceSource[Contact]):
     """Enumerates a Graph contact folder (and its children) as one item per contact.
 
     Each item carries its sidecar record in ``metadata``, so the export's index is
@@ -113,17 +88,16 @@ class ContactSource(DataSource):
     fidelity_dimensions = CONTACTS_EXPORT_DIMENSIONS
 
     def __init__(self, folder: ContactFolder, options: ContactExportOptions | None = None) -> None:
+        super().__init__()
         self._folder = folder
         self._options = options or ContactExportOptions()
-        self._contacts: dict[str, Contact] = {}  # dest path -> contact handle
-        self._enumerated = False
 
     def label(self) -> str:
         name = getattr(self._folder, "display_name", None) or getattr(self._folder, "id", "contacts")
         return f"contacts:{name}"
 
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
-        path = self._options.root_name or mail_slug(getattr(self._folder, "display_name", None)) or "contacts"
+        path = self._options.root_name or slug(getattr(self._folder, "display_name", None)) or "contacts"
         display = getattr(self._folder, "display_name", None) or path
         items: list[MigrationItem] = []
         self._collect(self._folder, path, display, items, progress)
@@ -133,15 +107,15 @@ class ContactSource(DataSource):
     def _collect(
         self, folder: ContactFolder, path: str, display: str, items: list[MigrationItem], progress: MigrationProgress
     ) -> None:
-        for contact in folder.contacts.select(CONTACT_COLUMNS).get_all().execute_query():
+        for contact in folder.contacts.select(list(ContactRecord.columns)).get_all().execute_query():
             item = self._item(contact, path, display)
-            self._contacts[item.dest_path] = contact
+            self._remember(item, contact)
             items.append(item)
             emit_progress(progress, done=len(items), stage="planning", items=[item])
         if not self._options.include_subfolders:
             return
         for child in folder.child_folders.get().execute_query():
-            name = mail_slug(getattr(child, "display_name", None)) or str(child.id)
+            name = slug(getattr(child, "display_name", None)) or str(child.id)
             child_display = getattr(child, "display_name", None) or name
             self._collect(child, f"{path}/{name}", f"{display}/{child_display}", items, progress)
 
@@ -152,22 +126,12 @@ class ContactSource(DataSource):
             dest_path=record.dest_path,
             # A contact has no byte size until its ``.vcf`` is rendered; ``read()`` fills it.
             size_bytes=0,
-            item_type="contact",
-            modified=iso_or_none(contact.last_modified_date_time),
-            created=iso_or_none(contact.created_datetime),
-            source_id=record.id,
+            item_type=ContactRecord.item_type,
+            modified=record.modified,
+            created=record.created,
+            source_id=record.source_id,
             metadata=record.to_json(),
         )
-
-    def _handle(self, item: MigrationItem) -> Contact:
-        """The contact for an item, enumerating once if the plan came from disk."""
-        contact = self._contacts.get(item.dest_path)
-        if contact is None and not self._enumerated:
-            self.list_items()
-            contact = self._contacts.get(item.dest_path)
-        if contact is None:
-            raise KeyError(f"{item.dest_path!r} was not enumerated by this source — re-plan the job")
-        return contact
 
     def read(self, item: MigrationItem) -> bytes:
         """The contact's vCard document, rendered from the record in ``metadata``."""
@@ -177,93 +141,32 @@ class ContactSource(DataSource):
 
     def checksum(self, item: MigrationItem) -> str:
         """The ``.vcf`` bytes — this export renders them itself, so equality is fair."""
-        return _md5(self.read(item))
+        return checksum(self.read(item))
 
 
 class VcfExportTarget(SidecarTreeTarget):
     """Writes a portable vCard tree: one ``.vcf`` plus one JSON sidecar per contact."""
 
     fidelity_dimensions = CONTACTS_EXPORT_DIMENSIONS
-    content_suffix = ".vcf"
-    payload_key = "vcf_path"
+    record = ContactRecord
 
 
-class VcfTreeSource(DataSource):
+class VcfTreeSource(SidecarTreeSource[ContactRecord]):
     """Reads an exported contact tree back as migration items.
 
-    The ``.vcf`` is the payload (what another client opens); the JSON sidecar is the
-    record the import replays, and it is **required** — a vCard cannot carry the
-    office fields, the address components or the categories without a lossy mapping,
-    and reading a contact back out of one would invent an import nobody verified.
+    The ``.vcf`` is the payload (what another client opens); the JSON sidecar is the record
+    the import replays, and it is **required** — a vCard cannot carry the office fields, the
+    address components or the categories without a lossy mapping, and reading a contact back
+    out of one would invent an import nobody verified.
     """
 
     #: What a contact import preserves; see ``outlook.fidelity``.
     fidelity_dimensions = CONTACTS_IMPORT_DIMENSIONS
-
-    def __init__(self, root: str | Path, options: ContactImportOptions | None = None) -> None:
-        self._root = Path(root)
-        self._options = options or ContactImportOptions()
-        self._items: dict[str, MigrationItem] = {}
-
-    @property
-    def root(self) -> Path:
-        return self._root
-
-    def label(self) -> str:
-        return f"vcf:{self._root}"
-
-    def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
-        if not self._root.is_dir():
-            raise FileNotFoundError(f"{self._root} is not a directory of exported .vcf files")
-        items: list[MigrationItem] = []
-        for path in sorted(self._root.rglob("*.vcf")):
-            item = self._item(path)
-            self._items[item.dest_path] = item
-            items.append(item)
-            emit_progress(progress, done=len(items), stage="planning", items=[item])
-        return items
-
-    def _item(self, path: Path) -> MigrationItem:
-        dest = path.relative_to(self._root).as_posix()
-        envelope = self._sidecar(path)
-        return MigrationItem(
-            source_path=dest,
-            dest_path=dest,
-            size_bytes=path.stat().st_size,
-            item_type="contact",
-            modified=envelope.get("lastModifiedDateTime"),
-            created=envelope.get("createdDateTime") or envelope.get("lastModifiedDateTime"),
-            source_id=envelope.get("id"),
-            metadata=envelope,
-        )
-
-    def _sidecar(self, path: Path) -> dict[str, Any]:
-        sidecar = path.with_suffix(SIDECAR_SUFFIX)
-        if not sidecar.exists():
-            raise FileNotFoundError(
-                f"{sidecar} is missing: the sidecar is the import contract (a vCard cannot carry the office fields,"
-                " address components and categories without loss), so the tree has to come from a contact export"
-            )
-        return json.loads(sidecar.read_text(encoding="utf-8"))
-
-    def _path(self, item: MigrationItem) -> Path:
-        path = self._root / item.dest_path
-        if self._root.resolve() not in path.resolve().parents:
-            raise ValueError(f"{item.dest_path!r} escapes the export tree")
-        return path
-
-    def read(self, item: MigrationItem) -> bytes:
-        """The contact's vCard document."""
-        return self._path(item).read_bytes()
-
-    def checksum(self, item: MigrationItem) -> str:
-        """The digest a contact target can also compute, not the ``.vcf`` bytes.
-
-        The target is Exchange, which assigns the identifiers and rewrites a
-        birthday's time of day, so the comparable artefact is the contact's
-        restorable fields rather than the document that carried them.
-        """
-        return ContactRecord.from_json(item.metadata or {}).digest(self._options)
+    record = ContactRecord
+    sidecar_note = (
+        "the sidecar is the import contract (a vCard cannot carry the office fields, address components and"
+        " categories without loss), so the tree has to come from a contact export"
+    )
 
 
 class ContactTarget(DataTarget):
@@ -321,7 +224,7 @@ class ContactTarget(DataTarget):
         if folder is None:
             folder = self._root
             for name in names:
-                folder = _ensure_child(folder, name)
+                folder = folder.child_folders.ensure(name).execute_query()
             self._folders[directory] = folder
         return directory, folder
 
@@ -392,7 +295,7 @@ class ContactTarget(DataTarget):
         # Read a fresh object through the folder the contact lives in: re-loading the
         # created one *appends* to its collection-valued properties (``emailAddresses``,
         # the phone lists, ``categories``), so the digest would see every list twice.
-        read = folder.contacts[contact.id].select(CONTACT_COLUMNS).get().execute_query()
+        read = folder.contacts[contact.id].select(list(ContactRecord.columns)).get().execute_query()
         return ContactRecord.of(read).digest(self._options)
 
     def commit(self, options: Any = None) -> None:  # noqa: ARG002 — runner hook signature
@@ -412,8 +315,7 @@ class ContactTarget(DataTarget):
         if cached is None:
             index: dict[tuple[str, str], list[Contact]] = {}
             for contact in folder.contacts.select(_EXISTING_COLUMNS).get_all().execute_query():
-                key = ContactRecord.from_json(contact.to_json()).dedup_key
-                index.setdefault(key, []).append(contact)
+                index.setdefault(ContactRecord.of(contact).dedup_key, []).append(contact)
             self._indexed[directory] = index
             cached = index
         return cached

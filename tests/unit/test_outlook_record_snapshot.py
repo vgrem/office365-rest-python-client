@@ -24,14 +24,11 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
-from office365.graph_client import GraphClient
 from office365.migration.outlook import (
     CalendarImportOptions,
     ContactImportOptions,
     ContactRecord,
-    event_create_payload,
-    event_dropped_attendees,
-    event_ics,
+    EventRecord,
 )
 from tests.unit.test_migration_calendar_import import _SERIES
 from tests.unit.test_migration_calendar_import import _envelope as _event
@@ -55,7 +52,6 @@ def _sha(data: bytes) -> str:
 
 
 def _capture() -> dict[str, Any]:
-    context = GraphClient("token")
     captured: dict[str, Any] = {}
 
     events = {
@@ -69,16 +65,14 @@ def _capture() -> dict[str, Any]:
     }
     for name, envelope in events.items():
         if name != "recurrence_text":  # a legacy sidecar the codec was never meant to render
-            captured[f"event.{name}.ics"] = _outcome(lambda e=envelope: _sha(event_ics(e)))
+            captured[f"event.{name}.ics"] = _outcome(lambda e=envelope: _sha(EventRecord.from_json(e).ics()))
         for attendees, categories, transaction in itertools.product(_BOOLS, _BOOLS, _BOOLS):
             options = CalendarImportOptions(
                 restore_attendees=attendees, restore_categories=categories, use_transaction_ids=transaction
             )
             label = f"event.{name}.a{int(attendees)}c{int(categories)}t{int(transaction)}"
-            captured[f"{label}.payload"] = _outcome(
-                lambda e=envelope, o=options: event_create_payload(e, o, context=context)
-            )
-            captured[f"{label}.dropped"] = event_dropped_attendees(envelope, options)
+            captured[f"{label}.payload"] = _outcome(lambda e=envelope, o=options: EventRecord.from_json(e).payload(o))
+            captured[f"{label}.dropped"] = EventRecord.from_json(envelope).dropped_attendees(options)
 
     contacts = {
         "full": _contact(),

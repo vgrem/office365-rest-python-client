@@ -438,6 +438,18 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   one — the two failures that used to be silent (a token for a word nothing sends, a
   value that renders as nothing). The exported bytes are unchanged: a golden test pins
   the document byte for byte.
+- **A mail sidecar is the message as the model serializes it**: `Message.to_json()` plus
+  the three keys no model can know (`folder_path`, `folder_display_path`, `eml_path`) —
+  the shape the calendar and contacts sidecars already took. Graph's own keys
+  (`internetMessageId`, `isRead`, `receivedDateTime`, `from`, `toRecipients`) replace the
+  snake_case copy this exporter kept (`internet_message_id`, `is_read`, `sender`,
+  `received`, and the rendered `Name <address>` strings), so a column the model declares
+  is exported and replayed with nothing in this package edited, and the import reads the
+  same names back. A tree exported by a pre-release build is refused with a message
+  naming the offending keys (`refuse_legacy_sidecar`, one rule for every family) instead
+  of importing every message with no read state and no identity. The record is
+  `MessageRecord` and what a verification compares is `mime_digest` — what the message
+  *says*, since Exchange re-serializes the bytes on the way in.
 - **A calendar sidecar is the event as the model serializes it**: `Event.to_json()` plus
   the three keys no model can know (`calendar_path`, `calendar_display_path`,
   `ics_path`), the same shape the contacts sidecar took. So nothing lists a field: a
@@ -448,16 +460,13 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   saying so, instead of importing as a wall of empty fields. `CalendarEventRecord` is
   gone: it existed to *re-spell* the model into `show_as`/`is_all_day`/`graph_id`, so
   with the sidecar being the model's own JSON it was a third representation with nothing
-  left to do. A sidecar is now read by functions over `(envelope, options)` —
-  `event_ics`, `event_create_payload`, `event_dest_path`, `event_dedup_key`,
-  `event_digest`, `event_dropped_attendees`, `event_transaction_id`, `event_key` — which
-  is what the adapters call and what callers outside this package already import.
-  `event_create_payload` alone also takes the `context` its `Event` lives in: the body is
-  spelled by the model, and a `ClientObject` is a handle that does not exist without one.
-  `ContactRecord` stays: unlike the calendar record it never re-spelled anything (its
-  payload has been the model's JSON since `fa2977db9`), so it is a payload plus its
-  derived artefacts rather than a second vocabulary. The digest is unchanged
-  (`4a8cc8de…`): the canonical form compares the same values, read from Graph's keys.
+  left to do — and the free functions over `(envelope, options)` that replaced it
+  (`event_ics`, `event_create_payload`, `event_dest_path`, …) are now the methods of one
+  `EventRecord`: `of(event, calendar)` during an export, `from_json(sidecar)` to read it
+  back, then `.payload(options)`, `.canonical(options)`, `.digest(options)`,
+  `.dedup_key`, `.transaction_id`, `.dropped_attendees(options)`, `.ics()`. The digest is
+  unchanged (`4a8cc8de…`): the canonical form compares the same values, read from
+  Graph's keys.
 
 **Migration (contacts)**
 
@@ -474,6 +483,38 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   `payload()`, `dest_path`, `dedup_key`, `digest()` and `id`. The record holds a payload
   and where it came from, never an entity, which is what lets an import verify a sidecar
   against a contact the service returned with no client and no context.
+
+**Migration (Outlook, all three families)**
+
+- **One record base, two adapter bases, and 129 fewer lines.** `SidecarRecord`
+  (`migration.outlook.records`) is the declared shape of an exported item: a family sets
+  class attributes — `model`, `content_suffix`, `provenance` (exactly three keys, asserted
+  at class definition), `legacy_keys`, `identity`, `label`, `file_stamp_from`,
+  `modified_from`, `created_from`, `verified`, `columns`, `options_class` — and inherits
+  `of()`, `from_json()`, `to_json()`, `dest_path`, `canonical()`, `digest()`, `checksum()`.
+  Nothing in a family module lists a field, and `from_json` hydrates only the model's own
+  declared properties (so a provenance key can never become one) on the library's
+  credential-less context. On the adapter side `ServiceSource` owns the handle seam
+  (`_remember`/`_handle`, one lazy re-enumeration) and `SidecarTreeSource` owns the file
+  seam (`_path`, `_sidecar`, `_record`), so `EmlTreeSource`, `IcsTreeSource` and
+  `VcfTreeSource` are three class attributes and a docstring; `SidecarTreeTarget` derives
+  `content_suffix` and `payload_key` from its `record`, so a family cannot add one and
+  forget the other. `sidecar_required` is the one legitimate family difference — `False`
+  for mail, since RFC 822 bytes are complete on their own.
+- `IcsProfile` is `IcsDialect`: with `MailProfile` dissolved into `MessageRecord`, the
+  only thing left called a profile is the serialization dialect `to_json(profile)` takes.
+- `ContactFolder.child_folders` returns a `ContactFolderCollection`, so creating a folder
+  during an import is `folder.child_folders.ensure(name)` as it already was for mail — the
+  adapter had been re-implementing the library's own `ensure`.
+- `STANDALONE_EVENT_TYPES` and `event_kind` are gone: the two spellings of one
+  `event.type_ in (EventType.singleInstance, EventType.seriesMaster)` test are one test.
+- `JsonProfile` lost four accessors with no caller (`metadata_type`, `collection`,
+  `collection_next`, `etag`); each re-exported a dialect field that `to_json` reads from
+  the dialect itself.
+- One byte-identity helper: `checksum(data)` in `migration.adapters` replaced four private
+  `_md5`/`_checksum` copies, and `digest()` in `runtime.odata.canonical` replaced three
+  hand-written hashers. Two digests, two jobs: `checksum()` is of the bytes,
+  `digest()` is of the meaning.
 
 **Long-running operations**
 

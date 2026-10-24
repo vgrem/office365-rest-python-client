@@ -12,7 +12,9 @@ three things no model can know (the calendar it came from, the path it is writte
 and that calendar's display path). So nothing here lists a field: a column the model
 declares is exported, replayed and verified with no function edited, and the keys are
 Graph's own spellings (``isAllDay``, ``showAs``, ``iCalUId``) because that is what the
-model answers and what an import posts back.
+model answers and what an import posts back. The convention itself is
+:class:`office365.migration.outlook.records.SidecarRecord`, shared with the mailbox and
+contacts families.
 
 Spelling lives in two tables, not here: which iCalendar token a Graph value becomes is
 :mod:`office365.migration.outlook.calendar_profile`, and the document itself is written
@@ -22,24 +24,19 @@ Unlike mail, this file is *built* rather than fetched, so a byte checksum is a v
 verification of an export: there is no server re-serialization in the middle. An
 *import* is the other way round — Exchange re-serializes what it accepts and assigns the
 meeting metadata — so it is verified by a digest of the event's restorable fields
-(:func:`event_digest`).
+(:meth:`EventRecord.digest`).
 """
 
 from __future__ import annotations
 
 import hashlib
-import json
 from dataclasses import dataclass, field
-from typing import Any, Mapping
+from typing import Any, Dict, Optional, Tuple, cast
 
 from office365.migration.outlook.calendar_codec import MAX_LINE_OCTETS, encode
-from office365.migration.outlook.models import dest_path
-from office365.migration.outlook.offline import offline_context
+from office365.migration.outlook.records import SidecarRecord
 from office365.migration.outlook.restore import restores, withheld
-from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.events.event import Event
-from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.canonical import CANONICAL
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 
@@ -49,16 +46,6 @@ from office365.runtime.odata.v4.json_format import V4JsonFormat
 #: the real ``iCalUId``, silently ``None``) is now unrepresentable. Navigation
 #: properties are excluded by construction: ``$select`` rejects them.
 EVENT_COLUMNS = Event.select_all()
-
-#: Event types that stand on their own. An ``occurrence``/``exception`` belongs to
-#: its ``seriesMaster`` (exported once, as a series), so exporting the instances
-#: too would duplicate every recurring meeting — the default skips them.
-STANDALONE_EVENT_TYPES = ("singleInstance", "seriesMaster")
-
-#: The keys an envelope holds that no model does: where the event came from, where its
-#: document is written, and the same for a reader who should not have to parse a path.
-PROVENANCE = ("calendar_path", "calendar_display_path", "ics_path")
-assert not set(PROVENANCE) & frozenset(EVENT_COLUMNS), "a provenance key collides with a column the model declares"
 
 #: Keys a sidecar written before the envelope became the model's own JSON carries. Their
 #: presence means the tree was exported by a version that spelled its own vocabulary
@@ -91,7 +78,7 @@ class CalendarImportOptions:
 
     Pass the *same* options object to both adapters of an import job: the source
     computes the content digest of what the target promises to restore, so the two
-    sides have to agree on the fields to be comparable (see :func:`event_digest`).
+    sides have to agree on the fields to be comparable (see :meth:`EventRecord.digest`).
     """
 
     #: Re-add the attendee list. **Off by default**, because creating an event with
@@ -106,138 +93,6 @@ class CalendarImportOptions:
     #: Give every created event a deterministic ``transactionId``, so two concurrent
     #: runs of the same import collide on the server rather than both writing.
     use_transaction_ids: bool = True
-
-
-def event_key(envelope: Mapping[str, Any]) -> str:
-    """The identity an export is keyed by: the Graph event id.
-
-    Deliberately not ``iCalUId``: Exchange assigns one to a *meeting* but not to a
-    plain appointment (measured — an event created through the API comes back with
-    ``iCalUId: null`` even on a later read), so keying on it would let a re-run see
-    the same event under a new identity and write a second copy. The Graph id is
-    stable for the event's life in its calendar. ``iCalUId`` is still what other
-    calendar clients match on, so it rides in the sidecar and becomes the ``.ics``
-    ``UID`` when present.
-    """
-    return str(envelope.get("id") or envelope.get("iCalUId") or "")
-
-
-def event_kind(event: Event) -> str | None:
-    """The wire name of an event's ``type``: ``singleInstance``, ``seriesMaster``, …
-
-    The getter answers with the generated enum, whose members carry the CSDL ordinals
-    (``EventType.singleInstance.value == "0"``) rather than what the service speaks;
-    ``serialize_value`` is the library's answer to that — the member *name*.
-    """
-    return serialize_value(event.type_)
-
-
-def event_dest_path(event: Event, calendar_path: str) -> str:
-    """The export path for a loaded event: ``<calendar>/<date>_<slug>_<id digest>.ics``.
-
-    The date is the event's start date — a calendar sorted by filename reads
-    chronologically. The shape itself is :func:`office365.migration.outlook.models.dest_path`,
-    shared with the mailbox and contacts families.
-    """
-    started = event.start.as_datetime() if event.start else None
-    stamp = started.strftime("%Y-%m-%d") if started else ""
-    return dest_path(str(event.id or event.ical_uid or ""), calendar_path, ".ics", stamp, event.subject)
-
-
-def event_envelope(
-    event: Event,
-    calendar_path: str = "",
-    extra_properties: list[str] | None = None,
-    display_path: str | None = None,
-) -> dict[str, Any]:
-    """The sidecar for an event read from the service: the model's own JSON, plus provenance.
-
-    ``to_json()`` is the library's serializer, so the sidecar keeps Graph's shape
-    (``start``/``end`` as a wall clock and zone name, ``recurrence`` as Graph's object)
-    rather than a second spelling this package would have to keep in step — and an
-    import posts it back verbatim, which is what makes the round trip exact.
-    """
-    envelope = event.to_json()
-    envelope["calendar_path"] = calendar_path
-    envelope["calendar_display_path"] = display_path or calendar_path
-    envelope["ics_path"] = event_dest_path(event, calendar_path)
-    for name in extra_properties or []:
-        envelope[name] = serialize_value(event.get_property(name))
-    return envelope
-
-
-def _model_spelling(envelope: Mapping[str, Any]) -> None:
-    """Refuse a sidecar written before the envelope was the model's own JSON."""
-    if any(name in envelope for name in LEGACY_KEYS):
-        raise ValueError(
-            "this sidecar spells its own keys (``graph_id``, ``is_all_day``) and was written by an older"
-            " exporter: re-export the calendar and import that tree"
-        )
-
-
-def event_ics(envelope: Mapping[str, Any]) -> bytes:
-    """The event as an ``.ics`` document (see the codec's :func:`encode`)."""
-    _model_spelling(envelope)
-    return encode(envelope)
-
-
-def event_create_payload(
-    envelope: Mapping[str, Any],
-    options: CalendarImportOptions | None = None,
-    *,
-    context: ClientRuntimeContext,
-) -> dict[str, Any]:
-    """The Graph ``POST /events`` body for an envelope.
-
-    The model reads its own sidecar and spells the body: ``hydrate`` fills an ``Event``
-    from the envelope (coercing each value to its declared type), and ``to_json`` with a
-    profile emits it as a request payload, dropping what the service owns
-    (``@odata(readonly=True)``: the id, the organizer, the attendee responses, the audit
-    stamps) and the ``extra_properties`` an export records only to survive a round trip.
-    What is left is exactly what an import may restore; the options then decide how much
-    of it to send. Nothing here spells a Graph field.
-
-    ``context`` is where the model lives, not something it asks: a ``ClientObject`` is a
-    handle, so an ``Event`` cannot exist without one. Nothing is queried while a body is
-    spelled, so a client with no credentials is enough to build one offline.
-    """
-    options = options or CalendarImportOptions()
-    _model_spelling(envelope)
-
-    event = Event(context).hydrate(envelope)
-    spelled = event.to_json(V4JsonFormat("none").scoped(Event, without=withheld(options)))
-    body: dict[str, Any] = {
-        name: value
-        for name, value in spelled.items()
-        # The model's own vocabulary, and only what it can actually say: an undeclared key
-        # is provenance an export records for its ledger, and a null/empty value is the
-        # absence of a statement, not a request to clear a field.
-        if name in Event._schema.properties and value not in (None, {}, [])
-    }
-    start, end = body.get("start") or {}, body.get("end") or {}
-    if not start.get("dateTime") or not end.get("dateTime"):
-        raise ValueError("the sidecar has no start/end dateTime: an event cannot be created without a time range")
-    if isinstance(body.get("recurrence"), str):
-        raise ValueError(
-            f"the sidecar records the recurrence as text ({body['recurrence'][:60]!r}): it was written by a version"
-            " of the exporter that serialised Graph's typed object with ``repr``, so the series cannot be"
-            " replayed — re-export the calendar and import that tree"
-        )
-
-    content = body.get("body")
-    if not (content and content.get("content")):
-        body.pop("body", None)
-    else:
-        # Graph is case-insensitive here (measured); ``HTML``/``Text`` is what an import has
-        # always sent, so the model's ``html`` is re-cased rather than the wire moving silently.
-        content["contentType"] = "HTML" if str(content.get("contentType")).lower() == "html" else "Text"
-    # ``status`` is the attendee's own reply, which Exchange assigns: an import sends the
-    # people, not the answers. Dropped here until a live create probe says otherwise.
-    for attendee in body.get("attendees", ()):
-        attendee.pop("status", None)
-    if options.use_transaction_ids:
-        body["transactionId"] = event_transaction_id(envelope)
-    return body
 
 
 #: What verifies an import: the event as its sender stated it. The other writable columns
@@ -262,79 +117,121 @@ _VERIFIED = (
 assert all(Event.wire_name(attr) for attr in _VERIFIED)  # a misspelt name fails here, not at the first digest
 
 
-def event_canonical(envelope: Mapping[str, Any], options: CalendarImportOptions | None = None) -> dict[str, Any]:
-    """The restored fields in the form the model says the service treats as equal.
+class EventRecord(SidecarRecord):
+    """One event as the export records it: Graph's payload, where it came from, its artefacts.
 
-    A field the import declines to restore (``restore_attendees``, ``restore_categories``)
-    leaves the canonical form, which is why the source and the target of one job must
-    share the options object.
+    ``ics`` is the portable document, ``payload`` the create body an import posts, and
+    ``digest``/``checksum`` what a verification compares on either side.
     """
-    options = options or CalendarImportOptions()
-    event = Event(offline_context()).hydrate(envelope)
-    return event.to_json(CANONICAL.scoped(Event, only=_VERIFIED, without=withheld(options)))
 
+    model = Event
+    item_type = "event"
+    content_suffix = ".ics"
+    provenance = ("calendar_path", "calendar_display_path", "ics_path")
+    legacy_keys = LEGACY_KEYS
+    legacy_name = "calendar"
+    identity = ("id", "ical_uid")
+    label = "subject"
+    file_stamp_from = ("start",)
+    modified_from = ("last_modified_date_time",)
+    created_from = ("created_date_time", "last_modified_date_time")
+    verified = _VERIFIED
+    columns = EVENT_COLUMNS
+    options_class = CalendarImportOptions
 
-def event_digest(envelope: Mapping[str, Any], options: CalendarImportOptions | None = None) -> str:
-    """A digest of the fields an import restores, for verifying that it did.
+    @property
+    def event(self) -> Event:
+        """The model this record was built from, or read back into."""
+        return cast("Event", self._entity)
 
-    Not the ``.ics`` bytes: the other side of an import is Exchange, which re-serializes
-    the body and assigns the meeting metadata, so the comparable artefact is the *event*.
-    Which fields take part — and what each is normalised to — is
-    :data:`_VERIFIED`, so a field the sidecar gains is a name there rather than a line in
-    this function.
-    """
-    _model_spelling(envelope)
-    canonical = json.dumps(event_canonical(envelope, options), sort_keys=True, default=str)
-    return hashlib.md5(canonical.encode("utf-8")).hexdigest()
+    def ics(self) -> bytes:
+        """The event as an ``.ics`` document (see the codec's :func:`encode`)."""
+        return encode(self.envelope)
 
+    def payload(self, options: CalendarImportOptions | None = None) -> Dict[str, Any]:
+        """The Graph ``POST /events`` body for this record.
 
-def event_dropped_attendees(envelope: Mapping[str, Any], options: CalendarImportOptions | None = None) -> int:
-    """How many attendee entries the import leaves out, and so does not invite.
+        The model spells the body: ``to_json`` with a request profile emits what a create
+        may send, dropping what the service owns (``@odata(readonly=True)``: the id, the
+        organizer, the attendee responses, the audit stamps) and the ``extra_properties``
+        an export records only to survive a round trip. What is left is exactly what an
+        import may restore; the options then decide how much of it to send. Nothing here
+        spells a Graph field.
+        """
+        options = self.options_class() if options is None else options
+        spelled = self.event.to_json(V4JsonFormat("none").scoped(Event, without=withheld(options)))
+        body: Dict[str, Any] = {
+            name: value
+            for name, value in spelled.items()
+            # The model's own vocabulary, and only what it can actually say: an undeclared
+            # key is provenance an export records for its ledger, and a null/empty value is
+            # the absence of a statement, not a request to clear a field.
+            if name in Event._schema.properties and value not in (None, {}, [])
+        }
+        start, end = body.get("start") or {}, body.get("end") or {}
+        if not start.get("dateTime") or not end.get("dateTime"):
+            raise ValueError("the sidecar has no start/end dateTime: an event cannot be created without a time range")
+        if isinstance(body.get("recurrence"), str):
+            raise ValueError(
+                f"the sidecar records the recurrence as text ({body['recurrence'][:60]!r}): it was written by a"
+                " version of the exporter that serialised Graph's typed object with ``repr``, so the series cannot"
+                " be replayed — re-export the calendar and import that tree"
+            )
 
-    Creating an event with attendees makes Exchange mail every one of them (measured),
-    which is why replaying the list is opt-in; the count is what the run reports so the
-    omission is a number rather than a silence.
-    """
-    if "attendees" not in withheld(options or CalendarImportOptions()):
-        return 0
-    return sum(1 for item in envelope.get("attendees") or [] if (item.get("emailAddress") or {}).get("address"))
+        content = body.get("body")
+        if not (content and content.get("content")):
+            body.pop("body", None)
+        else:
+            # Graph is case-insensitive here (measured); ``HTML``/``Text`` is what an import
+            # has always sent, so the model's ``html`` is re-cased rather than the wire moving
+            # silently.
+            content["contentType"] = "HTML" if str(content.get("contentType")).lower() == "html" else "Text"
+        # ``status`` is the attendee's own reply, which Exchange assigns: an import sends the
+        # people, not the answers. Dropped here until a live create probe says otherwise.
+        for attendee in body.get("attendees", ()):
+            attendee.pop("status", None)
+        if getattr(options, "use_transaction_ids", False):
+            body["transactionId"] = self.transaction_id
+        return body
 
+    def dropped_attendees(self, options: CalendarImportOptions | None = None) -> int:
+        """How many attendee entries the import leaves out, and so does not invite.
 
-def event_dedup_key(envelope: Mapping[str, Any]) -> tuple[str, str | None, str | None]:
-    """The key a target matches an existing event on: subject and start.
+        Creating an event with attendees makes Exchange mail every one of them (measured),
+        which is why replaying the list is opt-in; the count is what the run reports so the
+        omission is a number rather than a silence.
+        """
+        options = self.options_class() if options is None else options
+        if "attendees" not in withheld(options):
+            return 0
+        # Counted off the envelope: an attendee's address is a nested client value, and the
+        # question here is only whether it has one.
+        attendees = self._written(("attendees",)) or ()
+        return sum(1 for attendee in attendees if (attendee.get("emailAddress") or {}).get("address"))
 
-    A created event comes back with ``iCalUId: null`` and a fresh Graph id, so neither
-    of the source's identities survives the import — subject plus wall clock (and the
-    zone it is in) is what is left to recognise a re-run's own work by.
-    """
-    start = DateTimeTimeZone.parse(envelope.get("start"))
-    moment = start.to_json(CANONICAL) if start else {}
-    return (str(envelope.get("subject") or ""), moment.get("dateTime"), moment.get("timeZone"))
+    @property
+    def dedup_key(self) -> Tuple[str, Optional[str], Optional[str]]:
+        """The key a target matches an existing event on: subject and start.
 
+        A created event comes back with ``iCalUId: null`` and a fresh Graph id, so neither
+        of the source's identities survives the import — subject plus wall clock (and the
+        zone it is in) is what is left to recognise a re-run's own work by.
+        """
+        start = self.event.start
+        moment = start.to_json(CANONICAL) if start else {}
+        return (str(self.event.subject or ""), moment.get("dateTime"), moment.get("timeZone"))
 
-def event_transaction_id(envelope: Mapping[str, Any]) -> str:
-    """A deterministic ``transactionId`` for an exported event."""
-    key = event_key(envelope) or str(envelope.get("ics_path") or "")
-    return "mig-" + hashlib.sha1(key.encode("utf-8")).hexdigest()[:32]
+    @property
+    def transaction_id(self) -> str:
+        """A deterministic ``transactionId`` for an exported event: two runs collide, they do not both write."""
+        return "mig-" + hashlib.sha1((self.source_id or self.dest_path).encode("utf-8")).hexdigest()[:32]
 
 
 __all__ = [
     "EVENT_COLUMNS",
     "LEGACY_KEYS",
     "MAX_LINE_OCTETS",
-    "PROVENANCE",
-    "STANDALONE_EVENT_TYPES",
     "CalendarExportOptions",
     "CalendarImportOptions",
-    "event_canonical",
-    "event_create_payload",
-    "event_dedup_key",
-    "event_dest_path",
-    "event_digest",
-    "event_dropped_attendees",
-    "event_envelope",
-    "event_ics",
-    "event_key",
-    "event_kind",
-    "event_transaction_id",
+    "EventRecord",
 ]

@@ -3,7 +3,7 @@
 Three things are asserted here, all of them about *where* an answer lives rather than
 what one particular export happened to write:
 
-* every :class:`IcsProfile` row names a member its generated enum declares — a token for a
+* every :class:`IcsDialect` row names a member its generated enum declares — a token for a
   word the service never sends is a lie, and a renamed member is a row that silently
   stops matching;
 * the tables that are meant to be complete cover their enum, so a value the service gains
@@ -22,11 +22,7 @@ import json
 
 import pytest
 from office365.migration.outlook.calendar_codec import encode, rrule
-from office365.migration.outlook.calendar_models import (
-    CalendarImportOptions,
-    event_canonical,
-    event_digest,
-)
+from office365.migration.outlook.calendar_models import CalendarImportOptions, EventRecord
 from office365.migration.outlook.calendar_profile import ICALENDAR
 from office365.outlook.calendar.attendees.type import AttendeeType
 from office365.outlook.calendar.dayofweek import DayOfWeek
@@ -98,6 +94,12 @@ SIDECAR = {
     "ics_path": "Calendar/2026-03-02_quarterly_review_12345678.ics",
 }
 
+
+def _digest(envelope, options=None) -> str:
+    """The digest of a sidecar envelope, read back the way an import reads it."""
+    return EventRecord.from_json(envelope).digest(options)
+
+
 #: The document :data:`SIDECAR` renders to, byte for byte. Folded lines are written out
 #: with their continuation space, exactly as they land on disk.
 GOLDEN = (
@@ -162,11 +164,11 @@ def test_the_frequency_table_spells_every_pattern_the_service_sends(pattern, exp
 
 def test_the_digest_is_stable_across_the_split():
     """A sidecar's digest is computed by both sides of an import, so it must not drift."""
-    assert event_digest(SIDECAR) == "79a81fa4bdc5daa7465a055d8f0c8a59"
+    assert _digest(SIDECAR) == "79a81fa4bdc5daa7465a055d8f0c8a59"
 
 
 def test_the_comparable_form_is_what_the_sender_stated():
-    form = event_canonical(SIDECAR, CalendarImportOptions(restore_attendees=True))
+    form = EventRecord.from_json(SIDECAR).canonical(CalendarImportOptions(restore_attendees=True))
     assert form["start"] == {"dateTime": "2026-03-02T09:00:00", "timeZone": "Europe/Kiev"}
     assert form["body"] == {"content": "Agenda: Q1"}
     assert form["attendees"] == [
@@ -179,11 +181,11 @@ def test_the_comparable_form_is_what_the_sender_stated():
 def test_a_gated_field_leaves_the_digest_when_the_import_declines_to_restore_it():
     options = CalendarImportOptions(restore_attendees=False)
     someone_else = [{"emailAddress": {"address": "someone@else.test"}, "type": "required"}]
-    assert event_digest(SIDECAR, options) == event_digest({**SIDECAR, "attendees": someone_else}, options)
+    assert _digest(SIDECAR, options) == _digest({**SIDECAR, "attendees": someone_else}, options)
     restoring = CalendarImportOptions(restore_attendees=True)
-    assert event_digest(SIDECAR, restoring) != event_digest({**SIDECAR, "attendees": someone_else}, restoring)
+    assert _digest(SIDECAR, restoring) != _digest({**SIDECAR, "attendees": someone_else}, restoring)
 
 
 def test_the_digest_is_the_md5_of_the_canonical_form():
-    canonical = json.dumps(event_canonical(SIDECAR), sort_keys=True, default=str)
-    assert event_digest(SIDECAR) == hashlib.md5(canonical.encode("utf-8")).hexdigest()
+    canonical = json.dumps(EventRecord.from_json(SIDECAR).canonical(), sort_keys=True, default=str)
+    assert _digest(SIDECAR) == hashlib.md5(canonical.encode("utf-8")).hexdigest()

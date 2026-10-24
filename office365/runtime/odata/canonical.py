@@ -21,6 +21,7 @@ profile (``V4JsonFormat("none")``), never this one.
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import re
@@ -123,3 +124,15 @@ class CanonicalProfile(JsonProfile):
 
 #: The comparable form: ``entity.to_json(CANONICAL)``.
 CANONICAL = CanonicalProfile()
+
+
+def digest(form: Any) -> str:
+    """A digest of a comparable form: the meaning, not the spelling, and not the bytes.
+
+    ``sort_keys`` so two forms that differ only in field order agree; ``default=str`` so a
+    value the walk left un-reduced (a date, an id, a decimal) hashes by its text instead of
+    raising. The hash is a checksum, not a signature: a digest finds its twin only if both
+    sides ran this same rule, so a checksum written by another build is re-verified once
+    rather than trusted.
+    """
+    return hashlib.md5(json.dumps(form, sort_keys=True, default=str).encode("utf-8")).hexdigest()

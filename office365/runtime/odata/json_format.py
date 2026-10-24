@@ -86,29 +86,9 @@ class JsonProfile:
         return self.dialect.control_information
 
     @property
-    def metadata_type(self) -> str:
-        """The type identifier used for metadata in the JSON payload"""
-        return self.dialect.type_marker
-
-    @property
-    def collection(self) -> str:
-        """The JSON property name used for collections/set of entities"""
-        return self.dialect.collection
-
-    @property
-    def collection_next(self) -> str:
-        """str: The JSON property name used for next page links in collections"""
-        return self.dialect.collection_next
-
-    @property
     def collection_delta(self) -> str:
         """str: The JSON property name used for delta/differential updates"""
         return self.dialect.collection_delta
-
-    @property
-    def etag(self) -> str:
-        """str: The JSON property name used for entity tags (concurrency control)"""
-        return self.dialect.etag
 
     def wrap(self, obj: Any, payload: Any) -> Any:
         """Attach this dialect's control information to an outbound payload.

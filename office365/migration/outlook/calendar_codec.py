@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from office365.migration.outlook.calendar_profile import ICALENDAR, IcsProfile, display_name
+from office365.migration.outlook.calendar_profile import ICALENDAR, IcsDialect, display_name
 from office365.runtime.converters.scalars import wall_clock
 
 #: RFC 5545 §3.1 caps a content line at 75 octets; a continuation starts with a space.
@@ -69,12 +69,12 @@ def date_time_line(name: str, value: Mapping[str, Any], is_all_day: bool) -> str
     return f"{name};TZID={zone}:{moment.strftime('%Y%m%dT%H%M%S')}"
 
 
-def day_codes(days: list[Any] | None, profile: IcsProfile = ICALENDAR) -> str:
+def day_codes(days: list[Any] | None, dialect: IcsDialect = ICALENDAR) -> str:
     """``["monday", "wednesday"]`` -> ``MO,WE`` (in the week order Graph returned)."""
-    return ",".join(profile.weekdays[day] for day in days or [] if day in profile.weekdays)
+    return ",".join(dialect.weekdays[day] for day in days or [] if day in dialect.weekdays)
 
 
-def rrule(recurrence: Any, profile: IcsProfile = ICALENDAR) -> str | None:
+def rrule(recurrence: Any, dialect: IcsDialect = ICALENDAR) -> str | None:
     """Render Graph's recurrence object as an RFC 5545 ``RRULE`` value.
 
     Returns ``None`` for a shape this writer does not express (or when there is no
@@ -83,14 +83,14 @@ def rrule(recurrence: Any, profile: IcsProfile = ICALENDAR) -> str | None:
     """
     pattern = (recurrence or {}).get("pattern") or {}
     window = (recurrence or {}).get("range") or {}
-    frequency = profile.frequency.get(str(pattern.get("type") or ""))
+    frequency = dialect.frequency.get(str(pattern.get("type") or ""))
     if not frequency:
         return None
     parts = [f"FREQ={frequency}"]
     interval = pattern.get("interval")
     if isinstance(interval, int) and interval > 1:
         parts.append(f"INTERVAL={interval}")
-    days = day_codes(pattern.get("daysOfWeek"), profile)
+    days = day_codes(pattern.get("daysOfWeek"), dialect)
     if frequency == "WEEKLY" and days:
         parts.append(f"BYDAY={days}")
     elif frequency in ("MONTHLY", "YEARLY"):
@@ -99,7 +99,7 @@ def rrule(recurrence: Any, profile: IcsProfile = ICALENDAR) -> str | None:
         if pattern.get("dayOfMonth"):
             parts.append(f"BYMONTHDAY={pattern['dayOfMonth']}")
         elif days:
-            index = profile.week_index.get(str(pattern.get("index") or ""))
+            index = dialect.week_index.get(str(pattern.get("index") or ""))
             parts.append(f"BYDAY={','.join((index or '') + code for code in days.split(','))}")
     occurrences = window.get("numberOfOccurrences")
     if window.get("type") == "numbered" and isinstance(occurrences, int) and occurrences > 0:
@@ -111,7 +111,7 @@ def rrule(recurrence: Any, profile: IcsProfile = ICALENDAR) -> str | None:
     return ";".join(parts)
 
 
-def attendee_line(attendee: Mapping[str, Any], profile: IcsProfile = ICALENDAR) -> str | None:
+def attendee_line(attendee: Mapping[str, Any], dialect: IcsDialect = ICALENDAR) -> str | None:
     """One ``ATTENDEE`` line, skipping an attendee without an address."""
     person = attendee.get("emailAddress") or {}
     address = person.get("address")
@@ -120,17 +120,17 @@ def attendee_line(attendee: Mapping[str, Any], profile: IcsProfile = ICALENDAR) 
     parameters = []
     if person.get("name"):
         parameters.append(f'CN="{person["name"]}"')
-    role = profile.role.get(str(attendee.get("type") or "required"))
+    role = dialect.role.get(str(attendee.get("type") or "required"))
     if role:
         parameters.append(f"ROLE={role}")
-    status = profile.partstat.get(str((attendee.get("status") or {}).get("response") or "none"))
+    status = dialect.partstat.get(str((attendee.get("status") or {}).get("response") or "none"))
     if status:
         parameters.append(f"PARTSTAT={status}")
     parameters.append("RSVP=TRUE")
     return f"ATTENDEE;{';'.join(parameters)}:mailto:{address}"
 
 
-def encode(envelope: Mapping[str, Any], profile: IcsProfile = ICALENDAR) -> bytes:
+def encode(envelope: Mapping[str, Any], dialect: IcsDialect = ICALENDAR) -> bytes:
     """Render a sidecar record as an ``.ics`` document (CRLF, folded, UTF-8)."""
     is_all_day = bool(envelope.get("isAllDay"))
     lines = [
@@ -156,25 +156,25 @@ def encode(envelope: Mapping[str, Any], profile: IcsProfile = ICALENDAR) -> byte
     body = envelope.get("body") or {}
     content = body.get("content")
     if content:
-        field = profile.body_field.get(str(body.get("contentType") or "").lower(), "DESCRIPTION")
+        field = dialect.body_field.get(str(body.get("contentType") or "").lower(), "DESCRIPTION")
         lines.append(f"{field}:{escape_text(content)}")
     categories = envelope.get("categories") or []
     if categories:
         lines.append(f"CATEGORIES:{','.join(escape_text(item) for item in categories)}")
     show_as = str(envelope.get("showAs") or "")
     mapping = (
-        ("CLASS", profile.classification.get(str(envelope.get("sensitivity") or ""))),
-        ("PRIORITY", profile.priority.get(str(envelope.get("importance") or ""))),
-        ("STATUS", profile.status.get(show_as)),
-        ("TRANSP", profile.transp.get(show_as)),
+        ("CLASS", dialect.classification.get(str(envelope.get("sensitivity") or ""))),
+        ("PRIORITY", dialect.priority.get(str(envelope.get("importance") or ""))),
+        ("STATUS", dialect.status.get(show_as)),
+        ("TRANSP", dialect.transp.get(show_as)),
     )
     lines.extend(f"{name}:{value}" for name, value in mapping if value)
     organizer = (envelope.get("organizer") or {}).get("emailAddress") or {}
     if organizer.get("address"):
         name = f'CN="{organizer["name"]}"' if organizer.get("name") else ""
         lines.append(f"ORGANIZER{';' + name if name else ''}:mailto:{organizer['address']}")
-    lines.extend(line for line in (attendee_line(item, profile) for item in envelope.get("attendees") or []) if line)
-    rule = rrule(envelope.get("recurrence"), profile)
+    lines.extend(line for line in (attendee_line(item, dialect) for item in envelope.get("attendees") or []) if line)
+    rule = rrule(envelope.get("recurrence"), dialect)
     if rule:
         lines.append(f"RRULE:{rule}")
     join_url = (envelope.get("onlineMeeting") or {}).get("joinUrl")
