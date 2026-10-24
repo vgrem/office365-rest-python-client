@@ -113,13 +113,23 @@ def iso_or_none(value: Any) -> Optional[str]:
 
 
 def iso_z(value: Any) -> Optional[str]:
-    """UTC ISO-8601 string with a ``Z`` suffix (second precision); ``None`` for ``None``.
+    """UTC ISO-8601 string with a ``Z`` suffix (second precision); ``None`` when unset.
 
     SharePoint and Microsoft Graph parse date-time strings on the wire as UTC
     with a trailing ``Z``; some endpoints (for example ``ShareLink``) reject a
     numeric offset such as ``+00:00`` as an invalid date. Naive datetimes are
     assumed to be UTC.
+
+    A string is parsed first -- ``ValidateUpdateListItem(dates_in_utc=True)``, the
+    only REST path that writes ``Created``/``Modified``, takes one -- and a string
+    that cannot be read is passed through unchanged, so the service rejection names
+    the value instead of this layer having dropped it.
     """
+    if isinstance(value, str):
+        parsed = parse_datetime(value)
+        if parsed is None:
+            return value or None
+        value = parsed
     if value is None:
         return None
     if value.tzinfo is not None:
@@ -212,3 +222,23 @@ def wall_clock(value: Any) -> Optional[datetime]:
         return None
     parsed = parse_datetime(text)
     return parsed.replace(tzinfo=None) if parsed else None
+
+
+def wall_clock_text(value: Any) -> Optional[str]:
+    """A naive ``YYYY-MM-DD HH:MM:SS`` literal for a date, or for text a service returned.
+
+    This is the form a SharePoint *document* item accepts: it ignores ``datesInUTC``
+    and parses every date string in the web's locale, rejecting a trailing ``Z``
+    ("...must specify a valid date within the range of 1/1/1900 and 12/31/8900.").
+    The literal names a wall clock, so a caller converts the instant to web-local
+    time first (``TimeZone.utc_to_local_time``) rather than this function guessing a
+    zone.
+
+    Text is passed through as the service spelled it: a value that is already local,
+    or an unreadable literal, must not be reshaped here.
+    """
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    return str(value)

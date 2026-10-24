@@ -17,7 +17,7 @@ from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.records import iter_records
-from office365.runtime.converters.scalars import parse_datetime, parse_int, wall_clock
+from office365.runtime.converters.scalars import iso_z, parse_datetime, parse_int, wall_clock, wall_clock_text
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
@@ -48,6 +48,22 @@ class TestScalarConverters(unittest.TestCase):
         self.assertIsNone(wall_clock("2026-10-21"))
         self.assertIsNone(wall_clock(None))
         self.assertIsNone(wall_clock("not a date"))
+
+    def test_iso_z_is_the_utc_spelling_a_list_item_takes(self):
+        """``ValidateUpdateListItem`` with ``datesInUTC`` wants the ``...Z`` form, not an offset."""
+        self.assertEqual(iso_z("2021-01-01T00:00:00+00:00"), "2021-01-01T00:00:00Z")
+        self.assertEqual(iso_z("2021-01-01T00:00:00"), "2021-01-01T00:00:00Z")
+        self.assertEqual(iso_z("2021-01-01T00:00:00.123Z"), "2021-01-01T00:00:00Z")
+        self.assertIsNone(iso_z(None))
+        self.assertIsNone(iso_z(""))
+        # An unreadable literal is passed through, so the service rejection names it.
+        self.assertEqual(iso_z("not a date"), "not a date")
+
+    def test_wall_clock_text_is_the_local_spelling_a_document_item_takes(self):
+        """A document item parses in the web's locale and rejects a trailing ``Z``."""
+        self.assertEqual(wall_clock_text(datetime(2021, 1, 1, 8, 0, 0)), "2021-01-01 08:00:00")
+        self.assertEqual(wall_clock_text("2021-01-01T08:00:00"), "2021-01-01T08:00:00")
+        self.assertIsNone(wall_clock_text(None))
 
 
 def _new_user(properties: dict) -> User:

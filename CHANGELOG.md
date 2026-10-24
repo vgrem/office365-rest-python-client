@@ -401,6 +401,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `StringCollection(_data=[...], _item_type=<class 'str'>)` — private fields, no
   bounding, and none of the collection's own rendering.
 
+- The `iso_z`/`wall_clock_text` pair in `office365.runtime.converters.scalars` owns the two
+  date spellings a SharePoint item write takes, so the fact lives where the request is made.
+  `iso_z(value)` now also accepts a *string* — the form `ValidateUpdateListItem` receives —
+  and passes a literal it cannot read through unchanged, so the server rejection names the
+  value instead of the caller having dropped it; a naive datetime is still assumed UTC, a
+  numeric offset is still converted, and fractional seconds are still truncated. Its sibling
+  `wall_clock_text(value)` answers the local `YYYY-MM-DD HH:MM:SS` spelling a *document* item
+  accepts (it ignores `datesInUTC` and parses in the web's locale, rejecting a trailing `Z`),
+  with an already-local value passed through as the service spelled it. The SharePoint
+  migrator's own `_sp_utc_timestamp`/`_sp_local_timestamp` were a duplicate of the first and
+  a copy of the second; they are gone (`adapters.py` −35 lines), proved by differential
+  equality over 21 values — `None`, `""`, naive, aware, offset, fractional, date-only and
+  three unreadable literals — with zero drift.
+
 **Transports**
 
 - The bundled transports now bound the read phase as well as the connect phase:

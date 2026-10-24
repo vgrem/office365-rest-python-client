@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import io
 from collections.abc import Callable
-from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypeAlias
@@ -28,7 +27,7 @@ from office365.migration.base import (
 from office365.migration.sharepoint.structure import ListStructure, normalize_guid, provision_list_structure
 from office365.migration.sharepoint.transfer import Failure
 from office365.runtime.converters.records import records_from_items
-from office365.runtime.converters.scalars import iso_or_none, parse_datetime, parse_int
+from office365.runtime.converters.scalars import iso_or_none, iso_z, parse_datetime, parse_int, wall_clock_text
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
@@ -426,40 +425,6 @@ def _collection_payload(ids: list) -> dict:
     only the create path goes through this helper.
     """
     return {"results": ids}
-
-
-def _sp_utc_timestamp(value: str | None) -> str | None:
-    """Normalize a timestamp to the UTC form a *list item* honors.
-
-    Live-probed: ``ValidateUpdateListItem`` on a plain list item parses an
-    ISO-8601 value with a trailing ``Z`` as UTC (and ``datesInUTC=True`` keeps it
-    that way), so this form round-trips the exact instant.
-    """
-    if not value:
-        return None
-    parsed = parse_datetime(value)
-    if parsed is None:
-        return value
-    if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
-    return parsed.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _sp_local_timestamp(value: datetime | str | None) -> str | None:
-    """Format a *web-local* value as the date form a document item accepts.
-
-    Live-probed: document-library items ignore ``datesInUTC`` and parse every date
-    string in the web's locale, rejecting a trailing ``Z`` (``...must specify a
-    valid date within the range of 1/1/1900 and 12/31/8900.``). The space-separated
-    ``YYYY-MM-DD HH:MM:SS`` form is accepted and interpreted as local wall-clock,
-    so callers must pass the instant already converted to web-local time (see
-    ``SharePointLibraryTarget._local_timestamp``).
-    """
-    if value is None:
-        return None
-    if isinstance(value, datetime):
-        return value.strftime("%Y-%m-%d %H:%M:%S")
-    return str(value)
 
 
 def _report_rejected_fields(result, warnings: list[str], label: str) -> None:
@@ -2413,8 +2378,8 @@ class SharePointListTarget:
         if target_item is None:
             return
         form_values: dict = {}
-        created = _sp_utc_timestamp(item.created)
-        modified = _sp_utc_timestamp(item.modified)
+        created = iso_z(item.created)
+        modified = iso_z(item.modified)
         if created:
             form_values["Created"] = created
         if modified:
@@ -3057,7 +3022,7 @@ class SharePointLibraryTarget:
         for index, value in enumerate(values):
             if not value:
                 continue
-            utc = _sp_utc_timestamp(value)
+            utc = iso_z(value)
             if utc is None:
                 continue
             if not utc.endswith("Z"):
@@ -3079,7 +3044,7 @@ class SharePointLibraryTarget:
         if pending:
             self._folder.context.execute_query()
             for utc, result in pending.items():
-                local = _sp_local_timestamp(getattr(result, "value", None))
+                local = wall_clock_text(getattr(result, "value", None))
                 if local is not None:
                     self._local_cache[utc] = local
             for index, utc in assignments:
