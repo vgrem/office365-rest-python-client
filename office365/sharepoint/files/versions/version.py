@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import IO, AnyStr, Optional
+from typing import IO, AnyStr, Optional, Tuple
 
 from typing_extensions import Self
 
@@ -72,6 +72,21 @@ class FileVersion(Entity):
     def version_label(self) -> Optional[str]:
         """Gets a value that specifies the implementation specific identifier of the file."""
         return self.properties.get("VersionLabel", None)
+
+    @property
+    def sort_key(self) -> Tuple[int, ...]:
+        """The numeric parts of :attr:`version_label`, for ordering a history oldest-first.
+
+        SharePoint spells a version ``major.minor``, so a label has to be compared as
+        numbers: as text, ``"10.0"`` sorts before ``"9.0"``, which would place a file's
+        newest version in the middle of its history. A label with a part that is not a
+        number (the check-in path never produces one) gets the key ``(0,)``, so it sorts
+        before every numeric label instead of raising.
+        """
+        try:
+            return tuple(int(part) for part in str(self.version_label).split("."))
+        except ValueError:
+            return (0,)
 
     @property
     def is_current_version(self) -> Optional[bool]:

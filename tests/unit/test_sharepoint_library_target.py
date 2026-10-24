@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 
 from office365.migration.base import MigrationItem, Principal
 from office365.migration.sharepoint.adapters import SharePointLibrarySource, SharePointLibraryTarget
+from office365.sharepoint.files.versions.version import FileVersion
 
 
 class _Entry:
@@ -162,6 +163,38 @@ class _SourceFile:
         self.unique_id = None
         self.ui_version_label = None
         self.minor_version = minor_version
+        self.versions = _Versions([])
+
+
+class _Versions:
+    def __init__(self, versions) -> None:
+        self._versions = list(versions)
+
+    def get(self) -> "_Versions":
+        return self
+
+    def execute_query(self) -> list:
+        return self._versions
+
+
+class _Version(FileVersion):
+    """A real ``FileVersion`` — its label and ordering — with the stream kept offline."""
+
+    def __init__(self, label: str, current: bool = False) -> None:
+        super().__init__(_Context())
+        self.set_property("VersionLabel", label)
+        self.set_property("IsCurrentVersion", current)
+
+    def open_binary_stream(self) -> "_Stream":
+        return _Stream(f"bytes of {self.version_label}".encode())
+
+
+class _Stream:
+    def __init__(self, value: bytes) -> None:
+        self.value = value
+
+    def execute_query(self) -> "_Stream":
+        return self
 
 
 class _SourceFolder:
@@ -507,10 +540,10 @@ class _ModerationList:
         return self
 
 
-def _library_source(state: dict | None, moderation: bool = True):
+def _library_source(state: dict | None, moderation: bool = True, files=None):
     """A source over one file, whose list reports the given approval columns."""
     url = "/sites/x/Docs/doc.txt"
-    folder = _SourceFolder("/sites/x/Docs", _Web(), files=[_SourceFile(url)])
+    folder = _SourceFolder("/sites/x/Docs", _Web(), files=files or [_SourceFile(url)])
     properties = {"FileRef": url}
     properties.update(state or {})
     lst = _ModerationList([_ModerationItem(properties)], moderation=moderation)
@@ -533,6 +566,22 @@ def test_library_source_reads_a_draft_files_approval_state():
 
 
 # ── Un-published (minor) versions (the draft hides its published predecessor) ──
+
+
+def test_a_files_history_is_read_oldest_first_by_number_and_without_the_current_version():
+    # Live shape (``File.Versions`` on a 13-version document): every version comes
+    # back, the file's current content included, and a label is ``major.minor`` — so
+    # comparing labels as text puts "1.10" before "1.9".
+    source_file = _SourceFile("/sites/x/Docs/doc.txt")
+    source_file.ui_version_label = "1.11"
+    source_file.versions = _Versions([_Version("1.10"), _Version("1.11", current=True), _Version("1.9")])
+    source, _ = _library_source(None, files=[source_file])
+
+    current, older = source.read_version_history(source.list_items()[0])
+
+    assert current == "1.11"
+    # the current version's bytes are the file's content, which read() already supplies
+    assert older == [("1.9", b"bytes of 1.9"), ("1.10", b"bytes of 1.10")]
 
 
 # ── Folder system metadata (a folder is an item too) ─────────────────────────

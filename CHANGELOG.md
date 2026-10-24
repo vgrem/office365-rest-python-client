@@ -393,6 +393,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (empty, single-permission, both boundaries, full control, random 8/32/40/64-bit) gives
   zero payload drift and zero round-trip drift.
 
+**SharePoint files**
+
+- **`FileVersion` sorts its own history.** A version label is `major.minor` (`"1.9"`,
+  `"1.10"`, `"2.0"`), so the labels have to be compared as numbers: as text, `"1.10"`
+  sorts before `"1.9"`, which puts a file's newest version in the middle of its history.
+  `FileVersion.sort_key` answers `(1, 10)` for `"1.10"` and `(0,)` for a label with a
+  part that is not a number — the label's shape is a service fact, not a caller's. The
+  SharePoint migrator's own string parser (`_version_sort_key`, untested) is gone.
+
 ### Changed
 
 **Runtime**
@@ -641,6 +650,17 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
 
 **Migration (client-side)**
 
+- **A file's current version no longer appears twice in its history.** `File.Versions`
+  returns the file's current version as well (`IsCurrentVersion`), and
+  `SharePointLibrarySource.read_version_history` passed it through as an *older*
+  version — although its own docstring said the current version is excluded because
+  `read()` already supplies it. `PackageBuilder.add_file` then appends the current
+  version last (the Migration API promotes the last `<Versions>` entry), so where the
+  current version is also the newest label — the ordinary case — that label was listed
+  twice in `Manifest.xml`. A live read on a 13-version document shows the shape the
+  code had assumed away: labels `0.1, 0.2, …, 0.9, 0.10, 1.0 (IsCurrentVersion), 1.1,
+  1.2` with `UIVersionLabel` `1.3`. The read now skips `is_current_version`, exactly as
+  `MoveCopyUtil` already did for the same collection.
 - Verification reads each verified record once: the fresh target read behind
   `SharePointListTarget.checksum`, `read_metadata`, `read_authorship` and
   `read_permissions` is memoized for the run, so a verification pass costs one

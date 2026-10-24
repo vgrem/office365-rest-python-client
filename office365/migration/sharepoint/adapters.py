@@ -457,14 +457,6 @@ def _moderation_state(properties: dict) -> dict:
     return state
 
 
-def _version_sort_key(label: str) -> tuple[int, ...]:
-    """Sort key for a version label like ``"2.0"`` (numeric parts, non-numeric last)."""
-    try:
-        return tuple(int(part) for part in str(label).split("."))
-    except ValueError:
-        return (0,)
-
-
 #: Library-relative paths SharePoint owns and recreates on the target (its forms
 #: folder and the folder rendering file). Migrating them collides server-side and
 #: clobbers system pages client-side, so the source adapter skips them.
@@ -2715,13 +2707,10 @@ class SharePointLibrarySource:
         if file.ui_version_label is None:
             file.ensure_property("UIVersionLabel").execute_query()
         older: list[tuple[str, bytes]] = []
-        for version in file.versions.get().execute_query():
+        for version in sorted(file.versions.get().execute_query(), key=lambda v: v.sort_key):
             label = version.version_label
-            if not label:
-                continue
-            data = version.open_binary_stream().execute_query().value
-            older.append((label, data or b""))
-        older.sort(key=lambda row: _version_sort_key(row[0]))
+            if label and not version.is_current_version:
+                older.append((label, version.open_binary_stream().execute_query().value or b""))
         return file.ui_version_label, older
 
     @property
