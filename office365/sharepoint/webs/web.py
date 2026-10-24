@@ -52,7 +52,6 @@ from office365.sharepoint.files.file import File
 from office365.sharepoint.flows.synchronization_result import FlowSynchronizationResult
 from office365.sharepoint.folders.collection import FolderCollection
 from office365.sharepoint.folders.folder import Folder
-from office365.sharepoint.internal.paths.web import WebPath
 from office365.sharepoint.largeoperation.operation import SPLargeOperation
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.collection import ListCollection
@@ -176,7 +175,9 @@ class Web(SecurableObject):
     def __init__(self, context: ClientContext, resource_path: Optional[ResourcePath] = None):
         """ """
         if resource_path is None:
-            resource_path = WebPath("Web")
+            # A web's OData segment is ``Web`` wherever it was reached from; a subweb
+            # addresses itself by ``Url`` (see ``set_property``), not by its parent path.
+            resource_path = ResourcePath("Web")
         super().__init__(context, resource_path)
         self._web_url = None
 

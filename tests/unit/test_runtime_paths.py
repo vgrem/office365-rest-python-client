@@ -175,3 +175,23 @@ def test_get_by_app_id_delegates_to_alternate_key():
     principal = client.service_principals.get_by_app_id(app_id)
 
     assert str(principal.resource_path) == f"/servicePrincipals(appId='{app_id}')"
+
+
+def test_a_web_addresses_itself_at_web_not_at_the_collection_it_came_from():
+    """A web's OData segment is ``Web``; a subweb's address is its own ``Url``.
+
+    Both halves are one fact: a ``Web`` reached through ``web.webs`` is still the same
+    endpoint, and once the service reports ``Url`` the object addresses that site rather
+    than the site it was listed from. A ``$select`` that omits ``Url`` leaves the first
+    half in place, which is why it must not be a URL derived from the parent collection.
+    """
+    from office365.sharepoint.webs.web import Web
+
+    ctx = ClientContext("https://contoso.sharepoint.com/sites/project")
+
+    assert str(Web(ctx).resource_path) == "/Web"
+    assert str(ctx.web.webs.create_typed_object().resource_path) == "/Web"
+
+    web = Web(ctx)
+    web.set_property("Url", "https://contoso.sharepoint.com/sites/other")
+    assert web.resource_url == "https://contoso.sharepoint.com/sites/other/_api/Web"
