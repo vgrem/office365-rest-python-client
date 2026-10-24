@@ -159,7 +159,7 @@ class CalendarSource(DataSource):
             # An event has no byte size until its ``.ics`` is rendered; ``read()`` fills it.
             size_bytes=0,
             item_type="event",
-            modified=iso_or_none(event.last_modified_datetime),
+            modified=iso_or_none(event.last_modified_date_time),
             created=iso_or_none(event.created_datetime),
             source_id=event_key(envelope),
             metadata=envelope,

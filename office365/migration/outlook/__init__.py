@@ -48,9 +48,11 @@ from office365.migration.outlook.contacts_models import (
 )
 from office365.migration.outlook.eml_import import EmlTreeSource, MailboxTarget
 from office365.migration.outlook.models import (
+    MAIL,
     MailExportOptions,
     MailImportOptions,
-    mail_dest_path,
+    MailProfile,
+    dest_path,
     mail_envelope,
     mail_slug,
     mime_digest,
@@ -61,6 +63,7 @@ from office365.migration.outlook.scanner import MailboxFolderRecord, MailboxFold
 __all__ = [
     "CONTACT_COLUMNS",
     "EVENT_COLUMNS",
+    "MAIL",
     "MANIFEST_NAME",
     "OUTLOOK_SCANS",
     "CalendarExportOptions",
@@ -80,6 +83,7 @@ __all__ = [
     "MailFolderData",
     "MailFolderSource",
     "MailImportOptions",
+    "MailProfile",
     "MailboxAssessor",
     "MailboxFolderRecord",
     "MailboxFolderScan",
@@ -87,6 +91,7 @@ __all__ = [
     "OutlookOptions",
     "VcfExportTarget",
     "VcfTreeSource",
+    "dest_path",
     "event_create_payload",
     "event_dedup_key",
     "event_dest_path",
@@ -96,7 +101,6 @@ __all__ = [
     "event_ics",
     "event_key",
     "event_transaction_id",
-    "mail_dest_path",
     "mail_envelope",
     "mail_slug",
     "mime_digest",

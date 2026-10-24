@@ -6,7 +6,9 @@ folder, a folder tree of `childFolders`, and RFC 822 bytes on `/$value`.
 
 from __future__ import annotations
 
+import ast
 import hashlib
+import importlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,7 +22,8 @@ from office365.migration.outlook import (
     MailFolderSource,
     mail_slug,
 )
-from office365.migration.outlook.models import MAX_SLUG_LENGTH
+from office365.migration.outlook.models import MAX_SLUG_LENGTH, MailProfile
+from office365.outlook.mail.messages.message import Message
 from tests._scripted_transport import MethodRoutingTransport
 
 _INBOX = [
@@ -184,6 +187,48 @@ def test_source_reads_rfc822_bytes_and_checksums_them():
 
     assert payload == _MIME["m1"]
     assert source.checksum(items[0]) == hashlib.md5(_MIME["m1"]).hexdigest()  # noqa: S324 - the toolkit's checksum
+
+
+def _message_attributes_read_by(module: str, function: str) -> set[str]:
+    """Attribute names one function reads off its ``message`` argument.
+
+    Read off the source rather than re-listed, because a re-listed set is a third
+    spelling of the same fact — and the first one to rot is the copy nobody runs.
+    ``get_property`` is a method, not a column: ``extra_properties`` names are
+    caller-supplied and cannot be projected from here.
+    """
+    source = Path(importlib.import_module(module).__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    found = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef) and node.name == function)
+    scanned = {
+        node.attr
+        for node in ast.walk(found)
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == "message"
+    }
+    return scanned - {"get_property"}
+
+
+def test_the_projection_selects_exactly_what_the_export_reads():
+    """A ``$select`` that omits a column is indistinguishable from a message that has
+    no value for it — the class of bug behind ``size`` being unselectable and behind
+    the calendar's ``iCalUid`` spelling trap. So the two halves are pinned together:
+    every attribute the export reads is a selected column, and every selected column
+    is a declared Graph property.
+
+    Adding a sidecar key without its column now fails here rather than exporting
+    ``None`` for every message in a real mailbox.
+    """
+    profile = MailProfile()
+    read = (
+        _message_attributes_read_by("office365.migration.outlook.models", "mail_envelope")
+        | _message_attributes_read_by("office365.migration.outlook.adapters", "_item")
+        | set(profile.identity)
+        | set(profile.stamp)
+        | {profile.label}
+    )
+
+    assert {Message.wire_name(attribute) for attribute in read} <= set(profile.columns)
+    assert set(profile.columns) <= set(Message.select_all())
 
 
 def test_dest_paths_are_safe_and_bounded():

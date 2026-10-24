@@ -30,11 +30,10 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Any, Mapping
 
 from office365.migration.outlook.calendar_codec import MAX_LINE_OCTETS, encode
-from office365.migration.outlook.models import mail_slug
+from office365.migration.outlook.models import dest_path
 from office365.migration.outlook.offline import offline_context
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
@@ -133,24 +132,16 @@ def event_kind(event: Event) -> str | None:
     return serialize_value(event.type_)
 
 
-def _dest_path(stamp: datetime | None, subject: Any, key: str, calendar_path: str) -> str:
-    """``<calendar>/<date>_<slug>_<id digest>.ics``, from the three things that decide it.
-
-    Deterministic for a given event, so a re-run finds the file it wrote. The date is
-    the event's start date — a calendar sorted by filename reads chronologically — and
-    the digest of the key keeps same-titled events on the same day apart.
-    """
-    date = stamp.strftime("%Y-%m-%d") if stamp else ""
-    digest = hashlib.sha1(key.encode("utf-8")).hexdigest()[:8]
-    stem = "_".join(part for part in (date, mail_slug(subject), digest) if part)
-    name = f"{stem}.ics"
-    return f"{calendar_path}/{name}" if calendar_path else name
-
-
 def event_dest_path(event: Event, calendar_path: str) -> str:
-    """The export path for a loaded event — see :func:`_dest_path` for the shape."""
+    """The export path for a loaded event: ``<calendar>/<date>_<slug>_<id digest>.ics``.
+
+    The date is the event's start date — a calendar sorted by filename reads
+    chronologically. The shape itself is :func:`office365.migration.outlook.models.dest_path`,
+    shared with the mailbox and contacts families.
+    """
     started = event.start.as_datetime() if event.start else None
-    return _dest_path(started, event.subject, str(event.id or event.ical_uid or ""), calendar_path)
+    stamp = started.strftime("%Y-%m-%d") if started else ""
+    return dest_path(str(event.id or event.ical_uid or ""), calendar_path, ".ics", stamp, event.subject)
 
 
 def event_envelope(

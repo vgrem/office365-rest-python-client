@@ -153,7 +153,7 @@ class ContactSource(DataSource):
             # A contact has no byte size until its ``.vcf`` is rendered; ``read()`` fills it.
             size_bytes=0,
             item_type="contact",
-            modified=iso_or_none(contact.last_modified_datetime),
+            modified=iso_or_none(contact.last_modified_date_time),
             created=iso_or_none(contact.created_datetime),
             source_id=record.id,
             metadata=record.to_json(),

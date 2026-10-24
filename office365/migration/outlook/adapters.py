@@ -41,9 +41,8 @@ from office365.migration.adapters import DataSource, DataTarget, MigrationProgre
 from office365.migration.base import MigrationItem
 from office365.migration.outlook.fidelity import MAIL_EXPORT_DIMENSIONS
 from office365.migration.outlook.models import (
-    MAIL_COLUMNS,
+    MAIL,
     MailExportOptions,
-    mail_dest_path,
     mail_envelope,
     mail_slug,
 )
@@ -91,7 +90,7 @@ class MailFolderSource(DataSource):
     def _collect(
         self, folder: MailFolder, path: str, display: str, items: list[MigrationItem], progress: MigrationProgress
     ) -> None:
-        for message in folder.messages.select(MAIL_COLUMNS).get_all().execute_query():
+        for message in folder.messages.select(list(MAIL.columns)).get_all().execute_query():
             is_draft = bool(message.is_draft)
             if is_draft and not self._options.include_drafts:
                 continue
@@ -108,8 +107,8 @@ class MailFolderSource(DataSource):
 
     def _item(self, message: Message, path: str, display: str) -> MigrationItem:
         received = message.received_date_time
-        modified = message.last_modified_datetime or received
-        dest = mail_dest_path(message, path)
+        modified = message.last_modified_date_time or received
+        dest = MAIL.dest_path(message, path)
         return MigrationItem(
             source_path=dest,
             dest_path=dest,

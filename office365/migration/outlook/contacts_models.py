@@ -43,6 +43,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Mapping, Tuple
 
+from office365.migration.outlook.models import dest_path
 from office365.migration.outlook.offline import offline_context
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.contacts.contact import Contact
@@ -185,14 +186,10 @@ class ContactRecord:
 
         The name is the display name rather than a date: a contact has no meaningful
         instant to sort by (the created stamp is Exchange's), and a human browsing the
-        tree expects to find people by name.
+        tree expects to find people by name. The shape itself is
+        :func:`office365.migration.outlook.models.dest_path`, shared with the other families.
         """
-        from office365.migration.outlook.models import mail_slug  # local: avoid a cycle at import time
-
-        digest = hashlib.sha1(self.id.encode("utf-8")).hexdigest()[:8]
-        stem = "_".join(part for part in (mail_slug(self._json.get("displayName")), digest) if part)
-        name = f"{stem or digest}.vcf"
-        return f"{self.folder_path}/{name}" if self.folder_path else name
+        return dest_path(self.id, self.folder_path, ".vcf", label=self._json.get("displayName"))
 
     @property
     def dedup_key(self) -> Tuple[str, str]:

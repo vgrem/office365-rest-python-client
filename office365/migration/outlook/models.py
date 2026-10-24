@@ -1,9 +1,10 @@
-"""Mail export model — the options, the Graph projection, and the per-message record.
+"""Mail export model — the options, the profile, and the per-message record.
 
 An exported message is two files: the RFC 822 bytes (``.eml``) and a JSON sidecar
 carrying what MIME does not (Graph ids, categories, read state, conversation).
-This module owns the sidecar's shape and the naming convention that makes a
-re-run land on the same paths.
+This module owns the sidecar's shape and :func:`dest_path` — the naming convention
+*every* Outlook family uses, so a message, an event and a contact cannot each spell
+it their own way. The other families import the rule from here.
 """
 
 from __future__ import annotations
@@ -22,30 +23,6 @@ from typing import Any, cast
 from office365.outlook.mail.messages.message import Message
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.converters.scalars import iso_or_none
-
-#: Graph message properties an export reads (one projection, so two exports of the
-#: same mailbox are comparable; ``from``/``*Recipients`` are nested but selectable).
-#: ``size`` is *not* here: the Exchange-backed endpoint rejects it as a ``$select``
-#: column (``Could not find a property named 'size' on type Microsoft.OutlookServices.Message``),
-#: so a message's byte count is only known once its MIME is fetched.
-MAIL_COLUMNS = [
-    "id",
-    "internetMessageId",
-    "subject",
-    "receivedDateTime",
-    "sentDateTime",
-    "lastModifiedDateTime",
-    "isRead",
-    "isDraft",
-    "importance",
-    "categories",
-    "hasAttachments",
-    "conversationId",
-    "parentFolderId",
-    "from",
-    "toRecipients",
-    "ccRecipients",
-]
 
 #: Filename stem cap. Well under every platform's 255-byte name limit, and long
 #: enough to keep a subject recognizable next to its date and id digest.
@@ -99,11 +76,13 @@ class MailImportOptions:
 
 
 def mail_slug(subject: str | None) -> str:
-    """A filesystem-safe, ASCII, length-capped rendering of a subject.
+    """A filesystem-safe, ASCII, length-capped rendering of a subject or a name.
 
-    Accented characters are folded to their ASCII base (``über`` -> ``uber``)
-    rather than dropped, so two subjects differing only by accents do not collide;
-    separators and punctuation collapse into single dashes.
+    Used for a message subject, an event subject, a contact's display name and a
+    folder name alike — hence :data:`MAX_SLUG_LENGTH` is a filesystem fact, not a
+    service limit. Accented characters are folded to their ASCII base (``über`` ->
+    ``uber``) rather than dropped, so two subjects differing only by accents do not
+    collide; separators and punctuation collapse into single dashes.
     """
     if not subject:
         return ""
@@ -113,33 +92,92 @@ def mail_slug(subject: str | None) -> str:
     return slug[:MAX_SLUG_LENGTH].strip("-._")
 
 
-def message_key(message: Message) -> str:
-    """The identity an export is keyed by: ``internetMessageId``, else the Graph id.
+def dest_path(identity: str, folder_path: str, extension: str, stamp: str = "", label: str | None = None) -> str:
+    """The one file-naming rule every Outlook export uses.
 
-    ``internetMessageId`` is the header-preserved identity, stable across
-    mailboxes; a draft may not have one until it is sent, and its Graph id changes
-    if the draft is moved, which a re-run reports as a second copy rather than
-    silently overwriting.
+    ``<folder>/<stamp>_<label slug>_<identity digest><extension>``, absent parts left
+    out. Deterministic, so a re-run finds the file it wrote; human-readable, so a
+    calendar sorted by name reads chronologically; and the digest of the *identity*
+    (not the label) keeps same-titled items on the same day apart — newsletters,
+    ``RE:`` threads, ``(no subject)``, two meetings called ``Sync``.
+
+    ``stamp`` is a date string (``""`` when the family has no date to sort by) and
+    ``label`` is anything a human would recognise — a subject or a display name.
     """
-    return message.internet_message_id or message.id or ""
+    digest = hashlib.sha1(identity.encode("utf-8")).hexdigest()[:8]
+    stem = "_".join(part for part in (stamp, mail_slug(label), digest) if part)
+    return f"{folder_path}/{stem}{extension}" if folder_path else f"{stem}{extension}"
 
 
-def mail_dest_path(message: Message, folder_path: str) -> str:
-    """The export path for a message: ``<folder>/<date>_<slug>_<id digest>.eml``.
+@dataclass(frozen=True)
+class MailProfile:
+    """What a mailbox export reads about a message, and what it calls the file.
 
-    Deterministic for a given message, so a re-run finds the file it wrote. The
-    digest of :func:`message_key` keeps messages that share a subject and a
-    timestamp — newsletters, ``RE:`` threads, ``(no subject)`` — apart.
+    A frozen table, deliberately *not* a ``JsonProfile``: a JSON profile spells
+    **values** (which fields, which dialect, which control information) and is applied
+    recursively to every nested value — a ``Recipient`` and an ``ItemBody`` included —
+    while this describes an **artefact**: the file's name, and the columns that must be
+    read to earn it. Subclassing ``JsonProfile`` would make ``message.to_json(MAIL)`` a
+    call that looks right and silently answers the model's own JSON, with no path and
+    no migration options applied; there is no error to catch it with.
+
+    What *is* a serialization concern — the options — is already a profile, applied the
+    way every other payload is: ``message.to_json(V4JsonFormat("none").scoped(Message,
+    without=withheld(options)))``.
     """
-    received = message.received_date_time or message.sent_date_time
-    stamp = ""
-    if isinstance(received, datetime) and received != datetime.min:
-        stamp = received.strftime("%Y-%m-%d")
-    digest = hashlib.sha1(message_key(message).encode("utf-8")).hexdigest()[:8]
-    stem = "_".join(part for part in (stamp, mail_slug(message.subject), digest) if part)
-    name = f"{stem}.eml"
-    return f"{folder_path}/{name}" if folder_path else name
 
+    #: The artefact's extension: a mailbox export writes RFC 822.
+    extension: str = ".eml"
+    #: Model attributes naming a message, most stable first. ``internetMessageId`` is
+    #: the header-preserved identity, stable across mailboxes; a draft has none until
+    #: it is sent, and a moved draft gets a new Graph id — which a re-run reports as a
+    #: second copy rather than silently overwriting.
+    identity: tuple[str, ...] = ("internet_message_id", "id")
+    #: Model attributes holding the instant the name sorts by, first set wins.
+    #: ``received`` is what a reader means by "when it arrived"; a draft has none until
+    #: it is sent, hence the fallback.
+    stamp: tuple[str, ...] = ("received_date_time", "sent_date_time")
+    #: Model attribute holding the human part of the name.
+    label: str = "subject"
+    #: Graph message properties an export reads — one projection, so two exports of the
+    #: same mailbox are comparable. ``from``/``*Recipients`` are nested but selectable.
+    #: ``size`` is deliberately absent: the Exchange-backed endpoint rejects it as a
+    #: ``$select`` column (``Could not find a property named 'size' on type
+    #: Microsoft.OutlookServices.Message``), so a message's byte count is only known
+    #: once its MIME is fetched.
+    columns: tuple[str, ...] = (
+        "id",
+        "internetMessageId",
+        "subject",
+        "receivedDateTime",
+        "sentDateTime",
+        "lastModifiedDateTime",
+        "isRead",
+        "isDraft",
+        "importance",
+        "categories",
+        "hasAttachments",
+        "conversationId",
+        "parentFolderId",
+        "from",
+        "toRecipients",
+        "ccRecipients",
+    )
+
+    def key(self, message: Message) -> str:
+        """The identity an export is keyed by: the first :attr:`identity` attribute set."""
+        return str(next((value for value in (getattr(message, name, None) for name in self.identity) if value), ""))
+
+    def dest_path(self, message: Message, folder_path: str) -> str:
+        """``<folder>/<date>_<slug>_<identity digest>.eml`` for a loaded message."""
+        received = next((value for value in (getattr(message, name, None) for name in self.stamp) if value), None)
+        stamp = received.strftime("%Y-%m-%d") if isinstance(received, datetime) and received != datetime.min else ""
+        label = getattr(message, self.label, None)
+        return dest_path(self.key(message), folder_path, self.extension, stamp, label)
+
+
+#: The mailbox family's one profile.
+MAIL = MailProfile()
 
 #: The prefix Exchange prepends to an imported HTML body. It restates the charset
 #: the MIME headers already carry, so it is serialization, not content.
@@ -230,6 +268,7 @@ def mail_envelope(
     folder_path: str,
     extra_properties: list[str] | None = None,
     display_path: str | None = None,
+    profile: MailProfile = MAIL,
 ) -> dict[str, Any]:
     """The sidecar record for a message: what the MIME bytes do not carry.
 
@@ -245,7 +284,7 @@ def mail_envelope(
         "folder_path": folder_path,
         "folder_display_path": display_path or folder_path,
         "subject": message.subject,
-        "sender": _address(message.from_recipient),
+        "sender": _address(message.from_),
         "to": [address for address in (_address(r) for r in message.to_recipients) if address],
         "cc": [address for address in (_address(r) for r in message.cc_recipients) if address],
         "received": iso_or_none(message.received_date_time),
@@ -257,7 +296,7 @@ def mail_envelope(
         "has_attachments": message.has_attachments,
         "conversation_id": message.conversation_id,
         "parent_folder_id": message.parent_folder_id,
-        "eml_path": mail_dest_path(message, folder_path),
+        "eml_path": profile.dest_path(message, folder_path),
     }
     for name in extra_properties or []:
         envelope[name] = message.get_property(name)
@@ -265,14 +304,14 @@ def mail_envelope(
 
 
 __all__ = [
-    "MAIL_COLUMNS",
+    "MAIL",
     "MAX_IMPORT_MIME_BYTES",
     "MAX_SLUG_LENGTH",
     "MailExportOptions",
     "MailImportOptions",
-    "mail_dest_path",
+    "MailProfile",
+    "dest_path",
     "mail_envelope",
     "mail_slug",
-    "message_key",
     "mime_digest",
 ]
