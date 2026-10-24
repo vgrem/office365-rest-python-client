@@ -9,11 +9,16 @@ dispatches to the registered scans. Reuses the shared :class:`AssessmentReport`
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
+from office365.directory.users.user import User
+from office365.migration.adapters import MigrationProgress
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.runner import ScanRunner
 from office365.migration.outlook.registry import outlook_scan_pairs
 from office365.migration.outlook.scanner import MailFolderData, OutlookOptions
+from office365.outlook.mail.folders.folder import MailFolder
 from office365.runtime.converters.scalars import parse_int
 
 # Graph mailFolder properties the walker selects
@@ -28,20 +33,20 @@ class MailboxAssessor:
         >>> print(report.scan_report(MailboxFolderScan).to_csv())
     """
 
-    def __init__(self, user, options: OutlookOptions | None = None) -> None:
+    def __init__(self, user: User, options: OutlookOptions | None = None) -> None:
         self._user = user
         self._options = options or OutlookOptions()
         self.folder_count = 0
         self.message_count = 0
 
-    def assess(self, progress=None) -> AssessmentReport:
+    def assess(self, progress: MigrationProgress = None) -> AssessmentReport:
         """Scan the user's mail-folder tree (eager, Graph reads only)."""
         runner = ScanRunner(outlook_scan_pairs(self._options))
         report = runner.report
 
-        def _walk(folders, parent_path: str) -> None:
+        def _walk(folders: Iterable[MailFolder], parent_path: str) -> None:
             for folder in folders:
-                name = folder.display_name or folder.id
+                name = str(folder.display_name or folder.id)
                 path = f"{parent_path}/{name}" if parent_path else name
                 folder_data = MailFolderData(
                     path=path,

@@ -55,7 +55,7 @@ import hashlib
 import json
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from office365.migration.adapters import DataSource, DataTarget, MigrationProgress
 from office365.migration.base import MigrationItem
@@ -71,6 +71,7 @@ from office365.migration.outlook.fidelity import CONTACTS_EXPORT_DIMENSIONS, CON
 from office365.migration.outlook.models import mail_slug
 from office365.outlook.contacts.contact import Contact
 from office365.outlook.contacts.folders.collection import ContactFolderCollection
+from office365.outlook.contacts.folders.folder import ContactFolder
 from office365.runtime.converters.scalars import iso_or_none
 from office365.runtime.operations import emit_progress
 from office365.runtime.paths.resource_path import ResourcePath
@@ -87,7 +88,7 @@ def _md5(data: bytes) -> str:
     return hashlib.md5(data).hexdigest()
 
 
-def _ensure_child(folder, name: str):
+def _ensure_child(folder: ContactFolder, name: str) -> ContactFolder:
     """An idempotent child folder under ``folder``.
 
     ``ContactFolder.child_folders`` is the generated plain ``EntityCollection``, which
@@ -110,10 +111,10 @@ class ContactSource(DataSource):
     #: What a contact export preserves; see ``outlook.fidelity``.
     fidelity_dimensions = CONTACTS_EXPORT_DIMENSIONS
 
-    def __init__(self, folder, options: ContactExportOptions | None = None) -> None:
+    def __init__(self, folder: ContactFolder, options: ContactExportOptions | None = None) -> None:
         self._folder = folder
         self._options = options or ContactExportOptions()
-        self._contacts: dict[str, Any] = {}  # dest path -> contact handle
+        self._contacts: dict[str, Contact] = {}  # dest path -> contact handle
         self._enumerated = False
 
     def label(self) -> str:
@@ -128,7 +129,9 @@ class ContactSource(DataSource):
         self._enumerated = True
         return items
 
-    def _collect(self, folder, path: str, display: str, items: list[MigrationItem], progress) -> None:
+    def _collect(
+        self, folder: ContactFolder, path: str, display: str, items: list[MigrationItem], progress: MigrationProgress
+    ) -> None:
         for contact in folder.contacts.select(CONTACT_COLUMNS).get_all().execute_query():
             item = self._item(contact, path, display)
             self._contacts[item.dest_path] = contact
@@ -141,7 +144,7 @@ class ContactSource(DataSource):
             child_display = getattr(child, "display_name", None) or name
             self._collect(child, f"{path}/{name}", f"{display}/{child_display}", items, progress)
 
-    def _item(self, contact, path: str, display: str) -> MigrationItem:
+    def _item(self, contact: Contact, path: str, display: str) -> MigrationItem:
         record = ContactRecord.of(contact, path, extra_properties=self._options.extra_properties, display_path=display)
         return MigrationItem(
             source_path=record.dest_path,
@@ -155,7 +158,7 @@ class ContactSource(DataSource):
             metadata=record.to_json(),
         )
 
-    def _handle(self, item: MigrationItem):
+    def _handle(self, item: MigrationItem) -> Contact:
         """The contact for an item, enumerating once if the plan came from disk."""
         contact = self._contacts.get(item.dest_path)
         if contact is None and not self._enumerated:
@@ -272,19 +275,19 @@ class ContactTarget(DataTarget):
 
     fidelity_dimensions = CONTACTS_IMPORT_DIMENSIONS
 
-    def __init__(self, folder, options: ContactImportOptions | None = None) -> None:
+    def __init__(self, folder: ContactFolder, options: ContactImportOptions | None = None) -> None:
         self._root = folder
         self._options = options or ContactImportOptions()
-        self._folders: dict[str, Any] = {}  # source directory path -> Graph folder
-        self._indexed: dict[str, dict[tuple[str, str], list[Any]]] = {}  # folder id -> dedupe index
+        self._folders: dict[str, ContactFolder] = {}  # source directory path -> Graph folder
+        self._indexed: dict[str, dict[tuple[str, str], list[Contact]]] = {}  # folder id -> dedupe index
         self._claimed: dict[tuple[str, str], int] = {}
-        self._present: dict[str, Any] = {}  # dest path -> created/found contact
+        self._present: dict[str, Contact] = {}  # dest path -> created/found contact
         self._categories_dropped = 0
         #: Warnings a caller collects (the resolver convention).
         self.warnings: list[str] = []
 
     @property
-    def root(self):
+    def root(self) -> ContactFolder:
         return self._root
 
     def label(self) -> str:
@@ -311,7 +314,7 @@ class ContactTarget(DataTarget):
             names = segments
         return directory, names
 
-    def _folder(self, item: MigrationItem):
+    def _folder(self, item: MigrationItem) -> tuple[str, ContactFolder]:
         directory, names = self._names(item)
         folder = self._folders.get(directory)
         if folder is None:
@@ -382,7 +385,7 @@ class ContactTarget(DataTarget):
     def checksum(self, item: MigrationItem) -> str:
         """Fingerprint of the contact as the target folder returns it."""
         contact = self._present.get(item.dest_path)
-        if contact is None:
+        if contact is None or not contact.id:
             return ""
         _, folder = self._folder(item)
         # Read a fresh object through the folder the contact lives in: re-loading the
@@ -401,14 +404,14 @@ class ContactTarget(DataTarget):
 
     # -- helpers ---------------------------------------------------------------
 
-    def _folder_index(self, folder) -> dict[tuple[str, str], list[Any]]:
+    def _folder_index(self, folder: ContactFolder) -> dict[tuple[str, str], list[Contact]]:
         """The folder's contacts, grouped by the key an import recognises."""
         directory = getattr(folder, "id", str(folder))
         cached = self._indexed.get(directory)
         if cached is None:
-            index: dict[tuple[str, str], list[Any]] = {}
+            index: dict[tuple[str, str], list[Contact]] = {}
             for contact in folder.contacts.select(_EXISTING_COLUMNS).get_all().execute_query():
-                key = ContactRecord.from_json(contact.to_json()).dedup_key
+                key = ContactRecord.from_json(cast("dict[str, Any]", contact.to_json())).dedup_key
                 index.setdefault(key, []).append(contact)
             self._indexed[directory] = index
             cached = index

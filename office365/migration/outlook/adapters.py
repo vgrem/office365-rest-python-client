@@ -47,6 +47,8 @@ from office365.migration.outlook.models import (
     mail_envelope,
     mail_slug,
 )
+from office365.outlook.mail.folders.folder import MailFolder
+from office365.outlook.mail.messages.message import Message
 from office365.runtime.converters.scalars import iso_or_none, parse_datetime
 from office365.runtime.operations import emit_progress
 
@@ -68,10 +70,10 @@ class MailFolderSource(DataSource):
     #: A mailbox has none of the SharePoint dimensions; see ``outlook.fidelity``.
     fidelity_dimensions = MAIL_EXPORT_DIMENSIONS
 
-    def __init__(self, folder, options: MailExportOptions | None = None) -> None:
+    def __init__(self, folder: MailFolder, options: MailExportOptions | None = None) -> None:
         self._folder = folder
         self._options = options or MailExportOptions()
-        self._messages: dict[str, Any] = {}  # dest path -> message handle
+        self._messages: dict[str, Message] = {}  # dest path -> message handle
         self._enumerated = False
 
     def label(self) -> str:
@@ -86,7 +88,9 @@ class MailFolderSource(DataSource):
         self._enumerated = True
         return items
 
-    def _collect(self, folder, path: str, display: str, items: list[MigrationItem], progress) -> None:
+    def _collect(
+        self, folder: MailFolder, path: str, display: str, items: list[MigrationItem], progress: MigrationProgress
+    ) -> None:
         for message in folder.messages.select(MAIL_COLUMNS).get_all().execute_query():
             is_draft = bool(message.is_draft)
             if is_draft and not self._options.include_drafts:
@@ -102,7 +106,7 @@ class MailFolderSource(DataSource):
             child_display = getattr(child, "display_name", None) or name
             self._collect(child, f"{path}/{name}", f"{display}/{child_display}", items, progress)
 
-    def _item(self, message, path: str, display: str) -> MigrationItem:
+    def _item(self, message: Message, path: str, display: str) -> MigrationItem:
         received = message.received_date_time
         modified = message.last_modified_datetime or received
         dest = mail_dest_path(message, path)
@@ -119,7 +123,7 @@ class MailFolderSource(DataSource):
             metadata=mail_envelope(message, path, self._options.extra_properties, display),
         )
 
-    def _handle(self, item: MigrationItem):
+    def _handle(self, item: MigrationItem) -> Message:
         """The message for an item, enumerating once if the plan came from disk."""
         message = self._messages.get(item.dest_path)
         if message is None and not self._enumerated:
@@ -216,7 +220,7 @@ class SidecarTreeTarget(DataTarget):
         sidecar = self._sidecar(item)
         return json.loads(sidecar.read_text(encoding="utf-8")) if sidecar.exists() else None
 
-    def commit(self, options=None) -> None:
+    def commit(self, options: Any = None) -> None:
         """Write ``manifest.jsonl`` — read back from the sidecars, so a resumed run's index is complete."""
         if not self._write_manifest:
             return

@@ -62,7 +62,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
 
@@ -86,10 +86,12 @@ from office365.migration.outlook.calendar_models import (
 from office365.migration.outlook.eml_import import SIDECAR_SUFFIX
 from office365.migration.outlook.fidelity import CALENDAR_EXPORT_DIMENSIONS, CALENDAR_IMPORT_DIMENSIONS
 from office365.migration.outlook.models import mail_slug
+from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.calendar.events.event import Event
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.converters.scalars import iso_or_none
 from office365.runtime.http.prefer import prefer_outlook_timezone
+from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.operations import emit_progress
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -117,10 +119,10 @@ class CalendarSource(DataSource):
     #: What a calendar export preserves; see ``outlook.fidelity``.
     fidelity_dimensions = CALENDAR_EXPORT_DIMENSIONS
 
-    def __init__(self, calendar, options: CalendarExportOptions | None = None) -> None:
+    def __init__(self, calendar: Calendar, options: CalendarExportOptions | None = None) -> None:
         self._calendar = calendar
         self._options = options or CalendarExportOptions()
-        self._events: dict[str, Any] = {}  # dest path -> event handle
+        self._events: dict[str, Event] = {}  # dest path -> event handle
         self._enumerated = False
 
     def label(self) -> str:
@@ -141,7 +143,7 @@ class CalendarSource(DataSource):
         self._enumerated = True
         return items
 
-    def _include(self, event) -> bool:
+    def _include(self, event: Event) -> bool:
         """Whether an event is exported on its own (a series master, not an instance)."""
         if event.is_cancelled and not self._options.include_cancelled:
             return False
@@ -149,7 +151,7 @@ class CalendarSource(DataSource):
             return True
         return self._options.include_recurring_instances
 
-    def _item(self, event, path: str, display: str) -> MigrationItem:
+    def _item(self, event: Event, path: str, display: str) -> MigrationItem:
         envelope = event_envelope(event, path, self._options.extra_properties, display)
         return MigrationItem(
             source_path=envelope["ics_path"],
@@ -163,7 +165,7 @@ class CalendarSource(DataSource):
             metadata=envelope,
         )
 
-    def _handle(self, item: MigrationItem):
+    def _handle(self, item: MigrationItem) -> Event:
         """The event for an item, enumerating once if the plan came from disk."""
         event = self._events.get(item.dest_path)
         if event is None and not self._enumerated:
@@ -279,18 +281,18 @@ class CalendarTarget(DataTarget):
 
     fidelity_dimensions = CALENDAR_IMPORT_DIMENSIONS
 
-    def __init__(self, calendar, options: CalendarImportOptions | None = None) -> None:
+    def __init__(self, calendar: Calendar, options: CalendarImportOptions | None = None) -> None:
         self._calendar = calendar
         self._options = options or CalendarImportOptions()
-        self._index: dict[tuple[str, str | None, str | None], list[Any]] | None = None
+        self._index: dict[tuple[str, str | None, str | None], list[Event]] | None = None
         self._claimed: dict[tuple[str, str | None, str | None], int] = {}
-        self._present: dict[str, Any] = {}  # dest path -> created/found event
+        self._present: dict[str, Event] = {}  # dest path -> created/found event
         self._attendees_dropped = 0
         #: Warnings a caller collects (the resolver convention).
         self.warnings: list[str] = []
 
     @property
-    def calendar(self):
+    def calendar(self) -> Calendar:
         return self._calendar
 
     def label(self) -> str:
@@ -369,7 +371,7 @@ class CalendarTarget(DataTarget):
         (measured: ``09:00 W. Europe`` reads back as ``07:00 UTC`` unasked).
         """
         event = self._present.get(item.dest_path)
-        if event is None:
+        if event is None or not event.id:
             return ""
         read = self._calendar.events[event.id]
         read.select(EVENT_COLUMNS).get()
@@ -390,10 +392,10 @@ class CalendarTarget(DataTarget):
 
     # -- helpers ---------------------------------------------------------------
 
-    def _target_index(self) -> dict[tuple[str, str | None, str | None], list[Any]]:
+    def _target_index(self) -> dict[tuple[str, str | None, str | None], list[Event]]:
         """The target calendar's events, grouped by the key an import recognises."""
         if self._index is None:
-            index: dict[tuple[str, str | None, str | None], list[Any]] = {}
+            index: dict[tuple[str, str | None, str | None], list[Event]] = {}
             for event in self._calendar.events.select(_EXISTING_COLUMNS).get_all().execute_query():
                 # The key is read off the envelope, so hand it the wire form of the start
                 # (a fetched event carries a typed ``DateTimeTimeZone``).
@@ -418,10 +420,10 @@ class CalendarTarget(DataTarget):
         return candidates[-1] if candidates else None
 
 
-def _prefer_zone(zone: str):
+def _prefer_zone(zone: str) -> Callable[[RequestOptions], None]:
     """A ``before_execute`` hook that renders the read in ``zone``."""
 
-    def handler(request) -> None:
+    def handler(request: RequestOptions) -> None:
         prefer_outlook_timezone(request, zone)
 
     return handler

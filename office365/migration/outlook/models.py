@@ -19,6 +19,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, cast
 
+from office365.outlook.mail.messages.message import Message
+from office365.outlook.mail.recipient import Recipient
 from office365.runtime.converters.scalars import iso_or_none
 
 #: Graph message properties an export reads (one projection, so two exports of the
@@ -111,7 +113,7 @@ def mail_slug(subject: str | None) -> str:
     return slug[:MAX_SLUG_LENGTH].strip("-._")
 
 
-def message_key(message) -> str:
+def message_key(message: Message) -> str:
     """The identity an export is keyed by: ``internetMessageId``, else the Graph id.
 
     ``internetMessageId`` is the header-preserved identity, stable across
@@ -122,7 +124,7 @@ def message_key(message) -> str:
     return message.internet_message_id or message.id or ""
 
 
-def mail_dest_path(message, folder_path: str) -> str:
+def mail_dest_path(message: Message, folder_path: str) -> str:
     """The export path for a message: ``<folder>/<date>_<slug>_<id digest>.eml``.
 
     Deterministic for a given message, so a re-run finds the file it wrote. The
@@ -212,7 +214,7 @@ def mime_digest(data: bytes) -> str:
     return hashlib.sha256(json.dumps(canonical, sort_keys=True).encode("utf-8")).hexdigest()
 
 
-def _address(recipient) -> str | None:
+def _address(recipient: Recipient) -> str | None:
     """Render a Graph recipient as ``Name <address>`` (or whichever half exists)."""
     email_address = getattr(recipient, "emailAddress", None)
     if email_address is None:
@@ -224,7 +226,7 @@ def _address(recipient) -> str | None:
 
 
 def mail_envelope(
-    message,
+    message: Message,
     folder_path: str,
     extra_properties: list[str] | None = None,
     display_path: str | None = None,

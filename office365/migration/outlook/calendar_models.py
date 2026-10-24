@@ -120,7 +120,7 @@ def event_key(envelope: Mapping[str, Any]) -> str:
     return str(envelope.get("id") or envelope.get("iCalUId") or "")
 
 
-def event_kind(event) -> str | None:
+def event_kind(event: Event) -> str | None:
     """The wire name of an event's ``type``: ``singleInstance``, ``seriesMaster``, …
 
     The getter answers with the generated enum, whose members carry the CSDL ordinals
@@ -144,14 +144,14 @@ def _dest_path(stamp: datetime | None, subject: Any, key: str, calendar_path: st
     return f"{calendar_path}/{name}" if calendar_path else name
 
 
-def event_dest_path(event, calendar_path: str) -> str:
+def event_dest_path(event: Event, calendar_path: str) -> str:
     """The export path for a loaded event — see :func:`_dest_path` for the shape."""
     started = event.start.as_datetime() if event.start else None
     return _dest_path(started, event.subject, str(event.id or event.ical_uid or ""), calendar_path)
 
 
 def event_envelope(
-    event,
+    event: Event,
     calendar_path: str = "",
     extra_properties: list[str] | None = None,
     display_path: str | None = None,
@@ -163,7 +163,7 @@ def event_envelope(
     rather than a second spelling this package would have to keep in step — and an
     import posts it back verbatim, which is what makes the round trip exact.
     """
-    envelope = event.to_json()
+    envelope = cast(Dict[str, Any], event.to_json())
     envelope["calendar_path"] = calendar_path
     envelope["calendar_display_path"] = display_path or calendar_path
     envelope["ics_path"] = event_dest_path(event, calendar_path)

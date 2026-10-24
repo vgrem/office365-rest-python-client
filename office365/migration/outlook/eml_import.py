@@ -40,6 +40,10 @@ from office365.migration.adapters import DataSource, DataTarget, MigrationProgre
 from office365.migration.base import MigrationItem
 from office365.migration.outlook.fidelity import MAIL_IMPORT_DIMENSIONS
 from office365.migration.outlook.models import MAX_IMPORT_MIME_BYTES, MailImportOptions, mime_digest
+from office365.outlook.mail.folders.folder import MailFolder
+from office365.outlook.mail.messages.collection import MessageCollection
+from office365.outlook.mail.messages.message import Message
+from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.operations import emit_progress
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -51,7 +55,7 @@ SIDECAR_SUFFIX = ".json"
 _ID_COLUMNS = ["id", "internetMessageId"]
 
 
-def _post_as_mime(request) -> None:
+def _post_as_mime(request: RequestOptions) -> None:
     """Send the base64 MIME body as ``text/plain`` — Graph's MIME import contract."""
     request.set_header("Content-Type", "text/plain")
 
@@ -134,15 +138,15 @@ class MailboxTarget(DataTarget):
 
     fidelity_dimensions = MAIL_IMPORT_DIMENSIONS
 
-    def __init__(self, folder, options: MailImportOptions | None = None) -> None:
+    def __init__(self, folder: MailFolder, options: MailImportOptions | None = None) -> None:
         self._root = folder
         self._options = options or MailImportOptions()
-        self._folders: dict[str, Any] = {}  # source directory path -> Graph folder
-        self._delivered: dict[str, dict[str, Any]] = {}  # directory -> internetMessageId -> message
-        self._present: dict[str, Any] = {}  # dest path -> Graph message
+        self._folders: dict[str, MailFolder] = {}  # source directory path -> Graph folder
+        self._delivered: dict[str, dict[str, Message]] = {}  # directory -> internetMessageId -> message
+        self._present: dict[str, Message] = {}  # dest path -> Graph message
 
     @property
-    def root(self):
+    def root(self) -> MailFolder:
         return self._root
 
     def label(self) -> str:
@@ -172,7 +176,7 @@ class MailboxTarget(DataTarget):
             names = [self._options.root_name, *names]
         return directory, names
 
-    def _folder(self, item: MigrationItem):
+    def _folder(self, item: MigrationItem) -> tuple[str, MailFolder]:
         directory, names = self._names(item)
         folder = self._folders.get(directory)
         if folder is None:
@@ -227,7 +231,8 @@ class MailboxTarget(DataTarget):
         collection.context.add_query(query)
         collection.context.execute_query()
         self._present[item.dest_path] = message
-        self._delivered.setdefault(directory, {})[message.internet_message_id] = message
+        if message.internet_message_id:
+            self._delivered.setdefault(directory, {})[message.internet_message_id] = message
         self._replay(message, collection, item.metadata or {})
 
     def list_paths(self) -> Iterable[str]:
@@ -247,7 +252,7 @@ class MailboxTarget(DataTarget):
 
     # -- envelope replay -------------------------------------------------------
 
-    def _replay(self, message, collection, envelope: dict[str, Any]) -> None:
+    def _replay(self, message: Message, collection: MessageCollection, envelope: dict[str, Any]) -> None:
         """Re-apply the flags Exchange does not take from the MIME bytes (one PATCH).
 
         The PATCH addresses the message through a *stub* carrying only the changed
