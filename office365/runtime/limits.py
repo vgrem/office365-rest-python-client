@@ -188,8 +188,11 @@ class LimitDecl:
 
 _LIMITS_DOC = "\n    Limits:\n"
 
+#: What ``@limit`` stamps on a callable or a class: the declarations, in order.
+_Decls = Tuple[LimitDecl, ...]
 
-def _append_doc(target: Callable[..., Any], decls: Tuple[LimitDecl, ...]) -> None:
+
+def _append_doc(target: Callable[..., Any], decls: _Decls) -> None:
     """Append the declaration lines to the docstring, extending one ``Limits:`` block.
 
     ``@limit`` composes, so a second decorator adds its rows to the section the first
@@ -309,7 +312,7 @@ def limit(
     return decorator
 
 
-def _stamp(target: Any, decls: Tuple[LimitDecl, ...]) -> None:
+def _stamp(target: Any, decls: _Decls) -> None:
     """Record declarations on the target; ``@limit`` composes rather than replaces.
 
     Two decorators on one method is the natural way to say "these quotas also apply
@@ -317,9 +320,10 @@ def _stamp(target: Any, decls: Tuple[LimitDecl, ...]) -> None:
     Replacing the marker silently kept the last decorator's rows while the docstring
     documented both, so ``declared_limits()`` and the doc disagreed.
     """
-    existing: Tuple[LimitDecl, ...] = getattr(target, _LIMIT_MARKER, ())
+    existing: _Decls = getattr(target, _LIMIT_MARKER, ())
+    # The key includes ``arg``: one row enforced on two arguments is two declarations.
     seen = {(id(decl.limit), decl.arg) for decl in existing}
-    added = tuple(decl for decl in decls if (id(decl.limit), decl.arg) not in seen)
+    added: _Decls = tuple(decl for decl in decls if (id(decl.limit), decl.arg) not in seen)
     setattr(target, _LIMIT_MARKER, (*existing, *added))
     _append_doc(target, added)
 
@@ -338,7 +342,7 @@ def bounded(
     return _limit(limit, arg=arg, on_exceed=on_exceed, clamp=clamp)
 
 
-def collect_limit_meta(cls: type) -> dict[str, Tuple[LimitDecl, ...]]:
+def collect_limit_meta(cls: type) -> dict[str, _Decls]:
     """Collect ``@limit`` declarations from a class's methods/properties.
 
     Called from :meth:`TypeSchema.build` so a class carries its own limits — keyed by
@@ -348,7 +352,7 @@ def collect_limit_meta(cls: type) -> dict[str, Tuple[LimitDecl, ...]]:
     # attribute rather than importing ``TypeSchema`` keeps this module free of a cycle:
     # ``schema`` imports the limit types, so the dependency can only run one way.
     inherited_schema = getattr(cls, "_schema", None)
-    meta: dict[str, Tuple[LimitDecl, ...]] = dict(getattr(inherited_schema, "member_limits", {}))
+    meta: dict[str, _Decls] = dict(getattr(inherited_schema, "member_limits", {}))
     for attr_name, attr in cls.__dict__.items():
         target = attr.fget if isinstance(attr, property) else attr
         decls = getattr(target, _LIMIT_MARKER, None)
@@ -414,7 +418,7 @@ def catalog_products() -> list[str]:
     return list(_SOURCES)
 
 
-def collect_class_limits(cls: type) -> Tuple[LimitDecl, ...]:
+def collect_class_limits(cls: type) -> _Decls:
     """The class-level ``@limit`` declarations of ``cls``.
 
     Accumulates up the hierarchy: the base classes' declarations first, then the class's
@@ -424,13 +428,12 @@ def collect_class_limits(cls: type) -> Tuple[LimitDecl, ...]:
     """
     decls: list[LimitDecl] = []
     for klass in reversed(cls.__mro__):
-        own = klass.__dict__.get(_LIMIT_MARKER)
-        if own:
-            decls.extend(own)
+        own: _Decls = klass.__dict__.get(_LIMIT_MARKER) or ()
+        decls.extend(own)
     return tuple(decls)
 
 
-def limits_of(target: Any) -> Tuple[LimitDecl, ...]:
+def limits_of(target: Any) -> _Decls:
     """The limits declared on a method/property, or a class's collected limits.
 
     Args:

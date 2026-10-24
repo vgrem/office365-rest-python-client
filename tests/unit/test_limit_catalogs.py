@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import unittest
+from types import ModuleType
 
 from office365.communications import quotas as communications_quotas
 from office365.communications.callrecords.call_record import CallRecord
@@ -42,7 +43,7 @@ CATALOGS = (
 )
 
 
-def _rows(module) -> list[Limit]:
+def _rows(module: ModuleType) -> list[Limit]:
     """Every ``Limit`` tuple a catalog module exports, flattened."""
     found = []
     for value in vars(module).values():
