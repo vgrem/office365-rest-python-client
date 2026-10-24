@@ -7,19 +7,14 @@ from office365.migration.sharepoint.adapters import (
     _read_role_assignments,
     _resolve_group_ownership,
 )
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.principal.type import PrincipalType
-
-
-class _BasePermissions:
-    def __init__(self, high: int, low: int) -> None:
-        self.High = high
-        self.Low = low
 
 
 class _Role:
     def __init__(self, name: str, high: int, low: int) -> None:
         self.name = name
-        self.base_permissions = _BasePermissions(high, low)
+        self.base_permissions = BasePermissions(High=high, Low=low)
 
 
 class _Member:

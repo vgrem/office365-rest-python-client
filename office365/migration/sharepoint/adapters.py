@@ -528,12 +528,12 @@ def taxonomy_internal_names(fields) -> list[str]:
 
 
 def _perm_mask(role_definition: Any) -> str | None:
-    """The decimal ``PermMask`` of a role definition (``BasePermissions`` High/Low)."""
+    """The decimal ``PermMask`` a role definition grants (``None`` when it grants none)."""
     base = getattr(role_definition, "base_permissions", None)
     if base is None:
         return None
     try:
-        return str((int(base.High) << 32) | int(base.Low))
+        return str(base.value)
     except (TypeError, ValueError):
         return None
 

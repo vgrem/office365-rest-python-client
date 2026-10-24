@@ -81,7 +81,7 @@ class _Role:
         self.description = description
         self.hidden = hidden
         self.order = 1
-        self.base_permissions = BasePermissions(High=mask >> 32, Low=mask & 0xFFFFFFFF)
+        self.base_permissions = BasePermissions.from_value(mask)
 
 
 class _RoleDefinitions:
@@ -371,7 +371,9 @@ def _levels_web(roles, *, assignments=(), groups=None):
 
 
 def test_a_custom_level_the_target_lacks_is_created_with_its_mask():
-    source = _levels_web([_Role("Read", 1, 8, kind=2), _Role("Custom Reader", 2, 5, kind=0, description="ours")])
+    # The mask spans both halves, so the shift and the low word are both proved.
+    mask = (1 << 32) | 5
+    source = _levels_web([_Role("Read", 1, 8, kind=2), _Role("Custom Reader", 2, mask, kind=0, description="ours")])
     target = _levels_web([_Role("Read", 1, 8, kind=2)])
     warnings: list[str] = []
 
@@ -380,5 +382,6 @@ def test_a_custom_level_the_target_lacks_is_created_with_its_mask():
     ((base_permissions, name, description, _order),) = target.role_definitions.added
     assert name == "Custom Reader"
     assert description == "ours"
-    assert (base_permissions.High, base_permissions.Low) == (0, 5)
+    assert (base_permissions.High, base_permissions.Low) == (1, 5)
+    assert base_permissions.value == mask
     assert warnings == []

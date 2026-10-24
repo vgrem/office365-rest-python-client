@@ -67,6 +67,24 @@ class BasePermissions(ClientValue):
         self.High = 0
         self.Low = 0
 
+    @property
+    def value(self) -> int:
+        """The whole permission set as one 64-bit number (``High`` above bit 32).
+
+        SharePoint carries the same set two ways: CSOM splits it into two 32-bit
+        halves, while a ``PermMask`` -- on a role assignment, a legacy form, a
+        migration manifest's ``AnonymousPermMask`` -- spells it as one decimal, and
+        the two are the same number. This is the bridge, so a caller stops deriving
+        ``(High << 32) | Low`` (and its inverse) for itself.
+        """
+        return (self.High << self._BITS_PER_INT) | self.Low
+
+    @classmethod
+    def from_value(cls, value: int) -> Self:
+        """Build from the one-number form (see :attr:`value`)."""
+        mask = int(value)
+        return cls(High=mask >> cls._BITS_PER_INT, Low=mask & ((1 << cls._BITS_PER_INT) - 1))
+
     def to_json(self, profile=None):
         return {"Low": str(self.Low), "High": str(self.High)}
 

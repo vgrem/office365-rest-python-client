@@ -379,6 +379,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   window, scope, request class and the model that declares each row — so the
   published numbers cannot drift from the declarations.
 
+**SharePoint permissions**
+
+- **`BasePermissions` answers its own 64-bit mask, both ways.** SharePoint spells one
+  permission set two ways: CSOM splits it into `High`/`Low`, while a `PermMask` field —
+  a role assignment, a legacy form, a migration manifest's `AnonymousPermMask` — spells
+  it as one decimal. `BasePermissions.value` returns `(High << 32) | Low` and
+  `BasePermissions.from_value(mask)` builds from the one-number form, so no caller
+  derives the shift for itself. The SharePoint migrator derived it twice and its inverse
+  once, both times with the constant `32` written out (`_perm_mask` in `adapters.py`, the
+  inverse in `security.py`); all three now name the library property. `to_json()` and
+  every `High`/`Low` the service sees are unchanged — a differential over 511 masks
+  (empty, single-permission, both boundaries, full control, random 8/32/40/64-bit) gives
+  zero payload drift and zero round-trip drift.
+
 ### Changed
 
 **Runtime**

@@ -28,6 +28,7 @@ from office365.migration.sharepoint.adapters import (
     SharePointListTarget,
 )
 from office365.migration.validators import _verify_authorship
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.principal.type import PrincipalType
 
 # ── Fakes ────────────────────────────────────────────────────────────────────
@@ -135,16 +136,10 @@ class _Context:
         pass
 
 
-class _BasePermissions:
-    def __init__(self):
-        self.High = 176
-        self.Low = 138612833
-
-
 class _AssignmentRole:
     def __init__(self, name):
         self.name = name
-        self.base_permissions = _BasePermissions()
+        self.base_permissions = BasePermissions(High=176, Low=138612833)
 
 
 class _Member:

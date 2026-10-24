@@ -160,9 +160,8 @@ def _apply_permission_levels(levels: list[PermissionLevel], target_web, warnings
         if not level.is_custom:
             warnings.append(f"permission level {level.name!r} (a built-in level) is missing on the target")
             continue
-        mask = int(level.mask)
         target_web.role_definitions.add(
-            BasePermissions(High=mask >> 32, Low=mask & 0xFFFFFFFF),
+            BasePermissions.from_value(int(level.mask)),
             level.name,
             level.description,
             level.order,
