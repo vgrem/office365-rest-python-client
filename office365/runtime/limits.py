@@ -103,13 +103,14 @@ class Limit:
     request_type: str = ""
 
     def __str__(self) -> str:
-        unit = _unit_for(self.value, self.unit)
-        if self.window_seconds is not None:
-            window = f" / {self.window_seconds:,}s" if self.window_seconds else ""
-            return f"{self.value:,} {unit}{window}".strip()
         if self.unit == "bytes":
-            return _human_bytes(self.value)
-        return f"{self.value:,} {unit}".strip()
+            value = _human_bytes(self.value)
+        else:
+            value = f"{self.value:,} {_unit_for(self.value, self.unit)}"
+        if self.window_seconds is None:
+            return value
+        window = f" / {self.window_seconds:,}s" if self.window_seconds else ""
+        return f"{value}{window}"
 
     def exceeds(self, value: int) -> bool:
         """Whether ``value`` is over this limit."""

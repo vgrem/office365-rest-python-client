@@ -9,9 +9,11 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.attachments.attachment import Attachment
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
+from office365.outlook.quotas import OUTLOOK_UPLOAD
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.url import parse_query_param
+from office365.runtime.limits import limit
 from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.paths.resource_path import ResourcePath
@@ -21,6 +23,7 @@ if TYPE_CHECKING:
     from office365.graph_client import GraphClient
 
 
+@limit(OUTLOOK_UPLOAD)
 class AttachmentCollection(EntityCollection[Attachment]):
     """Attachment collection"""
 

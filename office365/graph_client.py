@@ -61,11 +61,13 @@ from office365.onedrive.sites.sites_with_root import SitesWithRoot
 from office365.onedrive.storage.storage import Storage
 from office365.outlook.calendar.place_collection import PlaceCollection
 from office365.outlook.calendar.rooms.list import RoomList
+from office365.outlook.quotas import OUTLOOK_BATCH
 from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
 from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.limits import limit
 from office365.runtime.odata.v4.batch_request import DEFAULT_MAX_BATCH_BYTES, ODataV4BatchRequest
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
@@ -420,6 +422,7 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().before_execute(_set_header, once=False)
         return self
 
+    @limit(OUTLOOK_BATCH)
     def execute_batch(
         self,
         items_per_batch: int = 20,

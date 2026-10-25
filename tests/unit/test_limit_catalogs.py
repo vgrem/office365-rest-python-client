@@ -7,9 +7,16 @@ from office365.communications import quotas as communications_quotas
 from office365.communications.callrecords.call_record import CallRecord
 from office365.communications.callrecords.collection import CallRecordCollection
 from office365.directory import quotas as directory_quotas
+from office365.graph_client import GraphClient
 from office365.onedrive import quotas as files_quotas
 from office365.onedrive.workbooks import quotas as excel_quotas
 from office365.outlook import quotas as outlook_quotas
+from office365.outlook.calendar.events.event import Event
+from office365.outlook.contacts.contact import Contact
+from office365.outlook.item import OutlookItem
+from office365.outlook.mail.attachments.collection import AttachmentCollection
+from office365.outlook.mail.messages.message import Message
+from office365.outlook.user import OutlookUser
 from office365.reports import quotas as reports_quotas
 from office365.runtime import limits as limits_module
 from office365.runtime.limits import (
@@ -173,6 +180,48 @@ class TestOutlookQuotas(unittest.TestCase):
 
     def test_json_batching_sends_four_sub_requests_at_a_time(self):
         self.assertIn((4, "requests", "batch", 0), self.facts)
+
+
+class TestOutlookBindings(unittest.TestCase):
+    """The per-mailbox budget belongs to the mailbox, not to one endpoint under it.
+
+    Messages, events and contacts spend one budget without sharing a root, so it is declared
+    on ``OutlookItem`` -- the base all three inherit -- and again on ``OutlookUser``, the
+    ``/outlook`` endpoint. Uploads are counted in bytes and only :class:`AttachmentCollection`
+    uploads, and the JSON-batch cap rides the entry point that submits a batch, its note
+    carrying the qualification (the cap is Outlook's, not every batch's).
+    """
+
+    def test_each_item_type_spends_the_mailbox_budget(self):
+        for model in (Message, Event, Contact):
+            with self.subTest(model=model.__name__):
+                self.assertEqual(
+                    [id(row) for row in model.declared_limits()],
+                    [id(row) for row in outlook_quotas.OUTLOOK_MAILBOX_BUDGETS],
+                )
+
+    def test_the_outlook_root_spends_the_same_budget(self):
+        self.assertEqual(
+            [id(row) for row in OutlookUser.declared_limits()],
+            [id(row) for row in outlook_quotas.OUTLOOK_MAILBOX_BUDGETS],
+        )
+
+    def test_uploads_carry_their_own_byte_budget(self):
+        self.assertEqual(
+            [id(decl.limit) for decl in limits_of(AttachmentCollection)],
+            [id(outlook_quotas.OUTLOOK_UPLOAD)],
+        )
+
+    def test_the_batch_cap_is_declared_where_a_batch_is_submitted(self):
+        self.assertEqual(
+            [id(decl.limit) for decl in limits_of(GraphClient.execute_batch)],
+            [id(outlook_quotas.OUTLOOK_BATCH)],
+        )
+
+    def test_every_published_row_reaches_a_model(self):
+        models = (OutlookItem, OutlookUser, AttachmentCollection, GraphClient.execute_batch)
+        bound = {id(decl.limit) for target in models for decl in limits_of(target)}
+        self.assertEqual([row.note for row in catalog(product="outlook") if id(row) not in bound], [])
 
 
 class TestTeamsQuotas(unittest.TestCase):

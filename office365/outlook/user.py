@@ -1,14 +1,17 @@
 from office365.entity import Entity
 from office365.outlook.categories.collection import OutlookCategoryCollection
 from office365.outlook.locale_info import LocaleInfo
+from office365.outlook.quotas import OUTLOOK_MAILBOX_BUDGETS
 from office365.outlook.timezones.information import TimeZoneInformation
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*OUTLOOK_MAILBOX_BUDGETS)
 class OutlookUser(Entity):
     """Represents the Outlook services available to a user."""
 

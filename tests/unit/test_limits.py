@@ -41,6 +41,8 @@ def test_str_formats_items_and_bytes():
     assert str(LIST_VIEW) == "5,000 items"
     assert str(Limits.FILE_UPLOAD) == "250 GB"
     assert str(Limits.LIST_ROW_BYTES) == "8,000 bytes"
+    # A byte budget inside a window is bytes, not a count: readable however it is spent.
+    assert str(Limit("upload", 150 * 1024 * 1024, LimitKind.SUPPORTED, "bytes", window_seconds=300)) == "150 MB / 300s"
 
 
 def test_warn_if_exceeds():

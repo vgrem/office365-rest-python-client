@@ -804,6 +804,25 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   1 request / 1s`); a static threshold states neither, so its line renders exactly as before.
   A singular value also takes a singular unit now (`1 request`, `1 item`, `1 byte`) — the
   Teams table made it unavoidable, seven of its rows cap a single request a second.
+- **The Outlook budgets are declared on the mailbox, the upload and the batch they cap.**
+  `office365.outlook.quotas` published 4 rows and bound none of them, so
+  `declared_limits(Message)` was empty and the Service limits page printed `—` for the whole
+  Outlook table. The two per-mailbox rows (`10,000 requests / 600s`, and `4 in flight` — a
+  concurrency limit is a rate window of zero) are now `OUTLOOK_MAILBOX_BUDGETS`, declared on
+  `OutlookItem`, which is what `Message`, `Event` and `Contact` share, *and* on `OutlookUser`,
+  the `/outlook` root: the budget belongs to a mailbox, the two hierarchies above it do not
+  share a root, so it is written twice rather than invented once. The 150 MB / 300 s upload
+  budget rides `AttachmentCollection` — the only place a mailbox uploads — and the JSON-batch
+  cap rides `GraphClient.execute_batch`, where its note carries the qualification the row is
+  published with: the cap is Outlook's, so a batch that addresses other services is not bound
+  by it. One row, `OUTLOOK_BATCH`, is the reason a declaration may sit on a method rather than
+  a type; the other three are class-level, and `Message.select_all()` is unchanged at 31 names
+  because a budget declares no member.
+- **A byte budget inside a window prints as bytes.** `str(Limit)` chose its scale from the
+  window, not the unit, so the Outlook upload row rendered `157,286,400 bytes / 300s` — a
+  five-minute ceiling stated in single bytes. The bytes form now follows the unit wherever it
+  appears, so that row reads `150 MB / 300s`; a static byte ceiling is untouched (`250 GB`,
+  `8,000 bytes`).
 - **A type answers the limits it declares on itself.** `limits_of(cls)` read only the
   schema's `member_limits`, so a model that writes a quota on the class — every
   `@limit(*QUOTAS)` model, such as `Workbook`'s two Excel ceilings — answered `()` and

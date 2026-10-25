@@ -2,10 +2,13 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.outlook.quotas import OUTLOOK_MAILBOX_BUDGETS
+from office365.runtime.limits import limit
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import Compare, odata
 
 
+@limit(*OUTLOOK_MAILBOX_BUDGETS)
 class OutlookItem(Entity):
     @odata(name="changeKey", readonly=True)
     @property
