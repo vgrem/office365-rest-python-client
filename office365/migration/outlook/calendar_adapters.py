@@ -82,7 +82,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 #: wall clock the key is built from. Spelled through the model, so a rename cannot
 #: leave it stale — and deliberately narrower than ``EventRecord.columns``, because this
 #: one runs per item during a dedupe pass.
-_EXISTING_COLUMNS = [Event.wire_name(attr) for attr in ("id", "subject", "start", "ical_uid")]
+_EXISTING_COLUMNS = [Event.odata_name(attr) for attr in ("id", "subject", "start", "ical_uid")]
 
 #: Graph's error code for a reused ``transactionId`` (a concurrent run got there first).
 _DUPLICATE_TRANSACTION = "ErrorDuplicateTransactionId"

@@ -139,7 +139,7 @@ class JsonProfile:
 
         ``only`` and ``without`` name Python attributes of ``model``, resolved through its
         declarations so a misspelling raises. The narrowing applies to ``model`` itself,
-        never to a nested value that happens to share a wire name (an ``EmailAddress``
+        never to a nested value that happens to share an OData name (an ``EmailAddress``
         keeps its ``name`` when a contact leaves out its own).
         """
         return ScopedProfile(self, model, only, without)
@@ -254,11 +254,11 @@ class ScopedProfile(JsonProfile):
         super().__init__(base.metadata_level)
         self._base = base
         self._model = model
-        self._only = None if only is None else frozenset(model.wire_name(attr) for attr in only)
-        self._without = frozenset(model.wire_name(attr) for attr in without)
+        self._only = None if only is None else frozenset(model.odata_name(attr) for attr in only)
+        self._without = frozenset(model.odata_name(attr) for attr in without)
         # ``refine`` is not told which type it is refining, so the narrowing is applied to
         # the one call that was handed exactly this model's own declarations. That is what
-        # keeps a nested value sharing a wire name untouched.
+        # keeps a nested value sharing an OData name untouched.
         self._own = frozenset(map(id, _declared_fields(model)))
 
     @property

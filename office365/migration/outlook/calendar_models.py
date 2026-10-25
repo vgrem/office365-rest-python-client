@@ -114,7 +114,7 @@ _VERIFIED = (
     "attendees",
     "categories",
 )
-assert all(Event.wire_name(attr) for attr in _VERIFIED)  # a misspelt name fails here, not at the first digest
+assert all(Event.odata_name(attr) for attr in _VERIFIED)  # a misspelt name fails here, not at the first digest
 
 
 class EventRecord(SidecarRecord):

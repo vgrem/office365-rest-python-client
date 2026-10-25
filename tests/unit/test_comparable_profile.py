@@ -201,7 +201,7 @@ def test_a_value_has_a_reader_too():
 # -- scoped profiles and the options that choose them --------------------------
 
 
-def test_a_scoped_profile_narrows_the_model_it_names_and_not_a_nested_value_sharing_a_wire_name():
+def test_a_scoped_profile_narrows_the_model_it_names_and_not_a_nested_value_sharing_an_odata_name():
     contact = Contact(GraphClient(lambda: {"access_token": "-", "token_type": "Bearer"})).hydrate(
         {"displayName": "A", "emailAddresses": [{"address": "a@x.com", "name": "A"}], "categories": ["x"]}
     )

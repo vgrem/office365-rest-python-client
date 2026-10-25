@@ -134,10 +134,10 @@ class ClientValue:
         return profile.wrap(self, profile.refine(result, by_attr.values()))
 
     @classmethod
-    def wire_name(cls, attr: str) -> str:
+    def odata_name(cls, attr: str) -> str:
         """The OData name of a declared field, given its Python attribute name.
 
-        The mirror of :meth:`ClientObject.wire_name`, so a profile that narrows a type can
+        The mirror of :meth:`ClientObject.odata_name`, so a profile that narrows a type can
         resolve a name without knowing which of the two kinds of model it was handed.
 
         Raises:

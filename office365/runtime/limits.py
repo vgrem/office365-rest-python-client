@@ -12,12 +12,13 @@ apply a limit imperatively at a call site; :func:`limits_of` / :func:`verify_lim
 inspect what a method/class declares.
 
 ``@limit`` stays a decorator of its own rather than becoming keywords on ``@odata``:
-``@odata`` names a *wire* member, so everything it can carry has a wire name, while a
-limit is a fact about a *call* — of its 19 targets, 9 are a class, 8 a method and 2 a
-property that declares no wire name. Merging would add a keyword to all 4,788 ``@odata``
-declarations to spell 19, and would still leave :func:`limit` alive for the targets with no
-wire name. They are unified where a reader looks, in ``TypeSchema``: one object holds the
-properties, the class limits and the member limits, and answers for the whole type.
+``@odata`` describes a *member* of the resource, so everything it can carry is something the
+member is called, while a limit is a fact about a *call* — of its 19 targets, 9 are a class,
+8 a method and 2 a property that declares no ``@odata`` name. Merging would add a keyword to
+all 4,788 ``@odata`` declarations to spell 19, and would still leave :func:`limit` alive for
+the targets with no member name. They are unified where a reader looks, in ``TypeSchema``:
+one object holds the properties, the class limits and the member limits, and answers for the
+whole type.
 
 Product packages declare the concrete values — ``office365.sharepoint.thresholds``
 for SharePoint/CSOM limits, and the ``quotas`` module of each Graph product

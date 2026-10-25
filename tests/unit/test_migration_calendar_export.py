@@ -300,11 +300,11 @@ def test_export_writes_a_json_safe_sidecar(tmp_path: Path):
     assert isinstance(record["recurrence"], dict)
     assert record["recurrence"]["pattern"]["type"] == "weekly"
     assert record["recurrence"]["range"]["numberOfOccurrences"] == 6  # noqa: PLR2004 — from the scripted series
-    # Enums travel as their wire name, not as ``FreeBusyStatus.tentative``.
+    # Enums travel as the name the service sends, not as ``FreeBusyStatus.tentative``.
     single = next(path for path in sidecars if "Quarterly-review" in path.read_text(encoding="utf-8"))
     single_record = json.loads(single.read_text(encoding="utf-8"))
     assert single_record["showAs"] == "tentative"
-    assert isinstance(single_record["onlineMeetingProvider"], str)  # a wire name, not an enum repr
+    assert isinstance(single_record["onlineMeetingProvider"], str)  # the service's name, not an enum repr
 
 
 def test_export_verifies_by_checksum(tmp_path: Path):
@@ -330,4 +330,4 @@ def test_the_export_projection_is_the_model_projection():
     """
     assert list(EventRecord.columns) == Event.select_all()
     assert "isCancelled" in EventRecord.columns
-    assert not set(EventRecord.columns) & set(Event.expandable())
+    assert not set(EventRecord.columns) & set(Event.expand_all())

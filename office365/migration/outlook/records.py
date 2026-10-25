@@ -276,7 +276,7 @@ class SidecarRecord:
         Read off the envelope rather than the model so a stamp keeps the offset the
         service sent (``…Z``) instead of being re-rendered here.
         """
-        return self._first(self.envelope, attrs, key=self.model.wire_name)
+        return self._first(self.envelope, attrs, key=self.model.odata_name)
 
     @staticmethod
     def _first(source: Any, attrs: Iterable[str], key: Any = None) -> Any:

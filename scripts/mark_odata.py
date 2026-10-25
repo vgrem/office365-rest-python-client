@@ -1,4 +1,4 @@
-"""Declare the OData wire name on every generated getter (one-time codemod).
+"""Declare its OData name on every generated getter (one-time codemod).
 
 The generator now emits ``@odata(name=..., navigation=True)`` with each getter, but
 it only renders *missing* members, so files generated before that change stay
@@ -12,7 +12,7 @@ without ``navigation=True`` where the CSDL says ``NavigationProperty``, which is
 how the first pass left every file that was already marked
 (``singleValueExtendedProperties``, ``attachments``, ``masterCategories``, ...).
 
-The wire name is never derived from the attribute name: ``iCalUId`` and ``icalUid``
+The OData name is never derived from the attribute name: ``iCalUId`` and ``icalUid``
 both survive a snake-case round trip, and only one of them is a real column. The
 literal in the getter is the ground truth; the metadata only vouches for it and
 supplies the navigation flag.
@@ -20,7 +20,7 @@ supplies the navigation flag.
 Declaring an enum-typed property changes the value the object holds: generated Graph
 enums spell their CSDL ordinal (``EventType.singleInstance = "0"``) while the service
 sends the member *name*, so a reader that compared ``type`` to ``"seriesMaster"`` now
-receives a member. Read such a property through ``.name`` (or ``_wire``) instead.
+receives a member. Read such a property through ``.name`` (or the declaration) instead.
 
 Usage::
 
@@ -56,14 +56,14 @@ _SERVICES = {
 
 
 class Declared(NamedTuple):
-    """A CSDL property: its wire name, whether $expand reaches it, and its kind."""
+    """A CSDL property: its OData name, whether $expand reaches it, and its kind."""
 
-    wire: str
+    name: str
     navigation: bool
     enum: bool
 
 
-#: CSDL type name (lowercased) -> {wire name: declaration}
+#: CSDL type name (lowercased) -> {OData name: declaration}
 Catalog = Dict[str, Dict[str, Declared]]
 
 
@@ -153,7 +153,7 @@ def type_index(catalog: Catalog) -> Dict[str, Dict[str, Declared]]:
     return {last: catalog[names[0]] for last, names in owners.items() if len(names) == 1}
 
 
-def read_wire_names(getter: ast.FunctionDef) -> Set[str]:
+def read_spelled_names(getter: ast.FunctionDef) -> Set[str]:
     """String literals the getter passes to ``properties.get``/``setdefault``."""
     names = set()
     for node in ast.walk(getter):
@@ -216,15 +216,15 @@ def pending_markers(
             if edit is not None:
                 markers.append(edit)
             continue
-        names = read_wire_names(node)
+        names = read_spelled_names(node)
         if len(names) != 1:
             continue  # a business method, or a getter that reads no single property
-        wire = names.pop()
-        declared = properties.get(wire)
+        name = names.pop()
+        declared = properties.get(name)
         if declared is None:
             continue  # a client-side convenience, not a column of this type
         suffix = ", navigation=True" if declared.navigation else ""
-        marker = f'    @odata(name="{wire}"{suffix})\n'
+        marker = f'    @odata(name="{name}"{suffix})\n'
         markers.append(Edit(node.decorator_list[0].lineno, None, marker))
     return markers
 

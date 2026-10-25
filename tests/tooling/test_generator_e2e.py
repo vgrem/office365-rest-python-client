@@ -107,7 +107,7 @@ def test_sharepoint_generates_all_kinds_and_methods(tmp_path: Path) -> None:
 
     assert "class Widget(Entity):" in entity
     assert "def do_thing" in entity  # bound FunctionImport -> generated method
-    # Every generated getter carries its wire name, so no caller spells it again.
+    # Every generated getter carries its OData name, so no caller spells it again.
     assert '@odata(name="Title")' in entity
     assert "from office365.runtime.types.odata_property import odata" in entity
     assert "class WidgetSettings(ClientValue):" in complex_type

@@ -74,7 +74,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 #: Identity and the two fields a dedupe checks; narrower than ``CONTACT_COLUMNS``
 #: on purpose — it runs per item. Spelled through the model so a rename cannot
 #: leave it stale.
-_EXISTING_COLUMNS = [Contact.wire_name(attr) for attr in ("id", "display_name", "email_addresses")]
+_EXISTING_COLUMNS = [Contact.odata_name(attr) for attr in ("id", "display_name", "email_addresses")]
 
 
 class ContactSource(ServiceSource[Contact]):

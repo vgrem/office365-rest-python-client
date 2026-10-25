@@ -2,7 +2,7 @@
 
 Every question the runtime asks about a type — which columns ``$select`` may name,
 which navigations ``$expand`` may reach, which names the service assigns, which
-Python attribute spells which wire name — is a projection of the same declarations.
+Python attribute spells which OData name — is a projection of the same declarations.
 Asked separately they became six class attributes and four loops over one dict;
 asked as one object they are attributes of a fact built once, when the class is
 created::
@@ -10,7 +10,7 @@ created::
     Event._schema.columns  # the columns $select accepts
     Event._schema.navigations  # what $expand can reach
     Event._schema.readonly  # what a request may not send
-    Event._schema.by_attr  # python attribute -> wire name
+    Event._schema.by_attr  # python attribute -> OData name
     Event._schema.declared_limits()  # the @limit declarations of the type and its members
 
 The build is eager because a class body is complete by the time
@@ -62,17 +62,17 @@ class TypeSchema:
     class body that declared them (a getter carries its own row).
     """
 
-    #: Wire name -> declaration, in declaration order (base class first).
+    #: OData name -> declaration, in declaration order (base class first).
     properties: Mapping[str, ODataPropertyMeta] = _EMPTY_MAP
-    #: The wire names ``$select`` accepts: declarations that are not navigations.
+    #: The OData names ``$select`` accepts: declarations that are not navigations.
     columns: Tuple[str, ...] = ()
-    #: The wire names ``$expand`` can reach.
+    #: The OData names ``$expand`` can reach.
     navigations: Tuple[str, ...] = ()
-    #: Python attribute name -> wire name, for the declared getters.
+    #: Python attribute name -> OData name, for the declared getters.
     by_attr: Mapping[str, str] = _EMPTY_MAP
-    #: Wire names the service assigns: a response carries them, a request may not.
+    #: OData names the service assigns: a response carries them, a request may not.
     readonly: frozenset[str] = frozenset()
-    #: Wire names a request always sends, even when nobody set them.
+    #: OData names a request always sends, even when nobody set them.
     persistable: frozenset[str] = frozenset()
     #: The ``@limit`` declarations on the type itself, accumulated up the hierarchy: a
     #: subclass is subject to its base class's limits and its own.
@@ -86,11 +86,11 @@ class TypeSchema:
         properties = _collect_properties(model)
         member_limits = MappingProxyType(collect_limit_meta(model))
         by_attr: Dict[str, str] = {}
-        for wire_name, declared in properties.items():
+        for name, declared in properties.items():
             if declared.attr:
                 # First declaration wins, as the scan this replaces did: one getter can
-                # be declared under more than one wire name.
-                by_attr.setdefault(declared.attr, wire_name)
+                # be declared under more than one OData name.
+                by_attr.setdefault(declared.attr, name)
         return cls(
             properties=MappingProxyType(properties),
             columns=tuple(

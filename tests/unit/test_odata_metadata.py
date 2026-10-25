@@ -1,6 +1,6 @@
-"""Generated getters declare their own OData metadata (wire name, navigation).
+"""Generated getters declare their own OData metadata (name, navigation).
 
-The wire name is a fact about the CSDL, not something derivable from the attribute
+The OData name is a fact about the CSDL, not something derivable from the attribute
 name: ``iCalUId`` and ``icalUid`` both round-trip through a snake-case guess, and
 only one of them is a real column. These tests pin the declaration and the codemod
 that back-filled it onto files the generator will not re-render.
@@ -54,7 +54,7 @@ _spec.loader.exec_module(_mark_odata)
 
 
 @pytest.mark.parametrize(("service", "root"), [("graph", "office365/outlook"), ("sharepoint", "office365/sharepoint")])
-def test_every_getter_that_spells_a_wire_name_declares_it(service: str, root: str) -> None:
+def test_every_getter_that_spells_an_odata_name_declares_it(service: str, root: str) -> None:
     # A getter reads a name the CSDL knows and leaves it undeclared, so the property is
     # unselectable and unmappable. The back-fill closed that; this holds it closed.
     catalog = _mark_odata.load_catalog(service)
@@ -77,13 +77,13 @@ def test_select_all_is_the_projection_the_declarations_describe():
     assert len(columns) == len(set(columns))
 
 
-def test_expandable_is_the_complement_of_select_all():
-    expandable = Event.expandable()
+def test_expand_all_is_the_complement_of_select_all():
+    expand_all = Event.expand_all()
 
-    assert "singleValueExtendedProperties" in expandable
-    assert "instances" in expandable
-    assert "iCalUId" not in expandable
-    assert not set(expandable) & set(Event.select_all())
+    assert "singleValueExtendedProperties" in expand_all
+    assert "instances" in expand_all
+    assert "iCalUId" not in expand_all
+    assert not set(expand_all) & set(Event.select_all())
 
 
 def _declared_kind(cls: type, name: str) -> Optional[str]:
@@ -113,12 +113,12 @@ def test_a_declared_member_is_a_navigation_exactly_when_its_type_is_a_client_obj
     checked_types = (Event, Message, Contact, ListItem, Navigation, NavigationNode)
     disagreements, covered = [], set()
     for cls in checked_types:
-        for attr, wire in cls._schema.by_attr.items():
+        for attr, name in cls._schema.by_attr.items():
             kind = _declared_kind(cls, attr)
             if kind is None:
                 continue
             covered.add(cls)
-            declared = cls._schema.properties[wire]
+            declared = cls._schema.properties[name]
             if (kind == "object") != bool(declared.navigation):
                 disagreements.append(f"{cls.__name__}.{attr}: {kind}, navigation={declared.navigation}")
     assert disagreements == []
@@ -128,7 +128,7 @@ def test_a_declared_member_is_a_navigation_exactly_when_its_type_is_a_client_obj
 def test_a_column_the_service_refuses_is_declared_but_not_offered():
     """Probed live: ``$select`` answers 400 for these names, and only on these types.
 
-    The declaration stays — hydration and comparison still know the wire name — while the
+    The declaration stays — hydration and comparison still know the OData name — while the
     projection leaves it out, so ``select_all()`` is a request the service accepts rather
     than a list that happens to contain everything. The refusal is a type's fact: the
     Shield flag is answered for a ``ListItem`` and refused for a ``Web``.
@@ -150,9 +150,9 @@ def test_a_securable_projects_its_flag_and_expands_its_role_assignments():
     assigns, which is why it comes back on a response and never on a request.
     """
     assert "HasUniqueRoleAssignments" in ListItem.select_all()
-    assert "RoleAssignments" in ListItem.expandable()
+    assert "RoleAssignments" in ListItem.expand_all()
     assert "RoleAssignments" not in ListItem.select_all()
-    assert ListItem.wire_name("has_unique_role_assignments") == "HasUniqueRoleAssignments"
+    assert ListItem.odata_name("has_unique_role_assignments") == "HasUniqueRoleAssignments"
 
 
 def test_a_link_the_service_will_not_follow_on_its_own_is_not_expandable():
@@ -163,8 +163,8 @@ def test_a_link_the_service_will_not_follow_on_its_own_is_not_expandable():
     filtered spelling stays reachable through a raw path.
     """
     assert "extensions" in Event._schema.navigations
-    assert "extensions" not in Event.expandable()
-    assert "attachments" in Event.expandable()
+    assert "extensions" not in Event.expand_all()
+    assert "attachments" in Event.expand_all()
 
 
 def test_a_column_the_service_assigns_never_travels_back():
@@ -177,12 +177,12 @@ def test_a_column_the_service_assigns_never_travels_back():
     assert item.has_unique_role_assignments is True
 
 
-def test_wire_name_answers_for_an_attribute_and_refuses_an_unknown_one():
-    assert Event.wire_name("ical_uid") == "iCalUId"
-    assert Message.wire_name("from_") == "from"  # a reserved word, renamed by the generator
+def test_odata_name_answers_for_an_attribute_and_refuses_an_unknown_one():
+    assert Event.odata_name("ical_uid") == "iCalUId"
+    assert Message.odata_name("from_") == "from"  # a reserved word, renamed by the generator
     # A naming inverse would happily answer i_cal_u_id here; the declaration knows better.
     with pytest.raises(AttributeError, match="not a declared property"):
-        Event.wire_name("i_cal_u_id")
+        Event.odata_name("i_cal_u_id")
 
 
 def test_no_served_module_has_a_column_without_a_declared_type():
@@ -317,8 +317,8 @@ def test_a_navigation_declares_one_column_and_reaches_its_bars():
     name and promised three.
     """
     assert Navigation.select_all() == ["UseShared"]
-    assert Navigation.expandable() == ["QuickLaunch", "TopNavigationBar"]
-    assert Navigation.wire_name("use_shared") == "UseShared"
+    assert Navigation.expand_all() == ["QuickLaunch", "TopNavigationBar"]
+    assert Navigation.odata_name("use_shared") == "UseShared"
 
 
 def test_a_navigation_node_projects_the_columns_a_read_returns():
@@ -335,7 +335,7 @@ def test_a_navigation_node_projects_the_columns_a_read_returns():
         "IsDocLib",
         "ListTemplateType",
     ]
-    assert NavigationNode.expandable() == ["Children", "TitleResource"]
+    assert NavigationNode.expand_all() == ["Children", "TitleResource"]
     # IsVisible and IsExternal are here because the service owns them: probed live,
     # neither a create body nor a merge at QuickLaunch(<id>) changes either flag.
     assert NavigationNode._schema.readonly == {
@@ -359,7 +359,7 @@ def test_a_navigation_node_reads_the_flags_the_service_spells():
 
     assert node.is_external is True
     assert node.is_visible is False
-    assert node.wire_name("is_external") == "IsExternal"
+    assert node.odata_name("is_external") == "IsExternal"
     # A request may not send the names the service assigns -- the two flags included:
     # a merge that asks for IsVisible=False reads back True, so asking is pointless.
     assert node.to_json(V4JsonFormat("none")) == {

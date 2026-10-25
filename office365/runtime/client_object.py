@@ -61,7 +61,7 @@ class ClientObject:
     #: instance; see :func:`office365.runtime.odata.edm.edm_type_name`.
     _odata_type_name: ClassVar[Optional[str]] = None
 
-    #: Declared wire names this type's own service refuses to project. The fact is per
+    #: Declared OData names this type's own service refuses to project. The fact is per
     #: type, not per property -- ``ShieldAddRoleAssignmentPushdown`` is answered on a
     #: ``ListItem`` and refused on a ``Web`` -- so it is stated by the type that saw the
     #: refusal, and the declaration stays intact for hydration and comparison.
@@ -73,7 +73,7 @@ class ClientObject:
 
     @classmethod
     def select_all(cls) -> List[str]:
-        """The declared columns of this type: every wire name ``$select`` accepts here.
+        """The declared columns of this type: every OData name ``$select`` accepts here.
 
         A navigation property is left out: the service reaches it through the path,
         not through a projection, and naming one in ``$select`` is an error. So is a
@@ -85,8 +85,9 @@ class ClientObject:
         return list(cls._schema.columns)
 
     @classmethod
-    def expandable(cls) -> List[str]:
-        """The declared navigation properties ``$expand`` can reach.
+    def expand_all(cls) -> List[str]:
+        """The declared navigation properties ``$expand`` can reach, as ``select_all()``
+        lists the ones ``$select`` accepts.
 
         A link is not a promise: ``$expand`` on ``Event.extensions`` is refused unless a
         ``$filter`` is supplied, so a declaration may say so and keep the name out of
@@ -97,7 +98,7 @@ class ClientObject:
         ]
 
     @classmethod
-    def wire_name(cls, attr: str) -> str:
+    def odata_name(cls, attr: str) -> str:
         """The OData name of a declared getter, given its Python attribute name.
 
         Raises:

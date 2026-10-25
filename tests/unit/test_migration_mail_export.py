@@ -211,7 +211,7 @@ def test_the_projection_selects_exactly_what_the_export_records():
     )
     recorded = MessageRecord.of(Message(offline_context()).hydrate(_INBOX[0]), "Inbox").to_json()
 
-    assert {Message.wire_name(attribute) for attribute in read} <= set(MessageRecord.columns)
+    assert {Message.odata_name(attribute) for attribute in read} <= set(MessageRecord.columns)
     assert set(recorded) - set(MessageRecord.provenance) == set(MessageRecord.columns)
     assert set(MessageRecord.columns) <= set(Message.select_all())
 

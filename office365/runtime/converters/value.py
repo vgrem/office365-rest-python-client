@@ -137,7 +137,7 @@ def _resolve_declared_type(cls: type, name: str) -> Any:
             # runtime, but the name is not resolvable here.
             declared = None
         except TypeError:
-            # ``attr`` is not a function (a class constant sharing the wire name).
+            # ``attr`` is not a function (a class constant sharing the OData name).
             declared = None
         if declared is not None:
             return _unwrap_type(declared)

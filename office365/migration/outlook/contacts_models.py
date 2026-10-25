@@ -153,7 +153,7 @@ class ContactRecord(SidecarRecord):
         dedupe index rather than by the service.
         """
         options = self.options_class() if options is None else options
-        left_out = {Contact.wire_name(attr) for attr in withheld(options)}
+        left_out = {Contact.odata_name(attr) for attr in withheld(options)}
         body = {key: value for key, value in self.restored().items() if value and key not in left_out}
         display_name = str(body.get("displayName") or "").strip()
         if not display_name:

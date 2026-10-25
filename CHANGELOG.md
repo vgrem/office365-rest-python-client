@@ -43,9 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   data-pipeline streaming entry (`from_csv`, `from_ndjson`, ...).
   `JsonProfile.scoped(Model, only=...,
   without=...)` narrows any profile to some properties of one model (attribute names,
-  checked against its declarations; a nested value that shares a wire name is untouched,
+  checked against its declarations; a nested value that shares an OData name is untouched,
   and a field the scope left out is not filled back in by a comparison rule).
-  `ClientValue.wire_name` is the mirror of `ClientObject.wire_name`, so a scope narrows a
+  `ClientValue.odata_name` is the mirror of `ClientObject.odata_name`, so a scope narrows a
   value (`EmailAddress`) as well as an entity.
   `ClientObject.to_json` is typed `Dict[str, Any]` (a collection's list form is its own
   override), so entity callers no longer cast.
@@ -59,9 +59,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `key` followed). `persist_changes` stays `True` for models and `False` for the
   response sinks (results, collections), and the protocol says why.
 
-- Generated Graph getters now declare their OData wire name in place
+- Generated Graph getters now declare their OData name in place
   (`@odata(name="iCalUId")`, `office365.runtime.types.odata_property`), so nothing
-  spells a wire name twice and the awkward ones resolve:
+  spells an OData name twice and the awkward ones resolve:
   `declared_type(Event, "iCalUId")` answers `str` where it used to answer `None`
   (a `to_snake_case` guess spells it `i_cal_u_id`). `ODataPropertyMeta.navigation`
   marks a CSDL `NavigationProperty` — the ones `$expand` reaches and `$select`
@@ -74,10 +74,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   declaration that exists but says less than the metadata — a navigation property
   without the flag, as every previously-hand-marked getter had — is finished in
   place. The declarations are answerable at runtime, so a projection is derived
-  rather than hand-written: `Event.select_all()` returns the 41 wire names `$select`
+  rather than hand-written: `Event.select_all()` returns the 41 OData names `$select`
   accepts (navigation properties excluded, `id` included via `Entity`),
-  `Event.expandable()` returns the 7 `$expand`-only ones, and
-  `Event.wire_name("ical_uid")` answers `"iCalUId"` rather than the snake-case
+  `Event.expand_all()` returns the 7 `$expand`-only ones, and
+  `Event.odata_name("ical_uid")` answers `"iCalUId"` rather than the snake-case
   misspelling; an attribute with no declaration raises `AttributeError` listing the
   ones that do. Declaring an enum-typed property makes a read answer with the
   generated enum member instead of the raw string; `CalendarSource` compares `type`
@@ -117,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `AttachmentItem`, `SearchFolder`, `MessageRule`), and `would mark:` is now 0 for both
   services.
 - What is left is a list, not a guess: 186 getters in `office365/sharepoint` still spell a
-  wire name their own type's metadata does not declare — 96 in 24 modules whose class the
+  OData name their own type's metadata does not declare — 96 in 24 modules whose class the
   CSDL does not describe at all (`SPFarm`, `SPActivityEntity`, `Sitesharing`, ...), and 90
   in 17 modules where the type exists but the name is not among its properties
   (`principal/users/user.py` alone reads 56 of them — `aboutMe`, `accountEnabled` — and
@@ -125,7 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `childrenCount` where the CSDL says `ChildrenCount`). Whether the service answers those
   spellings is a live question, so none of them is declared on a guess.
 - `@odata(..., expandable=False)` marks a navigation `$expand` will not follow on its own:
-  `Event.expandable()` no longer names `extensions`, which the service refuses without a
+  `Event.expand_all()` no longer names `extensions`, which the service refuses without a
   `$filter` (`ErrorGraphExtensionExpandRequiresFilter`). The CSDL says a member is a link;
   it does not say the service will follow it, and neither metadata file carries an
   expandability annotation, so the one exception is stated where it was measured and the
@@ -135,7 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   ("Specified method is not supported") and, like `List`, for
   `ShieldAddRoleAssignmentPushdown` ("Non-SPListItem objects are not supported"), while a
   `ListItem` serves that one and refuses `Client_Title`, `DisplayName` and `IconOverlay`
-  instead. The declaration survives — hydration and comparison still know the wire name —
+  instead. The declaration survives — hydration and comparison still know the OData name —
   and `select_all()` leaves it out, so the projection is a request the service accepts.
 
 **Outlook mail**
@@ -475,7 +475,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - `scripts/mark_odata.py` loses its per-service type-prefix column, and `type_index` no
   longer takes one: pass 2 replaced the prefix test with catalog membership, so the column
   was dead. Both services now plan zero declarations (`0 lines in 0 modules`), and that is
-  pinned as a test: a getter added tomorrow that spells a wire name without declaring it
+  pinned as a test: a getter added tomorrow that spells an OData name without declaring it
   turns `tests/unit/test_odata_metadata.py` red.
 
 **SharePoint navigation**
@@ -487,7 +487,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   and a hidden node indistinguishable from a shown one: the migrator's "copied visible"
   warning could never fire. Probed live on a real web: **21 of 24** quick-launch nodes report
   `IsExternal: true` (`News`, `Recent`, and the `/_layouts/15/Doc.aspx?...` links included),
-  and none of them was visible to the model. The two getters now read the wire spelling and
+  and none of them was visible to the model. The two getters now read the OData spelling and
   declare it, and the rest of the node is declared with them: nine projectable columns —
   `Id`, `Title`, `Url`, `IsVisible`, `IsExternal`, `AudienceIds`, `CurrentLCID`, `IsDocLib`,
   `ListTemplateType`, each proved projectable live ($select returns exactly those keys) — and
@@ -534,7 +534,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   call; `_sync_nodes` and `_verify_bar` take `NavigationNode`s, and a create is handed the two
   fields it sends (`Title`, `Url`) instead of the `IsExternal`/`AsLastNode` `add()` never
   posts. `office365.migration.sharepoint` lost two names (`__all__` 88 → 86), and the migrator
-  no longer builds a wire name by hand.
+  no longer builds an OData name by hand.
 
   One row changes, deliberately: a differential probe over the same fixtures prints identical
   created trees, warnings, flush counts and verification notes for all six paths — capture,
@@ -556,7 +556,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **A securable declares the ACL flag it has always read, and the two navigations it had
   spelled as columns.** `SecurableObject.has_unique_role_assignments` read
   `HasUniqueRoleAssignments` out of `properties` while no `@odata` declaration named it, so
-  `wire_name("has_unique_role_assignments")` raised, `select_all()` omitted the only column
+  `odata_name("has_unique_role_assignments")` raised, `select_all()` omitted the only column
   the type really has, and nothing stopped a stored flag from travelling back in a request.
   It is now declared `readonly=True`, which is what that rule needs: a response still reports
   it (`to_json()`), a request never carries it (`to_json(profile)` filters
@@ -790,8 +790,8 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   not two, so `limits_of(List)` answers 2 rows where it leaked 3 and `limits_of(CallRecord)`
   its 4 published budgets. `@limit` stays a decorator of its own rather than keywords on
   `@odata`: a limit is written on a call (9 classes, 8 methods, 2 properties) and `@odata`
-  names a wire member, so the two sets do not touch — see `office365.runtime.limits` for
-  why they stay apart and where they are already one.
+  names a member of the resource, so the two sets do not touch — see
+  `office365.runtime.limits` for why they stay apart and where they are already one.
 - **A throttled request now waits the interval the service asked for.**
   `execute_query_retry` retried a `429`/`503` on its exponential backoff and ignored
   `Retry-After` unless the caller passed a `failure_callback` of their own, so the
@@ -901,10 +901,10 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   and nothing else), so a cancelled event was exported with `is_cancelled: false`
   even though `CalendarExportOptions.include_cancelled` defaults to False. Both
   constants are now `Event.select_all()`/`Contact.select_all()` —
-  41 and 40 wire names, navigation properties excluded by construction — and the
-  adapters' narrower dedupe reads are spelled through `wire_name()`. The envelopes
+  41 and 40 OData names, navigation properties excluded by construction — and the
+  adapters' narrower dedupe reads are spelled through `odata_name()`. The envelopes
   read the model's getters (`event.subject`, `contact.display_name`) instead of
-  `get_property("displayName")`, so a wire name lives in exactly one place and the
+  `get_property("displayName")`, so an OData name lives in exactly one place and the
   `iCalUId`-style typo that `get_property` answers with `None` is unrepresentable.
   Live: a seeded calendar exported, imported into a second calendar, re-imported
   (3 skipped as already present) with matching digests; the same round trip for a
