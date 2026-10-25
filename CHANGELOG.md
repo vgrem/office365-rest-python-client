@@ -449,6 +449,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+**A model declares the names its type carries**
+
+- **Breaking:** `SP.User` (`office365.sharepoint.principal.users.user`) loses the 58
+  profile getters that were a second copy of `SP.Directory.User`: `about_me`, `skills`,
+  `schools`, `hire_date`, the `share_point_*_first_run` flags, and `id_`, which read `"id"`
+  where the payload says `"Id"` and so answered `None` always. `SP.User` carries thirteen
+  properties and two links and answers nothing else -- the service drops any other name
+  from `$select` silently -- and the profile fields live on
+  `office365.sharepoint.directory.users.user.User` (`SP.Directory.User`, all 63 declared)
+  or behind `PeopleManager.get_user_profile_properties`. `User.get_user_profile_properties`
+  goes as well: it returned a `UserProfilePropertiesForUser` entity that no query was ever
+  added to, and addressing that CSOM type on SharePoint Online answers
+  `InvalidClientQueryException`. The file goes from 451 to 148 lines. `Web.site_id` goes
+  too: it read `"SiteId"`, which `SP.Web` does not declare and
+  the service does not send on either a plain read or a projection (118 of 119 columns
+  answered live) -- a site collection's guid is `site.id`.
+- `PeopleManager.get_user_profile_properties` answers properties by name, not by the
+  ordinal the endpoint keys them with: `{"AboutMe": "", "Skills": None, ...}` (115 entries
+  live) instead of `{"0": {"Key": "0|AboutMe", "Value": "", "ValueType": "Edm.String"}}`.
+  The prefix is stripped once, in `parse_key_value`, so the plainly keyed
+  `PersonProperties.UserProfileProperties` and this reader agree and `ValueType` still
+  types each value. The two example snippets that printed `props.skills` and
+  `props.department` -- neither of which `PersonProperties` has -- now print what exists.
+- `scripts/mark_odata.py` loses its per-service type-prefix column, and `type_index` no
+  longer takes one: pass 2 replaced the prefix test with catalog membership, so the column
+  was dead. Both services now plan zero declarations (`0 lines in 0 modules`), and that is
+  pinned as a test: a getter added tomorrow that spells a wire name without declaring it
+  turns `tests/unit/test_odata_metadata.py` red.
+
 **SharePoint navigation**
 
 - **A navigation node answers the two flags SharePoint actually sends.** `is_visible` and

@@ -46,12 +46,12 @@ from generator.odata.v4.metadata_reader import ODataV4Reader  # noqa: E402
 _ODATA_IMPORT = "from office365.runtime.types.odata_property import odata"
 _GENERATOR_DIR = pathlib.Path(__file__).resolve().parents[1] / "generator"
 
-#: Service -> (metadata source, CSDL type prefix, reader). A Graph module names its own
+#: Service -> (metadata source, reader). A Graph module names its own
 #: type; a generated SharePoint module does not — the class name is the only handle
 #: back, which :func:`type_index` inverts from the CSDL last segment.
 _SERVICES = {
-    "graph": ("graph", "microsoft.graph.", ODataV4Reader),
-    "sharepoint": ("sharepoint", "SP.", ODataV3Reader),
+    "graph": ("graph", ODataV4Reader),
+    "sharepoint": ("sharepoint", ODataV3Reader),
 }
 
 
@@ -80,7 +80,7 @@ Edits = List[Edit]
 
 def load_catalog(service: str) -> Catalog:
     """Map each CSDL type name to the properties it declares itself."""
-    source, _, reader = _SERVICES[service]
+    source, reader = _SERVICES[service]
     options = GeneratorOptions.load(source, _GENERATOR_DIR)
     model = reader(options.metadata_path).read()
 
@@ -124,7 +124,7 @@ class Subject(NamedTuple):
     properties: Dict[str, Declared]
 
 
-def subject(tree: ast.Module, catalog: Catalog, index: Dict[str, Dict[str, Declared]], prefix: str) -> Optional[Subject]:
+def subject(tree: ast.Module, catalog: Catalog, index: Dict[str, Dict[str, Declared]]) -> Optional[Subject]:
     """The module class whose CSDL type is known — never a guess.
 
     A module may name its own type (``entity_type_name``); failing that, its class name
@@ -139,7 +139,7 @@ def subject(tree: ast.Module, catalog: Catalog, index: Dict[str, Dict[str, Decla
     return Subject(matches[0], index[matches[0].name.lower()]) if len(matches) == 1 else None
 
 
-def type_index(catalog: Catalog, prefix: str) -> Dict[str, Dict[str, Declared]]:
+def type_index(catalog: Catalog) -> Dict[str, Dict[str, Declared]]:
     """Lowercased class name -> declared properties, for modules that name no CSDL type.
 
     A generated SharePoint module usually spells its type name (``entity_type_name``),
@@ -149,8 +149,7 @@ def type_index(catalog: Catalog, prefix: str) -> Dict[str, Dict[str, Declared]]:
     """
     owners: Dict[str, List[str]] = {}
     for full_name in catalog:
-        if full_name.startswith(prefix.lower()):
-            owners.setdefault(full_name.rsplit(".", 1)[-1], []).append(full_name)
+        owners.setdefault(full_name.rsplit(".", 1)[-1], []).append(full_name)
     return {last: catalog[names[0]] for last, names in owners.items() if len(names) == 1}
 
 
@@ -230,13 +229,13 @@ def pending_markers(
     return markers
 
 
-def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]], prefix: str) -> Edits:
+def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]]) -> Edits:
     """The line insertions one module needs, without touching it."""
     source = path.read_text(encoding="utf-8")
     if "@property" not in source:
         return []
     tree = ast.parse(source)
-    found = subject(tree, catalog, index, prefix)
+    found = subject(tree, catalog, index)
     if found is None:
         return []
     markers = pending_markers(tree, found.node, found.properties, source.splitlines(keepends=True))
@@ -251,9 +250,9 @@ def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str,
     return markers + [Edit(last_import + 1, None, _ODATA_IMPORT + "\n")]
 
 
-def mark_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]], prefix: str) -> int:
+def mark_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]]) -> int:
     """Apply the planned declarations to one module; return how many were applied."""
-    markers = plan_module(path, catalog, index, prefix)
+    markers = plan_module(path, catalog, index)
     if not markers:
         return 0
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -275,12 +274,11 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     catalog = load_catalog(args.service)
-    prefix = _SERVICES[args.service][1]
-    index = type_index(catalog, prefix)
+    index = type_index(catalog)
     files = markers = 0
     for path in sorted(pathlib.Path(args.root).rglob("*.py")):
-        planned = plan_module(path, catalog, index, prefix) if args.dry_run else None
-        added = len(planned) if planned is not None else mark_module(path, catalog, index, prefix)
+        planned = plan_module(path, catalog, index) if args.dry_run else None
+        added = len(planned) if planned is not None else mark_module(path, catalog, index)
         if added:
             files += 1
             markers += added

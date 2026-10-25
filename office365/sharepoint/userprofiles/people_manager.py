@@ -6,6 +6,7 @@ from uuid import UUID
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
+from office365.runtime.converters.keyvalue import parse_key_value_collection
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -145,15 +146,27 @@ class PeopleManager(Entity):
     def get_user_profile_properties(self, user: Union[str, User]) -> ClientResult[dict]:
         """Gets the specified user profile properties for the specified user.
 
+        The service answers a CSOM property bag keyed by ordinal --
+        ``{"0": {"Key": "0|AboutMe", "Value": "", "ValueType": "Edm.String"}, ...}`` -- so the
+        result carries the properties by name instead: ``{"AboutMe": "", ...}``.
+
         Args:
             user (str or User): User or Login name of the specified user.
         """
         return_type = ClientResult(self.context, {})
 
+        def _flatten(result: ClientResult) -> None:
+            bag = result.value
+            if isinstance(bag, dict):
+                flat = parse_key_value_collection(bag)
+                bag.clear()
+                bag.update(flat)
+
         def _get_user_profile_properties(account_name: str) -> None:
             params = {"accountName": account_name}
             qry = ServiceOperationQuery(self, "GetUserProfileProperties", params, None, None, return_type)
             self.context.add_query(qry)
+            return_type.after_execute(_flatten)
 
         _ensure_user(user, _get_user_profile_properties)
         return return_type

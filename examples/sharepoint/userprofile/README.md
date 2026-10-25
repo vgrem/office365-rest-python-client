@@ -71,11 +71,15 @@ ctx = ClientContext("https://contoso.sharepoint.com/sites/team").with_client_cer
     "contoso.onmicrosoft.com", client_id="client_id", thumbprint="thumbprint", cert_path="./cert.pem"
 )
 
-# Get current user's profile properties
+# The person record carries who somebody is
 props = ctx.people_manager.get_properties_for(ctx.web.current_user).execute_query()
 print(f"Display name: {props.display_name}")
-print(f"Department: {props.department}")
-print(f"Skills: {props.skills}")
+print(f"Email: {props.email}")
+
+# The profile itself carries the fields the record does not (Department, Skills, ...)
+profile = ctx.people_manager.get_user_profile_properties(ctx.web.current_user).execute_query()
+print(f"Department: {profile.value.get('Department')}")
+print(f"Skills: {profile.value.get('Skills')}")
 
 # Get trending tags (note: the API takes the context)
 tags = ctx.people_manager.get_trending_tags(ctx).execute_query()

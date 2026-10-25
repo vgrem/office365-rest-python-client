@@ -5,8 +5,10 @@ name: ``iCalUId`` and ``icalUid`` both round-trip through a snake-case guess, an
 only one of them is a real column. These tests pin the declaration and the codemod
 that back-filled it onto files the generator will not re-render.
 
-Completeness is claimed per module, never globally: only the packages listed here
-are expected to be fully marked.
+Completeness is claimed for the two services whose metadata the codemod reads --
+``office365/outlook`` against ``Graph.xml`` and ``office365/sharepoint`` against
+``SharePoint.xml`` -- and it is claimed by running the codemod: a gate that re-spelled
+the back-fill's rule would agree with itself.
 """
 
 from __future__ import annotations
@@ -42,8 +44,27 @@ from office365.sharepoint.navigation.nodes.node import NavigationNode
 from office365.sharepoint.webs.web import Web
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-#: Packages whose getters are expected to be fully declared today.
+#: Packages whose columns are expected to declare their value type today.
 _SERVED = ("office365/outlook",)
+
+_spec = importlib.util.spec_from_file_location("_mark_odata", _REPO_ROOT / "scripts" / "mark_odata.py")
+assert _spec is not None and _spec.loader is not None
+_mark_odata = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mark_odata)
+
+
+@pytest.mark.parametrize(("service", "root"), [("graph", "office365/outlook"), ("sharepoint", "office365/sharepoint")])
+def test_every_getter_that_spells_a_wire_name_declares_it(service: str, root: str) -> None:
+    # A getter reads a name the CSDL knows and leaves it undeclared, so the property is
+    # unselectable and unmappable. The back-fill closed that; this holds it closed.
+    catalog = _mark_odata.load_catalog(service)
+    index = _mark_odata.type_index(catalog)
+    planned = {
+        str(path.relative_to(_REPO_ROOT)): len(markers)
+        for path in sorted((_REPO_ROOT / root).rglob("*.py"))
+        if (markers := _mark_odata.plan_module(path, catalog, index))
+    }
+    assert planned == {}
 
 
 def test_select_all_is_the_projection_the_declarations_describe():

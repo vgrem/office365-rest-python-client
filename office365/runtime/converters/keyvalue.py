@@ -28,6 +28,10 @@ def parse_key_value(value: Dict[str, Any]) -> Tuple[Optional[str], Any]:
         RuntimeWarning: When type conversion fails
     """
     key = value.get("Key")
+    if key is not None:
+        # A user-profile bag keys each entry by ordinal (``"0|AboutMe"``) while the same
+        # parser also reads plainly keyed bags; the property name is the tail either way.
+        key = key.rsplit("|", 1)[-1]
     raw_value = value.get("Value")
     value_type = value.get("ValueType")
 

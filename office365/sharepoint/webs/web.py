@@ -2114,12 +2114,6 @@ class Web(SecurableObject):
         """Specifies the site identifier for the site"""
         return self.properties.get("Id", None)
 
-    @odata(name="SiteId")
-    @property
-    def site_id(self) -> Optional[str]:
-        """Specifies the site collection identifier for the site collection that contains the site"""
-        return self.properties.get("SiteId", None)
-
     @odata(name="Language")
     @property
     def language(self) -> Optional[int]:
