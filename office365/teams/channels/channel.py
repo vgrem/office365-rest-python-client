@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.runtime.client_result import ClientResult
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -17,6 +18,7 @@ from office365.teams.channels.provision_email_result import ProvisionChannelEmai
 from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.members.conversation import ConversationMember
+from office365.teams.quotas import CHANNEL_MESSAGES_READ, CHANNEL_MESSAGES_WRITE
 from office365.teams.tabs.tab import TeamsTab
 
 if TYPE_CHECKING:
@@ -160,7 +162,11 @@ class Channel(Entity):
             EntityCollection(self.context, TeamsTab, ResourcePath("tabs", self.resource_path)),
         )
 
+    # Both budgets live on the member that names the endpoint, not on the collection type:
+    # ``ChatMessageCollection`` serves a channel and a chat alike, and their write budgets
+    # differ (500 against 200 requests a second), so only the parent knows which applies.
     @property
+    @limit(*CHANNEL_MESSAGES_READ, *CHANNEL_MESSAGES_WRITE)
     def messages(self) -> ChatMessageCollection:
         """A collection of all the messages in the channel."""
         return self.properties.get(

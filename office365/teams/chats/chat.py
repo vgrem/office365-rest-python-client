@@ -8,6 +8,7 @@ from office365.directory.permissions.grants.resource_specific import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.teams.apps.installation import TeamsAppInstallation
@@ -16,6 +17,7 @@ from office365.teams.chats.messages.info import ChatMessageInfo
 from office365.teams.chats.viewpoint import ChatViewpoint
 from office365.teams.members.conversation_collection import ConversationMemberCollection
 from office365.teams.operations.async_operation import TeamsAsyncOperation
+from office365.teams.quotas import CHAT_MESSAGES_READ, CHAT_MESSAGES_WRITE
 from office365.teams.tabs.tab import TeamsTab
 from office365.teams.teamwork.online_meeting_info import TeamworkOnlineMeetingInfo
 
@@ -104,7 +106,9 @@ class Chat(Entity):
             "members", ConversationMemberCollection(self.context, ResourcePath("members", self.resource_path))
         )
 
+    # The endpoint's budgets, not the collection's: see ``Channel.messages``.
     @property
+    @limit(*CHAT_MESSAGES_READ, *CHAT_MESSAGES_WRITE)
     def messages(self) -> ChatMessageCollection:
         """A collection of all the messages in the chat. Nullable."""
         return self.properties.get(

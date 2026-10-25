@@ -780,6 +780,30 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
 
 **Runtime**
 
+- **The Teams budgets are declared on the calls they cap.** `office365.teams.quotas` published
+  32 rows, 20 of them a 1:1 map onto the eight throttled teams operations the public table
+  names — and not one was reachable from a `_schema`. The table was written for binding and
+  never bound: `declared_limits(Team)` was empty, and the Service limits page printed `—` for
+  the whole Teams table. The catalog now groups its rows by *operation* (`TEAM_READ`,
+  `TEAM_CHANNELS`, `CHANNEL_MESSAGES_READ`, `CHANNEL_MESSAGES_WRITE`, `CHAT_MESSAGES_READ`,
+  `CHAT_MESSAGES_WRITE`), because the operation is the resource a request is counted against,
+  so one `@limit(*GROUP)` binds one endpoint's rows — and each group rides the member that
+  names its endpoint: `Team` answers the 6 rows of `GET /teams/{id}`, `Team.channels` the 3
+  of `GET /teams/{id}/channels`, `Channel.messages` 7 (3 read + 4 write),
+  `Chat.messages` 7. `ChatMessageCollection` is what decides the placement: it serves a
+  channel and a chat, whose write budgets differ (500 against 200 requests a second), so a
+  row declared on the collection would be false for half its instances and the budget belongs
+  on the accessor that knows which parent it came from — the collection declares nothing. The
+  12 default rows stay unbound, since a default names no resource.
+- **A declared budget says what it is counted against, and one request is one request.**
+  Stacking a read group and a write group on one member made the `Limits:` section print
+  seven lines that all began `microsoft teams: … requests / 1s` — it could not say which row
+  was the read budget, which the write, nor whether *1* was per app, per user or per team.
+  Each line now names the row's request type and the dimension it is counted against
+  (`microsoft teams (read on app): 200 requests / 1s`, `… (write on team, channel or chat):
+  1 request / 1s`); a static threshold states neither, so its line renders exactly as before.
+  A singular value also takes a singular unit now (`1 request`, `1 item`, `1 byte`) — the
+  Teams table made it unavoidable, seven of its rows cap a single request a second.
 - **A type answers the limits it declares on itself.** `limits_of(cls)` read only the
   schema's `member_limits`, so a model that writes a quota on the class — every
   `@limit(*QUOTAS)` model, such as `Workbook`'s two Excel ceilings — answered `()` and

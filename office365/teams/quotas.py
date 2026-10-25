@@ -20,6 +20,8 @@ Source: https://learn.microsoft.com/en-us/graph/throttling-limits#microsoft-team
 
 from __future__ import annotations
 
+from typing import Tuple
+
 from office365.runtime.limits import Limit, LimitKind, register_catalog
 
 _DOC = "https://learn.microsoft.com/en-us/graph/throttling-limits#microsoft-teams-service-limits"
@@ -51,43 +53,58 @@ _DEFAULTS = tuple(
     for scope, value in zip(_SCOPES, values)
 )
 
-_RESOURCES = (
-    # (operation, dimension, rps) — only the dimensions the published table fills in.
-    ("GET /teams/{id}", "app", 1_500),
-    ("GET /teams/{id}", "app+tenant", 30),
-    ("GET /teams/{id}", "team, channel or chat", 4),
-    ("GET /teams/{id}/channels", "app", 1_200),
-    ("GET /teams/{id}/channels", "app+tenant", 60),
-    ("GET /teams/{id}/channels", "team, channel or chat", 4),
-    ("POST /teams/{id}/channels/{id}/messages", "app", 500),
-    ("POST /teams/{id}/channels/{id}/messages", "app+tenant", 50),
-    ("POST /teams/{id}/channels/{id}/messages", "team, channel or chat", 1),
-    ("POST /teams/{id}/channels/{id}/messages", "user", 1),
-    ("GET /teams/{id}/channels/{id}/messages", "app", 200),
-    ("GET /teams/{id}/channels/{id}/messages", "app+tenant", 20),
-    ("GET /teams/{id}/channels/{id}/messages", "team, channel or chat", 1),
-    ("GET /chats/{id}/messages", "app", 200),
-    ("GET /chats/{id}/messages", "app+tenant", 20),
-    ("GET /chats/{id}/messages", "team, channel or chat", 1),
-    ("POST /chats/{id}/messages", "app", 200),
-    ("POST /chats/{id}/messages", "app+tenant", 20),
-    ("POST /chats/{id}/messages", "team, channel or chat", 1),
-    ("POST /chats/{id}/messages", "user", 1),
+
+def _rows(operation: str, *dimensions: Tuple[str, int]) -> Tuple[Limit, ...]:
+    """The published rows of one operation, as ``(dimension, requests per second)`` pairs.
+
+    Grouped by operation because the operation *is* the resource a request is counted
+    against: a model binds the group for the call it makes. The table names a dimension
+    only where it overrides the default, which is why a group is shorter than ``_SCOPES``.
+    """
+    return tuple(
+        Limit(
+            "microsoft teams",
+            rate,
+            _SUPPORTED,
+            "requests",
+            dimension,
+            note=operation,
+            doc=_DOC,
+            window_seconds=1,
+            request_type="read" if operation.startswith("GET") else "write",
+        )
+        for dimension, rate in dimensions
+    )
+
+
+#: One group per published operation, in the table's order. A model binds the rows of the
+#: call it makes; the member that names an endpoint binds both its read and write rows.
+TEAM_READ = _rows("GET /teams/{id}", ("app", 1_500), ("app+tenant", 30), ("team, channel or chat", 4))
+TEAM_CHANNELS = _rows("GET /teams/{id}/channels", ("app", 1_200), ("app+tenant", 60), ("team, channel or chat", 4))
+CHANNEL_MESSAGES_READ = _rows(
+    "GET /teams/{id}/channels/{id}/messages", ("app", 200), ("app+tenant", 20), ("team, channel or chat", 1)
+)
+CHANNEL_MESSAGES_WRITE = _rows(
+    "POST /teams/{id}/channels/{id}/messages",
+    ("app", 500),
+    ("app+tenant", 50),
+    ("team, channel or chat", 1),
+    ("user", 1),
+)
+CHAT_MESSAGES_READ = _rows("GET /chats/{id}/messages", ("app", 200), ("app+tenant", 20), ("team, channel or chat", 1))
+CHAT_MESSAGES_WRITE = _rows(
+    "POST /chats/{id}/messages", ("app", 200), ("app+tenant", 20), ("team, channel or chat", 1), ("user", 1)
 )
 
-TEAMS_QUOTAS = _DEFAULTS + tuple(
-    Limit(
-        "microsoft teams",
-        rate,
-        _SUPPORTED,
-        "requests",
-        scope,
-        note=operation,
-        doc=_DOC,
-        window_seconds=1,
-        request_type="read" if operation.startswith("GET") else "write",
-    )
-    for operation, scope, rate in _RESOURCES
+#: The published table: the defaults no operation overrides, then every named operation.
+TEAMS_QUOTAS = (
+    _DEFAULTS
+    + TEAM_READ
+    + TEAM_CHANNELS
+    + CHANNEL_MESSAGES_READ
+    + CHANNEL_MESSAGES_WRITE
+    + CHAT_MESSAGES_READ
+    + CHAT_MESSAGES_WRITE
 )
 
 register_catalog(TEAMS_QUOTAS, product="teams")

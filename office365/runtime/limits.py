@@ -62,12 +62,17 @@ class LimitKind(Enum):
     SUPPORTED = "supported"  # tested value
 
 
+def _unit_for(value: int, unit: str) -> str:
+    """The unit as it reads next to the number: ``1 request``, ``4 requests``."""
+    return unit[:-1] if value == 1 and unit.endswith("s") else unit
+
+
 def _human_bytes(value: int) -> str:
     """Format a byte count as ``250 GB`` when it divides evenly, else ``8,000 bytes``."""
     for suffix, step in (("TB", 1024**4), ("GB", 1024**3), ("MB", 1024**2), ("KB", 1024)):
         if value >= step and value % step == 0:
             return f"{value // step} {suffix}"
-    return f"{value:,} bytes"
+    return f"{value:,} {_unit_for(value, 'bytes')}"
 
 
 @dataclass(frozen=True)
@@ -98,12 +103,13 @@ class Limit:
     request_type: str = ""
 
     def __str__(self) -> str:
+        unit = _unit_for(self.value, self.unit)
         if self.window_seconds is not None:
             window = f" / {self.window_seconds:,}s" if self.window_seconds else ""
-            return f"{self.value:,} {self.unit}{window}".strip()
+            return f"{self.value:,} {unit}{window}".strip()
         if self.unit == "bytes":
             return _human_bytes(self.value)
-        return f"{self.value:,} {self.unit}".strip()
+        return f"{self.value:,} {unit}".strip()
 
     def exceeds(self, value: int) -> bool:
         """Whether ``value`` is over this limit."""
@@ -201,6 +207,17 @@ _LIMITS_DOC = "\n    Limits:\n"
 _Decls = Tuple[LimitDecl, ...]
 
 
+def _counted_against(limit: Limit) -> str:
+    """What the row is counted against, when the catalog states it.
+
+    Two rows of one resource can carry the same number for different reasons -- a chat
+    reads and writes 200 requests a second -- so the declaration line names both the
+    request type and the dimension; a static threshold states neither and gains nothing.
+    """
+    parts = [part for part in (limit.request_type, limit.scope) if part]
+    return f" ({' on '.join(parts)})" if parts else ""
+
+
 def _append_doc(target: Callable[..., Any], decls: _Decls) -> None:
     """Append the declaration lines to the docstring, extending one ``Limits:`` block.
 
@@ -210,7 +227,7 @@ def _append_doc(target: Callable[..., Any], decls: _Decls) -> None:
     lines: list[str] = []
     for decl in decls:
         bound = f" (<= {decl.limit})" if decl.arg else ""
-        lines.append(f"      {decl.limit.name}: {decl.limit}{bound}")
+        lines.append(f"      {decl.limit.name}{_counted_against(decl.limit)}: {decl.limit}{bound}")
     if not lines:
         return
     doc = target.__doc__ or ""

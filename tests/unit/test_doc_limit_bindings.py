@@ -69,3 +69,17 @@ class TestLimitBindingScan(unittest.TestCase):
     def test_every_declared_row_of_a_bound_class_is_bound(self) -> None:
         """The scan is not a partial answer: all workbook rows are accounted for."""
         self.assertEqual({id(row) for row in Workbook.declared_limits()}, {id(row) for row in EXCEL_QUOTAS})
+
+    def test_a_row_group_named_for_its_operation_reaches_the_column(self) -> None:
+        """Teams publishes one group per operation; each row must still find its member.
+
+        The same rows are reachable under two names -- ``TEAM_CHANNELS`` and the
+        ``TEAMS_QUOTAS`` catalog that contains it -- and ``row_attrs`` keeps the first name
+        it met, so a group defined *after* the catalog would leave every Teams row in the
+        page pointing at a tuple name that no decorator mentions. The invariant is the one
+        the generator relies on: a row that names a resource has an owner.
+        """
+        published = [row for row in catalog(product="teams") if not row.note.startswith("default")]
+        self.assertTrue(published)
+        unowned = [row.note for row in published if not _bindings_module.bound_at(row, self.bindings, self.names)]
+        self.assertEqual(unowned, [])

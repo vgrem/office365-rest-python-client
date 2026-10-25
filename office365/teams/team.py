@@ -10,6 +10,7 @@ from office365.directory.permissions.grants.resource_specific import ResourceSpe
 from office365.directory.profile_photo import ProfilePhoto
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -24,6 +25,7 @@ from office365.teams.members.conversation_collection import ConversationMemberCo
 from office365.teams.members.settings import TeamMemberSettings
 from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.operations.async_operation import TeamsAsyncOperation, wait_for_operation
+from office365.teams.quotas import TEAM_CHANNELS, TEAM_READ
 from office365.teams.schedule.schedule import Schedule
 from office365.teams.specialization import TeamSpecialization
 from office365.teams.summary import TeamSummary
@@ -34,6 +36,7 @@ from office365.teams.template import TeamsTemplate
 from office365.teams.visibility_type import TeamVisibilityType
 
 
+@limit(*TEAM_READ)
 class Team(Entity):
     """A team in Microsoft Teams is a collection of channel objects. A channel represents a topic, and therefore a
     logical isolation of discussion, within a team."""
@@ -138,6 +141,7 @@ class Team(Entity):
         )
 
     @property
+    @limit(*TEAM_CHANNELS)
     def channels(self) -> ChannelCollection:
         """The collection of channels & messages associated with the team."""
         return self.properties.get(

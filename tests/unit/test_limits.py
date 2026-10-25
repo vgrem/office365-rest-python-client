@@ -17,6 +17,7 @@ from office365.runtime.limits import (
     verify_limits,
     warn_if_exceeds,
 )
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits
 from tests import test_site_url
@@ -202,4 +203,70 @@ def test_verify_limits_reports_violations():
     assert "list view threshold" in str(report)
 
 
-# ── @limit on a class (model-bound quotas) ───────────────────────────────────
+# ── @odata + @limit on one member (one decorator per fact) ────────────────
+
+_STACK_ROWS = (
+    Limit(
+        "microsoft teams",
+        200,
+        LimitKind.SUPPORTED,
+        "requests",
+        "app",
+        doc="https://example.com/throttling",
+        window_seconds=1,
+        request_type="read",
+    ),
+    Limit(
+        "microsoft teams",
+        1,
+        LimitKind.SUPPORTED,
+        "requests",
+        "user",
+        doc="https://example.com/throttling",
+        window_seconds=1,
+        request_type="write",
+    ),
+)
+
+
+class _NavigationOutermost(ClientObject):
+    """``@odata`` above ``@limit``: two facts, two decorators, one member."""
+
+    @odata(name="channels", navigation=True)
+    @property
+    @limit(*_STACK_ROWS)
+    def channels(self) -> object:
+        """The channel collection."""
+
+
+class _NavigationInnermost(ClientObject):
+    """The other order, because nothing but ``TypeSchema`` reads a marker."""
+
+    @limit(*_STACK_ROWS)
+    @odata(name="channels", navigation=True)
+    @property
+    def channels(self) -> object:
+        """The channel collection."""
+
+
+@pytest.mark.parametrize("model", [_NavigationOutermost, _NavigationInnermost], ids=lambda m: m.__name__)
+def test_a_member_is_a_navigation_and_a_budgeted_call_at_once(model):
+    """``@odata`` answers representation, ``@limit`` answers budget: they do not overlap.
+
+    Stacking them is what binds a Teams endpoint's budgets to the member that names it,
+    and the order must not matter: neither decorator reads the other's marker.
+    """
+    declared = model._schema.properties["channels"]
+    assert declared.navigation is True
+    assert "channels" not in model._schema.columns
+    assert model.select_all() == []
+    assert model.expand_all() == ["channels"]
+    assert [decl.limit for decl in limits_of(model)] == list(_STACK_ROWS)
+    # The section is written on the getter. In one order ``property`` copies that doc, in
+    # the other it has already copied it -- so read the declaration, not the copy.
+    doc = model.__dict__["channels"].fget.__doc__
+    assert doc.count("Limits:") == 1
+    assert [line.strip() for line in doc.splitlines() if line.startswith("      ")] == [
+        "microsoft teams (read on app): 200 requests / 1s",
+        "microsoft teams (write on user): 1 request / 1s",
+    ]

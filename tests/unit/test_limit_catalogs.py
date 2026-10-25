@@ -24,6 +24,10 @@ from office365.runtime.limits import (
 from office365.security import quotas as security_quotas
 from office365.sharepoint import thresholds as sharepoint_limits
 from office365.teams import quotas as teams_quotas
+from office365.teams.channels.channel import Channel
+from office365.teams.chats.chat import Chat
+from office365.teams.chats.messages.collection import ChatMessageCollection
+from office365.teams.team import Team
 
 VALID_REQUEST_TYPES = {"", "read", "write", "delete", "any"}
 
@@ -242,6 +246,58 @@ class TestCallRecordBindings(unittest.TestCase):
     def test_a_row_bound_to_two_members_is_still_one_limit(self):
         # `sessions` and `participants_v2` share the 40/20s per-record ceiling.
         self.assertEqual(len(CallRecord.declared_limits()), len({id(row) for row in CallRecord.declared_limits()}))
+
+
+class TestTeamsBindings(unittest.TestCase):
+    """A Teams endpoint's budgets live on the member that names the endpoint.
+
+    The published table names an *operation* (``GET /teams/{id}/channels``), and the
+    operation is the resource a request is counted against: ``Team`` binds
+    ``GET /teams/{id}``, the ``channels`` navigation binds ``GET /teams/{id}/channels``,
+    and each message endpoint binds its own read and write rows.
+
+    ``ChatMessageCollection`` is what decides this. It serves a channel and a chat, whose
+    write budgets differ (500 against 200 requests a second), so a row declared on the
+    collection would be false for half its instances -- and the collection is where the
+    write happens, which is why the write rows ride the accessor instead.
+    """
+
+    def test_the_entity_carries_the_rows_of_the_call_it_makes(self):
+        self.assertEqual(
+            [id(decl.limit) for decl in collect_class_limits(Team)],
+            [id(row) for row in teams_quotas.TEAM_READ],
+        )
+
+    def test_a_navigation_carries_the_rows_of_the_endpoint_it_names(self):
+        self.assertEqual(
+            [id(decl.limit) for decl in limits_of(Team.channels)],
+            [id(row) for row in teams_quotas.TEAM_CHANNELS],
+        )
+
+    def test_each_message_endpoint_declares_its_own_read_and_write_rows(self):
+        endpoints = (
+            (
+                "Channel.messages",
+                Channel.messages,
+                teams_quotas.CHANNEL_MESSAGES_READ,
+                teams_quotas.CHANNEL_MESSAGES_WRITE,
+            ),
+            ("Chat.messages", Chat.messages, teams_quotas.CHAT_MESSAGES_READ, teams_quotas.CHAT_MESSAGES_WRITE),
+        )
+        for name, member, read, write in endpoints:
+            with self.subTest(endpoint=name):
+                self.assertEqual([id(decl.limit) for decl in limits_of(member)], [id(row) for row in (*read, *write)])
+
+    def test_the_shared_collection_declares_nothing_because_it_serves_two_endpoints(self):
+        self.assertEqual(collect_class_limits(ChatMessageCollection), ())
+
+    def test_every_named_operation_is_bound_and_only_the_defaults_are_not(self):
+        bound = set()
+        for target in (Team, Team.channels, Channel.messages, Chat.messages):
+            bound |= {id(decl.limit) for decl in limits_of(target)}
+        unbound = [row for row in catalog(product="teams") if id(row) not in bound]
+        self.assertEqual([row.note for row in unbound if not row.note.startswith("default")], [])
+        self.assertTrue(unbound, "a default row names no resource, so no model can bind it")
 
 
 class TestComposableDeclarations(unittest.TestCase):
