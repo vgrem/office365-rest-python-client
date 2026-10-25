@@ -1377,19 +1377,19 @@ class Tenant(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.Tenant"
 
-    @odata(name="displayName")
+    @odata(name="displayName", system=True)
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
-    @odata(name="id")
+    @odata(name="id", system=True)
     @property
     def id_(self) -> Optional[UUID]:
         """Gets the id property"""
         return self.properties.get("id", None)
 
-    @odata(name="serviceInfo")
+    @odata(name="serviceInfo", system=True)
     @property
     def service_info(self) -> ClientValueCollection[TenantServiceInfoValue]:
         """Gets the serviceInfo property"""

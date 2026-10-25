@@ -35,7 +35,7 @@ import unicodedata
 from datetime import datetime
 from typing import Any, ClassVar, Dict, Iterable, Mapping, Sequence, Tuple, Type, TypeVar
 
-from office365.migration.outlook.offline import offline_context
+from office365.migration.offline import offline_context
 from office365.migration.outlook.restore import withheld
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_object import ClientObject

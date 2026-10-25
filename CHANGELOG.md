@@ -130,6 +130,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   it does not say the service will follow it, and neither metadata file carries an
   expandability annotation, so the one exception is stated where it was measured and the
   filtered spelling stays reachable through a raw path.
+- `@odata(..., system=True)` records where a name comes from: the metadata this client is
+  generated from does not declare it, the service spells it on the *item* payload. A list
+  item answers `AuthorId`, `EditorId`, `Created` and `Modified`, while `SP.ListItem`'s own
+  declaration is 24 names long and carries none of the four; a page adds `FileLeafRef`,
+  `WikiField` and `OData__ModerationStatus`, which the `sitepages` entity accepts and
+  answers nothing for. `ListItem.author_id`, `editor_id`, `created`, `modified` and
+  `SitePage`'s three item columns now say so, and so do `Tenant`'s `displayName`, `id` and
+  `serviceInfo` — that class's type is
+  `Microsoft.Online.SharePoint.TenantAdministration.Tenant`, which the CSDL describes
+  without those three names. The flag is *derived*, not written by hand:
+  `scripts/mark_odata.py` marks `system` exactly when the metadata has no declaration for
+  the name (before `navigation`, since a name the metadata lacks is neither a column nor a
+  navigation), and `TypeSchema.system` answers the set — the same place `@limit` and
+  `@odata` already meet. It is a fact about a declaration, so a request is unchanged:
+  `persist` still defaults to `False`. `tests/unit/test_odata_metadata.py` keeps the flag
+  equal to the fact by re-deriving it from the metadata for both services — over
+  properties only, because a `@odata` on a *method* names a function import
+  (`OutlookUser.supported_languages`), not a column.
 - `ClientObject._unselectable` states the columns a *type's own* service refuses to
   project: `Web` answers 400 for `DescriptionTranslations` and `TitleTranslations`
   ("Specified method is not supported") and, like `List`, for
@@ -451,17 +469,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - **The fields a page item carries are spelled once, by the library**
   (`office365.sharepoint.publishing.pages.fields`): `PAGE_FIELDS` — the projection a
-  page copy reads — `BODY_FIELDS` (`CanvasContent1`, `WikiField`) and
-  `is_modern_page(content_type_id, canvas)`. Every name is derived from the type
-  (`SitePage.odata_name("canvas_content")`), so a projection cannot drift from the
-  model it reads, and the modern/classic rule lives beside the fields it reads rather
+  page copy reads — and `BODY_FIELDS` (`CanvasContent1`, `WikiField`). Every name is
+  derived from the type (`SitePage.odata_name("canvas_content")`), so a projection cannot
+  drift from the model it reads, and the modern/classic rule lives on the type rather
   than in the migrator. The page's content type base is
   `office365.sharepoint.contenttypes.builtin_content_type_id.SPBuiltInContentTypeId.SitePage`
   ("Site Page", `0x0101…4118`, read back from a site's content type catalog — the
   metadata this client is generated from carries no content type IDs), and a page
   type *derives* from it, which is why the rule is a prefix match.
-  `office365.migration.sharepoint.pages` now names no field at all: `_PAGE_SELECT =
-  PAGE_FIELDS`, `_DETECT_SELECT` from `SitePage.odata_name(…)` + `BODY_FIELDS`;
+  `office365.migration.sharepoint.pages` now names no field at all;
   `is_page_library(list)` is public because an example had re-spelled the template
   test inline. **Breaking:** `PAGE_LIBRARY_TEMPLATE`, `SITE_PAGE_CONTENT_TYPE_PREFIX`
   and `is_modern_page` leave that module (the first is
@@ -488,6 +504,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `odata_name("canvas_content")` raised. The twins are deleted. A differential over the
   type shows the only change is those two attribute names: `select_all()`,
   `expand_all()`, the declared names and a hydrated `to_json()` are byte-identical.
+- **A page item is a `SitePage`, and its copy writes through that type.**
+  `migration.sharepoint.pages` carried a second model of the same rows —
+  `PagePayload` with its `to_dict()`, the `_CONTENT_FIELDS` tuple and the
+  `_MAX_PAGES_IN_NOTE` copy of the `+N more` rule — and it is deleted, along with
+  `_payload` and `_classify`. What a page *is* now lives on the type: `is_modern` (a
+  canvas, or a content type derived from "Site Page"), `is_classic` (a `WikiField` body
+  and not modern), `body` and `body_field` — the name the body is carried under, which
+  replaces the `(0, canvas)`/`(1, wiki)` position tuple the read-back verifier compared
+  by, so `_body()` is gone too. The write is `apply_page_payload(item, page)`, which walks
+  six attribute names and asks `SitePage.odata_name(attr)` for each spelling
+  (`_BLANK_IS_NOTHING`: an empty canvas means nothing to carry, not a blanked canvas), and
+  the publish decision is the library's predicate — `moderation_status in (None, 0, "0")`,
+  so a wiki page copied into a library without approval is published as it was.
+  `PageCopyReport.classic` is deleted: it was written and never read, and it meant the
+  opposite of `PageInfo.kind == "classic"` in the same module (a page that is *not*
+  copied, versus one that is). A live differential over the tenant's eleven pages — the
+  MERGE body each copy would `set_property`, the publish decision, the modern/classic
+  classification and the body — is identical to the model it replaces. **Breaking:**
+  `PagePayload` leaves `office365.migration.sharepoint`, and `offline_context()` moves up
+  to `office365.migration.offline` (`migration.outlook` is not the only package that
+  hydrates a model with no service behind it).
 
 ### Changed
 

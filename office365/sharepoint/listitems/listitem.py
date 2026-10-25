@@ -688,6 +688,42 @@ class ListItem(SecurableObject):
         """Gets a value that specifies the list item identifier."""
         return self.properties.get("Id", None)
 
+    @odata(name="AuthorId", system=True)
+    @property
+    def author_id(self) -> Optional[int]:
+        """The site user id of the item's creator.
+
+        An item row spells this column; the metadata does not (``system=True``).
+        """
+        return self.properties.get("AuthorId", None)
+
+    @odata(name="EditorId", system=True)
+    @property
+    def editor_id(self) -> Optional[int]:
+        """The site user id of whoever last edited the item.
+
+        An item row spells this column; the metadata does not (``system=True``).
+        """
+        return self.properties.get("EditorId", None)
+
+    @odata(name="Created", system=True)
+    @property
+    def created(self) -> Optional[datetime.datetime]:
+        """When the item was created.
+
+        An item row spells this column; the metadata does not (``system=True``).
+        """
+        return self.properties.get("Created", None)
+
+    @odata(name="Modified", system=True)
+    @property
+    def modified(self) -> Optional[datetime.datetime]:
+        """When the item was last edited.
+
+        An item row spells this column; the metadata does not (``system=True``).
+        """
+        return self.properties.get("Modified", None)
+
     @odata(name="ServerRedirectedEmbedUri")
     @property
     def server_redirected_embed_uri(self) -> Optional[str]:

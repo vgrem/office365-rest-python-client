@@ -60,6 +60,12 @@ class ODataPropertyMeta:
     #: says a member is a link; it does not say the service will follow it, so a link
     #: that needs a ``$filter`` says so here.
     expandable: bool = True
+    #: The CSDL this client is generated from does not declare the name: the service
+    #: spells it on the *item* payload, which the metadata never describes. A list item
+    #: answers ``AuthorId``, ``EditorId``, ``Created`` and ``Modified``; a page adds
+    #: ``FileLeafRef``, ``WikiField`` and ``OData__ModerationStatus``. ``SP.ListItem``'s
+    #: own declaration is 24 names long and carries none of the seven.
+    system: bool = False
     filterable: bool = False
     nullable: bool = True
     sortable: bool = False
@@ -94,6 +100,10 @@ class odata(dict):
     declares it: it is reached with ``$expand`` and cannot appear in ``$select``.
     ``expandable=False`` narrows that to the links ``$expand`` will not follow on its own
     -- the CSDL knows the member is a link, only the service knows it demands an argument.
+    ``system=True`` records where the name comes from: the metadata does not declare it,
+    the service does. Everything a list item carries beyond ``Id`` is such a name, so a
+    reader who sees one knows the CSDL is silent about it and the wire is not -- and
+    ``tests/unit/test_odata_metadata.py`` keeps the flag equal to that fact.
     """
 
     meta: ODataPropertyMeta

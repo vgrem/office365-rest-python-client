@@ -13,6 +13,7 @@ the back-fill's rule would agree with itself.
 
 from __future__ import annotations
 
+import ast
 import importlib
 import pathlib
 import pkgutil
@@ -41,6 +42,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.navigation.navigation import Navigation
 from office365.sharepoint.navigation.nodes.node import NavigationNode
+from office365.sharepoint.publishing.pages.page import SitePage
 from office365.sharepoint.webs.web import Web
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -65,6 +67,56 @@ def test_every_getter_that_spells_an_odata_name_declares_it(service: str, root: 
         if (markers := _mark_odata.plan_module(path, catalog, index))
     }
     assert planned == {}
+
+
+def _says_system(call: ast.Call) -> bool:
+    """Whether the ``@odata`` call carries ``system=True``."""
+    for keyword in call.keywords:
+        if keyword.arg == "system":
+            return bool(getattr(keyword.value, "value", True))
+    return False
+
+
+def _is_property(node: ast.FunctionDef) -> bool:
+    return any(getattr(d, "id", "") == "property" for d in node.decorator_list if not isinstance(d, ast.Call))
+
+
+@pytest.mark.parametrize(("service", "root"), [("graph", "office365/outlook"), ("sharepoint", "office365/sharepoint")])
+def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, root: str) -> None:
+    """``system=True`` is where a name comes from, and the metadata decides.
+
+    The CSDL describes an object graph, not a list-item row: ``SP.ListItem`` declares 24
+    names and answers ``AuthorId``, ``EditorId``, ``Created``, ``Modified``, none of them
+    among the 24. A declaration cannot invent that difference from memory, so the flag is
+    read back against the same catalog the names came from -- in both directions, because
+    a ``system`` marker on a name the metadata does declare would be as wrong.
+    """
+    catalog = _mark_odata.load_catalog(service)
+    index = _mark_odata.type_index(catalog)
+    wrong = []
+    for path in sorted((_REPO_ROOT / root).rglob("*.py")):
+        source = path.read_text(encoding="utf-8")
+        if "@odata(" not in source:
+            continue
+        found = _mark_odata.subject(ast.parse(source), catalog, index)
+        if found is None:
+            continue
+        for node in found.node.body:
+            if not isinstance(node, ast.FunctionDef) or not _is_property(node):
+                continue  # a method's ``@odata`` names a function import, not a column
+            call = _mark_odata.declaration(node)
+            name = _mark_odata.declared_name(call) if call is not None else None
+            if name is not None and _says_system(call) != (name not in found.properties):
+                wrong.append(f"{path.relative_to(_REPO_ROOT)}:{call.lineno} {found.node.name}.{name}")
+    assert wrong == []
+
+
+def test_an_item_row_column_declares_that_the_metadata_is_silent():
+    """A page copy reads these by name; a reader must be able to see where they live."""
+    assert {"AuthorId", "EditorId", "Created", "Modified"} <= set(ListItem._schema.system)
+    assert {"FileLeafRef", "WikiField", "OData__ModerationStatus"} <= set(SitePage._schema.system)
+    assert "Id" not in ListItem._schema.system  # the one item column the CSDL does declare
+    assert "AuthorId" in ListItem.select_all()  # still a column the service answers
 
 
 def test_select_all_is_the_projection_the_declarations_describe():

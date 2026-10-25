@@ -74,6 +74,9 @@ class TypeSchema:
     readonly: frozenset[str] = frozenset()
     #: OData names a request always sends, even when nobody set them.
     persistable: frozenset[str] = frozenset()
+    #: OData names the metadata does not declare: the service spells them on the item
+    #: payload (``system=True`` on the declaration).
+    system: frozenset[str] = frozenset()
     #: The ``@limit`` declarations on the type itself, accumulated up the hierarchy: a
     #: subclass is subject to its base class's limits and its own.
     class_limits: Tuple[LimitDecl, ...] = ()
@@ -102,6 +105,7 @@ class TypeSchema:
             by_attr=MappingProxyType(by_attr),
             readonly=frozenset(name for name, declared in properties.items() if declared.readonly),
             persistable=frozenset(name for name, declared in properties.items() if declared.persist),
+            system=frozenset(name for name, declared in properties.items() if declared.system),
             class_limits=collect_class_limits(model),
             member_limits=member_limits,
         )

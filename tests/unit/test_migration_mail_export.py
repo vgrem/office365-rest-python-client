@@ -13,6 +13,7 @@ from pathlib import Path
 
 from office365.graph_client import GraphClient
 from office365.migration import MigrationJob
+from office365.migration.offline import offline_context
 from office365.migration.outlook import (
     MANIFEST_NAME,
     MailExportOptions,
@@ -21,7 +22,6 @@ from office365.migration.outlook import (
     MessageRecord,
     slug,
 )
-from office365.migration.outlook.offline import offline_context
 from office365.migration.outlook.records import MAX_SLUG_LENGTH
 from office365.outlook.mail.messages.message import Message
 from tests._scripted_transport import MethodRoutingTransport

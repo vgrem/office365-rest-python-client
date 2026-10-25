@@ -24,7 +24,7 @@ Two facts this module relies on, both live-verified on a SharePoint Online tenan
   ``POST /_api/sitepages/pages(<id>)/publish`` (``SitePage.publish``) runs, and a
   MERGE of ``OData__ModerationStatus`` does **not** publish it;
 * a page's ``CanvasContent1`` round-trips byte-identical through
-  ``item.set_property("CanvasContent1", ...)`` + ``item.update()``; a *newly
+  ``page.canvas_content`` + ``to_json()``; a *newly
   created* page already carries a default empty canvas, which a MERGE of ``""``
   does not clear, so an empty source canvas is left alone and not verified;
 * a wiki page is created with ``List.create_wiki_page(name, body)``, which the
@@ -51,11 +51,11 @@ the whole-site resolver actually calls.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Iterable, Optional
+from typing import TYPE_CHECKING, Iterable, Optional
 
+from office365.migration.offline import offline_context
 from office365.sharepoint.lists.templates.type import ListTemplateType
-from office365.sharepoint.publishing.pages.canvas import count_web_parts
-from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS, is_modern_page
+from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS
 from office365.sharepoint.publishing.pages.page import SitePage
 
 if TYPE_CHECKING:
@@ -70,69 +70,23 @@ DUPLICATE_SKIP = "SKIP"
 DUPLICATE_OVERWRITE = "OVERWRITE"
 _DUPLICATE_BEHAVIORS = (DUPLICATE_RENAME, DUPLICATE_SKIP, DUPLICATE_OVERWRITE)
 
-#: Page content blobs; an empty string means "nothing to carry" (see the module docstring).
-_CONTENT_FIELDS = ("CanvasContent1", "LayoutWebpartsContent")
+#: The page columns a copy carries: both bodies, the layout, and the metadata that
+#: gives the copy its title, description, banner and promoted state.
+_CARRIED = ("title", "description", "canvas_content", "layout_web_parts_content", "banner_image_url", "promoted_state")
 
-#: The projected read a page copy needs, as the library spells it: identity, both
-#: bodies, the layout, and the page metadata the Site Pages library stores as list
-#: item properties.
-_PAGE_SELECT = PAGE_FIELDS
+#: Columns where an empty value means "nothing to carry", not "blank it out": a
+#: created page is given a canvas of its own (``<div></div>``) — see the module docstring.
+_BLANK_IS_NOTHING = ("canvas_content", "layout_web_parts_content")
 
-#: A page whose ``Article`` canvas is empty is still readable, so detection needs
-#: only the wiki field of a classic page.
-_DETECT_SELECT = (SitePage.odata_name("file_leaf_ref"), SitePage.odata_name("content_type_id"), *BODY_FIELDS)
-
-#: Page names shown inline in the handoff note before it is truncated.
-_MAX_PAGES_IN_NOTE = 5
-
-#: Names shown inline in a copy warning before it is truncated.
+#: Names shown inline in a copy warning or a handoff note before it is truncated.
 _MAX_NAMES_IN_NOTE = 5
 
-
-@dataclass
-class PagePayload:
-    """The page content and metadata a copy writes onto a created page.
-
-    Property values are kept in their wire shape (``BannerImageUrl`` is a
-    ``{"Url", "Description"}`` value object), so they can be written back verbatim.
-    """
-
-    name: str
-    title: Optional[str] = None
-    description: Optional[str] = None
-    content_type_id: Optional[str] = None
-    canvas: Optional[str] = None
-    layout: Optional[str] = None
-    #: A classic wiki page's body (``WikiField``) — what it carries instead of a canvas.
-    wiki: Optional[str] = None
-    banner_image_url: Optional[dict] = None
-    promoted_state: Optional[int] = None
-    #: Whether the source page was published (approved), so the copy should publish too.
-    published: bool = True
-    #: Client-side web parts serialized in the canvas (their bindings are not remapped).
-    web_parts: int = 0
-
-    @property
-    def is_classic(self) -> bool:
-        """Whether this is a classic wiki page (a ``WikiField`` body, no canvas)."""
-        return bool(self.wiki) and not is_modern_page(self.content_type_id, self.canvas)
-
-    @property
-    def content(self) -> Optional[str]:
-        """The field value that carries the page body — what a copy writes and verifies."""
-        return self.wiki if self.is_classic else self.canvas
-
-    def to_dict(self) -> dict:
-        return {
-            "name": self.name,
-            "title": self.title,
-            "description": self.description,
-            "promoted_state": self.promoted_state,
-            "published": self.published,
-            "web_parts": self.web_parts,
-            "canvas_length": len(self.canvas or ""),
-            "wiki_length": len(self.wiki or ""),
-        }
+#: Detection needs a page's name, its content type and its body — not its metadata.
+_DETECT_FIELDS = (
+    SitePage.odata_name("file_leaf_ref"),
+    SitePage.odata_name("content_type_id"),
+    *BODY_FIELDS,
+)
 
 
 @dataclass
@@ -211,8 +165,6 @@ class PageCopyReport:
     mismatched: list[str] = field(default_factory=list)
     #: ``(page name, error)`` for pages that could not be copied.
     failed: list[tuple[str, str]] = field(default_factory=list)
-    #: Pages with neither a canvas nor a wiki body, left for page transformation.
-    classic: list[str] = field(default_factory=list)
     #: Pages whose canvas serializes client-side web parts (bindings not remapped).
     web_part_pages: list[str] = field(default_factory=list)
     #: Classic wiki pages copied through their ``WikiField`` body.
@@ -262,75 +214,46 @@ def _shown(names: Iterable[str]) -> str:
     return shown
 
 
-def _payload(properties: dict) -> PagePayload:
-    """The copyable payload of a modern page, from its list item properties."""
-    status = properties.get(SitePage.odata_name("moderation_status"))
-    return PagePayload(
-        name=str(properties.get("FileLeafRef") or ""),
-        title=properties.get("Title"),
-        description=properties.get("Description"),
-        content_type_id=properties.get("ContentTypeId"),
-        canvas=properties.get("CanvasContent1"),
-        layout=properties.get("LayoutWebpartsContent"),
-        wiki=properties.get("WikiField"),
-        banner_image_url=properties.get("BannerImageUrl"),
-        promoted_state=properties.get("PromotedState"),
-        published=status in (None, 0, "0"),
-        web_parts=count_web_parts(properties.get("CanvasContent1")),
-    )
+def _page(properties: dict) -> SitePage:
+    """A ``SitePage`` read from a list item's properties — the page as its item spells it."""
+    return SitePage(offline_context()).hydrate(properties)
 
 
-def capture_page(item: "ListItem") -> Optional[PagePayload]:
-    """The payload of a copyable page item (modern or classic wiki), or ``None``."""
-    properties = item.properties
-    name = properties.get("FileLeafRef") or ""
-    if not name.lower().endswith(".aspx"):
+def _copyable(page: SitePage) -> Optional[SitePage]:
+    """``page`` when a copy can carry it: an ``.aspx`` page with a body of its own."""
+    if not (page.file_leaf_ref or "").lower().endswith(".aspx"):
         return None
-    if is_modern_page(properties.get("ContentTypeId"), properties.get("CanvasContent1")):
-        return _payload(properties)
-    payload = _payload(properties)
-    return payload if payload.is_classic else None
+    return page if page.is_modern or page.is_classic else None
 
 
-def _classify(sp_list: "SPList") -> tuple[list[PagePayload], list[str]]:
-    """Read one page library once: (copyable payloads, page names with no copyable body)."""
-    payloads: list[PagePayload] = []
-    classic: list[str] = []
-    items = sp_list.items.select(list(_PAGE_SELECT)).get().execute_query()
-    for item in items:
-        properties = item.properties
-        name = str(properties.get("FileLeafRef") or "")
-        if not name.lower().endswith(".aspx"):
-            continue
-        payload = _payload(properties)
-        if is_modern_page(properties.get("ContentTypeId"), properties.get("CanvasContent1")) or payload.is_classic:
-            payloads.append(payload)
-        else:
-            classic.append(name)
-    return payloads, classic
+def capture_page(item: "ListItem") -> Optional[SitePage]:
+    """The copyable page an item carries (modern or classic wiki), or ``None``."""
+    return _copyable(_page(item.properties))
 
 
-def capture_site_pages(sp_list: "SPList") -> list[PagePayload]:
+def capture_site_pages(sp_list: "SPList") -> list[SitePage]:
     """The copyable pages of a page library (one projected read; read-only)."""
-    return _classify(sp_list)[0]
+    items = sp_list.items.select(list(PAGE_FIELDS)).get().execute_query()
+    return [page for page in (_copyable(_page(item.properties)) for item in items) if page is not None]
 
 
-def apply_page_payload(item: "ListItem", page: PagePayload) -> None:
+def _publishes(page: SitePage) -> bool:
+    """Whether the copy publishes itself, as the source item stands.
+
+    ``OData__ModerationStatus`` is unset on a library without approval and ``0`` on a page
+    served as edited; either is copied published. An approved or rejected page keeps its
+    own approval state, so the copy is not published over it.
+    """
+    return page.moderation_status in (None, 0, "0")
+
+
+def apply_page_payload(item: "ListItem", page: SitePage) -> None:
     """Queue a MERGE of the page content onto ``item`` (execute the query after)."""
-    values: dict[str, Any] = {
-        "Title": page.title,
-        "Description": page.description,
-        "CanvasContent1": page.canvas,
-        "LayoutWebpartsContent": page.layout,
-        "BannerImageUrl": page.banner_image_url,
-        "PromotedState": page.promoted_state,
-    }
-    for name, value in values.items():
-        if value is None:
+    for attr in _CARRIED:
+        value = getattr(page, attr)
+        if value is None or (attr in _BLANK_IS_NOTHING and not value):
             continue
-        if name in _CONTENT_FIELDS and not value:
-            continue
-        item.set_property(name, value)
+        item.set_property(SitePage.odata_name(attr), value)
     item.update()
 
 
@@ -367,7 +290,7 @@ def _renamed(name: str, taken: set) -> str:
         index += 1
 
 
-def _already_copied(page: "PagePayload", bodies: dict, consumed: set) -> Optional[str]:
+def _already_copied(page: SitePage, bodies: dict, consumed: set) -> Optional[str]:
     """The target page that already carries this page's body, if any.
 
     A copy writes the source body verbatim, so the body is the copy's identity. A
@@ -382,8 +305,8 @@ def _already_copied(page: "PagePayload", bodies: dict, consumed: set) -> Optiona
     of its own (``<div></div>``), which a copy never writes over, so a page with no
     canvas would otherwise be copied again on every run.
     """
-    content = page.content or ""
-    name = page.name.casefold()
+    content = page.body or ""
+    name = (page.file_leaf_ref or "").casefold()
     if name not in consumed and bodies.get(name) == content:
         return name
     return next(
@@ -412,7 +335,7 @@ def _batch(report: "PageCopyReport", behavior: str, name: str, taken: set, exist
 def _copy_wiki_page(
     target_web: "Web",
     target_list: "SPList",
-    page: PagePayload,
+    page: SitePage,
     target_name: str,
     item_id: Optional[int],
 ) -> None:
@@ -427,24 +350,25 @@ def _copy_wiki_page(
         raise ValueError(f"classic page {target_name!r} carries no wiki body")
     if item_id is None:
         created = target_list.create_wiki_page(target_name, body).execute_query()
-        item_id = created.list_item_all_fields.select(["Id"]).get().execute_query().properties.get("Id")
+        fields = created.list_item_all_fields.select([SitePage.odata_name("id")]).get().execute_query()
+        item_id = fields.properties.get(SitePage.odata_name("id"))
         if item_id is None:
             raise ValueError(f"the target did not return an id for the created page {target_name!r}")
     item = target_list.get_item_by_id(item_id)
-    values = {"WikiField": body, "Title": page.title, "Description": page.description}
-    for name, value in values.items():
+    for attr in ("wiki", "title", "description"):
+        value = getattr(page, attr)
         if value is not None:
-            item.set_property(name, value)
+            item.set_property(SitePage.odata_name(attr), value)
     item.update()
     target_web.context.execute_query()
-    if page.published:
+    if _publishes(page):
         item.file.publish("").execute_query()
 
 
 def _copy_page(
     target_web: "Web",
     target_list: "SPList",
-    page: PagePayload,
+    page: SitePage,
     target_name: str,
     item_id: Optional[int],
 ) -> None:
@@ -455,13 +379,13 @@ def _copy_page(
     if item_id is None:
         created = target_web.add_site_page(target_name, title=page.title)
         target_web.context.execute_query()
-        item_id = created.properties.get("Id")
+        item_id = created.properties.get(SitePage.odata_name("id"))
         if item_id is None:
             raise ValueError(f"the target did not return an id for the created page {target_name!r}")
     item = target_list.get_item_by_id(item_id)
     apply_page_payload(item, page)
     target_web.context.execute_query()
-    if page.published:
+    if _publishes(page):
         target_web.get_site_page_by_id(item_id).publish().execute_query()
 
 
@@ -469,46 +393,44 @@ def _verify(report: "PageCopyReport", target_list: "SPList", written: dict) -> N
     """Read the copied pages back once and compare the field that carries their body."""
     if not written:
         return
-    items = target_list.items.select(["FileLeafRef", "CanvasContent1", "WikiField"]).get().execute_query()
-    written_back = {
-        str(item.properties.get("FileLeafRef") or "").casefold(): (
-            item.properties.get("CanvasContent1"),
-            item.properties.get("WikiField"),
-        )
-        for item in items
-    }
-    for name, (index, expected) in written.items():
-        if not expected:
-            continue
-        if written_back.get(name.casefold(), (None, None))[index] != expected:
+    items = target_list.items.select([SitePage.odata_name("file_leaf_ref"), *BODY_FIELDS]).get().execute_query()
+    written_back = {}
+    for item in items:
+        page = _page(item.properties)
+        written_back[(page.file_leaf_ref or "").casefold()] = page
+    for name, (spelled, expected) in written.items():
+        found = written_back.get(name.casefold())
+        if expected and (found is None or found.properties.get(spelled) != expected):
             report.mismatched.append(name)
 
 
 def _copy_library(
-    target_web: "Web", target_list: "SPList", payloads: list, behavior: str, report: "PageCopyReport"
+    target_web: "Web", target_list: "SPList", pages: list, behavior: str, report: "PageCopyReport"
 ) -> None:
-    """Copy one page library's payloads onto the target, then read the bodies back."""
+    """Copy one page library's pages onto the target, then read the bodies back."""
     existing: dict = {}
     bodies: dict = {}
     names: dict = {}
-    for item in target_list.items.select(["Id", "FileLeafRef", "CanvasContent1", "WikiField"]).get().execute_query():
-        name = str(item.properties.get("FileLeafRef") or "").casefold()
-        existing[name] = item.properties.get("Id")
-        names[name] = str(item.properties.get("FileLeafRef") or "")
-        bodies[name] = _body(item.properties) or ""
+    select = [SitePage.odata_name("id"), SitePage.odata_name("file_leaf_ref"), *BODY_FIELDS]
+    for item in target_list.items.select(select).get().execute_query():
+        page = _page(item.properties)
+        name = (page.file_leaf_ref or "").casefold()
+        existing[name] = page.id
+        names[name] = page.file_leaf_ref or ""
+        bodies[name] = page.body or ""
     taken = set(existing)
     consumed: set = set()
     written: dict = {}
-    for page in payloads:
+    for page in pages:
         if behavior == DUPLICATE_RENAME:
             matched = _already_copied(page, bodies, consumed)
             if matched is not None:
                 consumed.add(matched)
-                report.unchanged.append(page.name)
-                if matched != page.name.casefold():
-                    report.renamed.append((page.name, names.get(matched, matched)))
+                report.unchanged.append(page.file_leaf_ref or "")
+                if matched != (page.file_leaf_ref or "").casefold():
+                    report.renamed.append((page.file_leaf_ref or "", names.get(matched, matched)))
                 continue
-        decision = _batch(report, behavior, page.name, taken, existing)
+        decision = _batch(report, behavior, page.file_leaf_ref or "", taken, existing)
         if decision is None:
             continue
         source_name, target_name, item_id = decision
@@ -519,22 +441,20 @@ def _copy_library(
             continue
         taken.add(target_name.casefold())
         consumed.add(target_name.casefold())
-        bodies[target_name.casefold()] = page.content or ""
+        bodies[target_name.casefold()] = page.body or ""
         if item_id is not None:
             report.overwritten.append(target_name)
         else:
             report.copied.append(target_name)
         if target_name != source_name:
             report.renamed.append((source_name, target_name))
-        if page.published:
+        if _publishes(page):
             report.published.append(target_name)
-        if page.web_parts:
+        if page.web_part_count:
             report.web_part_pages.append(target_name)
         if page.is_classic:
             report.wiki.append(target_name)
-            written[target_name] = (1, page.wiki)
-        else:
-            written[target_name] = (0, page.canvas)
+        written[target_name] = (page.body_field, page.body)
     _verify(report, target_list, written)
 
 
@@ -552,8 +472,8 @@ def copy_site_pages(
     had published, and read the bodies back to verify the write. Modern pages are
     created through the ``sitepages`` endpoint, classic wiki pages through
     ``create_wiki_page`` (their ``WikiField`` body is carried verbatim); a page with
-    neither a canvas nor a wiki body is reported in :attr:`PageCopyReport.classic`
-    because copying cannot transform it.
+    neither a canvas nor a wiki body cannot be copied as it stands and is skipped —
+    :func:`detect_page_handoff` is what names those pages.
 
     Args:
         source_web: The web whose pages are captured (read-only).
@@ -575,15 +495,14 @@ def copy_site_pages(
     for source_list in source_libraries:
         title = str(source_list.title or "")
         report.libraries.append(title)
-        payloads, classic = _classify(source_list)
-        report.classic.extend(classic)
-        if not payloads:
+        pages = capture_site_pages(source_list)
+        if not pages:
             continue
         target_list = _target_library(source_list, target_libraries)
         if target_list is None:
-            notes.append(f"page copy: no target page library matches '{title}' — {len(payloads)} page(s) not copied")
+            notes.append(f"page copy: no target page library matches '{title}' — {len(pages)} page(s) not copied")
             continue
-        _copy_library(target_web, target_list, payloads, behavior, report)
+        _copy_library(target_web, target_list, pages, behavior, report)
     notes.extend(_gap_notes(report))
     report.home_page = apply_home_page(source_web, target_web, renamed=dict(report.renamed), warnings=notes)
     return report
@@ -684,11 +603,13 @@ def apply_home_page(
 def _home_page_notes(source_web: "Web", target_web: "Web", source_pages: list, target_bodies: dict) -> list[str]:
     """Notes for a target whose home page is not the copy of the source's (read-only)."""
     source_path = capture_home_page(source_web)
-    source_page = next((page for page in source_pages if page.name.casefold() == _page_name(source_path)), None)
+    source_page = next(
+        (page for page in source_pages if (page.file_leaf_ref or "").casefold() == _page_name(source_path)), None
+    )
     if source_page is None:
         return []
     target_path = capture_home_page(target_web)
-    if target_bodies.get(_page_name(target_path)) == (source_page.content or ""):
+    if target_bodies.get(_page_name(target_path)) == (source_page.body or ""):
         return []
     return [
         f"the target's home page is '{target_path or ''}', not the copy of '{source_path}' — "
@@ -718,22 +639,22 @@ def verify_page_copy(source_web: "Web", target_web: "Web") -> list[str]:
         return []
     target_bodies: dict = {}
     for sp_list in _page_libraries(target_web.lists.get().execute_query()):
-        items = sp_list.items.select(["FileLeafRef", "CanvasContent1", "WikiField"]).get().execute_query()
-        for item in items:
-            properties = item.properties
-            target_bodies[str(properties.get("FileLeafRef") or "").casefold()] = _body(properties) or ""
+        select = [SitePage.odata_name("file_leaf_ref"), *BODY_FIELDS]
+        for item in sp_list.items.select(select).get().execute_query():
+            page = _page(item.properties)
+            target_bodies[(page.file_leaf_ref or "").casefold()] = page.body or ""
     delivered = set(target_bodies.values())
     missing = [
-        page.name
+        page.file_leaf_ref or ""
         for page in source_pages
-        if page.name.casefold() not in target_bodies and (page.content or "") not in delivered
+        if (page.file_leaf_ref or "").casefold() not in target_bodies and (page.body or "") not in delivered
     ]
     drifted = [
-        page.name
+        page.file_leaf_ref or ""
         for page in source_pages
-        if page.name.casefold() in target_bodies
-        and target_bodies[page.name.casefold()] != (page.content or "")
-        and (page.content or "") not in delivered
+        if (page.file_leaf_ref or "").casefold() in target_bodies
+        and target_bodies[(page.file_leaf_ref or "").casefold()] != (page.body or "")
+        and (page.body or "") not in delivered
     ]
     notes = []
     if missing:
@@ -744,30 +665,22 @@ def verify_page_copy(source_web: "Web", target_web: "Web") -> list[str]:
     return notes
 
 
-def _body(properties: dict) -> Optional[str]:
-    """The body a target page item carries — its canvas, or a wiki page's ``WikiField``."""
-    canvas = properties.get("CanvasContent1")
-    return canvas or properties.get("WikiField")
-
-
 def _page_info(item: "ListItem") -> Optional[PageInfo]:
-    properties = item.properties
-    name = properties.get("FileLeafRef") or ""
+    page = _page(item.properties)
+    name = page.file_leaf_ref or ""
     if not name.lower().endswith(".aspx"):
         return None
-    canvas = properties.get("CanvasContent1") or ""
-    wiki = properties.get("WikiField") or ""
-    if is_modern_page(properties.get("ContentTypeId"), canvas):
+    if page.is_modern:
         kind = "modern"
     else:
-        kind = "classic" if wiki else "unknown"
-    return PageInfo(name=name, kind=kind, web_parts=count_web_parts(canvas))
+        kind = "classic" if page.wiki else "unknown"
+    return PageInfo(name=name, kind=kind, web_parts=page.web_part_count)
 
 
 def _detect_library(sp_list: "SPList") -> Optional[PageLibrary]:
     if not is_page_library(sp_list):
         return None
-    items = sp_list.items.select(list(_DETECT_SELECT)).get().execute_query()
+    items = sp_list.items.select(list(_DETECT_FIELDS)).get().execute_query()
     pages = [page for page in (_page_info(item) for item in items) if page is not None]
     return PageLibrary(title=str(sp_list.title), pages=pages) if pages else None
 
@@ -793,9 +706,7 @@ def page_handoff_note(handoff: PageHandoff, *, modern_copied: bool = False) -> O
         pages = library.uncopyable_pages if modern_copied else library.pages
         if not pages:
             continue
-        names = ", ".join(page.name for page in pages[:_MAX_PAGES_IN_NOTE])
-        if len(pages) > _MAX_PAGES_IN_NOTE:
-            names += f", +{len(pages) - _MAX_PAGES_IN_NOTE} more"
+        names = _shown([page.name for page in pages])
         summary = f"{library.title} ({len(pages)} page(s): {names})"
         if any(page.web_parts for page in pages):
             summary += f" with {sum(page.web_parts for page in pages)} web part(s)"
@@ -818,7 +729,6 @@ __all__ = [
     "PageHandoff",
     "PageInfo",
     "PageLibrary",
-    "PagePayload",
     "apply_home_page",
     "apply_page_payload",
     "capture_home_page",

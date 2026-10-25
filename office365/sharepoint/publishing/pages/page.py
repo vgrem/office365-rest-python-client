@@ -11,6 +11,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.documents.coauthconfiguration import CoAuthConfiguration
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
@@ -293,6 +294,34 @@ class SitePage(SitePageMetadata):
         """Gets the number of client-side web parts serialized in the page canvas."""
         return count_web_parts(self.canvas_content)
 
+    @property
+    def is_modern(self) -> bool:
+        """Whether this is a modern site page rather than a classic one.
+
+        A page carrying a canvas is modern whatever its content type; a page with an
+        empty canvas is still modern when its content type derives from "Site Page".
+        """
+        return bool(self.canvas_content) or (self.content_type_id or "").startswith(SPBuiltInContentTypeId.SitePage)
+
+    @property
+    def is_classic(self) -> bool:
+        """Whether this is a classic wiki page: a ``WikiField`` body and no canvas of its own."""
+        return bool(self.wiki) and not self.is_modern
+
+    @property
+    def body(self) -> Optional[str]:
+        """The field value that carries this page's body — what a copy writes and verifies.
+
+        A wiki page's body is its ``WikiField``, a modern page's is its canvas; a page
+        with neither answers ``None`` and cannot be copied as it stands.
+        """
+        return self.wiki if self.is_classic else self.canvas_content
+
+    @property
+    def body_field(self) -> str:
+        """The name of the field :attr:`body` reads: ``WikiField`` or ``CanvasContent1``."""
+        return self.odata_name("wiki") if self.is_classic else self.odata_name("canvas_content")
+
     @odata(name="CheckIn")
     @property
     def check_in(self) -> Optional[bool]:
@@ -376,31 +405,34 @@ class SitePage(SitePageMetadata):
     # them: the entity spells the file name ``FileName`` (declared on the base class),
     # and accepts the other two without ever returning a value for them.
 
-    @odata(name="FileLeafRef")
+    @odata(name="FileLeafRef", system=True)
     @property
     def file_leaf_ref(self) -> Optional[str]:
         """Gets the FileLeafRef property
 
-        The list-item column that stores a page's file name.
+        The list-item column that stores a page's file name. An item row spells this
+        column; the metadata does not (``system=True``).
         """
         return self.properties.get("FileLeafRef", None)
 
-    @odata(name="WikiField")
+    @odata(name="WikiField", system=True)
     @property
     def wiki(self) -> Optional[str]:
         """Gets the WikiField property
 
-        A classic wiki page's body, which it carries instead of a canvas.
+        A classic wiki page's body, which it carries instead of a canvas. An item row
+        spells this column; the metadata does not (``system=True``).
         """
         return self.properties.get("WikiField", None)
 
-    @odata(name="OData__ModerationStatus")
+    @odata(name="OData__ModerationStatus", system=True)
     @property
     def moderation_status(self) -> Optional[int]:
         """Gets the OData__ModerationStatus property
 
         The item's approval status: 0 draft or pending, 1 rejected, 2 approved. REST
         spells a field whose internal name starts with ``_`` as ``OData_`` + that name.
+        An item row spells this column; the metadata does not (``system=True``).
         """
         return self.properties.get("OData__ModerationStatus", None)
 

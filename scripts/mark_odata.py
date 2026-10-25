@@ -10,7 +10,10 @@ declares it above the existing ``@property``.
 It also finishes a declaration that is already there but incomplete — a name
 without ``navigation=True`` where the CSDL says ``NavigationProperty``, which is
 how the first pass left every file that was already marked
-(``singleValueExtendedProperties``, ``attachments``, ``masterCategories``, ...).
+(``singleValueExtendedProperties``, ``attachments``, ``masterCategories``, ...) —
+and one that names a column the metadata has never heard of, which says
+``system=True`` instead (a list item's ``AuthorId``, a page's ``FileLeafRef``:
+the CSDL describes the object graph, not the item row).
 
 The OData name is never derived from the attribute name: ``iCalUId`` and ``icalUid``
 both survive a snake-case round trip, and only one of them is a real column. The
@@ -185,19 +188,16 @@ def declared_name(call: ast.Call) -> Optional[str]:
     return None
 
 
-def navigation_edit(call: ast.Call, properties: Dict[str, Declared], source_line: str) -> Optional[Edit]:
-    """Add ``navigation=True`` to a marker that names a ``NavigationProperty``."""
-    declared = properties.get(declared_name(call) or "")
-    if declared is None or not declared.navigation:
-        return None
-    if any(keyword.arg == "navigation" for keyword in call.keywords):
+def marker_edit(call: ast.Call, keyword: str, source_line: str) -> Optional[Edit]:
+    """Add ``keyword=True`` to a marker that still fits on one line."""
+    if any(k.arg == keyword for k in call.keywords):
         return None
     if call.end_lineno != call.lineno:  # a wrapped declaration: leave it to a human
         return None
     stripped = source_line.rstrip("\n")
     if not stripped.endswith(")"):
         return None
-    return Edit(call.lineno, source_line, stripped[:-1] + ", navigation=True)\n")
+    return Edit(call.lineno, source_line, stripped[:-1] + f", {keyword}=True)\n")
 
 
 def pending_markers(
@@ -212,7 +212,12 @@ def pending_markers(
             continue
         existing = declaration(node)
         if existing is not None:
-            edit = navigation_edit(existing, properties, lines[existing.lineno - 1])
+            declared = properties.get(declared_name(existing) or "")
+            if declared is None:  # a column the metadata does not describe
+                finish = "system"
+            else:
+                finish = "navigation" if declared.navigation else ""
+            edit = marker_edit(existing, finish, lines[existing.lineno - 1]) if finish else None
             if edit is not None:
                 markers.append(edit)
             continue

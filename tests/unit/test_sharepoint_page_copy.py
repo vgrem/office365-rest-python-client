@@ -12,6 +12,7 @@ from office365.migration.sharepoint.pages import (
 )
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.lists.templates.type import ListTemplateType
+from office365.sharepoint.publishing.pages.page import SitePage
 
 _WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
 # A modern site page content type (inherited from the Site Page base content type).
@@ -290,13 +291,13 @@ class TestCaptureSitePages(unittest.TestCase):
             _page_props("Blank.aspx", canvas=None, content_type=_PUBLISHING_CONTENT_TYPE),
         )
 
-        payloads = capture_site_pages(web._lists[0])
+        pages = capture_site_pages(web._lists[0])
 
-        self.assertEqual([page.name for page in payloads], ["Home.aspx", "Guide.aspx"])
-        self.assertEqual(payloads[0].web_parts, 1)
-        self.assertTrue(payloads[1].is_classic)
-        self.assertEqual(payloads[1].content, "<p>wiki</p>")
-        self.assertEqual(payloads[1].to_dict()["wiki_length"], len("<p>wiki</p>"))
+        self.assertEqual([page.file_leaf_ref for page in pages], ["Home.aspx", "Guide.aspx"])
+        self.assertEqual(pages[0].web_part_count, 1)
+        self.assertTrue(pages[1].is_classic)
+        self.assertEqual(pages[1].body, "<p>wiki</p>")
+        self.assertEqual(pages[1].body_field, SitePage.odata_name("wiki"))
 
 
 class TestCopySitePages(unittest.TestCase):

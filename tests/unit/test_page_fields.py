@@ -2,13 +2,19 @@
 
 import unittest
 
+from office365.migration.offline import offline_context
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
-from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS, is_modern_page
+from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS
 from office365.sharepoint.publishing.pages.page import SitePage
 
 #: A page content type derived from "Site Page" (the ID is hierarchical).
 DERIVED_SITE_PAGE = SPBuiltInContentTypeId.SitePage + "005E10E40F8E37D94AB983A0181120EFFC"
+
+
+def _page(payload: dict) -> SitePage:
+    """A page read from an item payload — hydration needs a context, not a service."""
+    return SitePage(offline_context()).hydrate(payload)
 
 
 class TestSitePageDeclarations(unittest.TestCase):
@@ -19,7 +25,7 @@ class TestSitePageDeclarations(unittest.TestCase):
         self.assertEqual(SitePage.odata_name("layout_web_parts_content"), "LayoutWebpartsContent")
 
     def test_a_hydrated_page_answers_the_body_properties(self):
-        page = SitePage(None).hydrate({"CanvasContent1": "<div/>", "LayoutWebpartsContent": "<div>l</div>"})
+        page = _page({"CanvasContent1": "<div/>", "LayoutWebpartsContent": "<div>l</div>"})
         self.assertEqual(page.canvas_content, "<div/>")
         self.assertEqual(page.layout_web_parts_content, "<div>l</div>")
 
@@ -32,9 +38,7 @@ class TestSitePageDeclarations(unittest.TestCase):
         self.assertEqual(SitePage.odata_name("moderation_status"), "OData__ModerationStatus")
 
     def test_a_hydrated_page_answers_the_item_columns(self):
-        page = SitePage(None).hydrate(
-            {"FileLeafRef": "x.aspx", "WikiField": "<div>wiki</div>", "OData__ModerationStatus": 0}
-        )
+        page = _page({"FileLeafRef": "x.aspx", "WikiField": "<div>wiki</div>", "OData__ModerationStatus": 0})
         self.assertEqual(page.file_leaf_ref, "x.aspx")
         self.assertEqual(page.wiki, "<div>wiki</div>")
         self.assertEqual(page.moderation_status, 0)
@@ -59,10 +63,21 @@ class TestPageFields(unittest.TestCase):
 
 class TestIsModernPage(unittest.TestCase):
     def test_a_derived_site_page_content_type_is_modern_without_a_canvas(self):
-        self.assertTrue(is_modern_page(DERIVED_SITE_PAGE, None))
+        page = _page({"ContentTypeId": DERIVED_SITE_PAGE})
+        self.assertTrue(page.is_modern)
 
     def test_a_canvas_makes_a_page_modern_whatever_its_content_type(self):
-        self.assertTrue(is_modern_page("0x010108", "<div/>"))
+        page = _page({"ContentTypeId": "0x010108", "CanvasContent1": "<div/>"})
+        self.assertTrue(page.is_modern)
 
     def test_a_classic_wiki_page_without_a_canvas_is_not_modern(self):
-        self.assertFalse(is_modern_page("0x010108", None))
+        page = _page({"ContentTypeId": "0x010108", "WikiField": "<p>wiki</p>"})
+        self.assertFalse(page.is_modern)
+        self.assertTrue(page.is_classic)
+        self.assertEqual(page.body, "<p>wiki</p>")
+        self.assertEqual(page.body_field, SitePage.odata_name("wiki"))
+
+    def test_a_modern_page_bodies_through_its_canvas(self):
+        page = _page({"ContentTypeId": DERIVED_SITE_PAGE, "CanvasContent1": "<div/>"})
+        self.assertEqual(page.body, "<div/>")
+        self.assertEqual(page.body_field, SitePage.odata_name("canvas_content"))
