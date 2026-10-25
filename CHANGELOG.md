@@ -461,6 +461,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   equality over 21 values — `None`, `""`, naive, aware, offset, fractional, date-only and
   three unreadable literals — with zero drift.
 
+- **A GUID has one spelling, read by the parser that already knew it.** `normalize_guid`
+  lived in the SharePoint migrator with a hand-rolled pattern that accepted only the bare and
+  the fully-braced form — and, on an unmatched brace, *returned the brace it had failed to
+  strip*, so the same list id arrived under two keys. It now lives in
+  `office365.runtime.converters.scalars` and asks `uuid.UUID`, which reads the braced,
+  `urn:uuid:` and 32-hex spellings and answers the canonical lower-case `8-4-4-4-12` form.
+  Four spellings therefore change what a comparison *keys on* — a stray brace on either side,
+  32-hex, `urn:uuid:` — and none changes what is *sent*: the function is a comparison key,
+  never a request payload. Its 16-line home in `structure.py` (and `_GUID_RE`) is gone, and
+  the migrator's three modules import the one parser. Proved by differential comparison
+  against the retired implementation over 24 spellings (four documented drifts; `None`, `""`,
+  `"not a guid"`, the all-zero GUID and both of its brace variants identical), and red-first
+  on both halves: the retired body fails with `'{a1b2…' != 'a1b2…'`, and a brace-fixing
+  variant of it still fails on the 32-hex form with `None != 'a1b2…'`.
+
 **Transports**
 
 - The bundled transports now bound the read phase as well as the connect phase:

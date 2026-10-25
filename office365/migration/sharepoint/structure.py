@@ -62,6 +62,7 @@ from xml.etree import ElementTree
 
 from office365.migration.map import ContentTypeMap
 from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCollection
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
@@ -87,7 +88,6 @@ __all__ = [
     "capture_list_structure",
     "compare_web_scope_structure",
     "load_list_structure",
-    "normalize_guid",
     "provision_list_structure",
     "provision_web_scope_columns",
     "rewrite_lookup_schema",
@@ -491,27 +491,10 @@ def _is_capturable_content_type(content_type: ContentType) -> bool:
 #: ``0x0101``, ...); custom content types append a 32-hex-digit GUID.
 _MIN_CUSTOM_CONTENT_TYPE_ID_LENGTH = 20
 
-#: A GUID, optionally wrapped in the braces SharePoint uses in ``SchemaXml``.
-_GUID_RE = re.compile(r"^\{?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}?$")
 #: ``Type="Lookup"`` / ``Type="LookupMulti"`` — the columns that name their list.
 _LOOKUP_TYPE_RE = re.compile(r'\bType="Lookup(?:Multi)?"')
 #: The ``List="..."`` attribute a lookup column carries in its ``SchemaXml``.
 _LIST_ATTR_RE = re.compile(r'\sList="([^"]*)"')
-
-
-def normalize_guid(value: Any) -> Optional[str]:
-    """A lower-cased, brace-stripped GUID, or ``None`` when not a GUID.
-
-    Lookup schemas carry ``List="{...}"`` while the migration threads list ids
-    around as plain strings; normalizing both sides keeps the lookup keyed by the
-    same value regardless of case or brace style.
-    """
-    if value is None:
-        return None
-    text = str(value).strip()
-    if text.startswith("{") and text.endswith("}"):
-        text = text[1:-1]
-    return text.lower() if _GUID_RE.match(text) else None
 
 
 def rewrite_lookup_schema(

@@ -17,7 +17,14 @@ from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.records import iter_records
-from office365.runtime.converters.scalars import iso_z, parse_datetime, parse_int, wall_clock, wall_clock_text
+from office365.runtime.converters.scalars import (
+    iso_z,
+    normalize_guid,
+    parse_datetime,
+    parse_int,
+    wall_clock,
+    wall_clock_text,
+)
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
@@ -64,6 +71,27 @@ class TestScalarConverters(unittest.TestCase):
         self.assertEqual(wall_clock_text(datetime(2021, 1, 1, 8, 0, 0)), "2021-01-01 08:00:00")
         self.assertEqual(wall_clock_text("2021-01-01T08:00:00"), "2021-01-01T08:00:00")
         self.assertIsNone(wall_clock_text(None))
+
+    def test_normalize_guid_answers_one_spelling_for_every_form(self):
+        """An id arrives braced from a column's ``SchemaXml`` and bare from a payload."""
+        guid = "A1B2C3D4-E5F6-4A7B-8C9D-0E1F2A3B4C5D"
+        for spelled in (guid, guid.lower(), "{%s}" % guid, "  %s  " % guid):
+            self.assertEqual(normalize_guid(spelled), guid.lower())
+        self.assertIsNone(normalize_guid(None))
+        self.assertIsNone(normalize_guid(""))
+        self.assertIsNone(normalize_guid("not a guid"))
+        # A stray brace is forgiven rather than reflected: what a caller keys on is the
+        # id, and the old spelling returned the brace it had failed to strip, so the
+        # same list arrived under two keys.
+        self.assertEqual(normalize_guid("{%s" % guid), guid.lower())
+        # The two forms a hand-rolled pattern refused: the same id arrives 32-hex from a
+        # Graph payload and as ``urn:uuid:`` from a term store.
+        self.assertEqual(normalize_guid(guid.replace("-", "")), guid.lower())
+        self.assertEqual(normalize_guid("urn:uuid:%s" % guid), guid.lower())
+        # The all-zero GUID is a real answer, not an absent one: SharePoint writes it
+        # for "no component", which a caller must be able to tell from "not a GUID".
+        zero = "00000000-0000-0000-0000-000000000000"
+        self.assertEqual(normalize_guid("{%s}" % zero), zero)
 
 
 def _new_user(properties: dict) -> User:

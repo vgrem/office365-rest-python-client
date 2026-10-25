@@ -7,6 +7,7 @@ in ``value.py`` build on these for object-level conversion.
 
 from __future__ import annotations
 
+import uuid
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional, Union
@@ -75,6 +76,23 @@ def try_float(value: Any) -> Any:
         return float(value)
     except (TypeError, ValueError):
         return value
+
+
+def normalize_guid(value: Any) -> Optional[str]:
+    """A GUID in its canonical lower-case form, or ``None`` when the value is not one.
+
+    One identifier is spelled several ways across SharePoint: bare in a JSON payload,
+    ``{...}`` in a column's ``SchemaXml``, in either case — so two ids that name the
+    same list compare unequal unless both sides are normalized first. ``uuid.UUID`` is
+    the parser: it accepts the brace, ``urn:uuid:`` and 32-hex forms too, and answers
+    the ``8-4-4-4-12`` spelling.
+    """
+    if value is None:
+        return None
+    try:
+        return str(uuid.UUID(str(value).strip()))
+    except ValueError:
+        return None
 
 
 def utc_now_iso() -> str:

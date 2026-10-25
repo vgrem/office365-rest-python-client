@@ -46,12 +46,12 @@ from office365.migration.sharepoint.site_settings import WebSettingsReport, appl
 from office365.migration.sharepoint.structure import (
     capture_list_structure,
     compare_web_scope_structure,
-    normalize_guid,
     provision_list_structure,
     provision_web_scope_columns,
     web_scope_note,
 )
 from office365.migration.tasks import FILE_SHARE, SHAREPOINT, MigrationTask
+from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.operations import Progress
 from office365.sharepoint.lists.base_type import BaseType
 from office365.sharepoint.lists.templates.type import ListTemplateType

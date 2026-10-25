@@ -24,10 +24,17 @@ from office365.migration.base import (
     conflict_to_on_conflict,
     normalize_puid,
 )
-from office365.migration.sharepoint.structure import ListStructure, normalize_guid, provision_list_structure
+from office365.migration.sharepoint.structure import ListStructure, provision_list_structure
 from office365.migration.sharepoint.transfer import Failure
 from office365.runtime.converters.records import records_from_items
-from office365.runtime.converters.scalars import iso_or_none, iso_z, parse_datetime, parse_int, wall_clock_text
+from office365.runtime.converters.scalars import (
+    iso_or_none,
+    iso_z,
+    normalize_guid,
+    parse_datetime,
+    parse_int,
+    wall_clock_text,
+)
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
