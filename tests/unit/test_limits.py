@@ -140,7 +140,8 @@ def test_limits_are_one_of_the_things_a_type_declares():
     assert [decl.limit for decl in _Tier._schema.class_limits] == [Limits.LIST_VIEW]
     assert set(_Tier._schema.member_limits) == {"upload", "get_items"}
     assert _Tier.declared_limits() == (Limits.LIST_VIEW, Limits.FILE_UPLOAD, Limits.BATCH_ITEMS)
-    assert [decl.limit for decl in limits_of(_Tier)] == [Limits.FILE_UPLOAD, Limits.BATCH_ITEMS]
+    # The type's own row comes first: a class is subject to what it declares on itself.
+    assert [decl.limit for decl in limits_of(_Tier)] == [Limits.LIST_VIEW, Limits.FILE_UPLOAD, Limits.BATCH_ITEMS]
     assert _Child._schema.class_limits == _Tier._schema.class_limits  # inherited, not shared map
     assert _Child._schema is not _Tier._schema
     assert Limits.LIST_VIEW in _Child.declared_limits()
@@ -164,6 +165,30 @@ def test_limit_decorator_on_property_and_class_meta():
     assert "get_items" in _Entity._schema.member_limits
     assert Limits.FILE_UPLOAD in _Entity.declared_limits()
     assert Limits.LIST_VIEW in _Entity.declared_limits()
+
+
+def test_a_class_answers_its_own_rows_and_counts_each_declaration_once():
+    """``limits_of(cls)`` is the declaration view of ``declared_limits()``.
+
+    A type declares some rows on itself and some on its members; asking the class used to
+    answer only the members' rows, so ``verify_limits(Workbook)`` said "0 limit(s)" for a
+    workbook whose two quotas are written on the class. Two members that share a row and an
+    argument is one ceiling on the type, not two.
+    """
+
+    @limit(Limits.LIST_VIEW)
+    class _Tier(ClientObject):
+        @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+        def execute_batch(self, items_per_batch=None):
+            return items_per_batch
+
+        @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+        def execute_batch_async(self, items_per_batch=None):
+            return items_per_batch
+
+    report = verify_limits(_Tier)
+    assert report.limits == (Limits.LIST_VIEW, Limits.BATCH_ITEMS)
+    assert [decl.limit for decl in limits_of(_Tier)] == [Limits.LIST_VIEW, Limits.BATCH_ITEMS]
 
 
 def test_verify_limits_reports_violations():

@@ -780,6 +780,18 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
 
 **Runtime**
 
+- **A type answers the limits it declares on itself.** `limits_of(cls)` read only the
+  schema's `member_limits`, so a model that writes a quota on the class — every
+  `@limit(*QUOTAS)` model, such as `Workbook`'s two Excel ceilings — answered `()` and
+  `verify_limits(Workbook)` printed `0 limit(s)`, while `declared_limits()` answered both.
+  The class now reads the one object that holds the facts (`TypeSchema`), class rows
+  first, keeps them as declarations so an `arg=` binding survives, and de-duplicates by
+  declaration: two members that share a row and an argument are one ceiling on the type,
+  not two, so `limits_of(List)` answers 2 rows where it leaked 3 and `limits_of(CallRecord)`
+  its 4 published budgets. `@limit` stays a decorator of its own rather than keywords on
+  `@odata`: a limit is written on a call (9 classes, 8 methods, 2 properties) and `@odata`
+  names a wire member, so the two sets do not touch — see `office365.runtime.limits` for
+  why they stay apart and where they are already one.
 - **A throttled request now waits the interval the service asked for.**
   `execute_query_retry` retried a `429`/`503` on its exponential backoff and ignored
   `Retry-After` unless the caller passed a `failure_callback` of their own, so the

@@ -11,6 +11,14 @@ The helpers :func:`exceeds` / :func:`warn_if_exceeds` / :func:`ensure_within`
 apply a limit imperatively at a call site; :func:`limits_of` / :func:`verify_limits`
 inspect what a method/class declares.
 
+``@limit`` stays a decorator of its own rather than becoming keywords on ``@odata``:
+``@odata`` names a *wire* member, so everything it can carry has a wire name, while a
+limit is a fact about a *call* — of its 19 targets, 9 are a class, 8 a method and 2 a
+property that declares no wire name. Merging would add a keyword to all 4,788 ``@odata``
+declarations to spell 19, and would still leave :func:`limit` alive for the targets with no
+wire name. They are unified where a reader looks, in ``TypeSchema``: one object holds the
+properties, the class limits and the member limits, and answers for the whole type.
+
 Product packages declare the concrete values — ``office365.sharepoint.thresholds``
 for SharePoint/CSOM limits, and the ``quotas`` module of each Graph product
 (``outlook``, ``teams``, ``reports``, ``security``, ``onedrive``, ``onedrive.workbooks``,
@@ -312,6 +320,23 @@ def limit(
     return decorator
 
 
+def _unique(decls: Iterable[LimitDecl]) -> _Decls:
+    """Keep one declaration per row-and-argument pair, in the order first written.
+
+    Those two fields *are* the declaration's identity: the key includes ``arg`` because
+    one row enforced on two arguments is two declarations, and it compares the row by
+    identity because a catalog publishes each threshold once.
+    """
+    seen: set[Tuple[int, Optional[str]]] = set()
+    unique: list[LimitDecl] = []
+    for decl in decls:
+        key = (id(decl.limit), decl.arg)
+        if key not in seen:
+            seen.add(key)
+            unique.append(decl)
+    return tuple(unique)
+
+
 def _stamp(target: Any, decls: _Decls) -> None:
     """Record declarations on the target; ``@limit`` composes rather than replaces.
 
@@ -321,11 +346,9 @@ def _stamp(target: Any, decls: _Decls) -> None:
     documented both, so ``declared_limits()`` and the doc disagreed.
     """
     existing: _Decls = getattr(target, _LIMIT_MARKER, ())
-    # The key includes ``arg``: one row enforced on two arguments is two declarations.
-    seen = {(id(decl.limit), decl.arg) for decl in existing}
-    added: _Decls = tuple(decl for decl in decls if (id(decl.limit), decl.arg) not in seen)
-    setattr(target, _LIMIT_MARKER, (*existing, *added))
-    _append_doc(target, added)
+    merged = _unique((*existing, *decls))
+    setattr(target, _LIMIT_MARKER, merged)
+    _append_doc(target, merged[len(existing) :])
 
 
 _limit = limit  # module alias (the ``bounded`` param name shadows ``limit`` below)
@@ -434,15 +457,21 @@ def collect_class_limits(cls: type) -> _Decls:
 
 
 def limits_of(target: Any) -> _Decls:
-    """The limits declared on a method/property, or a class's collected limits.
+    """The limits declared on a method/property, or on a class — its own and its members'.
+
+    A class answers the same rows :meth:`TypeSchema.declared_limits` answers, kept as
+    declarations so ``arg`` survives, and de-duplicated the same way: a type that is
+    subject to one ceiling answers it once, wherever the ceiling is written.
 
     Args:
         target: A callable (reads ``__limit_decls__``), a ``property``, or a
-            class (reads the ``member_limits`` of its schema).
+            class (reads ``class_limits`` then ``member_limits`` of its schema).
     """
     if isinstance(target, type):
-        member_limits = getattr(getattr(target, "_schema", None), "member_limits", {})
-        return tuple(decl for decls in member_limits.values() for decl in decls)
+        schema = getattr(target, "_schema", None)
+        if schema is None:
+            return ()
+        return _unique((*schema.class_limits, *(decl for decls in schema.member_limits.values() for decl in decls)))
     if isinstance(target, property):
         target = target.fget
     return tuple(getattr(target, _LIMIT_MARKER, ()))

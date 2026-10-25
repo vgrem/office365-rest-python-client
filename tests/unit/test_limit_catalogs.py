@@ -206,6 +206,17 @@ class TestCallRecordBindings(unittest.TestCase):
         declared = [decl.limit for decl in collect_class_limits(CallRecord)]
         self.assertEqual([id(row) for row in declared], [id(row) for row in communications_quotas.CALL_RECORD_BUDGETS])
 
+    def test_the_entity_answers_the_budgets_it_declares(self):
+        # The class's own rows first, then the per-record ceiling its two navigations share —
+        # one ceiling on the entity, not one per navigation.
+        self.assertEqual(
+            [id(decl.limit) for decl in limits_of(CallRecord)],
+            [
+                id(row)
+                for row in (*communications_quotas.CALL_RECORD_BUDGETS, communications_quotas.CALL_RECORD_RESOURCE_QUOTA)
+            ],
+        )
+
     def test_the_per_record_ceiling_is_bound_to_the_navigations_that_read_the_record(self):
         ceiling = communications_quotas.CALL_RECORD_RESOURCE_QUOTA
         for name in ("sessions", "participants_v2"):
