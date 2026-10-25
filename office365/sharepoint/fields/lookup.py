@@ -10,6 +10,17 @@ from office365.sharepoint.fields.field import Field
 class FieldLookup(Field):
     """Specifies a lookup field."""
 
+    @odata(name="AllowMultipleValues")
+    @property
+    def allow_multiple_values(self) -> Optional[bool]:
+        """Gets a value that specifies whether the lookup field allows multiple values."""
+        return self.properties.get("AllowMultipleValues", None)
+
+    @allow_multiple_values.setter
+    def allow_multiple_values(self, value: bool) -> None:
+        """Sets a value that specifies whether the lookup field allows multiple values."""
+        self.set_property("AllowMultipleValues", value)
+
     @odata(name="LookupWebId")
     @property
     def lookup_web_id(self) -> Optional[str]:

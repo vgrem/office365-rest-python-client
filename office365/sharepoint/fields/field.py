@@ -142,8 +142,13 @@ class Field(Entity):
         ``AllowMultipleValues`` tells the truth (live-verified). Classifying such a column
         as single-value left its collection of ids unremapped: a multi-lookup kept source
         item ids and a multi-person kept source site-user ids on the target.
+
+        The flag is declared on ``FieldLookup`` (and inherited by ``FieldUser`` and
+        ``TaxonomyField``) because that is where ``SP.FieldLookup`` puts it; a column of
+        any other type reports it as ``None``, so this predicate -- which answers for
+        every column -- reads the row rather than a getter it cannot have.
         """
-        return self.type_as_string in MULTI_VALUE_FIELD_TYPES or self.allow_multiple_values is True
+        return self.type_as_string in MULTI_VALUE_FIELD_TYPES or self.properties.get("AllowMultipleValues") is True
 
     @property
     def is_multi_choice(self) -> bool:
@@ -220,22 +225,6 @@ class Field(Entity):
     def id(self) -> Optional[str]:
         """Gets a value that specifies the field identifier."""
         return self.properties.get("Id", None)
-
-    #: ``SP.Field`` does not declare this name -- ``SP.FieldLookup``, ``SP.FieldUser`` and
-    #: ``SP.FieldChoice`` do -- so it is declared here with the provenance flag and answered
-    #: by every column type as ``None`` or ``False`` where the switch does not exist. A live
-    #: ``$select`` of it against a whole ``fields`` collection (164 columns, all types) is
-    #: accepted, which is what makes the base-class declaration safe.
-    @odata(name="AllowMultipleValues", system=True)
-    @property
-    def allow_multiple_values(self) -> Optional[bool]:
-        """Whether the column accepts many values; ``None``/``False`` where there is no switch."""
-        return self.properties.get("AllowMultipleValues", None)
-
-    @allow_multiple_values.setter
-    def allow_multiple_values(self, value: bool) -> None:
-        """Sets whether the column accepts many values."""
-        self.set_property("AllowMultipleValues", value)
 
     @odata(name="AutoIndexed")
     @property

@@ -11,6 +11,8 @@ import pytest
 from office365.migration.offline import offline_context
 from office365.sharepoint.fields.field import Field, is_taxonomy_column, schema_property
 from office365.sharepoint.fields.lookup import FieldLookup
+from office365.sharepoint.fields.user import FieldUser
+from office365.sharepoint.taxonomy.field import TaxonomyField
 
 #: The questions a caller may ask of a column.
 _PREDICATES = ("is_taxonomy", "is_lookup", "is_person", "is_multi_valued", "is_multi_choice", "is_value_object")
@@ -68,7 +70,27 @@ def test_a_schema_that_names_a_term_set_makes_a_column_managed_metadata():
     assert is_taxonomy_column(None, _TAXONOMY_SCHEMA) is True
 
 
-def test_a_multiple_values_flag_is_declared_on_a_column_not_on_a_lookup():
-    """The flag belongs to every column: a User column carries it too (live-verified)."""
-    assert Field.odata_name("allow_multiple_values") == "AllowMultipleValues"
+def test_a_lookups_list_and_target_column_belong_to_the_lookup_type():
+    """Where the metadata puts them: ``SP.FieldLookup``, and its subclasses by inheritance.
+
+    A ``fields`` row answers all three whatever the column's type -- a read is not routed
+    through the CSDL's type graph, so a projection that omits ``FieldTypeKind`` hands back
+    base ``Field`` objects -- which is why a caller that classifies by ``TypeAsString``
+    reads them out of the row. Declaring them on ``Field`` would say every column has a
+    lookup list: ``SP.Field`` carries none of them, and ``SP.FieldLookup`` all three.
+    """
+    assert FieldLookup.odata_name("lookup_list") == "LookupList"
+    assert FieldLookup.odata_name("lookup_field") == "LookupField"
     assert FieldLookup.odata_name("allow_multiple_values") == "AllowMultipleValues"
+    assert TaxonomyField.odata_name("text_field_id") == "TextField"
+    # Inherited, not re-spelled: SP.FieldUser and SP.Taxonomy.TaxonomyField are lookups.
+    assert FieldUser.odata_name("lookup_list") == "LookupList"
+    assert TaxonomyField.odata_name("allow_multiple_values") == "AllowMultipleValues"
+    # ...and a base column declares none of them.
+    assert not {"lookup_list", "lookup_field", "text_field_id"} & set(Field._schema.by_attr)
+
+    lookup = FieldLookup(offline_context()).hydrate({"LookupList": "6b6c1a9e-0000", "LookupField": "Title"})
+    term_column = TaxonomyField(offline_context()).hydrate({"TextField": "0f8a-0000"})
+
+    assert (lookup.lookup_list, lookup.lookup_field) == ("6b6c1a9e-0000", "Title")
+    assert term_column.text_field_id == "0f8a-0000"
