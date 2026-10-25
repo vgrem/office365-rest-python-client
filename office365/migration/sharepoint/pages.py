@@ -546,7 +546,7 @@ def _page_name(path: Optional[str]) -> str:
 def _target_refs(target_web: "Web") -> dict:
     """``file name -> FileRef`` for every page in the target's page libraries (one read each)."""
     return {
-        _page_name(str(item.properties.get("FileLeafRef") or "")): str(item.properties.get("FileRef") or "")
+        _page_name(item.file_leaf_ref): str(item.file_ref or "")
         for sp_list in _page_libraries(target_web.lists.get().execute_query())
         for item in sp_list.items.select(["FileLeafRef", "FileRef"]).get().execute_query()
     }

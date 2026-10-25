@@ -34,14 +34,16 @@ class CheckedOutFilesScanner(BaseScanner[CheckedOutFilesRecord]):
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         page: list[CheckedOutFilesRecord] = []
         for item in target.entity:
-            file = getattr(item, "file", None)
-            if file is None or not file.check_out_type:
+            if not item.is_file:
+                continue
+            file = item.file
+            if not file.check_out_type:
                 continue  # 0/None = not checked out
             user = file.checked_out_by_user
             page.append(
                 CheckedOutFilesRecord(
                     SiteURL=site_url(target.location),
-                    File=item.properties.get("FileRef", ""),
+                    File=item.file_ref or "",
                     CheckedOutUser=(user.login_name or user.title) if user is not None else None,
                     ScanID=report.scan_id or None,
                 )

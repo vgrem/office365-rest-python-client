@@ -41,14 +41,16 @@ class BrowserFileHandlingScanner(BaseScanner[BrowserFileHandlingRecord]):
         for item in target.entity:
             if file_extension(item) not in HTML_EXTENSIONS:
                 continue
-            file = getattr(item, "file", None)
-            modified_by = file.modified_by if file is not None else None
+            if not item.is_file:
+                continue
+            file = item.file
+            modified_by = file.modified_by
             self.records.append(
                 BrowserFileHandlingRecord(
                     SiteURL=location,
-                    File=item.properties.get("FileRef", ""),
-                    TimeCreated=file.time_created if file is not None else None,
-                    TimeModified=file.time_last_modified if file is not None else None,
+                    File=item.file_ref or "",
+                    TimeCreated=file.time_created,
+                    TimeModified=file.time_last_modified,
                     ModifiedBy=(modified_by.login_name or modified_by.title) if modified_by is not None else None,
                     ScanID=report.scan_id or None,
                 )

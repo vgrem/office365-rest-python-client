@@ -23,15 +23,15 @@ class ThicketFolderScanner(BaseScanner):
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         for item in target.entity:
-            if getattr(item, "file", None) is not None:
+            if item.is_file:
                 continue  # a file, not a folder
-            name = item.properties.get("FileLeafRef", "")
+            name = item.file_leaf_ref or ""
             if not name.lower().endswith(_THICKET_SUFFIXES):
                 continue
             self.flag(
                 report,
                 "blocker",
-                item.properties.get("FileRef", "") or name,
+                item.file_ref or name,
                 f"Thicket folder '{name}' isn't supported in SharePoint in Microsoft 365",
                 "Rename the folder so it no longer ends in '_file'/'_files'",
                 risk_code="THICKET_FOLDER_UNSUPPORTED",

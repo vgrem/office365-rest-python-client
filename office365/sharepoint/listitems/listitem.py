@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any, Dict, Union
+from typing import TYPE_CHECKING, Any, Dict, Union, cast
 from uuid import UUID
 
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.converters.scalars import iso_z
+from office365.runtime.converters.scalars import iso_z, parse_enum
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
@@ -671,8 +671,47 @@ class ListItem(SecurableObject):
     @odata(name="FileSystemObjectType")
     @property
     def file_system_object_type(self) -> Optional[FileSystemObjectType]:
-        """Gets a value that specifies whether the list item is a file or a list folder"""
-        return self.properties.get("FileSystemObjectType", FileSystemObjectType.Invalid)
+        """Whether the row is a file, a folder or a site.
+
+        The declaration has always promised an enum; the wire sends its number, so the
+        getter converts (``parse_enum``) rather than handing the raw integer out.
+        """
+        value = self.properties.get("FileSystemObjectType", FileSystemObjectType.Invalid)
+        if isinstance(value, FileSystemObjectType):
+            return value
+        return cast("FileSystemObjectType", parse_enum(FileSystemObjectType, value))
+
+    @property
+    def is_file(self) -> bool:
+        """Whether this row is a file (its ``FileSystemObjectType`` says so).
+
+        Read from the column, not from whether a ``File`` part happens to be expanded:
+        an unprojected column reads as ``Invalid``, which is neither.
+        """
+        return self.file_system_object_type == FileSystemObjectType.File
+
+    @property
+    def is_folder(self) -> bool:
+        """Whether this row is a folder (its ``FileSystemObjectType`` says so)."""
+        return self.file_system_object_type == FileSystemObjectType.Folder
+
+    @odata(name="FileRef", system=True)
+    @property
+    def file_ref(self) -> Optional[str]:
+        """The server-relative URL of the item, e.g. ``/Documents/Report.docx``.
+
+        An item row spells this column; the metadata does not (``system=True``).
+        """
+        return self.properties.get("FileRef", None)
+
+    @odata(name="FileLeafRef", system=True)
+    @property
+    def file_leaf_ref(self) -> Optional[str]:
+        """The item's name within its parent, e.g. ``Report.docx``.
+
+        An item row spells this column; the metadata does not (``system=True``).
+        """
+        return self.properties.get("FileLeafRef", None)
 
     @odata(name="IconOverlay")
     @property

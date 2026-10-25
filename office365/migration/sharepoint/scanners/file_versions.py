@@ -39,9 +39,9 @@ class FileVersionsScanner(BaseScanner[FileVersionsRecord]):
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         location = site_url(target.location)
         for item in target.entity:
-            file = getattr(item, "file", None)
-            if file is None:
+            if not item.is_file:
                 continue
+            file = item.file
             major = file.major_version or 0
             minor = file.minor_version or 0
             if major <= 1 and minor == 0:
@@ -50,7 +50,7 @@ class FileVersionsScanner(BaseScanner[FileVersionsRecord]):
                 FileVersionsRecord(
                     SiteURL=location,
                     VersionCount=major + minor,
-                    File=item.properties.get("FileRef", ""),
+                    File=item.file_ref or "",
                     ScanID=report.scan_id or None,
                 )
             )

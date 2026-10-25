@@ -41,7 +41,7 @@ class SiteScanRecord:
 
 def file_extension(item: Any) -> str:
     """The item's lower-cased extension including the dot (``""`` when none)."""
-    name = item.properties.get("FileLeafRef") or ""
+    name = item.file_leaf_ref or ""
     _, dot, extension = name.rpartition(".")
     return f".{extension.lower()}" if dot and extension else ""
 

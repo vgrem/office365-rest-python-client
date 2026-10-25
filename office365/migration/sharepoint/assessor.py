@@ -41,6 +41,25 @@ if TYPE_CHECKING:
     from office365.sharepoint.webs.web import Web
 
 
+#: The projection every list-items scan reads: the row's identity, the ``File`` part,
+#: and the row's kind. A column a scan reads through the model must be selected here —
+#: ``tests/unit/test_migration_assessment.py`` walks the scanners' source and says so.
+_ITEM_SCAN_SELECT = [
+    "FileRef",
+    "FileLeafRef",
+    "File/Length",
+    "File/MajorVersion",
+    "File/MinorVersion",
+    "File/CheckOutType",
+    "File/TimeCreated",
+    "File/TimeLastModified",
+    "FileSystemObjectType",
+]
+
+#: The paged unique-permission projection; ``PermissionScanner`` reads just these two.
+_UNIQUE_ITEM_SCAN_SELECT = ["HasUniqueRoleAssignments", "FileRef"]
+
+
 class MigrationAssessor(Entity):
     """
     Pre-migration assessment. Surfaces blockers and warnings before
@@ -305,18 +324,9 @@ class MigrationAssessor(Entity):
                 )
             if has_items:
                 pending["count"] += 1
-                lst.items.select(
-                    [
-                        "FileRef",
-                        "FileLeafRef",
-                        "File/Length",
-                        "File/MajorVersion",
-                        "File/MinorVersion",
-                        "File/CheckOutType",
-                        "File/TimeCreated",
-                        "File/TimeLastModified",
-                    ]
-                ).expand(["File", "File/ModifiedBy", "File/CheckedOutByUser"]).get().on_error(_fail).after_execute(
+                lst.items.select(list(_ITEM_SCAN_SELECT)).expand(
+                    ["File", "File/ModifiedBy", "File/CheckedOutByUser"]
+                ).get().on_error(_fail).after_execute(
                     lambda col, lst=lst, loc=location, done=_scan_done: (
                         self._scan_items(runner, col, loc),
                         done(lst),
@@ -325,7 +335,7 @@ class MigrationAssessor(Entity):
             if has_unique_items:
                 pending["count"] += 1
                 (
-                    lst.items.select(["HasUniqueRoleAssignments", "FileRef"])
+                    lst.items.select(list(_UNIQUE_ITEM_SCAN_SELECT))
                     .get_all()
                     .on_error(_fail)
                     .after_execute(

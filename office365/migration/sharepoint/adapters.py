@@ -2875,13 +2875,10 @@ class SharePointLibrarySource:
                     select.extend(_MODERATION_FIELDS)
                 items = self._sp_list.items.select(select).expand(["CheckoutUser"]).get_all().execute_query()
                 for item in items:
-                    ref = item.properties.get("FileRef")
+                    ref = item.file_ref
                     if ref:
-                        authors[ref] = (
-                            parse_int(item.properties.get("AuthorId")),
-                            parse_int(item.properties.get("EditorId")),
-                        )
-                        unique[ref] = bool(item.properties.get("HasUniqueRoleAssignments"))
+                        authors[ref] = (item.author_id, item.editor_id)
+                        unique[ref] = bool(item.has_unique_role_assignments)
                         if item.properties.get("CheckoutUser"):
                             checkout.add(ref)
                         if moderates:

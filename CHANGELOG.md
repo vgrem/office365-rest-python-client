@@ -556,6 +556,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   was dead. Both services now plan zero declarations (`0 lines in 0 modules`), and that is
   pinned as a test: a getter added tomorrow that spells an OData name without declaring it
   turns `tests/unit/test_odata_metadata.py` red.
+- **A list item's own columns are declared on the item.** `SP.ListItem` declares six more
+  names it always answered by reading the bag: `AuthorId`, `EditorId`, `Created`,
+  `Modified`, `FileRef` and `FileLeafRef`. All six are `system=True`, because that is the
+  fact the metadata was silent about — the item row spells them and `sp.listitem` does not
+  (of the wanted set the CSDL declares only `Id`). `_schema.system` therefore reads
+  `AuthorId, Created, EditorId, FileLeafRef, FileRef, Modified`, `select_all()` grows by
+  six, and a `create()`/`update()` body does not move: `system` is a declaration fact,
+  `persist` still defaults to `False`. `file_system_object_type` answers the enum its
+  annotation has always promised — the wire sends `0`/`1`/`2`, so the getter parses instead
+  of handing the number out (`Invalid` when the column is unprojected or unreadable).
+  `is_file` and `is_folder` are the two predicates that follow, and they read that column,
+  not the presence of an expanded `File` part: "the `File` navigation happens to be loaded"
+  and "this row is a file" were being spelled as one test, so a folder row (whose `File`
+  hydrates as `None`) read as neither, and a real file whose `File` was not expanded read as
+  not-a-file.
 
 **SharePoint navigation**
 
@@ -987,6 +1002,11 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
 
 **SharePoint (client)**
 
+- **`List.export()` exports files.** The item loop tested
+  `item.file_system_object_type == FileSystemObjectType.File`, but the getter handed out the
+  wire's JSON number, and `0 == FileSystemObjectType.File` is `False` in Python — so the
+  comparison could never hold and every item, files included, was skipped. The getter now
+  answers the enum, and the comparison reads the fact it was written to read.
 - **A query bound to a subweb addresses the subweb.** `ClientQuery.url` pasted the
   query's own path onto the service root, so `sp.web.get_sub_web_by_url(...).webs`
   and everything else reached through a subweb read the *root* web's collection —
@@ -1018,6 +1038,20 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
 
 **Migration (client-side)**
 
+- **The SharePoint assessment reads a list item's columns through the item.** Nine of the
+  `ITEMS`-container scans went behind the model to the JSON bag
+  (`item.properties.get("FileRef")` ten times, `"FileLeafRef"` four times,
+  `"HasUniqueRoleAssignments"` once), which is a second spelling of a name the library had
+  just declared and a silent coupling to a projection nobody checked. They now read
+  `item.file_ref`, `item.file_leaf_ref`, `item.is_file` and
+  `item.has_unique_role_assignments`, and the projection they read through is one named
+  constant per load (`assessor._ITEM_SCAN_SELECT`, `assessor._UNIQUE_ITEM_SCAN_SELECT`)
+  instead of an inline list per call. That projection gained exactly one name —
+  `FileSystemObjectType`, because the scans now filter on `is_file` and an unprojected
+  column reads as `Invalid`, which is neither a file nor a folder. A request-level
+  differential against a `HEAD` worktree over the live tenant's 252 assessment requests
+  shows the widened projection as the *only* difference: 124 `items` URLs, each one name
+  longer, and no request added, dropped or reordered.
 - **A file's current version no longer appears twice in its history.** `File.Versions`
   returns the file's current version as well (`IsCurrentVersion`), and
   `SharePointLibrarySource.read_version_history` passed it through as an *older*

@@ -42,14 +42,15 @@ class LargeExcelFilesScanner(BaseScanner[LargeExcelFilesRecord]):
         for item in target.entity:
             if file_extension(item) not in EXCEL_EXTENSIONS:
                 continue
-            file = getattr(item, "file", None)
-            size = (file.length if file is not None else None) or 0
+            if not item.is_file:
+                continue
+            size = item.file.length or 0
             if size <= limit.value:
                 continue
             self.records.append(
                 LargeExcelFilesRecord(
                     SiteURL=location,
-                    File=item.properties.get("FileRef", ""),
+                    File=item.file_ref or "",
                     FileSizeinMB=round(size / _MB, 2),
                     ScanID=report.scan_id or None,
                 )

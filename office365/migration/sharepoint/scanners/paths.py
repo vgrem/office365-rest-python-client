@@ -16,8 +16,8 @@ class PathScanner(BaseScanner):
         path_limit = self.options.limit("max_path_length")
         name_limit = self.options.limit("max_name_length")
         for item in target.entity:
-            path = item.properties.get("FileRef", "")
-            name = item.properties.get("FileLeafRef", "")
+            path = item.file_ref or ""
+            name = item.file_leaf_ref or ""
 
             if len(path) > path_limit.value:
                 self.flag(

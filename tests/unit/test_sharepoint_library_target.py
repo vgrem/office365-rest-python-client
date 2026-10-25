@@ -15,8 +15,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from office365.migration.base import MigrationItem, Principal
+from office365.migration.offline import offline_context
 from office365.migration.sharepoint.adapters import SharePointLibrarySource, SharePointLibraryTarget
 from office365.sharepoint.files.versions.version import FileVersion
+from office365.sharepoint.listitems.listitem import ListItem
 
 
 class _Entry:
@@ -492,9 +494,12 @@ def test_library_target_reads_a_folders_metadata_back_from_the_folder_resource()
 # ── Content-approval (moderation) state ───────────────────────────────────────
 
 
-class _ModerationItem:
+class _ModerationItem(ListItem):
+    """A library item: the row's columns, read the way the adapter reads them."""
+
     def __init__(self, properties: dict) -> None:
-        self.properties = properties
+        super().__init__(offline_context())
+        self.hydrate(properties)
 
 
 class _ModerationItems:

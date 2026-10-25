@@ -14,7 +14,7 @@ class PermissionScanner(BaseScanner):
     items_load = "unique"  # requires the paged unique-permission items projection
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
-        unique = sum(1 for i in target.entity if i.properties.get("HasUniqueRoleAssignments", False))
+        unique = sum(1 for item in target.entity if item.has_unique_role_assignments)
         supported = self.options.limit("unique_scopes")
         recommended = self.options.limit("recommended_unique_scopes")
         if unique > supported.value:

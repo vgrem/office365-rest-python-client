@@ -2,6 +2,7 @@
 
 import unittest
 
+from office365.migration.offline import offline_context
 from office365.migration.sharepoint.pages import (
     DUPLICATE_RENAME,
     capture_site_pages,
@@ -11,6 +12,7 @@ from office365.migration.sharepoint.pages import (
     verify_page_copy,
 )
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
+from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.publishing.pages.page import SitePage
 
@@ -56,19 +58,23 @@ class _FileHandle:
         return self.web.context.execute_query()
 
 
-class _Item:
+class _Item(ListItem):
+    """A target page item: its columns read through the model, its writes recorded."""
+
     def __init__(self, store, page_id, fields=None, web=None):
+        super().__init__(offline_context())
         self.store = store
         self.page_id = page_id
         self.web = web
-        self.properties = {name: value for name, value in store[page_id].items() if fields is None or name in fields}
+        self.hydrate({name: value for name, value in store[page_id].items() if fields is None or name in fields})
+        self.properties.pop("ParentList", None)  # the stub records only the columns it was given
         self.updates: list[dict] = []
 
     @property
     def file(self):
         return _FileHandle(self.web, self.page_id)
 
-    def set_property(self, name, value):
+    def set_property(self, name, value, persist_changes=False):
         self.properties[name] = value
 
     def update(self):

@@ -15,8 +15,10 @@ class FileScanner(BaseScanner):
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         limit = self.options.limit("large_file_bytes")
         for item in target.entity:
-            path = item.properties.get("FileRef", "")
-            size = (item.file.length if getattr(item, "file", None) is not None else None) or 0
+            if not item.is_file:
+                continue
+            path = item.file_ref or ""
+            size = item.file.length or 0
             if size > limit.value:
                 self.flag(
                     report,

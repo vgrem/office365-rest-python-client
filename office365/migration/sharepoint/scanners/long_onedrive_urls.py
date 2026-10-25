@@ -38,7 +38,7 @@ class LongOneDriveUrlsScanner(BaseScanner[LongOneDriveUrlsRecord]):
         parts = urlsplit(target.location or "")
         origin = f"{parts.scheme}://{parts.netloc}" if parts.scheme and parts.netloc else ""
         for item in target.entity:
-            path = item.properties.get("FileRef", "")
+            path = item.file_ref or ""
             url = f"{origin}{path}"
             if len(url) <= limit.value:
                 continue

@@ -7,7 +7,9 @@ SharePoint/Outlook adapters degrade gracefully).
 
 from __future__ import annotations
 
-from datetime import datetime
+import ast
+import pathlib
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
@@ -24,10 +26,12 @@ from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners import ScanTarget
+from office365.migration.offline import offline_context
 from office365.migration.sharepoint import SharePointAssessmentOptions
 from office365.migration.sharepoint.adapters import SharePointListSource
 from office365.migration.sharepoint.scanners import LargeSitesScanner
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests._scripted_transport import ScriptedTransport
 
@@ -402,18 +406,27 @@ def test_large_list_scanner_grades_by_threshold():
             assert report.issues[0].risk_code == code
 
 
+JANE = {"LoginName": "i:0#.f|membership|jane@contoso.com", "Title": "Jane"}
+
+
+def scanner_item(ref: str, file: dict | None = None, **columns) -> ListItem:
+    """A list-item row as the assessment projects it: its columns plus its ``File`` part."""
+    payload = {
+        "FileSystemObjectType": 0,
+        "FileRef": ref,
+        "FileLeafRef": ref.rsplit("/", 1)[-1],
+        "File": file or {},
+        **columns,
+    }
+    return ListItem(offline_context()).hydrate(payload)
+
+
 def test_checked_out_files_scanner_reports_and_warns():
     from office365.migration.sharepoint.scanners.checked_out_files import CheckedOutFilesScanner
 
-    class _File:
-        def __init__(self, check_out_type, user=None):
-            self.check_out_type = check_out_type
-            self.checked_out_by_user = user
-
-    user = SimpleNamespace(login_name="i:0#.f|membership|jane@contoso.com", title="Jane")
     items = [
-        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/free.txt"}, file=_File(0)),
-        SimpleNamespace(properties={"FileRef": "/sites/x/Docs/locked.txt"}, file=_File(1, user)),
+        scanner_item("/sites/x/Docs/free.txt", {"CheckOutType": 0}),
+        scanner_item("/sites/x/Docs/locked.txt", {"CheckOutType": 1, "CheckedOutByUser": JANE}),
     ]
     report = AssessmentReport.new()
     scanner = CheckedOutFilesScanner(SharePointAssessmentOptions())
@@ -431,15 +444,10 @@ def test_checked_out_files_scanner_reports_and_warns():
 def test_browser_file_handling_scanner_reports_html():
     from office365.migration.sharepoint.scanners.browser_file_handling import BrowserFileHandlingScanner
 
-    class _File:
-        def __init__(self):
-            self.time_created = datetime(2020, 1, 1)
-            self.time_last_modified = datetime(2021, 1, 1)
-            self.modified_by = SimpleNamespace(login_name="i:0#.f|membership|jane@contoso.com", title="Jane")
-
+    stamps = {"TimeCreated": "2020-01-01T00:00:00Z", "TimeLastModified": "2021-01-01T00:00:00Z", "ModifiedBy": JANE}
     items = [
-        SimpleNamespace(properties={"FileLeafRef": "page.html", "FileRef": "/sites/x/Docs/page.html"}, file=_File()),
-        SimpleNamespace(properties={"FileLeafRef": "doc.docx", "FileRef": "/sites/x/Docs/doc.docx"}, file=_File()),
+        scanner_item("/sites/x/Docs/page.html", stamps),
+        scanner_item("/sites/x/Docs/doc.docx", stamps),
     ]
     report = AssessmentReport.new()
     scanner = BrowserFileHandlingScanner(SharePointAssessmentOptions())
@@ -449,13 +457,45 @@ def test_browser_file_handling_scanner_reports_html():
     row = scanner.records[0]
     assert row.File == "/sites/x/Docs/page.html"
     assert row.ModifiedBy == "i:0#.f|membership|jane@contoso.com"
-    assert row.TimeCreated == datetime(2020, 1, 1)
+    assert row.TimeCreated == datetime(2020, 1, 1, tzinfo=timezone.utc)
+
+
+def test_every_item_column_a_scan_reads_is_projected():
+    """A scan reads a row's column through the model; the walk must select it.
+
+    The scans and the projection sit in different modules, so nothing but a read of
+    the source keeps them together — a column a scan starts reading is added to the
+    projection or it comes back empty, which reads exactly like "no value".
+    """
+    from office365.migration.sharepoint import assessor
+    from office365.migration.sharepoint.scanners import __path__ as package
+
+    derived = {"is_file": "file_system_object_type", "is_folder": "file_system_object_type"}
+    selected = {
+        "default": set(assessor._ITEM_SCAN_SELECT),
+        "unique": set(assessor._UNIQUE_ITEM_SCAN_SELECT),
+    }
+    missing = []
+    for path in sorted(pathlib.Path(package[0]).glob("*.py")):
+        source = path.read_text(encoding="utf-8")
+        load = "unique" if 'items_load = "unique"' in source else "default"
+        for node in ast.walk(ast.parse(source)):
+            if not (isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name)):
+                continue
+            if node.value.id != "item":
+                continue
+            wire = ListItem._schema.by_attr.get(derived.get(node.attr, node.attr))
+            if wire is None or ListItem._schema.properties[wire].navigation:
+                continue  # not a column: a dict read, a derived value, or an expanded part
+            if wire not in selected[load]:
+                missing.append(f"{path.name}: item.{node.attr} reads {wire}")
+    assert missing == []
 
 
 def test_permission_scanner_uses_unique_scope_limits():
     from office365.migration.sharepoint.scanners.permissions import PermissionScanner
 
-    items = [SimpleNamespace(properties={"HasUniqueRoleAssignments": True}) for _ in range(6000)]
+    items = [scanner_item(f"/sites/x/Docs/f{i}.txt", HasUniqueRoleAssignments=True) for i in range(6000)]
     report = AssessmentReport.new()
     PermissionScanner(SharePointAssessmentOptions()).run(ScanTarget(ScanContainer.ITEMS, items, "web/lists/L"), report)
     assert len(report.issues) == 1

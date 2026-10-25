@@ -114,9 +114,26 @@ def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, roo
 def test_an_item_row_column_declares_that_the_metadata_is_silent():
     """A page copy reads these by name; a reader must be able to see where they live."""
     assert {"AuthorId", "EditorId", "Created", "Modified"} <= set(ListItem._schema.system)
+    assert {"FileRef", "FileLeafRef"} <= set(ListItem._schema.system)
     assert {"FileLeafRef", "WikiField", "OData__ModerationStatus"} <= set(SitePage._schema.system)
     assert "Id" not in ListItem._schema.system  # the one item column the CSDL does declare
     assert "AuthorId" in ListItem.select_all()  # still a column the service answers
+
+
+def test_a_row_says_whether_it_is_a_file_or_a_folder():
+    """``FileSystemObjectType`` declares an enum; the wire sends its number."""
+    from office365.migration.offline import offline_context
+    from office365.sharepoint.files.system_object_type import FileSystemObjectType
+
+    def row(raw) -> ListItem:
+        payload = {} if raw is None else {"FileSystemObjectType": raw}
+        return ListItem(offline_context()).hydrate(payload)
+
+    assert row(0).is_file and not row(0).is_folder
+    assert row(1).is_folder and not row(1).is_file
+    assert row(2).file_system_object_type == FileSystemObjectType.Web
+    assert row(None).file_system_object_type == FileSystemObjectType.Invalid  # unprojected column
+    assert not row(None).is_file and not row(None).is_folder  # absent is neither
 
 
 def test_select_all_is_the_projection_the_declarations_describe():
