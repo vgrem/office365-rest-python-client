@@ -371,6 +371,39 @@ class SitePage(SitePageMetadata):
         """Gets the TemplateScope property"""
         return self.properties.get("TemplateScope", None)
 
+    # The three columns below are how the *list item* spells a page. A page is read
+    # through its library's item projection, where ``sitepages/pages`` answers none of
+    # them: the entity spells the file name ``FileName`` (declared on the base class),
+    # and accepts the other two without ever returning a value for them.
+
+    @odata(name="FileLeafRef")
+    @property
+    def file_leaf_ref(self) -> Optional[str]:
+        """Gets the FileLeafRef property
+
+        The list-item column that stores a page's file name.
+        """
+        return self.properties.get("FileLeafRef", None)
+
+    @odata(name="WikiField")
+    @property
+    def wiki(self) -> Optional[str]:
+        """Gets the WikiField property
+
+        A classic wiki page's body, which it carries instead of a canvas.
+        """
+        return self.properties.get("WikiField", None)
+
+    @odata(name="OData__ModerationStatus")
+    @property
+    def moderation_status(self) -> Optional[int]:
+        """Gets the OData__ModerationStatus property
+
+        The item's approval status: 0 draft or pending, 1 rejected, 2 approved. REST
+        spells a field whose internal name starts with ``_`` as ``OData_`` + that name.
+        """
+        return self.properties.get("OData__ModerationStatus", None)
+
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
         """Amplify operation.
 

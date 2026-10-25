@@ -451,9 +451,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - **The fields a page item carries are spelled once, by the library**
   (`office365.sharepoint.publishing.pages.fields`): `PAGE_FIELDS` — the projection a
-  page copy reads — `BODY_FIELDS` (`CanvasContent1`, `WikiField`), `WIKI_FIELD`,
-  `MODERATION_STATUS`, and `is_modern_page(content_type_id, canvas)`. The names a
-  `SitePage` already declares are derived from the type
+  page copy reads — `BODY_FIELDS` (`CanvasContent1`, `WikiField`) and
+  `is_modern_page(content_type_id, canvas)`. Every name is derived from the type
   (`SitePage.odata_name("canvas_content")`), so a projection cannot drift from the
   model it reads, and the modern/classic rule lives beside the fields it reads rather
   than in the migrator. The page's content type base is
@@ -461,12 +460,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   ("Site Page", `0x0101…4118`, read back from a site's content type catalog — the
   metadata this client is generated from carries no content type IDs), and a page
   type *derives* from it, which is why the rule is a prefix match.
-  `office365.migration.sharepoint.pages` now names selections, not spellings:
-  `_PAGE_SELECT = PAGE_FIELDS`, `_DETECT_SELECT` built from `SPBuiltInFieldName` +
-  `BODY_FIELDS`; `is_page_library(list)` is public because an example had re-spelled
-  the template test inline. **Breaking:** `PAGE_LIBRARY_TEMPLATE`,
-  `SITE_PAGE_CONTENT_TYPE_PREFIX` and `is_modern_page` leave that module (the first is
+  `office365.migration.sharepoint.pages` now names no field at all: `_PAGE_SELECT =
+  PAGE_FIELDS`, `_DETECT_SELECT` from `SitePage.odata_name(…)` + `BODY_FIELDS`;
+  `is_page_library(list)` is public because an example had re-spelled the template
+  test inline. **Breaking:** `PAGE_LIBRARY_TEMPLATE`, `SITE_PAGE_CONTENT_TYPE_PREFIX`
+  and `is_modern_page` leave that module (the first is
   `ListTemplateType.WebPageLibrary.value`, the other two are the library's).
+- **`SitePage` declares the three columns a page item answers and the entity does
+  not:** `file_leaf_ref` (`FileLeafRef`), `wiki` (`WikiField`) and
+  `moderation_status` (`OData__ModerationStatus`). A page is read through its
+  library's list-item projection — the `sitepages/pages` entity refuses any page whose
+  content type is not a modern site page ("This page does not have the site page
+  content type") — so its type has to spell what an item returns: `FileLeafRef`,
+  because this type spells the same fact `FileName` on the entity path, and the other
+  two because the entity accepts those names and answers nothing for them. Declaring
+  them is what makes a page hydrated from an item readable as a model
+  (`page.wiki`, `page.moderation_status`) instead of as a property bag, and what lets
+  the projection cite the type for all eleven of its names. `to_json()` of a hydrated
+  page is unchanged (properties are held whether or not they are declared); the only
+  schema difference is that `select_all()` names the three item columns as well.
 - **`SitePage` declares `canvas_content` and `layout_web_parts_content`, the two
   properties that can be written.** The class declared each of those wire names twice:
   `canvas_content`/`layout_web_parts_content` (with setters) and
@@ -475,7 +487,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   property was the undeclared one — `select_all()` could not name it, and
   `odata_name("canvas_content")` raised. The twins are deleted. A differential over the
   type shows the only change is those two attribute names: `select_all()`,
-  `expand_all()`, the 57 declared names and a hydrated `to_json()` are byte-identical.
+  `expand_all()`, the declared names and a hydrated `to_json()` are byte-identical.
 
 ### Changed
 

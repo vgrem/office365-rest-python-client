@@ -1,21 +1,11 @@
-"""The page-item facts the library spells once: fields, bodies, and the modern rule."""
+"""The page-item facts the library spells once: declarations, fields, bodies, the modern rule."""
 
 import unittest
 
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
-from office365.sharepoint.publishing.pages.fields import (
-    BODY_FIELDS,
-    MODERATION_STATUS,
-    PAGE_FIELDS,
-    WIKI_FIELD,
-    is_modern_page,
-)
+from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS, is_modern_page
 from office365.sharepoint.publishing.pages.page import SitePage
-
-#: Projected names the page type does not spell: the item columns of the library,
-#: which ``sitepages/pages`` refuses to serve for a page that is not modern.
-ITEM_ONLY = {SPBuiltInFieldName.FileLeafRef, WIKI_FIELD, MODERATION_STATUS}
 
 #: A page content type derived from "Site Page" (the ID is hierarchical).
 DERIVED_SITE_PAGE = SPBuiltInContentTypeId.SitePage + "005E10E40F8E37D94AB983A0181120EFFC"
@@ -33,11 +23,27 @@ class TestSitePageDeclarations(unittest.TestCase):
         self.assertEqual(page.canvas_content, "<div/>")
         self.assertEqual(page.layout_web_parts_content, "<div>l</div>")
 
+    def test_the_item_columns_are_declared_on_the_type(self):
+        # A page is read from its library's items, so its type declares what an item
+        # answers: hydration is by declared name, and a name nobody declares is a
+        # property nobody can read off the model.
+        self.assertEqual(SitePage.odata_name("file_leaf_ref"), SPBuiltInFieldName.FileLeafRef)
+        self.assertEqual(SitePage.odata_name("wiki"), "WikiField")
+        self.assertEqual(SitePage.odata_name("moderation_status"), "OData__ModerationStatus")
+
+    def test_a_hydrated_page_answers_the_item_columns(self):
+        page = SitePage(None).hydrate(
+            {"FileLeafRef": "x.aspx", "WikiField": "<div>wiki</div>", "OData__ModerationStatus": 0}
+        )
+        self.assertEqual(page.file_leaf_ref, "x.aspx")
+        self.assertEqual(page.wiki, "<div>wiki</div>")
+        self.assertEqual(page.moderation_status, 0)
+
 
 class TestPageFields(unittest.TestCase):
-    def test_every_projected_name_is_declared_or_an_item_column(self):
+    def test_every_projected_name_is_declared(self):
         declared = set(SitePage._schema.by_attr.values())
-        self.assertEqual(set(PAGE_FIELDS) - declared, ITEM_ONLY)
+        self.assertEqual(set(PAGE_FIELDS) - declared, set())
 
     def test_the_page_type_spells_the_file_name_differently(self):
         # Why the projection reads the item column: the entity's own spelling is not it.
@@ -48,7 +54,7 @@ class TestPageFields(unittest.TestCase):
         self.assertEqual(len(PAGE_FIELDS), len(set(PAGE_FIELDS)))
 
     def test_the_body_fields_are_derived_from_the_type(self):
-        self.assertEqual(BODY_FIELDS, (SitePage.odata_name("canvas_content"), WIKI_FIELD))
+        self.assertEqual(BODY_FIELDS, (SitePage.odata_name("canvas_content"), SitePage.odata_name("wiki")))
 
 
 class TestIsModernPage(unittest.TestCase):

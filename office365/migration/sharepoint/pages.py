@@ -53,15 +53,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Iterable, Optional
 
-from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.publishing.pages.canvas import count_web_parts
-from office365.sharepoint.publishing.pages.fields import (
-    BODY_FIELDS,
-    MODERATION_STATUS,
-    PAGE_FIELDS,
-    is_modern_page,
-)
+from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS, is_modern_page
+from office365.sharepoint.publishing.pages.page import SitePage
 
 if TYPE_CHECKING:
     from office365.sharepoint.listitems.listitem import ListItem
@@ -85,7 +80,7 @@ _PAGE_SELECT = PAGE_FIELDS
 
 #: A page whose ``Article`` canvas is empty is still readable, so detection needs
 #: only the wiki field of a classic page.
-_DETECT_SELECT = (SPBuiltInFieldName.FileLeafRef, SPBuiltInFieldName.ContentTypeId, *BODY_FIELDS)
+_DETECT_SELECT = (SitePage.odata_name("file_leaf_ref"), SitePage.odata_name("content_type_id"), *BODY_FIELDS)
 
 #: Page names shown inline in the handoff note before it is truncated.
 _MAX_PAGES_IN_NOTE = 5
@@ -269,7 +264,7 @@ def _shown(names: Iterable[str]) -> str:
 
 def _payload(properties: dict) -> PagePayload:
     """The copyable payload of a modern page, from its list item properties."""
-    status = properties.get(MODERATION_STATUS)
+    status = properties.get(SitePage.odata_name("moderation_status"))
     return PagePayload(
         name=str(properties.get("FileLeafRef") or ""),
         title=properties.get("Title"),
