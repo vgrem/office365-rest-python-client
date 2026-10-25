@@ -191,15 +191,19 @@ class SecurableObject(Entity):
             _get_user_effective_permissions(user)
         return return_type
 
+    @odata(name="HasUniqueRoleAssignments", readonly=True)
     @property
     def has_unique_role_assignments(self) -> Optional[bool]:
         """Specifies whether the role assignments are uniquely defined for this securable object or inherited from a
         parent securable object. If the value is "false", role assignments are inherited from a parent securable
         object.
+
+        A plain entity read does not return it, so it costs a ``$select``; the service
+        assigns it, so it never travels back in a request.
         """
         return self.properties.get("HasUniqueRoleAssignments", None)
 
-    @odata(name="FirstUniqueAncestorSecurableObject")
+    @odata(name="FirstUniqueAncestorSecurableObject", navigation=True)
     @property
     def first_unique_ancestor_securable_object(self) -> SecurableObject:
         """Specifies the object where role assignments for this object are defined"""
@@ -211,7 +215,7 @@ class SecurableObject(Entity):
             ),
         )
 
-    @odata(name="RoleAssignments")
+    @odata(name="RoleAssignments", navigation=True)
     @property
     def role_assignments(self) -> RoleAssignmentCollection:
         """The role assignments for the securable object."""

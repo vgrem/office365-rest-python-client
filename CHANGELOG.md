@@ -404,6 +404,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+**SharePoint permissions**
+
+- **A securable declares the ACL flag it has always read, and the two navigations it had
+  spelled as columns.** `SecurableObject.has_unique_role_assignments` read
+  `HasUniqueRoleAssignments` out of `properties` while no `@odata` declaration named it, so
+  `wire_name("has_unique_role_assignments")` raised, `select_all()` omitted the only column
+  the type really has, and nothing stopped a stored flag from travelling back in a request.
+  It is now declared `readonly=True`, which is what that rule needs: a response still reports
+  it (`to_json()`), a request never carries it (`to_json(profile)` filters
+  `_schema.readonly`). Its two siblings are navigations, verified live — `$expand` returns
+  them (51 assignments on a list item) while `$select` silently drops them — so
+  `FirstUniqueAncestorSecurableObject` and `RoleAssignments` are declared `navigation=True`
+  and leave `select_all()`. `ListItem.select_all()` therefore went from two names that read
+  nothing to `['HasUniqueRoleAssignments']`, which a live read of a projected item now
+  answers (`False`); `List` went 22 → 21 names and `Web` 40 → 39, with `expandable()`
+  gaining both. The migrator's own `"HasUniqueRoleAssignments"` literals stay where they are:
+  they sit beside `AuthorId`/`EditorId`, which are per-list columns no `@odata` can declare,
+  so deriving one name from the schema would put two sources in one tuple. Unchanged and now
+  precisely identified: `Web.select_all()` is still rejected as a whole by the server, and a
+  bisect of its names leaves one offender — `DescriptionTranslations`, whose `$select` is
+  `NotSupportedException` — which asks for a "declared but not projectable" fact that no
+  `@odata` flag expresses yet.
+
 **Runtime**
 
 - **A collection of scalars prints as the list it is.** `str()` on a

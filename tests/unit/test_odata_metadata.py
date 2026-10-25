@@ -32,6 +32,8 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.value import declared_type
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta, field_declarations, odata
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.listitems.listitem import ListItem
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 #: Packages whose getters are expected to be fully declared today.
@@ -55,6 +57,29 @@ def test_expandable_is_the_complement_of_select_all():
     assert "instances" in expandable
     assert "iCalUId" not in expandable
     assert not set(expandable) & set(Event.select_all())
+
+
+def test_a_securable_declares_one_column_and_two_navigations():
+    """A securable's projection used to name nothing but navigations, so it read nothing.
+
+    ``$select`` ignores a navigation silently (probed live: a ``ListItem`` projected
+    with ``RoleAssignments`` came back without one, while ``$expand`` returned 51
+    assignments), which left the ACL flag as the type's only real column — and it was
+    the one declaration the class did not carry.
+    """
+    assert ListItem.select_all() == ["HasUniqueRoleAssignments"]
+    assert ListItem.expandable() == ["FirstUniqueAncestorSecurableObject", "RoleAssignments"]
+    assert ListItem.wire_name("has_unique_role_assignments") == "HasUniqueRoleAssignments"
+
+
+def test_a_column_the_service_assigns_never_travels_back():
+    item = ListItem(ClientContext("https://contoso.sharepoint.com/sites/x"))
+    item.set_property("HasUniqueRoleAssignments", True)
+    item.set_property("ID", 7)
+
+    assert item.to_json(V4JsonFormat("none")) == {"ID": 7}  # a request may not carry it
+    assert item.to_json()["HasUniqueRoleAssignments"] is True  # a response reports it
+    assert item.has_unique_role_assignments is True
 
 
 def test_wire_name_answers_for_an_attribute_and_refuses_an_unknown_one():
