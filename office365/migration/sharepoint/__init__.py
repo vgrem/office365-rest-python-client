@@ -27,8 +27,6 @@ from office365.migration.sharepoint.handoff import (
     is_infopath_form_url,
 )
 from office365.migration.sharepoint.navigation import (
-    NavNode,
-    WebNavigation,
     apply_navigation,
     capture_navigation,
     verify_navigation,
@@ -128,7 +126,6 @@ __all__ = [
     "ListStructure",
     "MigrationAssessor",
     "MigrationTenantAssessor",
-    "NavNode",
     "PageCopyReport",
     "PageHandoff",
     "PageInfo",
@@ -158,7 +155,6 @@ __all__ = [
     "ViewDefinition",
     "WebBranding",
     "WebBrandingReport",
-    "WebNavigation",
     "WebScopeProvisionReport",
     "WebScopeStructure",
     "WebSettings",

@@ -32,7 +32,9 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         """Walk every navigation node (top-level and descendants) into a flat collection.
 
         Each visited node's ``Children`` are loaded and stored on the node, so the
-        loaded collection can be exported as a nested tree via ``to_json()``.
+        loaded collection can be exported as a nested tree via ``to_json()``. A
+        collection that an ``$expand`` already filled is walked as it stands, without
+        a second read of the level it already holds.
 
         Args:
             recursive (bool): Whether to walk child nodes recursively (default True).
@@ -55,7 +57,10 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
             node.set_property("Children", children)
             _walk(children)
 
-        self.get().after_execute(lambda _: _walk(self))
+        if len(self) == 0:
+            self.get().after_execute(lambda _: _walk(self))
+        else:
+            _walk(self)
         return return_type
 
     def add(self, create_node_info: NavigationNodeCreationInformation) -> NavigationNode:

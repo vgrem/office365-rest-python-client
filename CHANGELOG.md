@@ -443,6 +443,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `tests/unit/test_navigation_node_create.py` pins the body it sends: posting the
   information object instead fails that test rather than the tenant.
 
+- **Breaking:** a captured navigation is the model's own tree. `NavNode` and `WebNavigation`
+  were a third spelling of `{UseShared, QuickLaunch, TopNavigationBar}` and of a node
+  `{Title, Url, IsVisible, IsExternal, Children}` — and a copy is exactly how the two flags
+  stayed one step away from the wire, since the copy's names were the copy's own. The tree is
+  also the model in both directions, offline: `Navigation.to_json()` writes
+  `{'UseShared': False, 'QuickLaunch': [{'Title', 'Url', 'Children': [...]}]}` and
+  `Navigation(ctx).hydrate(payload)` reads it back as a typed `NavigationNodeCollection` →
+  `NavigationNode` → `NavigationNodeCollection`. So the walk moved into the library, where a
+  caller can ask for it: `Web.navigation.get_tree(recursive=True, progress=...)` expands both
+  bars — the response carries them as the model's own collections, since a plain read returns
+  only their URIs and each property builds a fresh collection per access — then walks each one
+  with `NavigationNodeCollection.get_all_nodes`, so one `execute_query()` returns the whole
+  tree. `get_all_nodes()` now walks a collection an `$expand` already filled as it stands
+  instead of reading that level a second time. `capture_navigation(web)` is therefore that one
+  call; `_sync_nodes` and `_verify_bar` take `NavigationNode`s, and a create is handed the two
+  fields it sends (`Title`, `Url`) instead of the `IsExternal`/`AsLastNode` `add()` never
+  posts. `office365.migration.sharepoint` lost two names (`__all__` 88 → 86), and the migrator
+  no longer builds a wire name by hand.
+
+  One row changes, deliberately: a differential probe over the same fixtures prints identical
+  created trees, warnings, flush counts and verification notes for all six paths — capture,
+  apply, verify, verify-after-apply, inherit, verify-inherit — and a different *captured* tree
+  for a dynamic node, which now carries the children the service computes for it
+  (`Recent` → `Depts`), because the walk reads every node's `Children`. Nothing derived is
+  copied: `_sync_nodes` still skips a URL-less node with a warning and `_verify_bar` does not
+  compare one, so the copy and the verify are what they were. A live read of the 24 + 2-node
+  site answers both bars and the nested children in one `execute_query()` (6.6 s, 10 keys per
+  node, JSON-serializable, `Home` → 1 child, `Recent` → 5). The three fakes that stood in for
+  the model (`_Node`, `_Nodes`, `_Navigation`) are gone, so the tests build real nodes over a
+  context that sends nothing — which is how the inherit path, counted by the old fake and
+  observed by no test, got one; the walk itself is pinned offline in
+  `tests/unit/test_navigation_tree.py`, which asserts the four requests one `get_tree()` makes
+  and the tree they leave.
+
 **SharePoint permissions**
 
 - **A securable declares the ACL flag it has always read, and the two navigations it had

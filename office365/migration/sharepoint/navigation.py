@@ -6,63 +6,32 @@ title) is left alone and its children are reconciled, so re-running is idempoten
 and a target's own links are never destroyed. Source links are rewritten from the
 source web's path to the target's, so a migrated node keeps working.
 
+A node *is* its model: ``Navigation`` and ``NavigationNode`` are the shape the
+service returns and accepts, and ``Navigation.get_tree()`` is what makes a
+captured navigation a tree, so nothing here re-spells the type.
+
 Out of scope (and reported as such): nodes without a URL (the dynamic *Recent*
-node and its computed children), audience targeting, title translations, and
-page/web-part content. This is the *OOTB* navigation SPMT preserves, not managed
-or structural navigation.
+node and its computed children, which a capture reads and a copy skips),
+audience targeting, title translations, and page/web-part content. This is the
+*OOTB* navigation SPMT preserves, not managed or structural navigation.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
+from typing import Iterable
 from urllib.parse import urlparse
 
+from office365.sharepoint.navigation.navigation import Navigation
+from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
 from office365.sharepoint.navigation.nodes.creationinformation import (
     NavigationNodeCreationInformation,
 )
+from office365.sharepoint.navigation.nodes.node import NavigationNode
 
 
-@dataclass
-class NavNode:
-    """A navigation node: link identity plus its (recursively captured) children."""
-
-    title: str
-    url: str
-    is_external: bool = False
-    is_visible: bool = True
-    children: list[NavNode] = field(default_factory=list)
-
-
-@dataclass
-class WebNavigation:
-    """A web's navigation: whether it inherits, and both link bars."""
-
-    use_shared: bool = False
-    quick_launch: list[NavNode] = field(default_factory=list)
-    top_navigation_bar: list[NavNode] = field(default_factory=list)
-
-
-def _capture_node(node: Any) -> NavNode:
-    """Capture one node; a node without a URL is a leaf (its children are computed)."""
-    url = node.url or ""
-    return NavNode(
-        title=node.title or "",
-        url=url,
-        is_external=bool(node.is_external),
-        is_visible=node.is_visible if node.is_visible is not None else True,
-        children=[] if not url else [_capture_node(child) for child in node.children.get().execute_query()],
-    )
-
-
-def capture_navigation(web) -> WebNavigation:
-    """Read a web's navigation (both bars, recursively)."""
-    navigation = web.navigation.get().execute_query()
-    return WebNavigation(
-        use_shared=bool(navigation.use_shared),
-        quick_launch=[_capture_node(node) for node in navigation.quick_launch.get().execute_query()],
-        top_navigation_bar=[_capture_node(node) for node in navigation.top_navigation_bar.get().execute_query()],
-    )
+def capture_navigation(web) -> Navigation:
+    """Read a web's navigation — both bars with their whole tree — as the model's own tree."""
+    return web.navigation.get_tree().execute_query()
 
 
 def _web_url(web) -> str:
@@ -86,7 +55,13 @@ def _rewrite_url(url: str, source: str, target: str) -> str:
     return url
 
 
-def _sync_nodes(source_nodes: list[NavNode], target_collection, source: str, target: str, warnings: list[str]) -> bool:
+def _sync_nodes(
+    source_nodes: Iterable[NavigationNode],
+    target_collection: NavigationNodeCollection,
+    source: str,
+    target: str,
+    warnings: list[str],
+) -> bool:
     """Add source nodes missing from the target collection; reconcile their children."""
     by_title = {node.title: node for node in target_collection.get().execute_query()}
     added = False
@@ -98,12 +73,7 @@ def _sync_nodes(source_nodes: list[NavNode], target_collection, source: str, tar
             warnings.append(f"navigation node {node.title!r} is hidden on the source; copied visible")
         current = by_title.get(node.title)
         if current is None:
-            info = NavigationNodeCreationInformation(
-                Title=node.title,
-                Url=_rewrite_url(node.url, source, target),
-                IsExternal=node.is_external,
-                AsLastNode=True,
-            )
+            info = NavigationNodeCreationInformation(Title=node.title or "", Url=_rewrite_url(node.url, source, target))
             current = target_collection.add(info).execute_query()  # materialize to get an Id for children
             by_title[node.title] = current
             added = True
@@ -146,8 +116,8 @@ def apply_navigation(source_web, target_web, warnings: list[str]) -> None:
 
 def _verify_bar(
     label: str,
-    source_nodes: list[NavNode],
-    target_nodes: list[NavNode],
+    source_nodes: Iterable[NavigationNode],
+    target_nodes: Iterable[NavigationNode],
     source: str,
     target: str,
     issues: list[str],
@@ -176,7 +146,7 @@ def verify_navigation(source_web, target_web) -> list[str]:
     source = capture_navigation(source_web)
     target = capture_navigation(target_web)
     issues: list[str] = []
-    if source.use_shared != target.use_shared:
+    if bool(source.use_shared) != bool(target.use_shared):
         issues.append(
             f"navigation inheritance differs (source use_shared={source.use_shared}, target={target.use_shared})"
         )
@@ -189,8 +159,6 @@ def verify_navigation(source_web, target_web) -> list[str]:
 
 
 __all__ = [
-    "NavNode",
-    "WebNavigation",
     "apply_navigation",
     "capture_navigation",
     "verify_navigation",
