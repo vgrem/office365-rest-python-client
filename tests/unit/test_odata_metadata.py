@@ -34,6 +34,8 @@ from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta, field_declarations, odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.navigation.navigation import Navigation
+from office365.sharepoint.navigation.nodes.node import NavigationNode
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 #: Packages whose getters are expected to be fully declared today.
@@ -195,3 +197,100 @@ def test_a_subclass_answers_with_its_own_declarations():
     assert "probeFlag" not in Event._schema.properties  # the base class is untouched
     assert "probeFlag" in Probe.select_all()
     assert Event._schema.readonly < Probe._schema.readonly
+
+
+_NAV_CONTEXT = "https://contoso.sharepoint.com/sites/x"
+
+#: A node exactly as SharePoint spells one (probed live: ``$select`` of the declared
+#: columns returns these nine keys and nothing else).
+_NODE_PAYLOAD = {
+    "Id": 1031,
+    "Title": "Docs",
+    "Url": "https://contoso.sharepoint.com/sites/other/Docs",
+    "IsExternal": True,
+    "IsVisible": False,
+    "IsDocLib": False,
+    "CurrentLCID": 1033,
+    "ListTemplateType": 0,
+    "AudienceIds": None,
+}
+
+
+def test_a_navigation_declares_one_column_and_reaches_its_bars():
+    """Both bars were declared as columns, so the projection named two navigations.
+
+    ``$select=QuickLaunch,TopNavigationBar`` answers nothing for either while
+    ``$expand`` returns both, so a projection built from ``select_all()`` read one
+    name and promised three.
+    """
+    assert Navigation.select_all() == ["UseShared"]
+    assert Navigation.expandable() == ["QuickLaunch", "TopNavigationBar"]
+    assert Navigation.wire_name("use_shared") == "UseShared"
+
+
+def test_a_navigation_node_projects_the_columns_a_read_returns():
+    # The one declaration the node carried was TitleResource, a navigation; the
+    # other ten fields were read through properties no projection could name.
+    assert NavigationNode.select_all() == [
+        "Id",
+        "Title",
+        "Url",
+        "IsVisible",
+        "IsExternal",
+        "AudienceIds",
+        "CurrentLCID",
+        "IsDocLib",
+        "ListTemplateType",
+    ]
+    assert NavigationNode.expandable() == ["Children", "TitleResource"]
+    # IsVisible and IsExternal are here because the service owns them: probed live,
+    # neither a create body nor a merge at QuickLaunch(<id>) changes either flag.
+    assert NavigationNode._schema.readonly == {
+        "Id",
+        "IsVisible",
+        "IsExternal",
+        "CurrentLCID",
+        "IsDocLib",
+        "ListTemplateType",
+    }
+
+
+def test_a_navigation_node_reads_the_flags_the_service_spells():
+    """The node asked for ``isVisible``/``isExternal``; the service sends capital I.
+
+    Probed live: every node of a real site arrives with ``IsVisible`` and
+    ``IsExternal`` set and both getters answering ``None``, which made every external
+    link a copy of an internal one and every hidden node a visible one.
+    """
+    node = NavigationNode(ClientContext(_NAV_CONTEXT)).hydrate(_NODE_PAYLOAD)
+
+    assert node.is_external is True
+    assert node.is_visible is False
+    assert node.wire_name("is_external") == "IsExternal"
+    # A request may not send the names the service assigns -- the two flags included:
+    # a merge that asks for IsVisible=False reads back True, so asking is pointless.
+    assert node.to_json(V4JsonFormat("none")) == {
+        "Title": "Docs",
+        "Url": "https://contoso.sharepoint.com/sites/other/Docs",
+        "AudienceIds": None,
+    }
+
+
+def test_a_navigation_node_serializes_the_tree_it_holds():
+    """The model is the sidecar: a node read with its children round-trips through JSON.
+
+    This is what makes a migration-side copy of the tree unnecessary -- ``to_json()``
+    is the document and ``hydrate()`` rebuilds it typed, one level down included.
+    """
+    node = NavigationNode(ClientContext(_NAV_CONTEXT)).hydrate(
+        dict(_NODE_PAYLOAD, Children=[{"Title": "Child page", "Url": "/sites/x/Pages/c.aspx"}])
+    )
+
+    assert node.children[0].title == "Child page"
+    document = node.to_json()
+    assert document["Children"] == [{"Title": "Child page", "Url": "/sites/x/Pages/c.aspx"}]
+    assert document["IsVisible"] is False  # a response carries what the service said
+
+    again = NavigationNode(ClientContext(_NAV_CONTEXT)).hydrate(document)
+    assert again.children[0].url == "/sites/x/Pages/c.aspx"
+    assert again.is_visible is False

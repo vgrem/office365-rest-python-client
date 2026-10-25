@@ -404,6 +404,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+**SharePoint navigation**
+
+- **A navigation node answers the two flags SharePoint actually sends.** `is_visible` and
+  `is_external` read `properties.get("isVisible")`/`("isExternal")` while the service spells
+  both with a capital `I`, and no `@odata` declaration named either — so on every site every
+  node answered `None`. That made an external link indistinguishable from an internal one,
+  and a hidden node indistinguishable from a shown one: the migrator's "copied visible"
+  warning could never fire. Probed live on a real web: **21 of 24** quick-launch nodes report
+  `IsExternal: true` (`News`, `Recent`, and the `/_layouts/15/Doc.aspx?...` links included),
+  and none of them was visible to the model. The two getters now read the wire spelling and
+  declare it, and the rest of the node is declared with them: nine projectable columns —
+  `Id`, `Title`, `Url`, `IsVisible`, `IsExternal`, `AudienceIds`, `CurrentLCID`, `IsDocLib`,
+  `ListTemplateType`, each proved projectable live ($select returns exactly those keys) — and
+  two navigations, `Children` (reached with `$expand`) and `TitleResource` (declared as a
+  column, silently dropped by `$select`, populated by `$expand`). So
+  `NavigationNode.select_all()` went from `['TitleResource']`, the one name it declared and a
+  projection cannot use, to the nine a read answers; `expandable()` is
+  `['Children', 'TitleResource']`. Six names are `readonly=True` because the service assigns
+  them (`Id`, `IsVisible`, `IsExternal`, `CurrentLCID`, `IsDocLib`, `ListTemplateType`), so
+  `to_json(profile)` keeps them out of a request while `to_json()` reports them. `Navigation`
+  follows the same rule: `UseShared` is its column and both bars are navigations, so
+  `select_all()` is `['UseShared']` instead of naming two properties `$expand` returns and
+  `$select` drops.
+
+  The migrator reads both flags through these getters, so a hidden source node raises the
+  warning the code always had. What it cannot do is copy a hidden node hidden: measured live,
+  a node created with `IsVisible: false` reads back `true`, and a merge of
+  `{"IsVisible": false}` at the node's own `QuickLaunch(<id>)` reads back `true` as well.
+
+  `add()` sends two fields, which is the whole create contract.
+  `NavigationNodeCreationInformation` describes five and looks like something that should be
+  posted as a whole; it is not. Probed live on the same web: `AsLastNode` and `PreviousNode`
+  are rejected outright — *"The property 'AsLastNode' does not exist on type
+  'SP.NavigationNode'"* — and `IsExternal` is the service's own computation, since an
+  off-site URL comes back `IsExternal: true` whether or not the body says so. So the fields
+  stay (CSOM has them), `add()` says which two leave the process, and
+  `tests/unit/test_navigation_node_create.py` pins the body it sends: posting the
+  information object instead fails that test rather than the tenant.
+
 **SharePoint permissions**
 
 - **A securable declares the ACL flag it has always read, and the two navigations it had

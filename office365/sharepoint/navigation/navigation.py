@@ -9,6 +9,7 @@ from office365.sharepoint.navigation.nodes.collection import NavigationNodeColle
 class Navigation(Entity):
     """Represents navigation operations at the site collection level."""
 
+    @odata(name="UseShared")
     @property
     def use_shared(self) -> bool | None:
         """Gets a value that specifies whether the site inherits navigation."""
@@ -19,7 +20,7 @@ class Navigation(Entity):
         """Sets a value that specifies whether the site inherits navigation."""
         self.set_property("UseShared", value)
 
-    @odata(name="QuickLaunch")
+    @odata(name="QuickLaunch", navigation=True)
     @property
     def quick_launch(self) -> NavigationNodeCollection:
         """Gets a value that collects navigation nodes corresponding to links in the Quick Launch area of the site."""
@@ -28,7 +29,7 @@ class Navigation(Entity):
             NavigationNodeCollection(self.context, ResourcePath("QuickLaunch", self.resource_path)),
         )
 
-    @odata(name="TopNavigationBar")
+    @odata(name="TopNavigationBar", navigation=True)
     @property
     def top_navigation_bar(self) -> NavigationNodeCollection:
         """Gets a value that collects navigation nodes corresponding to links in the top navigation bar of the site."""

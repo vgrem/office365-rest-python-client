@@ -59,8 +59,14 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         return return_type
 
     def add(self, create_node_info: NavigationNodeCreationInformation) -> NavigationNode:
-        """
-        Creates a navigation node object and adds it to the collection.
+        """Adds a navigation node to the collection.
+
+        The request body carries two fields, which is all the create contract has.
+        Probed live: ``AsLastNode`` and ``PreviousNode`` are rejected as properties
+        ``SP.NavigationNode`` does not have, ``IsExternal`` is the service's own
+        computation from the URL, and ``IsVisible`` is ignored both here and in an
+        update -- so a node cannot be created hidden. See
+        ``tests/unit/test_navigation_node_create.py``.
         """
         return_type = NavigationNode(self.context)
         return_type.title = create_node_info.Title  # type: ignore[assignment]
