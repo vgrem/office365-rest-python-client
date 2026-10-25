@@ -447,6 +447,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   part that is not a number — the label's shape is a service fact, not a caller's. The
   SharePoint migrator's own string parser (`_version_sort_key`, untested) is gone.
 
+**SharePoint pages**
+
+- **The fields a page item carries are spelled once, by the library**
+  (`office365.sharepoint.publishing.pages.fields`): `PAGE_FIELDS` — the projection a
+  page copy reads — `BODY_FIELDS` (`CanvasContent1`, `WikiField`), `WIKI_FIELD`,
+  `MODERATION_STATUS`, and `is_modern_page(content_type_id, canvas)`. The names a
+  `SitePage` already declares are derived from the type
+  (`SitePage.odata_name("canvas_content")`), so a projection cannot drift from the
+  model it reads, and the modern/classic rule lives beside the fields it reads rather
+  than in the migrator. The page's content type base is
+  `office365.sharepoint.contenttypes.builtin_content_type_id.SPBuiltInContentTypeId.SitePage`
+  ("Site Page", `0x0101…4118`, read back from a site's content type catalog — the
+  metadata this client is generated from carries no content type IDs), and a page
+  type *derives* from it, which is why the rule is a prefix match.
+  `office365.migration.sharepoint.pages` now names selections, not spellings:
+  `_PAGE_SELECT = PAGE_FIELDS`, `_DETECT_SELECT` built from `SPBuiltInFieldName` +
+  `BODY_FIELDS`; `is_page_library(list)` is public because an example had re-spelled
+  the template test inline. **Breaking:** `PAGE_LIBRARY_TEMPLATE`,
+  `SITE_PAGE_CONTENT_TYPE_PREFIX` and `is_modern_page` leave that module (the first is
+  `ListTemplateType.WebPageLibrary.value`, the other two are the library's).
+- **`SitePage` declares `canvas_content` and `layout_web_parts_content`, the two
+  properties that can be written.** The class declared each of those wire names twice:
+  `canvas_content`/`layout_web_parts_content` (with setters) and
+  `canvas_content1`/`layout_webparts_content` (read-only twins). The schema maps a wire
+  name to *one* attribute, so the later marker silently won and the round-trippable
+  property was the undeclared one — `select_all()` could not name it, and
+  `odata_name("canvas_content")` raised. The twins are deleted. A differential over the
+  type shows the only change is those two attribute names: `select_all()`,
+  `expand_all()`, the 57 declared names and a hydrated `to_json()` are byte-identical.
+
 ### Changed
 
 **A model declares the names its type carries**

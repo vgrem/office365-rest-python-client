@@ -53,20 +53,20 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Iterable, Optional
 
+from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.publishing.pages.canvas import count_web_parts
+from office365.sharepoint.publishing.pages.fields import (
+    BODY_FIELDS,
+    MODERATION_STATUS,
+    PAGE_FIELDS,
+    is_modern_page,
+)
 
 if TYPE_CHECKING:
     from office365.sharepoint.listitems.listitem import ListItem
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.webs.web import Web
-
-#: ``SPListTemplateType.WebPageLibrary`` — Site Pages, wiki and publishing pages.
-PAGE_LIBRARY_TEMPLATE = ListTemplateType.WebPageLibrary.value
-
-#: Modern site pages derive from this base content type, so a prefix match
-#: identifies them without enumerating every derived page content type.
-SITE_PAGE_CONTENT_TYPE_PREFIX = "0x0101009D1CB255DA76424F860D91F20E6C4118"
 
 #: Duplicate handling for a page whose name already exists on the target. The
 #: values are the SPMT ``DuplicatePageBehavior`` vocabulary.
@@ -78,25 +78,14 @@ _DUPLICATE_BEHAVIORS = (DUPLICATE_RENAME, DUPLICATE_SKIP, DUPLICATE_OVERWRITE)
 #: Page content blobs; an empty string means "nothing to carry" (see the module docstring).
 _CONTENT_FIELDS = ("CanvasContent1", "LayoutWebpartsContent")
 
-#: The projected read a page copy needs: identity, the canvas, the layout, and the
-#: page metadata the Site Pages library stores as list item properties.
-_PAGE_SELECT = (
-    "Id",
-    "FileLeafRef",
-    "Title",
-    "Description",
-    "ContentTypeId",
-    "CanvasContent1",
-    "LayoutWebpartsContent",
-    "WikiField",
-    "PromotedState",
-    "BannerImageUrl",
-    "OData__ModerationStatus",
-)
+#: The projected read a page copy needs, as the library spells it: identity, both
+#: bodies, the layout, and the page metadata the Site Pages library stores as list
+#: item properties.
+_PAGE_SELECT = PAGE_FIELDS
 
 #: A page whose ``Article`` canvas is empty is still readable, so detection needs
 #: only the wiki field of a classic page.
-_DETECT_SELECT = ("FileLeafRef", "ContentTypeId", "CanvasContent1", "WikiField")
+_DETECT_SELECT = (SPBuiltInFieldName.FileLeafRef, SPBuiltInFieldName.ContentTypeId, *BODY_FIELDS)
 
 #: Page names shown inline in the handoff note before it is truncated.
 _MAX_PAGES_IN_NOTE = 5
@@ -278,14 +267,9 @@ def _shown(names: Iterable[str]) -> str:
     return shown
 
 
-def is_modern_page(content_type_id: Optional[str], canvas: Optional[str]) -> bool:
-    """Whether a page is a modern site page (copyable) rather than a classic one."""
-    return bool(canvas) or (content_type_id or "").startswith(SITE_PAGE_CONTENT_TYPE_PREFIX)
-
-
 def _payload(properties: dict) -> PagePayload:
     """The copyable payload of a modern page, from its list item properties."""
-    status = properties.get("OData__ModerationStatus")
+    status = properties.get(MODERATION_STATUS)
     return PagePayload(
         name=str(properties.get("FileLeafRef") or ""),
         title=properties.get("Title"),
@@ -355,12 +339,14 @@ def apply_page_payload(item: "ListItem", page: PagePayload) -> None:
     item.update()
 
 
-def _is_page_library(sp_list: "SPList") -> bool:
-    return bool(sp_list.base_template == PAGE_LIBRARY_TEMPLATE and not sp_list.hidden and sp_list.title)
+def is_page_library(sp_list: "SPList") -> bool:
+    """A titled, visible Site Pages library."""
+    template = ListTemplateType.WebPageLibrary.value
+    return sp_list.base_template == template and not sp_list.hidden and bool(sp_list.title)
 
 
 def _page_libraries(lists: Iterable["SPList"]) -> list["SPList"]:
-    return [sp for sp in lists if _is_page_library(sp)]
+    return [sp for sp in lists if is_page_library(sp)]
 
 
 def _target_library(source_list: "SPList", target_libraries: list["SPList"]) -> Optional["SPList"]:
@@ -784,7 +770,7 @@ def _page_info(item: "ListItem") -> Optional[PageInfo]:
 
 
 def _detect_library(sp_list: "SPList") -> Optional[PageLibrary]:
-    if not _is_page_library(sp_list):
+    if not is_page_library(sp_list):
         return None
     items = sp_list.items.select(list(_DETECT_SELECT)).get().execute_query()
     pages = [page for page in (_page_info(item) for item in items) if page is not None]
@@ -833,8 +819,6 @@ __all__ = [
     "DUPLICATE_OVERWRITE",
     "DUPLICATE_RENAME",
     "DUPLICATE_SKIP",
-    "PAGE_LIBRARY_TEMPLATE",
-    "SITE_PAGE_CONTENT_TYPE_PREFIX",
     "PageCopyReport",
     "PageHandoff",
     "PageInfo",
@@ -847,7 +831,7 @@ __all__ = [
     "capture_site_pages",
     "copy_site_pages",
     "detect_page_handoff",
-    "is_modern_page",
+    "is_page_library",
     "page_handoff_note",
     "verify_page_copy",
 ]

@@ -12,7 +12,7 @@ column directly (e.g. a list item).
 
 Example:
     >>> from office365.sharepoint.publishing.pages.canvas import count_web_parts
-    >>> count_web_parts(page.canvas_content1)
+    >>> count_web_parts(page.canvas_content)
     3
 """
 

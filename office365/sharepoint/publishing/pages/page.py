@@ -282,12 +282,6 @@ class SitePage(SitePageMetadata):
         """Gets the CampaignMetadata property"""
         return self.properties.get("CampaignMetadata", None)
 
-    @odata(name="CanvasContent1")
-    @property
-    def canvas_content1(self) -> Optional[str]:
-        """Gets the CanvasContent1 property"""
-        return self.properties.get("CanvasContent1", None)
-
     @odata(name="CanvasJson1")
     @property
     def canvas_json1(self) -> Optional[str]:
@@ -297,7 +291,7 @@ class SitePage(SitePageMetadata):
     @property
     def web_part_count(self) -> int:
         """Gets the number of client-side web parts serialized in the page canvas."""
-        return count_web_parts(self.canvas_content1)
+        return count_web_parts(self.canvas_content)
 
     @odata(name="CheckIn")
     @property
@@ -340,12 +334,6 @@ class SitePage(SitePageMetadata):
     def is_template(self) -> Optional[bool]:
         """Gets the IsTemplate property"""
         return self.properties.get("IsTemplate", None)
-
-    @odata(name="LayoutWebpartsContent")
-    @property
-    def layout_webparts_content(self) -> Optional[str]:
-        """Gets the LayoutWebpartsContent property"""
-        return self.properties.get("LayoutWebpartsContent", None)
 
     @odata(name="Name")
     @property

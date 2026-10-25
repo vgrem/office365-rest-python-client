@@ -114,9 +114,9 @@ from office365.migration.logging import (
     log_event,
 )
 from office365.migration.sharepoint.pages import (
-    PAGE_LIBRARY_TEMPLATE,
     capture_home_page,
     capture_site_pages,
+    is_page_library,
 )
 from office365.migration.sharepoint.resolvers import is_document_library, is_migratable_list
 from office365.migration.tasks import MigrationTask
@@ -395,12 +395,7 @@ class _PlanPrinter:
         self._options()
 
     def _pages(self, source_web, all_lists) -> None:
-        pages = [
-            page
-            for entry in all_lists
-            if entry.base_template == PAGE_LIBRARY_TEMPLATE and not entry.hidden
-            for page in capture_site_pages(entry)
-        ]
+        pages = [page for entry in all_lists if is_page_library(entry) for page in capture_site_pages(entry)]
         print(f"\nPages ({len(pages)})")
         if pages:
             classic = sum(1 for page in pages if page.is_classic)

@@ -17,12 +17,13 @@ from office365.migration.sharepoint.resolvers import (
     resolve_task,
 )
 from office365.migration.tasks import MigrationTask
+from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 
 _DOCUMENT_LIBRARY_TEMPLATE = 101
 _WIKI_PAGE_CONTENT_TYPE = "0x010108"
 # A publishing page carries neither a canvas nor a wiki body.
 _PUBLISHING_CONTENT_TYPE = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39"
-_SITE_PAGE_CONTENT_TYPE = "0x0101009D1CB255DA76424F860D91F20E6C4118005E10E40F8E37D94AB983A0181120EFFC"
+_SITE_PAGE_CONTENT_TYPE = SPBuiltInContentTypeId.SitePage + "005E10E40F8E37D94AB983A0181120EFFC"
 
 
 class _Folder:

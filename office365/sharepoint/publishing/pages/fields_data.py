@@ -19,7 +19,7 @@ class SitePageFieldsData(ClientValue):
     Args:
         title (str): the Page title
         banner_image_url (str): the preview image Url for the current Site Page.
-        canvas_content1 (str): CanvasContent1 for the current Site Page.
+        canvas_content (str): CanvasContent1 for the current Site Page.
         topic_header (str): TopicHeader of the current Site Page
         publish_start_date (datetime.datetime):
     """

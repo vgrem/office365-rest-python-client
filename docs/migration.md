@@ -1205,13 +1205,14 @@ documents, so the item adapters do not migrate it. Both kinds of page it holds a
 reachable over REST, so the whole-site resolver copies them
 (`resolve_site_task(..., migrate_pages=True)`, the default):
 
-1. read the source page library once, projecting `Id, FileLeafRef, Title,
-   Description, ContentTypeId, CanvasContent1, LayoutWebpartsContent, WikiField,
-   PromotedState, BannerImageUrl, OData__ModerationStatus`;
-2. classify each page — **modern** when its content type id starts with
-   `0x0101009D1CB255DA76424F860D91F20E6C4118` (or it serializes a canvas),
-   **classic wiki** when only `WikiField` has content, and *uncopyable* when it
-   has neither;
+1. read the source page library once, projecting
+   `office365.sharepoint.publishing.pages.fields.PAGE_FIELDS` — the eleven fields a
+   page item carries: identity, both bodies, the layout, and the page metadata the
+   library stores as list item properties;
+2. classify each page — **modern** when `is_modern_page(...)` holds: it serializes
+   a canvas, or its content type id derives from "Site Page"
+   (`SPBuiltInContentTypeId.SitePage`), **classic wiki** when only `WikiField` has
+   content, and *uncopyable* when it has neither;
 3. create the target page — a modern page through `POST /_api/sitepages/pages`
    (`Web.add_site_page(name, title=...)`), a wiki page through
    `List.create_wiki_page(name, body)` — and read the new id back (`Id`; the

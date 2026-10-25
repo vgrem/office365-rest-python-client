@@ -3,10 +3,12 @@
 import unittest
 
 from office365.migration.sharepoint.pages import (
-    PAGE_LIBRARY_TEMPLATE,
     detect_page_handoff,
     page_handoff_note,
 )
+from office365.sharepoint.lists.templates.type import ListTemplateType
+
+_WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
 
 # A modern canvas control blob as SharePoint serializes it (HTML-encoded JSON).
 _WEB_PART_CONTROL = 'data-sp-controldata="{&quot;controlType&quot;:4}"'
@@ -49,7 +51,7 @@ def _page(name, canvas="", wiki=""):
 class TestDetectPageHandoff(unittest.TestCase):
     def test_note_truncates_long_page_lists(self):
         items = [_page(f"P{i}.aspx") for i in range(7)]
-        library = _List("Site Pages", base_template=PAGE_LIBRARY_TEMPLATE, items=items)
+        library = _List("Site Pages", base_template=_WEB_PAGE_LIBRARY, items=items)
 
         note = page_handoff_note(detect_page_handoff([library]))
 

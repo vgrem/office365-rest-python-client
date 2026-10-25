@@ -4,16 +4,18 @@ import unittest
 
 from office365.migration.sharepoint.pages import (
     DUPLICATE_RENAME,
-    PAGE_LIBRARY_TEMPLATE,
     capture_site_pages,
     copy_site_pages,
     detect_page_handoff,
     page_handoff_note,
     verify_page_copy,
 )
+from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
+from office365.sharepoint.lists.templates.type import ListTemplateType
 
+_WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
 # A modern site page content type (inherited from the Site Page base content type).
-_SITE_PAGE_CONTENT_TYPE = "0x0101009D1CB255DA76424F860D91F20E6C4118005E10E40F8E37D94AB983A0181120EFFC"
+_SITE_PAGE_CONTENT_TYPE = SPBuiltInContentTypeId.SitePage + "005E10E40F8E37D94AB983A0181120EFFC"
 _WIKI_CONTENT_TYPE = "0x010108"
 # A publishing page (``SP.Publishing.PublishingPage``) carries neither a canvas nor a wiki body.
 _PUBLISHING_CONTENT_TYPE = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39"
@@ -126,7 +128,7 @@ class _CreatedWikiPage:
 
 
 class _PageList:
-    def __init__(self, title, store, base_template=PAGE_LIBRARY_TEMPLATE, hidden=False):
+    def __init__(self, title, store, base_template=_WEB_PAGE_LIBRARY, hidden=False):
         self.title = title
         self.base_template = base_template
         self.hidden = hidden
