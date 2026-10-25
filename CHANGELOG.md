@@ -1050,6 +1050,15 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   every one, and the whole vocabulary is exercised: 71 lookups, 8 persons, 3 taxonomy
   columns (each resolving its hidden note companion by id), 6 multi-value columns, 1
   hyperlink.
+- **`SitePage.select_all()` is a projection the service accepts.** The entity declared
+  `TemplateScope` and therefore offered it to `$select`, which answers that one name with
+  `400 NotSupported` ("part of an experimental feature that is not supported in the
+  current environment") — and a `$select` is all-or-nothing, so the whole projection was
+  unusable. Bisecting the 60 declared names live isolated the offender and confirmed the
+  other 59 answer the site's 11 pages, so the type now states the refusal in
+  `_unselectable` (the mechanism `Web`, `List` and `ListItem` already use) and keeps the
+  declaration, which is what hydration and comparison read. No call site changes: the
+  method existed and could never have worked.
 - Two endpoints that cannot work over REST now say so where they are read:
   `UserProfilePropertiesForUser` is a CSOM complex type — `GetPropertyNames`
   answers `null` and any `propertyNames` argument is rejected as an invalid query

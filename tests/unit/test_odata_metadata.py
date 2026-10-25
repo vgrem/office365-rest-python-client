@@ -200,14 +200,19 @@ def test_a_column_the_service_refuses_is_declared_but_not_offered():
     The declaration stays — hydration and comparison still know the OData name — while the
     projection leaves it out, so ``select_all()`` is a request the service accepts rather
     than a list that happens to contain everything. The refusal is a type's fact: the
-    Shield flag is answered for a ``ListItem`` and refused for a ``Web``.
+    Shield flag is answered for a ``ListItem`` and refused for a ``Web``, and
+    ``TemplateScope`` is refused on the page entity that declares it.
     """
-    for cls in (Web, List, ListItem):
+    for cls in (Web, List, ListItem, SitePage):
         assert cls._unselectable  # the type states what it saw refused
         assert set(cls._unselectable) <= set(cls._schema.properties)  # about names it declares
         assert not set(cls._schema.columns) & set(cls._unselectable)
     assert "ShieldAddRoleAssignmentPushdown" in Web._unselectable
     assert "ShieldAddRoleAssignmentPushdown" in ListItem.select_all()
+    assert "TemplateScope" in SitePage._unselectable
+    assert "TemplateScope" not in SitePage.select_all()
+    # The getter that reads it keeps its declaration: a page row still carries the column.
+    assert SitePage.odata_name("template_scope") == "TemplateScope"
 
 
 def test_a_securable_projects_its_flag_and_expands_its_role_assignments():

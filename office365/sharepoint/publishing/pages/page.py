@@ -36,6 +36,13 @@ from office365.sharepoint.translation.status_collection import TranslationStatus
 class SitePage(SitePageMetadata):
     """Represents a Site Page."""
 
+    # Probed live: naming ``TemplateScope`` in ``$select`` is answered 400 NotSupported
+    # ("part of an experimental feature that is not supported in the current
+    # environment"), while the same projection without it answers the 11 pages. So the
+    # entity declares the column -- an item row still carries it -- and leaves it out of
+    # the projection.
+    _unselectable = ("TemplateScope",)
+
     def checkout_page(self) -> Self:
         """Checks out the current Site Page if it is available to be checked out."""
         qry = ServiceOperationQuery(self, "CheckoutPage", None, None, None, self)
