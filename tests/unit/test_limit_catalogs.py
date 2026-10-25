@@ -18,6 +18,7 @@ from office365.outlook.mail.attachments.collection import AttachmentCollection
 from office365.outlook.mail.messages.message import Message
 from office365.outlook.user import OutlookUser
 from office365.reports import quotas as reports_quotas
+from office365.reports.root import ReportRoot
 from office365.runtime import limits as limits_module
 from office365.runtime.limits import (
     Limit,
@@ -29,6 +30,10 @@ from office365.runtime.limits import (
     register_catalog,
 )
 from office365.security import quotas as security_quotas
+from office365.security.audit.core_root import AuditCoreRoot
+from office365.security.audit.log_query import AuditLogQuery
+from office365.security.cases.root import CasesRoot
+from office365.security.security import Security
 from office365.sharepoint import thresholds as sharepoint_limits
 from office365.teams import quotas as teams_quotas
 from office365.teams.channels.channel import Channel
@@ -347,6 +352,57 @@ class TestTeamsBindings(unittest.TestCase):
         unbound = [row for row in catalog(product="teams") if id(row) not in bound]
         self.assertEqual([row.note for row in unbound if not row.note.startswith("default")], [])
         self.assertTrue(unbound, "a default row names no resource, so no model can bind it")
+
+
+class TestSecurityBindings(unittest.TestCase):
+    """Three rows for one surface set, one per endpoint, and one row no type can own.
+
+    The detections-and-incidents rows name alert, securityActions and secureScore together, so
+    they are declared on ``Security`` -- the type all three requests go through -- and not on a
+    sub-surface that owns only one of them. eDiscovery and the audit-log endpoints each name
+    their own resource, so they are declared on the member that names them.
+    """
+
+    def test_the_detections_budget_covers_every_surface_it_names(self):
+        self.assertEqual(
+            [id(row) for row in Security.declared_limits()],
+            [id(row) for row in security_quotas.DETECTIONS_BUDGETS],
+        )
+
+    def test_ediscovery_is_declared_on_the_type_that_names_it(self):
+        self.assertEqual(
+            [id(row) for row in CasesRoot.declared_limits()],
+            [id(security_quotas.EDISCOVERY_BUDGET)],
+        )
+
+    def test_a_query_submission_is_capped_where_it_is_posted(self):
+        self.assertEqual(
+            [id(decl.limit) for decl in limits_of(AuditCoreRoot.queries)],
+            [id(row) for row in security_quotas.AUDIT_LOG_QUERY_BUDGETS],
+        )
+
+    def test_what_one_query_may_return_belongs_to_the_query(self):
+        self.assertEqual(
+            [id(row) for row in AuditLogQuery.declared_limits()],
+            [id(security_quotas.AUDIT_LOG_QUERY_RECORDS)],
+        )
+
+    def test_the_only_unbound_row_names_a_surface_the_library_does_not_spell(self):
+        models = (Security, CasesRoot, AuditCoreRoot.queries, AuditLogQuery)
+        bound = {id(decl.limit) for target in models for decl in limits_of(target)}
+        unbound = [row for row in catalog(product="security") if id(row) not in bound]
+        self.assertEqual([row.note for row in unbound], [security_quotas.TI_INDICATOR_BUDGET.note])
+        self.assertEqual(unbound[0].note, "tiIndicator")
+
+
+class TestReportBindings(unittest.TestCase):
+    """Every report API hangs off the root, and every row is counted per report API."""
+
+    def test_one_report_call_spends_three_budgets(self):
+        self.assertEqual(
+            [id(row) for row in ReportRoot.declared_limits()],
+            [id(row) for row in reports_quotas.REPORT_QUOTAS],
+        )
 
 
 class TestComposableDeclarations(unittest.TestCase):

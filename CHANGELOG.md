@@ -780,6 +780,29 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
 
 **Runtime**
 
+- **The security and report budgets are declared on the types that make the calls.**
+  `office365.security.quotas` published 8 rows and bound none, and `office365.reports.quotas`
+  3 and bound none: `declared_limits(Security)` was empty and the Service limits page printed
+  `—` for both tables. The detections-and-incidents rows name three endpoints at once (`alert,
+  securityActions, secureScore`), so they are grouped as `DETECTIONS_BUDGETS` and declared on
+  `Security` — the type all three requests go through — rather than on a sub-surface that owns
+  only one of them, and `Security` answers `150 requests / 60s`, `10,000 requests / 600s` and
+  the 4-in-flight cap. The endpoints that do own their resource are declared on the member
+  that names them: `EDISCOVERY_BUDGET` on `CasesRoot`, both `AUDIT_LOG_QUERY_BUDGETS` on
+  `AuditCoreRoot.queries`, and the one row that belongs to a *query* rather than a request
+  (`1,000,000 records`) on `AuditLogQuery`, whose `isRecordCountLimitExceeded` is how a
+  caller learns it was reached. The three report rows are all counted per report API and
+  every report API hangs off `ReportRoot`, so `@limit(*REPORT_QUOTAS)` rides that one type.
+  10 of those 11 rows are now reachable. The eleventh, `tiIndicator`, names a surface this
+  library does not spell — there is no `/security/tiIndicators` accessor — so it stays
+  published and unbound, and a test asserts that it is the only such row in the product,
+  which is how "declared but never handed out" reads for a limit.
+- **A window of a day is stated in hours.** `str(Limit)` printed the window in raw seconds,
+  so the audit-log submission budget rendered `200 requests / 86,400s` — a twenty-four-hour
+  allocation that reads like a per-second rate to anyone skimming the table. A window that is
+  a whole number of hours now renders as hours (`200 requests / 24h`, and SharePoint's
+  `100 GB / 1h` where it used to say `100 GB / 3,600s`); every other window is unchanged
+  (`60s`, `300s`, `600s`).
 - **The Teams budgets are declared on the calls they cap.** `office365.teams.quotas` published
   32 rows, 20 of them a 1:1 map onto the eight throttled teams operations the public table
   names — and not one was reachable from a `_schema`. The table was written for binding and

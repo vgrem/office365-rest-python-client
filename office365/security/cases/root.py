@@ -1,10 +1,13 @@
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.cases.ediscovery import EdiscoveryCase
+from office365.security.quotas import EDISCOVERY_BUDGET
 
 
+@limit(EDISCOVERY_BUDGET)
 class CasesRoot(Entity):
     """"""
 

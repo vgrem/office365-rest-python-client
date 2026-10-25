@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -18,6 +19,7 @@ from office365.security.datasecurity.governance import (
 from office365.security.hunting_query_results import HuntingQueryResults
 from office365.security.incidents.incident import Incident
 from office365.security.labels.root import LabelsRoot
+from office365.security.quotas import DETECTIONS_BUDGETS
 from office365.security.scorecontrol.profile import SecureScoreControlProfile
 from office365.security.subjectrightsrequests.request import (
     SubjectRightsRequest,
@@ -37,6 +39,7 @@ if TYPE_CHECKING:
     from office365.security.securescores.secure_score import SecureScore
 
 
+@limit(*DETECTIONS_BUDGETS)
 class Security(Entity):
     """The security resource is the entry point for the Security object model. It returns a singleton security resource.
     It doesn't contain any usable properties."""

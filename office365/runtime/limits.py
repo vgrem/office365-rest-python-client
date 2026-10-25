@@ -75,6 +75,15 @@ def _human_bytes(value: int) -> str:
     return f"{value:,} {_unit_for(value, 'bytes')}"
 
 
+def _window_for(seconds: int) -> str:
+    """The rate window as it reads next to the value: ``10s``, ``24h``.
+
+    A whole-day allocation printed as ``86,400s`` reads like a per-second rate to anyone
+    skimming, so a window that is a whole number of hours is stated in hours.
+    """
+    return f"{seconds // 3600:,}h" if seconds and seconds % 3600 == 0 else f"{seconds:,}s"
+
+
 @dataclass(frozen=True)
 class Limit:
     """A single service limit — a static threshold or a rate quota.
@@ -109,7 +118,7 @@ class Limit:
             value = f"{self.value:,} {_unit_for(self.value, self.unit)}"
         if self.window_seconds is None:
             return value
-        window = f" / {self.window_seconds:,}s" if self.window_seconds else ""
+        window = f" / {_window_for(self.window_seconds)}" if self.window_seconds else ""
         return f"{value}{window}"
 
     def exceeds(self, value: int) -> bool:

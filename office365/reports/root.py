@@ -9,6 +9,7 @@ from office365.partners.partners import Partners
 from office365.reports.internal.queries.create_report_query import create_report_query
 from office365.reports.print_usage_by_printer import PrintUsageByPrinter
 from office365.reports.print_usage_by_user import PrintUsageByUser
+from office365.reports.quotas import REPORT_QUOTAS
 from office365.reports.report_export import (
     ReportExportResult,
     ReportTarget,
@@ -17,6 +18,7 @@ from office365.reports.report_export import (
 )
 from office365.reports.report_result import ReportResult
 from office365.reports.security.root import SecurityReportsRoot
+from office365.runtime.limits import limit
 from office365.runtime.operations import ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -24,6 +26,7 @@ from office365.runtime.transport.base import DEFAULT_STREAM_CHUNK_SIZE
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*REPORT_QUOTAS)
 class ReportRoot(Entity):
     """Represents a container for Azure Active Directory (Azure AD) reporting resources."""
 

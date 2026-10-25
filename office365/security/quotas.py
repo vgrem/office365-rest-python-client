@@ -31,8 +31,11 @@ _DOC_EDISCOVERY = f"{_BASE}#security-ediscovery-service-limits"
 _SUPPORTED = LimitKind.SUPPORTED
 _THRESHOLD = LimitKind.THRESHOLD
 
-SECURITY_QUOTAS = (
-    # --- detections and incidents --------------------------------------------
+#: The detections-and-incidents surface. Three rows for one resource set: the alert,
+#: securityActions and secureScore endpoints share a 150-a-minute budget, secureScore also has
+#: a ten-minute one and a concurrency cap. Declared on ``Security`` -- the type every one of
+#: those requests goes through -- rather than on a sub-surface that only owns one of them.
+DETECTIONS_BUDGETS = (
     Limit(
         "security",
         150,
@@ -40,16 +43,6 @@ SECURITY_QUOTAS = (
         "requests",
         "app+tenant",
         note="alert, securityActions, secureScore",
-        doc=_DOC,
-        window_seconds=60,
-    ),
-    Limit(
-        "security",
-        1_000,
-        _SUPPORTED,
-        "requests",
-        "app+tenant",
-        note="tiIndicator",
         doc=_DOC,
         window_seconds=60,
     ),
@@ -73,18 +66,36 @@ SECURITY_QUOTAS = (
         doc=_DOC,
         window_seconds=0,
     ),
-    # --- eDiscovery -----------------------------------------------------------
-    Limit(
-        "security",
-        5,
-        _SUPPORTED,
-        "requests",
-        "app+tenant",
-        note="eDiscovery cases",
-        doc=_DOC_EDISCOVERY,
-        window_seconds=60,
-    ),
-    # --- Purview audit log query ---------------------------------------------
+)
+
+#: ``/security/tiIndicators`` has no accessor in this library, so this row is published but
+#: unbound: there is no object whose request it would cap.
+TI_INDICATOR_BUDGET = Limit(
+    "security",
+    1_000,
+    _SUPPORTED,
+    "requests",
+    "app+tenant",
+    note="tiIndicator",
+    doc=_DOC,
+    window_seconds=60,
+)
+
+#: The eDiscovery cases surface, declared on ``CasesRoot`` -- the type that names it.
+EDISCOVERY_BUDGET = Limit(
+    "security",
+    5,
+    _SUPPORTED,
+    "requests",
+    "app+tenant",
+    note="eDiscovery cases",
+    doc=_DOC_EDISCOVERY,
+    window_seconds=60,
+)
+
+#: Audit log queries: how often one may be submitted, and how many may be in flight. Declared
+#: on ``AuditCoreRoot.queries`` -- the endpoint a submission is posted to.
+AUDIT_LOG_QUERY_BUDGETS = (
     Limit(
         "security",
         200,
@@ -105,15 +116,26 @@ SECURITY_QUOTAS = (
         doc=_DOC_AUDIT,
         window_seconds=0,
     ),
-    Limit(
-        "security",
-        1_000_000,
-        _THRESHOLD,
-        "records",
-        "query",
-        note="per audit log query; exceeding it ends the query successfully, with isRecordCountLimitExceeded set",
-        doc=_DOC_AUDIT,
-    ),
+)
+
+#: What one audit log query may return, declared on ``AuditLogQuery`` because the cap belongs to
+#: the query, not to the request that submitted it.
+AUDIT_LOG_QUERY_RECORDS = Limit(
+    "security",
+    1_000_000,
+    _THRESHOLD,
+    "records",
+    "query",
+    note="per audit log query; exceeding it ends the query successfully, with isRecordCountLimitExceeded set",
+    doc=_DOC_AUDIT,
+)
+
+SECURITY_QUOTAS = (
+    *DETECTIONS_BUDGETS,
+    TI_INDICATOR_BUDGET,
+    EDISCOVERY_BUDGET,
+    *AUDIT_LOG_QUERY_BUDGETS,
+    AUDIT_LOG_QUERY_RECORDS,
 )
 
 register_catalog(SECURITY_QUOTAS, product="security")

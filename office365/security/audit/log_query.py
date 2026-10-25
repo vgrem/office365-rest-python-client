@@ -6,8 +6,10 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.security.quotas import AUDIT_LOG_QUERY_RECORDS
 
 if TYPE_CHECKING:
     from office365.directory.audit.logs.recordtype import AuditLogRecordType
@@ -17,6 +19,7 @@ if TYPE_CHECKING:
     from office365.security.audit.log_record import AuditLogRecord
 
 
+@limit(AUDIT_LOG_QUERY_RECORDS)
 class AuditLogQuery(Entity):
     @property
     def administrative_unit_id_filters(self) -> StringCollection:

@@ -4,13 +4,16 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.security.quotas import AUDIT_LOG_QUERY_BUDGETS
 
 if TYPE_CHECKING:
     from office365.security.audit.log_query import AuditLogQuery
 
 
 class AuditCoreRoot(Entity):
+    @limit(*AUDIT_LOG_QUERY_BUDGETS)
     @property
     def queries(self) -> EntityCollection[AuditLogQuery]:
         """Gets the queries property"""

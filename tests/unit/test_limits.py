@@ -43,6 +43,9 @@ def test_str_formats_items_and_bytes():
     assert str(Limits.LIST_ROW_BYTES) == "8,000 bytes"
     # A byte budget inside a window is bytes, not a count: readable however it is spent.
     assert str(Limit("upload", 150 * 1024 * 1024, LimitKind.SUPPORTED, "bytes", window_seconds=300)) == "150 MB / 300s"
+    # A whole-day allocation stated in seconds reads like a per-second rate.
+    assert str(Limit("queries", 200, LimitKind.THRESHOLD, "requests", window_seconds=86_400)) == "200 requests / 24h"
+    assert str(Limit("upload", 100 * 1024**3, LimitKind.THRESHOLD, "bytes", window_seconds=3600)) == "100 GB / 1h"
 
 
 def test_warn_if_exceeds():
