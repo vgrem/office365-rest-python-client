@@ -307,6 +307,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(credentials)
         return self
 
+    @limit(Limits.BATCH_BYTES)
     @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
     def execute_batch(
         self,

@@ -846,6 +846,32 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   five-minute ceiling stated in single bytes. The bytes form now follows the unit wherever it
   appears, so that row reads `150 MB / 300s`; a static byte ceiling is untouched (`250 GB`,
   `8,000 bytes`).
+- **The SharePoint ceilings are declared on the objects they are ceilings about.**
+  `office365.sharepoint.thresholds.Limits` published 46 rows and reached 3 of them, so
+  `declared_limits(List)` was empty and the Service limits page printed `—` for everything
+  but the view threshold, the file upload and the batch. A static ceiling is not a request
+  budget, so it cannot be "declared where the request is made": it is a fact about an
+  *object*, and the row's own `scope` says which. The 10 rows scoped `list` or `query` — the
+  view and index thresholds, the item ceiling, the indexed-column and lookup-join caps, and
+  the four role-assignment ceilings — ride `List`, because a query against a list is a query
+  against `List`; `LIST_ROW_BYTES` rides `ListItem`; `LIST_ITEM_ATTACHMENT` rides the
+  `Attachment`, which is *not* the 250 GB a library file may be, so the two are deliberately
+  not written on `File` together; the two column rows ride `Field`; `RENAME_FOLDER` the
+  `Folder`; the 11 rows about a file's path, name, size, version count and transfer formats
+  ride `File`; the size, file-count and ZIP ceilings ride `MoveCopyUtil`, which is what
+  assembles all three; the 5 site ceilings ride `Site`, `GROUP_MEMBERS` the `Group`, and the
+  5 managed-metadata ceilings the `TermStore`. 44 of the 46 rows are now reachable, and the
+  two that are not name nothing this library addresses — a tenant-wide compliance-policy
+  budget and a OneDrive sync client's file count — so a test keeps them by name, and a newly
+  published row fails until somebody decides where it belongs. No projection moved:
+  `List.select_all()` is 98 names before and after, `File.select_all()` 37, and the schema
+  rebuild `@limit` performs on a class was diffed against pristine `HEAD` across 10 types —
+  identical columns, navigations, `readonly` set and `to_json()`.
+- **A batch is capped by item count and by payload size, and the two are separate facts.**
+  `@limit` takes `arg=` for exactly one limit — the one it enforces — so the 1 MB batch-shell
+  ceiling is a second decorator on `ClientContext.execute_batch`, which is also the one place
+  "declarations compose" is checked on a method: `limits_of(ClientContext.execute_batch)`
+  answers both rows and only `items_per_batch` carries an argument.
 - **A type answers the limits it declares on itself.** `limits_of(cls)` read only the
   schema's `member_limits`, so a model that writes a quota on the class — every
   `@limit(*QUOTAS)` model, such as `Workbook`'s two Excel ceilings — answered `()` and

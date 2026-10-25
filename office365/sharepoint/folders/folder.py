@@ -46,6 +46,8 @@ if TYPE_CHECKING:
 _DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload threshold / upload-session chunk
 
 
+#: Renaming a folder within its library is one of the few operations with its own item ceiling.
+@limit(Limits.RENAME_FOLDER)
 class Folder(Entity):
     """Represents a folder in a SharePoint Website."""
 

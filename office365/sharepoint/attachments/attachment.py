@@ -8,9 +8,13 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.internal.queries.upload_file import create_upload_file_query
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 
+#: The upload budget of a list item attachment -- a different ceiling from a document library's
+#: 250 GB, so it is declared on the attachment and not on ``File``.
+@limit(Limits.LIST_ITEM_ATTACHMENT)
 class Attachment(Entity):
     """Represents an attachment file in a SharePoint List Item."""
 

@@ -19,7 +19,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
-from office365.sharepoint.thresholds import Limits
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:
@@ -37,6 +37,9 @@ UploadSource = Union[
 ]
 
 
+#: The transfer ceilings: a move or copy is capped by both size and file count, and the ZIP
+#: download is the one other operation whose ceiling is stated in gigabytes.
+@limit(Limits.MOVE_COPY_BYTES, Limits.MOVE_COPY_FILES, Limits.ZIP_DOWNLOAD)
 class MoveCopyUtil(Entity):
     """A container class for static move/copy methods."""
 

@@ -9,8 +9,18 @@ from office365.sharepoint.taxonomy.item import TaxonomyItem
 from office365.sharepoint.taxonomy.item_collection import TaxonomyItemCollection
 from office365.sharepoint.taxonomy.sets.collection import TermSetCollection
 from office365.sharepoint.taxonomy.terms.term import Term
+from office365.sharepoint.thresholds import Limits, limit
 
 
+#: The managed metadata ceilings: how many terms, labels, properties, term sets and term groups
+#: a tenant's store may hold.
+@limit(
+    Limits.MANAGED_TERMS,
+    Limits.MANAGED_TERM_LABELS,
+    Limits.MANAGED_TERM_PROPERTIES,
+    Limits.TERM_SETS,
+    Limits.TERM_GROUPS,
+)
 class TermStore(TaxonomyItem):
     """Represents a hierarchical or flat set of Term objects known as a 'TermSet'."""
 

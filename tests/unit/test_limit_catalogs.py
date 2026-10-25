@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import unittest
+from collections import Counter
 from types import ModuleType
 
 from office365.communications import quotas as communications_quotas
@@ -35,6 +36,17 @@ from office365.security.audit.log_query import AuditLogQuery
 from office365.security.cases.root import CasesRoot
 from office365.security.security import Security
 from office365.sharepoint import thresholds as sharepoint_limits
+from office365.sharepoint.attachments.attachment import Attachment
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.fields.field import Field
+from office365.sharepoint.files.file import File
+from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.lists.list import List
+from office365.sharepoint.principal.groups.group import Group
+from office365.sharepoint.sites.site import Site
+from office365.sharepoint.taxonomy.stores.store import TermStore
+from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
 from office365.teams import quotas as teams_quotas
 from office365.teams.channels.channel import Channel
 from office365.teams.chats.chat import Chat
@@ -403,6 +415,43 @@ class TestReportBindings(unittest.TestCase):
             [id(row) for row in ReportRoot.declared_limits()],
             [id(row) for row in reports_quotas.REPORT_QUOTAS],
         )
+
+
+class TestSharePointCeilings(unittest.TestCase):
+    """A static ceiling rides the type it is a ceiling about, and its own scope names it.
+
+    A ceiling is not a request quota, so it cannot be "declared where the request is made":
+    ``SITE_STORAGE`` is a fact about a site, ``LIST_ROW_BYTES`` about one list item,
+    ``LIST_ITEM_ATTACHMENT`` about a list item's attachment rather than about the 250 GB a
+    library file may be, and ``ZIP_DOWNLOAD`` about the transfer utility that assembles the
+    archive. Reading the scopes back off the class rows — and how many rows each scope has —
+    is what makes a row moved to the neighbouring type fail, without re-listing the 44 rows.
+    """
+
+    PLACEMENT = (
+        (List, {"list": 9, "query": 1}),
+        (ListItem, {"list item": 1}),
+        (Attachment, {"list item": 1}),
+        (Field, {"column": 2}),
+        (Folder, {"folder": 1}),
+        (File, {"file": 10, "url": 1}),
+        (MoveCopyUtil, {"transfer": 2, "download": 1}),
+        (Site, {"site": 5}),
+        (Group, {"group": 1}),
+        (TermStore, {"tenant": 5}),
+    )
+
+    def test_a_ceiling_rides_the_type_whose_scope_it_names(self):
+        for model, expected in self.PLACEMENT:
+            with self.subTest(model.__name__):
+                actual = Counter(decl.limit.scope for decl in model._schema.class_limits)
+                self.assertEqual(actual, Counter(expected))
+
+    def test_the_batch_is_capped_by_items_and_by_bytes(self):
+        """One decorator per fact: the item count is enforced, the payload size documented."""
+        rows = {id(decl.limit): decl.arg for decl in limits_of(ClientContext.execute_batch)}
+        batch = sharepoint_limits.Limits
+        self.assertEqual(rows, {id(batch.BATCH_ITEMS): "items_per_batch", id(batch.BATCH_BYTES): None})
 
 
 class TestComposableDeclarations(unittest.TestCase):

@@ -9,12 +9,15 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.principal.principal import Principal
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
 
 if TYPE_CHECKING:
     from office365.sharepoint.principal.groups.collection import GroupCollection
 
 
+#: How many users one SharePoint group may hold.
+@limit(Limits.GROUP_MEMBERS)
 class Group(Principal):
     """Represents a collection of members in a SharePoint site. A group is a type of SP.Principal."""
 

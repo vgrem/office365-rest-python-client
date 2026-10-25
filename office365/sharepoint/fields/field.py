@@ -12,9 +12,13 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.type import FieldType
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.translation.user_resource import UserResource
 
 
+#: What a column may hold: the length of a single line of text, and how many terms a managed
+#: metadata column is expected to carry before downstream experiences stop being guaranteed.
+@limit(Limits.TEXT_COLUMN, Limits.DEFAULT_TERMS)
 class Field(Entity):
     """A container for metadata within a SharePoint list and associated list items."""
 

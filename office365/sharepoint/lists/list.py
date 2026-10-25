@@ -150,6 +150,20 @@ if TYPE_CHECKING:
     )
 
 
+#: The ceilings on a list's own shape and on what a query against it may do: its item count,
+#: its indexes, who may see those items, and the joins one view may make.
+@limit(
+    Limits.LIST_VIEW_ADMIN,
+    Limits.INDEX_ADD_REMOVE,
+    Limits.DELETE_ITEMS,
+    Limits.MAX_LIST_ITEMS,
+    Limits.MAX_INDEXED_COLUMNS,
+    Limits.LOOKUP_JOINS,
+    Limits.PERMISSION_INHERITANCE,
+    Limits.UNIQUE_SCOPES,
+    Limits.UNIQUE_SCOPES_RECOMMENDED,
+    Limits.ACL_PROPAGATION,
+)
 class List(SecurableObject):
     """
     Represents a list on a SharePoint Web site.

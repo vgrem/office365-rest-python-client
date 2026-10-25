@@ -67,6 +67,7 @@ from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
 from office365.sharepoint.teams.channel_capabilities import ChannelCapabilities
 from office365.sharepoint.tenant.administration.hubsites.creation_information import HubSiteCreationInformation
 from office365.sharepoint.tenant.administration.sites.administrators_info import SiteAdministratorsInfo
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
 from office365.sharepoint.webs.templates.collection import WebTemplateCollection
@@ -85,6 +86,14 @@ def _aes_key_base64(value: str | bytes) -> str:
     return base64.b64encode(value).decode("ascii") if isinstance(value, bytes) else value
 
 
+#: What one site collection may hold: its lists, its subsites, its groups and its storage.
+@limit(
+    Limits.LISTS_PER_SITE,
+    Limits.SUBSITES_PER_SITE,
+    Limits.SITE_STORAGE,
+    Limits.SITE_METADATA,
+    Limits.GROUPS_PER_SITE,
+)
 class Site(Entity):
     """
     Represents a collection of sites in a Web application, including a top-level website and all its sub sites.

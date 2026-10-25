@@ -56,6 +56,7 @@ from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
 from office365.sharepoint.sharing.object_sharing_information import (
     ObjectSharingInformation,
 )
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.upload_status import UploadStatus
 from office365.sharepoint.utilities.wopi_frame_action import SPWOPIFrameAction
@@ -117,6 +118,22 @@ def _consume_download_chunk(
     return bytes_read
 
 
+#: What one file may be and what may be done to it: its path, its name, how large an upload or
+#: a transfer may be, and how many versions it may keep. Declared on the file rather than on
+#: the collection that uploads it, because every one of these is a fact about the file.
+@limit(
+    Limits.UPLOAD_SIMPLE,
+    Limits.UPLOAD_SESSION_CHUNK,
+    Limits.FILE_PATH_LENGTH,
+    Limits.LONG_ONEDRIVE_URL,
+    Limits.FILE_NAME_LENGTH,
+    Limits.LARGE_EXCEL_FILE,
+    Limits.MAJOR_VERSIONS,
+    Limits.MINOR_VERSIONS,
+    Limits.CROSS_GEO_FILE,
+    Limits.ONENOTE_FILE,
+    Limits.MIGRATION_FILE_SIZE,
+)
 class File(AbstractFile):
     """Represents a file in a SharePoint Web site that can be a Web Part Page, an item in a document library,
     or a file in a folder."""

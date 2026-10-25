@@ -48,6 +48,7 @@ from office365.sharepoint.sharing.object_sharing_information import (
 )
 from office365.sharepoint.sharing.result import SharingResult
 from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
+from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.wopi_action import SPWOPIAction
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,
@@ -75,6 +76,9 @@ if TYPE_CHECKING:
     )
 
 
+#: What one row may hold. The 300 reserved bytes the published ceiling accounts for are why
+#: this is a boundary on the item, not on a column.
+@limit(Limits.LIST_ROW_BYTES)
 class ListItem(SecurableObject):
     """An individual entry within a SharePoint list. Each list item has a schema that maps to fields in the list
     that contains the item, depending on the content type of the item."""

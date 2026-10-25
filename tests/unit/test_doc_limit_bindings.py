@@ -83,3 +83,30 @@ class TestLimitBindingScan(unittest.TestCase):
         self.assertTrue(published)
         unowned = [row.note for row in published if not _bindings_module.bound_at(row, self.bindings, self.names)]
         self.assertEqual(unowned, [])
+
+
+class TestSharePointCeilingBindings(unittest.TestCase):
+    """SharePoint publishes 46 ceilings; exactly two of them cap nothing a type spells.
+
+    ``compliance policies per tenant`` is a tenant-wide compliance budget that no SharePoint
+    object owns, and ``files in a synced library`` is a ceiling on the OneDrive sync client
+    rather than on an API this library addresses. Keeping the two by name, rather than by
+    count, is what makes a newly published row fail here until somebody decides where it
+    belongs.
+    """
+
+    #: The rows no type can own, in catalog order.
+    UNBOUND = ("compliance policies per tenant", "files in a synced library")
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.bindings = _bindings_module.scan_bindings(_REPO_ROOT / "office365")
+        cls.names = _bindings_module.row_attrs()
+
+    def test_every_published_ceiling_reaches_a_type(self) -> None:
+        unbound = [
+            row.name
+            for row in catalog(product="sharepoint")
+            if not _bindings_module.bound_at(row, self.bindings, self.names)
+        ]
+        self.assertEqual(unbound, list(self.UNBOUND))
