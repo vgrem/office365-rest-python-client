@@ -6,6 +6,7 @@ from uuid import UUID
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -31,6 +32,7 @@ class ListTemplate(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="InternalName")
     @property
     def internal_name(self) -> Optional[str]:
         """Gets a value that specifies the identifier for the list template."""
@@ -44,56 +46,67 @@ class ListTemplate(Entity):
                 self._resource_path = ServiceOperationPath("GetByName", [value], self._parent_collection.resource_path)
         return self
 
+    @odata(name="AllowsFolderCreation")
     @property
     def allows_folder_creation(self) -> Optional[bool]:
         """Gets the AllowsFolderCreation property"""
         return self.properties.get("AllowsFolderCreation", None)
 
+    @odata(name="BaseType")
     @property
     def base_type(self) -> Optional[int]:
         """Gets the BaseType property"""
         return self.properties.get("BaseType", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the Description property"""
         return self.properties.get("Description", None)
 
+    @odata(name="FeatureId")
     @property
     def feature_id(self) -> Optional[UUID]:
         """Gets the FeatureId property"""
         return self.properties.get("FeatureId", None)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Gets the Hidden property"""
         return self.properties.get("Hidden", None)
 
+    @odata(name="ImageUrl")
     @property
     def image_url(self) -> Optional[str]:
         """Gets the ImageUrl property"""
         return self.properties.get("ImageUrl", None)
 
+    @odata(name="IsCustomTemplate")
     @property
     def is_custom_template(self) -> Optional[bool]:
         """Gets the IsCustomTemplate property"""
         return self.properties.get("IsCustomTemplate", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""
         return self.properties.get("Name", None)
 
+    @odata(name="OnQuickLaunch")
     @property
     def on_quick_launch(self) -> Optional[bool]:
         """Gets the OnQuickLaunch property"""
         return self.properties.get("OnQuickLaunch", None)
 
+    @odata(name="ListTemplateTypeKind")
     @property
     def list_template_type_kind(self) -> Optional[int]:
         """Gets the ListTemplateTypeKind property"""
         return self.properties.get("ListTemplateTypeKind", None)
 
+    @odata(name="Unique")
     @property
     def unique(self) -> Optional[bool]:
         """Gets the Unique property"""

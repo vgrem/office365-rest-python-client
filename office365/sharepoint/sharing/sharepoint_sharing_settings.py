@@ -12,7 +12,7 @@ from office365.sharepoint.sharing.picker_settings import PickerSettings
 class SharePointSharingSettings(Entity):
     """This class contains the SharePoint UI-specific sharing settings."""
 
-    @odata(name="PickerProperties")
+    @odata(name="PickerProperties", navigation=True)
     @property
     def picker_properties(self) -> PickerSettings:
         """An object containing the necessary information to initialize a client people picker control used
@@ -22,81 +22,97 @@ class SharePointSharingSettings(Entity):
             PickerSettings(self.context, ResourcePath("PickerProperties", self.resource_path)),
         )
 
+    @odata(name="AddToGroupModeName")
     @property
     def add_to_group_mode_name(self) -> Optional[str]:
         """Gets the AddToGroupModeName property"""
         return self.properties.get("AddToGroupModeName", None)
 
+    @odata(name="GroupNameLines")
     @property
     def group_name_lines(self) -> StringCollection:
         """Gets the GroupNameLines property"""
         return self.properties.get("GroupNameLines", StringCollection())
 
+    @odata(name="GroupRoleDefinitionNamesLines")
     @property
     def group_role_definition_names_lines(self) -> StringCollection:
         """Gets the GroupRoleDefinitionNamesLines property"""
         return self.properties.get("GroupRoleDefinitionNamesLines", StringCollection())
 
+    @odata(name="IsMobileView")
     @property
     def is_mobile_view(self) -> Optional[bool]:
         """Gets the IsMobileView property"""
         return self.properties.get("IsMobileView", None)
 
+    @odata(name="PanelGivePermissionsVisible")
     @property
     def panel_give_permissions_visible(self) -> Optional[bool]:
         """Gets the PanelGivePermissionsVisible property"""
         return self.properties.get("PanelGivePermissionsVisible", None)
 
+    @odata(name="PanelShowHideMoreOptionsVisible")
     @property
     def panel_show_hide_more_options_visible(self) -> Optional[bool]:
         """Gets the PanelShowHideMoreOptionsVisible property"""
         return self.properties.get("PanelShowHideMoreOptionsVisible", None)
 
+    @odata(name="PanelSimplifiedRoleSelectorVisible")
     @property
     def panel_simplified_role_selector_visible(self) -> Optional[bool]:
         """Gets the PanelSimplifiedRoleSelectorVisible property"""
         return self.properties.get("PanelSimplifiedRoleSelectorVisible", None)
 
+    @odata(name="RequiredScriptFileLinks")
     @property
     def required_script_file_links(self) -> StringCollection:
         """Gets the RequiredScriptFileLinks property"""
         return self.properties.get("RequiredScriptFileLinks", StringCollection())
 
+    @odata(name="RoleDefinitionNameLines")
     @property
     def role_definition_name_lines(self) -> StringCollection:
         """Gets the RoleDefinitionNameLines property"""
         return self.properties.get("RoleDefinitionNameLines", StringCollection())
 
+    @odata(name="SelectedGroup")
     @property
     def selected_group(self) -> Optional[str]:
         """Gets the SelectedGroup property"""
         return self.properties.get("SelectedGroup", None)
 
+    @odata(name="SharedWithEnabled")
     @property
     def shared_with_enabled(self) -> Optional[bool]:
         """Gets the SharedWithEnabled property"""
         return self.properties.get("SharedWithEnabled", None)
 
+    @odata(name="SharingCssLink")
     @property
     def sharing_css_link(self) -> Optional[str]:
         """Gets the SharingCssLink property"""
         return self.properties.get("SharingCssLink", None)
 
+    @odata(name="TabbedDialogEnabled")
     @property
     def tabbed_dialog_enabled(self) -> Optional[bool]:
         """Gets the TabbedDialogEnabled property"""
         return self.properties.get("TabbedDialogEnabled", None)
 
+    @odata(name="TabToShow")
     @property
     def tab_to_show(self) -> Optional[int]:
         """Gets the TabToShow property"""
         return self.properties.get("TabToShow", None)
 
+    @odata(name="txtEmailSubjectText")
     @property
     def txt_email_subject_text(self) -> Optional[str]:
         """Gets the txtEmailSubjectText property"""
         return self.properties.get("txtEmailSubjectText", None)
 
+    @odata(name="UserDisplayUrl")
     @property
     def user_display_url(self) -> Optional[str]:
         """Gets the UserDisplayUrl property"""

@@ -1,14 +1,17 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class SiteRenameJobsForTenantRename(Entity):
+    @odata(name="NextLink")
     @property
     def next_link(self) -> Optional[str]:
         """Gets the NextLink property"""
         return self.properties.get("NextLink", None)
 
+    @odata(name="SiteRenameJobsCountByParentIdAndState")
     @property
     def site_rename_jobs_count_by_parent_id_and_state(self) -> Optional[int]:
         """Gets the SiteRenameJobsCountByParentIdAndState property"""

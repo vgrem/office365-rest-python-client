@@ -1,67 +1,80 @@
 from typing import Optional
 from uuid import UUID
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class WorkflowDefinition(Entity):
     """Represents a workflow definition and associated properties."""
 
+    @odata(name="AssociationUrl")
     @property
     def association_url(self) -> Optional[str]:
         """Gets the AssociationUrl property"""
         return self.properties.get("AssociationUrl", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the Description property"""
         return self.properties.get("Description", None)
 
+    @odata(name="DisplayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the DisplayName property"""
         return self.properties.get("DisplayName", None)
 
+    @odata(name="DraftVersion")
     @property
     def draft_version(self) -> Optional[str]:
         """Gets the DraftVersion property"""
         return self.properties.get("DraftVersion", None)
 
+    @odata(name="FormField")
     @property
     def form_field(self) -> Optional[str]:
         """Gets the FormField property"""
         return self.properties.get("FormField", None)
 
+    @odata(name="InitiationUrl")
     @property
     def initiation_url(self) -> Optional[str]:
         """Gets the InitiationUrl property"""
         return self.properties.get("InitiationUrl", None)
 
+    @odata(name="Published")
     @property
     def published(self) -> Optional[bool]:
         """Gets the Published property"""
         return self.properties.get("Published", None)
 
+    @odata(name="RequiresAssociationForm")
     @property
     def requires_association_form(self) -> Optional[bool]:
         """Gets the RequiresAssociationForm property"""
         return self.properties.get("RequiresAssociationForm", None)
 
+    @odata(name="RequiresInitiationForm")
     @property
     def requires_initiation_form(self) -> Optional[bool]:
         """Gets the RequiresInitiationForm property"""
         return self.properties.get("RequiresInitiationForm", None)
 
+    @odata(name="RestrictToScope")
     @property
     def restrict_to_scope(self) -> Optional[str]:
         """Gets the RestrictToScope property"""
         return self.properties.get("RestrictToScope", None)
 
+    @odata(name="RestrictToType")
     @property
     def restrict_to_type(self) -> Optional[str]:
         """Gets the RestrictToType property"""
         return self.properties.get("RestrictToType", None)
 
+    @odata(name="Xaml")
     @property
     def xaml(self) -> Optional[str]:
         """Gets the Xaml property"""
@@ -71,6 +84,7 @@ class WorkflowDefinition(Entity):
     def entity_type_name(self):
         return "SP.WorkflowServices.WorkflowDefinition"
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[UUID]:
         """Gets the Id property"""

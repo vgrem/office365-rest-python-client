@@ -17,6 +17,7 @@ class CreatablesInfo(Entity):
     appending &IsDlg=1 to the link, to remove the UI from the linked page, if desired.
     """
 
+    @odata(name="CanCreateFolders")
     @property
     def can_create_folders(self) -> Optional[bool]:
         """
@@ -25,6 +26,7 @@ class CreatablesInfo(Entity):
         """
         return self.properties.get("CanCreateFolders", None)
 
+    @odata(name="CanCreateItems")
     @property
     def can_create_items(self) -> Optional[bool]:
         """
@@ -33,6 +35,7 @@ class CreatablesInfo(Entity):
         """
         return self.properties.get("CanCreateItems", None)
 
+    @odata(name="CanUploadFiles")
     @property
     def can_upload_files(self) -> Optional[bool]:
         """

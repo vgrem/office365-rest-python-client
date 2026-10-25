@@ -1,5 +1,6 @@
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.search.query.sort.sort import Sort
 
@@ -34,6 +35,7 @@ class SortCollection(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="Items")
     @property
     def items(self) -> ClientValueCollection[Sort]:
         return self.properties.get("Items", ClientValueCollection(Sort))

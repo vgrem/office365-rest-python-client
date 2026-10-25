@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class MailSearchFolder(MailFolder):
@@ -13,11 +14,13 @@ class MailSearchFolder(MailFolder):
     WellKnownFolderName.SearchFolders folder.
     """
 
+    @odata(name="filterQuery")
     @property
     def filter_query(self) -> Optional[str]:
         """The OData query to filter the messages."""
         return self.properties.get("filterQuery", None)
 
+    @odata(name="includeNestedFolders")
     @property
     def include_nested_folders(self) -> Optional[bool]:
         """Indicates how the mailbox folder hierarchy should be traversed in the search. true means that a deep
@@ -26,11 +29,13 @@ class MailSearchFolder(MailFolder):
         in sourceFolderIds."""
         return self.properties.get("includeNestedFolders", None)
 
+    @odata(name="isSupported")
     @property
     def is_supported(self) -> Optional[bool]:
         """Indicates whether a search folder is editable using REST APIs."""
         return self.properties.get("isSupported", None)
 
+    @odata(name="sourceFolderIds")
     @property
     def source_folder_ids(self) -> StringCollection:
         """The mailbox folders that should be mined."""

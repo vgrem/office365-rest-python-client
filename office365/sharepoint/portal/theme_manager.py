@@ -9,6 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.utilities.jsontheme import JsonTheme
 from office365.sharepoint.utilities.themingoptions import ThemingOptions
@@ -160,6 +161,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="ContextThemeManager", navigation=True)
     @property
     def context_theme_manager(self) -> ThemeManager:
         """Gets the ContextThemeManager property"""

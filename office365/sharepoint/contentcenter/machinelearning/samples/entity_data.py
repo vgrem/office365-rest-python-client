@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -15,11 +16,13 @@ class SPMachineLearningSampleEntityData(Entity):
     def entity_type_name(self):
         return "Microsoft.Office.Server.ContentCenter.SPMachineLearningSampleEntityData"
 
+    @odata(name="ExtractedText")
     @property
     def extracted_text(self) -> Optional[str]:
         """Gets the ExtractedText property"""
         return self.properties.get("ExtractedText", None)
 
+    @odata(name="Markups")
     @property
     def markups(self) -> Optional[str]:
         """Gets the Markups property"""

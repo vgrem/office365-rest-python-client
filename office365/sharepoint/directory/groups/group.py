@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.directory.helper import SPHelper
 from office365.sharepoint.directory.members_info import MembersInfo
 from office365.sharepoint.entity import Entity
@@ -152,96 +153,115 @@ class Group(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="alias")
     @property
     def alias(self) -> Optional[str]:
         """Gets the alias property"""
         return self.properties.get("alias", None)
 
+    @odata(name="allowToAddGuests")
     @property
     def allow_to_add_guests(self) -> Optional[bool]:
         """Gets the allowToAddGuests property"""
         return self.properties.get("allowToAddGuests", None)
 
+    @odata(name="assignedLabels")
     @property
     def assigned_labels(self) -> Optional[str]:
         """Gets the assignedLabels property"""
         return self.properties.get("assignedLabels", None)
 
+    @odata(name="calendarUrl")
     @property
     def calendar_url(self) -> Optional[str]:
         """Gets the calendarUrl property"""
         return self.properties.get("calendarUrl", None)
 
+    @odata(name="classification")
     @property
     def classification(self) -> Optional[str]:
         """Gets the classification property"""
         return self.properties.get("classification", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="documentsUrl")
     @property
     def documents_url(self) -> Optional[str]:
         """Gets the documentsUrl property"""
         return self.properties.get("documentsUrl", None)
 
+    @odata(name="editGroupUrl")
     @property
     def edit_group_url(self) -> Optional[str]:
         """Gets the editGroupUrl property"""
         return self.properties.get("editGroupUrl", None)
 
+    @odata(name="id")
     @property
     def id(self) -> Optional[UUID]:
         """Gets the id property"""
         return self.properties.get("id", None)
 
+    @odata(name="inboxUrl")
     @property
     def inbox_url(self) -> Optional[str]:
         """Gets the inboxUrl property"""
         return self.properties.get("inboxUrl", None)
 
+    @odata(name="isDynamic")
     @property
     def is_dynamic(self) -> Optional[bool]:
         """Gets the isDynamic property"""
         return self.properties.get("isDynamic", None)
 
+    @odata(name="isPublic")
     @property
     def is_public(self) -> Optional[bool]:
         """Gets the isPublic property"""
         return self.properties.get("isPublic", None)
 
+    @odata(name="mail")
     @property
     def mail(self) -> Optional[str]:
         """Gets the mail property"""
         return self.properties.get("mail", None)
 
+    @odata(name="notebookUrl")
     @property
     def notebook_url(self) -> Optional[str]:
         """Gets the notebookUrl property"""
         return self.properties.get("notebookUrl", None)
 
+    @odata(name="peopleUrl")
     @property
     def people_url(self) -> Optional[str]:
         """Gets the peopleUrl property"""
         return self.properties.get("peopleUrl", None)
 
+    @odata(name="pictureUrl")
     @property
     def picture_url(self) -> Optional[str]:
         """Gets the pictureUrl property"""
         return self.properties.get("pictureUrl", None)
 
+    @odata(name="principalName")
     @property
     def principal_name(self) -> Optional[str]:
         """Gets the principalName property"""
         return self.properties.get("principalName", None)
 
+    @odata(name="siteUrl")
     @property
     def site_url(self) -> Optional[str]:
         """Gets the siteUrl property"""
         return self.properties.get("siteUrl", None)
 
+    @odata(name="members", navigation=True)
     @property
     def members(self) -> EntityCollection[User]:
         """Gets the members property"""
@@ -251,6 +271,7 @@ class Group(Entity):
             "members", EntityCollection[User](self.context, User, ResourcePath("members", self.resource_path))
         )
 
+    @odata(name="owners", navigation=True)
     @property
     def owners(self) -> EntityCollection[User]:
         """Gets the owners property"""

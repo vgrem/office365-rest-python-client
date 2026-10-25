@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
@@ -10,6 +11,7 @@ from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 class Form(Entity):
     """A form provides a display and editing interface for a single list item."""
 
+    @odata(name="FormType")
     @property
     def form_type(self) -> Optional[str]:
         """
@@ -17,6 +19,7 @@ class Form(Entity):
         """
         return self.properties.get("FormType", None)
 
+    @odata(name="ServerRelativeUrl")
     @property
     def server_relative_url(self) -> Optional[str]:
         """
@@ -24,6 +27,7 @@ class Form(Entity):
         """
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="ResourcePath")
     @property
     def resource_path(self) -> SPResPath:  # type: ignore[override]
         """
@@ -31,6 +35,7 @@ class Form(Entity):
         """
         return self.properties.get("ResourcePath", SPResPath())
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[UUID]:
         """Gets the Id property"""

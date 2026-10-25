@@ -12,11 +12,13 @@ from office365.sharepoint.sharing.shared_with_user import SharedWithUser
 class FileVersionEvent(Entity):
     """Represents an event object happened on a Microsoft.SharePoint.SPFile."""
 
+    @odata(name="EventType")
     @property
     def event_type(self) -> Optional[str]:
         """Returns the type of the event."""
         return self.properties.get("EventType", None)
 
+    @odata(name="Editor")
     @property
     def editor(self) -> Optional[str]:
         """Returns the name of the user who initiated the event."""
@@ -34,11 +36,13 @@ class FileVersionEvent(Entity):
         """Returns the array of users that have been shared in sharing action for the change log."""
         return self.properties.get("SharedWithUsers", ClientValueCollection(SharedWithUser))
 
+    @odata(name="EditorEmail")
     @property
     def editor_email(self) -> Optional[str]:
         """Gets the EditorEmail property"""
         return self.properties.get("EditorEmail", None)
 
+    @odata(name="Time")
     @property
     def time(self) -> Optional[datetime]:
         """Gets the Time property"""

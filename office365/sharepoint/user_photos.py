@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class UserPhotos(Entity):
+    @odata(name="Settings")
     @property
     def settings(self) -> Optional[str]:
         """Gets the Settings property"""

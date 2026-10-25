@@ -83,17 +83,19 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="IsDefaultContentCenter")
     @property
     def is_default_content_center(self) -> Optional[bool]:
         """ """
         return self.properties.get("IsDefaultContentCenter", None)
 
+    @odata(name="MachineLearningCaptureEnabled")
     @property
     def machine_learning_capture_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("MachineLearningCaptureEnabled", None)
 
-    @odata(name="MachineLearningEnabled")
+    @odata(name="MachineLearningEnabled", navigation=True)
     @property
     def machine_learning_enabled(self) -> SPMachineLearningEnabled:
         """ """
@@ -102,6 +104,7 @@ class SPMachineLearningHub(Entity):
             SPMachineLearningEnabled(self.context, ResourcePath("MachineLearningEnabled", self.resource_path)),
         )
 
+    @odata(name="Models", navigation=True)
     @property
     def models(self) -> SPMachineLearningModelCollection:
         """ """
@@ -109,6 +112,7 @@ class SPMachineLearningHub(Entity):
             "Models", SPMachineLearningModelCollection(self.context, ResourcePath("Models", self.resource_path))
         )
 
+    @odata(name="Samples", navigation=True)
     @property
     def samples(self) -> SPMachineLearningSampleCollection:
         """ """
@@ -120,6 +124,7 @@ class SPMachineLearningHub(Entity):
     def entity_type_name(self):
         return "Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"
 
+    @odata(name="AgreementWorkItems", navigation=True)
     @property
     def agreement_work_items(self) -> EntityCollection[SPMachineLearningWorkItem]:
         """Gets the AgreementWorkItems property"""
@@ -130,6 +135,7 @@ class SPMachineLearningHub(Entity):
             ),
         )
 
+    @odata(name="DefaultContentCenter", navigation=True)
     @property
     def default_content_center(self) -> DefaultContentCenterSiteInfo:
         """Gets the DefaultContentCenter property"""
@@ -138,6 +144,7 @@ class SPMachineLearningHub(Entity):
             DefaultContentCenterSiteInfo(self.context, ResourcePath("DefaultContentCenter", self.resource_path)),
         )
 
+    @odata(name="Publications", navigation=True)
     @property
     def publications(self) -> EntityCollection[SPMachineLearningPublication]:
         """Gets the Publications property"""
@@ -148,6 +155,7 @@ class SPMachineLearningHub(Entity):
             ),
         )
 
+    @odata(name="SyntexContext", navigation=True)
     @property
     def syntex_context(self) -> SyntexContext:
         """Gets the SyntexContext property"""
@@ -155,6 +163,7 @@ class SPMachineLearningHub(Entity):
             "SyntexContext", SyntexContext(self.context, ResourcePath("SyntexContext", self.resource_path))
         )
 
+    @odata(name="WorkItems", navigation=True)
     @property
     def work_items(self) -> EntityCollection[SPMachineLearningWorkItem]:
         """Gets the WorkItems property"""

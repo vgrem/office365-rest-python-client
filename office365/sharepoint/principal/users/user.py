@@ -72,11 +72,13 @@ class User(Principal):
         user's name identifier."""
         return self.properties.get("AadObjectId", UserIdInfo())
 
+    @odata(name="Alerts", navigation=True)
     @property
     def alerts(self) -> AlertCollection:
         """Gets site alerts for this user."""
         return self.properties.get("Alerts", AlertCollection(self.context, ResourcePath("Alerts", self.resource_path)))
 
+    @odata(name="Groups", navigation=True)
     @property
     def groups(self):
         """Gets a collection of group objects that represents all of the groups for the user."""
@@ -84,6 +86,7 @@ class User(Principal):
 
         return self.properties.get("Groups", GroupCollection(self.context, ResourcePath("Groups", self.resource_path)))
 
+    @odata(name="IsSiteAdmin")
     @property
     def is_site_admin(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether the user is a site collection administrator."""
@@ -96,6 +99,7 @@ class User(Principal):
         user's name identifier."""
         return self.properties.get("UserId", UserIdInfo())
 
+    @odata(name="Email")
     @property
     def email(self) -> Optional[str]:
         """
@@ -104,14 +108,17 @@ class User(Principal):
         """
         return self.properties.get("Email", None)
 
+    @odata(name="EmailWithFallback")
     @property
     def email_with_fallback(self) -> Optional[str]:
         return self.properties.get("EmailWithFallback", None)
 
+    @odata(name="Expiration")
     @property
     def expiration(self) -> Optional[str]:
         return self.properties.get("Expiration", None)
 
+    @odata(name="IsEmailAuthenticationGuestUser")
     @property
     def is_email_authentication_guest_user(self) -> Optional[bool]:
         """
@@ -120,6 +127,7 @@ class User(Principal):
         """
         return self.properties.get("IsEmailAuthenticationGuestUser", None)
 
+    @odata(name="IsShareByEmailGuestUser")
     @property
     def is_share_by_email_guest_user(self) -> Optional[bool]:
         """
@@ -128,6 +136,7 @@ class User(Principal):
         """
         return self.properties.get("IsShareByEmailGuestUser", None)
 
+    @odata(name="UserPrincipalName")
     @property
     def user_principal_name(self) -> Optional[str]:
         """User principal name of the user that initiated the sign-in."""
@@ -429,11 +438,13 @@ class User(Principal):
     def entity_type_name(self) -> str:
         return "SP.User"
 
+    @odata(name="HexCid")
     @property
     def hex_cid(self) -> Optional[str]:
         """Gets the HexCid property"""
         return self.properties.get("HexCid", None)
 
+    @odata(name="UserIdentityType")
     @property
     def user_identity_type(self) -> Optional[int]:
         """Gets the UserIdentityType property"""

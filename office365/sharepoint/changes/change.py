@@ -37,6 +37,7 @@ class Change(Entity):
         """
         return self.properties.get("ChangeType", ChangeType.None_)
 
+    @odata(name="SiteId")
     @property
     def site_id(self) -> Optional[str]:
         """
@@ -44,6 +45,7 @@ class Change(Entity):
         """
         return self.properties.get("SiteId", None)
 
+    @odata(name="Time")
     @property
     def time(self) -> datetime:
         """
@@ -51,6 +53,7 @@ class Change(Entity):
         """
         return self.properties.get("Time", datetime.min)
 
+    @odata(name="RelativeTime")
     @property
     def relative_time(self) -> Optional[str]:
         """Gets the RelativeTime property"""

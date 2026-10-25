@@ -8,6 +8,7 @@ from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.types.property_values import PropertyValues
 
@@ -25,21 +26,25 @@ class Alert(Entity):
     set for this type.
     """
 
+    @odata(name="AlertFrequency")
     @property
     def alert_frequency(self) -> Optional[int]:
         """Gets the time interval for sending the alert."""
         return self.properties.get("AlertFrequency", None)
 
+    @odata(name="AlertTemplateName")
     @property
     def alert_template_name(self) -> Optional[int]:
         """Gets the string representing the alert template name."""
         return self.properties.get("AlertTemplateName", None)
 
+    @odata(name="AlwaysNotify")
     @property
     def always_notify(self) -> Optional[bool]:
         """Gets a Boolean value that causes daily and weekly alerts to trigger, even if there is no matching event."""
         return self.properties.get("AlwaysNotify", None)
 
+    @odata(name="Item", navigation=True)
     @property
     def item(self) -> ListItem:
         """Gets the list item or document to which the alert applies."""
@@ -47,6 +52,7 @@ class Alert(Entity):
 
         return self.properties.get("Item", ListItem(self.context, ResourcePath("item", self.resource_path)))
 
+    @odata(name="User", navigation=True)
     @property
     def user(self):
         """Gets user object that represents User for the alert."""
@@ -54,6 +60,7 @@ class Alert(Entity):
 
         return self.properties.get("User", User(self.context, ResourcePath("user", self.resource_path)))
 
+    @odata(name="List", navigation=True)
     @property
     def list(self):
         """Gets list object that represents List for the alert."""
@@ -61,66 +68,79 @@ class Alert(Entity):
 
         return self.properties.get("List", List(self.context, ResourcePath("list", self.resource_path)))
 
+    @odata(name="AlertTime")
     @property
     def alert_time(self) -> Optional[datetime]:
         """Gets the AlertTime property"""
         return self.properties.get("AlertTime", datetime.min)
 
+    @odata(name="AlertType")
     @property
     def alert_type(self) -> Optional[int]:
         """Gets the AlertType property"""
         return self.properties.get("AlertType", None)
 
+    @odata(name="DeliveryChannels")
     @property
     def delivery_channels(self) -> Optional[int]:
         """Gets the DeliveryChannels property"""
         return self.properties.get("DeliveryChannels", None)
 
+    @odata(name="EventType")
     @property
     def event_type(self) -> Optional[int]:
         """Gets the EventType property"""
         return self.properties.get("EventType", None)
 
+    @odata(name="Filter")
     @property
     def filter_(self) -> Optional[str]:
         """Gets the Filter property"""
         return self.properties.get("Filter", None)
 
+    @odata(name="ID")
     @property
     def id_(self) -> Optional[UUID]:
         """Gets the ID property"""
         return self.properties.get("ID", None)
 
+    @odata(name="ItemID")
     @property
     def item_id(self) -> Optional[int]:
         """Gets the ItemID property"""
         return self.properties.get("ItemID", None)
 
+    @odata(name="ListID")
     @property
     def list_id(self) -> Optional[UUID]:
         """Gets the ListID property"""
         return self.properties.get("ListID", None)
 
+    @odata(name="ListUrl")
     @property
     def list_url(self) -> Optional[str]:
         """Gets the ListUrl property"""
         return self.properties.get("ListUrl", None)
 
+    @odata(name="Status")
     @property
     def status(self) -> Optional[int]:
         """Gets the Status property"""
         return self.properties.get("Status", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the Title property"""
         return self.properties.get("Title", None)
 
+    @odata(name="UserId")
     @property
     def user_id(self) -> Optional[int]:
         """Gets the UserId property"""
         return self.properties.get("UserId", None)
 
+    @odata(name="AllProperties", navigation=True)
     @property
     def all_properties(self) -> PropertyValues:
         """Gets the AllProperties property"""
@@ -134,11 +154,13 @@ class Alert(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="Filter")
     @property
     def filter(self) -> Optional[str]:
         """Gets the Filter property"""
         return self.properties.get("Filter", None)
 
+    @odata(name="ID")
     @property
     def id(self) -> Optional[UUID]:
         """Gets the ID property"""

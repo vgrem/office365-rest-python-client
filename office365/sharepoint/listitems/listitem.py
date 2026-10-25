@@ -16,6 +16,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.attachments.collection import AttachmentCollection
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
@@ -77,6 +78,10 @@ if TYPE_CHECKING:
 class ListItem(SecurableObject):
     """An individual entry within a SharePoint list. Each list item has a schema that maps to fields in the list
     that contains the item, depending on the content type of the item."""
+
+    # Probed live: these three are declared by the CSDL yet ``$select`` answers "Value does
+    # not fall within the expected range" / "Invalid field name" -- they are not fields.
+    _unselectable = ("Client_Title", "DisplayName", "IconOverlay")
 
     def __init__(self, context, resource_path=None, parent_list=None):
         """Args:
@@ -570,11 +575,13 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @odata(name="DisplayName")
     @property
     def display_name(self) -> Optional[str]:
         """Specifies the display name of the list item."""
         return self.properties.get("DisplayName", None)
 
+    @odata(name="ParentList", navigation=True)
     @property
     def parent_list(self) -> List:
         """Get parent List"""
@@ -585,6 +592,7 @@ class ListItem(SecurableObject):
             List(self.context, ResourcePath("ParentList", self.resource_path)),
         )
 
+    @odata(name="File", navigation=True)
     @property
     def file(self) -> File:
         """Get file"""
@@ -592,6 +600,7 @@ class ListItem(SecurableObject):
 
         return self.properties.get("File", File(self.context, ResourcePath("File", self.resource_path)))
 
+    @odata(name="Folder", navigation=True)
     @property
     def folder(self) -> Folder:
         """Get folder"""
@@ -599,6 +608,7 @@ class ListItem(SecurableObject):
 
         return self.properties.get("Folder", Folder(self.context, ResourcePath("Folder", self.resource_path)))
 
+    @odata(name="AttachmentFiles", navigation=True)
     @property
     def attachment_files(self) -> AttachmentCollection:
         """Specifies the collection of attachments that are associated with the list item.<62>"""
@@ -611,6 +621,7 @@ class ListItem(SecurableObject):
             AttachmentCollection(self.context, ResourcePath("AttachmentFiles", self.resource_path), self),
         )
 
+    @odata(name="ContentType", navigation=True)
     @property
     def content_type(self) -> ContentType:
         """Gets a value that specifies the content type of the list item."""
@@ -621,6 +632,7 @@ class ListItem(SecurableObject):
             ContentType(self.context, ResourcePath("ContentType", self.resource_path)),
         )
 
+    @odata(name="EffectiveBasePermissions")
     @property
     def effective_base_permissions(self) -> BasePermissions:
         """Gets a value that specifies the effective permissions on the list item that are assigned
@@ -629,6 +641,7 @@ class ListItem(SecurableObject):
 
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
+    @odata(name="EffectiveBasePermissionsForUI")
     @property
     def effective_base_permissions_for_ui(self) -> BasePermissions:
         """Specifies the effective base permissions for the current user, as they SHOULD be displayed in the user
@@ -645,16 +658,19 @@ class ListItem(SecurableObject):
         """Gets a collection of key/value pairs containing the names and values for the fields of the list item."""
         return self.properties.get("FieldValues", None)
 
+    @odata(name="CommentsDisabled")
     @property
     def comments_disabled(self) -> Optional[bool]:
         """Indicates whether comments for this item are disabled or not."""
         return self.properties.get("CommentsDisabled", None)
 
+    @odata(name="FileSystemObjectType")
     @property
     def file_system_object_type(self) -> Optional[FileSystemObjectType]:
         """Gets a value that specifies whether the list item is a file or a list folder"""
         return self.properties.get("FileSystemObjectType", FileSystemObjectType.Invalid)
 
+    @odata(name="IconOverlay")
     @property
     def icon_overlay(self) -> Optional[str]:
         """This is an overlay icon for the item. If the parent list of the item does not already have the IconOverlay
@@ -662,17 +678,20 @@ class ListItem(SecurableObject):
         will not be set for the item."""
         return self.properties.get("IconOverlay", None)
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Gets a value that specifies the list item identifier."""
         return self.properties.get("Id", None)
 
+    @odata(name="ServerRedirectedEmbedUri")
     @property
     def server_redirected_embed_uri(self) -> Optional[str]:
         """Returns the path for previewing a document in the browser, often in an interactive way, if
         that feature exists."""
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
+    @odata(name="ServerRedirectedEmbedUri")
     @property
     def server_redirected_embed_url(self) -> Optional[str]:
         """Returns the URL for previewing a document in the browser, often in an interactive way, if that feature
@@ -680,20 +699,24 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
+    @odata(name="Client_Title")
     @property
     def client_title(self) -> Optional[str]:
         """ """
         return self.properties.get("Client_Title", None)
 
+    @odata(name="ComplianceInfo")
     @property
     def compliance_info(self) -> ListItemComplianceInfo:
         return self.properties.get("ComplianceInfo", ListItemComplianceInfo())
 
+    @odata(name="CommentsDisabledScope")
     @property
     def comments_disabled_scope(self) -> Optional[str]:
         """Indicates at what scope comments are disabled."""
         return self.properties.get("CommentsDisabledScope", None)
 
+    @odata(name="GetDlpPolicyTip", navigation=True)
     @property
     def get_dlp_policy_tip(self) -> DlpPolicyTip:
         """Gets the Data Loss Protection policy tip notification for this item."""
@@ -702,6 +725,7 @@ class ListItem(SecurableObject):
             DlpPolicyTip(self.context, ResourcePath("GetDlpPolicyTip", self.resource_path)),
         )
 
+    @odata(name="FieldValuesAsHtml", navigation=True)
     @property
     def field_values_as_html(self) -> FieldStringValues:
         """Specifies the values for the list item as Hypertext Markup Language (HTML)."""
@@ -710,6 +734,7 @@ class ListItem(SecurableObject):
             FieldStringValues(self.context, ResourcePath("FieldValuesAsHtml", self.resource_path)),
         )
 
+    @odata(name="LikedByInformation", navigation=True)
     @property
     def liked_by_information(self) -> LikedByInformation:
         """Gets a value that specifies the list item identifier."""
@@ -718,6 +743,7 @@ class ListItem(SecurableObject):
             LikedByInformation(self.context, ResourcePath("likedByInformation", self.resource_path)),
         )
 
+    @odata(name="Versions", navigation=True)
     @property
     def versions(self) -> ListItemVersionCollection:
         """Gets the collection of item version objects that represent the versions of the item."""
@@ -855,6 +881,7 @@ class ListItem(SecurableObject):
             target_list.context.add_query(DeferredOperationQuery(target_list.context))
         return self
 
+    @odata(name="FieldValuesAsText", navigation=True)
     @property
     def field_values_as_text(self) -> FieldStringValues:
         """Gets the FieldValuesAsText property"""
@@ -864,6 +891,7 @@ class ListItem(SecurableObject):
             "FieldValuesAsText", FieldStringValues(self.context, ResourcePath("FieldValuesAsText", self.resource_path))
         )
 
+    @odata(name="FieldValuesForEdit", navigation=True)
     @property
     def field_values_for_edit(self) -> FieldStringValues:
         """Gets the FieldValuesForEdit property"""

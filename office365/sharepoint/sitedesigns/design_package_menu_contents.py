@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -14,11 +15,13 @@ class DesignPackageMenuContents(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.DesignPackageMenuContents"
 
+    @odata(name="HiddenDesignPackages")
     @property
     def hidden_design_packages(self) -> Optional[int]:
         """Gets the HiddenDesignPackages property"""
         return self.properties.get("HiddenDesignPackages", None)
 
+    @odata(name="SiteDesigns")
     @property
     def site_designs(self) -> ClientValueCollection[SiteDesignMetadata]:
         """Gets the SiteDesigns property"""

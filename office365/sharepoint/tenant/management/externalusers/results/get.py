@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.tenant.management.externalusers.collection import (
     ExternalUserCollection,
@@ -8,14 +9,17 @@ from office365.sharepoint.tenant.management.externalusers.collection import (
 
 
 class GetExternalUsersResults(Entity):
+    @odata(name="TotalUserCount")
     @property
     def total_user_count(self) -> Optional[int]:
         return self.properties.get("TotalUserCount", None)
 
+    @odata(name="UserCollectionPosition")
     @property
     def user_collection_position(self) -> Optional[int]:
         return self.properties.get("UserCollectionPosition", None)
 
+    @odata(name="ExternalUserCollection", navigation=True)
     @property
     def external_user_collection(self) -> ExternalUserCollection:
         return self.properties.get(

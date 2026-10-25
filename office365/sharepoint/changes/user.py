@@ -1,11 +1,13 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.change import Change
 
 
 class ChangeUser(Change):
     """Specifies a change on a user."""
 
+    @odata(name="Activate")
     @property
     def activate(self) -> Optional[bool]:
         """
@@ -17,6 +19,7 @@ class ChangeUser(Change):
         """
         return self.properties.get("Activate", None)
 
+    @odata(name="UserId")
     @property
     def user_id(self) -> Optional[str]:
         """Uniquely identifies the changed user."""

@@ -158,6 +158,10 @@ class List(SecurableObject):
     composed of one or more fields.
     """
 
+    # Probed live: ``$select`` answers this one with "Non-SPListItem objects are not
+    # supported", while a ``ListItem`` serves it -- so the refusal belongs to the type.
+    _unselectable = ("ShieldAddRoleAssignmentPushdown",)
+
     def __repr__(self):
         return self.title or self.entity_type_name
 
@@ -1437,40 +1441,48 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets a value that specifies the list identifier."""
         return self.properties.get("Id", None)
 
+    @odata(name="AdditionalUXProperties")
     @property
     def additional_ux_properties(self) -> Optional[str]:
         return self.properties.get("AdditionalUXProperties", None)
 
+    @odata(name="Author", navigation=True)
     @property
     def author(self) -> User:
         """Specifies the user who created the list."""
         return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
+    @odata(name="AllowContentTypes")
     @property
     def allow_content_types(self) -> Optional[bool]:
         """Specifies whether the list supports content types."""
         return self.properties.get("AllowContentTypes", None)
 
+    @odata(name="AllowDeletion")
     @property
     def allow_deletion(self) -> Optional[bool]:
         """Specifies whether the list could be deleted."""
         return self.properties.get("AllowDeletion", None)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Specifies whether the list is hidden from UI."""
         return self.properties.get("Hidden", None)
 
+    @odata(name="BaseTemplate")
     @property
     def base_template(self) -> Optional[int]:
         """Specifies the list server template of the list."""
         return self.properties.get("BaseTemplate", None)
 
+    @odata(name="BaseType")
     @property
     def base_type(self) -> Optional[int]:
         """
@@ -1479,6 +1491,7 @@ class List(SecurableObject):
         """
         return self.properties.get("BaseType", None)
 
+    @odata(name="BrowserFileHandling")
     @property
     def browser_file_handling(self) -> Optional[int]:
         """
@@ -1489,11 +1502,13 @@ class List(SecurableObject):
         """
         return self.properties.get("BrowserFileHandling", None)
 
+    @odata(name="Created")
     @property
     def created(self) -> datetime:
         """Specifies when the list was created."""
         return self.properties.get("Created", datetime.min)
 
+    @odata(name="DefaultDisplayFormUrl")
     @property
     def default_display_form_url(self) -> Optional[str]:
         """Specifies the location of the default display form for the list."""
@@ -1505,6 +1520,7 @@ class List(SecurableObject):
         """Specifies the server-relative URL of the default view for the list."""
         return self.properties.get("DefaultViewPath", SPResPath())
 
+    @odata(name="DefaultViewUrl")
     @property
     def default_view_url(self) -> Optional[str]:
         """
@@ -1512,6 +1528,7 @@ class List(SecurableObject):
         """
         return self.properties.get("DefaultViewUrl", None)
 
+    @odata(name="CrawlNonDefaultViews")
     @property
     def crawl_non_default_views(self) -> Optional[bool]:
         """
@@ -1520,7 +1537,7 @@ class List(SecurableObject):
         """
         return self.properties.get("CrawlNonDefaultViews", None)
 
-    @odata(name="CreatablesInfo")
+    @odata(name="CreatablesInfo", navigation=True)
     @property
     def creatables_info(self) -> CreatablesInfo:
         """
@@ -1552,15 +1569,18 @@ class List(SecurableObject):
         """
         return self.properties.get("DataSource", ListDataSource())
 
+    @odata(name="DefaultEditFormUrl")
     @property
     def default_edit_form_url(self) -> Optional[str]:
         """Gets a value that specifies the URL of the edit form to use for list items in the list."""
         return self.properties.get("DefaultEditFormUrl", None)
 
+    @odata(name="DefaultItemOpenInBrowser")
     @property
     def default_item_open_in_browser(self) -> Optional[bool]:
         return self.properties.get("DefaultItemOpenInBrowser", None)
 
+    @odata(name="DefaultItemOpenUseListSetting")
     @property
     def default_item_open_use_list_setting(self) -> Optional[bool]:
         """
@@ -1570,14 +1590,17 @@ class List(SecurableObject):
         """
         return self.properties.get("DefaultItemOpenUseListSetting", None)
 
+    @odata(name="DisableCommenting")
     @property
     def disable_commenting(self) -> Optional[bool]:
         return self.properties.get("DisableCommenting", None)
 
+    @odata(name="DisableGridEditing")
     @property
     def disable_grid_editing(self) -> Optional[bool]:
         return self.properties.get("DisableGridEditing", None)
 
+    @odata(name="DocumentTemplateUrl")
     @property
     def document_template_url(self) -> Optional[str]:
         """Specifies the URL of the document template assigned to the list."""
@@ -1606,6 +1629,7 @@ class List(SecurableObject):
 
         return self.properties.get("EffectiveBasePermissionsForUI", BasePermissions())
 
+    @odata(name="EnableAssignToEmail")
     @property
     def enable_assign_to_email(self) -> Optional[bool]:
         """
@@ -1613,11 +1637,13 @@ class List(SecurableObject):
         """
         return self.properties.get("EnableAssignToEmail", None)
 
+    @odata(name="EnableAttachments")
     @property
     def enable_attachments(self) -> Optional[bool]:
         """Specifies whether list item attachments are enabled for the list"""
         return self.properties.get("EnableAttachments", None)
 
+    @odata(name="EnableFolderCreation")
     @property
     def enable_folder_creation(self) -> Optional[bool]:
         """Specifies whether new list folders can be added to the list."""
@@ -1627,25 +1653,30 @@ class List(SecurableObject):
     def enable_folder_creation(self, value: bool) -> None:
         self.set_property("EnableFolderCreation", value, True)
 
+    @odata(name="EnableMinorVersions")
     @property
     def enable_minor_versions(self) -> Optional[bool]:
         """Specifies whether minor versions are enabled for the list."""
         return self.properties.get("EnableMinorVersions", None)
 
+    @odata(name="EnableModeration")
     @property
     def enable_moderation(self) -> Optional[bool]:
         """Specifies whether content approval is enabled for the list."""
         return self.properties.get("EnableModeration", None)
 
+    @odata(name="EnableRequestSignOff")
     @property
     def enable_request_sign_off(self) -> Optional[bool]:
         return self.properties.get("EnableRequestSignOff", None)
 
+    @odata(name="EnableVersioning")
     @property
     def enable_versioning(self) -> Optional[bool]:
         """Specifies whether content approval is enabled for the list."""
         return self.properties.get("EnableVersioning", None)
 
+    @odata(name="ExcludeFromOfflineClient")
     @property
     def exclude_from_offline_client(self) -> Optional[bool]:
         """
@@ -1654,6 +1685,7 @@ class List(SecurableObject):
         """
         return self.properties.get("ExcludeFromOfflineClient", None)
 
+    @odata(name="ExemptFromBlockDownloadOfNonViewableFiles")
     @property
     def exempt_from_block_download_of_non_viewable_files(self) -> Optional[bool]:
         """
@@ -1662,6 +1694,7 @@ class List(SecurableObject):
         """
         return self.properties.get("ExemptFromBlockDownloadOfNonViewableFiles", None)
 
+    @odata(name="FileSavePostProcessingEnabled")
     @property
     def file_save_post_processing_enabled(self) -> Optional[bool]:
         """
@@ -1670,16 +1703,19 @@ class List(SecurableObject):
         """
         return self.properties.get("FileSavePostProcessingEnabled", None)
 
+    @odata(name="ForceCheckout")
     @property
     def force_checkout(self) -> Optional[bool]:
         """Specifies whether check out is required when adding or editing documents in the list"""
         return self.properties.get("ForceCheckout", None)
 
+    @odata(name="HasContentAssemblyTemplates")
     @property
     def has_content_assembly_templates(self) -> Optional[bool]:
         """ """
         return self.properties.get("HasContentAssemblyTemplates", None)
 
+    @odata(name="HasExternalDataSource")
     @property
     def has_external_data_source(self) -> Optional[bool]:
         """
@@ -1687,16 +1723,19 @@ class List(SecurableObject):
         """
         return self.properties.get("HasExternalDataSource", None)
 
+    @odata(name="HasFolderColoringFields")
     @property
     def has_folder_coloring_fields(self) -> Optional[bool]:
         """ """
         return self.properties.get("HasFolderColoringFields", None)
 
+    @odata(name="IrmEnabled")
     @property
     def irm_enabled(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether Information Rights Management (IRM) is enabled for the list."""
         return self.properties.get("IrmEnabled", None)
 
+    @odata(name="IrmExpire")
     @property
     def irm_expire(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether Information Rights Management (IRM) expiration is enabled
@@ -1704,6 +1743,7 @@ class List(SecurableObject):
         """
         return self.properties.get("IrmExpire", None)
 
+    @odata(name="Items", navigation=True)
     @property
     def items(self) -> ListItemCollection:
         """Get list items"""
@@ -1712,7 +1752,7 @@ class List(SecurableObject):
             ListItemCollection(self.context, ResourcePath("items", self.resource_path), parent=self),
         )
 
-    @odata(name="RootFolder")
+    @odata(name="RootFolder", navigation=True)
     @property
     def root_folder(self) -> Folder:
         """Get a root folder"""
@@ -1721,6 +1761,7 @@ class List(SecurableObject):
             Folder(self.context, ResourcePath("RootFolder", self.resource_path)),
         )
 
+    @odata(name="Fields", navigation=True)
     @property
     def fields(self) -> FieldCollection:
         """Gets a value that specifies the collection of all fields in the list."""
@@ -1729,6 +1770,7 @@ class List(SecurableObject):
             FieldCollection(self.context, ResourcePath("Fields", self.resource_path), self),
         )
 
+    @odata(name="Subscriptions", navigation=True)
     @property
     def subscriptions(self) -> SubscriptionCollection:
         """Gets one or more webhook subscriptions on a SharePoint list."""
@@ -1737,6 +1779,7 @@ class List(SecurableObject):
             SubscriptionCollection(self.context, ResourcePath("Subscriptions", self.resource_path), self),
         )
 
+    @odata(name="Views", navigation=True)
     @property
     def views(self) -> ViewCollection:
         """Gets a value that specifies the collection of all public views on the list and personal views
@@ -1746,7 +1789,7 @@ class List(SecurableObject):
             ViewCollection(self.context, ResourcePath("views", self.resource_path), self),
         )
 
-    @odata(name="DefaultView")
+    @odata(name="DefaultView", navigation=True)
     @property
     def default_view(self) -> View:
         """Gets or sets a value that specifies whether the list view is the default list view."""
@@ -1755,7 +1798,7 @@ class List(SecurableObject):
             View(self.context, ResourcePath("DefaultView", self.resource_path), self),
         )
 
-    @odata(name="ContentTypes")
+    @odata(name="ContentTypes", navigation=True)
     @property
     def content_types(self) -> ContentTypeCollection:
         """Gets the content types that are associated with the list."""
@@ -1764,11 +1807,13 @@ class List(SecurableObject):
             ContentTypeCollection(self.context, ResourcePath("ContentTypes", self.resource_path), self),
         )
 
+    @odata(name="ContentTypesEnabled")
     @property
     def content_types_enabled(self) -> Optional[bool]:
         """Specifies whether content types are enabled for the list."""
         return self.properties.get("ContentTypesEnabled", None)
 
+    @odata(name="IsPrivate")
     @property
     def is_private(self) -> Optional[bool]:
         """
@@ -1777,6 +1822,7 @@ class List(SecurableObject):
         """
         return self.properties.get("IsPrivate", None)
 
+    @odata(name="IsSiteAssetsLibrary")
     @property
     def is_site_assets_library(self) -> Optional[bool]:
         """
@@ -1785,6 +1831,7 @@ class List(SecurableObject):
         """
         return self.properties.get("IsSiteAssetsLibrary", None)
 
+    @odata(name="IsSystemList")
     @property
     def is_system_list(self) -> Optional[bool]:
         """
@@ -1793,7 +1840,7 @@ class List(SecurableObject):
         """
         return self.properties.get("IsSystemList", None)
 
-    @odata(name="UserCustomActions")
+    @odata(name="UserCustomActions", navigation=True)
     @property
     def user_custom_actions(self) -> UserCustomActionCollection:
         """Gets the User Custom Actions that are associated with the list."""
@@ -1802,7 +1849,7 @@ class List(SecurableObject):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
-    @odata(name="VersionPolicies")
+    @odata(name="VersionPolicies", navigation=True)
     @property
     def version_policies(self) -> VersionPolicyManager:
         """ """
@@ -1816,6 +1863,7 @@ class List(SecurableObject):
     def custom_action_elements(self) -> CustomActionElementCollection:
         return self.properties.get("CustomActionElements", CustomActionElementCollection())
 
+    @odata(name="Forms", navigation=True)
     @property
     def forms(self) -> FormCollection:
         """Gets a value that specifies the collection of all list forms in the list."""
@@ -1824,7 +1872,7 @@ class List(SecurableObject):
             FormCollection(self.context, ResourcePath("forms", self.resource_path)),
         )
 
-    @odata(name="ParentWeb")
+    @odata(name="ParentWeb", navigation=True)
     @property
     def parent_web(self) -> Web:
         """Gets a value that specifies the web where list resides."""
@@ -1835,7 +1883,7 @@ class List(SecurableObject):
             Web(self.context, ResourcePath("parentWeb", self.resource_path)),
         )
 
-    @odata(name="EventReceivers")
+    @odata(name="EventReceivers", navigation=True)
     @property
     def event_receivers(self) -> EventReceiverDefinitionCollection:
         """Get Event receivers"""
@@ -1844,6 +1892,7 @@ class List(SecurableObject):
             EventReceiverDefinitionCollection(self.context, ResourcePath("eventReceivers", self.resource_path), self),
         )
 
+    @odata(name="ItemCount")
     @property
     def item_count(self) -> Optional[int]:
         """Gets a value that specifies the number of list items in the list"""
@@ -1875,6 +1924,7 @@ class List(SecurableObject):
         """
         return self.properties.get("LastItemUserModifiedDate", None)
 
+    @odata(name="ListExperienceOptions")
     @property
     def list_experience_options(self) -> Optional[int]:
         """
@@ -1882,11 +1932,13 @@ class List(SecurableObject):
         """
         return self.properties.get("ListExperienceOptions", None)
 
+    @odata(name="ListFormCustomized")
     @property
     def list_form_customized(self) -> Optional[bool]:
         """ """
         return self.properties.get("ListFormCustomized", None)
 
+    @odata(name="ListItemEntityTypeFullName")
     @property
     def list_item_entity_type_full_name(self) -> Optional[str]:
         """
@@ -1894,6 +1946,7 @@ class List(SecurableObject):
         """
         return self.properties.get("ListItemEntityTypeFullName", None)
 
+    @odata(name="MajorVersionLimit")
     @property
     def major_version_limit(self) -> Optional[int]:
         """
@@ -1902,11 +1955,13 @@ class List(SecurableObject):
         """
         return self.properties.get("MajorVersionLimit", None)
 
+    @odata(name="ListSchemaVersion")
     @property
     def list_schema_version(self) -> Optional[str]:
         """"""
         return self.properties.get("ListSchemaVersion", None)
 
+    @odata(name="MajorWithMinorVersionsLimit")
     @property
     def major_with_minor_versions_limit(self) -> Optional[int]:
         """
@@ -1915,6 +1970,7 @@ class List(SecurableObject):
         """
         return self.properties.get("MajorWithMinorVersionsLimit", None)
 
+    @odata(name="NoCrawl")
     @property
     def no_crawl(self) -> Optional[bool]:
         """
@@ -1922,6 +1978,7 @@ class List(SecurableObject):
         """
         return self.properties.get("NoCrawl", None)
 
+    @odata(name="OnQuickLaunch")
     @property
     def on_quick_launch(self) -> Optional[bool]:
         """
@@ -1930,6 +1987,7 @@ class List(SecurableObject):
         """
         return self.properties.get("OnQuickLaunch", None)
 
+    @odata(name="PageRenderType")
     @property
     def page_render_type(self) -> Optional[int]:
         """
@@ -1939,6 +1997,7 @@ class List(SecurableObject):
         """
         return self.properties.get("PageRenderType", None)
 
+    @odata(name="ParentWebUrl")
     @property
     def parent_web_url(self) -> Optional[str]:
         """
@@ -1947,6 +2006,7 @@ class List(SecurableObject):
         """
         return self.properties.get("ParentWebUrl", None)
 
+    @odata(name="ParserDisabled")
     @property
     def parser_disabled(self) -> Optional[str]:
         """
@@ -1955,11 +2015,13 @@ class List(SecurableObject):
         """
         return self.properties.get("ParserDisabled", None)
 
+    @odata(name="ReadSecurity")
     @property
     def read_security(self) -> Optional[int]:
         """Gets or sets the Read security setting for the list."""
         return self.properties.get("ReadSecurity", None)
 
+    @odata(name="ServerTemplateCanCreateFolders")
     @property
     def server_template_can_create_folders(self) -> Optional[bool]:
         """
@@ -1967,10 +2029,12 @@ class List(SecurableObject):
         """
         return self.properties.get("ServerTemplateCanCreateFolders", None)
 
+    @odata(name="ShowHiddenFieldsInModernForm")
     @property
     def show_hidden_fields_in_modern_form(self) -> Optional[bool]:
         return self.properties.get("ShowHiddenFieldsInModernForm", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the displayed title for the list."""
@@ -1981,6 +2045,7 @@ class List(SecurableObject):
         """Sets the displayed title for the list."""
         self.set_property("Title", val)
 
+    @odata(name="DefaultContentApprovalWorkflowId")
     @property
     def default_content_approval_workflow_id(self) -> Optional[str]:
         """
@@ -1989,6 +2054,7 @@ class List(SecurableObject):
         """
         return self.properties.get("DefaultContentApprovalWorkflowId", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description for the list."""
@@ -1999,7 +2065,7 @@ class List(SecurableObject):
         """Sets the description for the list."""
         self.set_property("Description", val)
 
-    @odata(name="DescriptionResource")
+    @odata(name="DescriptionResource", navigation=True)
     @property
     def description_resource(self) -> UserResource:
         """Represents the description of this list."""
@@ -2014,11 +2080,13 @@ class List(SecurableObject):
         """Returns the path of the parent web for the list."""
         return self.properties.get("ParentWebPath", SPResPath())
 
+    @odata(name="SchemaXml")
     @property
     def schema_xml(self) -> Optional[str]:
         """Specifies the list schema of the list."""
         return self.properties.get("SchemaXml", None)
 
+    @odata(name="TemplateFeatureId")
     @property
     def template_feature_id(self) -> Optional[str]:
         """
@@ -2027,7 +2095,7 @@ class List(SecurableObject):
         """
         return self.properties.get("TemplateFeatureId", None)
 
-    @odata(name="TitleResource")
+    @odata(name="TitleResource", navigation=True)
     @property
     def title_resource(self) -> UserResource:
         """Represents the title of this list."""
@@ -2036,6 +2104,7 @@ class List(SecurableObject):
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
+    @odata(name="ValidationFormula")
     @property
     def validation_formula(self) -> Optional[str]:
         """Specifies the data validation criteria for a list item."""
@@ -2049,66 +2118,79 @@ class List(SecurableObject):
                 self._resource_path = ServiceOperationPath("getList", [value], self.context.web.resource_path)
         return self
 
+    @odata(name="Color")
     @property
     def color(self) -> Optional[str]:
         """Gets the Color property"""
         return self.properties.get("Color", None)
 
+    @odata(name="DefaultNewFormUrl")
     @property
     def default_new_form_url(self) -> Optional[str]:
         """Gets the DefaultNewFormUrl property"""
         return self.properties.get("DefaultNewFormUrl", None)
 
+    @odata(name="Direction")
     @property
     def direction(self) -> Optional[str]:
         """Gets the Direction property"""
         return self.properties.get("Direction", None)
 
+    @odata(name="DocumentReadSecurity")
     @property
     def document_read_security(self) -> Optional[bool]:
         """Gets the DocumentReadSecurity property"""
         return self.properties.get("DocumentReadSecurity", None)
 
+    @odata(name="DraftVersionVisibility")
     @property
     def draft_version_visibility(self) -> Optional[int]:
         """Gets the DraftVersionVisibility property"""
         return self.properties.get("DraftVersionVisibility", None)
 
+    @odata(name="EnabledQueryableColumnsDateTime")
     @property
     def enabled_queryable_columns_datetime(self) -> Optional[datetime]:
         """Gets the EnabledQueryableColumnsDateTime property"""
         return self.properties.get("EnabledQueryableColumnsDateTime", datetime.min)
 
+    @odata(name="ExcludeFromOfflineMode")
     @property
     def exclude_from_offline_mode(self) -> Optional[bool]:
         """Gets the ExcludeFromOfflineMode property"""
         return self.properties.get("ExcludeFromOfflineMode", None)
 
+    @odata(name="ExtendedSharePointPermissionOfflineDaysForLibrary")
     @property
     def extended_sharepoint_permission_offline_days_for_library(self) -> Optional[int]:
         """Gets the ExtendedSharePointPermissionOfflineDaysForLibrary property"""
         return self.properties.get("ExtendedSharePointPermissionOfflineDaysForLibrary", None)
 
+    @odata(name="HasCopyMoveRules")
     @property
     def has_copy_move_rules(self) -> Optional[bool]:
         """Gets the HasCopyMoveRules property"""
         return self.properties.get("HasCopyMoveRules", None)
 
+    @odata(name="HasListBoundContentAssemblyTemplates")
     @property
     def has_list_bound_content_assembly_templates(self) -> Optional[bool]:
         """Gets the HasListBoundContentAssemblyTemplates property"""
         return self.properties.get("HasListBoundContentAssemblyTemplates", None)
 
+    @odata(name="HighPriorityMediaProcessing")
     @property
     def high_priority_media_processing(self) -> Optional[bool]:
         """Gets the HighPriorityMediaProcessing property"""
         return self.properties.get("HighPriorityMediaProcessing", None)
 
+    @odata(name="Icon")
     @property
     def icon(self) -> Optional[str]:
         """Gets the Icon property"""
         return self.properties.get("Icon", None)
 
+    @odata(name="ImagePath")
     @property
     def image_path(self) -> ResourcePath:
         """Gets the ImagePath property"""
@@ -2116,81 +2198,97 @@ class List(SecurableObject):
 
         return self.properties.get("ImagePath", ResourcePath())
 
+    @odata(name="ImageUrl")
     @property
     def image_url(self) -> Optional[str]:
         """Gets the ImageUrl property"""
         return self.properties.get("ImageUrl", None)
 
+    @odata(name="DefaultSensitivityLabelForLibrary")
     @property
     def default_sensitivity_label_for_library(self) -> Optional[str]:
         """Gets the DefaultSensitivityLabelForLibrary property"""
         return self.properties.get("DefaultSensitivityLabelForLibrary", None)
 
+    @odata(name="SensitivityLabelToEncryptOnDownloadForLibrary")
     @property
     def sensitivity_label_to_encrypt_on_download_for_library(self) -> Optional[str]:
         """Gets the SensitivityLabelToEncryptOnDownloadForLibrary property"""
         return self.properties.get("SensitivityLabelToEncryptOnDownloadForLibrary", None)
 
+    @odata(name="IrmReject")
     @property
     def irm_reject(self) -> Optional[bool]:
         """Gets the IrmReject property"""
         return self.properties.get("IrmReject", None)
 
+    @odata(name="IsApplicationList")
     @property
     def is_application_list(self) -> Optional[bool]:
         """Gets the IsApplicationList property"""
         return self.properties.get("IsApplicationList", None)
 
+    @odata(name="IsCatalog")
     @property
     def is_catalog(self) -> Optional[bool]:
         """Gets the IsCatalog property"""
         return self.properties.get("IsCatalog", None)
 
+    @odata(name="IsContributorOwnerEnabled")
     @property
     def is_contributor_owner_enabled(self) -> Optional[bool]:
         """Gets the IsContributorOwnerEnabled property"""
         return self.properties.get("IsContributorOwnerEnabled", None)
 
+    @odata(name="IsDefaultDocumentLibrary")
     @property
     def is_default_document_library(self) -> Optional[bool]:
         """Gets the IsDefaultDocumentLibrary property"""
         return self.properties.get("IsDefaultDocumentLibrary", None)
 
+    @odata(name="IsEnterpriseGalleryLibrary")
     @property
     def is_enterprise_gallery_library(self) -> Optional[bool]:
         """Gets the IsEnterpriseGalleryLibrary property"""
         return self.properties.get("IsEnterpriseGalleryLibrary", None)
 
+    @odata(name="IsPredictionModelApplied")
     @property
     def is_prediction_model_applied(self) -> Optional[bool]:
         """Gets the IsPredictionModelApplied property"""
         return self.properties.get("IsPredictionModelApplied", None)
 
+    @odata(name="MultipleDataList")
     @property
     def multiple_data_list(self) -> Optional[bool]:
         """Gets the MultipleDataList property"""
         return self.properties.get("MultipleDataList", None)
 
+    @odata(name="ShowOneTabOnly")
     @property
     def show_one_tab_only(self) -> Optional[bool]:
         """Gets the ShowOneTabOnly property"""
         return self.properties.get("ShowOneTabOnly", None)
 
+    @odata(name="TemplateTypeId")
     @property
     def template_type_id(self) -> Optional[str]:
         """Gets the TemplateTypeId property"""
         return self.properties.get("TemplateTypeId", None)
 
+    @odata(name="ValidationMessage")
     @property
     def validation_message(self) -> Optional[str]:
         """Gets the ValidationMessage property"""
         return self.properties.get("ValidationMessage", None)
 
+    @odata(name="WriteSecurity")
     @property
     def write_security(self) -> Optional[int]:
         """Gets the WriteSecurity property"""
         return self.properties.get("WriteSecurity", None)
 
+    @odata(name="ExtendedSharePointPermissionSettings", navigation=True)
     @property
     def extended_sharepoint_permission_settings(self) -> ExtendedSharePointPermissionSettings:
         """Gets the ExtendedSharePointPermissionSettings property"""
@@ -2205,6 +2303,7 @@ class List(SecurableObject):
             ),
         )
 
+    @odata(name="InformationRightsManagementSettings", navigation=True)
     @property
     def information_rights_management_settings(self) -> InformationRightsManagementSettings:
         """Gets the InformationRightsManagementSettings property"""
@@ -2219,6 +2318,7 @@ class List(SecurableObject):
             ),
         )
 
+    @odata(name="WorkflowAssociations", navigation=True)
     @property
     def workflow_associations(self) -> EntityCollection[WorkflowAssociation]:
         """Gets the WorkflowAssociations property"""

@@ -41,7 +41,7 @@ class SitePageService(Entity):
         """Gets the SitePageCollection for the current web."""
         return self.properties.get("pages", SitePageCollection(self.context, ResourcePath("pages", self.resource_path)))
 
-    @odata(name="CommunicationSite")
+    @odata(name="CommunicationSite", navigation=True)
     @property
     def communication_site(self) -> CommunicationSite:
         """Gets a CommunicationSite for the current web."""
@@ -53,11 +53,13 @@ class SitePageService(Entity):
     def entity_type_name(self):
         return "SP.Publishing.SitePageService"
 
+    @odata(name="CustomContentApprovalEnabled")
     @property
     def custom_content_approval_enabled(self) -> Optional[bool]:
         """Gets the CustomContentApprovalEnabled property"""
         return self.properties.get("CustomContentApprovalEnabled", None)
 
+    @odata(name="Campaigns", navigation=True)
     @property
     def campaigns(self) -> EntityCollection[Campaign]:
         """Gets the Campaigns property"""

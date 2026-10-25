@@ -2,17 +2,20 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class FieldLink(Entity):
     """Specifies a reference to a field or field definition for a content type."""
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets a value that specifies the GUID of the FieldLink."""
         return self.properties.get("Id", None)
 
+    @odata(name="FieldInternalName")
     @property
     def field_internal_name(self) -> Optional[str]:
         """Gets a value that specifies the linked field's internal name.
@@ -24,31 +27,37 @@ class FieldLink(Entity):
         """
         return self.properties.get("FieldInternalName", None) or self.name
 
+    @odata(name="ReadOnly")
     @property
     def read_only(self) -> Optional[bool]:
         """ """
         return self.properties.get("ReadOnly", None)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Gets a value that specifies whether the field is displayed in forms that can be edited."""
         return self.properties.get("Hidden", None)
 
+    @odata(name="Required")
     @property
     def required(self) -> Optional[bool]:
         """Gets a value that specifies whether the field (2) requires a value."""
         return self.properties.get("Required", None)
 
+    @odata(name="ShowInDisplayForm")
     @property
     def show_in_display_form(self) -> Optional[bool]:
         """A Boolean value that indicates whether this field is shown in the display form."""
         return self.properties.get("ShowInDisplayForm", None)
 
+    @odata(name="DisplayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the DisplayName property"""
         return self.properties.get("DisplayName", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""

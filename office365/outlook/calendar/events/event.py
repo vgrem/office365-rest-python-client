@@ -416,7 +416,7 @@ class Event(OutlookItem):
             "attachments", AttachmentCollection(self.context, ResourcePath("attachments", self.resource_path))
         )
 
-    @odata(name="extensions", navigation=True, readonly=True)
+    @odata(name="extensions", navigation=True, readonly=True, expandable=False)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the event. Nullable."""

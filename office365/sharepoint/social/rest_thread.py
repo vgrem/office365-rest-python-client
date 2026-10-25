@@ -59,6 +59,7 @@ class SocialRestThread(Entity):
         """The SocialThread property provides the object that contains the thread"""
         return self.properties.get("SocialThread", SocialThread())
 
+    @odata(name="ID")
     @property
     def id_(self) -> Optional[str]:
         """Gets the ID property"""
@@ -68,6 +69,7 @@ class SocialRestThread(Entity):
     def entity_type_name(self):
         return "SP.Social.SocialRestThread"
 
+    @odata(name="ID")
     @property
     def id(self) -> Optional[str]:
         """Gets the ID property"""

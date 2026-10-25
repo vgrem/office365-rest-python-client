@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.actor import SocialActor
 
@@ -38,11 +39,13 @@ class SocialFollowingManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="FollowedDocumentsUri")
     @property
     def followed_documents_uri(self) -> Optional[str]:
         """Gets the FollowedDocumentsUri property"""
         return self.properties.get("FollowedDocumentsUri", None)
 
+    @odata(name="FollowedSitesUri")
     @property
     def followed_sites_uri(self) -> Optional[str]:
         """Gets the FollowedSitesUri property"""

@@ -6,6 +6,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.microfeed.entity import MicroBlogEntity
 from office365.sharepoint.microfeed.posts.options import MicrofeedPostOptions
@@ -21,16 +22,19 @@ class MicrofeedManager(Entity):
             self._resource_path = StaticPath("SP.Microfeed.MicrofeedManager")
         return self._resource_path
 
+    @odata(name="CurrentUser")
     @property
     def current_user(self) -> MicroBlogEntity:
         """Gets the CurrentUser property"""
         return self.properties.get("CurrentUser", MicroBlogEntity())
 
+    @odata(name="IsFeedActivityPublic")
     @property
     def is_feed_activity_public(self) -> Optional[bool]:
         """Gets the IsFeedActivityPublic property"""
         return self.properties.get("IsFeedActivityPublic", None)
 
+    @odata(name="StaticThreadLink")
     @property
     def static_thread_link(self) -> Optional[str]:
         """Gets the StaticThreadLink property"""

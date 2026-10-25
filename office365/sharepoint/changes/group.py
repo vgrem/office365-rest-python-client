@@ -1,11 +1,13 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.change import Change
 
 
 class ChangeGroup(Change):
     """Specifies a change on a group."""
 
+    @odata(name="GroupId")
     @property
     def group_id(self) -> Optional[int]:
         """Identifies the changed group."""

@@ -45,12 +45,13 @@ class FileVersion(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="Created")
     @property
     def created(self) -> Optional[datetime]:
         """Specifies the creation date and time for the file version."""
         return self.properties.get("Created", datetime.min)
 
-    @odata(name="CreatedBy")
+    @odata(name="CreatedBy", navigation=True)
     @property
     def created_by(self):
         """Gets the user that created the file version."""
@@ -58,16 +59,19 @@ class FileVersion(Entity):
 
         return self.properties.get("CreatedBy", User(self.context, ResourcePath("CreatedBy", self.resource_path)))
 
+    @odata(name="ID")
     @property
     def id(self) -> Optional[int]:
         """Gets a file version identifier"""
         return int(self.properties.get("ID", -1))
 
+    @odata(name="Url")
     @property
     def url(self) -> Optional[str]:
         """Gets a value that specifies the relative URL of the file version based on the URL for the site or subsite."""
         return self.properties.get("Url", None)
 
+    @odata(name="VersionLabel")
     @property
     def version_label(self) -> Optional[str]:
         """Gets a value that specifies the implementation specific identifier of the file."""
@@ -88,36 +92,43 @@ class FileVersion(Entity):
         except ValueError:
             return (0,)
 
+    @odata(name="IsCurrentVersion")
     @property
     def is_current_version(self) -> Optional[bool]:
         """Gets a value that specifies whether the file version is the current version."""
         return self.properties.get("IsCurrentVersion", None)
 
+    @odata(name="CheckInComment")
     @property
     def checkin_comment(self) -> Optional[str]:
         """Gets a value that specifies the check-in comment."""
         return self.properties.get("CheckInComment", None)
 
+    @odata(name="CheckInComment")
     @property
     def check_in_comment(self) -> Optional[str]:
         """Gets the CheckInComment property"""
         return self.properties.get("CheckInComment", None)
 
+    @odata(name="ExpirationDate")
     @property
     def expiration_date(self) -> Optional[str]:
         """Gets the ExpirationDate property"""
         return self.properties.get("ExpirationDate", None)
 
+    @odata(name="Length")
     @property
     def length(self) -> Optional[int]:
         """Gets the Length property"""
         return self.properties.get("Length", None)
 
+    @odata(name="Size")
     @property
     def size(self) -> Optional[int]:
         """Gets the Size property"""
         return self.properties.get("Size", None)
 
+    @odata(name="SnapshotDate")
     @property
     def snapshot_date(self) -> Optional[str]:
         """Gets the SnapshotDate property"""

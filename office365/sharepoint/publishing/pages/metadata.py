@@ -23,6 +23,7 @@ class SitePageMetadata(Entity):
     def __repr__(self):
         return self.file_name or self.absolute_url or self.entity_type_name
 
+    @odata(name="AbsoluteUrl")
     @property
     def absolute_url(self) -> Optional[str]:
         """Gets the absolute Url of the Site Page."""
@@ -33,23 +34,25 @@ class SitePageMetadata(Entity):
     def author_byline(self) -> StringCollection:
         return self.properties.get("AuthorByline", StringCollection())
 
-    @odata(name="CreatedBy")
+    @odata(name="CreatedBy", navigation=True)
     @property
     def created_by(self) -> UserInfo:
         """Specifies the user who created the page."""
         return self.properties.get("CreatedBy", UserInfo())
 
-    @odata(name="LastModifiedBy")
+    @odata(name="LastModifiedBy", navigation=True)
     @property
     def last_modified_by(self) -> UserInfo:
         """Gets the user who last modified the current Site Page."""
         return self.properties.get("LastModifiedBy", UserInfo())
 
+    @odata(name="CommentsDisabled")
     @property
     def comments_disabled(self) -> Optional[bool]:
         """Indicates if comments are disabled for the current Site Page."""
         return self.properties.get("CommentsDisabled", None)
 
+    @odata(name="BannerImageUrl")
     @property
     def banner_image_url(self) -> Optional[str]:
         """Gets the banner image Url"""
@@ -60,6 +63,7 @@ class SitePageMetadata(Entity):
         """Sets the banner image Url"""
         self.set_property("BannerImageUrl", value)
 
+    @odata(name="ContentTypeId")
     @property
     def content_type_id(self) -> Optional[str]:
         """Gets the content type ID of the current Site Page."""
@@ -70,16 +74,19 @@ class SitePageMetadata(Entity):
         """Sets the content type ID of the current Site Page."""
         self.set_property("ContentTypeId", value)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description for the current Site Page"""
         return self.properties.get("Description", None)
 
+    @odata(name="DoesUserHaveEditPermission")
     @property
     def does_user_have_edit_permission(self) -> Optional[bool]:
         """Indicates if the current user has edit permission to the Site Page."""
         return self.properties.get("DoesUserHaveEditPermission", None)
 
+    @odata(name="FileName")
     @property
     def file_name(self) -> Optional[str]:
         """Gets the file name of the current Site Page."""
@@ -93,6 +100,7 @@ class SitePageMetadata(Entity):
         """
         return self.properties.get("FirstPublished", None)
 
+    @odata(name="IsPageCheckedOutToCurrentUser")
     @property
     def is_page_checked_out_to_current_user(self) -> Optional[bool]:
         """Indicates if the Site Page is checked out to the current user."""
@@ -112,6 +120,7 @@ class SitePageMetadata(Entity):
 
         return cast(SitePageMetadataCollection, self._parent_collection)
 
+    @odata(name="TopicHeader")
     @property
     def topic_header(self) -> Optional[str]:
         return self.properties.get("TopicHeader", None)
@@ -120,81 +129,97 @@ class SitePageMetadata(Entity):
     def entity_type_name(self) -> str:
         return "SP.Publishing.SitePageMetadata"
 
+    @odata(name="AssetFolderId")
     @property
     def asset_folder_id(self) -> Optional[int]:
         """Gets the AssetFolderId property"""
         return self.properties.get("AssetFolderId", None)
 
+    @odata(name="BannerThumbnailUrl")
     @property
     def banner_thumbnail_url(self) -> Optional[str]:
         """Gets the BannerThumbnailUrl property"""
         return self.properties.get("BannerThumbnailUrl", None)
 
+    @odata(name="CallToAction")
     @property
     def call_to_action(self) -> Optional[str]:
         """Gets the CallToAction property"""
         return self.properties.get("CallToAction", None)
 
+    @odata(name="Categories")
     @property
     def categories(self) -> Optional[str]:
         """Gets the Categories property"""
         return self.properties.get("Categories", None)
 
+    @odata(name="CommentCount")
     @property
     def comment_count(self) -> Optional[int]:
         """Gets the CommentCount property"""
         return self.properties.get("CommentCount", None)
 
+    @odata(name="Created")
     @property
     def created(self) -> Optional[datetime.datetime]:
         """Gets the Created property"""
         return self.properties.get("Created", datetime.datetime.min)
 
+    @odata(name="FirstPublishedRelativeTime")
     @property
     def first_published_relative_time(self) -> Optional[str]:
         """Gets the FirstPublishedRelativeTime property"""
         return self.properties.get("FirstPublishedRelativeTime", None)
 
+    @odata(name="HasUserRecentlyModified")
     @property
     def has_user_recently_modified(self) -> Optional[bool]:
         """Gets the HasUserRecentlyModified property"""
         return self.properties.get("HasUserRecentlyModified", None)
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
+    @odata(name="IsWebWelcomePage")
     @property
     def is_web_welcome_page(self) -> Optional[bool]:
         """Gets the IsWebWelcomePage property"""
         return self.properties.get("IsWebWelcomePage", None)
 
+    @odata(name="LikeCount")
     @property
     def like_count(self) -> Optional[int]:
         """Gets the LikeCount property"""
         return self.properties.get("LikeCount", None)
 
+    @odata(name="ListId")
     @property
     def list_id(self) -> Optional[UUID]:
         """Gets the ListId property"""
         return self.properties.get("ListId", None)
 
+    @odata(name="Modified")
     @property
     def modified(self) -> Optional[datetime.datetime]:
         """Gets the Modified property"""
         return self.properties.get("Modified", datetime.datetime.min)
 
+    @odata(name="ModifiedRelativeTime")
     @property
     def modified_relative_time(self) -> Optional[str]:
         """Gets the ModifiedRelativeTime property"""
         return self.properties.get("ModifiedRelativeTime", None)
 
+    @odata(name="PageLayoutType")
     @property
     def page_layout_type(self) -> Optional[str]:
         """Gets the PageLayoutType property"""
         return self.properties.get("PageLayoutType", None)
 
+    @odata(name="Path")
     @property
     def path(self) -> ResourcePath:
         """Gets the Path property"""
@@ -202,36 +227,43 @@ class SitePageMetadata(Entity):
 
         return self.properties.get("Path", ResourcePath())
 
+    @odata(name="PromotedState")
     @property
     def promoted_state(self) -> Optional[int]:
         """Gets the PromotedState property"""
         return self.properties.get("PromotedState", None)
 
+    @odata(name="PublishStartDate")
     @property
     def publish_start_date(self) -> Optional[datetime.datetime]:
         """Gets the PublishStartDate property"""
         return self.properties.get("PublishStartDate", datetime.datetime.min)
 
+    @odata(name="SocialBarOnSitePagesDisabled")
     @property
     def social_bar_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the SocialBarOnSitePagesDisabled property"""
         return self.properties.get("SocialBarOnSitePagesDisabled", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the Title property"""
         return self.properties.get("Title", None)
 
+    @odata(name="UniqueId")
     @property
     def unique_id(self) -> Optional[UUID]:
         """Gets the UniqueId property"""
         return self.properties.get("UniqueId", None)
 
+    @odata(name="Url")
     @property
     def url(self) -> Optional[str]:
         """Gets the Url property"""
         return self.properties.get("Url", None)
 
+    @odata(name="Version")
     @property
     def version(self) -> Optional[str]:
         """Gets the Version property"""

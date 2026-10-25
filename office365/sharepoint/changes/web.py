@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.change import Change
 
 
@@ -9,6 +10,7 @@ class ChangeWeb(Change):
     def __repr__(self):
         return f"Web: {self.web_id}, Action: {self.change_type_name}"
 
+    @odata(name="WebId")
     @property
     def web_id(self) -> Optional[str]:
         """

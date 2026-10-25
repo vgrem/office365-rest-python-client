@@ -6,50 +6,60 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class WorkflowSubscription(Entity):
+    @odata(name="DefinitionId")
     @property
     def definition_id(self) -> Optional[UUID]:
         """Gets the DefinitionId property"""
         return self.properties.get("DefinitionId", None)
 
+    @odata(name="Enabled")
     @property
     def enabled(self) -> Optional[bool]:
         """Gets the Enabled property"""
         return self.properties.get("Enabled", None)
 
+    @odata(name="EventSourceId")
     @property
     def event_source_id(self) -> Optional[UUID]:
         """Gets the EventSourceId property"""
         return self.properties.get("EventSourceId", None)
 
+    @odata(name="EventTypes")
     @property
     def event_types(self) -> StringCollection:
         """Gets the EventTypes property"""
         return self.properties.get("EventTypes", StringCollection())
 
+    @odata(name="ManualStartBypassesActivationLimit")
     @property
     def manual_start_bypasses_activation_limit(self) -> Optional[bool]:
         """Gets the ManualStartBypassesActivationLimit property"""
         return self.properties.get("ManualStartBypassesActivationLimit", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""
         return self.properties.get("Name", None)
 
+    @odata(name="ParentContentTypeId")
     @property
     def parent_content_type_id(self) -> Optional[str]:
         """Gets the ParentContentTypeId property"""
         return self.properties.get("ParentContentTypeId", None)
 
+    @odata(name="PropertyDefinitions")
     @property
     def property_definitions(self) -> Optional[Dict]:
         """Gets the PropertyDefinitions property"""
         return self.properties.get("PropertyDefinitions", None)
 
+    @odata(name="StatusFieldName")
     @property
     def status_field_name(self) -> Optional[str]:
         """Gets the StatusFieldName property"""
@@ -59,6 +69,7 @@ class WorkflowSubscription(Entity):
     def entity_type_name(self):
         return "SP.WorkflowServices.WorkflowSubscription"
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets the Id property"""

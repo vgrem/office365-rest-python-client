@@ -12,11 +12,13 @@ from office365.sharepoint.principal.principal import Principal
 class RoleAssignment(Entity):
     """An association between a principal or a site group and a role definition."""
 
+    @odata(name="PrincipalId")
     @property
     def principal_id(self) -> Optional[int]:
         """Specifies the identifier of the user or group corresponding to the role assignment."""
         return self.properties.get("PrincipalId", None)
 
+    @odata(name="Member", navigation=True)
     @property
     def member(self) -> Principal:
         """Specifies the user or group corresponding to the role assignment."""
@@ -25,7 +27,7 @@ class RoleAssignment(Entity):
             Principal(self.context, ResourcePath("Member", self.resource_path)),
         )
 
-    @odata(name="RoleDefinitionBindings")
+    @odata(name="RoleDefinitionBindings", navigation=True)
     @property
     def role_definition_bindings(self) -> RoleDefinitionCollection:
         """Specifies a collection of role definitions for this role assignment."""

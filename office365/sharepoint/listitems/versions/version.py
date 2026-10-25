@@ -25,25 +25,30 @@ class ListItemVersion(Entity):
     def __repr__(self):
         return f"Label: {self.version_label}, Url: {self.properties.get('FileRef', None)}"
 
+    @odata(name="VersionId")
     @property
     def version_id(self) -> Optional[int]:
         """Gets the ID of the version."""
         return int(self.properties.get("VersionId", -1))
 
+    @odata(name="VersionLabel")
     @property
     def version_label(self) -> Optional[str]:
         """Gets the version number of the item version."""
         return self.properties.get("VersionLabel", None)
 
+    @odata(name="IsCurrentVersion")
     @property
     def is_current_version(self) -> Optional[bool]:
         """Gets a value that specifies whether the file version is the current version."""
         return self.properties.get("IsCurrentVersion", None)
 
+    @odata(name="Changes")
     @property
     def changes(self) -> ClientValueCollection[SPListItemVersionChange]:
         return self.properties.get("Changes", ClientValueCollection(SPListItemVersionChange))
 
+    @odata(name="Created")
     @property
     def created(self) -> datetime:
         """Gets the creation date and time for the item version."""
@@ -54,7 +59,7 @@ class ListItemVersion(Entity):
         """Gets the modified date and time for the item version."""
         return self.properties.get("Modified", datetime.min)
 
-    @odata(name="FileVersion")
+    @odata(name="FileVersion", navigation=True)
     @property
     def created_by(self):
         """Gets the user that created the item version."""
@@ -65,6 +70,7 @@ class ListItemVersion(Entity):
             User(self.context, ResourcePath("CreatedBy", self.resource_path)),
         )
 
+    @odata(name="Fields", navigation=True)
     @property
     def fields(self) -> FieldCollection:
         """Gets the collection of fields that are used in the list that contains the item version."""
@@ -75,7 +81,7 @@ class ListItemVersion(Entity):
             FieldCollection(self.context, ResourcePath("Fields", self.resource_path)),
         )
 
-    @odata(name="FileVersion")
+    @odata(name="FileVersion", navigation=True)
     @property
     def file_version(self):
         """"""

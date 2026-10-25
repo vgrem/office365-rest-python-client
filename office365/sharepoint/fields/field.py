@@ -118,16 +118,19 @@ class Field(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets a value that specifies the field identifier."""
         return self.properties.get("Id", None)
 
+    @odata(name="AutoIndexed")
     @property
     def auto_indexed(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether the field is auto-indexed."""
         return self.properties.get("AutoIndexed", None)
 
+    @odata(name="DefaultFormula")
     @property
     def default_formula(self) -> Optional[str]:
         return self.properties.get("DefaultFormula", None)
@@ -137,7 +140,7 @@ class Field(Entity):
     def field_type_kind(self) -> FieldType:
         return self.properties.get("FieldTypeKind", FieldType.Unknown)
 
-    @odata(name="DescriptionResource")
+    @odata(name="DescriptionResource", navigation=True)
     @property
     def description_resource(self) -> UserResource:
         """Gets the resource object corresponding to the Description property for a field"""
@@ -146,6 +149,7 @@ class Field(Entity):
             UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
+    @odata(name="SchemaXml")
     @property
     def schema_xml(self) -> Optional[str]:
         """
@@ -173,11 +177,13 @@ class Field(Entity):
             return None
         return re.sub(r'\s*(?:SourceID|Version)="[^"]*"', "", xml)
 
+    @odata(name="TypeAsString")
     @property
     def type_as_string(self) -> Optional[str]:
         """Gets a value that specifies the type of the field"""
         return self.properties.get("TypeAsString", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets a value that specifies the display name of the field."""
@@ -190,6 +196,7 @@ class Field(Entity):
         """
         self.set_property("Title", val)
 
+    @odata(name="Group")
     @property
     def group(self) -> Optional[str]:
         """Gets a value that specifies the field group"""
@@ -200,24 +207,29 @@ class Field(Entity):
         """Sets a value that specifies the field group."""
         self.set_property("Group", val)
 
+    @odata(name="InternalName")
     @property
     def internal_name(self) -> Optional[str]:
         """Gets a value that specifies the field internal name."""
         return self.properties.get("InternalName", None)
 
+    @odata(name="CanBeDeleted")
     @property
     def can_be_deleted(self) -> Optional[bool]:
         """Gets a value that specifies whether the field can be deleted"""
         return self.properties.get("CanBeDeleted", None)
 
+    @odata(name="ClientSideComponentId")
     @property
     def client_side_component_id(self) -> Optional[str]:
         return self.properties.get("ClientSideComponentId", None)
 
+    @odata(name="ClientSideComponentProperties")
     @property
     def client_side_component_properties(self) -> Optional[str]:
         return self.properties.get("ClientSideComponentProperties", None)
 
+    @odata(name="ClientValidationFormula")
     @property
     def client_validation_formula(self) -> Optional[str]:
         return self.properties.get("ClientValidationFormula", None)
@@ -229,6 +241,7 @@ class Field(Entity):
         """
         return self.properties.get("enforceUniqueValues", None)
 
+    @odata(name="Filterable")
     @property
     def filterable(self) -> Optional[bool]:
         """
@@ -236,6 +249,7 @@ class Field(Entity):
         """
         return self.properties.get("Filterable", None)
 
+    @odata(name="FromBaseType")
     @property
     def from_base_type(self) -> Optional[bool]:
         """
@@ -243,6 +257,7 @@ class Field(Entity):
         """
         return self.properties.get("FromBaseType", None)
 
+    @odata(name="JSLink")
     @property
     def js_link(self) -> Optional[str]:
         """
@@ -251,6 +266,7 @@ class Field(Entity):
         """
         return self.properties.get("JSLink", None)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """
@@ -265,6 +281,7 @@ class Field(Entity):
         """
         self.set_property("Hidden", val)
 
+    @odata(name="NoCrawl")
     @property
     def no_crawl(self) -> Optional[bool]:
         """
@@ -272,6 +289,7 @@ class Field(Entity):
         """
         return self.properties.get("NoCrawl", None)
 
+    @odata(name="ReadOnlyField")
     @property
     def read_only_field(self) -> Optional[bool]:
         """
@@ -279,6 +297,7 @@ class Field(Entity):
         """
         return self.properties.get("ReadOnlyField", None)
 
+    @odata(name="DefaultValue")
     @property
     def default_value(self) -> Optional[str]:
         """
@@ -293,6 +312,7 @@ class Field(Entity):
         """
         self.set_property("DefaultValue", val)
 
+    @odata(name="Indexed")
     @property
     def indexed(self):
         return self.properties.get("Indexed", None)
@@ -314,6 +334,7 @@ class Field(Entity):
             _enable()
         return self
 
+    @odata(name="TypeDisplayName")
     @property
     def type_display_name(self) -> Optional[str]:
         """
@@ -321,7 +342,7 @@ class Field(Entity):
         """
         return self.properties.get("TypeDisplayName", None)
 
-    @odata(name="TitleResource")
+    @odata(name="TitleResource", navigation=True)
     @property
     def title_resource(self):
         """Gets the resource object corresponding to the Title property for a field"""
@@ -330,6 +351,7 @@ class Field(Entity):
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
+    @odata(name="TypeShortDescription")
     @property
     def type_short_description(self) -> Optional[str]:
         """
@@ -348,91 +370,109 @@ class Field(Entity):
             self.__class__ = self.resolve_field_type(value)  # type: ignore[reportAttributeAccessIssue]
         return self
 
+    @odata(name="AutofillInfo")
     @property
     def autofill_info(self) -> Optional[str]:
         """Gets the AutofillInfo property"""
         return self.properties.get("AutofillInfo", None)
 
+    @odata(name="ClientValidationMessage")
     @property
     def client_validation_message(self) -> Optional[str]:
         """Gets the ClientValidationMessage property"""
         return self.properties.get("ClientValidationMessage", None)
 
+    @odata(name="CustomFormatter")
     @property
     def custom_formatter(self) -> Optional[str]:
         """Gets the CustomFormatter property"""
         return self.properties.get("CustomFormatter", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the Description property"""
         return self.properties.get("Description", None)
 
+    @odata(name="Direction")
     @property
     def direction(self) -> Optional[str]:
         """Gets the Direction property"""
         return self.properties.get("Direction", None)
 
+    @odata(name="EntityPropertyName")
     @property
     def entity_property_name(self) -> Optional[str]:
         """Gets the EntityPropertyName property"""
         return self.properties.get("EntityPropertyName", None)
 
+    @odata(name="IndexStatus")
     @property
     def index_status(self) -> Optional[int]:
         """Gets the IndexStatus property"""
         return self.properties.get("IndexStatus", None)
 
+    @odata(name="IsModern")
     @property
     def is_modern(self) -> Optional[bool]:
         """Gets the IsModern property"""
         return self.properties.get("IsModern", None)
 
+    @odata(name="PinnedToFiltersPane")
     @property
     def pinned_to_filters_pane(self) -> Optional[bool]:
         """Gets the PinnedToFiltersPane property"""
         return self.properties.get("PinnedToFiltersPane", None)
 
+    @odata(name="Required")
     @property
     def required(self) -> Optional[bool]:
         """Gets the Required property"""
         return self.properties.get("Required", None)
 
+    @odata(name="SchemaXmlWithResourceTokens")
     @property
     def schema_xml_with_resource_tokens(self) -> Optional[str]:
         """Gets the SchemaXmlWithResourceTokens property"""
         return self.properties.get("SchemaXmlWithResourceTokens", None)
 
+    @odata(name="Scope")
     @property
     def scope(self) -> Optional[str]:
         """Gets the Scope property"""
         return self.properties.get("Scope", None)
 
+    @odata(name="Sealed")
     @property
     def sealed(self) -> Optional[bool]:
         """Gets the Sealed property"""
         return self.properties.get("Sealed", None)
 
+    @odata(name="ShowInFiltersPane")
     @property
     def show_in_filters_pane(self) -> Optional[int]:
         """Gets the ShowInFiltersPane property"""
         return self.properties.get("ShowInFiltersPane", None)
 
+    @odata(name="Sortable")
     @property
     def sortable(self) -> Optional[bool]:
         """Gets the Sortable property"""
         return self.properties.get("Sortable", None)
 
+    @odata(name="StaticName")
     @property
     def static_name(self) -> Optional[str]:
         """Gets the StaticName property"""
         return self.properties.get("StaticName", None)
 
+    @odata(name="ValidationFormula")
     @property
     def validation_formula(self) -> Optional[str]:
         """Gets the ValidationFormula property"""
         return self.properties.get("ValidationFormula", None)
 
+    @odata(name="ValidationMessage")
     @property
     def validation_message(self) -> Optional[str]:
         """Gets the ValidationMessage property"""

@@ -15,6 +15,7 @@ from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.administration.archiving.file_size_metric import (
     ArchiveFileSizeMetric,
 )
@@ -1173,11 +1174,13 @@ class Tenant(Entity):
 
         return MultiGeoServices(self.context)
 
+    @odata(name="AIBuilderEnabled")
     @property
     def ai_builder_enabled(self) -> Optional[str]:
         """Gets the value if the AIBuilder settings should be shown in the tenant"""
         return self.properties.get("AIBuilderEnabled", None)
 
+    @odata(name="AIBuilderSiteInfoList")
     @property
     def ai_builder_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """"""
@@ -1188,6 +1191,7 @@ class Tenant(Entity):
         """ """
         return self.context.web.lists.get_by_title("DO_NOT_DELETE_SPLIST_TENANTADMIN_AGGREGATED_SITECOLLECTIONS")
 
+    @odata(name="AllowCommentsTextOnEmailEnabled")
     @property
     def allow_comments_text_on_email_enabled(self) -> Optional[bool]:
         """
@@ -1196,6 +1200,7 @@ class Tenant(Entity):
         """
         return self.properties.get("AllowCommentsTextOnEmailEnabled", None)
 
+    @odata(name="AllowEveryoneExceptExternalUsersClaimInPrivateSite")
     @property
     def allow_everyone_except_external_users_claim_in_private_site(self) -> Optional[bool]:
         """
@@ -1204,6 +1209,7 @@ class Tenant(Entity):
         """
         return self.properties.get("AllowEveryoneExceptExternalUsersClaimInPrivateSite", None)
 
+    @odata(name="AllowEditing")
     @property
     def allow_editing(self) -> Optional[bool]:
         """
@@ -1212,26 +1218,31 @@ class Tenant(Entity):
         """
         return self.properties.get("AllowEditing", None)
 
+    @odata(name="DefaultContentCenterSite")
     @property
     def default_content_center_site(self) -> SiteInfoForSitePicker:
         """"""
         return self.properties.get("DefaultContentCenterSite", SiteInfoForSitePicker())
 
+    @odata(name="FileVersionPolicyXml")
     @property
     def file_version_policy_xml(self) -> Optional[str]:
         """ """
         return self.properties.get("FileVersionPolicyXml", None)
 
+    @odata(name="InformationBarriersSuspension")
     @property
     def information_barriers_suspension(self) -> Optional[bool]:
         """Gets information barriers in SharePoint and OneDrive in your organization"""
         return self.properties.get("InformationBarriersSuspension", None)
 
+    @odata(name="IPAddressAllowList")
     @property
     def ip_address_allow_list(self) -> Optional[str]:
         """Configures multiple IP addresses or IP address ranges (IPv4 or IPv6), that are recognized as trusted."""
         return self.properties.get("IPAddressAllowList", None)
 
+    @odata(name="IPAddressEnforcement")
     @property
     def ip_address_enforcement(self) -> Optional[bool]:
         """Determines whether access from network locations that are defined by an administrator is allowed."""
@@ -1246,21 +1257,25 @@ class Tenant(Entity):
         """
         self.set_property("IPAddressEnforcement", value)
 
+    @odata(name="NoAccessRedirectUrl")
     @property
     def no_access_redirect_url(self) -> Optional[bool]:
         """Specifies the URL of the redirected site for those site collections which have the locked state "NoAccess"""
         return self.properties.get("NoAccessRedirectUrl", None)
 
+    @odata(name="LegacyAuthProtocolsEnabled")
     @property
     def legacy_auth_protocols_enabled(self) -> Optional[bool]:
         """Gets legacy authentication protocols on the tenant"""
         return self.properties.get("LegacyAuthProtocolsEnabled", None)
 
+    @odata(name="NotificationsInSharePointEnabled")
     @property
     def notifications_in_share_point_enabled(self) -> Optional[bool]:
         """Enables or disables notifications in SharePoint."""
         return self.properties.get("NotificationsInSharePointEnabled", None)
 
+    @odata(name="NotifyOwnersWhenInvitationsAccepted")
     @property
     def notify_owners_when_invitations_accepted(self) -> Optional[bool]:
         """When this parameter is set to true and when an external user accepts an invitation to a resource
@@ -1268,12 +1283,14 @@ class Tenant(Entity):
         """
         return self.properties.get("NotifyOwnersWhenInvitationsAccepted", None)
 
+    @odata(name="OneDriveStorageQuota")
     @property
     def one_drive_storage_quota(self) -> Optional[int]:
         """Gets a default OneDrive for Business storage quota for the tenant. It will be used for new OneDrive
         for Business sites created."""
         return self.properties.get("OneDriveStorageQuota", None)
 
+    @odata(name="NotifyOwnersWhenItemsReshared")
     @property
     def notify_owners_when_items_reshared(self) -> Optional[bool]:
         """When is set to true and another user re-shares a document from a
@@ -1281,11 +1298,13 @@ class Tenant(Entity):
         """
         return self.properties.get("NotifyOwnersWhenItemsReshared", None)
 
+    @odata(name="OneDriveDefaultLinkToExistingAccess")
     @property
     def one_drive_default_link_to_existing_access(self) -> Optional[str]:
         """ """
         return self.properties.get("OneDriveDefaultLinkToExistingAccess", None)
 
+    @odata(name="RootSiteUrl")
     @property
     def root_site_url(self) -> Optional[str]:
         """The tenant's root site url"""
@@ -1298,6 +1317,7 @@ class Tenant(Entity):
             "sites", SitePropertiesCollection(self.context, ResourcePath("sites", self.resource_path))
         )
 
+    @odata(name="TotalTenantArchiveFileSizeAggregation", navigation=True)
     @property
     def total_tenant_archive_file_size_aggregation(self) -> ArchiveFileSizeMetric:
         """ """
@@ -1308,11 +1328,13 @@ class Tenant(Entity):
             ),
         )
 
+    @odata(name="SyntexPowerAppsEnvironmentsContext")
     @property
     def syntex_power_apps_environments_context(self) -> SyntexPowerAppsEnvironmentsContext:
         """ """
         return self.properties.get("SyntexPowerAppsEnvironmentsContext", SyntexPowerAppsEnvironmentsContext())
 
+    @odata(name="TaxonomyTaggingEnabled")
     @property
     def taxonomy_tagging_enabled(self) -> Optional[bool]:
         """ """
@@ -1334,6 +1356,7 @@ class Tenant(Entity):
 
         return TenantCrawlVersionsInfoProvider(self.context)
 
+    @odata(name="SyntexBillingSubscriptionSettings")
     @property
     def syntex_billing_subscription_settings(self) -> SyntexBillingContext:
         """
@@ -1354,16 +1377,19 @@ class Tenant(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.TenantAdministration.Tenant"
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="id")
     @property
     def id_(self) -> Optional[UUID]:
         """Gets the id property"""
         return self.properties.get("id", None)
 
+    @odata(name="serviceInfo")
     @property
     def service_info(self) -> ClientValueCollection[TenantServiceInfoValue]:
         """Gets the serviceInfo property"""
@@ -1379,171 +1405,205 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="AddressbarLinkPermission")
     @property
     def addressbar_link_permission(self) -> Optional[int]:
         """Gets the AddressbarLinkPermission property"""
         return self.properties.get("AddressbarLinkPermission", None)
 
+    @odata(name="AIBuilderDefaultPowerAppsEnvironment")
     @property
     def ai_builder_default_power_apps_environment(self) -> Optional[str]:
         """Gets the AIBuilderDefaultPowerAppsEnvironment property"""
         return self.properties.get("AIBuilderDefaultPowerAppsEnvironment", None)
 
+    @odata(name="AIBuilderEnabledInContentCenter")
     @property
     def ai_builder_enabled_in_content_center(self) -> Optional[int]:
         """Gets the AIBuilderEnabledInContentCenter property"""
         return self.properties.get("AIBuilderEnabledInContentCenter", None)
 
+    @odata(name="AIBuilderSiteList")
     @property
     def ai_builder_site_list(self) -> GuidCollection:
         """Gets the AIBuilderSiteList property"""
         return self.properties.get("AIBuilderSiteList", GuidCollection())
 
+    @odata(name="AIBuilderSiteListFileName")
     @property
     def ai_builder_site_list_file_name(self) -> Optional[str]:
         """Gets the AIBuilderSiteListFileName property"""
         return self.properties.get("AIBuilderSiteListFileName", None)
 
+    @odata(name="AllOrganizationSecurityGroupId")
     @property
     def all_organization_security_group_id(self) -> Optional[UUID]:
         """Gets the AllOrganizationSecurityGroupId property"""
         return self.properties.get("AllOrganizationSecurityGroupId", None)
 
+    @odata(name="AllowAnonymousMeetingParticipantsToAccessWhiteboards")
     @property
     def allow_anonymous_meeting_participants_to_access_whiteboards(self) -> Optional[int]:
         """Gets the AllowAnonymousMeetingParticipantsToAccessWhiteboards property"""
         return self.properties.get("AllowAnonymousMeetingParticipantsToAccessWhiteboards", None)
 
+    @odata(name="AllowAppsBypassOfUnmanagedDevicePolicy")
     @property
     def allow_apps_bypass_of_unmanaged_device_policy(self) -> Optional[bool]:
         """Gets the AllowAppsBypassOfUnmanagedDevicePolicy property"""
         return self.properties.get("AllowAppsBypassOfUnmanagedDevicePolicy", None)
 
+    @odata(name="AllowClassicPublishingSiteCreation")
     @property
     def allow_classic_publishing_site_creation(self) -> Optional[bool]:
         """Gets the AllowClassicPublishingSiteCreation property"""
         return self.properties.get("AllowClassicPublishingSiteCreation", None)
 
+    @odata(name="AllowDownloadingNonWebViewableFiles")
     @property
     def allow_downloading_non_web_viewable_files(self) -> Optional[bool]:
         """Gets the AllowDownloadingNonWebViewableFiles property"""
         return self.properties.get("AllowDownloadingNonWebViewableFiles", None)
 
+    @odata(name="AllowedDomainListForSyncClient")
     @property
     def allowed_domain_list_for_sync_client(self) -> GuidCollection:
         """Gets the AllowedDomainListForSyncClient property"""
         return self.properties.get("AllowedDomainListForSyncClient", GuidCollection())
 
+    @odata(name="AllowFileArchive")
     @property
     def allow_file_archive(self) -> Optional[bool]:
         """Gets the AllowFileArchive property"""
         return self.properties.get("AllowFileArchive", None)
 
+    @odata(name="AllowFileArchiveOnNewSitesByDefault")
     @property
     def allow_file_archive_on_new_sites_by_default(self) -> Optional[bool]:
         """Gets the AllowFileArchiveOnNewSitesByDefault property"""
         return self.properties.get("AllowFileArchiveOnNewSitesByDefault", None)
 
+    @odata(name="AllowGuestUserShareToUsersNotInSiteCollection")
     @property
     def allow_guest_user_share_to_users_not_in_site_collection(self) -> Optional[bool]:
         """Gets the AllowGuestUserShareToUsersNotInSiteCollection property"""
         return self.properties.get("AllowGuestUserShareToUsersNotInSiteCollection", None)
 
+    @odata(name="AllowLegacyAuthProtocolsEnabledSetting")
     @property
     def allow_legacy_auth_protocols_enabled_setting(self) -> Optional[bool]:
         """Gets the AllowLegacyAuthProtocolsEnabledSetting property"""
         return self.properties.get("AllowLegacyAuthProtocolsEnabledSetting", None)
 
+    @odata(name="AllowLegacyBrowserAuthProtocolsEnabledSetting")
     @property
     def allow_legacy_browser_auth_protocols_enabled_setting(self) -> Optional[bool]:
         """Gets the AllowLegacyBrowserAuthProtocolsEnabledSetting property"""
         return self.properties.get("AllowLegacyBrowserAuthProtocolsEnabledSetting", None)
 
+    @odata(name="AllowLimitedAccessOnUnmanagedDevices")
     @property
     def allow_limited_access_on_unmanaged_devices(self) -> Optional[bool]:
         """Gets the AllowLimitedAccessOnUnmanagedDevices property"""
         return self.properties.get("AllowLimitedAccessOnUnmanagedDevices", None)
 
+    @odata(name="AllowOverrideForBlockUserInfoVisibility")
     @property
     def allow_override_for_block_user_info_visibility(self) -> Optional[bool]:
         """Gets the AllowOverrideForBlockUserInfoVisibility property"""
         return self.properties.get("AllowOverrideForBlockUserInfoVisibility", None)
 
+    @odata(name="AllowSelectSecurityGroupsInSPSitesList")
     @property
     def allow_select_security_groups_in_sp_sites_list(self) -> StringCollection:
         """Gets the AllowSelectSecurityGroupsInSPSitesList property"""
         return self.properties.get("AllowSelectSecurityGroupsInSPSitesList", StringCollection())
 
+    @odata(name="AllowSelectSGsInODBListInTenant")
     @property
     def allow_select_sgs_in_odb_list_in_tenant(self) -> StringCollection:
         """Gets the AllowSelectSGsInODBListInTenant property"""
         return self.properties.get("AllowSelectSGsInODBListInTenant", StringCollection())
 
+    @odata(name="AllowSensitivityLabelOnRecords")
     @property
     def allow_sensitivity_label_on_records(self) -> Optional[bool]:
         """Gets the AllowSensitivityLabelOnRecords property"""
         return self.properties.get("AllowSensitivityLabelOnRecords", None)
 
+    @odata(name="AllowSharingOutsideRestrictedAccessControlGroups")
     @property
     def allow_sharing_outside_restricted_access_control_groups(self) -> Optional[bool]:
         """Gets the AllowSharingOutsideRestrictedAccessControlGroups property"""
         return self.properties.get("AllowSharingOutsideRestrictedAccessControlGroups", None)
 
+    @odata(name="AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled")
     @property
     def allow_web_property_bag_update_when_deny_add_and_customize_pages_is_enabled(self) -> Optional[bool]:
         """Gets the AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled property"""
         return self.properties.get("AllowWebPropertyBagUpdateWhenDenyAddAndCustomizePagesIsEnabled", None)
 
+    @odata(name="AmplifyAdminSettings")
     @property
     def amplify_admin_settings(self) -> Optional[str]:
         """Gets the AmplifyAdminSettings property"""
         return self.properties.get("AmplifyAdminSettings", None)
 
+    @odata(name="AnyoneLinkTrackUsers")
     @property
     def anyone_link_track_users(self) -> Optional[bool]:
         """Gets the AnyoneLinkTrackUsers property"""
         return self.properties.get("AnyoneLinkTrackUsers", None)
 
+    @odata(name="AppAccessInformationBarriersAllowList")
     @property
     def app_access_information_barriers_allow_list(self) -> GuidCollection:
         """Gets the AppAccessInformationBarriersAllowList property"""
         return self.properties.get("AppAccessInformationBarriersAllowList", GuidCollection())
 
+    @odata(name="AppBypassInformationBarriers")
     @property
     def app_bypass_information_barriers(self) -> Optional[bool]:
         """Gets the AppBypassInformationBarriers property"""
         return self.properties.get("AppBypassInformationBarriers", None)
 
+    @odata(name="ApplyAppEnforcedRestrictionsToAdHocRecipients")
     @property
     def apply_app_enforced_restrictions_to_ad_hoc_recipients(self) -> Optional[bool]:
         """Gets the ApplyAppEnforcedRestrictionsToAdHocRecipients property"""
         return self.properties.get("ApplyAppEnforcedRestrictionsToAdHocRecipients", None)
 
+    @odata(name="AppOnlyBypassPeoplePickerPolicies")
     @property
     def app_only_bypass_people_picker_policies(self) -> Optional[bool]:
         """Gets the AppOnlyBypassPeoplePickerPolicies property"""
         return self.properties.get("AppOnlyBypassPeoplePickerPolicies", None)
 
+    @odata(name="ArchivedFileStorageUsageMB")
     @property
     def archived_file_storage_usage_mb(self) -> Optional[int]:
         """Gets the ArchivedFileStorageUsageMB property"""
         return self.properties.get("ArchivedFileStorageUsageMB", None)
 
+    @odata(name="ArchiveRedirectUrl")
     @property
     def archive_redirect_url(self) -> Optional[str]:
         """Gets the ArchiveRedirectUrl property"""
         return self.properties.get("ArchiveRedirectUrl", None)
 
+    @odata(name="AuthContextResilienceMode")
     @property
     def auth_context_resilience_mode(self) -> Optional[int]:
         """Gets the AuthContextResilienceMode property"""
         return self.properties.get("AuthContextResilienceMode", None)
 
+    @odata(name="AutofillColumnsCustomModelEnabled")
     @property
     def autofill_columns_custom_model_enabled(self) -> Optional[bool]:
         """Gets the AutofillColumnsCustomModelEnabled property"""
         return self.properties.get("AutofillColumnsCustomModelEnabled", None)
 
+    @odata(name="AutofillColumnsCustomModelSettings")
     @property
     def autofill_columns_custom_model_settings(self) -> ClientValueCollection[SyntexCustomModelSetting]:
         """Gets the AutofillColumnsCustomModelSettings property"""
@@ -1556,11 +1616,13 @@ class Tenant(Entity):
             ClientValueCollection[SyntexCustomModelSetting](SyntexCustomModelSetting),
         )
 
+    @odata(name="AutofillColumnsEnabled")
     @property
     def autofill_columns_enabled(self) -> Optional[bool]:
         """Gets the AutofillColumnsEnabled property"""
         return self.properties.get("AutofillColumnsEnabled", None)
 
+    @odata(name="AutofillColumnsSiteInfoList")
     @property
     def autofill_columns_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the AutofillColumnsSiteInfoList property"""
@@ -1572,16 +1634,19 @@ class Tenant(Entity):
             "AutofillColumnsSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="AutofillColumnsSiteList")
     @property
     def autofill_columns_site_list(self) -> GuidCollection:
         """Gets the AutofillColumnsSiteList property"""
         return self.properties.get("AutofillColumnsSiteList", GuidCollection())
 
+    @odata(name="AutofillColumnsSiteListFileName")
     @property
     def autofill_columns_site_list_file_name(self) -> Optional[str]:
         """Gets the AutofillColumnsSiteListFileName property"""
         return self.properties.get("AutofillColumnsSiteListFileName", None)
 
+    @odata(name="BaselineSecurityModeThirdPartyAppHPA")
     @property
     def baseline_security_mode_third_party_app_hpa(self) -> BaselineSecurityModeThirdPartyAppHPASetting:
         """Gets the BaselineSecurityModeThirdPartyAppHPA property"""
@@ -1591,396 +1656,475 @@ class Tenant(Entity):
 
         return self.properties.get("BaselineSecurityModeThirdPartyAppHPA", BaselineSecurityModeThirdPartyAppHPASetting())
 
+    @odata(name="BccExternalSharingInvitations")
     @property
     def bcc_external_sharing_invitations(self) -> Optional[bool]:
         """Gets the BccExternalSharingInvitations property"""
         return self.properties.get("BccExternalSharingInvitations", None)
 
+    @odata(name="BccExternalSharingInvitationsList")
     @property
     def bcc_external_sharing_invitations_list(self) -> Optional[str]:
         """Gets the BccExternalSharingInvitationsList property"""
         return self.properties.get("BccExternalSharingInvitationsList", None)
 
+    @odata(name="BlockAccessOnUnmanagedDevices")
     @property
     def block_access_on_unmanaged_devices(self) -> Optional[bool]:
         """Gets the BlockAccessOnUnmanagedDevices property"""
         return self.properties.get("BlockAccessOnUnmanagedDevices", None)
 
+    @odata(name="BlockAppAccessWithAuthenticationContext")
     @property
     def block_app_access_with_authentication_context(self) -> Optional[bool]:
         """Gets the BlockAppAccessWithAuthenticationContext property"""
         return self.properties.get("BlockAppAccessWithAuthenticationContext", None)
 
+    @odata(name="BlockDownloadFileTypeIds")
     @property
     def block_download_file_type_ids(self) -> ClientValueCollection:
         """Gets the BlockDownloadFileTypeIds property"""
         return self.properties.get("BlockDownloadFileTypeIds", ClientValueCollection(int))
 
+    @odata(name="BlockDownloadFileTypePolicy")
     @property
     def block_download_file_type_policy(self) -> Optional[bool]:
         """Gets the BlockDownloadFileTypePolicy property"""
         return self.properties.get("BlockDownloadFileTypePolicy", None)
 
+    @odata(name="BlockDownloadLinksFileType")
     @property
     def block_download_links_file_type(self) -> Optional[int]:
         """Gets the BlockDownloadLinksFileType property"""
         return self.properties.get("BlockDownloadLinksFileType", None)
 
+    @odata(name="BlockDownloadOfAllFilesForGuests")
     @property
     def block_download_of_all_files_for_guests(self) -> Optional[bool]:
         """Gets the BlockDownloadOfAllFilesForGuests property"""
         return self.properties.get("BlockDownloadOfAllFilesForGuests", None)
 
+    @odata(name="BlockDownloadOfAllFilesOnUnmanagedDevices")
     @property
     def block_download_of_all_files_on_unmanaged_devices(self) -> Optional[bool]:
         """Gets the BlockDownloadOfAllFilesOnUnmanagedDevices property"""
         return self.properties.get("BlockDownloadOfAllFilesOnUnmanagedDevices", None)
 
+    @odata(name="BlockDownloadOfViewableFilesForGuests")
     @property
     def block_download_of_viewable_files_for_guests(self) -> Optional[bool]:
         """Gets the BlockDownloadOfViewableFilesForGuests property"""
         return self.properties.get("BlockDownloadOfViewableFilesForGuests", None)
 
+    @odata(name="BlockDownloadOfViewableFilesOnUnmanagedDevices")
     @property
     def block_download_of_viewable_files_on_unmanaged_devices(self) -> Optional[bool]:
         """Gets the BlockDownloadOfViewableFilesOnUnmanagedDevices property"""
         return self.properties.get("BlockDownloadOfViewableFilesOnUnmanagedDevices", None)
 
+    @odata(name="BlockMacSync")
     @property
     def block_mac_sync(self) -> Optional[bool]:
         """Gets the BlockMacSync property"""
         return self.properties.get("BlockMacSync", None)
 
+    @odata(name="BlockSendLabelMismatchEmail")
     @property
     def block_send_label_mismatch_email(self) -> Optional[bool]:
         """Gets the BlockSendLabelMismatchEmail property"""
         return self.properties.get("BlockSendLabelMismatchEmail", None)
 
+    @odata(name="BlockUserInfoVisibility")
     @property
     def block_user_info_visibility(self) -> Optional[str]:
         """Gets the BlockUserInfoVisibility property"""
         return self.properties.get("BlockUserInfoVisibility", None)
 
+    @odata(name="BlockUserInfoVisibilityInOneDrive")
     @property
     def block_user_info_visibility_in_onedrive(self) -> Optional[int]:
         """Gets the BlockUserInfoVisibilityInOneDrive property"""
         return self.properties.get("BlockUserInfoVisibilityInOneDrive", None)
 
+    @odata(name="BlockUserInfoVisibilityInSharePoint")
     @property
     def block_user_info_visibility_in_sharepoint(self) -> Optional[int]:
         """Gets the BlockUserInfoVisibilityInSharePoint property"""
         return self.properties.get("BlockUserInfoVisibilityInSharePoint", None)
 
+    @odata(name="BonusStorageQuotaMB")
     @property
     def bonus_storage_quota_mb(self) -> Optional[int]:
         """Gets the BonusStorageQuotaMB property"""
         return self.properties.get("BonusStorageQuotaMB", None)
 
+    @odata(name="BusinessConnectivityServiceDisabled")
     @property
     def business_connectivity_service_disabled(self) -> Optional[bool]:
         """Gets the BusinessConnectivityServiceDisabled property"""
         return self.properties.get("BusinessConnectivityServiceDisabled", None)
 
+    @odata(name="ClassicPagesRestrictMode")
     @property
     def classic_pages_restrict_mode(self) -> Optional[bool]:
         """Gets the ClassicPagesRestrictMode property"""
         return self.properties.get("ClassicPagesRestrictMode", None)
 
+    @odata(name="CommentsOnFilesDisabled")
     @property
     def comments_on_files_disabled(self) -> Optional[bool]:
         """Gets the CommentsOnFilesDisabled property"""
         return self.properties.get("CommentsOnFilesDisabled", None)
 
+    @odata(name="CommentsOnListItemsDisabled")
     @property
     def comments_on_list_items_disabled(self) -> Optional[bool]:
         """Gets the CommentsOnListItemsDisabled property"""
         return self.properties.get("CommentsOnListItemsDisabled", None)
 
+    @odata(name="CommentsOnSitePagesDisabled")
     @property
     def comments_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the CommentsOnSitePagesDisabled property"""
         return self.properties.get("CommentsOnSitePagesDisabled", None)
 
+    @odata(name="CompatibilityRange")
     @property
     def compatibility_range(self) -> Optional[str]:
         """Gets the CompatibilityRange property"""
         return self.properties.get("CompatibilityRange", None)
 
+    @odata(name="ConditionalAccessPolicy")
     @property
     def conditional_access_policy(self) -> Optional[int]:
         """Gets the ConditionalAccessPolicy property"""
         return self.properties.get("ConditionalAccessPolicy", None)
 
+    @odata(name="ConditionalAccessPolicyErrorHelpLink")
     @property
     def conditional_access_policy_error_help_link(self) -> Optional[str]:
         """Gets the ConditionalAccessPolicyErrorHelpLink property"""
         return self.properties.get("ConditionalAccessPolicyErrorHelpLink", None)
 
+    @odata(name="ContentSecurityPolicyConfigSynced")
     @property
     def content_security_policy_config_synced(self) -> Optional[bool]:
         """Gets the ContentSecurityPolicyConfigSynced property"""
         return self.properties.get("ContentSecurityPolicyConfigSynced", None)
 
+    @odata(name="ContentSecurityPolicyEnforcement")
     @property
     def content_security_policy_enforcement(self) -> Optional[bool]:
         """Gets the ContentSecurityPolicyEnforcement property"""
         return self.properties.get("ContentSecurityPolicyEnforcement", None)
 
+    @odata(name="ContentTypeSyncSiteTemplatesList")
     @property
     def content_type_sync_site_templates_list(self) -> StringCollection:
         """Gets the ContentTypeSyncSiteTemplatesList property"""
         return self.properties.get("ContentTypeSyncSiteTemplatesList", StringCollection())
 
+    @odata(name="CopilotSearchOptIn")
     @property
     def copilot_search_opt_in(self) -> Optional[bool]:
         """Gets the CopilotSearchOptIn property"""
         return self.properties.get("CopilotSearchOptIn", None)
 
+    @odata(name="CoreAnyoneSharingLinkMaxExpirationInDays")
     @property
     def core_anyone_sharing_link_max_expiration_in_days(self) -> Optional[int]:
         """Gets the CoreAnyoneSharingLinkMaxExpirationInDays property"""
         return self.properties.get("CoreAnyoneSharingLinkMaxExpirationInDays", None)
 
+    @odata(name="CoreAnyoneSharingLinkRecommendedExpirationInDays")
     @property
     def core_anyone_sharing_link_recommended_expiration_in_days(self) -> Optional[int]:
         """Gets the CoreAnyoneSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("CoreAnyoneSharingLinkRecommendedExpirationInDays", None)
 
+    @odata(name="CoreBlockGuestsAsSiteAdmin")
     @property
     def core_block_guests_as_site_admin(self) -> Optional[int]:
         """Gets the CoreBlockGuestsAsSiteAdmin property"""
         return self.properties.get("CoreBlockGuestsAsSiteAdmin", None)
 
+    @odata(name="CoreDefaultLinkToExistingAccess")
     @property
     def core_default_link_to_existing_access(self) -> Optional[bool]:
         """Gets the CoreDefaultLinkToExistingAccess property"""
         return self.properties.get("CoreDefaultLinkToExistingAccess", None)
 
+    @odata(name="CoreDefaultShareLinkRole")
     @property
     def core_default_share_link_role(self) -> Optional[int]:
         """Gets the CoreDefaultShareLinkRole property"""
         return self.properties.get("CoreDefaultShareLinkRole", None)
 
+    @odata(name="CoreDefaultShareLinkScope")
     @property
     def core_default_share_link_scope(self) -> Optional[int]:
         """Gets the CoreDefaultShareLinkScope property"""
         return self.properties.get("CoreDefaultShareLinkScope", None)
 
+    @odata(name="CoreLoopDefaultSharingLinkRole")
     @property
     def core_loop_default_sharing_link_role(self) -> Optional[int]:
         """Gets the CoreLoopDefaultSharingLinkRole property"""
         return self.properties.get("CoreLoopDefaultSharingLinkRole", None)
 
+    @odata(name="CoreLoopDefaultSharingLinkScope")
     @property
     def core_loop_default_sharing_link_scope(self) -> Optional[int]:
         """Gets the CoreLoopDefaultSharingLinkScope property"""
         return self.properties.get("CoreLoopDefaultSharingLinkScope", None)
 
+    @odata(name="CoreLoopSharingCapability")
     @property
     def core_loop_sharing_capability(self) -> Optional[int]:
         """Gets the CoreLoopSharingCapability property"""
         return self.properties.get("CoreLoopSharingCapability", None)
 
+    @odata(name="CoreOrganizationSharingLinkMaxExpirationInDays")
     @property
     def core_organization_sharing_link_max_expiration_in_days(self) -> Optional[int]:
         """Gets the CoreOrganizationSharingLinkMaxExpirationInDays property"""
         return self.properties.get("CoreOrganizationSharingLinkMaxExpirationInDays", None)
 
+    @odata(name="CoreOrganizationSharingLinkRecommendedExpirationInDays")
     @property
     def core_organization_sharing_link_recommended_expiration_in_days(self) -> Optional[int]:
         """Gets the CoreOrganizationSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("CoreOrganizationSharingLinkRecommendedExpirationInDays", None)
 
+    @odata(name="CoreRequestFilesLinkEnabled")
     @property
     def core_request_files_link_enabled(self) -> Optional[bool]:
         """Gets the CoreRequestFilesLinkEnabled property"""
         return self.properties.get("CoreRequestFilesLinkEnabled", None)
 
+    @odata(name="CoreRequestFilesLinkExpirationInDays")
     @property
     def core_request_files_link_expiration_in_days(self) -> Optional[int]:
         """Gets the CoreRequestFilesLinkExpirationInDays property"""
         return self.properties.get("CoreRequestFilesLinkExpirationInDays", None)
 
+    @odata(name="CoreSharingCapability")
     @property
     def core_sharing_capability(self) -> Optional[int]:
         """Gets the CoreSharingCapability property"""
         return self.properties.get("CoreSharingCapability", None)
 
+    @odata(name="CustomizedExternalSharingServiceUrl")
     @property
     def customized_external_sharing_service_url(self) -> Optional[str]:
         """Gets the CustomizedExternalSharingServiceUrl property"""
         return self.properties.get("CustomizedExternalSharingServiceUrl", None)
 
+    @odata(name="CustomScriptsRestrictMode")
     @property
     def custom_scripts_restrict_mode(self) -> Optional[bool]:
         """Gets the CustomScriptsRestrictMode property"""
         return self.properties.get("CustomScriptsRestrictMode", None)
 
+    @odata(name="DataverseUsageConsentEnabled")
     @property
     def dataverse_usage_consent_enabled(self) -> Optional[bool]:
         """Gets the DataverseUsageConsentEnabled property"""
         return self.properties.get("DataverseUsageConsentEnabled", None)
 
+    @odata(name="DefaultLanguageForSiteCreation")
     @property
     def default_language_for_site_creation(self) -> Optional[str]:
         """Gets the DefaultLanguageForSiteCreation property"""
         return self.properties.get("DefaultLanguageForSiteCreation", None)
 
+    @odata(name="DefaultLinkPermission")
     @property
     def default_link_permission(self) -> Optional[int]:
         """Gets the DefaultLinkPermission property"""
         return self.properties.get("DefaultLinkPermission", None)
 
+    @odata(name="DefaultODBMode")
     @property
     def default_odb_mode(self) -> Optional[str]:
         """Gets the DefaultODBMode property"""
         return self.properties.get("DefaultODBMode", None)
 
+    @odata(name="DefaultSharingLinkType")
     @property
     def default_sharing_link_type(self) -> Optional[int]:
         """Gets the DefaultSharingLinkType property"""
         return self.properties.get("DefaultSharingLinkType", None)
 
+    @odata(name="DelayContentSecurityPolicyEnforcement")
     @property
     def delay_content_security_policy_enforcement(self) -> Optional[bool]:
         """Gets the DelayContentSecurityPolicyEnforcement property"""
         return self.properties.get("DelayContentSecurityPolicyEnforcement", None)
 
+    @odata(name="DelayDenyAddAndCustomizePagesEnforcement")
     @property
     def delay_deny_add_and_customize_pages_enforcement(self) -> Optional[bool]:
         """Gets the DelayDenyAddAndCustomizePagesEnforcement property"""
         return self.properties.get("DelayDenyAddAndCustomizePagesEnforcement", None)
 
+    @odata(name="DelayDenyAddAndCustomizePagesEnforcementOnClassicPublishingSites")
     @property
     def delay_deny_add_and_customize_pages_enforcement_on_classic_publishing_sites(self) -> Optional[bool]:
         """Gets the DelayDenyAddAndCustomizePagesEnforcementOnClassicPublishingSites property"""
         return self.properties.get("DelayDenyAddAndCustomizePagesEnforcementOnClassicPublishingSites", None)
 
+    @odata(name="DelegateRestrictedAccessControlConfiguration")
     @property
     def delegate_restricted_access_control_configuration(self) -> Optional[bool]:
         """Gets the DelegateRestrictedAccessControlConfiguration property"""
         return self.properties.get("DelegateRestrictedAccessControlConfiguration", None)
 
+    @odata(name="DelegateRestrictedContentDiscoveryConfiguration")
     @property
     def delegate_restricted_content_discovery_configuration(self) -> Optional[bool]:
         """Gets the DelegateRestrictedContentDiscoveryConfiguration property"""
         return self.properties.get("DelegateRestrictedContentDiscoveryConfiguration", None)
 
+    @odata(name="DenySelectSecurityGroupsInSPSitesList")
     @property
     def deny_select_security_groups_in_sp_sites_list(self) -> StringCollection:
         """Gets the DenySelectSecurityGroupsInSPSitesList property"""
         return self.properties.get("DenySelectSecurityGroupsInSPSitesList", StringCollection())
 
+    @odata(name="DenySelectSGsInODBListInTenant")
     @property
     def deny_select_sgs_in_odb_list_in_tenant(self) -> StringCollection:
         """Gets the DenySelectSGsInODBListInTenant property"""
         return self.properties.get("DenySelectSGsInODBListInTenant", StringCollection())
 
+    @odata(name="DisableAddToOneDrive")
     @property
     def disable_add_to_onedrive(self) -> Optional[bool]:
         """Gets the DisableAddToOneDrive property"""
         return self.properties.get("DisableAddToOneDrive", None)
 
+    @odata(name="DisableBackToClassic")
     @property
     def disable_back_to_classic(self) -> Optional[bool]:
         """Gets the DisableBackToClassic property"""
         return self.properties.get("DisableBackToClassic", None)
 
+    @odata(name="DisableCustomAppAuthentication")
     @property
     def disable_custom_app_authentication(self) -> Optional[bool]:
         """Gets the DisableCustomAppAuthentication property"""
         return self.properties.get("DisableCustomAppAuthentication", None)
 
+    @odata(name="DisabledAdaptiveCardExtensionIds")
     @property
     def disabled_adaptive_card_extension_ids(self) -> GuidCollection:
         """Gets the DisabledAdaptiveCardExtensionIds property"""
         return self.properties.get("DisabledAdaptiveCardExtensionIds", GuidCollection())
 
+    @odata(name="DisabledModernListTemplateIds")
     @property
     def disabled_modern_list_template_ids(self) -> GuidCollection:
         """Gets the DisabledModernListTemplateIds property"""
         return self.properties.get("DisabledModernListTemplateIds", GuidCollection())
 
+    @odata(name="DisableDocumentLibraryDefaultLabeling")
     @property
     def disable_document_library_default_labeling(self) -> Optional[bool]:
         """Gets the DisableDocumentLibraryDefaultLabeling property"""
         return self.properties.get("DisableDocumentLibraryDefaultLabeling", None)
 
+    @odata(name="DisabledWebPartIds")
     @property
     def disabled_web_part_ids(self) -> GuidCollection:
         """Gets the DisabledWebPartIds property"""
         return self.properties.get("DisabledWebPartIds", GuidCollection())
 
+    @odata(name="DisableOutlookPSTVersionTrimming")
     @property
     def disable_outlook_pst_version_trimming(self) -> Optional[bool]:
         """Gets the DisableOutlookPSTVersionTrimming property"""
         return self.properties.get("DisableOutlookPSTVersionTrimming", None)
 
+    @odata(name="DisablePersonalListCreation")
     @property
     def disable_personal_list_creation(self) -> Optional[bool]:
         """Gets the DisablePersonalListCreation property"""
         return self.properties.get("DisablePersonalListCreation", None)
 
+    @odata(name="DisableReportProblemDialog")
     @property
     def disable_report_problem_dialog(self) -> Optional[bool]:
         """Gets the DisableReportProblemDialog property"""
         return self.properties.get("DisableReportProblemDialog", None)
 
+    @odata(name="DisableSharePointStoreAccess")
     @property
     def disable_sharepoint_store_access(self) -> Optional[bool]:
         """Gets the DisableSharePointStoreAccess property"""
         return self.properties.get("DisableSharePointStoreAccess", None)
 
+    @odata(name="DisableSpacesActivation")
     @property
     def disable_spaces_activation(self) -> Optional[bool]:
         """Gets the DisableSpacesActivation property"""
         return self.properties.get("DisableSpacesActivation", None)
 
+    @odata(name="DisableSpfxTopBottomPlaceholdersInElevatedContent")
     @property
     def disable_spfx_top_bottom_placeholders_in_elevated_content(self) -> Optional[bool]:
         """Gets the DisableSpfxTopBottomPlaceholdersInElevatedContent property"""
         return self.properties.get("DisableSpfxTopBottomPlaceholdersInElevatedContent", None)
 
+    @odata(name="DisableTeamsMeetingRecordingDeletedNotification")
     @property
     def disable_teams_meeting_recording_deleted_notification(self) -> Optional[bool]:
         """Gets the DisableTeamsMeetingRecordingDeletedNotification property"""
         return self.properties.get("DisableTeamsMeetingRecordingDeletedNotification", None)
 
+    @odata(name="DisableVivaConnectionsAnalytics")
     @property
     def disable_viva_connections_analytics(self) -> Optional[bool]:
         """Gets the DisableVivaConnectionsAnalytics property"""
         return self.properties.get("DisableVivaConnectionsAnalytics", None)
 
+    @odata(name="DisallowInfectedFileDownload")
     @property
     def disallow_infected_file_download(self) -> Optional[bool]:
         """Gets the DisallowInfectedFileDownload property"""
         return self.properties.get("DisallowInfectedFileDownload", None)
 
+    @odata(name="DisplayNamesOfFileViewers")
     @property
     def display_names_of_file_viewers(self) -> Optional[bool]:
         """Gets the DisplayNamesOfFileViewers property"""
         return self.properties.get("DisplayNamesOfFileViewers", None)
 
+    @odata(name="DisplayNamesOfFileViewersInSpo")
     @property
     def display_names_of_file_viewers_in_spo(self) -> Optional[bool]:
         """Gets the DisplayNamesOfFileViewersInSpo property"""
         return self.properties.get("DisplayNamesOfFileViewersInSpo", None)
 
+    @odata(name="DisplayStartASiteOption")
     @property
     def display_start_a_site_option(self) -> Optional[bool]:
         """Gets the DisplayStartASiteOption property"""
         return self.properties.get("DisplayStartASiteOption", None)
 
+    @odata(name="DocumentUnderstandingEnabled")
     @property
     def document_understanding_enabled(self) -> Optional[bool]:
         """Gets the DocumentUnderstandingEnabled property"""
         return self.properties.get("DocumentUnderstandingEnabled", None)
 
+    @odata(name="DocumentUnderstandingEnabledInContentCenter")
     @property
     def document_understanding_enabled_in_content_center(self) -> Optional[int]:
         """Gets the DocumentUnderstandingEnabledInContentCenter property"""
         return self.properties.get("DocumentUnderstandingEnabledInContentCenter", None)
 
+    @odata(name="DocumentUnderstandingSiteInfoList")
     @property
     def document_understanding_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the DocumentUnderstandingSiteInfoList property"""
@@ -1992,146 +2136,175 @@ class Tenant(Entity):
             "DocumentUnderstandingSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="DocumentUnderstandingSiteList")
     @property
     def document_understanding_site_list(self) -> GuidCollection:
         """Gets the DocumentUnderstandingSiteList property"""
         return self.properties.get("DocumentUnderstandingSiteList", GuidCollection())
 
+    @odata(name="DocumentUnderstandingSiteListFileName")
     @property
     def document_understanding_site_list_file_name(self) -> Optional[str]:
         """Gets the DocumentUnderstandingSiteListFileName property"""
         return self.properties.get("DocumentUnderstandingSiteListFileName", None)
 
+    @odata(name="EmailAttestationEnabled")
     @property
     def email_attestation_enabled(self) -> Optional[bool]:
         """Gets the EmailAttestationEnabled property"""
         return self.properties.get("EmailAttestationEnabled", None)
 
+    @odata(name="EmailAttestationReAuthDays")
     @property
     def email_attestation_re_auth_days(self) -> Optional[int]:
         """Gets the EmailAttestationReAuthDays property"""
         return self.properties.get("EmailAttestationReAuthDays", None)
 
+    @odata(name="EmailAttestationRequired")
     @property
     def email_attestation_required(self) -> Optional[bool]:
         """Gets the EmailAttestationRequired property"""
         return self.properties.get("EmailAttestationRequired", None)
 
+    @odata(name="EnableAgentWorkerSharingDisclaimer")
     @property
     def enable_agent_worker_sharing_disclaimer(self) -> Optional[bool]:
         """Gets the EnableAgentWorkerSharingDisclaimer property"""
         return self.properties.get("EnableAgentWorkerSharingDisclaimer", None)
 
+    @odata(name="EnableAIPIntegration")
     @property
     def enable_aip_integration(self) -> Optional[bool]:
         """Gets the EnableAIPIntegration property"""
         return self.properties.get("EnableAIPIntegration", None)
 
+    @odata(name="EnableAutoExpirationVersionTrim")
     @property
     def enable_auto_expiration_version_trim(self) -> Optional[bool]:
         """Gets the EnableAutoExpirationVersionTrim property"""
         return self.properties.get("EnableAutoExpirationVersionTrim", None)
 
+    @odata(name="EnableAutoNewsDigest")
     @property
     def enable_auto_news_digest(self) -> Optional[bool]:
         """Gets the EnableAutoNewsDigest property"""
         return self.properties.get("EnableAutoNewsDigest", None)
 
+    @odata(name="EnableAzureADB2BIntegration")
     @property
     def enable_azure_adb2_b_integration(self) -> Optional[bool]:
         """Gets the EnableAzureADB2BIntegration property"""
         return self.properties.get("EnableAzureADB2BIntegration", None)
 
+    @odata(name="EnabledFlightAllowAADB2BSkipCheckingOTP")
     @property
     def enabled_flight_allow_aadb2_b_skip_checking_otp(self) -> Optional[bool]:
         """Gets the EnabledFlightAllowAADB2BSkipCheckingOTP property"""
         return self.properties.get("EnabledFlightAllowAADB2BSkipCheckingOTP", None)
 
+    @odata(name="EnableDirectToCustomerBilling")
     @property
     def enable_direct_to_customer_billing(self) -> Optional[bool]:
         """Gets the EnableDirectToCustomerBilling property"""
         return self.properties.get("EnableDirectToCustomerBilling", None)
 
+    @odata(name="EnableDiscoverableByOrganizationForVideos")
     @property
     def enable_discoverable_by_organization_for_videos(self) -> Optional[bool]:
         """Gets the EnableDiscoverableByOrganizationForVideos property"""
         return self.properties.get("EnableDiscoverableByOrganizationForVideos", None)
 
+    @odata(name="EnableGuestSignInAcceleration")
     @property
     def enable_guest_sign_in_acceleration(self) -> Optional[bool]:
         """Gets the EnableGuestSignInAcceleration property"""
         return self.properties.get("EnableGuestSignInAcceleration", None)
 
+    @odata(name="EnableMediaReactions")
     @property
     def enable_media_reactions(self) -> Optional[bool]:
         """Gets the EnableMediaReactions property"""
         return self.properties.get("EnableMediaReactions", None)
 
+    @odata(name="EnableMinimumVersionRequirement")
     @property
     def enable_minimum_version_requirement(self) -> Optional[bool]:
         """Gets the EnableMinimumVersionRequirement property"""
         return self.properties.get("EnableMinimumVersionRequirement", None)
 
+    @odata(name="EnableMipSiteLabel")
     @property
     def enable_mip_site_label(self) -> Optional[bool]:
         """Gets the EnableMipSiteLabel property"""
         return self.properties.get("EnableMipSiteLabel", None)
 
+    @odata(name="EnableNotificationsSubscriptions")
     @property
     def enable_notifications_subscriptions(self) -> Optional[bool]:
         """Gets the EnableNotificationsSubscriptions property"""
         return self.properties.get("EnableNotificationsSubscriptions", None)
 
+    @odata(name="EnablePromotedFileHandlers")
     @property
     def enable_promoted_file_handlers(self) -> Optional[bool]:
         """Gets the EnablePromotedFileHandlers property"""
         return self.properties.get("EnablePromotedFileHandlers", None)
 
+    @odata(name="EnableRestrictedAccessControl")
     @property
     def enable_restricted_access_control(self) -> Optional[bool]:
         """Gets the EnableRestrictedAccessControl property"""
         return self.properties.get("EnableRestrictedAccessControl", None)
 
+    @odata(name="EnableSensitivityLabelForOneNote")
     @property
     def enable_sensitivity_label_for_onenote(self) -> Optional[bool]:
         """Gets the EnableSensitivityLabelForOneNote property"""
         return self.properties.get("EnableSensitivityLabelForOneNote", None)
 
+    @odata(name="EnableSensitivityLabelForPDF")
     @property
     def enable_sensitivity_label_for_pdf(self) -> Optional[bool]:
         """Gets the EnableSensitivityLabelForPDF property"""
         return self.properties.get("EnableSensitivityLabelForPDF", None)
 
+    @odata(name="EnableSensitivityLabelForVideoFiles")
     @property
     def enable_sensitivity_label_for_video_files(self) -> Optional[bool]:
         """Gets the EnableSensitivityLabelForVideoFiles property"""
         return self.properties.get("EnableSensitivityLabelForVideoFiles", None)
 
+    @odata(name="EnableSiteArchive")
     @property
     def enable_site_archive(self) -> Optional[bool]:
         """Gets the EnableSiteArchive property"""
         return self.properties.get("EnableSiteArchive", None)
 
+    @odata(name="EnableTenantRestrictionsInsights")
     @property
     def enable_tenant_restrictions_insights(self) -> Optional[bool]:
         """Gets the EnableTenantRestrictionsInsights property"""
         return self.properties.get("EnableTenantRestrictionsInsights", None)
 
+    @odata(name="EnforceRequestDigest")
     @property
     def enforce_request_digest(self) -> Optional[bool]:
         """Gets the EnforceRequestDigest property"""
         return self.properties.get("EnforceRequestDigest", None)
 
+    @odata(name="ESignatureAppList")
     @property
     def e_signature_app_list(self) -> StringCollection:
         """Gets the ESignatureAppList property"""
         return self.properties.get("ESignatureAppList", StringCollection())
 
+    @odata(name="ESignatureEnabled")
     @property
     def e_signature_enabled(self) -> Optional[bool]:
         """Gets the ESignatureEnabled property"""
         return self.properties.get("ESignatureEnabled", None)
 
+    @odata(name="ESignatureSiteInfoList")
     @property
     def e_signature_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the ESignatureSiteInfoList property"""
@@ -2143,151 +2316,181 @@ class Tenant(Entity):
             "ESignatureSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="ESignatureSiteList")
     @property
     def e_signature_site_list(self) -> GuidCollection:
         """Gets the ESignatureSiteList property"""
         return self.properties.get("ESignatureSiteList", GuidCollection())
 
+    @odata(name="ESignatureSiteListFileName")
     @property
     def e_signature_site_list_file_name(self) -> Optional[str]:
         """Gets the ESignatureSiteListFileName property"""
         return self.properties.get("ESignatureSiteListFileName", None)
 
+    @odata(name="ESignatureThirdPartyProviderInfoList")
     @property
     def e_signature_third_party_provider_info_list(self) -> StringCollection:
         """Gets the ESignatureThirdPartyProviderInfoList property"""
         return self.properties.get("ESignatureThirdPartyProviderInfoList", StringCollection())
 
+    @odata(name="ESignatureThirdPartyProviderList")
     @property
     def e_signature_third_party_provider_list(self) -> StringCollection:
         """Gets the ESignatureThirdPartyProviderList property"""
         return self.properties.get("ESignatureThirdPartyProviderList", StringCollection())
 
+    @odata(name="ESignatureThirdPartyProviderListFileName")
     @property
     def e_signature_third_party_provider_list_file_name(self) -> Optional[str]:
         """Gets the ESignatureThirdPartyProviderListFileName property"""
         return self.properties.get("ESignatureThirdPartyProviderListFileName", None)
 
+    @odata(name="ExcludedBlockDownloadGroupIds")
     @property
     def excluded_block_download_group_ids(self) -> GuidCollection:
         """Gets the ExcludedBlockDownloadGroupIds property"""
         return self.properties.get("ExcludedBlockDownloadGroupIds", GuidCollection())
 
+    @odata(name="ExcludedFileExtensionsForSyncClient")
     @property
     def excluded_file_extensions_for_sync_client(self) -> StringCollection:
         """Gets the ExcludedFileExtensionsForSyncClient property"""
         return self.properties.get("ExcludedFileExtensionsForSyncClient", StringCollection())
 
+    @odata(name="ExemptNativeUsersFromTenantLevelRestricedAccessControl")
     @property
     def exempt_native_users_from_tenant_level_restriced_access_control(self) -> Optional[bool]:
         """Gets the ExemptNativeUsersFromTenantLevelRestricedAccessControl property"""
         return self.properties.get("ExemptNativeUsersFromTenantLevelRestricedAccessControl", None)
 
+    @odata(name="ExpireVersionsAfterDays")
     @property
     def expire_versions_after_days(self) -> Optional[int]:
         """Gets the ExpireVersionsAfterDays property"""
         return self.properties.get("ExpireVersionsAfterDays", None)
 
+    @odata(name="ExtendPermissionsToUnprotectedFiles")
     @property
     def extend_permissions_to_unprotected_files(self) -> Optional[bool]:
         """Gets the ExtendPermissionsToUnprotectedFiles property"""
         return self.properties.get("ExtendPermissionsToUnprotectedFiles", None)
 
+    @odata(name="ExternalServicesEnabled")
     @property
     def external_services_enabled(self) -> Optional[bool]:
         """Gets the ExternalServicesEnabled property"""
         return self.properties.get("ExternalServicesEnabled", None)
 
+    @odata(name="ExternalUserExpirationRequired")
     @property
     def external_user_expiration_required(self) -> Optional[bool]:
         """Gets the ExternalUserExpirationRequired property"""
         return self.properties.get("ExternalUserExpirationRequired", None)
 
+    @odata(name="ExternalUserExpireInDays")
     @property
     def external_user_expire_in_days(self) -> Optional[int]:
         """Gets the ExternalUserExpireInDays property"""
         return self.properties.get("ExternalUserExpireInDays", None)
 
+    @odata(name="FileAnonymousLinkType")
     @property
     def file_anonymous_link_type(self) -> Optional[int]:
         """Gets the FileAnonymousLinkType property"""
         return self.properties.get("FileAnonymousLinkType", None)
 
+    @odata(name="FilePickerExternalImageSearchEnabled")
     @property
     def file_picker_external_image_search_enabled(self) -> Optional[bool]:
         """Gets the FilePickerExternalImageSearchEnabled property"""
         return self.properties.get("FilePickerExternalImageSearchEnabled", None)
 
+    @odata(name="FilePreviewAllowedDomainList")
     @property
     def file_preview_allowed_domain_list(self) -> Optional[str]:
         """Gets the FilePreviewAllowedDomainList property"""
         return self.properties.get("FilePreviewAllowedDomainList", None)
 
+    @odata(name="FolderAnonymousLinkType")
     @property
     def folder_anonymous_link_type(self) -> Optional[int]:
         """Gets the FolderAnonymousLinkType property"""
         return self.properties.get("FolderAnonymousLinkType", None)
 
+    @odata(name="GuestSharingGroupAllowListInTenant")
     @property
     def guest_sharing_group_allow_list_in_tenant(self) -> Optional[str]:
         """Gets the GuestSharingGroupAllowListInTenant property"""
         return self.properties.get("GuestSharingGroupAllowListInTenant", None)
 
+    @odata(name="GuestSharingGroupAllowListInTenantByGroupId")
     @property
     def guest_sharing_group_allow_list_in_tenant_by_group_id(self) -> StringCollection:
         """Gets the GuestSharingGroupAllowListInTenantByGroupId property"""
         return self.properties.get("GuestSharingGroupAllowListInTenantByGroupId", StringCollection())
 
+    @odata(name="GuestSharingGroupAllowListInTenantByPrincipalIdentity")
     @property
     def guest_sharing_group_allow_list_in_tenant_by_principal_identity(self) -> StringCollection:
         """Gets the GuestSharingGroupAllowListInTenantByPrincipalIdentity property"""
         return self.properties.get("GuestSharingGroupAllowListInTenantByPrincipalIdentity", StringCollection())
 
+    @odata(name="HardDeprecationRPSEnabled")
     @property
     def hard_deprecation_rps_enabled(self) -> Optional[bool]:
         """Gets the HardDeprecationRPSEnabled property"""
         return self.properties.get("HardDeprecationRPSEnabled", None)
 
+    @odata(name="HasAdminCompletedCUConfiguration")
     @property
     def has_admin_completed_cu_configuration(self) -> Optional[bool]:
         """Gets the HasAdminCompletedCUConfiguration property"""
         return self.properties.get("HasAdminCompletedCUConfiguration", None)
 
+    @odata(name="HasIntelligentContentServicesCapability")
     @property
     def has_intelligent_content_services_capability(self) -> Optional[bool]:
         """Gets the HasIntelligentContentServicesCapability property"""
         return self.properties.get("HasIntelligentContentServicesCapability", None)
 
+    @odata(name="HasTopicExperiencesCapability")
     @property
     def has_topic_experiences_capability(self) -> Optional[bool]:
         """Gets the HasTopicExperiencesCapability property"""
         return self.properties.get("HasTopicExperiencesCapability", None)
 
+    @odata(name="HideDefaultThemes")
     @property
     def hide_default_themes(self) -> Optional[bool]:
         """Gets the HideDefaultThemes property"""
         return self.properties.get("HideDefaultThemes", None)
 
+    @odata(name="HideSyncButtonOnDocLib")
     @property
     def hide_sync_button_on_doc_lib(self) -> Optional[bool]:
         """Gets the HideSyncButtonOnDocLib property"""
         return self.properties.get("HideSyncButtonOnDocLib", None)
 
+    @odata(name="HideSyncButtonOnODB")
     @property
     def hide_sync_button_on_odb(self) -> Optional[bool]:
         """Gets the HideSyncButtonOnODB property"""
         return self.properties.get("HideSyncButtonOnODB", None)
 
+    @odata(name="IBImplicitGroupBased")
     @property
     def ib_implicit_group_based(self) -> Optional[bool]:
         """Gets the IBImplicitGroupBased property"""
         return self.properties.get("IBImplicitGroupBased", None)
 
+    @odata(name="ImageTaggingOption")
     @property
     def image_tagging_option(self) -> Optional[int]:
         """Gets the ImageTaggingOption property"""
         return self.properties.get("ImageTaggingOption", None)
 
+    @odata(name="ImageTaggingSiteInfoList")
     @property
     def image_tagging_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the ImageTaggingSiteInfoList property"""
@@ -2299,131 +2502,157 @@ class Tenant(Entity):
             "ImageTaggingSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="ImageTaggingSiteList")
     @property
     def image_tagging_site_list(self) -> GuidCollection:
         """Gets the ImageTaggingSiteList property"""
         return self.properties.get("ImageTaggingSiteList", GuidCollection())
 
+    @odata(name="ImageTaggingSiteListFileName")
     @property
     def image_tagging_site_list_file_name(self) -> Optional[str]:
         """Gets the ImageTaggingSiteListFileName property"""
         return self.properties.get("ImageTaggingSiteListFileName", None)
 
+    @odata(name="IncludeAtAGlanceInShareEmails")
     @property
     def include_at_a_glance_in_share_emails(self) -> Optional[bool]:
         """Gets the IncludeAtAGlanceInShareEmails property"""
         return self.properties.get("IncludeAtAGlanceInShareEmails", None)
 
+    @odata(name="IPAddressWACTokenLifetime")
     @property
     def ip_address_wac_token_lifetime(self) -> Optional[int]:
         """Gets the IPAddressWACTokenLifetime property"""
         return self.properties.get("IPAddressWACTokenLifetime", None)
 
+    @odata(name="IsAppBarTemporarilyDisabled")
     @property
     def is_app_bar_temporarily_disabled(self) -> Optional[bool]:
         """Gets the IsAppBarTemporarilyDisabled property"""
         return self.properties.get("IsAppBarTemporarilyDisabled", None)
 
+    @odata(name="IsCollabMeetingNotesFluidEnabled")
     @property
     def is_collab_meeting_notes_fluid_enabled(self) -> Optional[bool]:
         """Gets the IsCollabMeetingNotesFluidEnabled property"""
         return self.properties.get("IsCollabMeetingNotesFluidEnabled", None)
 
+    @odata(name="IsDataAccessInCardDesignerEnabled")
     @property
     def is_data_access_in_card_designer_enabled(self) -> Optional[bool]:
         """Gets the IsDataAccessInCardDesignerEnabled property"""
         return self.properties.get("IsDataAccessInCardDesignerEnabled", None)
 
+    @odata(name="IsEnableAppAuthPopUpEnabled")
     @property
     def is_enable_app_auth_pop_up_enabled(self) -> Optional[bool]:
         """Gets the IsEnableAppAuthPopUpEnabled property"""
         return self.properties.get("IsEnableAppAuthPopUpEnabled", None)
 
+    @odata(name="IsFilePreviewDomainRestrictionEnabled")
     @property
     def is_file_preview_domain_restriction_enabled(self) -> Optional[bool]:
         """Gets the IsFilePreviewDomainRestrictionEnabled property"""
         return self.properties.get("IsFilePreviewDomainRestrictionEnabled", None)
 
+    @odata(name="IsFluidEnabled")
     @property
     def is_fluid_enabled(self) -> Optional[bool]:
         """Gets the IsFluidEnabled property"""
         return self.properties.get("IsFluidEnabled", None)
 
+    @odata(name="IsHubSitesMultiGeoFlightEnabled")
     @property
     def is_hub_sites_multi_geo_flight_enabled(self) -> Optional[bool]:
         """Gets the IsHubSitesMultiGeoFlightEnabled property"""
         return self.properties.get("IsHubSitesMultiGeoFlightEnabled", None)
 
+    @odata(name="IsLoopEnabled")
     @property
     def is_loop_enabled(self) -> Optional[bool]:
         """Gets the IsLoopEnabled property"""
         return self.properties.get("IsLoopEnabled", None)
 
+    @odata(name="IsMnAFlightEnabled")
     @property
     def is_mn_a_flight_enabled(self) -> Optional[bool]:
         """Gets the IsMnAFlightEnabled property"""
         return self.properties.get("IsMnAFlightEnabled", None)
 
+    @odata(name="IsMultiGeo")
     @property
     def is_multi_geo(self) -> Optional[bool]:
         """Gets the IsMultiGeo property"""
         return self.properties.get("IsMultiGeo", None)
 
+    @odata(name="IsMultipleHomeSitesFlightEnabled")
     @property
     def is_multiple_home_sites_flight_enabled(self) -> Optional[bool]:
         """Gets the IsMultipleHomeSitesFlightEnabled property"""
         return self.properties.get("IsMultipleHomeSitesFlightEnabled", None)
 
+    @odata(name="IsMultipleVivaConnectionsFlightEnabled")
     @property
     def is_multiple_viva_connections_flight_enabled(self) -> Optional[bool]:
         """Gets the IsMultipleVivaConnectionsFlightEnabled property"""
         return self.properties.get("IsMultipleVivaConnectionsFlightEnabled", None)
 
+    @odata(name="IsOnlyCertifiedAppsAllowed")
     @property
     def is_only_certified_apps_allowed(self) -> Optional[bool]:
         """Gets the IsOnlyCertifiedAppsAllowed property"""
         return self.properties.get("IsOnlyCertifiedAppsAllowed", None)
 
+    @odata(name="IsSelfServiceContainerTypeManagementEnabled")
     @property
     def is_self_service_container_type_management_enabled(self) -> Optional[bool]:
         """Gets the IsSelfServiceContainerTypeManagementEnabled property"""
         return self.properties.get("IsSelfServiceContainerTypeManagementEnabled", None)
 
+    @odata(name="IsUnmanagedSyncClientForTenantRestricted")
     @property
     def is_unmanaged_sync_client_for_tenant_restricted(self) -> Optional[bool]:
         """Gets the IsUnmanagedSyncClientForTenantRestricted property"""
         return self.properties.get("IsUnmanagedSyncClientForTenantRestricted", None)
 
+    @odata(name="IsUnmanagedSyncClientRestrictionFlightEnabled")
     @property
     def is_unmanaged_sync_client_restriction_flight_enabled(self) -> Optional[bool]:
         """Gets the IsUnmanagedSyncClientRestrictionFlightEnabled property"""
         return self.properties.get("IsUnmanagedSyncClientRestrictionFlightEnabled", None)
 
+    @odata(name="IsVivaHomeFlightEnabled")
     @property
     def is_viva_home_flight_enabled(self) -> Optional[bool]:
         """Gets the IsVivaHomeFlightEnabled property"""
         return self.properties.get("IsVivaHomeFlightEnabled", None)
 
+    @odata(name="IsVivaHomeGAFlightEnabled")
     @property
     def is_viva_home_ga_flight_enabled(self) -> Optional[bool]:
         """Gets the IsVivaHomeGAFlightEnabled property"""
         return self.properties.get("IsVivaHomeGAFlightEnabled", None)
 
+    @odata(name="IsWBFluidEnabled")
     @property
     def is_wb_fluid_enabled(self) -> Optional[bool]:
         """Gets the IsWBFluidEnabled property"""
         return self.properties.get("IsWBFluidEnabled", None)
 
+    @odata(name="KnowledgeAgentEnabled")
     @property
     def knowledge_agent_enabled(self) -> Optional[bool]:
         """Gets the KnowledgeAgentEnabled property"""
         return self.properties.get("KnowledgeAgentEnabled", None)
 
+    @odata(name="KnowledgeAgentScopeMode")
     @property
     def knowledge_agent_scope_mode(self) -> Optional[int]:
         """Gets the KnowledgeAgentScopeMode property"""
         return self.properties.get("KnowledgeAgentScopeMode", None)
 
+    @odata(name="KnowledgeAgentSiteInfoList")
     @property
     def knowledge_agent_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the KnowledgeAgentSiteInfoList property"""
@@ -2435,126 +2664,151 @@ class Tenant(Entity):
             "KnowledgeAgentSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="KnowledgeAgentSiteList")
     @property
     def knowledge_agent_site_list(self) -> GuidCollection:
         """Gets the KnowledgeAgentSiteList property"""
         return self.properties.get("KnowledgeAgentSiteList", GuidCollection())
 
+    @odata(name="KnowledgeAgentSiteListFileName")
     @property
     def knowledge_agent_site_list_file_name(self) -> Optional[str]:
         """Gets the KnowledgeAgentSiteListFileName property"""
         return self.properties.get("KnowledgeAgentSiteListFileName", None)
 
+    @odata(name="LabelMismatchEmailHelpLink")
     @property
     def label_mismatch_email_help_link(self) -> Optional[str]:
         """Gets the LabelMismatchEmailHelpLink property"""
         return self.properties.get("LabelMismatchEmailHelpLink", None)
 
+    @odata(name="LegacyBrowserAuthProtocolsEnabled")
     @property
     def legacy_browser_auth_protocols_enabled(self) -> Optional[bool]:
         """Gets the LegacyBrowserAuthProtocolsEnabled property"""
         return self.properties.get("LegacyBrowserAuthProtocolsEnabled", None)
 
+    @odata(name="LimitedAccessFileType")
     @property
     def limited_access_file_type(self) -> Optional[int]:
         """Gets the LimitedAccessFileType property"""
         return self.properties.get("LimitedAccessFileType", None)
 
+    @odata(name="M365AdditionalStorageSPOEnabled")
     @property
     def m365_additional_storage_spo_enabled(self) -> Optional[bool]:
         """Gets the M365AdditionalStorageSPOEnabled property"""
         return self.properties.get("M365AdditionalStorageSPOEnabled", None)
 
+    @odata(name="M365SharePointStorageEnabled")
     @property
     def m365_sharepoint_storage_enabled(self) -> Optional[bool]:
         """Gets the M365SharePointStorageEnabled property"""
         return self.properties.get("M365SharePointStorageEnabled", None)
 
+    @odata(name="MachineLearningCaptureEnabled")
     @property
     def machine_learning_capture_enabled(self) -> Optional[bool]:
         """Gets the MachineLearningCaptureEnabled property"""
         return self.properties.get("MachineLearningCaptureEnabled", None)
 
+    @odata(name="MajorVersionLimit")
     @property
     def major_version_limit(self) -> Optional[int]:
         """Gets the MajorVersionLimit property"""
         return self.properties.get("MajorVersionLimit", None)
 
+    @odata(name="ManagedPathsForSiteCreation")
     @property
     def managed_paths_for_site_creation(self) -> StringCollection:
         """Gets the ManagedPathsForSiteCreation property"""
         return self.properties.get("ManagedPathsForSiteCreation", StringCollection())
 
+    @odata(name="MarkAllFilesAsSensitiveByDefault")
     @property
     def mark_all_files_as_sensitive_by_default(self) -> Optional[bool]:
         """Gets the MarkAllFilesAsSensitiveByDefault property"""
         return self.properties.get("MarkAllFilesAsSensitiveByDefault", None)
 
+    @odata(name="MarkNewFilesSensitiveByDefault")
     @property
     def mark_new_files_sensitive_by_default(self) -> Optional[int]:
         """Gets the MarkNewFilesSensitiveByDefault property"""
         return self.properties.get("MarkNewFilesSensitiveByDefault", None)
 
+    @odata(name="MassDeleteNotificationDisabled")
     @property
     def mass_delete_notification_disabled(self) -> Optional[bool]:
         """Gets the MassDeleteNotificationDisabled property"""
         return self.properties.get("MassDeleteNotificationDisabled", None)
 
+    @odata(name="MassDeleteNotificationDisabledForODB")
     @property
     def mass_delete_notification_disabled_for_odb(self) -> Optional[bool]:
         """Gets the MassDeleteNotificationDisabledForODB property"""
         return self.properties.get("MassDeleteNotificationDisabledForODB", None)
 
+    @odata(name="MassDeleteNotificationDisabledForSPO")
     @property
     def mass_delete_notification_disabled_for_spo(self) -> Optional[bool]:
         """Gets the MassDeleteNotificationDisabledForSPO property"""
         return self.properties.get("MassDeleteNotificationDisabledForSPO", None)
 
+    @odata(name="MaxSiteStorageQuotaMB")
     @property
     def max_site_storage_quota_mb(self) -> Optional[int]:
         """Gets the MaxSiteStorageQuotaMB property"""
         return self.properties.get("MaxSiteStorageQuotaMB", None)
 
+    @odata(name="MediaTranscription")
     @property
     def media_transcription(self) -> Optional[int]:
         """Gets the MediaTranscription property"""
         return self.properties.get("MediaTranscription", None)
 
+    @odata(name="MediaTranscriptionAutomaticFeatures")
     @property
     def media_transcription_automatic_features(self) -> Optional[int]:
         """Gets the MediaTranscriptionAutomaticFeatures property"""
         return self.properties.get("MediaTranscriptionAutomaticFeatures", None)
 
+    @odata(name="MobileFriendlyUrlEnabledInTenant")
     @property
     def mobile_friendly_url_enabled_in_tenant(self) -> Optional[bool]:
         """Gets the MobileFriendlyUrlEnabledInTenant property"""
         return self.properties.get("MobileFriendlyUrlEnabledInTenant", None)
 
+    @odata(name="NewSharePointExperienceOptIn")
     @property
     def new_sharepoint_experience_opt_in(self) -> Optional[bool]:
         """Gets the NewSharePointExperienceOptIn property"""
         return self.properties.get("NewSharePointExperienceOptIn", None)
 
+    @odata(name="NotificationsInOneDriveForBusinessEnabled")
     @property
     def notifications_in_onedrive_for_business_enabled(self) -> Optional[bool]:
         """Gets the NotificationsInOneDriveForBusinessEnabled property"""
         return self.properties.get("NotificationsInOneDriveForBusinessEnabled", None)
 
+    @odata(name="NotificationsInSharePointEnabled")
     @property
     def notifications_in_sharepoint_enabled(self) -> Optional[bool]:
         """Gets the NotificationsInSharePointEnabled property"""
         return self.properties.get("NotificationsInSharePointEnabled", None)
 
+    @odata(name="OCRAdminODBGroupList")
     @property
     def ocr_admin_odb_group_list(self) -> GuidCollection:
         """Gets the OCRAdminODBGroupList property"""
         return self.properties.get("OCRAdminODBGroupList", GuidCollection())
 
+    @odata(name="OCRAdminODBUserList")
     @property
     def ocr_admin_odb_user_list(self) -> GuidCollection:
         """Gets the OCRAdminODBUserList property"""
         return self.properties.get("OCRAdminODBUserList", GuidCollection())
 
+    @odata(name="OCRAdminSiteInfoList")
     @property
     def ocr_admin_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the OCRAdminSiteInfoList property"""
@@ -2566,26 +2820,31 @@ class Tenant(Entity):
             "OCRAdminSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="OCRAdminSiteList")
     @property
     def ocr_admin_site_list(self) -> GuidCollection:
         """Gets the OCRAdminSiteList property"""
         return self.properties.get("OCRAdminSiteList", GuidCollection())
 
+    @odata(name="OCRAdminSiteListFileName")
     @property
     def ocr_admin_site_list_file_name(self) -> Optional[str]:
         """Gets the OCRAdminSiteListFileName property"""
         return self.properties.get("OCRAdminSiteListFileName", None)
 
+    @odata(name="OCRComplianceODBGroupList")
     @property
     def ocr_compliance_odb_group_list(self) -> GuidCollection:
         """Gets the OCRComplianceODBGroupList property"""
         return self.properties.get("OCRComplianceODBGroupList", GuidCollection())
 
+    @odata(name="OCRComplianceODBUserList")
     @property
     def ocr_compliance_odb_user_list(self) -> GuidCollection:
         """Gets the OCRComplianceODBUserList property"""
         return self.properties.get("OCRComplianceODBUserList", GuidCollection())
 
+    @odata(name="OCRComplianceSiteInfoList")
     @property
     def ocr_compliance_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the OCRComplianceSiteInfoList property"""
@@ -2597,181 +2856,217 @@ class Tenant(Entity):
             "OCRComplianceSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="OCRComplianceSiteList")
     @property
     def ocr_compliance_site_list(self) -> GuidCollection:
         """Gets the OCRComplianceSiteList property"""
         return self.properties.get("OCRComplianceSiteList", GuidCollection())
 
+    @odata(name="OCRComplianceSiteListFileName")
     @property
     def ocr_compliance_site_list_file_name(self) -> Optional[str]:
         """Gets the OCRComplianceSiteListFileName property"""
         return self.properties.get("OCRComplianceSiteListFileName", None)
 
+    @odata(name="OCRModeForAdminODBs")
     @property
     def ocr_mode_for_admin_odbs(self) -> Optional[int]:
         """Gets the OCRModeForAdminODBs property"""
         return self.properties.get("OCRModeForAdminODBs", None)
 
+    @odata(name="OCRModeForAdminSites")
     @property
     def ocr_mode_for_admin_sites(self) -> Optional[int]:
         """Gets the OCRModeForAdminSites property"""
         return self.properties.get("OCRModeForAdminSites", None)
 
+    @odata(name="OCRModeForComplianceODBs")
     @property
     def ocr_mode_for_compliance_odbs(self) -> Optional[int]:
         """Gets the OCRModeForComplianceODBs property"""
         return self.properties.get("OCRModeForComplianceODBs", None)
 
+    @odata(name="OCRModeForComplianceSites")
     @property
     def ocr_mode_for_compliance_sites(self) -> Optional[int]:
         """Gets the OCRModeForComplianceSites property"""
         return self.properties.get("OCRModeForComplianceSites", None)
 
+    @odata(name="ODBAccessRequests")
     @property
     def odb_access_requests(self) -> Optional[int]:
         """Gets the ODBAccessRequests property"""
         return self.properties.get("ODBAccessRequests", None)
 
+    @odata(name="ODBMembersCanShare")
     @property
     def odb_members_can_share(self) -> Optional[int]:
         """Gets the ODBMembersCanShare property"""
         return self.properties.get("ODBMembersCanShare", None)
 
+    @odata(name="ODBSensitivityRefreshWindowInHours")
     @property
     def odb_sensitivity_refresh_window_in_hours(self) -> Optional[int]:
         """Gets the ODBSensitivityRefreshWindowInHours property"""
         return self.properties.get("ODBSensitivityRefreshWindowInHours", None)
 
+    @odata(name="ODBSharingCapability")
     @property
     def odb_sharing_capability(self) -> Optional[int]:
         """Gets the ODBSharingCapability property"""
         return self.properties.get("ODBSharingCapability", None)
 
+    @odata(name="ODBTranslationEnabled")
     @property
     def odb_translation_enabled(self) -> Optional[bool]:
         """Gets the ODBTranslationEnabled property"""
         return self.properties.get("ODBTranslationEnabled", None)
 
+    @odata(name="OfficeClientADALDisabled")
     @property
     def office_client_adal_disabled(self) -> Optional[bool]:
         """Gets the OfficeClientADALDisabled property"""
         return self.properties.get("OfficeClientADALDisabled", None)
 
+    @odata(name="OneDriveAnyoneSharingLinkMaxExpirationInDays")
     @property
     def onedrive_anyone_sharing_link_max_expiration_in_days(self) -> Optional[int]:
         """Gets the OneDriveAnyoneSharingLinkMaxExpirationInDays property"""
         return self.properties.get("OneDriveAnyoneSharingLinkMaxExpirationInDays", None)
 
+    @odata(name="OneDriveAnyoneSharingLinkRecommendedExpirationInDays")
     @property
     def onedrive_anyone_sharing_link_recommended_expiration_in_days(self) -> Optional[int]:
         """Gets the OneDriveAnyoneSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("OneDriveAnyoneSharingLinkRecommendedExpirationInDays", None)
 
+    @odata(name="OneDriveBlockGuestsAsSiteAdmin")
     @property
     def onedrive_block_guests_as_site_admin(self) -> Optional[int]:
         """Gets the OneDriveBlockGuestsAsSiteAdmin property"""
         return self.properties.get("OneDriveBlockGuestsAsSiteAdmin", None)
 
+    @odata(name="OneDriveDefaultLinkToExistingAccess")
     @property
     def onedrive_default_link_to_existing_access(self) -> Optional[bool]:
         """Gets the OneDriveDefaultLinkToExistingAccess property"""
         return self.properties.get("OneDriveDefaultLinkToExistingAccess", None)
 
+    @odata(name="OneDriveDefaultShareLinkRole")
     @property
     def onedrive_default_share_link_role(self) -> Optional[int]:
         """Gets the OneDriveDefaultShareLinkRole property"""
         return self.properties.get("OneDriveDefaultShareLinkRole", None)
 
+    @odata(name="OneDriveDefaultShareLinkScope")
     @property
     def onedrive_default_share_link_scope(self) -> Optional[int]:
         """Gets the OneDriveDefaultShareLinkScope property"""
         return self.properties.get("OneDriveDefaultShareLinkScope", None)
 
+    @odata(name="OneDriveForGuestsEnabled")
     @property
     def onedrive_for_guests_enabled(self) -> Optional[bool]:
         """Gets the OneDriveForGuestsEnabled property"""
         return self.properties.get("OneDriveForGuestsEnabled", None)
 
+    @odata(name="OneDriveLoopDefaultSharingLinkRole")
     @property
     def onedrive_loop_default_sharing_link_role(self) -> Optional[int]:
         """Gets the OneDriveLoopDefaultSharingLinkRole property"""
         return self.properties.get("OneDriveLoopDefaultSharingLinkRole", None)
 
+    @odata(name="OneDriveLoopDefaultSharingLinkScope")
     @property
     def onedrive_loop_default_sharing_link_scope(self) -> Optional[int]:
         """Gets the OneDriveLoopDefaultSharingLinkScope property"""
         return self.properties.get("OneDriveLoopDefaultSharingLinkScope", None)
 
+    @odata(name="OneDriveLoopSharingCapability")
     @property
     def onedrive_loop_sharing_capability(self) -> Optional[int]:
         """Gets the OneDriveLoopSharingCapability property"""
         return self.properties.get("OneDriveLoopSharingCapability", None)
 
+    @odata(name="OneDriveOrganizationSharingLinkMaxExpirationInDays")
     @property
     def onedrive_organization_sharing_link_max_expiration_in_days(self) -> Optional[int]:
         """Gets the OneDriveOrganizationSharingLinkMaxExpirationInDays property"""
         return self.properties.get("OneDriveOrganizationSharingLinkMaxExpirationInDays", None)
 
+    @odata(name="OneDriveOrganizationSharingLinkRecommendedExpirationInDays")
     @property
     def onedrive_organization_sharing_link_recommended_expiration_in_days(self) -> Optional[int]:
         """Gets the OneDriveOrganizationSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("OneDriveOrganizationSharingLinkRecommendedExpirationInDays", None)
 
+    @odata(name="OneDriveRequestFilesLinkEnabled")
     @property
     def onedrive_request_files_link_enabled(self) -> Optional[bool]:
         """Gets the OneDriveRequestFilesLinkEnabled property"""
         return self.properties.get("OneDriveRequestFilesLinkEnabled", None)
 
+    @odata(name="OneDriveRequestFilesLinkExpirationInDays")
     @property
     def onedrive_request_files_link_expiration_in_days(self) -> Optional[int]:
         """Gets the OneDriveRequestFilesLinkExpirationInDays property"""
         return self.properties.get("OneDriveRequestFilesLinkExpirationInDays", None)
 
+    @odata(name="OneDriveStorageQuota")
     @property
     def onedrive_storage_quota(self) -> Optional[int]:
         """Gets the OneDriveStorageQuota property"""
         return self.properties.get("OneDriveStorageQuota", None)
 
+    @odata(name="OptOutOfGrooveBlock")
     @property
     def opt_out_of_groove_block(self) -> Optional[bool]:
         """Gets the OptOutOfGrooveBlock property"""
         return self.properties.get("OptOutOfGrooveBlock", None)
 
+    @odata(name="OptOutOfGrooveSoftBlock")
     @property
     def opt_out_of_groove_soft_block(self) -> Optional[bool]:
         """Gets the OptOutOfGrooveSoftBlock property"""
         return self.properties.get("OptOutOfGrooveSoftBlock", None)
 
+    @odata(name="OrgNewsSiteUrl")
     @property
     def org_news_site_url(self) -> Optional[str]:
         """Gets the OrgNewsSiteUrl property"""
         return self.properties.get("OrgNewsSiteUrl", None)
 
+    @odata(name="OrphanedPersonalSitesRetentionPeriod")
     @property
     def orphaned_personal_sites_retention_period(self) -> Optional[int]:
         """Gets the OrphanedPersonalSitesRetentionPeriod property"""
         return self.properties.get("OrphanedPersonalSitesRetentionPeriod", None)
 
+    @odata(name="OwnerAnonymousNotification")
     @property
     def owner_anonymous_notification(self) -> Optional[bool]:
         """Gets the OwnerAnonymousNotification property"""
         return self.properties.get("OwnerAnonymousNotification", None)
 
+    @odata(name="PermissiveBrowserFileHandlingOverride")
     @property
     def permissive_browser_file_handling_override(self) -> Optional[bool]:
         """Gets the PermissiveBrowserFileHandlingOverride property"""
         return self.properties.get("PermissiveBrowserFileHandlingOverride", None)
 
+    @odata(name="PrebuiltEnabled")
     @property
     def prebuilt_enabled(self) -> Optional[bool]:
         """Gets the PrebuiltEnabled property"""
         return self.properties.get("PrebuiltEnabled", None)
 
+    @odata(name="PrebuiltEnabledInContentCenter")
     @property
     def prebuilt_enabled_in_content_center(self) -> Optional[int]:
         """Gets the PrebuiltEnabledInContentCenter property"""
         return self.properties.get("PrebuiltEnabledInContentCenter", None)
 
+    @odata(name="PrebuiltSiteInfoList")
     @property
     def prebuilt_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the PrebuiltSiteInfoList property"""
@@ -2783,216 +3078,259 @@ class Tenant(Entity):
             "PrebuiltSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="PrebuiltSiteList")
     @property
     def prebuilt_site_list(self) -> GuidCollection:
         """Gets the PrebuiltSiteList property"""
         return self.properties.get("PrebuiltSiteList", GuidCollection())
 
+    @odata(name="PrebuiltSiteListFileName")
     @property
     def prebuilt_site_list_file_name(self) -> Optional[str]:
         """Gets the PrebuiltSiteListFileName property"""
         return self.properties.get("PrebuiltSiteListFileName", None)
 
+    @odata(name="PreventExternalUsersFromResharing")
     @property
     def prevent_external_users_from_resharing(self) -> Optional[bool]:
         """Gets the PreventExternalUsersFromResharing property"""
         return self.properties.get("PreventExternalUsersFromResharing", None)
 
+    @odata(name="ProvisionSharedWithEveryoneFolder")
     @property
     def provision_shared_with_everyone_folder(self) -> Optional[bool]:
         """Gets the ProvisionSharedWithEveryoneFolder property"""
         return self.properties.get("ProvisionSharedWithEveryoneFolder", None)
 
+    @odata(name="PublicCdnAllowedFileTypes")
     @property
     def public_cdn_allowed_file_types(self) -> Optional[str]:
         """Gets the PublicCdnAllowedFileTypes property"""
         return self.properties.get("PublicCdnAllowedFileTypes", None)
 
+    @odata(name="PublicCdnEnabled")
     @property
     def public_cdn_enabled(self) -> Optional[bool]:
         """Gets the PublicCdnEnabled property"""
         return self.properties.get("PublicCdnEnabled", None)
 
+    @odata(name="PublicCdnOrigins")
     @property
     def public_cdn_origins(self) -> StringCollection:
         """Gets the PublicCdnOrigins property"""
         return self.properties.get("PublicCdnOrigins", StringCollection())
 
+    @odata(name="ReactivationCost")
     @property
     def reactivation_cost(self) -> Optional[float]:
         """Gets the ReactivationCost property"""
         return self.properties.get("ReactivationCost", None)
 
+    @odata(name="RecycleBinRetentionPeriod")
     @property
     def recycle_bin_retention_period(self) -> Optional[int]:
         """Gets the RecycleBinRetentionPeriod property"""
         return self.properties.get("RecycleBinRetentionPeriod", None)
 
+    @odata(name="ReduceTempTokenLifetimeEnabled")
     @property
     def reduce_temp_token_lifetime_enabled(self) -> Optional[bool]:
         """Gets the ReduceTempTokenLifetimeEnabled property"""
         return self.properties.get("ReduceTempTokenLifetimeEnabled", None)
 
+    @odata(name="ReduceTempTokenLifetimeValue")
     @property
     def reduce_temp_token_lifetime_value(self) -> Optional[int]:
         """Gets the ReduceTempTokenLifetimeValue property"""
         return self.properties.get("ReduceTempTokenLifetimeValue", None)
 
+    @odata(name="RequireAcceptingAccountMatchInvitedAccount")
     @property
     def require_accepting_account_match_invited_account(self) -> Optional[bool]:
         """Gets the RequireAcceptingAccountMatchInvitedAccount property"""
         return self.properties.get("RequireAcceptingAccountMatchInvitedAccount", None)
 
+    @odata(name="RequireAnonymousLinksExpireInDays")
     @property
     def require_anonymous_links_expire_in_days(self) -> Optional[int]:
         """Gets the RequireAnonymousLinksExpireInDays property"""
         return self.properties.get("RequireAnonymousLinksExpireInDays", None)
 
+    @odata(name="ResourceQuota")
     @property
     def resource_quota(self) -> Optional[float]:
         """Gets the ResourceQuota property"""
         return self.properties.get("ResourceQuota", None)
 
+    @odata(name="ResourceQuotaAllocated")
     @property
     def resource_quota_allocated(self) -> Optional[float]:
         """Gets the ResourceQuotaAllocated property"""
         return self.properties.get("ResourceQuotaAllocated", None)
 
+    @odata(name="RestrictedAccessControlForOneDriveErrorHelpLink")
     @property
     def restricted_access_control_for_onedrive_error_help_link(self) -> Optional[str]:
         """Gets the RestrictedAccessControlForOneDriveErrorHelpLink property"""
         return self.properties.get("RestrictedAccessControlForOneDriveErrorHelpLink", None)
 
+    @odata(name="RestrictedAccessControlforSitesErrorHelpLink")
     @property
     def restricted_access_controlfor_sites_error_help_link(self) -> Optional[str]:
         """Gets the RestrictedAccessControlforSitesErrorHelpLink property"""
         return self.properties.get("RestrictedAccessControlforSitesErrorHelpLink", None)
 
+    @odata(name="RestrictedOneDriveLicense")
     @property
     def restricted_onedrive_license(self) -> Optional[bool]:
         """Gets the RestrictedOneDriveLicense property"""
         return self.properties.get("RestrictedOneDriveLicense", None)
 
+    @odata(name="RestrictedSharePointLicense")
     @property
     def restricted_sharepoint_license(self) -> Optional[bool]:
         """Gets the RestrictedSharePointLicense property"""
         return self.properties.get("RestrictedSharePointLicense", None)
 
+    @odata(name="RestrictExternalSharing")
     @property
     def restrict_external_sharing(self) -> GuidCollection:
         """Gets the RestrictExternalSharing property"""
         return self.properties.get("RestrictExternalSharing", GuidCollection())
 
+    @odata(name="RestrictExternalSharingForAgents")
     @property
     def restrict_external_sharing_for_agents(self) -> Optional[bool]:
         """Gets the RestrictExternalSharingForAgents property"""
         return self.properties.get("RestrictExternalSharingForAgents", None)
 
+    @odata(name="RestrictResourceAccountAccess")
     @property
     def restrict_resource_account_access(self) -> Optional[bool]:
         """Gets the RestrictResourceAccountAccess property"""
         return self.properties.get("RestrictResourceAccountAccess", None)
 
+    @odata(name="SearchResolveExactEmailOrUPN")
     @property
     def search_resolve_exact_email_or_upn(self) -> Optional[bool]:
         """Gets the SearchResolveExactEmailOrUPN property"""
         return self.properties.get("SearchResolveExactEmailOrUPN", None)
 
+    @odata(name="SelfServiceSiteCreationDisabled")
     @property
     def self_service_site_creation_disabled(self) -> Optional[bool]:
         """Gets the SelfServiceSiteCreationDisabled property"""
         return self.properties.get("SelfServiceSiteCreationDisabled", None)
 
+    @odata(name="SharePointAddInsBlocked")
     @property
     def sharepoint_add_ins_blocked(self) -> Optional[bool]:
         """Gets the SharePointAddInsBlocked property"""
         return self.properties.get("SharePointAddInsBlocked", None)
 
+    @odata(name="SharePointAddInsDisabled")
     @property
     def sharepoint_add_ins_disabled(self) -> Optional[bool]:
         """Gets the SharePointAddInsDisabled property"""
         return self.properties.get("SharePointAddInsDisabled", None)
 
+    @odata(name="SharingAllowedDomainList")
     @property
     def sharing_allowed_domain_list(self) -> Optional[str]:
         """Gets the SharingAllowedDomainList property"""
         return self.properties.get("SharingAllowedDomainList", None)
 
+    @odata(name="SharingBlockedDomainList")
     @property
     def sharing_blocked_domain_list(self) -> Optional[str]:
         """Gets the SharingBlockedDomainList property"""
         return self.properties.get("SharingBlockedDomainList", None)
 
+    @odata(name="SharingCapability")
     @property
     def sharing_capability(self) -> Optional[int]:
         """Gets the SharingCapability property"""
         return self.properties.get("SharingCapability", None)
 
+    @odata(name="SharingDomainRestrictionMode")
     @property
     def sharing_domain_restriction_mode(self) -> Optional[int]:
         """Gets the SharingDomainRestrictionMode property"""
         return self.properties.get("SharingDomainRestrictionMode", None)
 
+    @odata(name="ShowAllUsersClaim")
     @property
     def show_all_users_claim(self) -> Optional[bool]:
         """Gets the ShowAllUsersClaim property"""
         return self.properties.get("ShowAllUsersClaim", None)
 
+    @odata(name="ShowEveryoneClaim")
     @property
     def show_everyone_claim(self) -> Optional[bool]:
         """Gets the ShowEveryoneClaim property"""
         return self.properties.get("ShowEveryoneClaim", None)
 
+    @odata(name="ShowEveryoneExceptExternalUsersClaim")
     @property
     def show_everyone_except_external_users_claim(self) -> Optional[bool]:
         """Gets the ShowEveryoneExceptExternalUsersClaim property"""
         return self.properties.get("ShowEveryoneExceptExternalUsersClaim", None)
 
+    @odata(name="ShowNGSCDialogForSyncOnODB")
     @property
     def show_ngsc_dialog_for_sync_on_odb(self) -> Optional[bool]:
         """Gets the ShowNGSCDialogForSyncOnODB property"""
         return self.properties.get("ShowNGSCDialogForSyncOnODB", None)
 
+    @odata(name="ShowOpenInDesktopOptionForSyncedFiles")
     @property
     def show_open_in_desktop_option_for_synced_files(self) -> Optional[bool]:
         """Gets the ShowOpenInDesktopOptionForSyncedFiles property"""
         return self.properties.get("ShowOpenInDesktopOptionForSyncedFiles", None)
 
+    @odata(name="ShowPeoplePickerGroupSuggestionsForIB")
     @property
     def show_people_picker_group_suggestions_for_ib(self) -> Optional[bool]:
         """Gets the ShowPeoplePickerGroupSuggestionsForIB property"""
         return self.properties.get("ShowPeoplePickerGroupSuggestionsForIB", None)
 
+    @odata(name="ShowPeoplePickerSuggestionsForGuestUsers")
     @property
     def show_people_picker_suggestions_for_guest_users(self) -> Optional[bool]:
         """Gets the ShowPeoplePickerSuggestionsForGuestUsers property"""
         return self.properties.get("ShowPeoplePickerSuggestionsForGuestUsers", None)
 
+    @odata(name="SignInAccelerationDomain")
     @property
     def sign_in_acceleration_domain(self) -> Optional[str]:
         """Gets the SignInAccelerationDomain property"""
         return self.properties.get("SignInAccelerationDomain", None)
 
+    @odata(name="SiteOwnerManageLegacyServicePrincipalEnabled")
     @property
     def site_owner_manage_legacy_service_principal_enabled(self) -> Optional[bool]:
         """Gets the SiteOwnerManageLegacyServicePrincipalEnabled property"""
         return self.properties.get("SiteOwnerManageLegacyServicePrincipalEnabled", None)
 
+    @odata(name="SiteOwnersCanAccessMissingContent")
     @property
     def site_owners_can_access_missing_content(self) -> Optional[bool]:
         """Gets the SiteOwnersCanAccessMissingContent property"""
         return self.properties.get("SiteOwnersCanAccessMissingContent", None)
 
+    @odata(name="SocialBarOnSitePagesDisabled")
     @property
     def social_bar_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the SocialBarOnSitePagesDisabled property"""
         return self.properties.get("SocialBarOnSitePagesDisabled", None)
 
+    @odata(name="SpecialCharactersStateInFileFolderNames")
     @property
     def special_characters_state_in_file_folder_names(self) -> Optional[int]:
         """Gets the SpecialCharactersStateInFileFolderNames property"""
         return self.properties.get("SpecialCharactersStateInFileFolderNames", None)
 
+    @odata(name="SPJitDlpPolicyData")
     @property
     def sp_jit_dlp_policy_data(self) -> SPJitDlpPolicyData:
         """Gets the SPJitDlpPolicyData property"""
@@ -3002,56 +3340,67 @@ class Tenant(Entity):
 
         return self.properties.get("SPJitDlpPolicyData", SPJitDlpPolicyData())
 
+    @odata(name="StartASiteFormUrl")
     @property
     def start_a_site_form_url(self) -> Optional[str]:
         """Gets the StartASiteFormUrl property"""
         return self.properties.get("StartASiteFormUrl", None)
 
+    @odata(name="StopAlerts")
     @property
     def stop_alerts(self) -> Optional[bool]:
         """Gets the StopAlerts property"""
         return self.properties.get("StopAlerts", None)
 
+    @odata(name="StopNew2010Workflows")
     @property
     def stop_new2010_workflows(self) -> Optional[bool]:
         """Gets the StopNew2010Workflows property"""
         return self.properties.get("StopNew2010Workflows", None)
 
+    @odata(name="StopNew2013Workflows")
     @property
     def stop_new2013_workflows(self) -> Optional[bool]:
         """Gets the StopNew2013Workflows property"""
         return self.properties.get("StopNew2013Workflows", None)
 
+    @odata(name="StorageQuota")
     @property
     def storage_quota(self) -> Optional[int]:
         """Gets the StorageQuota property"""
         return self.properties.get("StorageQuota", None)
 
+    @odata(name="StorageQuotaAllocated")
     @property
     def storage_quota_allocated(self) -> Optional[int]:
         """Gets the StorageQuotaAllocated property"""
         return self.properties.get("StorageQuotaAllocated", None)
 
+    @odata(name="StreamLaunchConfig")
     @property
     def stream_launch_config(self) -> Optional[int]:
         """Gets the StreamLaunchConfig property"""
         return self.properties.get("StreamLaunchConfig", None)
 
+    @odata(name="StreamLaunchConfigLastUpdated")
     @property
     def stream_launch_config_last_updated(self) -> Optional[datetime]:
         """Gets the StreamLaunchConfigLastUpdated property"""
         return self.properties.get("StreamLaunchConfigLastUpdated", datetime.min)
 
+    @odata(name="StreamLaunchConfigUpdateCount")
     @property
     def stream_launch_config_update_count(self) -> Optional[int]:
         """Gets the StreamLaunchConfigUpdateCount property"""
         return self.properties.get("StreamLaunchConfigUpdateCount", None)
 
+    @odata(name="SyncPrivacyProfileProperties")
     @property
     def sync_privacy_profile_properties(self) -> Optional[bool]:
         """Gets the SyncPrivacyProfileProperties property"""
         return self.properties.get("SyncPrivacyProfileProperties", None)
 
+    @odata(name="SyntexMediaAnalyticsSettings")
     @property
     def syntex_media_analytics_settings(self) -> SyntexPremiumFeatureSettings:
         """Gets the SyntexMediaAnalyticsSettings property"""
@@ -3061,6 +3410,7 @@ class Tenant(Entity):
 
         return self.properties.get("SyntexMediaAnalyticsSettings", SyntexPremiumFeatureSettings())
 
+    @odata(name="SyntexPlaybackTranscriptTranslationSettings")
     @property
     def syntex_playback_transcript_translation_settings(self) -> SyntexPremiumFeatureSettings:
         """Gets the SyntexPlaybackTranscriptTranslationSettings property"""
@@ -3070,6 +3420,7 @@ class Tenant(Entity):
 
         return self.properties.get("SyntexPlaybackTranscriptTranslationSettings", SyntexPremiumFeatureSettings())
 
+    @odata(name="TaxonomyTaggingSiteInfoList")
     @property
     def taxonomy_tagging_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the TaxonomyTaggingSiteInfoList property"""
@@ -3081,26 +3432,31 @@ class Tenant(Entity):
             "TaxonomyTaggingSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="TaxonomyTaggingSiteList")
     @property
     def taxonomy_tagging_site_list(self) -> GuidCollection:
         """Gets the TaxonomyTaggingSiteList property"""
         return self.properties.get("TaxonomyTaggingSiteList", GuidCollection())
 
+    @odata(name="TaxonomyTaggingSiteListFileName")
     @property
     def taxonomy_tagging_site_list_file_name(self) -> Optional[str]:
         """Gets the TaxonomyTaggingSiteListFileName property"""
         return self.properties.get("TaxonomyTaggingSiteListFileName", None)
 
+    @odata(name="TlsTokenBindingPolicyValue")
     @property
     def tls_token_binding_policy_value(self) -> Optional[int]:
         """Gets the TlsTokenBindingPolicyValue property"""
         return self.properties.get("TlsTokenBindingPolicyValue", None)
 
+    @odata(name="TranslationEnabled")
     @property
     def translation_enabled(self) -> Optional[bool]:
         """Gets the TranslationEnabled property"""
         return self.properties.get("TranslationEnabled", None)
 
+    @odata(name="TranslationSiteInfoList")
     @property
     def translation_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the TranslationSiteInfoList property"""
@@ -3112,36 +3468,43 @@ class Tenant(Entity):
             "TranslationSiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="TranslationSiteList")
     @property
     def translation_site_list(self) -> GuidCollection:
         """Gets the TranslationSiteList property"""
         return self.properties.get("TranslationSiteList", GuidCollection())
 
+    @odata(name="TranslationSiteListFileName")
     @property
     def translation_site_list_file_name(self) -> Optional[str]:
         """Gets the TranslationSiteListFileName property"""
         return self.properties.get("TranslationSiteListFileName", None)
 
+    @odata(name="UniversalAnnotationDisabled")
     @property
     def universal_annotation_disabled(self) -> Optional[bool]:
         """Gets the UniversalAnnotationDisabled property"""
         return self.properties.get("UniversalAnnotationDisabled", None)
 
+    @odata(name="UnlicensedOdbActiveStorageRetentionPeriod")
     @property
     def unlicensed_odb_active_storage_retention_period(self) -> Optional[int]:
         """Gets the UnlicensedOdbActiveStorageRetentionPeriod property"""
         return self.properties.get("UnlicensedOdbActiveStorageRetentionPeriod", None)
 
+    @odata(name="UnlicensedOdbStorageBillingMode")
     @property
     def unlicensed_odb_storage_billing_mode(self) -> Optional[int]:
         """Gets the UnlicensedOdbStorageBillingMode property"""
         return self.properties.get("UnlicensedOdbStorageBillingMode", None)
 
+    @odata(name="UnlicensedOdbSyntexBillingEnabled")
     @property
     def unlicensed_odb_syntex_billing_enabled(self) -> Optional[bool]:
         """Gets the UnlicensedOdbSyntexBillingEnabled property"""
         return self.properties.get("UnlicensedOdbSyntexBillingEnabled", None)
 
+    @odata(name="UnlicensedOneDriveForBusinessTenantMetricsData")
     @property
     def unlicensed_onedrive_for_business_tenant_metrics_data(self) -> UnlicensedOdbTenantMetrics:
         """Gets the UnlicensedOneDriveForBusinessTenantMetricsData property"""
@@ -3151,16 +3514,19 @@ class Tenant(Entity):
 
         return self.properties.get("UnlicensedOneDriveForBusinessTenantMetricsData", UnlicensedOdbTenantMetrics())
 
+    @odata(name="UseFindPeopleInPeoplePicker")
     @property
     def use_find_people_in_people_picker(self) -> Optional[bool]:
         """Gets the UseFindPeopleInPeoplePicker property"""
         return self.properties.get("UseFindPeopleInPeoplePicker", None)
 
+    @odata(name="UsePersistentCookiesForExplorerView")
     @property
     def use_persistent_cookies_for_explorer_view(self) -> Optional[bool]:
         """Gets the UsePersistentCookiesForExplorerView property"""
         return self.properties.get("UsePersistentCookiesForExplorerView", None)
 
+    @odata(name="VersionPolicyFileTypeOverride")
     @property
     def version_policy_file_type_override(self) -> ClientValueCollection[SPOFileVersionFileTypePolicySettings]:
         """Gets the VersionPolicyFileTypeOverride property"""
@@ -3173,41 +3539,49 @@ class Tenant(Entity):
             ClientValueCollection[SPOFileVersionFileTypePolicySettings](SPOFileVersionFileTypePolicySettings),
         )
 
+    @odata(name="ViewersCanCommentOnMediaDisabled")
     @property
     def viewers_can_comment_on_media_disabled(self) -> Optional[bool]:
         """Gets the ViewersCanCommentOnMediaDisabled property"""
         return self.properties.get("ViewersCanCommentOnMediaDisabled", None)
 
+    @odata(name="ViewInFileExplorerEnabled")
     @property
     def view_in_file_explorer_enabled(self) -> Optional[bool]:
         """Gets the ViewInFileExplorerEnabled property"""
         return self.properties.get("ViewInFileExplorerEnabled", None)
 
+    @odata(name="WhoCanShareAllowListInTenant")
     @property
     def who_can_share_allow_list_in_tenant(self) -> Optional[str]:
         """Gets the WhoCanShareAllowListInTenant property"""
         return self.properties.get("WhoCanShareAllowListInTenant", None)
 
+    @odata(name="WhoCanShareAllowListInTenantByGroupId")
     @property
     def who_can_share_allow_list_in_tenant_by_group_id(self) -> StringCollection:
         """Gets the WhoCanShareAllowListInTenantByGroupId property"""
         return self.properties.get("WhoCanShareAllowListInTenantByGroupId", StringCollection())
 
+    @odata(name="WhoCanShareAllowListInTenantByPrincipalIdentity")
     @property
     def who_can_share_allow_list_in_tenant_by_principal_identity(self) -> StringCollection:
         """Gets the WhoCanShareAllowListInTenantByPrincipalIdentity property"""
         return self.properties.get("WhoCanShareAllowListInTenantByPrincipalIdentity", StringCollection())
 
+    @odata(name="Workflow2010Disabled")
     @property
     def workflow2010_disabled(self) -> Optional[bool]:
         """Gets the Workflow2010Disabled property"""
         return self.properties.get("Workflow2010Disabled", None)
 
+    @odata(name="Workflows2013State")
     @property
     def workflows2013_state(self) -> Optional[int]:
         """Gets the Workflows2013State property"""
         return self.properties.get("Workflows2013State", None)
 
+    @odata(name="CatalogManagement", navigation=True)
     @property
     def catalog_management(self) -> CatalogManagementCollection:
         """Gets the CatalogManagement property"""
@@ -3220,6 +3594,7 @@ class Tenant(Entity):
             CatalogManagementCollection(self.context, ResourcePath("CatalogManagement", self.resource_path)),
         )
 
+    @odata(name="CatalogManagementCustomProperties", navigation=True)
     @property
     def catalog_management_custom_properties(self) -> CatalogManagementCustomPropertiesCollection:
         """Gets the CatalogManagementCustomProperties property"""
@@ -3234,6 +3609,7 @@ class Tenant(Entity):
             ),
         )
 
+    @odata(name="CatalogManagementRestrictedContentDiscovery", navigation=True)
     @property
     def catalog_management_restricted_content_discovery(self) -> CatalogManagementRestrictedContentDiscoveryCollection:
         """Gets the CatalogManagementRestrictedContentDiscovery property"""
@@ -3248,6 +3624,7 @@ class Tenant(Entity):
             ),
         )
 
+    @odata(name="TenantDataLossPreventionQuarantineSettings", navigation=True)
     @property
     def tenant_data_loss_prevention_quarantine_settings(self) -> TenantDataLossPreventionQuarantineSettings:
         """Gets the TenantDataLossPreventionQuarantineSettings property"""
@@ -6917,11 +7294,13 @@ class Tenant(Entity):
         """Gets the OneDrivesSummaryMetricsData property"""
         return self.properties.get("OneDrivesSummaryMetricsData", None)
 
+    @odata(name="SmartWikiEntryScope")
     @property
     def smart_wiki_entry_scope(self) -> Optional[int]:
         """Gets the SmartWikiEntryScope property"""
         return self.properties.get("SmartWikiEntryScope", None)
 
+    @odata(name="SmartWikiEntrySiteInfoList")
     @property
     def smart_wiki_entry_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the SmartWikiEntrySiteInfoList property"""
@@ -6933,6 +7312,7 @@ class Tenant(Entity):
             "SmartWikiEntrySiteInfoList", ClientValueCollection[SiteInfoForSitePicker](SiteInfoForSitePicker)
         )
 
+    @odata(name="SmartWikiEntrySiteList")
     @property
     def smart_wiki_entry_site_list(self) -> GuidCollection:
         """Gets the SmartWikiEntrySiteList property"""

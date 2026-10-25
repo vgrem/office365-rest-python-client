@@ -3,16 +3,19 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.multigeo.service.common_move_job import CommonMoveJob
 
 
 class MoveJobReport(Entity):
+    @odata(name="Jobs")
     @property
     def jobs(self) -> ClientValueCollection[CommonMoveJob]:
         """Gets the Jobs property"""
         return self.properties.get("Jobs", ClientValueCollection[CommonMoveJob](CommonMoveJob))
 
+    @odata(name="ReportUrl")
     @property
     def report_url(self) -> Optional[str]:
         """Gets the ReportUrl property"""

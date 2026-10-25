@@ -48,6 +48,7 @@ class MessageRule(Entity):
         """Indicates whether the rule is enabled to be applied to messages."""
         return self.properties.get("isEnabled", None)
 
+    @odata(name="isReadOnly")
     @property
     def is_read_only(self) -> Optional[bool]:
         """Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API."""

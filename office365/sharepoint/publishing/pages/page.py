@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.documents.coauthconfiguration import CoAuthConfiguration
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
@@ -204,11 +205,13 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="CanvasContent1")
     @property
     def canvas_content(self) -> Optional[str]:
         """Gets the CanvasContent1 for the current Site Page"""
         return self.properties.get("CanvasContent1", None)
 
+    @odata(name="Language")
     @property
     def language(self) -> Optional[str]:
         """Gets the Language for the Site Page."""
@@ -219,6 +222,7 @@ class SitePage(SitePageMetadata):
         """Sets the CanvasContent1 for the current Site Page"""
         self.set_property("CanvasContent1", value)
 
+    @odata(name="LayoutWebpartsContent")
     @property
     def layout_web_parts_content(self) -> Optional[str]:
         """Gets the LayoutWebPartsContent field for the current Site Page."""
@@ -229,6 +233,7 @@ class SitePage(SitePageMetadata):
         """Sets the LayoutWebPartsContent field for the current Site Page."""
         self.set_property("LayoutWebpartsContent", value)
 
+    @odata(name="Translations", navigation=True)
     @property
     def translations(self) -> TranslationStatusCollection:
         return self.properties.get(
@@ -247,36 +252,43 @@ class SitePage(SitePageMetadata):
     def entity_type_name(self) -> str:
         return "SP.Publishing.SitePage"
 
+    @odata(name="AlternativeUrlMap")
     @property
     def alternative_url_map(self) -> Optional[str]:
         """Gets the AlternativeUrlMap property"""
         return self.properties.get("AlternativeUrlMap", None)
 
+    @odata(name="AmplifyPublishingHistory")
     @property
     def amplify_publishing_history(self) -> AmplifyPublishingHistory:
         """Gets the AmplifyPublishingHistory property"""
         return self.properties.get("AmplifyPublishingHistory", AmplifyPublishingHistory())
 
+    @odata(name="AuthoringMetadata")
     @property
     def authoring_metadata(self) -> SitePageAuthoringMetadata:
         """Gets the AuthoringMetadata property"""
         return self.properties.get("AuthoringMetadata", SitePageAuthoringMetadata())
 
+    @odata(name="BoostProperties")
     @property
     def boost_properties(self) -> SitePageBoostProperties:
         """Gets the BoostProperties property"""
         return self.properties.get("BoostProperties", SitePageBoostProperties())
 
+    @odata(name="CampaignMetadata")
     @property
     def campaign_metadata(self) -> Optional[str]:
         """Gets the CampaignMetadata property"""
         return self.properties.get("CampaignMetadata", None)
 
+    @odata(name="CanvasContent1")
     @property
     def canvas_content1(self) -> Optional[str]:
         """Gets the CanvasContent1 property"""
         return self.properties.get("CanvasContent1", None)
 
+    @odata(name="CanvasJson1")
     @property
     def canvas_json1(self) -> Optional[str]:
         """Gets the CanvasJson1 property"""
@@ -287,71 +299,85 @@ class SitePage(SitePageMetadata):
         """Gets the number of client-side web parts serialized in the page canvas."""
         return count_web_parts(self.canvas_content1)
 
+    @odata(name="CheckIn")
     @property
     def check_in(self) -> Optional[bool]:
         """Gets the CheckIn property"""
         return self.properties.get("CheckIn", None)
 
+    @odata(name="CoAuthState")
     @property
     def co_auth_state(self) -> SitePageCoAuthState:
         """Gets the CoAuthState property"""
         return self.properties.get("CoAuthState", SitePageCoAuthState())
 
+    @odata(name="CoAuthTenantConfiguration")
     @property
     def co_auth_tenant_configuration(self) -> CoAuthConfiguration:
         """Gets the CoAuthTenantConfiguration property"""
         return self.properties.get("CoAuthTenantConfiguration", CoAuthConfiguration())
 
+    @odata(name="Collaborators")
     @property
     def collaborators(self) -> ClientValueCollection[SitePageCollaborator]:
         """Gets the Collaborators property"""
         return self.properties.get("Collaborators", ClientValueCollection[SitePageCollaborator](SitePageCollaborator))
 
+    @odata(name="CreationMode")
     @property
     def creation_mode(self) -> Optional[int]:
         """Gets the CreationMode property"""
         return self.properties.get("CreationMode", None)
 
+    @odata(name="IsLikedByCurrentUser")
     @property
     def is_liked_by_current_user(self) -> Optional[bool]:
         """Gets the IsLikedByCurrentUser property"""
         return self.properties.get("IsLikedByCurrentUser", None)
 
+    @odata(name="IsTemplate")
     @property
     def is_template(self) -> Optional[bool]:
         """Gets the IsTemplate property"""
         return self.properties.get("IsTemplate", None)
 
+    @odata(name="LayoutWebpartsContent")
     @property
     def layout_webparts_content(self) -> Optional[str]:
         """Gets the LayoutWebpartsContent property"""
         return self.properties.get("LayoutWebpartsContent", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""
         return self.properties.get("Name", None)
 
+    @odata(name="PublicationMetadata")
     @property
     def publication_metadata(self) -> Optional[str]:
         """Gets the PublicationMetadata property"""
         return self.properties.get("PublicationMetadata", None)
 
+    @odata(name="PublicationRecipients")
     @property
     def publication_recipients(self) -> Optional[str]:
         """Gets the PublicationRecipients property"""
         return self.properties.get("PublicationRecipients", None)
 
+    @odata(name="SitePageFlags")
     @property
     def site_page_flags(self) -> Optional[str]:
         """Gets the SitePageFlags property"""
         return self.properties.get("SitePageFlags", None)
 
+    @odata(name="SourceDynamicSectionId")
     @property
     def source_dynamic_section_id(self) -> Optional[str]:
         """Gets the SourceDynamicSectionId property"""
         return self.properties.get("SourceDynamicSectionId", None)
 
+    @odata(name="TemplateScope")
     @property
     def template_scope(self) -> Optional[int]:
         """Gets the TemplateScope property"""

@@ -1,9 +1,11 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class UserMnAODMoveValidationResult(Entity):
+    @odata(name="Result")
     @property
     def result(self) -> Optional[str]:
         """Gets the Result property"""

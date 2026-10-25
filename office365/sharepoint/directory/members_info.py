@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -11,11 +12,13 @@ class MembersInfo(Entity):
     def entity_type_name(self):
         return "SP.Directory.MembersInfo"
 
+    @odata(name="MemberNames")
     @property
     def member_names(self) -> StringCollection:
         """Gets the MemberNames property"""
         return self.properties.get("MemberNames", StringCollection())
 
+    @odata(name="TotalCount")
     @property
     def total_count(self) -> Optional[int]:
         """Gets the TotalCount property"""

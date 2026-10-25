@@ -5,6 +5,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -33,6 +34,7 @@ class TenantSettings(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="CorporateCatalogUrl")
     @property
     def corporate_catalog_url(self) -> Optional[str]:
         """Specifies the URL of the corporate catalog site collection."""

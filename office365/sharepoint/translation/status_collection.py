@@ -1,6 +1,7 @@
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.translation.status import TranslationStatus
 from office365.sharepoint.translation.status_set_request import (
@@ -24,10 +25,12 @@ class TranslationStatusCollection(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="UntranslatedLanguages")
     @property
     def untranslated_languages(self):
         return self.properties.get("UntranslatedLanguages", StringCollection())
 
+    @odata(name="Items")
     @property
     def items(self):
         return self.properties.get("Items", ClientValueCollection(TranslationStatus))

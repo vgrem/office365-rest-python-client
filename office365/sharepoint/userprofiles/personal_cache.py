@@ -10,6 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -30,6 +31,7 @@ class PersonalCache(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="CacheName")
     @property
     def cache_name(self) -> Optional[str]:
         """"""
@@ -39,11 +41,13 @@ class PersonalCache(Entity):
     def entity_type_name(self):
         return "SP.UserProfiles.PersonalCache"
 
+    @odata(name="MySiteUrl")
     @property
     def my_site_url(self) -> Optional[str]:
         """Gets the MySiteUrl property"""
         return self.properties.get("MySiteUrl", None)
 
+    @odata(name="RequireHtmlStorage")
     @property
     def require_html_storage(self) -> Optional[bool]:
         """Gets the RequireHtmlStorage property"""

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -14,6 +15,7 @@ class WebPart(Entity):
     def __str__(self):
         return self.title or self.entity_type_name
 
+    @odata(name="ExportMode")
     @property
     def export_mode(self) -> Optional[int]:
         """
@@ -21,6 +23,7 @@ class WebPart(Entity):
         """
         return self.properties.get("ExportMode", None)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """
@@ -31,6 +34,7 @@ class WebPart(Entity):
         """
         return self.properties.get("Hidden", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """
@@ -41,6 +45,7 @@ class WebPart(Entity):
         """
         return self.properties.get("Title", None)
 
+    @odata(name="TitleUrl")
     @property
     def title_url(self) -> Optional[str]:
         """
@@ -54,6 +59,7 @@ class WebPart(Entity):
         """
         return self.properties.get("TitleUrl", None)
 
+    @odata(name="ZoneIndex")
     @property
     def zone_index(self) -> Optional[int]:
         """
@@ -67,11 +73,13 @@ class WebPart(Entity):
     def entity_type_name(self):
         return "SP.WebParts.WebPart"
 
+    @odata(name="IsClosed")
     @property
     def is_closed(self) -> Optional[bool]:
         """Gets the IsClosed property"""
         return self.properties.get("IsClosed", None)
 
+    @odata(name="Subtitle")
     @property
     def subtitle(self) -> Optional[str]:
         """Gets the Subtitle property"""

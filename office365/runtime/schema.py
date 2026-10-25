@@ -93,7 +93,11 @@ class TypeSchema:
                 by_attr.setdefault(declared.attr, wire_name)
         return cls(
             properties=MappingProxyType(properties),
-            columns=tuple(name for name, declared in properties.items() if not declared.navigation),
+            columns=tuple(
+                name
+                for name, declared in properties.items()
+                if not declared.navigation and name not in getattr(model, "_unselectable", ())
+            ),
             navigations=tuple(name for name, declared in properties.items() if declared.navigation),
             by_attr=MappingProxyType(by_attr),
             readonly=frozenset(name for name, declared in properties.items() if declared.readonly),

@@ -10,6 +10,7 @@ from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.principal.users.user import User
@@ -324,11 +325,13 @@ class PeopleManager(Entity):
     def entity_type_name(self):
         return "SP.UserProfiles.PeopleManager"
 
+    @odata(name="EditProfileLink")
     @property
     def edit_profile_link(self) -> Optional[str]:
         """Gets the EditProfileLink property"""
         return self.properties.get("EditProfileLink", None)
 
+    @odata(name="IsMyPeopleListPublic")
     @property
     def is_my_people_list_public(self) -> Optional[bool]:
         """Gets the IsMyPeopleListPublic property"""

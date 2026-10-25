@@ -16,6 +16,7 @@ import pathlib
 import pkgutil
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Optional, get_origin, get_type_hints
 
 import pytest
 from office365.communications.onlinemeetings.online_meeting_info import OnlineMeetingInfo
@@ -28,14 +29,17 @@ from office365.outlook.contacts.contact import Contact
 from office365.outlook.mail.messages.message import Message
 from office365.planner.assignment import PlannerAssignment
 from office365.runtime.client_object import ClientObject
+from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.value import declared_type
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta, field_declarations, odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.lists.list import List
 from office365.sharepoint.navigation.navigation import Navigation
 from office365.sharepoint.navigation.nodes.node import NavigationNode
+from office365.sharepoint.webs.web import Web
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 #: Packages whose getters are expected to be fully declared today.
@@ -61,17 +65,85 @@ def test_expandable_is_the_complement_of_select_all():
     assert not set(expandable) & set(Event.select_all())
 
 
-def test_a_securable_declares_one_column_and_two_navigations():
-    """A securable's projection used to name nothing but navigations, so it read nothing.
+def _declared_kind(cls: type, name: str) -> Optional[str]:
+    """``"object"`` or ``"value"`` from a getter's annotation, ``None`` when unresolvable."""
+    prop = getattr(cls, name, None)
+    if not isinstance(prop, property) or prop.fget is None:
+        return None
+    try:
+        hint = get_type_hints(prop.fget).get("return")
+    except Exception:  # a TYPE_CHECKING-only import cannot be resolved at runtime
+        return None
+    target = get_origin(hint) or hint
+    if not isinstance(target, type):
+        return None
+    return "object" if issubclass(target, (ClientObject, ClientObjectCollection)) else "value"
+
+
+def test_a_declared_member_is_a_navigation_exactly_when_its_type_is_a_client_object():
+    """A link and a value are already separated by their base type.
+
+    So ``navigation`` is not a second fact to maintain: it is that separation spelled
+    where the class body can read it, and the CSDL agrees with the annotation by
+    construction. Where the annotation does not resolve (a ``TYPE_CHECKING``-only
+    import) there is nothing to compare, so the member is skipped — but every listed type
+    must still resolve enough to be checked, so the rule cannot quietly stop applying.
+    """
+    checked_types = (Event, Message, Contact, ListItem, Navigation, NavigationNode)
+    disagreements, covered = [], set()
+    for cls in checked_types:
+        for attr, wire in cls._schema.by_attr.items():
+            kind = _declared_kind(cls, attr)
+            if kind is None:
+                continue
+            covered.add(cls)
+            declared = cls._schema.properties[wire]
+            if (kind == "object") != bool(declared.navigation):
+                disagreements.append(f"{cls.__name__}.{attr}: {kind}, navigation={declared.navigation}")
+    assert disagreements == []
+    assert covered == set(checked_types)
+
+
+def test_a_column_the_service_refuses_is_declared_but_not_offered():
+    """Probed live: ``$select`` answers 400 for these names, and only on these types.
+
+    The declaration stays — hydration and comparison still know the wire name — while the
+    projection leaves it out, so ``select_all()`` is a request the service accepts rather
+    than a list that happens to contain everything. The refusal is a type's fact: the
+    Shield flag is answered for a ``ListItem`` and refused for a ``Web``.
+    """
+    for cls in (Web, List, ListItem):
+        assert cls._unselectable  # the type states what it saw refused
+        assert set(cls._unselectable) <= set(cls._schema.properties)  # about names it declares
+        assert not set(cls._schema.columns) & set(cls._unselectable)
+    assert "ShieldAddRoleAssignmentPushdown" in Web._unselectable
+    assert "ShieldAddRoleAssignmentPushdown" in ListItem.select_all()
+
+
+def test_a_securable_projects_its_flag_and_expands_its_role_assignments():
+    """A securable used to name nothing but navigations, so its projection read nothing.
 
     ``$select`` ignores a navigation silently (probed live: a ``ListItem`` projected
     with ``RoleAssignments`` came back without one, while ``$expand`` returned 51
-    assignments), which left the ACL flag as the type's only real column — and it was
-    the one declaration the class did not carry.
+    assignments), so the flag is the column that matters — and it is the one the service
+    assigns, which is why it comes back on a response and never on a request.
     """
-    assert ListItem.select_all() == ["HasUniqueRoleAssignments"]
-    assert ListItem.expandable() == ["FirstUniqueAncestorSecurableObject", "RoleAssignments"]
+    assert "HasUniqueRoleAssignments" in ListItem.select_all()
+    assert "RoleAssignments" in ListItem.expandable()
+    assert "RoleAssignments" not in ListItem.select_all()
     assert ListItem.wire_name("has_unique_role_assignments") == "HasUniqueRoleAssignments"
+
+
+def test_a_link_the_service_will_not_follow_on_its_own_is_not_expandable():
+    """Probed live: ``$expand=extensions`` is refused without a ``$filter``.
+
+    ``ErrorGraphExtensionExpandRequiresFilter`` — so the member is still a navigation
+    (the CSDL says it is a link), but ``$expand`` cannot follow it as it stands. The
+    filtered spelling stays reachable through a raw path.
+    """
+    assert "extensions" in Event._schema.navigations
+    assert "extensions" not in Event.expandable()
+    assert "attachments" in Event.expandable()
 
 
 def test_a_column_the_service_assigns_never_travels_back():

@@ -40,10 +40,19 @@ from typing import Dict, List, NamedTuple, Optional, Set
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from generator.config import GeneratorOptions  # noqa: E402
+from generator.odata.v3.metadata_reader import ODataV3Reader  # noqa: E402
 from generator.odata.v4.metadata_reader import ODataV4Reader  # noqa: E402
 
 _ODATA_IMPORT = "from office365.runtime.types.odata_property import odata"
 _GENERATOR_DIR = pathlib.Path(__file__).resolve().parents[1] / "generator"
+
+#: Service -> (metadata source, CSDL type prefix, reader). A Graph module names its own
+#: type; a generated SharePoint module does not — the class name is the only handle
+#: back, which :func:`type_index` inverts from the CSDL last segment.
+_SERVICES = {
+    "graph": ("graph", "microsoft.graph.", ODataV4Reader),
+    "sharepoint": ("sharepoint", "SP.", ODataV3Reader),
+}
 
 
 class Declared(NamedTuple):
@@ -69,10 +78,11 @@ class Edit(NamedTuple):
 Edits = List[Edit]
 
 
-def load_catalog() -> Catalog:
+def load_catalog(service: str) -> Catalog:
     """Map each CSDL type name to the properties it declares itself."""
-    options = GeneratorOptions.load("graph", _GENERATOR_DIR)
-    model = ODataV4Reader(options.metadata_path).read()
+    source, _, reader = _SERVICES[service]
+    options = GeneratorOptions.load(source, _GENERATOR_DIR)
+    model = reader(options.metadata_path).read()
 
     def is_enum(type_name: str) -> bool:
         bare = type_name[len("Collection(") : -1] if type_name.startswith("Collection(") else type_name
@@ -88,17 +98,60 @@ def load_catalog() -> Catalog:
     }
 
 
-def declared_type_name(tree: ast.Module) -> Optional[str]:
-    """The ``microsoft.graph.*`` name the module's ``entity_type_name`` returns."""
+def declared_type_name(tree: ast.Module, catalog: Catalog) -> Optional[str]:
+    """The CSDL type name the module's ``entity_type_name`` returns.
+
+    The module is asked first, because it is the one place that can name a type outright
+    -- and it sometimes spells the CSOM name (``Microsoft.SharePoint.Administration...``)
+    rather than the ``SP.`` alias, which is the same type under the name the metadata
+    itself uses. So the catalog decides: a name it does not contain is not a type.
+    """
     for node in ast.walk(tree):
         if not isinstance(node, ast.FunctionDef) or node.name != "entity_type_name":
             continue
         for child in ast.walk(node):
             if isinstance(child, ast.Return) and isinstance(child.value, ast.Constant):
                 value = child.value.value
-                if isinstance(value, str) and value.startswith("microsoft.graph."):
+                if isinstance(value, str) and value.lower() in catalog:
                     return value
     return None
+
+
+class Subject(NamedTuple):
+    """The one class of a module whose CSDL type is known."""
+
+    node: ast.ClassDef
+    properties: Dict[str, Declared]
+
+
+def subject(tree: ast.Module, catalog: Catalog, index: Dict[str, Dict[str, Declared]], prefix: str) -> Optional[Subject]:
+    """The module class whose CSDL type is known — never a guess.
+
+    A module may name its own type (``entity_type_name``); failing that, its class name
+    is matched against the CSDL last segment. Two candidates on either path is a guess.
+    """
+    classes = [node for node in tree.body if isinstance(node, ast.ClassDef)]
+    name = declared_type_name(tree, catalog)
+    if name:
+        properties = catalog.get(name.lower())
+        return Subject(classes[0], properties) if properties and len(classes) == 1 else None
+    matches = [node for node in classes if node.name.lower() in index]
+    return Subject(matches[0], index[matches[0].name.lower()]) if len(matches) == 1 else None
+
+
+def type_index(catalog: Catalog, prefix: str) -> Dict[str, Dict[str, Declared]]:
+    """Lowercased class name -> declared properties, for modules that name no CSDL type.
+
+    A generated SharePoint module usually spells its type name (``entity_type_name``),
+    but the older ones do not: the CSDL does, and the module only carries the class. The
+    generator turns a type's last segment into that class name, so the same rule inverts
+    it — and a last segment two types share is dropped rather than guessed.
+    """
+    owners: Dict[str, List[str]] = {}
+    for full_name in catalog:
+        if full_name.startswith(prefix.lower()):
+            owners.setdefault(full_name.rsplit(".", 1)[-1], []).append(full_name)
+    return {last: catalog[names[0]] for last, names in owners.items() if len(names) == 1}
 
 
 def read_wire_names(getter: ast.FunctionDef) -> Set[str]:
@@ -177,20 +230,16 @@ def pending_markers(
     return markers
 
 
-def plan_module(path: pathlib.Path, catalog: Catalog) -> Edits:
+def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]], prefix: str) -> Edits:
     """The line insertions one module needs, without touching it."""
     source = path.read_text(encoding="utf-8")
     if "@property" not in source:
         return []
     tree = ast.parse(source)
-    name = declared_type_name(tree)
-    properties = catalog.get(name.lower()) if name else None
-    if not properties:
+    found = subject(tree, catalog, index, prefix)
+    if found is None:
         return []
-    classes = [node for node in tree.body if isinstance(node, ast.ClassDef)]
-    if len(classes) != 1:
-        return []
-    markers = pending_markers(tree, classes[0], properties, source.splitlines(keepends=True))
+    markers = pending_markers(tree, found.node, found.properties, source.splitlines(keepends=True))
     if not markers or _ODATA_IMPORT in source:
         return markers
     last_import = max(
@@ -202,9 +251,9 @@ def plan_module(path: pathlib.Path, catalog: Catalog) -> Edits:
     return markers + [Edit(last_import + 1, None, _ODATA_IMPORT + "\n")]
 
 
-def mark_module(path: pathlib.Path, catalog: Catalog) -> int:
+def mark_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]], prefix: str) -> int:
     """Apply the planned declarations to one module; return how many were applied."""
-    markers = plan_module(path, catalog)
+    markers = plan_module(path, catalog, index, prefix)
     if not markers:
         return 0
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -221,14 +270,17 @@ def mark_module(path: pathlib.Path, catalog: Catalog) -> int:
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("root", help="package directory to update, e.g. office365/outlook")
+    parser.add_argument("--service", choices=sorted(_SERVICES), default="graph", help="which CSDL to read")
     parser.add_argument("--dry-run", action="store_true", help="report the diff size without writing")
     args = parser.parse_args(argv)
 
-    catalog = load_catalog()
+    catalog = load_catalog(args.service)
+    prefix = _SERVICES[args.service][1]
+    index = type_index(catalog, prefix)
     files = markers = 0
     for path in sorted(pathlib.Path(args.root).rglob("*.py")):
-        planned = plan_module(path, catalog) if args.dry_run else None
-        added = len(planned) if planned is not None else mark_module(path, catalog)
+        planned = plan_module(path, catalog, index, prefix) if args.dry_run else None
+        added = len(planned) if planned is not None else mark_module(path, catalog, index, prefix)
         if added:
             files += 1
             markers += added

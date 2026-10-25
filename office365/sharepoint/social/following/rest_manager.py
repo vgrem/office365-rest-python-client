@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.actor import SocialActor
 
@@ -40,26 +41,31 @@ class SocialRestFollowingManager(Entity):
     def entity_type_name(self):
         return "SP.Social.SocialRestFollowingManager"
 
+    @odata(name="FollowedDocumentsUri")
     @property
     def followed_documents_uri(self) -> Optional[str]:
         """Gets the FollowedDocumentsUri property"""
         return self.properties.get("FollowedDocumentsUri", None)
 
+    @odata(name="FollowedSitesUri")
     @property
     def followed_sites_uri(self) -> Optional[str]:
         """Gets the FollowedSitesUri property"""
         return self.properties.get("FollowedSitesUri", None)
 
+    @odata(name="MyFollowedDocumentsUri")
     @property
     def my_followed_documents_uri(self) -> Optional[str]:
         """Gets the MyFollowedDocumentsUri property"""
         return self.properties.get("MyFollowedDocumentsUri", None)
 
+    @odata(name="MyFollowedSitesUri")
     @property
     def my_followed_sites_uri(self) -> Optional[str]:
         """Gets the MyFollowedSitesUri property"""
         return self.properties.get("MyFollowedSitesUri", None)
 
+    @odata(name="SocialActor")
     @property
     def social_actor(self) -> SocialActor:
         """Gets the SocialActor property"""

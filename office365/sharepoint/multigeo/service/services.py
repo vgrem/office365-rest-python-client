@@ -38,7 +38,7 @@ class MultiGeoServices(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="StorageQuotas")
+    @odata(name="StorageQuotas", navigation=True)
     @property
     def storage_quotas(self) -> EntityCollection[UnifiedGroup]:
         """ """
@@ -51,7 +51,7 @@ class MultiGeoServices(Entity):
             ),
         )
 
-    @odata(name="UnifiedGroups")
+    @odata(name="UnifiedGroups", navigation=True)
     @property
     def unified_groups(self) -> EntityCollection[UnifiedGroup]:
         """ """

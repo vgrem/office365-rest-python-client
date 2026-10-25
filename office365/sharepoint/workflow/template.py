@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
@@ -10,41 +11,49 @@ from office365.sharepoint.permissions.base_permissions import BasePermissions
 class WorkflowTemplate(Entity):
     """Represents a workflow template currently deployed on the site"""
 
+    @odata(name="AllowManual")
     @property
     def allow_manual(self) -> Optional[bool]:
         """Gets the AllowManual property"""
         return self.properties.get("AllowManual", None)
 
+    @odata(name="AssociationUrl")
     @property
     def association_url(self) -> Optional[str]:
         """Gets the AssociationUrl property"""
         return self.properties.get("AssociationUrl", None)
 
+    @odata(name="AutoStartChange")
     @property
     def auto_start_change(self) -> Optional[bool]:
         """Gets the AutoStartChange property"""
         return self.properties.get("AutoStartChange", None)
 
+    @odata(name="AutoStartCreate")
     @property
     def auto_start_create(self) -> Optional[bool]:
         """Gets the AutoStartCreate property"""
         return self.properties.get("AutoStartCreate", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the Description property"""
         return self.properties.get("Description", None)
 
+    @odata(name="IsDeclarative")
     @property
     def is_declarative(self) -> Optional[bool]:
         """Gets the IsDeclarative property"""
         return self.properties.get("IsDeclarative", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""
         return self.properties.get("Name", None)
 
+    @odata(name="PermissionsManual")
     @property
     def permissions_manual(self) -> BasePermissions:
         """Gets the PermissionsManual property"""
@@ -54,6 +63,7 @@ class WorkflowTemplate(Entity):
     def entity_type_name(self):
         return "SP.Workflow.WorkflowTemplate"
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[UUID]:
         """Gets the Id property"""

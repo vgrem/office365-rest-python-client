@@ -2,20 +2,24 @@ from typing import Optional
 from uuid import UUID
 
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class PrioritySiteRenameJob(Entity):
+    @odata(name="JobId")
     @property
     def job_id(self) -> Optional[UUID]:
         """Gets the JobId property"""
         return self.properties.get("JobId", None)
 
+    @odata(name="PrioritizedSiteCount")
     @property
     def prioritized_site_count(self) -> Optional[int]:
         """Gets the PrioritizedSiteCount property"""
         return self.properties.get("PrioritizedSiteCount", None)
 
+    @odata(name="ResponseMessages")
     @property
     def response_messages(self) -> Optional[StringCollection]:
         """Gets the ResponseMessages property"""

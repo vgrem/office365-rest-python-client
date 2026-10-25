@@ -5,101 +5,121 @@ from typing_extensions import Self
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.migrationcenter.listinformation import SPListInformation
 
 
 class UrlParseResult(Entity):
+    @odata(name="DisplayUrl")
     @property
     def display_url(self) -> Optional[str]:
         """Gets the DisplayUrl property"""
         return self.properties.get("DisplayUrl", None)
 
+    @odata(name="ErrorCode")
     @property
     def error_code(self) -> Optional[str]:
         """Gets the ErrorCode property"""
         return self.properties.get("ErrorCode", None)
 
+    @odata(name="FreeSiteStorageBytes")
     @property
     def free_site_storage_bytes(self) -> Optional[int]:
         """Gets the FreeSiteStorageBytes property"""
         return self.properties.get("FreeSiteStorageBytes", None)
 
+    @odata(name="HasEnoughSiteStorage")
     @property
     def has_enough_site_storage(self) -> Optional[bool]:
         """Gets the HasEnoughSiteStorage property"""
         return self.properties.get("HasEnoughSiteStorage", None)
 
+    @odata(name="IsCurrentUserSiteAdmin")
     @property
     def is_current_user_site_admin(self) -> Optional[bool]:
         """Gets the IsCurrentUserSiteAdmin property"""
         return self.properties.get("IsCurrentUserSiteAdmin", None)
 
+    @odata(name="IsPersonalSite")
     @property
     def is_personal_site(self) -> Optional[bool]:
         """Gets the IsPersonalSite property"""
         return self.properties.get("IsPersonalSite", None)
 
+    @odata(name="Message")
     @property
     def message(self) -> Optional[str]:
         """Gets the Message property"""
         return self.properties.get("Message", None)
 
+    @odata(name="OriginalUrl")
     @property
     def original_url(self) -> Optional[str]:
         """Gets the OriginalUrl property"""
         return self.properties.get("OriginalUrl", None)
 
+    @odata(name="ProcessingMilliseconds")
     @property
     def processing_milliseconds(self) -> Optional[int]:
         """Gets the ProcessingMilliseconds property"""
         return self.properties.get("ProcessingMilliseconds", None)
 
+    @odata(name="ServerUrl")
     @property
     def server_url(self) -> Optional[str]:
         """Gets the ServerUrl property"""
         return self.properties.get("ServerUrl", None)
 
+    @odata(name="SiteId")
     @property
     def site_id(self) -> Optional[UUID]:
         """Gets the SiteId property"""
         return self.properties.get("SiteId", None)
 
+    @odata(name="SiteServerRelativeUrl")
     @property
     def site_server_relative_url(self) -> Optional[str]:
         """Gets the SiteServerRelativeUrl property"""
         return self.properties.get("SiteServerRelativeUrl", None)
 
+    @odata(name="SiteUrl")
     @property
     def site_url(self) -> Optional[str]:
         """Gets the SiteUrl property"""
         return self.properties.get("SiteUrl", None)
 
+    @odata(name="SPListInfoList")
     @property
     def sp_list_info_list(self) -> ClientValueCollection[SPListInformation]:
         """Gets the SPListInfoList property"""
         return self.properties.get("SPListInfoList", ClientValueCollection(SPListInformation))
 
+    @odata(name="Success")
     @property
     def success(self) -> Optional[bool]:
         """Gets the Success property"""
         return self.properties.get("Success", None)
 
+    @odata(name="WebId")
     @property
     def web_id(self) -> Optional[UUID]:
         """Gets the WebId property"""
         return self.properties.get("WebId", None)
 
+    @odata(name="WebServerRelativeUrl")
     @property
     def web_server_relative_url(self) -> Optional[str]:
         """Gets the WebServerRelativeUrl property"""
         return self.properties.get("WebServerRelativeUrl", None)
 
+    @odata(name="WebTemplateId")
     @property
     def web_template_id(self) -> Optional[int]:
         """Gets the WebTemplateId property"""
         return self.properties.get("WebTemplateId", None)
 
+    @odata(name="WebUrl")
     @property
     def web_url(self) -> Optional[str]:
         """Gets the WebUrl property"""

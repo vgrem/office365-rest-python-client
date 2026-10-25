@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.field import Field
 
 
 class FieldMultiChoice(Field):
     """Specifies a field that contains one or more values from a set of specified values."""
 
+    @odata(name="FillInChoice")
     @property
     def fill_in_choice(self) -> Optional[bool]:
         """
@@ -17,16 +19,19 @@ class FieldMultiChoice(Field):
         """
         return self.properties.get("FillInChoice", None)
 
+    @odata(name="Mappings")
     @property
     def mappings(self) -> Optional[str]:
         """Specifies the internal values corresponding to Choices."""
         return self.properties.get("Mappings", None)
 
+    @odata(name="Choices")
     @property
     def choices(self) -> StringCollection:
         """Specifies values that are available for selection in the field"""
         return self.properties.get("Choices", StringCollection())
 
+    @odata(name="UnlimitedLengthInDocumentLibrary")
     @property
     def unlimited_length_in_document_library(self) -> Optional[bool]:
         """Gets the UnlimitedLengthInDocumentLibrary property"""

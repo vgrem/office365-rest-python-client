@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -10,6 +11,7 @@ class SharingPermissionInformation(Entity):
     Contains information about a sharing permission entity such as group or role.
     """
 
+    @odata(name="IsDefaultPermission")
     @property
     def is_default_permission(self) -> Optional[bool]:
         """
@@ -27,6 +29,7 @@ class SharingPermissionInformation(Entity):
         """
         return self.properties.get("IsDefaultPermission", None)
 
+    @odata(name="PermissionId")
     @property
     def permission_id(self) -> Optional[str]:
         """Gets the ID of this permission in the following formats: group:x, role: xxxxxx."""
@@ -36,21 +39,25 @@ class SharingPermissionInformation(Entity):
     def entity_type_name(self):
         return "SP.SharingPermissionInformation"
 
+    @odata(name="PermissionDescription")
     @property
     def permission_description(self) -> Optional[str]:
         """Gets the PermissionDescription property"""
         return self.properties.get("PermissionDescription", None)
 
+    @odata(name="PermissionKind")
     @property
     def permission_kind(self) -> Optional[int]:
         """Gets the PermissionKind property"""
         return self.properties.get("PermissionKind", None)
 
+    @odata(name="PermissionName")
     @property
     def permission_name(self) -> Optional[str]:
         """Gets the PermissionName property"""
         return self.properties.get("PermissionName", None)
 
+    @odata(name="PermissionRoleType")
     @property
     def permission_role_type(self) -> Optional[int]:
         """Gets the PermissionRoleType property"""

@@ -9,6 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.social.actor import SocialActor
 from office365.sharepoint.social.attachment import SocialAttachment
@@ -95,11 +96,13 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="Owner")
     @property
     def owner(self) -> SocialActor:
         """The Owner property returns the current user."""
         return self.properties.get("Owner", SocialActor())
 
+    @odata(name="PersonalSitePortalUri")
     @property
     def personal_site_portal_uri(self) -> Optional[str]:
         """The PersonalSitePortalUri property specifies the URI of the personal site portal."""

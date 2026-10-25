@@ -24,12 +24,14 @@ class RoleDefinition(Entity):
         """
         return self.properties.get("BasePermissions", BasePermissions())
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Specifies the identifier of the role definition.
         Its value MUST be equal to or greater than 1073741824."""
         return self.properties.get("Id", None)
 
+    @odata(name="RoleTypeKind")
     @property
     def role_type_kind(self) -> Optional[int]:
         """Specifies the type of the role definition.
@@ -37,6 +39,7 @@ class RoleDefinition(Entity):
         """
         return self.properties.get("RoleTypeKind", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets a value that specifies the role definition name."""
@@ -47,6 +50,7 @@ class RoleDefinition(Entity):
         """Sets a value that specifies the role definition name."""
         self.set_property("Name", value)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets or sets a value that specifies the description of the role definition."""
@@ -63,11 +67,13 @@ class RoleDefinition(Entity):
                 self._resource_path = ServiceOperationPath("GetById", [value], self.parent_collection.resource_path)
         return super().set_property(name, value, persist_changes)
 
+    @odata(name="Hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Gets the Hidden property"""
         return self.properties.get("Hidden", None)
 
+    @odata(name="Order")
     @property
     def order(self) -> Optional[int]:
         """Gets the Order property"""

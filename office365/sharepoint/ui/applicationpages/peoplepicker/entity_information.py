@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.client_object import ClientObject
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.ui.applicationpages.peoplepicker.entity_information_request import (
     PickerEntityInformationRequest,
 )
@@ -9,6 +10,7 @@ from office365.sharepoint.ui.applicationpages.peoplepicker.entity_information_re
 class PickerEntityInformation(ClientObject):
     """Represents additional information about the principal."""
 
+    @odata(name="TotalMemberCount")
     @property
     def total_member_count(self) -> Optional[int]:
         """
@@ -16,6 +18,7 @@ class PickerEntityInformation(ClientObject):
         """
         return self.properties.get("TotalMemberCount", None)
 
+    @odata(name="Entity")
     @property
     def entity(self) -> PickerEntityInformationRequest:
         """The principal for which information is being requested."""

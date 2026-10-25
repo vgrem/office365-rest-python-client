@@ -3,17 +3,20 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.changes.change import Change
 
 
 class ChangeContentType(Change):
     """Specifies a change on a content type."""
 
+    @odata(name="ContentTypeId")
     @property
     def content_type_id(self) -> Optional[str]:
         """Identifies the content type that has changed."""
         return self.properties.get("ContentTypeId", None)
 
+    @odata(name="WebId")
     @property
     def web_id(self) -> Optional[UUID]:
         """Gets the WebId property"""

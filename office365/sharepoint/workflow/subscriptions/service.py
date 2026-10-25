@@ -6,10 +6,12 @@ from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class WorkflowSubscriptionService(Entity):
+    @odata(name="Current", navigation=True)
     @property
     def current(self) -> WorkflowSubscriptionService:
         """Gets the Current property"""

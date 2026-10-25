@@ -6,6 +6,7 @@ from uuid import UUID
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 
@@ -36,16 +37,19 @@ class TranslationJob(Entity):
     def entity_type_name(self) -> str:
         return "SP.Translation.TranslationJob"
 
+    @odata(name="JobId")
     @property
     def job_id(self) -> Optional[UUID]:
         """Gets the JobId property"""
         return self.properties.get("JobId", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""
         return self.properties.get("Name", None)
 
+    @odata(name="OutputSaveBehavior")
     @property
     def output_save_behavior(self) -> Optional[int]:
         """Gets the OutputSaveBehavior property"""

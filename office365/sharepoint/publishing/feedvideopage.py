@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
@@ -26,11 +27,13 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 
 
 class FeedVideoPage(Entity):
+    @odata(name="ModernAudienceTargetUserField")
     @property
     def modern_audience_target_user_field(self) -> Optional[str]:
         """Gets the ModernAudienceTargetUserField property"""
         return self.properties.get("ModernAudienceTargetUserField", None)
 
+    @odata(name="VideoDuration")
     @property
     def video_duration(self) -> Optional[int]:
         """Gets the VideoDuration property"""

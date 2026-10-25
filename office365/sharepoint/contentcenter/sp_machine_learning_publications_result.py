@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class SPMachineLearningPublicationsResult(Entity):
+    @odata(name="Details")
     @property
     def details(self) -> ClientValueCollection[SPMachineLearningPublicationResult]:
         """Gets the Details property"""
@@ -23,11 +25,13 @@ class SPMachineLearningPublicationsResult(Entity):
             "Details", ClientValueCollection[SPMachineLearningPublicationResult](SPMachineLearningPublicationResult)
         )
 
+    @odata(name="TotalFailures")
     @property
     def total_failures(self) -> Optional[int]:
         """Gets the TotalFailures property"""
         return self.properties.get("TotalFailures", None)
 
+    @odata(name="TotalSuccesses")
     @property
     def total_successes(self) -> Optional[int]:
         """Gets the TotalSuccesses property"""

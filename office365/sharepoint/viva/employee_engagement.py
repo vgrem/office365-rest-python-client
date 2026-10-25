@@ -71,7 +71,7 @@ class EmployeeEngagement(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="AppConfiguration")
+    @odata(name="AppConfiguration", navigation=True)
     @property
     def app_configuration(self) -> AppConfiguration:
         return self.properties.get(
@@ -79,7 +79,7 @@ class EmployeeEngagement(Entity):
             AppConfiguration(self.context, ResourcePath("AppConfiguration", self.resource_path)),
         )
 
-    @odata(name="VivaConnectionsPage")
+    @odata(name="VivaConnectionsPage", navigation=True)
     @property
     def viva_connections_page(self) -> VivaConnectionsPage:
         return self.properties.get(
@@ -87,6 +87,7 @@ class EmployeeEngagement(Entity):
             VivaConnectionsPage(self.context, ResourcePath("VivaConnectionsPage", self.resource_path)),
         )
 
+    @odata(name="VivaResources", navigation=True)
     @property
     def viva_resources(self) -> VivaResources:
         """Gets the VivaResources property"""

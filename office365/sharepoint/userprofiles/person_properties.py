@@ -17,26 +17,31 @@ class PersonProperties(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="AccountName")
     @property
     def account_name(self) -> Optional[str]:
         """The AccountName property specifies the person's account name."""
         return self.properties.get("AccountName", None)
 
+    @odata(name="DisplayName")
     @property
     def display_name(self) -> Optional[str]:
         """The DisplayName property specifies the person's display name."""
         return self.properties.get("DisplayName", None)
 
+    @odata(name="Email")
     @property
     def email(self) -> Optional[str]:
         """The Email property specifies the person's email address."""
         return self.properties.get("Email", None)
 
+    @odata(name="LatestPost")
     @property
     def latest_post(self) -> Optional[str]:
         """The  LatestPost property specifies the person's latest microblog post."""
         return self.properties.get("LatestPost", None)
 
+    @odata(name="Peers")
     @property
     def peers(self) -> StringCollection:
         """
@@ -45,6 +50,7 @@ class PersonProperties(Entity):
         """
         return self.properties.get("Peers", StringCollection())
 
+    @odata(name="PersonalUrl")
     @property
     def personal_url(self) -> Optional[str]:
         """The PersonalUrl property specifies the absolute URL of the person's personal page."""
@@ -68,16 +74,19 @@ class PersonProperties(Entity):
         """
         return self.properties.get("ExtendedReports", StringCollection())
 
+    @odata(name="PictureUrl")
     @property
     def picture_url(self) -> Optional[str]:
         """The PictureUrl property specifies the  URL for the person's profile picture."""
         return self.properties.get("PictureUrl", None)
 
+    @odata(name="UserUrl")
     @property
     def user_url(self) -> Optional[str]:
         """The UserUrl property specifies the URL for the person's profile."""
         return self.properties.get("UserUrl", None)
 
+    @odata(name="UserProfileProperties")
     @property
     def user_profile_properties(self) -> Optional[Dict[str, Any]]:
         """"""
@@ -93,21 +102,25 @@ class PersonProperties(Entity):
         super().set_property(name, value)
         return self
 
+    @odata(name="DirectReports")
     @property
     def direct_reports(self) -> StringCollection:
         """Gets the DirectReports property"""
         return self.properties.get("DirectReports", StringCollection())
 
+    @odata(name="IsFollowed")
     @property
     def is_followed(self) -> Optional[bool]:
         """Gets the IsFollowed property"""
         return self.properties.get("IsFollowed", None)
 
+    @odata(name="PersonalSiteHostUrl")
     @property
     def personal_site_host_url(self) -> Optional[str]:
         """Gets the PersonalSiteHostUrl property"""
         return self.properties.get("PersonalSiteHostUrl", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the Title property"""

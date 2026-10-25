@@ -8,27 +8,31 @@ from office365.sharepoint.entity import Entity
 class RelatedField(Entity):
     """Represents a Lookup Field that points to a given list on a Web site."""
 
+    @odata(name="FieldId")
     @property
     def field_id(self) -> Optional[str]:
         """Gets the field id of the corresponding Lookup Field."""
         return self.properties.get("FieldId", None)
 
+    @odata(name="ListId")
     @property
     def list_id(self) -> Optional[str]:
         """Gets the ID of the List containing the corresponding Lookup Field."""
         return self.properties.get("ListId", None)
 
+    @odata(name="WebId")
     @property
     def web_id(self) -> Optional[str]:
         """Gets the ID of the Web containing the corresponding Lookup Field."""
         return self.properties.get("WebId", None)
 
+    @odata(name="RelationshipDeleteBehavior")
     @property
     def relationship_delete_behavior(self) -> Optional[int]:
         """Gets delete behavior of the corresponding Lookup Field."""
         return self.properties.get("RelationshipDeleteBehavior", None)
 
-    @odata(name="LookupList")
+    @odata(name="LookupList", navigation=True)
     @property
     def lookup_list(self):
         """Specifies the List that the corresponding Lookup Field looks up to."""

@@ -7,17 +7,20 @@ from uuid import UUID
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.publishing.propertyvalue import PropertyValue
 from office365.sharepoint.tenant.administration.property import Property
 
 
 class CatalogManagementCollection(Entity):
+    @odata(name="lastUpdatedTimeUtc")
     @property
     def last_updated_time_utc(self) -> Optional[datetime]:
         """Gets the lastUpdatedTimeUtc property"""
         return self.properties.get("lastUpdatedTimeUtc", datetime.min)
 
+    @odata(name="Items")
     @property
     def items(self) -> ClientValueCollection[Property]:
         """Gets the Items property"""

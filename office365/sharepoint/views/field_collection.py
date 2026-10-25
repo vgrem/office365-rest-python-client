@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, List, Optional, Union
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -31,11 +32,13 @@ class ViewFieldCollection(Entity):
     def __repr__(self):
         return repr(self.items)
 
+    @odata(name="SchemaXml")
     @property
     def schema_xml(self) -> Optional[str]:
         """Gets Schema Xml."""
         return self.properties.get("SchemaXml", None)
 
+    @odata(name="Items")
     @property
     def items(self) -> Optional[List[str]]:
         """Gets items."""

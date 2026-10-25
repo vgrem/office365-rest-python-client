@@ -61,25 +61,40 @@ class ClientObject:
     #: instance; see :func:`office365.runtime.odata.edm.edm_type_name`.
     _odata_type_name: ClassVar[Optional[str]] = None
 
+    #: Declared wire names this type's own service refuses to project. The fact is per
+    #: type, not per property -- ``ShieldAddRoleAssignmentPushdown`` is answered on a
+    #: ``ListItem`` and refused on a ``Web`` -- so it is stated by the type that saw the
+    #: refusal, and the declaration stays intact for hydration and comparison.
+    _unselectable: ClassVar[Tuple[str, ...]] = ()
+
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
         cls._schema = TypeSchema.build(cls)
 
     @classmethod
     def select_all(cls) -> List[str]:
-        """The declared columns of this type: every wire name ``$select`` accepts.
+        """The declared columns of this type: every wire name ``$select`` accepts here.
 
         A navigation property is left out: the service reaches it through the path,
-        not through a projection, and naming one in ``$select`` is an error. The
-        names come from the same declarations the getters read, so a projection
-        built here cannot spell a column differently from the code that consumes it.
+        not through a projection, and naming one in ``$select`` is an error. So is a
+        name the type lists in :attr:`_unselectable`, which is how a type says its
+        service answers 400 for a column it nevertheless declares. The names come from
+        the same declarations the getters read, so a projection built here cannot spell
+        a column differently from the code that consumes it.
         """
         return list(cls._schema.columns)
 
     @classmethod
     def expandable(cls) -> List[str]:
-        """The declared navigation properties of this type: what ``$expand`` can reach."""
-        return list(cls._schema.navigations)
+        """The declared navigation properties ``$expand`` can reach.
+
+        A link is not a promise: ``$expand`` on ``Event.extensions`` is refused unless a
+        ``$filter`` is supplied, so a declaration may say so and keep the name out of
+        here while the link itself stays a navigation.
+        """
+        return [
+            declared.name for declared in cls._schema.properties.values() if declared.navigation and declared.expandable
+        ]
 
     @classmethod
     def wire_name(cls, attr: str) -> str:

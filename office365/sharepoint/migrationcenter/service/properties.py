@@ -3,6 +3,7 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -13,6 +14,7 @@ class MigrationProperties(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationProperties"
 
+    @odata(name="Count")
     @property
     def count(self) -> Optional[int]:
         """Gets the Count property"""

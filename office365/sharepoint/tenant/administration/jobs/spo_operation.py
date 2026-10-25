@@ -1,11 +1,13 @@
 from typing import Optional
 
 from office365.runtime.client_object import ClientObject
+from office365.runtime.types.odata_property import odata
 
 
 class SpoOperation(ClientObject):
     """Represents an operation on a site collection."""
 
+    @odata(name="HasTimedout")
     @property
     def has_timedout(self) -> Optional[bool]:
         """Gets a value that indicates whether the maximum wait time for the operation has been exceeded."""
@@ -25,6 +27,7 @@ class SpoOperation(ClientObject):
             return int(self.properties["PollingInterval"]) / 1000
         return None
 
+    @odata(name="PollingInterval")
     @property
     def polling_interval(self) -> Optional[int]:
         """Gets the PollingInterval property"""

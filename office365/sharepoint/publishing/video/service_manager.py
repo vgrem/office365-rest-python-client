@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.publishing.video.channel_collection import (
@@ -28,31 +29,37 @@ class VideoServiceManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="AutomaticMigrationType")
     @property
     def automatic_migration_type(self) -> Optional[str]:
         """Gets the AutomaticMigrationType property"""
         return self.properties.get("AutomaticMigrationType", None)
 
+    @odata(name="CanAdministratePortalByCurrent")
     @property
     def can_administrate_portal_by_current(self) -> Optional[bool]:
         """Gets the CanAdministratePortalByCurrent property"""
         return self.properties.get("CanAdministratePortalByCurrent", None)
 
+    @odata(name="CanCreateChannelsByCurrent")
     @property
     def can_create_channels_by_current(self) -> Optional[bool]:
         """Gets the CanCreateChannelsByCurrent property"""
         return self.properties.get("CanCreateChannelsByCurrent", None)
 
+    @odata(name="CanViewPortalByCurrent")
     @property
     def can_view_portal_by_current(self) -> Optional[bool]:
         """Gets the CanViewPortalByCurrent property"""
         return self.properties.get("CanViewPortalByCurrent", None)
 
+    @odata(name="UploadGuidelinesLink")
     @property
     def upload_guidelines_link(self) -> Optional[str]:
         """Gets the UploadGuidelinesLink property"""
         return self.properties.get("UploadGuidelinesLink", None)
 
+    @odata(name="VideoGuidelinesLink")
     @property
     def video_guidelines_link(self) -> Optional[str]:
         """Gets the VideoGuidelinesLink property"""
@@ -62,6 +69,7 @@ class VideoServiceManager(Entity):
     def entity_type_name(self):
         return "SP.Publishing.VideoServiceManager"
 
+    @odata(name="CanEditChannels", navigation=True)
     @property
     def can_edit_channels(self) -> EntityCollection[VideoChannel]:
         """Gets the CanEditChannels property"""
@@ -74,6 +82,7 @@ class VideoServiceManager(Entity):
             ),
         )
 
+    @odata(name="Channels", navigation=True)
     @property
     def channels(self) -> EntityCollection[VideoChannel]:
         """Gets the Channels property"""
@@ -84,6 +93,7 @@ class VideoServiceManager(Entity):
             EntityCollection[VideoChannel](self.context, VideoChannel, ResourcePath("Channels", self.resource_path)),
         )
 
+    @odata(name="Search", navigation=True)
     @property
     def search(self) -> Search:
         """Gets the Search property"""
@@ -91,6 +101,7 @@ class VideoServiceManager(Entity):
 
         return self.properties.get("Search", Search(self.context, ResourcePath("Search", self.resource_path)))
 
+    @odata(name="SpotlightChannels", navigation=True)
     @property
     def spotlight_channels(self) -> EntityCollection[SpotlightChannel]:
         """Gets the SpotlightChannels property"""
@@ -103,6 +114,7 @@ class VideoServiceManager(Entity):
             ),
         )
 
+    @odata(name="SpotlightVideos", navigation=True)
     @property
     def spotlight_videos(self) -> EntityCollection[SpotlightVideo]:
         """Gets the SpotlightVideos property"""

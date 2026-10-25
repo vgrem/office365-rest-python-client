@@ -1,11 +1,13 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.field import Field
 
 
 class FieldText(Field):
     """Specifies a field that contains a single line of text."""
 
+    @odata(name="MaxLength")
     @property
     def max_length(self) -> Optional[int]:
         """Gets a value that specifies the maximum number of characters allowed in the value of the field."""

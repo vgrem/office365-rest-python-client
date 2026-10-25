@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.number import FieldNumber
 
 
@@ -7,6 +8,7 @@ class FieldCurrency(FieldNumber):
     """Specifies a field that contains currency values. To set properties, call the Update method
     (section 3.2.5.43.2.1.5)."""
 
+    @odata(name="CurrencyLocaleId")
     @property
     def currency_locale_id(self) -> Optional[int]:
         """Gets the language code identifier (LCID) used to format the value of the field."""

@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.webs.time_zone_information import TimeZoneInformation
@@ -36,16 +37,19 @@ class TimeZone(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Gets the identifier of the time zone."""
         return self.properties.get("Id", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description of the time zone."""
         return self.properties.get("Description", None)
 
+    @odata(name="Information")
     @property
     def information(self) -> TimeZoneInformation:
         """Gets information about the time zone."""

@@ -1,10 +1,12 @@
 from office365.outlook.mail.attachments.attachment import Attachment
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class ItemAttachment(Attachment):
     """A contact, event, or message that's attached to a user event, message, or post."""
 
+    @odata(name="item", navigation=True)
     @property
     def item(self):
         """The attached message or event."""

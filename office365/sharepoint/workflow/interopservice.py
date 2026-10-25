@@ -7,10 +7,12 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class InteropService(Entity):
+    @odata(name="Current", navigation=True)
     @property
     def current(self) -> InteropService:
         """Gets the Current property"""

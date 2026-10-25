@@ -1,17 +1,20 @@
 from datetime import datetime
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class StorageMetrics(Entity):
     """Specifies the storage-related metrics for list folders in the site"""
 
+    @odata(name="AdditionalFileStreamSize")
     @property
     def additional_file_stream_size(self) -> Optional[int]:
         """ """
         return self.properties.get("AdditionalFileStreamSize", None)
 
+    @odata(name="LastModified")
     @property
     def last_modified(self) -> Optional[datetime]:
         """
@@ -19,6 +22,7 @@ class StorageMetrics(Entity):
         """
         return self.properties.get("LastModified", datetime.min)
 
+    @odata(name="TotalFileCount")
     @property
     def total_file_count(self) -> Optional[int]:
         """
@@ -27,6 +31,7 @@ class StorageMetrics(Entity):
         """
         return self.properties.get("TotalFileCount", None)
 
+    @odata(name="TotalFileStreamSize")
     @property
     def total_file_stream_size(self) -> Optional[int]:
         """
@@ -35,6 +40,7 @@ class StorageMetrics(Entity):
         """
         return self.properties.get("TotalFileStreamSize", None)
 
+    @odata(name="TotalSize")
     @property
     def total_size(self) -> Optional[int]:
         """
@@ -43,11 +49,13 @@ class StorageMetrics(Entity):
         """
         return self.properties.get("TotalSize", None)
 
+    @odata(name="VersionCount")
     @property
     def version_count(self) -> Optional[int]:
         """ """
         return self.properties.get("VersionCount", None)
 
+    @odata(name="VersionSize")
     @property
     def version_size(self) -> Optional[int]:
         """ """

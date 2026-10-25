@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -22,6 +23,7 @@ class SPOContentSecurityPolicyConfiguration(Entity):
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOContentSecurityPolicyConfiguration"
 
+    @odata(name="Items")
     @property
     def items(self) -> ClientValueCollection[SPOContentSecurityPolicyEntry]:
         """Gets the Items property"""

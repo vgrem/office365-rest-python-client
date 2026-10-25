@@ -35,26 +35,31 @@ class RecycleBinItem(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="AuthorEmail")
     @property
     def author_email(self) -> Optional[str]:
         """Gets the email address of the user who originally created the Recycle Bin item."""
         return self.properties.get("AuthorEmail", None)
 
+    @odata(name="AuthorName")
     @property
     def author_name(self) -> Optional[str]:
         """Gets the user display name of the user who originally created the Recycle Bin item."""
         return self.properties.get("AuthorName", None)
 
+    @odata(name="DeletedByEmail")
     @property
     def deleted_by_email(self) -> Optional[str]:
         """Gets the email address of the user who deleted the Recycle Bin item."""
         return self.properties.get("DeletedByEmail", None)
 
+    @odata(name="DeletedByName")
     @property
     def deleted_by_name(self) -> Optional[str]:
         """Gets the user display name of the user who deleted the Recycle Bin item."""
         return self.properties.get("DeletedByName", None)
 
+    @odata(name="DeletedDateLocalFormatted")
     @property
     def deleted_date_local_formatted(self) -> Optional[str]:
         """
@@ -63,6 +68,7 @@ class RecycleBinItem(Entity):
         """
         return self.properties.get("DeletedDateLocalFormatted", None)
 
+    @odata(name="DirName")
     @property
     def dir_name(self) -> Optional[str]:
         """
@@ -76,21 +82,25 @@ class RecycleBinItem(Entity):
         """Returns the site relative path of the list or folder that originally contained the Recycle Bin item."""
         return self.properties.get("DirNamePath", SPResPath())
 
+    @odata(name="ItemState")
     @property
     def item_state(self) -> Optional[int]:
         """Specifies the Recycle Bin stage of the Recycle Bin item."""
         return self.properties.get("ItemState", None)
 
+    @odata(name="ItemType")
     @property
     def item_type(self) -> Optional[int]:
         """Specifies the type of the Recycle Bin item."""
         return self.properties.get("ItemType", None)
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets a value that specifies the identifier of the Recycle Bin item."""
         return self.properties.get("Id", None)
 
+    @odata(name="LeafName")
     @property
     def leaf_name(self) -> Optional[str]:
         """Specifies the leaf name of the Recycle Bin item."""
@@ -102,22 +112,25 @@ class RecycleBinItem(Entity):
         """Returns the leaf name path of the Recycle Bin item."""
         return self.properties.get("LeafNamePath", SPResPath())
 
+    @odata(name="Size")
     @property
     def size(self) -> Optional[int]:
         """Gets a value that specifies the size of the Recycle Bin item in bytes."""
         return self.properties.get("Size", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Specifies the title of the Recycle Bin item."""
         return self.properties.get("Title", None)
 
+    @odata(name="Author", navigation=True)
     @property
     def author(self) -> User:
         """Gets a value that specifies the user who created the Recycle Bin item."""
         return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
-    @odata(name="DeletedBy")
+    @odata(name="DeletedBy", navigation=True)
     @property
     def deleted_by(self) -> User:
         """Gets a value that specifies the user who deleted the Recycle Bin item."""
@@ -132,16 +145,19 @@ class RecycleBinItem(Entity):
         """Gets a value that specifies when the Recycle Bin item was moved to the Recycle Bin."""
         return self.properties.get("DeletedDate", datetime.min)
 
+    @odata(name="ArchivedFileSize")
     @property
     def archived_file_size(self) -> Optional[int]:
         """Gets the ArchivedFileSize property"""
         return self.properties.get("ArchivedFileSize", None)
 
+    @odata(name="UniqueId")
     @property
     def unique_id(self) -> Optional[UUID]:
         """Gets the UniqueId property"""
         return self.properties.get("UniqueId", None)
 
+    @odata(name="RecycleBinListId")
     @property
     def recycle_bin_list_id(self) -> Optional[UUID]:
         """Gets the RecycleBinListId property"""

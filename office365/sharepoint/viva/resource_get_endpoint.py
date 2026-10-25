@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -14,6 +15,7 @@ class VivaResourceGetEndpoint(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.EmployeeEngagement.VivaResourceGetEndpoint"
 
+    @odata(name="CompanyLinks")
     @property
     def company_links(self) -> ClientValueCollection[VivaResourceLink]:
         """Gets the CompanyLinks property"""

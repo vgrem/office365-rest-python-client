@@ -744,7 +744,7 @@ class Folder(Entity):
         self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return return_type
 
-    @odata(name="StorageMetrics")
+    @odata(name="StorageMetrics", navigation=True)
     @property
     def storage_metrics(self) -> StorageMetrics:
         """Specifies the storage-related metrics for list folders in the site"""
@@ -752,7 +752,7 @@ class Folder(Entity):
             "StorageMetrics", StorageMetrics(self.context, ResourcePath("StorageMetrics", self.resource_path))
         )
 
-    @odata(name="ListItemAllFields")
+    @odata(name="ListItemAllFields", navigation=True)
     @property
     def list_item_all_fields(self) -> ListItem:
         """Specifies the list item fields values for the list item corresponding to the folder."""
@@ -760,6 +760,7 @@ class Folder(Entity):
             "ListItemAllFields", ListItem(self.context, ResourcePath("ListItemAllFields", self.resource_path))
         )
 
+    @odata(name="Files", navigation=True)
     @property
     def files(self) -> FileCollection:
         """Specifies the collection of files contained in the list folder.
@@ -774,6 +775,7 @@ class Folder(Entity):
             "Files", FileCollection(self.context, ResourcePath("Files", self.resource_path), self)
         )
 
+    @odata(name="Folders", navigation=True)
     @property
     def folders(self) -> FolderCollection:
         """Specifies the collection of list folders contained within the list folder.
@@ -818,7 +820,7 @@ class Folder(Entity):
         deepest = [path for path in paths if not any(other.startswith(f"{path}/") for other in paths if other != path)]
         return [self.ensure_folder(path) for path in deepest]
 
-    @odata(name="ParentFolder")
+    @odata(name="ParentFolder", navigation=True)
     @property
     def parent_folder(self) -> Folder:
         """Specifies the list folder."""
@@ -826,31 +828,37 @@ class Folder(Entity):
             "ParentFolder", Folder(self.context, ResourcePath("ParentFolder", self.resource_path))
         )
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Specifies the list folder name."""
         return self.properties.get("Name", None)
 
+    @odata(name="IsWOPIEnabled")
     @property
     def is_wopi_enabled(self) -> Optional[bool]:
         """Indicates whether the folder is enabled for WOPI default action."""
         return self.properties.get("IsWOPIEnabled", None)
 
+    @odata(name="ProgID")
     @property
     def prog_id(self) -> Optional[str]:
         """Gets the identifier (ID) of the application in which the folder was created."""
         return self.properties.get("ProgID", None)
 
+    @odata(name="UniqueId")
     @property
     def unique_id(self) -> Optional[str]:
         """Gets the unique ID of the folder."""
         return self.properties.get("UniqueId", None)
 
+    @odata(name="Exists")
     @property
     def exists(self) -> Optional[bool]:
         """Gets a Boolean value that indicates whether the folder exists."""
         return self.properties.get("Exists", None)
 
+    @odata(name="WelcomePage")
     @property
     def welcome_page(self) -> Optional[str]:
         """Specifies the server-relative URL for the list folder Welcome page."""
@@ -880,6 +888,7 @@ class Folder(Entity):
         """Gets when the folder was created in UTC."""
         return self.properties.get("TimeCreated", datetime.min)
 
+    @odata(name="ServerRelativeUrl")
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the server-relative URL of the list folder."""
@@ -906,16 +915,19 @@ class Folder(Entity):
                 self._resource_path = self.context.web.get_folder_by_server_relative_path(value).resource_path
         return self
 
+    @odata(name="ExistsAllowThrowForPolicyFailures")
     @property
     def exists_allow_throw_for_policy_failures(self) -> Optional[bool]:
         """Gets the ExistsAllowThrowForPolicyFailures property"""
         return self.properties.get("ExistsAllowThrowForPolicyFailures", None)
 
+    @odata(name="ExistsWithException")
     @property
     def exists_with_exception(self) -> Optional[bool]:
         """Gets the ExistsWithException property"""
         return self.properties.get("ExistsWithException", None)
 
+    @odata(name="ItemCount")
     @property
     def item_count(self) -> Optional[int]:
         """Gets the ItemCount property"""

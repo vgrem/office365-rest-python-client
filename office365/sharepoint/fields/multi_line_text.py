@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.field import Field
 
 
 class FieldMultiLineText(Field):
     """Represents a text field that can contain multiple lines."""
 
+    @odata(name="AllowHyperlink")
     @property
     def allow_hyperlink(self) -> Optional[bool]:
         """Gets a value that specifies whether a hyperlink is allowed as a value of the field."""
@@ -18,6 +20,7 @@ class FieldMultiLineText(Field):
         """Sets a value that specifies whether a hyperlink is allowed as a value of the field."""
         self.set_property("AllowHyperlink", val)
 
+    @odata(name="NumberOfLines")
     @property
     def number_of_lines(self) -> Optional[int]:
         """Gets the number of lines to display in the field."""
@@ -28,32 +31,38 @@ class FieldMultiLineText(Field):
         """Set the number of lines to display in the field."""
         self.set_property("NumberOfLines", val)
 
+    @odata(name="RestrictedMode")
     @property
     def restricted_mode(self) -> Optional[bool]:
         """Specifies whether the field supports a subset of rich text formatting."""
         return self.properties.get("RestrictedMode", None)
 
+    @odata(name="RichText")
     @property
     def rich_text(self) -> Optional[bool]:
         """Specifies whether the field supports rich text formatting."""
         return self.properties.get("RichText", None)
 
+    @odata(name="UnlimitedLengthInDocumentLibrary")
     @property
     def unlimited_length_in_document_library(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether to allow unlimited field length in document libraries."""
         return self.properties.get("UnlimitedLengthInDocumentLibrary", None)
 
+    @odata(name="WikiLinking")
     @property
     def wiki_linking(self) -> Optional[bool]:
         """Specifies whether an implementation-specific mechanism for linking wiki pages is supported.
         It MUST be "false" if RichText is "false"."""
         return self.properties.get("WikiLinking", None)
 
+    @odata(name="AppendOnly")
     @property
     def append_only(self) -> Optional[bool]:
         """Gets the AppendOnly property"""
         return self.properties.get("AppendOnly", None)
 
+    @odata(name="IsLongHyperlink")
     @property
     def is_long_hyperlink(self) -> Optional[bool]:
         """Gets the IsLongHyperlink property"""

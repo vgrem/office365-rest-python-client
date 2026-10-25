@@ -3,15 +3,18 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class GeoExperience(Entity):
+    @odata(name="GeoLocation")
     @property
     def geo_location(self) -> Optional[str]:
         """Gets the GeoLocation property"""
         return self.properties.get("GeoLocation", None)
 
+    @odata(name="MultiGeoExperienceMode")
     @property
     def multi_geo_experience_mode(self) -> Optional[int]:
         """Gets the MultiGeoExperienceMode property"""

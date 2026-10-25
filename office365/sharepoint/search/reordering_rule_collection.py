@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.search.query.reordering_rule import ReorderingRule
 
@@ -13,6 +14,7 @@ class ReorderingRuleCollection(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Query.ReorderingRuleCollection"
 
+    @odata(name="Items")
     @property
     def items(self) -> ClientValueCollection[ReorderingRule]:
         """Gets the Items property"""

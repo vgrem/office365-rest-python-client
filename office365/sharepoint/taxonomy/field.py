@@ -91,11 +91,13 @@ class TaxonomyField(FieldLookup):
                 """.format(name=name, text_field_name=text_field_name)
         return self.parent_collection.create_field_as_xml(text_field_schema)
 
+    @odata(name="AnchorId")
     @property
     def anchor_id(self) -> str | None:
         """Gets or sets the GUID of the anchor Term object for a TaxonomyField object."""
         return self.properties.get("AnchorId", None)
 
+    @odata(name="CreateValuesInEditForm")
     @property
     def create_values_in_edit_form(self) -> bool | None:
         """
@@ -104,16 +106,19 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("CreateValuesInEditForm", None)
 
+    @odata(name="IsAnchorValid")
     @property
     def is_anchor_valid(self) -> bool | None:
         """Gets a Boolean value that specifies whether the Term object identified by the AnchorId property is valid."""
         return self.properties.get("IsAnchorValid", None)
 
+    @odata(name="IsDocTagsEnabled")
     @property
     def is_doc_tags_enabled(self) -> bool | None:
         """ """
         return self.properties.get("IsDocTagsEnabled", None)
 
+    @odata(name="IsKeyword")
     @property
     def is_keyword(self) -> bool | None:
         """
@@ -122,6 +127,7 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("IsKeyword", None)
 
+    @odata(name="IsPathRendered")
     @property
     def is_path_rendered(self) -> bool | None:
         """
@@ -131,6 +137,7 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("IsPathRendered", None)
 
+    @odata(name="IsTermSetValid")
     @property
     def is_term_set_valid(self) -> bool | None:
         """
@@ -139,6 +146,7 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("IsTermSetValid", None)
 
+    @odata(name="Open")
     @property
     def open(self) -> bool | None:
         """
@@ -147,6 +155,7 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("Open", None)
 
+    @odata(name="SspId")
     @property
     def ssp_id(self) -> str | None:
         """
@@ -155,6 +164,7 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("SspId", None)
 
+    @odata(name="TargetTemplate")
     @property
     def target_template(self) -> str | None:
         """
@@ -163,6 +173,7 @@ class TaxonomyField(FieldLookup):
         """
         return self.properties.get("TargetTemplate", None)
 
+    @odata(name="TermSetId")
     @property
     def term_set_id(self) -> str | None:
         """
@@ -184,6 +195,7 @@ class TaxonomyField(FieldLookup):
         assert text_field_id is not None
         return cast(FieldMultiLineText, self.parent_collection.parent.fields.get_by_id(text_field_id))
 
+    @odata(name="UserCreated")
     @property
     def user_created(self) -> bool | None:
         """
@@ -202,6 +214,7 @@ class TaxonomyField(FieldLookup):
     def entity_type_name(self) -> str:
         return "SP.Taxonomy.TaxonomyField"
 
+    @odata(name="IsEnhancedImageTaggingEnabled")
     @property
     def is_enhanced_image_tagging_enabled(self) -> Optional[bool]:
         """Gets the IsEnhancedImageTaggingEnabled property"""

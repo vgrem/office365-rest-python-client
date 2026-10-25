@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sites.health.result import SiteHealthResult
 
@@ -8,21 +9,25 @@ from office365.sharepoint.sites.health.result import SiteHealthResult
 class SiteHealthSummary(Entity):
     """Specifies a summary of the results of running a set of site collection sitehealth rules."""
 
+    @odata(name="FailedErrorCount")
     @property
     def failed_error_count(self) -> Optional[int]:
         """Specifies the number of site collection sitehealth rules that failed with an error."""
         return self.properties.get("FailedErrorCount", None)
 
+    @odata(name="FailedWarningCount")
     @property
     def failed_warning_count(self) -> Optional[int]:
         """Specifies the number of site collection sitehealth rules that failed with a warning."""
         return self.properties.get("FailedWarningCount", None)
 
+    @odata(name="PassedCount")
     @property
     def passed_count(self) -> Optional[int]:
         """Specifies the number of site collection sitehealth rules that passed."""
         return self.properties.get("PassedCount", None)
 
+    @odata(name="Results")
     @property
     def results(self):
         """Specifies a list of site collection sitehealth rule results, one for each site collection sitehealth rule that

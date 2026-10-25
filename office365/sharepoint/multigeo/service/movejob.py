@@ -1,25 +1,30 @@
 from datetime import datetime
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class MoveJob(Entity):
+    @odata(name="IsContentMoved")
     @property
     def is_content_moved(self) -> Optional[bool]:
         """Gets the IsContentMoved property"""
         return self.properties.get("IsContentMoved", None)
 
+    @odata(name="LastModified")
     @property
     def last_modified(self) -> Optional[datetime]:
         """Gets the LastModified property"""
         return self.properties.get("LastModified", None)
 
+    @odata(name="StartedDateInUtc")
     @property
     def started_date_in_utc(self) -> Optional[datetime]:
         """Gets the StartedDateInUtc property"""
         return self.properties.get("StartedDateInUtc", None)
 
+    @odata(name="StateName")
     @property
     def state_name(self) -> Optional[str]:
         """Gets the StateName property"""

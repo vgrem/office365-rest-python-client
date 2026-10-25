@@ -20,12 +20,13 @@ class CheckedOutFile(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="CheckedOutById")
     @property
     def checked_out_by_id(self) -> Optional[int]:
         """Returns the user ID of the account used to check out the file."""
         return self.properties.get("CheckedOutById", None)
 
-    @odata(name="CheckedOutBy")
+    @odata(name="CheckedOutBy", navigation=True)
     @property
     def checked_out_by(self) -> User:
         """Returns the username of the account used to check out the file."""
@@ -38,6 +39,7 @@ class CheckedOutFile(Entity):
     def property_ref_name(self) -> str:
         return "CheckedOutById"
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> ResourcePath:
         """Gets the ServerRelativePath property"""

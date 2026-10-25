@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
 from office365.sharepoint.publishing.amplify.history import AmplifyPublishingHistory
@@ -28,14 +29,17 @@ class RepostPage(SitePage):
     """Represents a re-posting of existing content where existing content can be a link to a resource on the
     internet or other page in your SharePoint environment"""
 
+    @odata(name="IsBannerImageUrlExternal")
     @property
     def is_banner_image_url_external(self) -> Optional[bool]:
         return self.properties.get("IsBannerImageUrlExternal", None)
 
+    @odata(name="OriginalSourceItemId")
     @property
     def original_source_item_id(self) -> Optional[str]:
         return self.properties.get("OriginalSourceItemId", None)
 
+    @odata(name="OriginalSourceUrl")
     @property
     def original_source_url(self) -> Optional[str]:
         return self.properties.get("OriginalSourceUrl", None)
@@ -44,21 +48,25 @@ class RepostPage(SitePage):
     def entity_type_name(self):
         return "SP.Publishing.RepostPage"
 
+    @odata(name="OriginalSourceListId")
     @property
     def original_source_list_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceListId property"""
         return self.properties.get("OriginalSourceListId", None)
 
+    @odata(name="OriginalSourceSiteId")
     @property
     def original_source_site_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceSiteId property"""
         return self.properties.get("OriginalSourceSiteId", None)
 
+    @odata(name="OriginalSourceWebId")
     @property
     def original_source_web_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceWebId property"""
         return self.properties.get("OriginalSourceWebId", None)
 
+    @odata(name="ShouldSaveAsDraft")
     @property
     def should_save_as_draft(self) -> Optional[bool]:
         """Gets the ShouldSaveAsDraft property"""

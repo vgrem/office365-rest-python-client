@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
 from office365.sharepoint.publishing.amplify.history import AmplifyPublishingHistory
@@ -25,19 +26,23 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 
 
 class TopicSitePage(SitePage):
+    @odata(name="EntityId")
     @property
     def entity_id(self):
         return self.properties.get("EntityId", None)
 
+    @odata(name="EntityType")
     @property
     def entity_type(self):
         return self.properties.get("EntityType", None)
 
+    @odata(name="EntityRelations")
     @property
     def entity_relations(self) -> Optional[str]:
         """Gets the EntityRelations property"""
         return self.properties.get("EntityRelations", None)
 
+    @odata(name="VerifiedTopicAllowedEditors")
     @property
     def verified_topic_allowed_editors(self) -> Optional[str]:
         """Gets the VerifiedTopicAllowedEditors property"""

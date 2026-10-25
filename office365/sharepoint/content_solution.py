@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -10,6 +11,7 @@ if TYPE_CHECKING:
 
 
 class ContentSolution(Entity):
+    @odata(name="Templates", navigation=True)
     @property
     def templates(self) -> TemplateAPI:
         """Gets the Templates property"""

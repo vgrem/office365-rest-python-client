@@ -1,5 +1,6 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -17,6 +18,7 @@ class Audit(Entity):
         """
         return self.properties.get("AllowDesigner", None)
 
+    @odata(name="AuditFlags")
     @property
     def audit_flags(self) -> Optional[int]:
         """Gets the AuditFlags property"""

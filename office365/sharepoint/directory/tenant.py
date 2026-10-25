@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 
 class Tenant(Entity):
+    @odata(name="id")
     @property
     def id(self) -> Optional[UUID]:
         """Gets the id property"""
@@ -22,11 +24,13 @@ class Tenant(Entity):
     def entity_type_name(self) -> str:
         return "SP.Directory.Tenant"
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="serviceInfo")
     @property
     def service_info(self) -> ClientValueCollection[TenantServiceInfoValue]:
         """Gets the serviceInfo property"""

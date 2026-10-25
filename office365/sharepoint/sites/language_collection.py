@@ -3,6 +3,7 @@ from __future__ import annotations
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sites.language import Language
 
@@ -15,6 +16,7 @@ class LanguageCollection(Entity):
         super().__init__(context, resource_path)
         self.properties["Items"] = ClientValueCollection(Language)
 
+    @odata(name="Items")
     @property
     def items(self) -> ClientValueCollection[Language]:
         return self.properties.get("Items", ClientValueCollection(Language))

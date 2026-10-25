@@ -56,7 +56,7 @@ class LimitedWebPartManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="WebParts")
+    @odata(name="WebParts", navigation=True)
     @property
     def web_parts(self) -> WebPartDefinitionCollection:
         """A collection of the Web Parts on the Web Part Page available to the current user based
@@ -69,16 +69,19 @@ class LimitedWebPartManager(Entity):
     def entity_type_name(self):
         return "SP.WebParts.LimitedWebPartManager"
 
+    @odata(name="HasPersonalizedParts")
     @property
     def has_personalized_parts(self) -> Optional[bool]:
         """Gets the HasPersonalizedParts property"""
         return self.properties.get("HasPersonalizedParts", None)
 
+    @odata(name="HasWebPartConnections")
     @property
     def has_web_part_connections(self) -> Optional[bool]:
         """Gets the HasWebPartConnections property"""
         return self.properties.get("HasWebPartConnections", None)
 
+    @odata(name="Scope")
     @property
     def scope(self) -> Optional[int]:
         """Gets the Scope property"""

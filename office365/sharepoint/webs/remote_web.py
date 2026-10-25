@@ -5,6 +5,7 @@ from typing import Optional
 from office365.onedrive.lists.list import List
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.webs.web import Web
 
@@ -42,21 +43,25 @@ class RemoteWeb(Entity):
         context.add_query(qry)
         return remote_web
 
+    @odata(name="Web", navigation=True)
     @property
     def web(self):
         """Gets the SPWeb."""
         return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))
 
+    @odata(name="CanSendEmail")
     @property
     def can_send_email(self) -> Optional[bool]:
         """Gets the CanSendEmail property"""
         return self.properties.get("CanSendEmail", None)
 
+    @odata(name="ShareByEmailEnabled")
     @property
     def share_by_email_enabled(self) -> Optional[bool]:
         """Gets the ShareByEmailEnabled property"""
         return self.properties.get("ShareByEmailEnabled", None)
 
+    @odata(name="ShareByLinkEnabled")
     @property
     def share_by_link_enabled(self) -> Optional[bool]:
         """Gets the ShareByLinkEnabled property"""

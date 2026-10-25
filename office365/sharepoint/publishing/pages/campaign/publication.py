@@ -12,6 +12,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import (
     ClientAmplifyAnywhereResults,
 )
@@ -82,6 +83,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="EmailEndpoint")
     @property
     def email_endpoint(self) -> Optional[str]:
         """"""
@@ -91,26 +93,31 @@ class CampaignPublication(SitePage):
     def entity_type_name(self):
         return "SP.Publishing.CampaignPublication"
 
+    @odata(name="PublicationStatus")
     @property
     def publication_status(self) -> Optional[int]:
         """Gets the PublicationStatus property"""
         return self.properties.get("PublicationStatus", None)
 
+    @odata(name="SharePointEndpoint")
     @property
     def share_point_endpoint(self) -> Optional[str]:
         """Gets the SharePointEndpoint property"""
         return self.properties.get("SharePointEndpoint", None)
 
+    @odata(name="TeamsEndpoint")
     @property
     def teams_endpoint(self) -> Optional[str]:
         """Gets the TeamsEndpoint property"""
         return self.properties.get("TeamsEndpoint", None)
 
+    @odata(name="VivaEngageEndpoint")
     @property
     def viva_engage_endpoint(self) -> Optional[str]:
         """Gets the VivaEngageEndpoint property"""
         return self.properties.get("VivaEngageEndpoint", None)
 
+    @odata(name="YammerEndpoint")
     @property
     def yammer_endpoint(self) -> Optional[str]:
         """Gets the YammerEndpoint property"""
@@ -606,6 +613,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="SharePointEndpoint")
     @property
     def sharepoint_endpoint(self) -> Optional[str]:
         """Gets the SharePointEndpoint property"""

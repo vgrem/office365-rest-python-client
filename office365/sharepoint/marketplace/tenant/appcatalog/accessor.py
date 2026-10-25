@@ -110,7 +110,7 @@ class TenantCorporateCatalogAccessor(Entity):
         self.context.add_query(qry)
         return self
 
-    @odata(name="AvailableApps")
+    @odata(name="AvailableApps", navigation=True)
     @property
     def available_apps(self) -> CorporateCatalogAppMetadataCollection:
         """Returns the apps available in this corporate catalog."""
@@ -119,7 +119,7 @@ class TenantCorporateCatalogAccessor(Entity):
             CorporateCatalogAppMetadataCollection(self.context, ResourcePath("AvailableApps", self.resource_path)),
         )
 
-    @odata(name="CardDesigns")
+    @odata(name="CardDesigns", navigation=True)
     @property
     def card_designs(self) -> CardDesigns:
         """Returns the card designs available in this corporate catalog."""
@@ -127,7 +127,7 @@ class TenantCorporateCatalogAccessor(Entity):
             "CardDesigns", CardDesigns(self.context, ResourcePath("CardDesigns", self.resource_path))
         )
 
-    @odata(name="SiteCollectionAppCatalogsSites")
+    @odata(name="SiteCollectionAppCatalogsSites", navigation=True)
     @property
     def site_collection_app_catalogs_sites(self) -> SiteCollectionAppCatalogAllowedItems:
         """Returns an accessor to the allow list of site collections allowed to have site collection corporate
@@ -143,6 +143,7 @@ class TenantCorporateCatalogAccessor(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Marketplace.CorporateCuratedGallery.TenantCorporateCatalogAccessor"
 
+    @odata(name="StoreApps", navigation=True)
     @property
     def store_apps(self) -> EntityCollection[CorporateCatalogAppMetadata]:
         """Gets the StoreApps property"""

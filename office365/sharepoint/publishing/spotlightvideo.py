@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -10,11 +11,13 @@ if TYPE_CHECKING:
 
 
 class SpotlightVideo(Entity):
+    @odata(name="ServerRelativeUrl")
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the ServerRelativeUrl property"""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="Url")
     @property
     def url(self) -> Optional[str]:
         """Gets the Url property"""
@@ -24,11 +27,13 @@ class SpotlightVideo(Entity):
     def entity_type_name(self):
         return "SP.Publishing.SpotlightVideo"
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
+    @odata(name="Video", navigation=True)
     @property
     def video(self) -> VideoItem:
         """Gets the Video property"""

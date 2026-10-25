@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class UserFirstRun(Entity):
+    @odata(name="Experiences")
     @property
     def experiences(self) -> ClientValueCollection[int]:
         """Gets the Experiences property"""

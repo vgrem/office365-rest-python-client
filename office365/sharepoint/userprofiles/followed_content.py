@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.userprofiles.follow_result import FollowResult
 from office365.sharepoint.userprofiles.followed_item import FollowedItem
@@ -43,11 +44,13 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="FollowedDocumentsUrl")
     @property
     def followed_documents_url(self) -> Optional[str]:
         """The FollowedDocumentsUrl property gets the location of the followed documents view."""
         return self.properties.get("FollowedDocumentsUrl", None)
 
+    @odata(name="FollowedSitesUrl")
     @property
     def followed_sites_url(self) -> Optional[str]:
         """The FollowedSitesUrl property gets the location of the followed sites view."""

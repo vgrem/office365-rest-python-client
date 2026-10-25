@@ -131,7 +131,7 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="HomeSiteSettings")
+    @odata(name="HomeSiteSettings", navigation=True)
     @property
     def home_site_settings(self) -> HomeSiteNavigationSettings:
         return self.properties.get(

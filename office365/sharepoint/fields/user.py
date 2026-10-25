@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.lookup import FieldLookup
 
 
 class FieldUser(FieldLookup):
     """Specifies a field that contains a user."""
 
+    @odata(name="Presence")
     @property
     def presence(self) -> Optional[bool]:
         """Gets a value that specifies whether presence is enabled on the field."""
@@ -18,6 +20,7 @@ class FieldUser(FieldLookup):
         """Sets a value that specifies whether presence is enabled on the field."""
         self.properties.get("Presence", val)
 
+    @odata(name="AllowDisplay")
     @property
     def allow_display(self) -> Optional[bool]:
         """Gets a value that specifies whether to display the name of the user in a survey list."""
@@ -28,6 +31,7 @@ class FieldUser(FieldLookup):
         """Sets a value that specifies whether to display the name of the user in a survey list."""
         self.properties.get("AllowDisplay", val)
 
+    @odata(name="SelectionGroup")
     @property
     def selection_group(self) -> Optional[int]:
         """
@@ -43,11 +47,13 @@ class FieldUser(FieldLookup):
         """
         self.properties.get("SelectionGroup", val)
 
+    @odata(name="SelectionMode")
     @property
     def selection_mode(self) -> Optional[int]:
         """Gets the SelectionMode property"""
         return self.properties.get("SelectionMode", None)
 
+    @odata(name="UserDisplayOptions")
     @property
     def user_display_options(self) -> Optional[str]:
         """Gets the UserDisplayOptions property"""

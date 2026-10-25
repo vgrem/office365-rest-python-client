@@ -1,6 +1,7 @@
 from office365.onedrive.sites.site import Site
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.webs.web import Web
@@ -17,6 +18,7 @@ class AppContextSite(Entity):
         )
         super().__init__(context, static_path)
 
+    @odata(name="Site", navigation=True)
     @property
     def site(self) -> Site:
         """"""
@@ -28,6 +30,7 @@ class AppContextSite(Entity):
             ),
         )
 
+    @odata(name="Web", navigation=True)
     @property
     def web(self) -> Web:
         """"""

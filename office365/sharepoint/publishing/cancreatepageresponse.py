@@ -1,24 +1,29 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class CanCreatePageResponse(Entity):
+    @odata(name="CanCreatePage")
     @property
     def can_create_page(self) -> Optional[bool]:
         """Gets the CanCreatePage property"""
         return self.properties.get("CanCreatePage", None)
 
+    @odata(name="CanCreatePromotedPage")
     @property
     def can_create_promoted_page(self) -> Optional[bool]:
         """Gets the CanCreatePromotedPage property"""
         return self.properties.get("CanCreatePromotedPage", None)
 
+    @odata(name="EnableModeration")
     @property
     def enable_moderation(self) -> Optional[bool]:
         """Gets the EnableModeration property"""
         return self.properties.get("EnableModeration", None)
 
+    @odata(name="SiteUrl")
     @property
     def site_url(self) -> Optional[str]:
         """Gets the SiteUrl property"""

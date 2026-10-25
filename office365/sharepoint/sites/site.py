@@ -14,6 +14,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.administration.unlicensedodblicenseenforcementwarningcontext import (
     UnlicensedOdbLicenseEnforcementWarningContext,
 )
@@ -702,11 +703,13 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="AllowCreateDeclarativeWorkflow")
     @property
     def allow_create_declarative_workflow(self) -> Optional[bool]:
         """Specifies whether a designer can be used to create declarative workflows on this site collection"""
         return self.properties.get("AllowCreateDeclarativeWorkflow", None)
 
+    @odata(name="AllowDesigner")
     @property
     def allow_designer(self) -> Optional[bool]:
         """
@@ -716,10 +719,12 @@ class Site(Entity):
         """
         return self.properties.get("AllowDesigner", None)
 
+    @odata(name="AllowedExternalDomains")
     @property
     def allowed_external_domains(self) -> Optional[HTMLFieldSecuritySetting]:
         return self.properties.get("AllowedExternalDomains", HTMLFieldSecuritySetting())
 
+    @odata(name="AllowMasterPageEditing")
     @property
     def allow_master_page_editing(self) -> Optional[bool]:
         """
@@ -729,6 +734,7 @@ class Site(Entity):
         """
         return self.properties.get("AllowMasterPageEditing", None)
 
+    @odata(name="AllowRevertFromTemplate")
     @property
     def allow_revert_from_template(self) -> Optional[bool]:
         """
@@ -738,11 +744,13 @@ class Site(Entity):
         """
         return self.properties.get("AllowRevertFromTemplate", None)
 
+    @odata(name="Audit", navigation=True)
     @property
     def audit(self) -> Audit:
         """Enables auditing of how site collection is accessed, changed, and used."""
         return self.properties.get("Audit", Audit(self.context, ResourcePath("Audit", self.resource_path)))
 
+    @odata(name="CanUpgrade")
     @property
     def can_upgrade(self) -> Optional[bool]:
         """
@@ -751,16 +759,19 @@ class Site(Entity):
         """
         return self.properties.get("CanUpgrade", None)
 
+    @odata(name="ChannelGroupId")
     @property
     def channel_group_id(self) -> Optional[str]:
         """ """
         return self.properties.get("ChannelGroupId", None)
 
+    @odata(name="Classification")
     @property
     def classification(self) -> Optional[str]:
         """Gets the classification of this site."""
         return self.properties.get("Classification", None)
 
+    @odata(name="CompatibilityLevel")
     @property
     def compatibility_level(self) -> Optional[str]:
         """
@@ -769,21 +780,25 @@ class Site(Entity):
         """
         return self.properties.get("CompatibilityLevel", None)
 
+    @odata(name="CommentsOnSitePagesDisabled")
     @property
     def comments_on_site_pages_disabled(self) -> Optional[bool]:
         """Indicates whether comments on site pages are disabled or not."""
         return self.properties.get("CommentsOnSitePagesDisabled", None)
 
+    @odata(name="CurrentChangeToken")
     @property
     def current_change_token(self) -> ChangeToken:
         """Gets the current change token that is used in the change log for the site collection."""
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
+    @odata(name="DisableFlows")
     @property
     def disable_flows(self) -> Optional[bool]:
         """"""
         return self.properties.get("DisableFlows", None)
 
+    @odata(name="ExternalSharingTipsEnabled")
     @property
     def external_sharing_tips_enabled(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether users will be greeted with a notification bar telling them that
@@ -791,36 +806,43 @@ class Site(Entity):
         it is false."""
         return self.properties.get("ExternalSharingTipsEnabled", None)
 
+    @odata(name="ExternalUserExpirationInDays")
     @property
     def external_user_expiration_in_days(self) -> Optional[int]:
         """"""
         return self.properties.get("ExternalUserExpirationInDays", None)
 
+    @odata(name="GeoLocation")
     @property
     def geo_location(self) -> Optional[str]:
         """"""
         return self.properties.get("GeoLocation", None)
 
+    @odata(name="GroupId")
     @property
     def group_id(self) -> Optional[str]:
         """Group identifier"""
         return self.properties.get("GroupId", None)
 
+    @odata(name="LockIssue")
     @property
     def lock_issue(self) -> Optional[str]:
         """Specifies the comment that is used when a site collection is locked"""
         return self.properties.get("LockIssue", None)
 
+    @odata(name="RootWeb", navigation=True)
     @property
     def root_web(self) -> Web:
         """Get root web"""
         return self.properties.get("RootWeb", Web(self.context, ResourcePath("RootWeb", self.resource_path)))
 
+    @odata(name="Owner", navigation=True)
     @property
     def owner(self) -> User:
         """Gets or sets the owner of the site collection. (Read-only in sandboxed solutions.)"""
         return self.properties.get("Owner", User(self.context, ResourcePath("Owner", self.resource_path)))
 
+    @odata(name="ReadOnly")
     @property
     def read_only(self) -> Optional[bool]:
         """
@@ -829,6 +851,7 @@ class Site(Entity):
         """
         return self.properties.get("ReadOnly", None)
 
+    @odata(name="RequiredDesignerVersion")
     @property
     def required_designer_version(self) -> Optional[str]:
         """
@@ -837,16 +860,19 @@ class Site(Entity):
         """
         return self.properties.get("RequiredDesignerVersion", None)
 
+    @odata(name="Url")
     @property
     def url(self) -> Optional[str]:
         """Specifies the full URL of the site (2), including host name, port number and path"""
         return self.properties.get("Url", None)
 
+    @odata(name="ServerRelativeUrl")
     @property
     def server_relative_url(self) -> Optional[str]:
         """Specifies the server-relative URL of the top-level site in the site collection."""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="ShareByEmailEnabled")
     @property
     def share_by_email_enabled(self) -> Optional[bool]:
         """
@@ -854,46 +880,55 @@ class Site(Entity):
         """
         return self.properties.get("ShareByEmailEnabled", None)
 
+    @odata(name="StatusBarText")
     @property
     def status_bar_text(self) -> Optional[str]:
         """Gets or sets the status bar message text for this site."""
         return self.properties.get("StatusBarText", None)
 
+    @odata(name="TrimAuditLog")
     @property
     def trim_audit_log(self) -> Optional[bool]:
         """When this flag is set for the site, the audit events are trimmed periodically."""
         return self.properties.get("TrimAuditLog", None)
 
+    @odata(name="WriteLocked")
     @property
     def write_locked(self) -> Optional[bool]:
         """ """
         return self.properties.get("WriteLocked", None)
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Specifies the GUID that identifies the site collection."""
         return self.properties.get("Id", None)
 
+    @odata(name="HubSiteId")
     @property
     def hub_site_id(self) -> Optional[str]:
         """ """
         return self.properties.get("HubSiteId", None)
 
+    @odata(name="IsHubSite")
     @property
     def is_hub_site(self) -> Optional[bool]:
         """Returns whether the specified site is a hub site"""
         return self.properties.get("IsHubSite", None)
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the Site."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
+    @odata(name="StatusBarLink")
     @property
     def status_bar_link(self) -> Optional[str]:
         """Gets the status bar message link target for this site."""
         return self.properties.get("StatusBarLink", None)
 
+    @odata(name="SecondaryContact", navigation=True)
     @property
     def secondary_contact(self) -> User:
         """Gets or sets the secondary contact that is used for the site collection."""
@@ -901,6 +936,7 @@ class Site(Entity):
             "SecondaryContact", User(self.context, ResourcePath("SecondaryContact", self.resource_path))
         )
 
+    @odata(name="RecycleBin", navigation=True)
     @property
     def recycle_bin(self) -> RecycleBinItemCollection:
         """Get recycle bin"""
@@ -908,6 +944,7 @@ class Site(Entity):
             "RecycleBin", RecycleBinItemCollection(self.context, ResourcePath("RecycleBin", self.resource_path))
         )
 
+    @odata(name="Features", navigation=True)
     @property
     def features(self) -> FeatureCollection:
         """Get features"""
@@ -915,6 +952,7 @@ class Site(Entity):
             "Features", FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self)
         )
 
+    @odata(name="MaxItemsPerThrottledOperation")
     @property
     def max_items_per_throttled_operation(self) -> Optional[int]:
         """
@@ -923,11 +961,13 @@ class Site(Entity):
         """
         return self.properties.get("MaxItemsPerThrottledOperation", None)
 
+    @odata(name="NeedsB2BUpgrade")
     @property
     def needs_b2b_upgrade(self) -> Optional[bool]:
         """Specifies whether the site needs a Build-to-Build upgrade."""
         return self.properties.get("NeedsB2BUpgrade", None)
 
+    @odata(name="EventReceivers", navigation=True)
     @property
     def event_receivers(self) -> EventReceiverDefinitionCollection:
         """
@@ -938,6 +978,7 @@ class Site(Entity):
             EventReceiverDefinitionCollection(self.context, ResourcePath("eventReceivers", self.resource_path), self),
         )
 
+    @odata(name="ShowUrlStructure")
     @property
     def show_url_structure(self) -> Optional[bool]:
         """
@@ -947,6 +988,7 @@ class Site(Entity):
         """
         return self.properties.get("ShowUrlStructure", None)
 
+    @odata(name="UIVersionConfigurationEnabled")
     @property
     def ui_version_configuration_enabled(self) -> Optional[bool]:
         """
@@ -959,11 +1001,13 @@ class Site(Entity):
         """Provides fields used to access information regarding site collection usage."""
         return self.properties.get("UsageInfo", UsageInfo())
 
+    @odata(name="UpgradeInfo")
     @property
     def upgrade_info(self):
         """Specifies the upgrade information of this site collection."""
         return self.properties.get("UpgradeInfo", UpgradeInfo())
 
+    @odata(name="UpgradeReminderDate")
     @property
     def upgrade_reminder_date(self) -> Optional[datetime]:
         """
@@ -971,6 +1015,7 @@ class Site(Entity):
         """
         return self.properties.get("UpgradeReminderDate", datetime.min)
 
+    @odata(name="UpgradeScheduled")
     @property
     def upgrade_scheduled(self) -> Optional[bool]:
         """
@@ -979,6 +1024,7 @@ class Site(Entity):
         """
         return self.properties.get("UpgradeScheduled", None)
 
+    @odata(name="UpgradeScheduledDate")
     @property
     def upgrade_scheduled_date(self) -> Optional[datetime]:
         """
@@ -987,6 +1033,7 @@ class Site(Entity):
         """
         return self.properties.get("UpgradeScheduledDate", datetime.min)
 
+    @odata(name="Upgrading")
     @property
     def upgrading(self) -> Optional[bool]:
         """
@@ -994,6 +1041,7 @@ class Site(Entity):
         """
         return self.properties.get("Upgrading", None)
 
+    @odata(name="UserCustomActions", navigation=True)
     @property
     def user_custom_actions(self) -> UserCustomActionCollection:
         """Gets the User Custom Actions that are associated with the site."""
@@ -1002,6 +1050,7 @@ class Site(Entity):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
+    @odata(name="VersionPolicyForNewLibrariesTemplate", navigation=True)
     @property
     def version_policy_for_new_libraries_template(self) -> SiteVersionPolicyManager:
         """"""
@@ -1012,206 +1061,247 @@ class Site(Entity):
             ),
         )
 
+    @odata(name="AllowExternalEmbeddingWrapper")
     @property
     def allow_external_embedding_wrapper(self) -> Optional[int]:
         """Gets the AllowExternalEmbeddingWrapper property"""
         return self.properties.get("AllowExternalEmbeddingWrapper", None)
 
+    @odata(name="AllowSaveDeclarativeWorkflowAsTemplate")
     @property
     def allow_save_declarative_workflow_as_template(self) -> Optional[bool]:
         """Gets the AllowSaveDeclarativeWorkflowAsTemplate property"""
         return self.properties.get("AllowSaveDeclarativeWorkflowAsTemplate", None)
 
+    @odata(name="AllowSavePublishDeclarativeWorkflow")
     @property
     def allow_save_publish_declarative_workflow(self) -> Optional[bool]:
         """Gets the AllowSavePublishDeclarativeWorkflow property"""
         return self.properties.get("AllowSavePublishDeclarativeWorkflow", None)
 
+    @odata(name="AllowSelfServiceUpgrade")
     @property
     def allow_self_service_upgrade(self) -> Optional[bool]:
         """Gets the AllowSelfServiceUpgrade property"""
         return self.properties.get("AllowSelfServiceUpgrade", None)
 
+    @odata(name="AllowSelfServiceUpgradeEvaluation")
     @property
     def allow_self_service_upgrade_evaluation(self) -> Optional[bool]:
         """Gets the AllowSelfServiceUpgradeEvaluation property"""
         return self.properties.get("AllowSelfServiceUpgradeEvaluation", None)
 
+    @odata(name="AuditLogTrimmingRetention")
     @property
     def audit_log_trimming_retention(self) -> Optional[int]:
         """Gets the AuditLogTrimmingRetention property"""
         return self.properties.get("AuditLogTrimmingRetention", None)
 
+    @odata(name="CanSyncHubSitePermissions")
     @property
     def can_sync_hub_site_permissions(self) -> Optional[bool]:
         """Gets the CanSyncHubSitePermissions property"""
         return self.properties.get("CanSyncHubSitePermissions", None)
 
+    @odata(name="ChannelCapabilities")
     @property
     def channel_capabilities(self) -> ChannelCapabilities:
         """Gets the ChannelCapabilities property"""
         return self.properties.get("ChannelCapabilities", ChannelCapabilities())
 
+    @odata(name="ComplianceAttribute")
     @property
     def compliance_attribute(self) -> Optional[str]:
         """Gets the ComplianceAttribute property"""
         return self.properties.get("ComplianceAttribute", None)
 
+    @odata(name="CustomizedFormsPages")
     @property
     def customized_forms_pages(self) -> CustomizedFormsPageCollection:
         """Gets the CustomizedFormsPages property"""
         return self.properties.get("CustomizedFormsPages", CustomizedFormsPageCollection())
 
+    @odata(name="DisableAppViews")
     @property
     def disable_app_views(self) -> Optional[bool]:
         """Gets the DisableAppViews property"""
         return self.properties.get("DisableAppViews", None)
 
+    @odata(name="DisableCompanyWideSharingLinks")
     @property
     def disable_company_wide_sharing_links(self) -> Optional[bool]:
         """Gets the DisableCompanyWideSharingLinks property"""
         return self.properties.get("DisableCompanyWideSharingLinks", None)
 
+    @odata(name="Id")
     @property
     def id_(self) -> Optional[UUID]:
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
+    @odata(name="SensitivityLabelId")
     @property
     def sensitivity_label_id(self) -> Optional[str]:
         """Gets the SensitivityLabelId property"""
         return self.properties.get("SensitivityLabelId", None)
 
+    @odata(name="SensitivityLabel")
     @property
     def sensitivity_label(self) -> Optional[UUID]:
         """Gets the SensitivityLabel property"""
         return self.properties.get("SensitivityLabel", None)
 
+    @odata(name="IsPersonalSiteOverLicenseQuota")
     @property
     def is_personal_site_over_license_quota(self) -> Optional[bool]:
         """Gets the IsPersonalSiteOverLicenseQuota property"""
         return self.properties.get("IsPersonalSiteOverLicenseQuota", None)
 
+    @odata(name="IsPersonalSiteStorageLimitSetOnPaygTenant")
     @property
     def is_personal_site_storage_limit_set_on_payg_tenant(self) -> Optional[bool]:
         """Gets the IsPersonalSiteStorageLimitSetOnPaygTenant property"""
         return self.properties.get("IsPersonalSiteStorageLimitSetOnPaygTenant", None)
 
+    @odata(name="IsRestrictContentOrgWideSearchPolicyEnforcedOnSite")
     @property
     def is_restrict_content_org_wide_search_policy_enforced_on_site(self) -> Optional[bool]:
         """Gets the IsRestrictContentOrgWideSearchPolicyEnforcedOnSite property"""
         return self.properties.get("IsRestrictContentOrgWideSearchPolicyEnforcedOnSite", None)
 
+    @odata(name="IsRestrictedAccessControlPolicyEnforcedOnSite")
     @property
     def is_restricted_access_control_policy_enforced_on_site(self) -> Optional[bool]:
         """Gets the IsRestrictedAccessControlPolicyEnforcedOnSite property"""
         return self.properties.get("IsRestrictedAccessControlPolicyEnforcedOnSite", None)
 
+    @odata(name="IsRestrictedContentDiscoveryforCopilotAndAgentsEnabled")
     @property
     def is_restricted_content_discoveryfor_copilot_and_agents_enabled(self) -> Optional[bool]:
         """Gets the IsRestrictedContentDiscoveryforCopilotAndAgentsEnabled property"""
         return self.properties.get("IsRestrictedContentDiscoveryforCopilotAndAgentsEnabled", None)
 
+    @odata(name="IsScheduledForRemoval")
     @property
     def is_scheduled_for_removal(self) -> Optional[bool]:
         """Gets the IsScheduledForRemoval property"""
         return self.properties.get("IsScheduledForRemoval", None)
 
+    @odata(name="IsUnlicensedOdb")
     @property
     def is_unlicensed_odb(self) -> Optional[bool]:
         """Gets the IsUnlicensedOdb property"""
         return self.properties.get("IsUnlicensedOdb", None)
 
+    @odata(name="MediaTranscriptionDisabled")
     @property
     def media_transcription_disabled(self) -> Optional[bool]:
         """Gets the MediaTranscriptionDisabled property"""
         return self.properties.get("MediaTranscriptionDisabled", None)
 
+    @odata(name="NeedsB2BUpgrade")
     @property
     def needs_b2_b_upgrade(self) -> Optional[bool]:
         """Gets the NeedsB2BUpgrade property"""
         return self.properties.get("NeedsB2BUpgrade", None)
 
+    @odata(name="PrimaryUri")
     @property
     def primary_uri(self) -> Optional[str]:
         """Gets the PrimaryUri property"""
         return self.properties.get("PrimaryUri", None)
 
+    @odata(name="RelatedGroupId")
     @property
     def related_group_id(self) -> Optional[UUID]:
         """Gets the RelatedGroupId property"""
         return self.properties.get("RelatedGroupId", None)
 
+    @odata(name="RestrictContentOrgWideSearchUpdate")
     @property
     def restrict_content_org_wide_search_update(self) -> RestrictContentOrgWidePolicyUpdate:
         """Gets the RestrictContentOrgWideSearchUpdate property"""
         return self.properties.get("RestrictContentOrgWideSearchUpdate", RestrictContentOrgWidePolicyUpdate())
 
+    @odata(name="RestrictedAccessControlGroupsDelegatedOnSite")
     @property
     def restricted_access_control_groups_delegated_on_site(self) -> RestrictAccessControlUpdate:
         """Gets the RestrictedAccessControlGroupsDelegatedOnSite property"""
         return self.properties.get("RestrictedAccessControlGroupsDelegatedOnSite", RestrictAccessControlUpdate())
 
+    @odata(name="RestrictedAccessControlGroupsEnforcedOnSite")
     @property
     def restricted_access_control_groups_enforced_on_site(self) -> StringCollection:
         """Gets the RestrictedAccessControlGroupsEnforcedOnSite property"""
         return self.properties.get("RestrictedAccessControlGroupsEnforcedOnSite", StringCollection())
 
+    @odata(name="SandboxedCodeActivationCapability")
     @property
     def sandboxed_code_activation_capability(self) -> Optional[int]:
         """Gets the SandboxedCodeActivationCapability property"""
         return self.properties.get("SandboxedCodeActivationCapability", None)
 
+    @odata(name="ScheduledDateForRemoval")
     @property
     def scheduled_date_for_removal(self) -> Optional[str]:
         """Gets the ScheduledDateForRemoval property"""
         return self.properties.get("ScheduledDateForRemoval", None)
 
+    @odata(name="SearchBoxInNavBar")
     @property
     def search_box_in_nav_bar(self) -> Optional[int]:
         """Gets the SearchBoxInNavBar property"""
         return self.properties.get("SearchBoxInNavBar", None)
 
+    @odata(name="SearchBoxPlaceholderText")
     @property
     def search_box_placeholder_text(self) -> Optional[str]:
         """Gets the SearchBoxPlaceholderText property"""
         return self.properties.get("SearchBoxPlaceholderText", None)
 
+    @odata(name="SensitivityLabelInfo")
     @property
     def sensitivity_label_info(self) -> SensitivityLabelInfo:
         """Gets the SensitivityLabelInfo property"""
         return self.properties.get("SensitivityLabelInfo", SensitivityLabelInfo())
 
+    @odata(name="ShareByLinkEnabled")
     @property
     def share_by_link_enabled(self) -> Optional[bool]:
         """Gets the ShareByLinkEnabled property"""
         return self.properties.get("ShareByLinkEnabled", None)
 
+    @odata(name="ShowPeoplePickerSuggestionsForGuestUsers")
     @property
     def show_people_picker_suggestions_for_guest_users(self) -> Optional[bool]:
         """Gets the ShowPeoplePickerSuggestionsForGuestUsers property"""
         return self.properties.get("ShowPeoplePickerSuggestionsForGuestUsers", None)
 
+    @odata(name="SitePolicyEnabled")
     @property
     def site_policy_enabled(self) -> Optional[bool]:
         """Gets the SitePolicyEnabled property"""
         return self.properties.get("SitePolicyEnabled", None)
 
+    @odata(name="SocialBarOnSitePagesDisabled")
     @property
     def social_bar_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the SocialBarOnSitePagesDisabled property"""
         return self.properties.get("SocialBarOnSitePagesDisabled", None)
 
+    @odata(name="ThicketSupportDisabled")
     @property
     def thicket_support_disabled(self) -> Optional[bool]:
         """Gets the ThicketSupportDisabled property"""
         return self.properties.get("ThicketSupportDisabled", None)
 
+    @odata(name="UnifiedDomainUrl")
     @property
     def unified_domain_url(self) -> Optional[str]:
         """Gets the UnifiedDomainUrl property"""
         return self.properties.get("UnifiedDomainUrl", None)
 
+    @odata(name="UnlicensedOdbLicenseEnforcementWarningContext")
     @property
     def unlicensed_odb_license_enforcement_warning_context(self) -> UnlicensedOdbLicenseEnforcementWarningContext:
         """Gets the UnlicensedOdbLicenseEnforcementWarningContext property"""
@@ -1219,11 +1309,13 @@ class Site(Entity):
             "UnlicensedOdbLicenseEnforcementWarningContext", UnlicensedOdbLicenseEnforcementWarningContext()
         )
 
+    @odata(name="Usage")
     @property
     def usage(self) -> UsageInfo:
         """Gets the Usage property"""
         return self.properties.get("Usage", UsageInfo())
 
+    @odata(name="CustomScriptSafeDomains", navigation=True)
     @property
     def custom_script_safe_domains(self) -> EntityCollection[ScriptSafeDomain]:
         """Gets the CustomScriptSafeDomains property"""
@@ -1234,6 +1326,7 @@ class Site(Entity):
             ),
         )
 
+    @odata(name="HubSiteSynchronizableVisitorGroup", navigation=True)
     @property
     def hub_site_synchronizable_visitor_group(self) -> Group:
         """Gets the HubSiteSynchronizableVisitorGroup property"""
@@ -1242,6 +1335,7 @@ class Site(Entity):
             Group(self.context, ResourcePath("HubSiteSynchronizableVisitorGroup", self.resource_path)),
         )
 
+    @odata(name="CopilotSearchOptOut")
     @property
     def copilot_search_opt_out(self) -> Optional[bool]:
         """Gets the CopilotSearchOptOut property"""

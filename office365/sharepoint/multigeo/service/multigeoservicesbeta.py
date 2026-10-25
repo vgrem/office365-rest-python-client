@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.multigeo.service.alloweddatalocation import (
@@ -63,6 +64,7 @@ if TYPE_CHECKING:
 
 
 class MultiGeoServicesBeta(Entity):
+    @odata(name="AllowedDataLocations", navigation=True)
     @property
     def allowed_data_locations(self) -> EntityCollection[AllowedDataLocation]:
         """Gets the AllowedDataLocations property"""
@@ -73,6 +75,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="ContentDbSchemaVersion", navigation=True)
     @property
     def content_db_schema_version(self) -> ContentDbSchemaVersion:
         """Gets the ContentDbSchemaVersion property"""
@@ -81,6 +84,7 @@ class MultiGeoServicesBeta(Entity):
             ContentDbSchemaVersion(self.context, ResourcePath("ContentDbSchemaVersion", self.resource_path)),
         )
 
+    @odata(name="CrossFarmGroupMoveJobs", navigation=True)
     @property
     def cross_farm_group_move_jobs(self) -> EntityCollection[CrossFarmGroupMoveJob]:
         """Gets the CrossFarmGroupMoveJobs property"""
@@ -91,6 +95,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="CrossFarmSiteMoveJobs", navigation=True)
     @property
     def cross_farm_site_move_jobs(self) -> EntityCollection[CrossFarmSiteMoveJob]:
         """Gets the CrossFarmSiteMoveJobs property"""
@@ -101,6 +106,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="CrossFarmUserMoveJobs", navigation=True)
     @property
     def cross_farm_user_move_jobs(self) -> EntityCollection[CrossFarmUserMoveJob]:
         """Gets the CrossFarmUserMoveJobs property"""
@@ -111,6 +117,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="CrossGeoTenantBYOK", navigation=True)
     @property
     def cross_geo_tenant_byok(self) -> CrossGeoTenantBYOK:
         """Gets the CrossGeoTenantBYOK property"""
@@ -119,6 +126,7 @@ class MultiGeoServicesBeta(Entity):
             CrossGeoTenantBYOK(self.context, ResourcePath("CrossGeoTenantBYOK", self.resource_path)),
         )
 
+    @odata(name="CrossGeoTenantCompatibility", navigation=True)
     @property
     def cross_geo_tenant_compatibility(self) -> CrossGeoTenantCompatibility:
         """Gets the CrossGeoTenantCompatibility property"""
@@ -127,6 +135,7 @@ class MultiGeoServicesBeta(Entity):
             CrossGeoTenantCompatibility(self.context, ResourcePath("CrossGeoTenantCompatibility", self.resource_path)),
         )
 
+    @odata(name="CrossGeoTenantProperties", navigation=True)
     @property
     def cross_geo_tenant_properties(self) -> EntityCollection[CrossGeoTenantProperty]:
         """Gets the CrossGeoTenantProperties property"""
@@ -137,6 +146,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="CrossGeoUserPlacementJobs", navigation=True)
     @property
     def cross_geo_user_placement_jobs(self) -> EntityCollection[CrossGeoUserPlacementJob]:
         """Gets the CrossGeoUserPlacementJobs property"""
@@ -147,6 +157,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="DBLevelWorkItems", navigation=True)
     @property
     def db_level_work_items(self) -> EntityCollection[DBLevelWorkItemEntityData]:
         """Gets the DBLevelWorkItems property"""
@@ -157,6 +168,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="DeleteTargetSite", navigation=True)
     @property
     def delete_target_site(self) -> EntityCollection[SiteAtTargetEntityData]:
         """Gets the DeleteTargetSite property"""
@@ -167,6 +179,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="DfDeprecationJobs", navigation=True)
     @property
     def df_deprecation_jobs(self) -> EntityCollection[DfDeprecationJob]:
         """Gets the DfDeprecationJobs property"""
@@ -177,6 +190,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="GeoAdministrators", navigation=True)
     @property
     def geo_administrators(self) -> EntityCollection[GeoAdministrator]:
         """Gets the GeoAdministrators property"""
@@ -187,6 +201,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="GeoExperience", navigation=True)
     @property
     def geo_experience(self) -> GeoExperience:
         """Gets the GeoExperience property"""
@@ -194,6 +209,7 @@ class MultiGeoServicesBeta(Entity):
             "GeoExperience", GeoExperience(self.context, ResourcePath("GeoExperience", self.resource_path))
         )
 
+    @odata(name="GeoTenantInstanceInformationCollection", navigation=True)
     @property
     def geo_tenant_instance_information_collection(self) -> EntityCollection[GeoTenantInstanceInformation]:
         """Gets the GeoTenantInstanceInformationCollection property"""
@@ -206,6 +222,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="GlobalAdminCheck", navigation=True)
     @property
     def global_admin_check(self) -> GlobalAdminCheck:
         """Gets the GlobalAdminCheck property"""
@@ -213,6 +230,7 @@ class MultiGeoServicesBeta(Entity):
             "GlobalAdminCheck", GlobalAdminCheck(self.context, ResourcePath("GlobalAdminCheck", self.resource_path))
         )
 
+    @odata(name="GroupMoveJobs", navigation=True)
     @property
     def group_move_jobs(self) -> EntityCollection[GroupMoveJob]:
         """Gets the GroupMoveJobs property"""
@@ -223,6 +241,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="MoveSites", navigation=True)
     @property
     def move_sites(self) -> EntityCollection[MoveSiteROState]:
         """Gets the MoveSites property"""
@@ -233,6 +252,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="SiteMoveJobs", navigation=True)
     @property
     def site_move_jobs(self) -> EntityCollection[SiteMoveJob]:
         """Gets the SiteMoveJobs property"""
@@ -241,6 +261,7 @@ class MultiGeoServicesBeta(Entity):
             EntityCollection[SiteMoveJob](self.context, SiteMoveJob, ResourcePath("SiteMoveJobs", self.resource_path)),
         )
 
+    @odata(name="StorageQuotas", navigation=True)
     @property
     def storage_quotas(self) -> EntityCollection[StorageQuota]:
         """Gets the StorageQuotas property"""
@@ -251,6 +272,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="SupportedGeoLocationsForTenant", navigation=True)
     @property
     def supported_geo_locations_for_tenant(self) -> SupportedGeoLocationsForTenant:
         """Gets the SupportedGeoLocationsForTenant property"""
@@ -261,6 +283,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="supportedgeolocationsmapdata", navigation=True)
     @property
     def supportedgeolocationsmapdata(self) -> EntityCollection[GeoLocationData]:
         """Gets the supportedgeolocationsmapdata property"""
@@ -271,6 +294,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="TaxonomyReplicationParameters", navigation=True)
     @property
     def taxonomy_replication_parameters(self) -> TaxonomyReplicationParameters:
         """Gets the TaxonomyReplicationParameters property"""
@@ -281,6 +305,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="TenantInformationCollection", navigation=True)
     @property
     def tenant_information_collection(self) -> EntityCollection[TenantInformation]:
         """Gets the TenantInformationCollection property"""
@@ -291,6 +316,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="UnifiedGroups", navigation=True)
     @property
     def unified_groups(self) -> EntityCollection[UnifiedGroup]:
         """Gets the UnifiedGroups property"""
@@ -301,6 +327,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="UpdateGLSRegistration", navigation=True)
     @property
     def update_gls_registration(self) -> EntityCollection[SiteAtTargetEntityData]:
         """Gets the UpdateGLSRegistration property"""
@@ -311,6 +338,7 @@ class MultiGeoServicesBeta(Entity):
             ),
         )
 
+    @odata(name="UserMoveJobs", navigation=True)
     @property
     def user_move_jobs(self) -> EntityCollection[UserMoveJob]:
         """Gets the UserMoveJobs property"""
@@ -323,6 +351,7 @@ class MultiGeoServicesBeta(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta"
 
+    @odata(name="MoveJobReports", navigation=True)
     @property
     def move_job_reports(self) -> MoveJobReport:
         """Gets the MoveJobReports property"""

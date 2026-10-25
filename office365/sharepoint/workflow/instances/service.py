@@ -3,6 +3,7 @@ from uuid import UUID
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.workflow.instances.instance import WorkflowInstance
@@ -24,6 +25,7 @@ class WorkflowInstanceService(Entity):
     def entity_type_name(self):
         return "SP.WorkflowServices.WorkflowInstanceService"
 
+    @odata(name="Current", navigation=True)
     @property
     def current(self) -> "WorkflowInstanceService":
         """Gets the Current property"""

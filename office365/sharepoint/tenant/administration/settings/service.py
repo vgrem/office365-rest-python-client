@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.tenant.administration.settings.default_time_zone_id import (
     TenantDefaultTimeZoneId,
@@ -87,6 +88,7 @@ class TenantAdminSettingsService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="AutoQuotaEnabled")
     @property
     def auto_quota_enabled(self):
         """Controls whether automatic quota management is enabled for SharePoint Online site collections.
@@ -95,6 +97,7 @@ class TenantAdminSettingsService(Entity):
         """
         return self.properties.get("AutoQuotaEnabled", AutoQuotaEnabled())
 
+    @odata(name="AvailableManagedPathsForSiteCreation")
     @property
     def available_managed_paths_for_site_creation(self):
         """
@@ -102,6 +105,7 @@ class TenantAdminSettingsService(Entity):
         """
         return self.properties.get("AvailableManagedPathsForSiteCreation", StringCollection())
 
+    @odata(name="DisableGroupify")
     @property
     def disable_groupify(self):
         """
@@ -110,22 +114,26 @@ class TenantAdminSettingsService(Entity):
         """
         return self.properties.get("DisableGroupify", DisableGroupify())
 
+    @odata(name="DisableSelfServiceSiteCreation")
     @property
     def disable_self_service_site_creation(self):
         """ " """
         return self.properties.get("DisableSelfServiceSiteCreation", DisableSelfServiceSiteCreation())
 
+    @odata(name="EnableAutoNewsDigest")
     @property
     def enable_auto_news_digest(self):
         """ " """
         return self.properties.get("EnableAutoNewsDigest", EnableAutoNewsDigest())
 
+    @odata(name="SmtpServer")
     @property
     def smtp_server(self):
         """Specifies the server address or endpoint of the SMTP server that SharePoint Online or tenant-related
         services use for sending emails"""
         return self.properties.get("SmtpServer", SmtpServer())
 
+    @odata(name="TenantDefaultTimeZoneId")
     @property
     def tenant_default_time_zone_id(self):
         """Default time zone configured for a SharePoint Online tenant"""
@@ -149,6 +157,7 @@ class TenantAdminSettingsService(Entity):
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
 
+    @odata(name="CommentsOnSitePagesDisabled")
     @property
     def comments_on_site_pages_disabled(self) -> CommentsOnSitePagesDisabled:
         """Gets the CommentsOnSitePagesDisabled property"""
@@ -158,6 +167,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("CommentsOnSitePagesDisabled", CommentsOnSitePagesDisabled())
 
+    @odata(name="CustomFormUrl")
     @property
     def custom_form_url(self) -> CustomFormUrl:
         """Gets the CustomFormUrl property"""
@@ -167,6 +177,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("CustomFormUrl", CustomFormUrl())
 
+    @odata(name="IncludeAtAGlanceInShareEmails")
     @property
     def include_at_a_glance_in_share_emails(self) -> IncludeAtAGlanceInShareEmails:
         """Gets the IncludeAtAGlanceInShareEmails property"""
@@ -176,6 +187,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("IncludeAtAGlanceInShareEmails", IncludeAtAGlanceInShareEmails())
 
+    @odata(name="MailFromAddress")
     @property
     def mail_from_address(self) -> MailFromAddress:
         """Gets the MailFromAddress property"""
@@ -185,6 +197,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("MailFromAddress", MailFromAddress())
 
+    @odata(name="MobileNotificationIsEnabledForSharepoint")
     @property
     def mobile_notification_is_enabled_for_sharepoint(self) -> MobileNotificationIsEnabledForSharepoint:
         """Gets the MobileNotificationIsEnabledForSharepoint property"""
@@ -196,6 +209,7 @@ class TenantAdminSettingsService(Entity):
             "MobileNotificationIsEnabledForSharepoint", MobileNotificationIsEnabledForSharepoint()
         )
 
+    @odata(name="NewSiteManagedPath")
     @property
     def new_site_managed_path(self) -> NewSiteManagedPath:
         """Gets the NewSiteManagedPath property"""
@@ -205,6 +219,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("NewSiteManagedPath", NewSiteManagedPath())
 
+    @odata(name="NewSubsiteInModernOffForAll")
     @property
     def new_subsite_in_modern_off_for_all(self) -> NewSubsiteInModernOffForAll:
         """Gets the NewSubsiteInModernOffForAll property"""
@@ -214,6 +229,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("NewSubsiteInModernOffForAll", NewSubsiteInModernOffForAll())
 
+    @odata(name="NewSubsiteInModernOffForModernTemplates")
     @property
     def new_subsite_in_modern_off_for_modern_templates(self) -> NewSubsiteInModernOffForModernTemplates:
         """Gets the NewSubsiteInModernOffForModernTemplates property"""
@@ -223,6 +239,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("NewSubsiteInModernOffForModernTemplates", NewSubsiteInModernOffForModernTemplates())
 
+    @odata(name="NewTeamSiteManagedPath")
     @property
     def new_team_site_managed_path(self) -> NewTeamSiteManagedPath:
         """Gets the NewTeamSiteManagedPath property"""
@@ -232,6 +249,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("NewTeamSiteManagedPath", NewTeamSiteManagedPath())
 
+    @odata(name="ParentSiteUrl")
     @property
     def parent_site_url(self) -> ParentSiteUrl:
         """Gets the ParentSiteUrl property"""
@@ -241,6 +259,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("ParentSiteUrl", ParentSiteUrl())
 
+    @odata(name="PolicyOption")
     @property
     def policy_option(self) -> PolicyOption:
         """Gets the PolicyOption property"""
@@ -248,6 +267,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("PolicyOption", PolicyOption())
 
+    @odata(name="RequireSecondaryContact")
     @property
     def require_secondary_contact(self) -> RequireSecondaryContact:
         """Gets the RequireSecondaryContact property"""
@@ -257,6 +277,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("RequireSecondaryContact", RequireSecondaryContact())
 
+    @odata(name="ShowNextGenerationSyncClientOnTeamSite")
     @property
     def show_next_generation_sync_client_on_team_site(self) -> ShowNextGenerationSyncClientOnTeamSite:
         """Gets the ShowNextGenerationSyncClientOnTeamSite property"""
@@ -266,6 +287,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("ShowNextGenerationSyncClientOnTeamSite", ShowNextGenerationSyncClientOnTeamSite())
 
+    @odata(name="ShowSelfServiceSiteCreation")
     @property
     def show_self_service_site_creation(self) -> ShowSelfServiceSiteCreation:
         """Gets the ShowSelfServiceSiteCreation property"""
@@ -275,6 +297,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("ShowSelfServiceSiteCreation", ShowSelfServiceSiteCreation())
 
+    @odata(name="SiteCreationDefaultStorageQuota")
     @property
     def site_creation_default_storage_quota(self) -> SiteCreationDefaultStorageQuota:
         """Gets the SiteCreationDefaultStorageQuota property"""
@@ -284,6 +307,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("SiteCreationDefaultStorageQuota", SiteCreationDefaultStorageQuota())
 
+    @odata(name="SiteCreationNewUX")
     @property
     def site_creation_new_ux(self) -> SiteCreationNewUX:
         """Gets the SiteCreationNewUX property"""
@@ -293,6 +317,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("SiteCreationNewUX", SiteCreationNewUX())
 
+    @odata(name="SitePagesEnabled")
     @property
     def site_pages_enabled(self) -> SitePagesEnabled:
         """Gets the SitePagesEnabled property"""
@@ -302,6 +327,7 @@ class TenantAdminSettingsService(Entity):
 
         return self.properties.get("SitePagesEnabled", SitePagesEnabled())
 
+    @odata(name="SPListModernUXOff")
     @property
     def sp_list_modern_ux_off(self) -> SPListModernUXOff:
         """Gets the SPListModernUXOff property"""

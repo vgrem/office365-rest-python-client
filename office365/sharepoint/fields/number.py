@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.field import Field
 
 
@@ -9,11 +10,13 @@ class FieldNumber(Field):
     """Specifies a field that contains number values. To set properties, call the Update method
     (section 3.2.5.53.2.1.5)."""
 
+    @odata(name="DisplayFormat")
     @property
     def display_format(self) -> Optional[int]:
         """Gets the number of decimal places to be used when displaying the field."""
         return self.properties.get("DisplayFormat", None)
 
+    @odata(name="CommaSeparator")
     @property
     def comma_separator(self) -> Optional[str]:
         """Gets the separator used to format the value of the field."""
@@ -24,6 +27,7 @@ class FieldNumber(Field):
         """Sets the separator used to format the value of the field."""
         self.set_property("CommaSeparator", value)
 
+    @odata(name="ShowAsPercentage")
     @property
     def show_as_percentage(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether to render the field as a percentage."""
@@ -34,26 +38,31 @@ class FieldNumber(Field):
         """Sets a Boolean value that specifies whether to render the field as a percentage."""
         self.set_property("ShowAsPercentage", value)
 
+    @odata(name="CustomUnitName")
     @property
     def custom_unit_name(self) -> Optional[str]:
         """Gets the CustomUnitName property"""
         return self.properties.get("CustomUnitName", None)
 
+    @odata(name="CustomUnitOnRight")
     @property
     def custom_unit_on_right(self) -> Optional[bool]:
         """Gets the CustomUnitOnRight property"""
         return self.properties.get("CustomUnitOnRight", None)
 
+    @odata(name="MaximumValue")
     @property
     def maximum_value(self) -> Optional[float]:
         """Gets the MaximumValue property"""
         return self.properties.get("MaximumValue", None)
 
+    @odata(name="MinimumValue")
     @property
     def minimum_value(self) -> Optional[float]:
         """Gets the MinimumValue property"""
         return self.properties.get("MinimumValue", None)
 
+    @odata(name="Unit")
     @property
     def unit(self) -> Optional[str]:
         """Gets the Unit property"""

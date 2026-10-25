@@ -11,6 +11,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
 from office365.sharepoint.entity import Entity
 
@@ -237,16 +238,19 @@ class SPPolicyStoreProxy(Entity):
     def entity_type_name(self):
         return "SP.CompliancePolicy.SPPolicyStoreProxy"
 
+    @odata(name="PolicyStoreUrl")
     @property
     def policy_store_url(self) -> Optional[str]:
         """Gets the PolicyStoreUrl property"""
         return self.properties.get("PolicyStoreUrl", None)
 
+    @odata(name="ReviewCenterUrl")
     @property
     def review_center_url(self) -> Optional[str]:
         """Gets the ReviewCenterUrl property"""
         return self.properties.get("ReviewCenterUrl", None)
 
+    @odata(name="SupportContentTypeRetention")
     @property
     def support_content_type_retention(self) -> Optional[bool]:
         """Gets the SupportContentTypeRetention property"""

@@ -7,12 +7,14 @@ from office365.runtime.converters.scalars import iso_z
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class Subscription(Entity):
     """A subscription for receiving notifications at a specified endpoint."""
 
+    @odata(name="id")
     @property
     def id(self) -> Optional[str]:
         """Gets the unique identifier of the subscription."""
@@ -23,6 +25,7 @@ class Subscription(Entity):
         """Identifier of the application used to create the subscription."""
         return self.properties.get("applicationId", None)
 
+    @odata(name="notificationUrl")
     @property
     def notification_url(self) -> Optional[str]:
         """Gets endpoint that will be called when an event occurs."""
@@ -33,6 +36,7 @@ class Subscription(Entity):
         """Sets endpoint that will be called when an event occurs."""
         self.set_property("notificationUrl", value)
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_datetime(self) -> Optional[datetime]:
         """Gets endpoint that will be called when an event occurs."""
@@ -57,21 +61,25 @@ class Subscription(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Webhooks.Subscription"
 
+    @odata(name="clientState")
     @property
     def client_state(self) -> Optional[str]:
         """Gets the clientState property"""
         return self.properties.get("clientState", None)
 
+    @odata(name="resource")
     @property
     def resource(self) -> Optional[str]:
         """Gets the resource property"""
         return self.properties.get("resource", None)
 
+    @odata(name="resourceData")
     @property
     def resource_data(self) -> Optional[str]:
         """Gets the resourceData property"""
         return self.properties.get("resourceData", None)
 
+    @odata(name="scenarios")
     @property
     def scenarios(self) -> StringCollection:
         """Gets the scenarios property"""

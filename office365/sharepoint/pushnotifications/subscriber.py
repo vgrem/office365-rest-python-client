@@ -4,17 +4,20 @@ import datetime
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class PushNotificationSubscriber(Entity):
     """Represents a push notification subscriber over a site."""
 
+    @odata(name="CustomArgs")
     @property
     def custom_args(self) -> Optional[str]:
         """Gets the custom arguments specified by the app."""
         return self.properties.get("CustomArgs", None)
 
+    @odata(name="ServiceToken")
     @property
     def service_token(self) -> Optional[str]:
         """Specifies the delivery channel URI for push notifications. It must not be null. It must not be empty."""
@@ -25,21 +28,25 @@ class PushNotificationSubscriber(Entity):
         """Specifies the delivery channel URI for push notifications. It must not be null. It must not be empty."""
         self.set_property("ServiceToken", value)
 
+    @odata(name="DeviceAppInstanceId")
     @property
     def device_app_instance_id(self) -> Optional[str]:
         """Specifies a device app instance identifier."""
         return self.properties.get("DeviceAppInstanceId", None)
 
+    @odata(name="LastModifiedTimeStamp")
     @property
     def last_modified_time_stamp(self) -> Optional[datetime.datetime]:
         """Specifies the time and date when the subscriber was last updated."""
         return self.properties.get("LastModifiedTimeStamp", datetime.datetime.min)
 
+    @odata(name="RegistrationTimeStamp")
     @property
     def registration_time_stamp(self) -> Optional[datetime.datetime]:
         """Specifies the time and date when the subscriber registered for push notifications."""
         return self.properties.get("RegistrationTimeStamp", datetime.datetime.min)
 
+    @odata(name="User", navigation=True)
     @property
     def user(self):
         """Gets the SharePoint user who created this subscriber."""
@@ -47,6 +54,7 @@ class PushNotificationSubscriber(Entity):
 
         return self.properties.get("User", User(self.context, ResourcePath("user", self.resource_path)))
 
+    @odata(name="SubscriberType")
     @property
     def subscriber_type(self) -> Optional[str]:
         """Gets the SubscriberType property"""

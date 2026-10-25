@@ -1,8 +1,10 @@
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class SPTenantIBInsightsReportOneDrive(Entity):
+    @odata(name="Mixed")
     @property
     def mixed(self) -> StringCollection:
         """Gets the Mixed property"""

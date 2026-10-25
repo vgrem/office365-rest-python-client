@@ -1,9 +1,11 @@
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.microfeed.posts.options import MicrofeedPostOptions
 
 
 class MicrofeedPostOptionCollection(Entity):
+    @odata(name="Items")
     @property
     def items(self) -> ClientValueCollection[MicrofeedPostOptions]:
         """Gets the Items property"""

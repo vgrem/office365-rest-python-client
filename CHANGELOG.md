@@ -93,6 +93,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   failure instead of swallowing every exception, and a test fails if any `$select` column of a
   served package stops declaring its type.
 
+- **Breaking:** SharePoint getters declare their OData metadata too, so the same three
+  answers exist for the types the migrator reads. `scripts/mark_odata.py --service
+  sharepoint` (v3 CSDL) back-filled 4,013 declarations from
+  `generator/metadata/SharePoint.xml` — `Web`'s hand-marked `ContentTypes` names a navigation
+  property, not a column, so an existing declaration is finished as well as a missing one
+  added. Two passes were needed because a module names its type either way: `SP.Web` or
+  `Microsoft.SharePoint.Administration.Archiving.ArchiveFileSizeMetric`, the CSOM name of
+  the same type, so a name is resolved by asking the catalog rather than by stripping a
+  fixed prefix — and a module defining more than one class is resolved by name only when
+  exactly one candidate matches. `Web.select_all()` goes 39 → 119 columns and 2 → 50
+  navigations, `List` 21 → 98 and 2 → 21, `ListItem` 1 → 10 and 2 → 13, `Field` 3 → 41
+  and 0 → 2, `ContentType` 3 → 33 and 0 → 6, `Folder` 8 → 15 and 0 → 5, `File` 11 → 37
+  and 0 → 11, `View` 13 → 47 and 0 → 1. Probed live against `/sites/project`:
+  `web.select(Web.select_all())` answers 118 of 119 names and `List` 98 of 98, while
+  before, 33 of `Web`'s 39 names asked for navigation properties — which `$select` drops
+  silently, so a projection built from them read nothing. Request bodies are unchanged: a
+  fetched object still reports nothing and an edited one still sends only what was
+  edited, because a declaration says what a *response* may carry, never what a request
+  must.
+- The same run finished 18 getters it had missed on the Graph side, in six modules that
+  define more than one class (`CalendarPermission`, `RoomList`, `Category`,
+  `AttachmentItem`, `SearchFolder`, `MessageRule`), and `would mark:` is now 0 for both
+  services.
+- What is left is a list, not a guess: 186 getters in `office365/sharepoint` still spell a
+  wire name their own type's metadata does not declare — 96 in 24 modules whose class the
+  CSDL does not describe at all (`SPFarm`, `SPActivityEntity`, `Sitesharing`, ...), and 90
+  in 17 modules where the type exists but the name is not among its properties
+  (`principal/users/user.py` alone reads 56 of them — `aboutMe`, `accountEnabled` — and
+  `SP.User` declares 13 properties, none of them that; `Term.children_count` reads
+  `childrenCount` where the CSDL says `ChildrenCount`). Whether the service answers those
+  spellings is a live question, so none of them is declared on a guess.
+- `@odata(..., expandable=False)` marks a navigation `$expand` will not follow on its own:
+  `Event.expandable()` no longer names `extensions`, which the service refuses without a
+  `$filter` (`ErrorGraphExtensionExpandRequiresFilter`). The CSDL says a member is a link;
+  it does not say the service will follow it, and neither metadata file carries an
+  expandability annotation, so the one exception is stated where it was measured and the
+  filtered spelling stays reachable through a raw path.
+- `ClientObject._unselectable` states the columns a *type's own* service refuses to
+  project: `Web` answers 400 for `DescriptionTranslations` and `TitleTranslations`
+  ("Specified method is not supported") and, like `List`, for
+  `ShieldAddRoleAssignmentPushdown` ("Non-SPListItem objects are not supported"), while a
+  `ListItem` serves that one and refuses `Client_Title`, `DisplayName` and `IconOverlay`
+  instead. The declaration survives — hydration and comparison still know the wire name —
+  and `select_all()` leaves it out, so the projection is a request the service accepts.
+
 **Outlook mail**
 
 - `MessageCollection.add_from_mime(data)` creates a draft from an RFC 822 document — an

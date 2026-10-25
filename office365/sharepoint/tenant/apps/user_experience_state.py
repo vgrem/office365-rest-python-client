@@ -5,12 +5,14 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class UserExperienceState(Entity):
     """"""
 
+    @odata(name="Flags")
     @property
     def flags(self) -> Optional[int]:
         """Gets the Flags property"""

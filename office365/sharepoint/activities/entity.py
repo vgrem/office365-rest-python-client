@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.activities.action_facet import ActionFacet
 from office365.sharepoint.activities.facets.activity_time import ActivityTimeFacet
 from office365.sharepoint.activities.facets.coalesced import CoalescedFacet
@@ -14,26 +15,32 @@ from office365.sharepoint.sharing.principal import Principal
 class SPActivityEntity(Entity):
     """"""
 
+    @odata(name="action")
     @property
     def action(self):
         return self.properties.get("action", ActionFacet())
 
+    @odata(name="actor")
     @property
     def actor(self):
         return self.properties.get("actor", Principal())
 
+    @odata(name="isCoalesced")
     @property
     def is_coalesced(self):
         return self.properties.get("isCoalesced", CoalescedFacet())
 
+    @odata(name="docDetails")
     @property
     def doc_details(self):
         return self.properties.get("docDetails", InDocFacet())
 
+    @odata(name="resource")
     @property
     def resource(self):
         return self.properties.get("resource", ResourceFacet())
 
+    @odata(name="times")
     @property
     def times(self):
         return self.properties.get("times", ActivityTimeFacet())
@@ -52,6 +59,7 @@ class SPActivityEntity(Entity):
             self._resource_path.set_segment(value)
         return self
 
+    @odata(name="id")
     @property
     def id(self) -> Optional[str]:
         """Gets the id property"""

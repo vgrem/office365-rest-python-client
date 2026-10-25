@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -27,6 +28,7 @@ class UserProfilePropertiesForUser(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="AccountName")
     @property
     def account_name(self) -> Optional[str]:
         """The AccountName property specifies the account name of the user."""

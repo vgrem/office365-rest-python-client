@@ -13,16 +13,19 @@ from office365.sharepoint.webs.time_zone import TimeZone, TimeZoneCollection
 class RegionalSettings(Entity):
     """Represents regional settings that are used on the server that is running SharePoint Server."""
 
+    @odata(name="AdjustHijriDays")
     @property
     def adjust_hijri_days(self) -> Optional[int]:
         """Specifies the number of days to extend or reduce the current month in Hijri calendars on the site"""
         return self.properties.get("AdjustHijriDays", None)
 
+    @odata(name="AlternateCalendarType")
     @property
     def alternate_calendar_type(self) -> Optional[int]:
         """Gets an alternate calendar type that is used on the site"""
         return self.properties.get("AlternateCalendarType", None)
 
+    @odata(name="AM")
     @property
     def am(self) -> Optional[str]:
         """Specifies the string that is used to represent time before midday on the site"""
@@ -34,6 +37,7 @@ class RegionalSettings(Entity):
         """Specifies the calendar type that SHOULD be used when processing date values on the site"""
         return self.properties.get("CalendarType", CalendarType.Unknown)
 
+    @odata(name="Collation")
     @property
     def collation(self) -> Optional[int]:
         """
@@ -43,31 +47,37 @@ class RegionalSettings(Entity):
         """
         return self.properties.get("Collation", None)
 
+    @odata(name="CollationLCID")
     @property
     def collation_lcid(self) -> Optional[int]:
         """Gets the language code identifier (LCID) for the collation rules that are used on the site"""
         return self.properties.get("CollationLCID", None)
 
+    @odata(name="DateFormat")
     @property
     def date_format(self) -> Optional[int]:
         """Gets the date format that is used on the server."""
         return self.properties.get("DateFormat", None)
 
+    @odata(name="DateSeparator")
     @property
     def date_separator(self) -> Optional[str]:
         """Gets the separator that is used for dates on the server."""
         return self.properties.get("DateSeparator", None)
 
+    @odata(name="DecimalSeparator")
     @property
     def decimal_separator(self) -> Optional[str]:
         """Gets the separator that is used for decimals on the server."""
         return self.properties.get("DecimalSeparator", None)
 
+    @odata(name="DigitGrouping")
     @property
     def digit_grouping(self) -> Optional[str]:
         """Gets the separator that is used in grouping digits."""
         return self.properties.get("DigitGrouping", None)
 
+    @odata(name="FirstDayOfWeek")
     @property
     def first_day_of_week(self) -> Optional[int]:
         """Specifies the first day of the week used in calendars on the server.
@@ -83,78 +93,91 @@ class RegionalSettings(Entity):
         """
         return self.properties.get("FirstDayOfWeek", None)
 
+    @odata(name="FirstWeekOfYear")
     @property
     def first_week_of_year(self) -> Optional[int]:
         """Specifies the first week of the year used in calendars on the server.
         Specifies which week of a year is considered the first week."""
         return self.properties.get("FirstWeekOfYear", None)
 
+    @odata(name="IsEastAsia")
     @property
     def is_east_asia(self) -> Optional[bool]:
         """Returns "true" if the web locale is an East Asia locale; "false" otherwise."""
         return self.properties.get("IsEastAsia", None)
 
+    @odata(name="IsRightToLeft")
     @property
     def is_right_to_left(self) -> Optional[bool]:
         """Specifies whether the site uses a right-to-left language. If it uses a right-to-left language,
         this value MUST be "true". Otherwise, this value MUST be "false"."""
         return self.properties.get("IsRightToLeft", None)
 
+    @odata(name="IsUIRightToLeft")
     @property
     def is_ui_right_to_left(self) -> Optional[bool]:
         """Specifies whether the UI of the site (2) uses a right-to-left language. If it uses a right-to-left language,
         this value MUST be "true". Otherwise, this value MUST be "false"."""
         return self.properties.get("IsUIRightToLeft", None)
 
+    @odata(name="ListSeparator")
     @property
     def list_separator(self) -> Optional[str]:
         """Specifies the separator that is used for lists on the server. For example, if the separator is ",",
         items in a list will appear as "1,2,3,4"."""
         return self.properties.get("ListSeparator", None)
 
+    @odata(name="LocaleId")
     @property
     def locale_id(self) -> Optional[int]:
         """Gets the locale identifier in use on the server."""
         return self.properties.get("LocaleId", None)
 
+    @odata(name="NegativeSign")
     @property
     def negative_sign(self) -> Optional[str]:
         """ """
         return self.properties.get("NegativeSign", None)
 
+    @odata(name="NegNumberMode")
     @property
     def neg_number_mode(self) -> Optional[int]:
         """Specifies the negative number mode that is used for displaying negative numbers in calculated fields
         based on the locale of the server."""
         return self.properties.get("NegNumberMode", None)
 
+    @odata(name="PM")
     @property
     def pm(self) -> Optional[str]:
         """Specifies the string that is used to represent time after noon on the site"""
         return self.properties.get("PM", None)
 
+    @odata(name="PositiveSign")
     @property
     def positive_sign(self) -> Optional[str]:
         """Specifies the symbol that is used to represent a positive number on the site"""
         return self.properties.get("PositiveSign", None)
 
+    @odata(name="ShowWeeks")
     @property
     def show_weeks(self) -> Optional[bool]:
         """Specifies whether to display the week number in day or week views of a calendar."""
         return self.properties.get("ShowWeeks", None)
 
+    @odata(name="ThousandSeparator")
     @property
     def thousand_separator(self) -> Optional[str]:
         """Specifies the symbol that is used to separate thousands for numbers on the site. For example,
         if the symbol is "," the number 123456789 would appear as "123,456,789"."""
         return self.properties.get("ThousandSeparator", None)
 
+    @odata(name="WorkDays")
     @property
     def work_days(self) -> Optional[int]:
         """Gets a number that represents the work days of Web site calendars."""
         return self.properties.get("WorkDays", None)
 
-    @odata(name="TimeZone")
+    @odata(name="TimeZone", navigation=True)
     @property
     def time_zone(self) -> TimeZone:
         """Gets the time zone that is used on the server."""
@@ -163,7 +186,7 @@ class RegionalSettings(Entity):
             TimeZone(self.context, ResourcePath("TimeZone", self.resource_path)),
         )
 
-    @odata(name="TimeZones")
+    @odata(name="TimeZones", navigation=True)
     @property
     def time_zones(self) -> TimeZoneCollection:
         """Gets the collection of time zones used in a server farm."""
@@ -172,7 +195,7 @@ class RegionalSettings(Entity):
             TimeZoneCollection(self.context, ResourcePath("TimeZones", self.resource_path)),
         )
 
-    @odata(name="InstalledLanguages")
+    @odata(name="InstalledLanguages", navigation=True)
     @property
     def installed_languages(self) -> LanguageCollection:
         return self.properties.get(
@@ -180,26 +203,31 @@ class RegionalSettings(Entity):
             LanguageCollection(self.context, ResourcePath("InstalledLanguages", self.resource_path)),
         )
 
+    @odata(name="Time24")
     @property
     def time24(self) -> Optional[bool]:
         """Gets the Time24 property"""
         return self.properties.get("Time24", None)
 
+    @odata(name="TimeMarkerPosition")
     @property
     def time_marker_position(self) -> Optional[int]:
         """Gets the TimeMarkerPosition property"""
         return self.properties.get("TimeMarkerPosition", None)
 
+    @odata(name="TimeSeparator")
     @property
     def time_separator(self) -> Optional[str]:
         """Gets the TimeSeparator property"""
         return self.properties.get("TimeSeparator", None)
 
+    @odata(name="WorkDayEndHour")
     @property
     def work_day_end_hour(self) -> Optional[int]:
         """Gets the WorkDayEndHour property"""
         return self.properties.get("WorkDayEndHour", None)
 
+    @odata(name="WorkDayStartHour")
     @property
     def work_day_start_hour(self) -> Optional[int]:
         """Gets the WorkDayStartHour property"""

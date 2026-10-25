@@ -83,6 +83,7 @@ class Attachment(Entity):
             self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _upload_file_by_url())
         return self
 
+    @odata(name="FileName")
     @property
     def file_name(self) -> Optional[str]:
         """Specifies the file name of the list item attachment."""
@@ -94,6 +95,7 @@ class Attachment(Entity):
         """The file name of the attachment as a SP.ResourcePath."""
         return self.properties.get("FileNameAsPath", SPResPath())
 
+    @odata(name="ServerRelativeUrl")
     @property
     def server_relative_url(self) -> Optional[str]:
         """The server-relative-url of the attachment"""

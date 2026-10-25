@@ -15,12 +15,13 @@ class LikedByInformation(Entity):
         """Number of users that have liked the item."""
         return self.properties.get("LikeCount", None)
 
+    @odata(name="isLikedByUser")
     @property
     def is_liked_by_user(self) -> Optional[bool]:
         """MUST be TRUE if the current user has liked the list item."""
         return self.properties.get("isLikedByUser", None)
 
-    @odata(name="likedBy")
+    @odata(name="likedBy", navigation=True)
     @property
     def liked_by(self) -> EntityCollection[UserEntity]:
         """

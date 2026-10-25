@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sharing.internal.canonymouslinkuselimit import (
     CAnonymousLinkUseLimit,
@@ -24,6 +25,7 @@ class SharingRestrictions(Entity):
         static_path = ResourcePath("Microsoft.SharePoint.Sharing.Internal.SharingRestrictions")
         super().__init__(context, static_path)
 
+    @odata(name="anonymousLinkUseLimit")
     @property
     def anonymous_link_use_limit(self):
         return self.properties.get("anonymousLinkUseLimit", CAnonymousLinkUseLimit())
@@ -32,6 +34,7 @@ class SharingRestrictions(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Sharing.Internal.SharingRestrictions"
 
+    @odata(name="externalSharingEnforcement")
     @property
     def external_sharing_enforcement(self) -> CExternalSharingEnforcement:
         """Gets the externalSharingEnforcement property"""
@@ -41,6 +44,7 @@ class SharingRestrictions(Entity):
 
         return self.properties.get("externalSharingEnforcement", CExternalSharingEnforcement())
 
+    @odata(name="externalSharingThrottling")
     @property
     def external_sharing_throttling(self) -> CExternalSharingThrottling:
         """Gets the externalSharingThrottling property"""

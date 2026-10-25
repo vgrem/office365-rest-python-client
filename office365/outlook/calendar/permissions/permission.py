@@ -40,6 +40,7 @@ class CalendarPermission(Entity):
         """
         return self.properties.get("emailAddress", EmailAddress())
 
+    @odata(name="isInsideOrganization")
     @property
     def is_inside_organization(self) -> Optional[bool]:
         """
@@ -47,6 +48,7 @@ class CalendarPermission(Entity):
         """
         return self.properties.get("isInsideOrganization", None)
 
+    @odata(name="isRemovable")
     @property
     def is_removable(self) -> Optional[bool]:
         """
@@ -56,6 +58,7 @@ class CalendarPermission(Entity):
         """
         return self.properties.get("isRemovable", None)
 
+    @odata(name="role")
     @property
     def role(self) -> Optional[str]:
         """Current permission level of the calendar sharee or delegate."""

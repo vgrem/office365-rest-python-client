@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.principal.groups.collection import GroupCollection
 from office365.sharepoint.principal.groups.group import Group
@@ -15,26 +16,31 @@ from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
 class SharingResult(Entity):
     """Contains properties generated as a result of sharing."""
 
+    @odata(name="Url")
     @property
     def url(self) -> Optional[str]:
         """Gets the URL of the securable object being shared."""
         return self.properties.get("Url", None)
 
+    @odata(name="ErrorMessage")
     @property
     def error_message(self) -> Optional[str]:
         """Gets an error message about the failure if sharing was unsuccessful."""
         return self.properties.get("ErrorMessage", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name of the securable object being shared."""
         return self.properties.get("Name", None)
 
+    @odata(name="IconUrl")
     @property
     def icon_url(self) -> Optional[str]:
         """Gets a URL to an icon that represents the securable object, if one exists."""
         return self.properties.get("IconUrl", None)
 
+    @odata(name="StatusCode")
     @property
     def status_code(self) -> Optional[int]:
         """
@@ -42,11 +48,13 @@ class SharingResult(Entity):
         """
         return self.properties.get("StatusCode", None)
 
+    @odata(name="PermissionsPageRelativeUrl")
     @property
     def permissions_page_relative_url(self) -> Optional[str]:
         """Gets the relative URL of the page that shows permissions."""
         return self.properties.get("PermissionsPageRelativeUrl", None)
 
+    @odata(name="InvitedUsers")
     @property
     def invited_users(self) -> ClientValueCollection[SPInvitationCreationResult]:
         """
@@ -55,10 +63,12 @@ class SharingResult(Entity):
         """
         return self.properties.get("InvitedUsers", ClientValueCollection(SPInvitationCreationResult))
 
+    @odata(name="UniquelyPermissionedUsers")
     @property
     def uniquely_permissioned_users(self) -> ClientValueCollection[UserSharingResult]:
         return self.properties.get("UniquelyPermissionedUsers", ClientValueCollection(UserSharingResult))
 
+    @odata(name="GroupsSharedWith", navigation=True)
     @property
     def groups_shared_with(self) -> GroupCollection:
         return self.properties.get(
@@ -66,6 +76,7 @@ class SharingResult(Entity):
             GroupCollection(self.context, ResourcePath("GroupsSharedWith", self.resource_path)),
         )
 
+    @odata(name="GroupUsersAddedTo", navigation=True)
     @property
     def group_users_added_to(self) -> Group:
         return self.properties.get(
@@ -73,6 +84,7 @@ class SharingResult(Entity):
             Group(self.context, ResourcePath("GroupUsersAddedTo", self.resource_path)),
         )
 
+    @odata(name="UsersWithAccessRequests", navigation=True)
     @property
     def users_with_access_requests(self) -> UserCollection:
         return self.properties.get(
@@ -83,6 +95,7 @@ class SharingResult(Entity):
             ),
         )
 
+    @odata(name="UsersAddedToGroup")
     @property
     def users_added_to_group(self) -> ClientValueCollection[UserSharingResult]:
         """Gets the list of users being added to the SharePoint permissions group."""

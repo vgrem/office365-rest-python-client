@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.migrationcenter.service.performance.data import (
@@ -31,6 +32,7 @@ class MigrationCenterServices(Entity):
             resource_path = ResourcePath("Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationCenterServices")
         super().__init__(context, resource_path)
 
+    @odata(name="PerformanceData", navigation=True)
     @property
     def performance_data(self) -> PerformanceDataCollection:
         """"""
@@ -39,6 +41,7 @@ class MigrationCenterServices(Entity):
             PerformanceDataCollection(self.context, ResourcePath("PerformanceData", self.resource_path)),
         )
 
+    @odata(name="Teams", navigation=True)
     @property
     def teams(self) -> MigrationCenterTeams:
         """"""
@@ -51,6 +54,7 @@ class MigrationCenterServices(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationCenterServices"
 
+    @odata(name="AgentGroups", navigation=True)
     @property
     def agent_groups(self) -> EntityCollection[AgentGroup]:
         """Gets the AgentGroups property"""
@@ -61,6 +65,7 @@ class MigrationCenterServices(Entity):
             EntityCollection[AgentGroup](self.context, AgentGroup, ResourcePath("AgentGroups", self.resource_path)),
         )
 
+    @odata(name="DeployStatus", navigation=True)
     @property
     def deploy_status(self) -> MigrationCenterDeployStatus:
         """Gets the DeployStatus property"""
@@ -72,6 +77,7 @@ class MigrationCenterServices(Entity):
             "DeployStatus", MigrationCenterDeployStatus(self.context, ResourcePath("DeployStatus", self.resource_path))
         )
 
+    @odata(name="Devices", navigation=True)
     @property
     def devices(self) -> EntityCollection[Device]:
         """Gets the Devices property"""
@@ -81,6 +87,7 @@ class MigrationCenterServices(Entity):
             "Devices", EntityCollection[Device](self.context, Device, ResourcePath("Devices", self.resource_path))
         )
 
+    @odata(name="SPFlight", navigation=True)
     @property
     def sp_flight(self) -> MigrationSPFlight:
         """Gets the SPFlight property"""
@@ -90,6 +97,7 @@ class MigrationCenterServices(Entity):
             "SPFlight", MigrationSPFlight(self.context, ResourcePath("SPFlight", self.resource_path))
         )
 
+    @odata(name="Storage", navigation=True)
     @property
     def storage(self) -> MigrationCenterStorage:
         """Gets the Storage property"""
@@ -101,6 +109,7 @@ class MigrationCenterServices(Entity):
             "Storage", MigrationCenterStorage(self.context, ResourcePath("Storage", self.resource_path))
         )
 
+    @odata(name="Tasks", navigation=True)
     @property
     def tasks(self) -> EntityCollection[MigrationTask]:
         """Gets the Tasks property"""

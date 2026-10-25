@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -14,11 +15,13 @@ class WebTemplate(Entity):
     def __repr__(self):
         return self.name or self.entity_type_name
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets a value that specifies the description of the list template."""
         return self.properties.get("Description", None)
 
+    @odata(name="DisplayCategory")
     @property
     def display_category(self) -> Optional[str]:
         """
@@ -27,6 +30,7 @@ class WebTemplate(Entity):
         """
         return self.properties.get("DisplayCategory", None)
 
+    @odata(name="ImageUrl")
     @property
     def image_url(self) -> Optional[str]:
         """
@@ -34,6 +38,7 @@ class WebTemplate(Entity):
         """
         return self.properties.get("ImageUrl", None)
 
+    @odata(name="IsHidden")
     @property
     def is_hidden(self) -> Optional[bool]:
         """
@@ -41,6 +46,7 @@ class WebTemplate(Entity):
         """
         return self.properties.get("IsHidden", None)
 
+    @odata(name="IsRootWebOnly")
     @property
     def is_root_web_only(self) -> Optional[bool]:
         """
@@ -49,6 +55,7 @@ class WebTemplate(Entity):
         """
         return self.properties.get("IsRootWebOnly", None)
 
+    @odata(name="IsSubWebOnly")
     @property
     def is_sub_web_only(self) -> Optional[bool]:
         """
@@ -57,21 +64,25 @@ class WebTemplate(Entity):
         """
         return self.properties.get("IsSubWebOnly", None)
 
+    @odata(name="Lcid")
     @property
     def lcid(self) -> Optional[int]:
         """Specifies the LCID for the site definition configuration or site template."""
         return self.properties.get("Lcid", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets a value that specifies the display name of the list template."""
         return self.properties.get("Name", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Specifies the display name for the site definition configuration or site template."""
         return self.properties.get("Title", None)
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Gets the Id property"""

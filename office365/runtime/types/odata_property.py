@@ -56,6 +56,10 @@ class ODataPropertyMeta:
     persist: bool = False
     readonly: bool = False
     navigation: bool = False
+    #: Whether ``$expand`` reaches this navigation with no further arguments. The CSDL
+    #: says a member is a link; it does not say the service will follow it, so a link
+    #: that needs a ``$filter`` says so here.
+    expandable: bool = True
     filterable: bool = False
     nullable: bool = True
     sortable: bool = False
@@ -85,7 +89,9 @@ class odata(dict):
     ``readonly=True`` marks a value the service assigns -- its id, its audit stamps,
     the organizer it resolved, the response it recorded: a response carries it, a
     request must not. ``navigation=True`` marks a CSDL ``NavigationProperty``: it is
-    reached with ``$expand`` and cannot appear in ``$select``.
+    reached with ``$expand`` and cannot appear in ``$select``. ``expandable=False``
+    narrows that to the links ``$expand`` will not follow on its own -- the CSDL knows
+    the member is a link, only the service knows it demands an argument.
     """
 
     meta: ODataPropertyMeta

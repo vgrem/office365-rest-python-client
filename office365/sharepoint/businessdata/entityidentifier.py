@@ -2,15 +2,18 @@ from typing import Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class EntityIdentifier(Entity):
+    @odata(name="IdentifierType")
     @property
     def identifier_type(self) -> Optional[str]:
         """Gets the IdentifierType property"""
         return self.properties.get("IdentifierType", None)
 
+    @odata(name="Name")
     @property
     def name(self) -> Optional[str]:
         """Gets the Name property"""

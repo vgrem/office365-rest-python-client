@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class AppConfiguration(Entity):
+    @odata(name="AppSettingsInTeams")
     @property
     def app_settings_in_teams(self) -> AppSettingsInTeams:
         """Gets the AppSettingsInTeams property"""
@@ -23,6 +25,7 @@ class AppConfiguration(Entity):
 
         return self.properties.get("AppSettingsInTeams", AppSettingsInTeams())
 
+    @odata(name="DashboardItems")
     @property
     def dashboard_items(self) -> ClientValueCollection[DashboardItem]:
         """Gets the DashboardItems property"""
@@ -30,6 +33,7 @@ class AppConfiguration(Entity):
 
         return self.properties.get("DashboardItems", ClientValueCollection[DashboardItem](DashboardItem))
 
+    @odata(name="PivotItems")
     @property
     def pivot_items(self) -> ClientValueCollection[PivotItem]:
         """Gets the PivotItems property"""

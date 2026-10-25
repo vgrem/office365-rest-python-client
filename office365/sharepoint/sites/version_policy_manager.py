@@ -18,6 +18,7 @@ class SiteVersionPolicyManager(Entity):
     major version limits and automatic expiration policies.
     """
 
+    @odata(name="MajorVersionLimit")
     @property
     def major_version_limit(self) -> Optional[int]:
         """Gets the maximum number of major versions allowed for documents.
@@ -27,7 +28,7 @@ class SiteVersionPolicyManager(Entity):
         """
         return self.properties.get("MajorVersionLimit", None)
 
-    @odata(name="VersionPolicies")
+    @odata(name="VersionPolicies", navigation=True)
     @property
     def version_policies(self) -> VersionPolicyManager:
         """Gets the version policies manager for detailed version control settings.

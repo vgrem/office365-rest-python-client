@@ -1,10 +1,12 @@
 from typing import Optional
 from uuid import UUID
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class DBLevelWorkItem(Entity):
+    @odata(name="WorkItemId")
     @property
     def work_item_id(self) -> Optional[UUID]:
         """Gets the WorkItemId property"""

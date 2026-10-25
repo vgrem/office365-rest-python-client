@@ -6,6 +6,7 @@ from uuid import UUID
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
@@ -18,81 +19,97 @@ class HubSite(Entity):
     def __repr__(self):
         return self.site_url or self.entity_type_name
 
+    @odata(name="ID")
     @property
     def id(self) -> Optional[str]:
         """Gets the id of the hub site."""
         return self.properties.get("ID", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description of the hub site type."""
         return self.properties.get("Description", None)
 
+    @odata(name="SiteUrl")
     @property
     def site_url(self) -> Optional[str]:
         """Gets the url of the hub site."""
         return self.properties.get("SiteUrl", None)
 
+    @odata(name="Targets")
     @property
     def targets(self) -> Optional[str]:
         """List of security groups with access to join the hub site. Null if everyone has permission."""
         return self.properties.get("Targets", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the title of the hub site."""
         return self.properties.get("Title", None)
 
+    @odata(name="TenantInstanceId")
     @property
     def tenant_instance_id(self) -> Optional[str]:
         """Gets The tenant instance ID in which the hub site is located."""
         return self.properties.get("TenantInstanceId", None)
 
+    @odata(name="EnablePermissionsSync")
     @property
     def enable_permissions_sync(self) -> Optional[bool]:
         """Gets the EnablePermissionsSync property"""
         return self.properties.get("EnablePermissionsSync", None)
 
+    @odata(name="EnforcedECTs")
     @property
     def enforced_ects(self) -> Optional[str]:
         """Gets the EnforcedECTs property"""
         return self.properties.get("EnforcedECTs", None)
 
+    @odata(name="EnforcedECTsVersion")
     @property
     def enforced_ects_version(self) -> Optional[int]:
         """Gets the EnforcedECTsVersion property"""
         return self.properties.get("EnforcedECTsVersion", None)
 
+    @odata(name="HideNameInNavigation")
     @property
     def hide_name_in_navigation(self) -> Optional[bool]:
         """Gets the HideNameInNavigation property"""
         return self.properties.get("HideNameInNavigation", None)
 
+    @odata(name="LogoUrl")
     @property
     def logo_url(self) -> Optional[str]:
         """Gets the LogoUrl property"""
         return self.properties.get("LogoUrl", None)
 
+    @odata(name="ParentHubSiteId")
     @property
     def parent_hub_site_id(self) -> Optional[UUID]:
         """Gets the ParentHubSiteId property"""
         return self.properties.get("ParentHubSiteId", None)
 
+    @odata(name="PermissionsSyncTag")
     @property
     def permissions_sync_tag(self) -> Optional[int]:
         """Gets the PermissionsSyncTag property"""
         return self.properties.get("PermissionsSyncTag", None)
 
+    @odata(name="RequiresJoinApproval")
     @property
     def requires_join_approval(self) -> Optional[bool]:
         """Gets the RequiresJoinApproval property"""
         return self.properties.get("RequiresJoinApproval", None)
 
+    @odata(name="SiteDesignId")
     @property
     def site_design_id(self) -> Optional[UUID]:
         """Gets the SiteDesignId property"""
         return self.properties.get("SiteDesignId", None)
 
+    @odata(name="SiteId")
     @property
     def site_id(self) -> Optional[UUID]:
         """Gets the SiteId property"""

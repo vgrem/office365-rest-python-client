@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
@@ -40,36 +41,43 @@ class MigrationUrlParser(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Common.MigrationUrlParser"
 
+    @odata(name="CurrentContextSiteSubscriptionId")
     @property
     def current_context_site_subscription_id(self) -> Optional[UUID]:
         """Gets the CurrentContextSiteSubscriptionId property"""
         return self.properties.get("CurrentContextSiteSubscriptionId", None)
 
+    @odata(name="ForceMySiteDefaultList")
     @property
     def force_my_site_default_list(self) -> Optional[bool]:
         """Gets the ForceMySiteDefaultList property"""
         return self.properties.get("ForceMySiteDefaultList", None)
 
+    @odata(name="MaxFolderLevels")
     @property
     def max_folder_levels(self) -> Optional[int]:
         """Gets the MaxFolderLevels property"""
         return self.properties.get("MaxFolderLevels", None)
 
+    @odata(name="MigrationType")
     @property
     def migration_type(self) -> Optional[str]:
         """Gets the MigrationType property"""
         return self.properties.get("MigrationType", None)
 
+    @odata(name="OriginalDestinationUrl")
     @property
     def original_destination_url(self) -> Optional[str]:
         """Gets the OriginalDestinationUrl property"""
         return self.properties.get("OriginalDestinationUrl", None)
 
+    @odata(name="RetrieveAllLists")
     @property
     def retrieve_all_lists(self) -> Optional[bool]:
         """Gets the RetrieveAllLists property"""
         return self.properties.get("RetrieveAllLists", None)
 
+    @odata(name="RetrieveSubFoldersForAllLists")
     @property
     def retrieve_sub_folders_for_all_lists(self) -> Optional[bool]:
         """Gets the RetrieveSubFoldersForAllLists property"""

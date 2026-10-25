@@ -3,6 +3,7 @@ from __future__ import annotations
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.translation.item_info import TranslationItemInfo
 
@@ -32,6 +33,7 @@ class SyncTranslator(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="OutputSaveBehavior")
     @property
     def output_save_behavior(self) -> int | None:
         """Determines the behavior when the output file already exists during translation.

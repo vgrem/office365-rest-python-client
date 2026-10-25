@@ -56,12 +56,13 @@ class WebPartDefinition(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Gets a value that specifies the identifier of the Web Part."""
         return self.properties.get("Id", None)
 
-    @odata(name="WebPart")
+    @odata(name="WebPart", navigation=True)
     @property
     def web_part(self) -> WebPart:
         """The WebPart object, as specified in section 3.2.5.148, associated with this WebPartDefinition.
@@ -69,6 +70,7 @@ class WebPartDefinition(Entity):
         WebPartDefinition object"""
         return self.properties.get("WebPart", WebPart(self.context, ResourcePath("WebPart", self.resource_path)))
 
+    @odata(name="ZoneId")
     @property
     def zone_id(self) -> Optional[str]:
         """Gets the ZoneId property"""

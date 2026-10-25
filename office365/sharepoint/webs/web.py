@@ -172,6 +172,11 @@ class Web(SecurableObject):
     Also referred to as web site.
     """
 
+    # Probed live against ``/sites/project``: ``$select`` answers 400 for these --
+    # the two translated-resource collections with "Specified method is not supported",
+    # the Shield flag with "Non-SPListItem objects are not supported".
+    _unselectable = ("DescriptionTranslations", "TitleTranslations", "ShieldAddRoleAssignmentPushdown")
+
     def __init__(self, context: ClientContext, resource_path: Optional[ResourcePath] = None):
         """ """
         if resource_path is None:
@@ -2007,6 +2012,7 @@ class Web(SecurableObject):
         }
         return self.set_property("AllProperties", props).update()
 
+    @odata(name="Activities", navigation=True)
     @property
     def activities(self) -> EntityCollection[SPActivityEntity]:
         return self.properties.get(
@@ -2018,7 +2024,7 @@ class Web(SecurableObject):
             ),
         )
 
-    @odata(name="ActivityLogger")
+    @odata(name="ActivityLogger", navigation=True)
     @property
     def activity_logger(self) -> ActivityLogger:
         """"""
@@ -2027,6 +2033,7 @@ class Web(SecurableObject):
             ActivityLogger(self.context, ResourcePath("ActivityLogger", self.resource_path)),
         )
 
+    @odata(name="AllowRssFeeds")
     @property
     def allow_rss_feeds(self) -> Optional[bool]:
         """
@@ -2034,11 +2041,13 @@ class Web(SecurableObject):
         """
         return self.properties.get("AllowRssFeeds", None)
 
+    @odata(name="AlternateCssUrl")
     @property
     def alternate_css_url(self) -> Optional[str]:
         """Gets the URL for an alternate cascading style sheet (CSS) to use in the website."""
         return self.properties.get("AlternateCssUrl", None)
 
+    @odata(name="AppInstanceId")
     @property
     def app_instance_id(self) -> Optional[str]:
         """
@@ -2047,6 +2056,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("AppInstanceId", None)
 
+    @odata(name="Author", navigation=True)
     @property
     def author(self) -> User:
         """
@@ -2054,16 +2064,19 @@ class Web(SecurableObject):
         """
         return self.properties.get("Author", User(self.context, ResourcePath("Author", self.resource_path)))
 
+    @odata(name="Created")
     @property
     def created(self) -> datetime:
         """Specifies when the site was created"""
         return self.properties.get("Created", datetime.min)
 
+    @odata(name="CustomMasterUrl")
     @property
     def custom_master_url(self) -> Optional[str]:
         """Gets the URL for a custom master page to apply to the Web site"""
         return self.properties.get("CustomMasterUrl", None)
 
+    @odata(name="CustomSiteActionsDisabled")
     @property
     def custom_site_actions_disabled(self) -> Optional[bool]:
         return self.properties.get("CustomSiteActionsDisabled", None)
@@ -2074,6 +2087,7 @@ class Web(SecurableObject):
         """"""
         return self.properties.get("DescriptionTranslations", ClientValueCollection(SPResourceEntry))
 
+    @odata(name="DesignPackageId")
     @property
     def design_package_id(self) -> Optional[str]:
         """Gets or sets the ID of the Design Package used in this SP.Web.
@@ -2082,16 +2096,19 @@ class Web(SecurableObject):
         The default is determined by the SP.WebTemplate of this SP.Web."""
         return self.properties.get("DesignPackageId", None)
 
+    @odata(name="DisableAppViews")
     @property
     def disable_app_views(self) -> Optional[bool]:
         """"""
         return self.properties.get("DisableAppViews", None)
 
+    @odata(name="DisableFlows")
     @property
     def disable_flows(self) -> Optional[bool]:
         """"""
         return self.properties.get("DisableFlows", None)
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[str]:
         """Specifies the site identifier for the site"""
@@ -2103,6 +2120,7 @@ class Web(SecurableObject):
         """Specifies the site collection identifier for the site collection that contains the site"""
         return self.properties.get("SiteId", None)
 
+    @odata(name="Language")
     @property
     def language(self) -> Optional[int]:
         """Specifies the language code identifier (LCID) for the language that is used on the site"""
@@ -2114,7 +2132,7 @@ class Web(SecurableObject):
         """Specifies when an item was last modified in the site"""
         return self.properties.get("LastItemModifiedDate", None)
 
-    @odata(name="AccessRequestsList")
+    @odata(name="AccessRequestsList", navigation=True)
     @property
     def access_requests_list(self) -> List:
         """"""
@@ -2123,11 +2141,13 @@ class Web(SecurableObject):
             List(self.context, ResourcePath("AccessRequestsList", self.resource_path)),
         )
 
+    @odata(name="AccessRequestListUrl")
     @property
     def access_request_list_url(self) -> Optional[str]:
         """Gets the URL of the access request list to the current site"""
         return self.properties.get("AccessRequestListUrl", None)
 
+    @odata(name="AllowDesignerForCurrentUser")
     @property
     def allow_designer_for_current_user(self) -> Optional[bool]:
         """
@@ -2135,6 +2155,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("AllowDesignerForCurrentUser", None)
 
+    @odata(name="AllowMasterPageEditingForCurrentUser")
     @property
     def allow_master_page_editing_for_current_user(self) -> Optional[bool]:
         """
@@ -2142,6 +2163,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("AllowMasterPageEditingForCurrentUser", None)
 
+    @odata(name="AllowRevertFromTemplateForCurrentUser")
     @property
     def allow_revert_from_template_for_current_user(self) -> Optional[bool]:
         """
@@ -2155,6 +2177,7 @@ class Web(SecurableObject):
         """Specifies the effective permissions that are assigned to the current user"""
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
+    @odata(name="EnableMinimalDownload")
     @property
     def enable_minimal_download(self) -> Optional[bool]:
         """
@@ -2167,6 +2190,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("EnableMinimalDownload", None)
 
+    @odata(name="Webs", navigation=True)
     @property
     def webs(self) -> WebCollection:
         """Specifies the collection of all child sites for the site"""
@@ -2176,6 +2200,7 @@ class Web(SecurableObject):
             WebCollection(self.context, ResourcePath("webs", self.resource_path), self),
         )
 
+    @odata(name="Folders", navigation=True)
     @property
     def folders(self) -> FolderCollection:
         """Specifies the collection of all first-level folders in the site"""
@@ -2184,7 +2209,7 @@ class Web(SecurableObject):
             FolderCollection(self.context, ResourcePath("folders", self.resource_path), self),
         )
 
-    @odata(name="HostedApps")
+    @odata(name="HostedApps", navigation=True)
     @property
     def hosted_apps(self) -> HostedAppsManager:
         """"""
@@ -2193,6 +2218,7 @@ class Web(SecurableObject):
             HostedAppsManager(self.context, ResourcePath("HostedApps", self.resource_path)),
         )
 
+    @odata(name="Lists", navigation=True)
     @property
     def lists(self) -> ListCollection:
         """Specifies the collection of lists that are contained in the site available to the current user based on the
@@ -2202,7 +2228,7 @@ class Web(SecurableObject):
             ListCollection(self.context, ResourcePath("lists", self.resource_path)),
         )
 
-    @odata(name="OneDriveSharedItems")
+    @odata(name="OneDriveSharedItems", navigation=True)
     @property
     def onedrive_shared_items(self) -> EntityCollection[SharedDocumentInfo]:
         """"""
@@ -2215,7 +2241,7 @@ class Web(SecurableObject):
             ),
         )
 
-    @odata(name="SiteUsers")
+    @odata(name="SiteUsers", navigation=True)
     @property
     def site_users(self) -> UserCollection:
         """Specifies the collection of users in the site collection that contains the site"""
@@ -2224,7 +2250,7 @@ class Web(SecurableObject):
             UserCollection(self.context, ResourcePath("siteUsers", self.resource_path)),
         )
 
-    @odata(name="SiteGroups")
+    @odata(name="SiteGroups", navigation=True)
     @property
     def site_groups(self) -> GroupCollection:
         """Gets the collection of groups for the site collection."""
@@ -2233,7 +2259,7 @@ class Web(SecurableObject):
             GroupCollection(self.context, ResourcePath("siteGroups", self.resource_path)),
         )
 
-    @odata(name="CurrentUser")
+    @odata(name="CurrentUser", navigation=True)
     @property
     def current_user(self) -> User:
         """Gets the current user."""
@@ -2242,7 +2268,7 @@ class Web(SecurableObject):
             User(self.context, ResourcePath("CurrentUser", self.resource_path)),
         )
 
-    @odata(name="ParentWeb")
+    @odata(name="ParentWeb", navigation=True)
     @property
     def parent_web(self) -> Web:
         """Gets the parent website of the specified website."""
@@ -2251,7 +2277,7 @@ class Web(SecurableObject):
             Web(self.context, ResourcePath("ParentWeb", self.resource_path)),
         )
 
-    @odata(name="AssociatedVisitorGroup")
+    @odata(name="AssociatedVisitorGroup", navigation=True)
     @property
     def associated_visitor_group(self) -> Group:
         """Gets or sets the associated visitor group of the Web site."""
@@ -2260,7 +2286,7 @@ class Web(SecurableObject):
             Group(self.context, ResourcePath("AssociatedVisitorGroup", self.resource_path)),
         )
 
-    @odata(name="AssociatedOwnerGroup")
+    @odata(name="AssociatedOwnerGroup", navigation=True)
     @property
     def associated_owner_group(self) -> Group:
         """Gets or sets the associated owner group of the Web site."""
@@ -2269,7 +2295,7 @@ class Web(SecurableObject):
             Group(self.context, ResourcePath("AssociatedOwnerGroup", self.resource_path)),
         )
 
-    @odata(name="AssociatedMemberGroup")
+    @odata(name="AssociatedMemberGroup", navigation=True)
     @property
     def associated_member_group(self) -> Group:
         """Gets or sets the group of users who have been given contribute permissions to the Web site."""
@@ -2278,6 +2304,7 @@ class Web(SecurableObject):
             Group(self.context, ResourcePath("AssociatedMemberGroup", self.resource_path)),
         )
 
+    @odata(name="CanModernizeHomepage", navigation=True)
     @property
     def can_modernize_homepage(self) -> ModernizeHomepageResult:
         """Specifies the site theme associated with the site"""
@@ -2286,6 +2313,7 @@ class Web(SecurableObject):
             ModernizeHomepageResult(self.context, ResourcePath("CanModernizeHomepage", self.resource_path)),
         )
 
+    @odata(name="Fields", navigation=True)
     @property
     def fields(self) -> FieldCollection:
         """Specifies the collection of all the fields (2) in the site (2)."""
@@ -2294,7 +2322,7 @@ class Web(SecurableObject):
             FieldCollection(self.context, ResourcePath("Fields", self.resource_path), self),
         )
 
-    @odata(name="ContentTypes")
+    @odata(name="ContentTypes", navigation=True)
     @property
     def content_types(self) -> ContentTypeCollection:
         """Gets the collection of content types for the Web site."""
@@ -2303,6 +2331,7 @@ class Web(SecurableObject):
             ContentTypeCollection(self.context, ResourcePath("ContentTypes", self.resource_path), self),
         )
 
+    @odata(name="Configuration")
     @property
     def configuration(self):
         """
@@ -2312,7 +2341,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("Configuration", None)
 
-    @odata(name="DataLeakagePreventionStatusInfo")
+    @odata(name="DataLeakagePreventionStatusInfo", navigation=True)
     @property
     def data_leakage_prevention_status_info(self) -> SPDataLeakagePreventionStatusInfo:
         return self.properties.get(
@@ -2323,7 +2352,7 @@ class Web(SecurableObject):
             ),
         )
 
-    @odata(name="DescriptionResource")
+    @odata(name="DescriptionResource", navigation=True)
     @property
     def description_resource(self) -> UserResource:
         """A UserResource object that represents the description of this web."""
@@ -2332,7 +2361,7 @@ class Web(SecurableObject):
             UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
-    @odata(name="RoleDefinitions")
+    @odata(name="RoleDefinitions", navigation=True)
     @property
     def role_definitions(self) -> RoleDefinitionCollection:
         """Gets the collection of role definitions for the Web site."""
@@ -2341,7 +2370,7 @@ class Web(SecurableObject):
             RoleDefinitionCollection(self.context, ResourcePath("RoleDefinitions", self.resource_path)),
         )
 
-    @odata(name="EventReceivers")
+    @odata(name="EventReceivers", navigation=True)
     @property
     def event_receivers(self) -> EventReceiverDefinitionCollection:
         """Specifies the collection of event receiver definitions that are currently available on the Web site"""
@@ -2350,7 +2379,7 @@ class Web(SecurableObject):
             EventReceiverDefinitionCollection(self.context, ResourcePath("EventReceivers", self.resource_path), self),
         )
 
-    @odata(name="ClientWebParts")
+    @odata(name="ClientWebParts", navigation=True)
     @property
     def client_web_parts(self) -> ClientWebPartCollection:
         """
@@ -2362,6 +2391,7 @@ class Web(SecurableObject):
             ClientWebPartCollection(self.context, ResourcePath("ClientWebParts", self.resource_path)),
         )
 
+    @odata(name="Features", navigation=True)
     @property
     def features(self) -> FeatureCollection:
         """Get web features"""
@@ -2370,7 +2400,7 @@ class Web(SecurableObject):
             FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self),
         )
 
-    @odata(name="TenantAppCatalog")
+    @odata(name="TenantAppCatalog", navigation=True)
     @property
     def tenant_app_catalog(self) -> TenantCorporateCatalogAccessor:
         """Returns the tenant app catalog for the given tenant if it exists."""
@@ -2379,7 +2409,7 @@ class Web(SecurableObject):
             TenantCorporateCatalogAccessor(self.context, ResourcePath("TenantAppCatalog", self.resource_path)),
         )
 
-    @odata(name="SiteCollectionAppCatalog")
+    @odata(name="SiteCollectionAppCatalog", navigation=True)
     @property
     def site_collection_app_catalog(self) -> SiteCollectionCorporateCatalogAccessor:
         """Returns the site collection app catalog for the given web if it exists."""
@@ -2391,7 +2421,7 @@ class Web(SecurableObject):
             ),
         )
 
-    @odata(name="WebInfos")
+    @odata(name="WebInfos", navigation=True)
     @property
     def web_infos(self) -> WebInformationCollection:
         """Specifies the collection of all child sites for the site"""
@@ -2400,7 +2430,7 @@ class Web(SecurableObject):
             WebInformationCollection(self.context, ResourcePath("WebInfos", self.resource_path)),
         )
 
-    @odata(name="ThemeInfo")
+    @odata(name="ThemeInfo", navigation=True)
     @property
     def theme_info(self) -> ThemeInfo:
         """Specifies the site theme associated with the site"""
@@ -2409,16 +2439,19 @@ class Web(SecurableObject):
             ThemeInfo(self.context, ResourcePath("ThemeInfo", self.resource_path)),
         )
 
+    @odata(name="Url")
     @property
     def url(self) -> Optional[str]:
         """Gets the absolute URL for the website."""
         return self.properties.get("Url", None)
 
+    @odata(name="QuickLaunchEnabled")
     @property
     def quick_launch_enabled(self) -> Optional[bool]:
         """Gets a value that specifies whether the Quick Launch area is enabled on the site."""
         return self.properties.get("QuickLaunchEnabled", None)
 
+    @odata(name="MegaMenuEnabled")
     @property
     def mega_menu_enabled(self) -> Optional[bool]:
         """Gets a value that specifies whether the Mega menu is enabled on the site."""
@@ -2429,12 +2462,13 @@ class Web(SecurableObject):
         """Sets a value that specifies whether the Quick Launch area is enabled on the site."""
         self.set_property("QuickLaunchEnabled", value)
 
+    @odata(name="SiteLogoUrl")
     @property
     def site_logo_url(self) -> Optional[str]:
         """Gets a value that specifies Site logo url."""
         return self.properties.get("SiteLogoUrl", None)
 
-    @odata(name="ListTemplates")
+    @odata(name="ListTemplates", navigation=True)
     @property
     def list_templates(self) -> ListTemplateCollection:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
@@ -2444,6 +2478,7 @@ class Web(SecurableObject):
             ListTemplateCollection(self.context, ResourcePath("ListTemplates", self.resource_path)),
         )
 
+    @odata(name="IsMultilingual")
     @property
     def is_multilingual(self) -> Optional[bool]:
         """Gets whether Multilingual UI is turned on for this web or not."""
@@ -2456,7 +2491,7 @@ class Web(SecurableObject):
         """
         self.set_property("IsMultilingual", val)
 
-    @odata(name="MultilingualSettings")
+    @odata(name="MultilingualSettings", navigation=True)
     @property
     def multilingual_settings(self) -> MultilingualSettings:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
@@ -2466,12 +2501,13 @@ class Web(SecurableObject):
             MultilingualSettings(self.context, ResourcePath("MultilingualSettings", self.resource_path)),
         )
 
+    @odata(name="WebTemplate")
     @property
     def web_template(self) -> Optional[str]:
         """Gets the name of the site definition or site template that was used to create the site."""
         return self.properties.get("WebTemplate", None)
 
-    @odata(name="RegionalSettings")
+    @odata(name="RegionalSettings", navigation=True)
     @property
     def regional_settings(self) -> RegionalSettings:
         """Gets the regional settings that are currently implemented on the website."""
@@ -2480,7 +2516,7 @@ class Web(SecurableObject):
             RegionalSettings(self.context, ResourcePath("RegionalSettings", self.resource_path)),
         )
 
-    @odata(name="RecycleBin")
+    @odata(name="RecycleBin", navigation=True)
     @property
     def recycle_bin(self) -> RecycleBinItemCollection:
         """Specifies the collection of Recycle Bin items of the Recycle Bin of the site"""
@@ -2489,21 +2525,25 @@ class Web(SecurableObject):
             RecycleBinItemCollection(self.context, ResourcePath("RecycleBin", self.resource_path)),
         )
 
+    @odata(name="RecycleBinEnabled")
     @property
     def recycle_bin_enabled(self) -> Optional[bool]:
         """Specifies whether the Recycle Bin is enabled."""
         return self.properties.get("RecycleBinEnabled", None)
 
+    @odata(name="RelatedHubSiteIds")
     @property
     def related_hub_site_ids(self) -> Optional[str]:
         """ """
         return self.properties.get("RelatedHubSiteIds", None)
 
+    @odata(name="RequestAccessEmail")
     @property
     def request_access_email(self) -> Optional[str]:
         """Gets the e-mail address to which requests for access are sent."""
         return self.properties.get("RequestAccessEmail", None)
 
+    @odata(name="SaveSiteAsTemplateEnabled")
     @property
     def save_site_as_template_enabled(self) -> Optional[bool]:
         """Specifies if the site (2) can be saved as a site template.
@@ -2518,16 +2558,19 @@ class Web(SecurableObject):
         """
         return self.properties.get("SaveSiteAsTemplateEnabled", None)
 
+    @odata(name="SearchBoxInNavBar")
     @property
     def search_box_in_navbar(self) -> Optional[int]:
         """Gets the e-mail address to which requests for access are sent."""
         return self.properties.get("SearchBoxInNavBar", None)
 
+    @odata(name="SearchBoxPlaceholderText")
     @property
     def search_box_placeholder_text(self) -> Optional[str]:
         """Gets the placeholder text in SharePoint online search box for a given (sub) site."""
         return self.properties.get("SearchBoxPlaceholderText", None)
 
+    @odata(name="Navigation", navigation=True)
     @property
     def navigation(self) -> Navigation:
         """Specifies the navigation structure on the site (2), including the Quick Launch area and the link bar."""
@@ -2536,7 +2579,7 @@ class Web(SecurableObject):
             Navigation(self.context, ResourcePath("Navigation", self.resource_path)),
         )
 
-    @odata(name="PushNotificationSubscribers")
+    @odata(name="PushNotificationSubscribers", navigation=True)
     @property
     def push_notification_subscribers(self) -> PushNotificationSubscriberCollection:
         """Specifies the collection of push notification subscribers for the site"""
@@ -2548,7 +2591,7 @@ class Web(SecurableObject):
             ),
         )
 
-    @odata(name="RootFolder")
+    @odata(name="RootFolder", navigation=True)
     @property
     def root_folder(self) -> Folder:
         """Get a root folder"""
@@ -2557,6 +2600,7 @@ class Web(SecurableObject):
             Folder(self.context, ResourcePath("RootFolder", self.resource_path)),
         )
 
+    @odata(name="Alerts", navigation=True)
     @property
     def alerts(self) -> AlertCollection:
         """Gets the collection of alerts for the site or subsite."""
@@ -2565,7 +2609,7 @@ class Web(SecurableObject):
             AlertCollection(self.context, ResourcePath("Alerts", self.resource_path)),
         )
 
-    @odata(name="AvailableFields")
+    @odata(name="AvailableFields", navigation=True)
     @property
     def available_fields(self) -> FieldCollection:
         """
@@ -2577,7 +2621,7 @@ class Web(SecurableObject):
             FieldCollection(self.context, ResourcePath("AvailableFields", self.resource_path)),
         )
 
-    @odata(name="AvailableContentTypes")
+    @odata(name="AvailableContentTypes", navigation=True)
     @property
     def available_content_types(self) -> ContentTypeCollection:
         """
@@ -2589,7 +2633,7 @@ class Web(SecurableObject):
             ContentTypeCollection(self.context, ResourcePath("AvailableContentTypes", self.resource_path)),
         )
 
-    @odata(name="SiteUserInfoList")
+    @odata(name="SiteUserInfoList", navigation=True)
     @property
     def site_user_info_list(self) -> List:
         """
@@ -2600,11 +2644,13 @@ class Web(SecurableObject):
             List(self.context, ResourcePath("SiteUserInfoList", self.resource_path)),
         )
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets the title of the web."""
         return self.properties.get("Title", None)
 
+    @odata(name="WelcomePage")
     @property
     def welcome_page(self) -> Optional[str]:
         """Specifies the URL of the Welcome page for the site"""
@@ -2616,12 +2662,13 @@ class Web(SecurableObject):
         """Specifies the language code identifiers (LCIDs) of the languages that are enabled for the site."""
         return self.properties.get("SupportedUILanguageIds", ClientValueCollection(int))
 
+    @odata(name="UIVersion")
     @property
     def ui_version(self) -> Optional[int]:
         """Gets or sets the user interface (UI) version of the Web site."""
         return self.properties.get("UIVersion", None)
 
-    @odata(name="UserCustomActions")
+    @odata(name="UserCustomActions", navigation=True)
     @property
     def user_custom_actions(self) -> UserCustomActionCollection:
         """Specifies the collection of user custom actions for the site"""
@@ -2630,17 +2677,19 @@ class Web(SecurableObject):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
+    @odata(name="ServerRelativePath")
     @property
     def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the Web."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
+    @odata(name="SyndicationEnabled")
     @property
     def syndication_enabled(self) -> Optional[bool]:
         """Specifies whether the [RSS2.0] feeds are enabled on the site"""
         return self.properties.get("SyndicationEnabled", None)
 
-    @odata(name="TitleResource")
+    @odata(name="TitleResource", navigation=True)
     @property
     def title_resource(self) -> UserResource:
         """A UserResource object that represents the title of this web."""
@@ -2649,7 +2698,7 @@ class Web(SecurableObject):
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
-    @odata(name="AllProperties")
+    @odata(name="AllProperties", navigation=True)
     @property
     def all_properties(self) -> PropertyValues:
         """A UserResource object that represents the title of this web."""
@@ -2658,6 +2707,7 @@ class Web(SecurableObject):
             PropertyValues(self.context, ResourcePath("AllProperties", self.resource_path)),
         )
 
+    @odata(name="TreeViewEnabled")
     @property
     def treeview_enabled(self) -> Optional[bool]:
         """Specifies whether the tree view is enabled on the site"""
@@ -2684,51 +2734,61 @@ class Web(SecurableObject):
             orig_resource_url = orig_resource_url.replace(self.context.service_root_url, self._web_url + "/_api")
         return orig_resource_url
 
+    @odata(name="AccessRequestSiteDescription")
     @property
     def access_request_site_description(self) -> Optional[str]:
         """Gets the AccessRequestSiteDescription property"""
         return self.properties.get("AccessRequestSiteDescription", None)
 
+    @odata(name="Acronym")
     @property
     def acronym(self) -> Optional[str]:
         """Gets the Acronym property"""
         return self.properties.get("Acronym", None)
 
+    @odata(name="AllowAutomaticASPXPageIndexing")
     @property
     def allow_automatic_aspx_page_indexing(self) -> Optional[bool]:
         """Gets the AllowAutomaticASPXPageIndexing property"""
         return self.properties.get("AllowAutomaticASPXPageIndexing", None)
 
+    @odata(name="AllowCreateDeclarativeWorkflowForCurrentUser")
     @property
     def allow_create_declarative_workflow_for_current_user(self) -> Optional[bool]:
         """Gets the AllowCreateDeclarativeWorkflowForCurrentUser property"""
         return self.properties.get("AllowCreateDeclarativeWorkflowForCurrentUser", None)
 
+    @odata(name="AllowSaveDeclarativeWorkflowAsTemplateForCurrentUser")
     @property
     def allow_save_declarative_workflow_as_template_for_current_user(self) -> Optional[bool]:
         """Gets the AllowSaveDeclarativeWorkflowAsTemplateForCurrentUser property"""
         return self.properties.get("AllowSaveDeclarativeWorkflowAsTemplateForCurrentUser", None)
 
+    @odata(name="AllowSavePublishDeclarativeWorkflowForCurrentUser")
     @property
     def allow_save_publish_declarative_workflow_for_current_user(self) -> Optional[bool]:
         """Gets the AllowSavePublishDeclarativeWorkflowForCurrentUser property"""
         return self.properties.get("AllowSavePublishDeclarativeWorkflowForCurrentUser", None)
 
+    @odata(name="ClassicWelcomePage")
     @property
     def classic_welcome_page(self) -> Optional[str]:
         """Gets the ClassicWelcomePage property"""
         return self.properties.get("ClassicWelcomePage", None)
 
+    @odata(name="CommentsOnSitePagesDisabled")
     @property
     def comments_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the CommentsOnSitePagesDisabled property"""
         return self.properties.get("CommentsOnSitePagesDisabled", None)
 
+    @odata(name="ContainsConfidentialInfo")
     @property
     def contains_confidential_info(self) -> Optional[bool]:
         """Gets the ContainsConfidentialInfo property"""
         return self.properties.get("ContainsConfidentialInfo", None)
 
+    @odata(name="CurrentChangeToken")
     @property
     def current_change_token(self) -> ChangeToken:
         """Gets the CurrentChangeToken property"""
@@ -2736,41 +2796,49 @@ class Web(SecurableObject):
 
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
+    @odata(name="DefaultNewPageTemplateId")
     @property
     def default_new_page_template_id(self) -> Optional[UUID]:
         """Gets the DefaultNewPageTemplateId property"""
         return self.properties.get("DefaultNewPageTemplateId", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the Description property"""
         return self.properties.get("Description", None)
 
+    @odata(name="DescriptionForExistingLanguage")
     @property
     def description_for_existing_language(self) -> Optional[str]:
         """Gets the DescriptionForExistingLanguage property"""
         return self.properties.get("DescriptionForExistingLanguage", None)
 
+    @odata(name="DesignerDownloadUrlForCurrentUser")
     @property
     def designer_download_url_for_current_user(self) -> Optional[str]:
         """Gets the DesignerDownloadUrlForCurrentUser property"""
         return self.properties.get("DesignerDownloadUrlForCurrentUser", None)
 
+    @odata(name="DisableRecommendedItems")
     @property
     def disable_recommended_items(self) -> Optional[bool]:
         """Gets the DisableRecommendedItems property"""
         return self.properties.get("DisableRecommendedItems", None)
 
+    @odata(name="DocumentLibraryCalloutOfficeWebAppPreviewersDisabled")
     @property
     def document_library_callout_office_web_app_previewers_disabled(self) -> Optional[bool]:
         """Gets the DocumentLibraryCalloutOfficeWebAppPreviewersDisabled property"""
         return self.properties.get("DocumentLibraryCalloutOfficeWebAppPreviewersDisabled", None)
 
+    @odata(name="ExcludeFromOfflineClient")
     @property
     def exclude_from_offline_client(self) -> Optional[bool]:
         """Gets the ExcludeFromOfflineClient property"""
         return self.properties.get("ExcludeFromOfflineClient", None)
 
+    @odata(name="FontOptionForSiteFooterNav")
     @property
     def font_option_for_site_footer_nav(self) -> FontOption:
         """Gets the FontOptionForSiteFooterNav property"""
@@ -2778,6 +2846,7 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteFooterNav", FontOption())
 
+    @odata(name="FontOptionForSiteFooterTitle")
     @property
     def font_option_for_site_footer_title(self) -> FontOption:
         """Gets the FontOptionForSiteFooterTitle property"""
@@ -2785,6 +2854,7 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteFooterTitle", FontOption())
 
+    @odata(name="FontOptionForSiteNav")
     @property
     def font_option_for_site_nav(self) -> FontOption:
         """Gets the FontOptionForSiteNav property"""
@@ -2792,6 +2862,7 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteNav", FontOption())
 
+    @odata(name="FontOptionForSiteTitle")
     @property
     def font_option_for_site_title(self) -> FontOption:
         """Gets the FontOptionForSiteTitle property"""
@@ -2799,11 +2870,13 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteTitle", FontOption())
 
+    @odata(name="FooterAlignment")
     @property
     def footer_alignment(self) -> Optional[int]:
         """Gets the FooterAlignment property"""
         return self.properties.get("FooterAlignment", None)
 
+    @odata(name="FooterBackgroundFocalPoint")
     @property
     def footer_background_focal_point(self) -> SPFocalPoint:
         """Gets the FooterBackgroundFocalPoint property"""
@@ -2811,271 +2884,325 @@ class Web(SecurableObject):
 
         return self.properties.get("FooterBackgroundFocalPoint", SPFocalPoint())
 
+    @odata(name="FooterBlur")
     @property
     def footer_blur(self) -> Optional[int]:
         """Gets the FooterBlur property"""
         return self.properties.get("FooterBlur", None)
 
+    @odata(name="FooterColorIndexInDarkMode")
     @property
     def footer_color_index_in_dark_mode(self) -> Optional[int]:
         """Gets the FooterColorIndexInDarkMode property"""
         return self.properties.get("FooterColorIndexInDarkMode", None)
 
+    @odata(name="FooterColorIndexInLightMode")
     @property
     def footer_color_index_in_light_mode(self) -> Optional[int]:
         """Gets the FooterColorIndexInLightMode property"""
         return self.properties.get("FooterColorIndexInLightMode", None)
 
+    @odata(name="FooterEmphasis")
     @property
     def footer_emphasis(self) -> Optional[int]:
         """Gets the FooterEmphasis property"""
         return self.properties.get("FooterEmphasis", None)
 
+    @odata(name="FooterEnabled")
     @property
     def footer_enabled(self) -> Optional[bool]:
         """Gets the FooterEnabled property"""
         return self.properties.get("FooterEnabled", None)
 
+    @odata(name="FooterLayout")
     @property
     def footer_layout(self) -> Optional[int]:
         """Gets the FooterLayout property"""
         return self.properties.get("FooterLayout", None)
 
+    @odata(name="FooterOverlayColor")
     @property
     def footer_overlay_color(self) -> Optional[int]:
         """Gets the FooterOverlayColor property"""
         return self.properties.get("FooterOverlayColor", None)
 
+    @odata(name="FooterOverlayGradientDirection")
     @property
     def footer_overlay_gradient_direction(self) -> Optional[int]:
         """Gets the FooterOverlayGradientDirection property"""
         return self.properties.get("FooterOverlayGradientDirection", None)
 
+    @odata(name="FooterOverlayOpacity")
     @property
     def footer_overlay_opacity(self) -> Optional[int]:
         """Gets the FooterOverlayOpacity property"""
         return self.properties.get("FooterOverlayOpacity", None)
 
+    @odata(name="HasFooterBackgroundImage")
     @property
     def has_footer_background_image(self) -> Optional[bool]:
         """Gets the HasFooterBackgroundImage property"""
         return self.properties.get("HasFooterBackgroundImage", None)
 
+    @odata(name="HasHeaderBackgroundImage")
     @property
     def has_header_background_image(self) -> Optional[bool]:
         """Gets the HasHeaderBackgroundImage property"""
         return self.properties.get("HasHeaderBackgroundImage", None)
 
+    @odata(name="HasWebTemplateExtension")
     @property
     def has_web_template_extension(self) -> Optional[bool]:
         """Gets the HasWebTemplateExtension property"""
         return self.properties.get("HasWebTemplateExtension", None)
 
+    @odata(name="HeaderColorIndexInDarkMode")
     @property
     def header_color_index_in_dark_mode(self) -> Optional[int]:
         """Gets the HeaderColorIndexInDarkMode property"""
         return self.properties.get("HeaderColorIndexInDarkMode", None)
 
+    @odata(name="HeaderColorIndexInLightMode")
     @property
     def header_color_index_in_light_mode(self) -> Optional[int]:
         """Gets the HeaderColorIndexInLightMode property"""
         return self.properties.get("HeaderColorIndexInLightMode", None)
 
+    @odata(name="HeaderEmphasis")
     @property
     def header_emphasis(self) -> Optional[int]:
         """Gets the HeaderEmphasis property"""
         return self.properties.get("HeaderEmphasis", None)
 
+    @odata(name="HeaderLayout")
     @property
     def header_layout(self) -> Optional[int]:
         """Gets the HeaderLayout property"""
         return self.properties.get("HeaderLayout", None)
 
+    @odata(name="HeaderOverlayColor")
     @property
     def header_overlay_color(self) -> Optional[int]:
         """Gets the HeaderOverlayColor property"""
         return self.properties.get("HeaderOverlayColor", None)
 
+    @odata(name="HeaderOverlayGradientDirection")
     @property
     def header_overlay_gradient_direction(self) -> Optional[int]:
         """Gets the HeaderOverlayGradientDirection property"""
         return self.properties.get("HeaderOverlayGradientDirection", None)
 
+    @odata(name="HeaderOverlayOpacity")
     @property
     def header_overlay_opacity(self) -> Optional[int]:
         """Gets the HeaderOverlayOpacity property"""
         return self.properties.get("HeaderOverlayOpacity", None)
 
+    @odata(name="HideTitleInHeader")
     @property
     def hide_title_in_header(self) -> Optional[bool]:
         """Gets the HideTitleInHeader property"""
         return self.properties.get("HideTitleInHeader", None)
 
+    @odata(name="HorizontalQuickLaunch")
     @property
     def horizontal_quick_launch(self) -> Optional[bool]:
         """Gets the HorizontalQuickLaunch property"""
         return self.properties.get("HorizontalQuickLaunch", None)
 
+    @odata(name="IsEduClass")
     @property
     def is_edu_class(self) -> Optional[bool]:
         """Gets the IsEduClass property"""
         return self.properties.get("IsEduClass", None)
 
+    @odata(name="IsEduClassProvisionChecked")
     @property
     def is_edu_class_provision_checked(self) -> Optional[bool]:
         """Gets the IsEduClassProvisionChecked property"""
         return self.properties.get("IsEduClassProvisionChecked", None)
 
+    @odata(name="IsEduClassProvisionPending")
     @property
     def is_edu_class_provision_pending(self) -> Optional[bool]:
         """Gets the IsEduClassProvisionPending property"""
         return self.properties.get("IsEduClassProvisionPending", None)
 
+    @odata(name="IsHomepageModernized")
     @property
     def is_homepage_modernized(self) -> Optional[bool]:
         """Gets the IsHomepageModernized property"""
         return self.properties.get("IsHomepageModernized", None)
 
+    @odata(name="IsProvisioningComplete")
     @property
     def is_provisioning_complete(self) -> Optional[bool]:
         """Gets the IsProvisioningComplete property"""
         return self.properties.get("IsProvisioningComplete", None)
 
+    @odata(name="IsRevertHomepageLinkHidden")
     @property
     def is_revert_homepage_link_hidden(self) -> Optional[bool]:
         """Gets the IsRevertHomepageLinkHidden property"""
         return self.properties.get("IsRevertHomepageLinkHidden", None)
 
+    @odata(name="LastItemUserModifiedDate")
     @property
     def last_item_user_modified_date(self) -> Optional[datetime]:
         """Gets the LastItemUserModifiedDate property"""
         return self.properties.get("LastItemUserModifiedDate", datetime.min)
 
+    @odata(name="LogoAlignment")
     @property
     def logo_alignment(self) -> Optional[int]:
         """Gets the LogoAlignment property"""
         return self.properties.get("LogoAlignment", None)
 
+    @odata(name="MasterUrl")
     @property
     def master_url(self) -> Optional[str]:
         """Gets the MasterUrl property"""
         return self.properties.get("MasterUrl", None)
 
+    @odata(name="MembersCanShare")
     @property
     def members_can_share(self) -> Optional[bool]:
         """Gets the MembersCanShare property"""
         return self.properties.get("MembersCanShare", None)
 
+    @odata(name="NavAudienceTargetingEnabled")
     @property
     def nav_audience_targeting_enabled(self) -> Optional[bool]:
         """Gets the NavAudienceTargetingEnabled property"""
         return self.properties.get("NavAudienceTargetingEnabled", None)
 
+    @odata(name="NextStepsFirstRunEnabled")
     @property
     def next_steps_first_run_enabled(self) -> Optional[bool]:
         """Gets the NextStepsFirstRunEnabled property"""
         return self.properties.get("NextStepsFirstRunEnabled", None)
 
+    @odata(name="NoCrawl")
     @property
     def no_crawl(self) -> Optional[bool]:
         """Gets the NoCrawl property"""
         return self.properties.get("NoCrawl", None)
 
+    @odata(name="NotificationsInOneDriveForBusinessEnabled")
     @property
     def notifications_in_onedrive_for_business_enabled(self) -> Optional[bool]:
         """Gets the NotificationsInOneDriveForBusinessEnabled property"""
         return self.properties.get("NotificationsInOneDriveForBusinessEnabled", None)
 
+    @odata(name="NotificationsInSharePointEnabled")
     @property
     def notifications_in_sharepoint_enabled(self) -> Optional[bool]:
         """Gets the NotificationsInSharePointEnabled property"""
         return self.properties.get("NotificationsInSharePointEnabled", None)
 
+    @odata(name="ObjectCacheEnabled")
     @property
     def object_cache_enabled(self) -> Optional[bool]:
         """Gets the ObjectCacheEnabled property"""
         return self.properties.get("ObjectCacheEnabled", None)
 
+    @odata(name="OverwriteTranslationsOnChange")
     @property
     def overwrite_translations_on_change(self) -> Optional[bool]:
         """Gets the OverwriteTranslationsOnChange property"""
         return self.properties.get("OverwriteTranslationsOnChange", None)
 
+    @odata(name="PreviewFeaturesEnabled")
     @property
     def preview_features_enabled(self) -> Optional[bool]:
         """Gets the PreviewFeaturesEnabled property"""
         return self.properties.get("PreviewFeaturesEnabled", None)
 
+    @odata(name="PrimaryColor")
     @property
     def primary_color(self) -> Optional[str]:
         """Gets the PrimaryColor property"""
         return self.properties.get("PrimaryColor", None)
 
+    @odata(name="SearchBoxInNavBar")
     @property
     def search_box_in_nav_bar(self) -> Optional[int]:
         """Gets the SearchBoxInNavBar property"""
         return self.properties.get("SearchBoxInNavBar", None)
 
+    @odata(name="SearchScope")
     @property
     def search_scope(self) -> Optional[int]:
         """Gets the SearchScope property"""
         return self.properties.get("SearchScope", None)
 
+    @odata(name="ServerRelativeUrl")
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the ServerRelativeUrl property"""
         return self.properties.get("ServerRelativeUrl", None)
 
+    @odata(name="ShouldExtendHeaderBgImageToNav")
     @property
     def should_extend_header_bg_image_to_nav(self) -> Optional[str]:
         """Gets the ShouldExtendHeaderBgImageToNav property"""
         return self.properties.get("ShouldExtendHeaderBgImageToNav", None)
 
+    @odata(name="ShowUrlStructureForCurrentUser")
     @property
     def show_url_structure_for_current_user(self) -> Optional[bool]:
         """Gets the ShowUrlStructureForCurrentUser property"""
         return self.properties.get("ShowUrlStructureForCurrentUser", None)
 
+    @odata(name="SiteLogoDescription")
     @property
     def site_logo_description(self) -> Optional[str]:
         """Gets the SiteLogoDescription property"""
         return self.properties.get("SiteLogoDescription", None)
 
+    @odata(name="TenantAdminMembersCanShare")
     @property
     def tenant_admin_members_can_share(self) -> Optional[int]:
         """Gets the TenantAdminMembersCanShare property"""
         return self.properties.get("TenantAdminMembersCanShare", None)
 
+    @odata(name="TenantTagPolicyEnabled")
     @property
     def tenant_tag_policy_enabled(self) -> Optional[bool]:
         """Gets the TenantTagPolicyEnabled property"""
         return self.properties.get("TenantTagPolicyEnabled", None)
 
+    @odata(name="ThemeApplicationActionHistory")
     @property
     def theme_application_action_history(self) -> Optional[str]:
         """Gets the ThemeApplicationActionHistory property"""
         return self.properties.get("ThemeApplicationActionHistory", None)
 
+    @odata(name="ThemeData")
     @property
     def theme_data(self) -> Optional[str]:
         """Gets the ThemeData property"""
         return self.properties.get("ThemeData", None)
 
+    @odata(name="ThemedCssFolderUrl")
     @property
     def themed_css_folder_url(self) -> Optional[str]:
         """Gets the ThemedCssFolderUrl property"""
         return self.properties.get("ThemedCssFolderUrl", None)
 
+    @odata(name="ThirdPartyMdmEnabled")
     @property
     def third_party_mdm_enabled(self) -> Optional[bool]:
         """Gets the ThirdPartyMdmEnabled property"""
         return self.properties.get("ThirdPartyMdmEnabled", None)
 
+    @odata(name="TitleForExistingLanguage")
     @property
     def title_for_existing_language(self) -> Optional[str]:
         """Gets the TitleForExistingLanguage property"""
         return self.properties.get("TitleForExistingLanguage", None)
 
+    @odata(name="TitleTranslations")
     @property
     def title_translations(self) -> ClientValueCollection[SPResourceEntry]:
         """Gets the TitleTranslations property"""
@@ -3083,31 +3210,37 @@ class Web(SecurableObject):
 
         return self.properties.get("TitleTranslations", ClientValueCollection[SPResourceEntry](SPResourceEntry))
 
+    @odata(name="TreeViewEnabled")
     @property
     def tree_view_enabled(self) -> Optional[bool]:
         """Gets the TreeViewEnabled property"""
         return self.properties.get("TreeViewEnabled", None)
 
+    @odata(name="UIVersionConfigurationEnabled")
     @property
     def ui_version_configuration_enabled(self) -> Optional[bool]:
         """Gets the UIVersionConfigurationEnabled property"""
         return self.properties.get("UIVersionConfigurationEnabled", None)
 
+    @odata(name="UseAccessRequestDefault")
     @property
     def use_access_request_default(self) -> Optional[bool]:
         """Gets the UseAccessRequestDefault property"""
         return self.properties.get("UseAccessRequestDefault", None)
 
+    @odata(name="WebTemplateConfiguration")
     @property
     def web_template_configuration(self) -> Optional[str]:
         """Gets the WebTemplateConfiguration property"""
         return self.properties.get("WebTemplateConfiguration", None)
 
+    @odata(name="WebTemplatesGalleryFirstRunEnabled")
     @property
     def web_templates_gallery_first_run_enabled(self) -> Optional[bool]:
         """Gets the WebTemplatesGalleryFirstRunEnabled property"""
         return self.properties.get("WebTemplatesGalleryFirstRunEnabled", None)
 
+    @odata(name="AppTiles", navigation=True)
     @property
     def app_tiles(self) -> EntityCollection[AppTile]:
         """Gets the AppTiles property"""
@@ -3117,6 +3250,7 @@ class Web(SecurableObject):
             "AppTiles", EntityCollection[AppTile](self.context, AppTile, ResourcePath("AppTiles", self.resource_path))
         )
 
+    @odata(name="CardDesigns", navigation=True)
     @property
     def card_designs(self) -> CardDesigns:
         """Gets the CardDesigns property"""
@@ -3128,6 +3262,7 @@ class Web(SecurableObject):
             "CardDesigns", CardDesigns(self.context, ResourcePath("CardDesigns", self.resource_path))
         )
 
+    @odata(name="FolderColoring", navigation=True)
     @property
     def folder_coloring(self) -> FolderColoring:
         """Gets the FolderColoring property"""
@@ -3137,6 +3272,7 @@ class Web(SecurableObject):
             "FolderColoring", FolderColoring(self.context, ResourcePath("FolderColoring", self.resource_path))
         )
 
+    @odata(name="WorkflowAssociations", navigation=True)
     @property
     def workflow_associations(self) -> EntityCollection[WorkflowAssociation]:
         """Gets the WorkflowAssociations property"""
@@ -3151,6 +3287,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @odata(name="WorkflowTemplates", navigation=True)
     @property
     def workflow_templates(self) -> EntityCollection[WorkflowTemplate]:
         """Gets the WorkflowTemplates property"""

@@ -1,9 +1,11 @@
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 
 
 class FollowedItemData(Entity):
+    @odata(name="Properties")
     @property
     def properties(self) -> Optional[dict]:  # type: ignore[override]
         """Gets the Properties property"""
