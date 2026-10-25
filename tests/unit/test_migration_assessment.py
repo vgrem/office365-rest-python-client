@@ -31,6 +31,7 @@ from office365.migration.sharepoint import SharePointAssessmentOptions
 from office365.migration.sharepoint.adapters import SharePointListSource
 from office365.migration.sharepoint.scanners import LargeSitesScanner
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.fields.field import Field
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.tenant.administration.tenant import Tenant
 from tests._scripted_transport import ScriptedTransport
@@ -233,12 +234,19 @@ class _Item:
         self.properties = properties
 
 
-class _Field:
+class _Field(Field):
+    """A column as a ``fields`` projection returns it, hydrated into the real type."""
+
     def __init__(self, internal_name: str, type_as_string: str = "", schema_xml: str = "", hidden: bool = False):
-        self.internal_name = internal_name
-        self.type_as_string = type_as_string
-        self.schema_xml = schema_xml
-        self.hidden = hidden
+        super().__init__(offline_context())
+        self.hydrate(
+            {
+                "InternalName": internal_name,
+                "TypeAsString": type_as_string,
+                "SchemaXml": schema_xml,
+                "Hidden": hidden,
+            }
+        )
 
 
 class _QueryOptions:

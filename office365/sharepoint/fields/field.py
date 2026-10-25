@@ -15,6 +15,49 @@ from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.translation.user_resource import UserResource
 
+#: ``TypeAsString`` spellings, grouped by the question a caller asks of a column. A column's
+#: Python class is decided by whichever of ``FieldTypeKind``/``TypeAsString`` a read happened to
+#: project (``resolve_field_type``), so "what does this column hold" is answered from its
+#: spelling rather than its class.
+TAXONOMY_FIELD_TYPES = frozenset({"TaxonomyFieldType", "TaxonomyFieldTypeMulti"})
+LOOKUP_FIELD_TYPES = frozenset({"Lookup", "LookupMulti"})
+PERSON_FIELD_TYPES = frozenset({"User", "UserMulti"})
+CHOICE_FIELD_TYPES = frozenset({"Choice", "MultiChoice"})
+MULTI_VALUE_FIELD_TYPES = frozenset({"LookupMulti", "UserMulti", "MultiChoice", "TaxonomyFieldTypeMulti"})
+
+#: One ``<Property><Name>..</Name><Value>..</Value></Property>`` row of a schema's
+#: ``<Customization>`` bag (a managed metadata column's ``TermSetId``, ``SspId``, ...).
+_CUSTOMIZATION_PROPERTY = re.compile(
+    r"<Name>\s*(?P<name>[^<]+?)\s*</Name>\s*<Value\b[^>]*>\s*(?P<value>[^<\s]+)\s*</Value>",
+    re.IGNORECASE,
+)
+
+
+def schema_property(schema_xml: Optional[str], name: str) -> Optional[str]:
+    """Read one value out of a field schema's ``<Customization>`` property bag.
+
+    A managed metadata column keeps its term set binding in the schema, not in a
+    projected member: ``TermSetId``/``SspId`` are not columns of ``SP.Field``, and a
+    structure captured for replay carries the schema only. Reading them here keeps the
+    one spelling of the bag.
+    """
+    if not schema_xml:
+        return None
+    for match in _CUSTOMIZATION_PROPERTY.finditer(schema_xml):
+        if match.group("name").lower() == name.lower():
+            return match.group("value")
+    return None
+
+
+def is_taxonomy_column(type_as_string: Optional[str], schema_xml: Optional[str]) -> bool:
+    """Whether a column is Managed Metadata (bound to a term set).
+
+    ``TypeAsString`` is the direct answer for a column SharePoint provisioned as one;
+    a column whose schema names a ``TermSetId`` is one whatever the type says. Both
+    callers -- a live :class:`Field` and a replayed structure definition -- ask here.
+    """
+    return type_as_string in TAXONOMY_FIELD_TYPES or "TermSetId" in (schema_xml or "")
+
 
 #: What a column may hold: the length of a single line of text, and how many terms a managed
 #: metadata column is expected to carry before downstream experiences stop being guaranteed.
@@ -74,6 +117,56 @@ class Field(Entity):
         else:
             return Field
 
+    @property
+    def is_taxonomy(self) -> bool:
+        """Whether the column is Managed Metadata (bound to a term set)."""
+        return is_taxonomy_column(self.type_as_string, self.schema_xml)
+
+    @property
+    def is_lookup(self) -> bool:
+        """Whether the column stores a reference to an item in another list."""
+        return self.type_as_string in LOOKUP_FIELD_TYPES
+
+    @property
+    def is_person(self) -> bool:
+        """Whether the column stores a SharePoint user."""
+        return self.type_as_string in PERSON_FIELD_TYPES
+
+    @property
+    def is_multi_valued(self) -> bool:
+        """Whether the column holds many values (a multi-lookup, -person, -choice or -term).
+
+        ``TypeAsString`` is not authoritative here. A column created from a
+        ``Type="Lookup" Mult="TRUE"`` (or ``Type="User" Mult="TRUE"``) schema keeps that
+        spelling, so SharePoint reports the *single-value* type and only
+        ``AllowMultipleValues`` tells the truth (live-verified). Classifying such a column
+        as single-value left its collection of ids unremapped: a multi-lookup kept source
+        item ids and a multi-person kept source site-user ids on the target.
+        """
+        return self.type_as_string in MULTI_VALUE_FIELD_TYPES or self.allow_multiple_values is True
+
+    @property
+    def is_multi_choice(self) -> bool:
+        """Whether the column stores a collection of choice values.
+
+        ``TypeAsString == "MultiChoice"`` is the reliable signal. Live-probed: a column
+        created from a ``Type="Choice" Mult="TRUE"`` schema reads back as ``"Choice"``,
+        stores one value in a single ``nvarchar`` slot (a scalar write round-trips, an
+        array is rejected), so its schema ``Mult`` flag is deliberately not used.
+        """
+        return self.type_as_string in CHOICE_FIELD_TYPES and self.is_multi_valued
+
+    @property
+    def is_value_object(self) -> bool:
+        """Whether the column holds a REST value object rather than a scalar.
+
+        A Hyperlink column is the common case: a read returns
+        ``{"Url": ..., "Description": ...}``, which a scalar-only record projection
+        dropped (a plain string is accepted on write but then makes every subsequent
+        *read* of the column fail, live-probed).
+        """
+        return self.type_as_string == "URL"
+
     def enable_index(self) -> ClientResult[bool]:
         """
         Enables the index for a field
@@ -127,6 +220,22 @@ class Field(Entity):
     def id(self) -> Optional[str]:
         """Gets a value that specifies the field identifier."""
         return self.properties.get("Id", None)
+
+    #: ``SP.Field`` does not declare this name -- ``SP.FieldLookup``, ``SP.FieldUser`` and
+    #: ``SP.FieldChoice`` do -- so it is declared here with the provenance flag and answered
+    #: by every column type as ``None`` or ``False`` where the switch does not exist. A live
+    #: ``$select`` of it against a whole ``fields`` collection (164 columns, all types) is
+    #: accepted, which is what makes the base-class declaration safe.
+    @odata(name="AllowMultipleValues", system=True)
+    @property
+    def allow_multiple_values(self) -> Optional[bool]:
+        """Whether the column accepts many values; ``None``/``False`` where there is no switch."""
+        return self.properties.get("AllowMultipleValues", None)
+
+    @allow_multiple_values.setter
+    def allow_multiple_values(self, value: bool) -> None:
+        """Sets whether the column accepts many values."""
+        self.set_property("AllowMultipleValues", value)
 
     @odata(name="AutoIndexed")
     @property

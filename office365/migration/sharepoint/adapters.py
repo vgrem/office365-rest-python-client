@@ -11,7 +11,7 @@ Lazy imports keep the migration core client-agnostic.
 from __future__ import annotations
 
 import io
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypeAlias
@@ -44,13 +44,12 @@ from office365.sharepoint.principal.type import PrincipalType
 
 if TYPE_CHECKING:
     from office365.migration.map import ContentTypeMap
+    from office365.sharepoint.fields.field import Field
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.folder import Folder
     from office365.sharepoint.listitems.listitem import ListItem
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
-
-_TAXONOMY_FIELD_TYPES = {"TaxonomyFieldType", "TaxonomyFieldTypeMulti"}
 
 
 def _cloned_context(obj):
@@ -132,14 +131,6 @@ _MODERATION_FIELDS = ("OData__ModerationStatus", "OData__ModerationComments")
 #: How many paths a per-run warning names before it summarizes the rest.
 _WARNING_SAMPLE = 5
 
-#: Multi-value typed columns. Their ``<name>Id`` companion is a collection of ids
-#: that a ``*`` projection omits (LookupMulti entirely; UserMulti unreliably), so the
-#: source selects them explicitly and the target writes ``{"results": [...]}``.
-_MULTI_VALUE_TYPES = frozenset({"LookupMulti", "UserMulti"})
-
-#: Typed columns whose values are remapped (lookup item ids, person logins).
-_TYPED_VALUE_TYPES = frozenset({"Lookup", "LookupMulti", "User", "UserMulti"})
-
 #: Properties the source column scans need. Selecting them explicitly keeps the read
 #: independent of whatever ``$select`` a previous caller left on the shared
 #: ``fields`` collection — ``List.fields`` survives a ``capture_list_structure``
@@ -155,55 +146,6 @@ _SOURCE_FIELD_SELECT = [
     "TextField",
     "AllowMultipleValues",
 ]
-
-
-#: Choice column types; a multi-choice column stores a collection of strings.
-_CHOICE_TYPES = frozenset({"Choice", "MultiChoice"})
-
-#: Column types whose value is a small REST object instead of a scalar.
-_VALUE_OBJECT_TYPES = frozenset({"URL"})
-
-
-def _allows_multiple_values(field: Any) -> bool:
-    """Whether a Lookup/Person column holds many values.
-
-    ``TypeAsString`` is not authoritative here. A column created from a
-    ``Type="Lookup" Mult="TRUE"`` (or ``Type="User" Mult="TRUE"``) schema keeps that
-    spelling, so SharePoint reports the *single-value* type and only
-    ``AllowMultipleValues`` tells the truth (live-verified). Classifying such a
-    column as single-value left its collection of ids unremapped: a multi-lookup
-    kept source item ids and a multi-person kept source site-user ids on the target,
-    and verification could not see the difference.
-    """
-    if getattr(field, "type_as_string", None) in _MULTI_VALUE_TYPES:
-        return True
-    return field.properties.get("AllowMultipleValues") is True
-
-
-def _is_multi_choice_column(field: Any) -> bool:
-    """Whether a Choice column stores a collection of values.
-
-    ``TypeAsString == "MultiChoice"`` is the only reliable signal. Live-probed: a
-    column created from a ``Type="Choice" Mult="TRUE"`` schema reads back as
-    ``"Choice"``, stores one value in a single ``nvarchar`` slot (a scalar write
-    round-trips, an array is rejected) and does not project ``AllowMultipleValues``
-    at all — its schema ``Mult`` flag is misleading, so it is deliberately not used.
-    """
-    field_type = getattr(field, "type_as_string", None)
-    if field_type == "MultiChoice":
-        return True
-    return field_type in _CHOICE_TYPES and _allows_multiple_values(field)
-
-
-def _is_value_object_column(field: Any) -> bool:
-    """Whether a column holds a REST value object rather than a scalar.
-
-    A Hyperlink column is the common case: a read returns
-    ``{"Url": ..., "Description": ...}``, which a scalar-only record projection
-    dropped (a plain string is accepted on write but then makes every subsequent
-    *read* of the column fail, live-probed).
-    """
-    return getattr(field, "type_as_string", None) in _VALUE_OBJECT_TYPES
 
 
 def _scalar_mapping(value: Any) -> dict | None:
@@ -513,17 +455,9 @@ def is_taxonomy_validation(exc: Exception) -> bool:
     return "spfieldvalidationexception" in text and "term store" in text
 
 
-def taxonomy_internal_names(fields) -> list[str]:
+def taxonomy_internal_names(fields: Iterable[Field]) -> list[str]:
     """Internal names of Managed Metadata columns in a loaded field set."""
-    names: list[str] = []
-    for field in fields:
-        type_name = getattr(field, "type_as_string", None) or ""
-        schema = getattr(field, "schema_xml", None) or ""
-        if type_name in _TAXONOMY_FIELD_TYPES or "TermSetId=" in schema:
-            internal_name = getattr(field, "internal_name", None)
-            if internal_name:
-                names.append(internal_name)
-    return list(dict.fromkeys(names))
+    return list(dict.fromkeys(field.internal_name for field in fields if field.internal_name and field.is_taxonomy))
 
 
 def _perm_mask(role_definition: Any) -> str | None:
@@ -971,14 +905,7 @@ class SharePointListSource:
         # Group title -> (owner user, owner group chain); a ``<Group>`` needs both.
         self._group_owners: dict[str, tuple[Principal | None, list[str]]] = {}
         self._default_groups: _DefaultGroups | None = None
-        self._source_fields_cache: list[Any] | None = None
-        self._user_columns_cache: set[str] | None = None
-        self._multi_columns_cache: dict[str, str] | None = None
-        self._skipped_columns_cache: set[str] | None = None
-        self._taxonomy_columns_cache: dict[str, bool] | None = None
-        self._taxonomy_note_columns_cache: set[str] | None = None
-        self._multi_choice_columns_cache: set[str] | None = None
-        self._value_object_columns_cache: set[str] | None = None
+        self._source_fields_cache: list[Field] | None = None
         self._folder_records_cache: dict[str, dict] | None = None
         self.warnings: list[str] = []
 
@@ -1206,7 +1133,7 @@ class SharePointListSource:
         single_lookups = {
             field.internal_name
             for field in self._source_fields()
-            if field.internal_name and field.type_as_string == "Lookup" and not _allows_multiple_values(field)
+            if field.internal_name and field.is_lookup and not field.is_multi_valued
         }
         for name in sorted((single_lookups | self._user_columns() | set(self._multi_columns())) & writable):
             key = f"{name}Id"
@@ -1217,44 +1144,39 @@ class SharePointListSource:
                 columns.append(note)
         return columns
 
-    def _source_fields(self) -> list[Any]:
+    def _source_fields(self) -> list[Field]:
         """The source list's field definitions, read once and shared by every scan."""
         if self._source_fields_cache is None:
-            self._source_fields_cache = list(self._list.fields.select(list(_SOURCE_FIELD_SELECT)).get().execute_query())
+            try:
+                self._source_fields_cache = list(
+                    self._list.fields.select(list(_SOURCE_FIELD_SELECT)).get().execute_query()
+                )
+            except Exception as e:  # noqa: BLE001 — values stay un-remapped, never fatal
+                self.warnings.append(f"could not read the list's columns for typed-value remapping: {e}")
+                self._source_fields_cache = []
         return self._source_fields_cache
 
     def _taxonomy_columns(self) -> dict[str, bool]:
-        """The source's Managed Metadata columns (internal name -> allows many)."""
-        if self._taxonomy_columns_cache is None:
-            columns: dict[str, bool] = {}
-            notes: set[str] = set()
-            try:
-                fields = self._source_fields()
-                by_id = {
-                    normalize_guid(getattr(field, "id", None)): getattr(field, "internal_name", None) for field in fields
-                }
-                for field in fields:
-                    internal_name = getattr(field, "internal_name", None)
-                    if not internal_name:
-                        continue
-                    field_type = getattr(field, "type_as_string", None)
-                    schema = getattr(field, "schema_xml", None) or ""
-                    if field_type not in _TAXONOMY_FIELD_TYPES and "TermSetId" not in schema:
-                        continue
-                    columns[internal_name] = field_type == "TaxonomyFieldTypeMulti" or 'Mult="TRUE"' in schema
-                    note = by_id.get(normalize_guid(field.properties.get("TextField")))
-                    if note:
-                        notes.add(note)
-            except Exception as e:  # noqa: BLE001 — values stay un-remapped, never fatal
-                self.warnings.append(f"could not read source columns for taxonomy remapping: {e}")
-            self._taxonomy_columns_cache = columns
-            self._taxonomy_note_columns_cache = notes
-        return self._taxonomy_columns_cache
+        """The source's Managed Metadata columns (internal name -> holds many values)."""
+        return {
+            field.internal_name: field.is_multi_valued
+            for field in self._source_fields()
+            if field.internal_name and field.is_taxonomy
+        }
 
     def _taxonomy_note_columns(self) -> set[str]:
-        """The hidden note companions of the source's taxonomy columns."""
-        self._taxonomy_columns()
-        return self._taxonomy_note_columns_cache or set()
+        """The hidden note companions of the source's taxonomy columns.
+
+        The note column is what the target's write payload becomes for a multi-value
+        column, and its name is chosen by the service; the taxonomy column names it by
+        id, so it is resolved through the column set.
+        """
+        fields = self._source_fields()
+        by_id = {normalize_guid(field.id): field.internal_name for field in fields}
+        # ``TextField`` is the bag name the projection selects; it is not a declared
+        # member of ``Field``, because only a taxonomy column carries one.
+        notes = (normalize_guid(field.properties.get("TextField")) for field in fields)
+        return {name for name in (by_id.get(note) for note in notes) if name}
 
     def _project_taxonomy_values(self, records: list[dict]) -> None:
         """Project taxonomy columns as bare ``[{"TermGuid": ...}]`` term lists.
@@ -1278,42 +1200,34 @@ class SharePointListSource:
                     record.pop(name, None)
 
     def _typed_columns(self) -> tuple[set[str], dict[str, str], set[str]]:
-        """The source's Person and multi-value columns, read once.
+        """The source's Person and multi-value columns.
 
         Returns ``(single-value User columns, {multi-value column: field type},
         hidden typed columns)``. The field type tells a multi-lookup (remapped by
         item id) from a multi-person (remapped by login). Hidden typed columns are
         reported separately because structure provisioning does not replicate them.
         """
-        if self._user_columns_cache is None or self._multi_columns_cache is None or self._skipped_columns_cache is None:
-            users: set[str] = set()
-            multi: dict[str, str] = {}
-            skipped: set[str] = set()
-            try:
-                for field in self._source_fields():
-                    internal_name = getattr(field, "internal_name", None)
-                    if not internal_name or internal_name in _PERSON_EXCLUDED:
-                        continue
-                    field_type = getattr(field, "type_as_string", None)
-                    if field_type not in _TYPED_VALUE_TYPES:
-                        continue
-                    # Structure replay skips hidden columns, so the target never
-                    # gets them; projecting their values would fail the write.
-                    if getattr(field, "hidden", None) is True:
-                        skipped.add(internal_name)
-                    elif field_type.startswith("User"):
-                        if _allows_multiple_values(field):
-                            multi[internal_name] = "UserMulti"
-                        else:
-                            users.add(internal_name)
-                    elif _allows_multiple_values(field):
-                        multi[internal_name] = "LookupMulti"
-            except Exception as e:  # noqa: BLE001 — without field types ids stay raw
-                self.warnings.append(f"could not read source columns for typed-value remapping: {e}")
-            self._user_columns_cache = users
-            self._multi_columns_cache = multi
-            self._skipped_columns_cache = skipped
-        return self._user_columns_cache, self._multi_columns_cache, self._skipped_columns_cache
+        users: set[str] = set()
+        multi: dict[str, str] = {}
+        skipped: set[str] = set()
+        for field in self._source_fields():
+            internal_name = field.internal_name
+            if not internal_name or internal_name in _PERSON_EXCLUDED:
+                continue
+            if not (field.is_person or field.is_lookup):
+                continue
+            if field.hidden is True:
+                # Structure replay skips hidden columns, so the target never gets
+                # them; projecting their values would fail the write.
+                skipped.add(internal_name)
+            elif field.is_person:
+                if field.is_multi_valued:
+                    multi[internal_name] = "UserMulti"
+                else:
+                    users.add(internal_name)
+            elif field.is_multi_valued:
+                multi[internal_name] = "LookupMulti"
+        return users, multi, skipped
 
     def _user_columns(self) -> set[str]:
         """The source's single-value Person columns (internal names)."""
@@ -1329,33 +1243,11 @@ class SharePointListSource:
 
     def _multi_choice_columns(self) -> set[str]:
         """The source's multi-choice columns (internal names)."""
-        if self._multi_choice_columns_cache is None:
-            names: set[str] = set()
-            try:
-                names = {
-                    field.internal_name
-                    for field in self._source_fields()
-                    if getattr(field, "internal_name", None) and _is_multi_choice_column(field)
-                }
-            except Exception as e:  # noqa: BLE001 — values stay un-normalized, never fatal
-                self.warnings.append(f"could not read source columns for multi-choice values: {e}")
-            self._multi_choice_columns_cache = names
-        return self._multi_choice_columns_cache
+        return {field.internal_name for field in self._source_fields() if field.internal_name and field.is_multi_choice}
 
     def _value_object_columns(self) -> set[str]:
         """The source's columns that hold a REST value object (e.g. a hyperlink)."""
-        if self._value_object_columns_cache is None:
-            names: set[str] = set()
-            try:
-                names = {
-                    field.internal_name
-                    for field in self._source_fields()
-                    if getattr(field, "internal_name", None) and _is_value_object_column(field)
-                }
-            except Exception as e:  # noqa: BLE001 — values are dropped, never fatal
-                self.warnings.append(f"could not read source columns for value-object values: {e}")
-            self._value_object_columns_cache = names
-        return self._value_object_columns_cache
+        return {field.internal_name for field in self._source_fields() if field.internal_name and field.is_value_object}
 
     def _annotate_person_logins(self, records: list[dict]) -> None:
         """Replace each Person column's site-user id with the user's login name.
@@ -1893,21 +1785,20 @@ class SharePointListTarget:
         except Exception as e:  # noqa: BLE001 — without columns we cannot remap; content still migrates
             self.warnings.append(f"could not read target columns for typed-value remapping: {e}")
             return lookups, users, multi_lookups, multi_users, taxonomy, multi_choices
-        by_id = {normalize_guid(getattr(field, "id", None)): getattr(field, "internal_name", None) for field in fields}
+        by_id = {normalize_guid(field.id): field.internal_name for field in fields}
         for field in fields:
-            internal_name = getattr(field, "internal_name", None)
+            internal_name = field.internal_name
             if not internal_name or internal_name in _PERSON_EXCLUDED:
                 continue
-            field_type = getattr(field, "type_as_string", None)
-            if field_type in _TAXONOMY_FIELD_TYPES:
+            if field.is_taxonomy:
                 # The companion note column that actually carries the write payload
                 # has an unpredictable name; resolve it through the column's
                 # ``TextField`` id.
                 note_name = by_id.get(normalize_guid(field.properties.get("TextField")))
-                taxonomy[internal_name] = (field_type == "TaxonomyFieldTypeMulti", note_name)
-            elif field_type in _TYPED_VALUE_TYPES:
-                multiple = _allows_multiple_values(field)
-                if field_type.startswith("User"):
+                taxonomy[internal_name] = (field.is_multi_valued, note_name)
+            elif field.is_person or field.is_lookup:
+                multiple = field.is_multi_valued
+                if field.is_person:
                     if multiple:
                         multi_users.add(internal_name)
                     else:
@@ -1920,7 +1811,7 @@ class SharePointListTarget:
                         multi_lookups[internal_name] = list_id
                     else:
                         lookups[internal_name] = list_id
-            elif _is_multi_choice_column(field):
+            elif field.is_multi_choice:
                 multi_choices.add(internal_name)
         return lookups, users, multi_lookups, multi_users, taxonomy, multi_choices
 

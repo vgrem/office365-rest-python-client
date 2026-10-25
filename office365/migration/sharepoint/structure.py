@@ -66,6 +66,7 @@ from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCollection
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
+from office365.sharepoint.fields.field import is_taxonomy_column, schema_property
 
 if TYPE_CHECKING:
     from office365.sharepoint.contenttypes.content_type import ContentType
@@ -530,18 +531,6 @@ def rewrite_lookup_schema(
     return rewritten, None
 
 
-#: Managed-metadata column types; recreated through ``TaxonomyField.create`` below.
-_TAXONOMY_TYPES = frozenset({"TaxonomyFieldType", "TaxonomyFieldTypeMulti"})
-
-
-def _is_taxonomy_definition(definition: FieldDefinition) -> bool:
-    """Whether a captured column is a managed-metadata (taxonomy) column."""
-    if (definition.type_as_string or "") in _TAXONOMY_TYPES:
-        return True
-    schema = definition.schema_xml or ""
-    return "TaxonomyFieldType" in schema and "<Name>TermSetId</Name>" in schema
-
-
 #: A column bound to an external (BCS) content type. The generated ``FieldType``
 #: model does not carry this member, so the ``TypeAsString``/``SchemaXml``
 #: spelling is what identifies it.
@@ -555,19 +544,13 @@ def _is_external_data_definition(definition: FieldDefinition) -> bool:
     return f'Type="{_EXTERNAL_DATA_TYPE}"' in (definition.schema_xml or "")
 
 
-def _taxonomy_property(schema_xml: Optional[str], name: str) -> Optional[str]:
-    """Read a value from a taxonomy column's ``<Customization>`` property bag."""
-    if not schema_xml:
-        return None
-    match = re.search(
-        r"<Name>\s*" + re.escape(name) + r"\s*</Name>\s*<Value\b[^>]*>\s*([^<\s]+)\s*</Value>",
-        schema_xml,
-        re.IGNORECASE,
-    )
-    return match.group(1).strip() if match else None
+def _is_taxonomy_definition(definition: FieldDefinition) -> bool:
+    """Whether a captured column is a managed-metadata (taxonomy) column."""
+    return is_taxonomy_column(definition.type_as_string, definition.schema_xml)
 
 
 def _taxonomy_allow_multiple(schema_xml: str) -> bool:
+    """Whether a taxonomy column's schema declares that it holds many terms."""
     match = re.search(r'\bMult="(TRUE|FALSE)"', schema_xml, re.IGNORECASE)
     if match:
         return match.group(1).upper() == "TRUE"
@@ -587,7 +570,7 @@ def _ensure_taxonomy_field(container: SPList | Web, definition: FieldDefinition,
     ``execute_query()``), or ``None`` when it could not even be queued.
     """
     name = definition.internal_name
-    term_set = _taxonomy_property(definition.schema_xml, "TermSetId")
+    term_set = schema_property(definition.schema_xml, "TermSetId")
     if not term_set:
         warning = f"taxonomy column '{name}' was not recreated: its term set id could not be read"
         logger.debug(warning)
@@ -600,7 +583,7 @@ def _ensure_taxonomy_field(container: SPList | Web, definition: FieldDefinition,
             container.fields,
             name,
             term_set,
-            _taxonomy_property(definition.schema_xml, "SspId"),
+            schema_property(definition.schema_xml, "SspId"),
             _taxonomy_allow_multiple(definition.schema_xml or ""),
         )
     except Exception as exc:  # noqa: BLE001 - best effort, surfaced as a warning

@@ -1030,6 +1030,26 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   enum's repr where the service expects an integer and every input came back `null`.
   Both parameters now take the enum *or* the integer and coerce, and neither is
   omitted (an omitted flag is answered `null` too, not refused).
+- **A column says what it holds, so a reader need not parse its schema.** A `fields`
+  read that omits `FieldTypeKind` hands back base `Field` objects, and the list
+  migration's projection does exactly that — so every caller re-derived the answer from
+  `TypeAsString` plus a hand-rolled `<Customization>` regex, which is how five predicate
+  helpers and two schema parsers came to live in two different modules. `Field` now
+  answers `is_taxonomy`, `is_lookup`, `is_person`, `is_multi_valued`, `is_multi_choice`
+  and `is_value_object`, and the two facts behind them are named once at module scope:
+  `schema_property(schema_xml, name)` reads one `<Customization>` row (a managed metadata
+  column keeps its term-set binding there, not in a projected member) and
+  `is_taxonomy_column(type_as_string, schema_xml)` answers "managed metadata" for a live
+  column and for a replayed structure definition alike. `AllowMultipleValues` moved down
+  to `Field` — declared once, `system=True`, because `SP.Field` does not carry it while a
+  live `$select` of it against a 164-column collection is accepted — since a column
+  created from a `Type="Lookup" Mult="TRUE"` schema keeps the *single-value* spelling and
+  only the flag tells the truth; `FieldLookup`'s copy is deleted rather than repeated, and
+  a multi-term column (`TaxonomyFieldTypeMulti`) is now multi-valued too. Over that
+  tenant's 164 real columns the new classifiers agree with the deleted predicates on
+  every one, and the whole vocabulary is exercised: 71 lookups, 8 persons, 3 taxonomy
+  columns (each resolving its hidden note companion by id), 6 multi-value columns, 1
+  hyperlink.
 - Two endpoints that cannot work over REST now say so where they are read:
   `UserProfilePropertiesForUser` is a CSOM complex type — `GetPropertyNames`
   answers `null` and any `propertyNames` argument is rejected as an invalid query
@@ -1052,6 +1072,19 @@ with `author_id=`/`editor_id=` now raises `TypeError` — pass
   differential against a `HEAD` worktree over the live tenant's 252 assessment requests
   shows the widened projection as the *only* difference: 124 `items` URLs, each one name
   longer, and no request added, dropped or reordered.
+- **The list migration classifies a column once, through the column.** The source kept
+  five per-run caches (`_taxonomy_columns`, `_multi_choice_columns`, `_user_columns`,
+  `_multi_columns`, `_skipped_columns`) over a single `fields` read, each answering a
+  different predicate over `TypeAsString`, and the typed-value remapping (lookup ids,
+  person logins, multi-value reshaping, taxonomy note text) asked all five. They are
+  gone: `_source_fields()` reads the columns once and the questions are the column's own
+  (`field.is_taxonomy`, `is_person`, `is_lookup`, `is_multi_valued`, `is_multi_choice`,
+  `is_value_object`). The one question that needs the whole set — a taxonomy column names
+  its hidden note companion by id, and that companion is what a multi-value write payload
+  becomes — stays a single helper (`_taxonomy_note_columns`). The target's `_load_columns`
+  reads the same predicates instead of its own copies, so the source and target halves of
+  the pipeline can no longer disagree about what a column is. No projection changed: both
+  `$select` lists are byte-identical to `HEAD`, so the wire is untouched.
 - **A file's current version no longer appears twice in its history.** `File.Versions`
   returns the file's current version as well (`IsCurrentVersion`), and
   `SharePointLibrarySource.read_version_history` passed it through as an *older*

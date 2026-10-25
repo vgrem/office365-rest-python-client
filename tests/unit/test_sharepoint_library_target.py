@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 from office365.migration.base import MigrationItem, Principal
 from office365.migration.offline import offline_context
 from office365.migration.sharepoint.adapters import SharePointLibrarySource, SharePointLibraryTarget
+from office365.sharepoint.fields.field import Field
 from office365.sharepoint.files.versions.version import FileVersion
 from office365.sharepoint.listitems.listitem import ListItem
 
@@ -352,34 +353,19 @@ def test_library_target_folds_authorship_into_the_timestamp_write():
 # ── Folder column values (a folder is a list item too) ────────────────────────
 
 
-class _Column:
-    """A library column as returned by a ``fields`` projection."""
+class _Column(Field):
+    """A library column as a ``fields`` projection returns it, hydrated into the real type."""
 
     def __init__(self, internal_name: str, type_as_string: str = "Text", *, hidden=False, read_only=False) -> None:
-        self.properties = {
-            "InternalName": internal_name,
-            "TypeAsString": type_as_string,
-            "Hidden": hidden,
-            "ReadOnlyField": read_only,
-        }
-        self.id = None
-        self.schema_xml = None
-
-    @property
-    def internal_name(self) -> str:
-        return self.properties["InternalName"]
-
-    @property
-    def type_as_string(self) -> str:
-        return self.properties["TypeAsString"]
-
-    @property
-    def hidden(self) -> bool:
-        return self.properties["Hidden"]
-
-    @property
-    def read_only_field(self) -> bool:
-        return self.properties["ReadOnlyField"]
+        super().__init__(offline_context())
+        self.hydrate(
+            {
+                "InternalName": internal_name,
+                "TypeAsString": type_as_string,
+                "Hidden": hidden,
+                "ReadOnlyField": read_only,
+            }
+        )
 
 
 class _Fields:

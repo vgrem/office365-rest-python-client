@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 from office365.migration.base import MigrationItem
 from office365.migration.map import ContentTypeMap
+from office365.migration.offline import offline_context
 from office365.migration.sharepoint.adapters import (
     DEFAULT_LIST_IDENTITY_FIELD,
     SharePointListSource,
@@ -29,6 +30,7 @@ from office365.migration.sharepoint.adapters import (
     _content_checksum,
     _MultiValueCreateTarget,
 )
+from office365.sharepoint.fields.field import Field
 
 
 class _QueryOptions:
@@ -325,8 +327,13 @@ class _TargetItems:
         self._owner.queued.clear()
 
 
-class _Field:
-    """A target column as returned by a ``fields`` projection."""
+class _Field(Field):
+    """A column as a ``fields`` projection returns it, hydrated into the real type.
+
+    Hydrating rather than impersonating matters: the adapters ask the column what it
+    holds (``is_lookup``, ``is_multi_valued``), and a hand-rolled double answers those
+    questions with whatever its author remembered.
+    """
 
     def __init__(
         self,
@@ -340,44 +347,23 @@ class _Field:
         allow_multiple_values=None,
         read_only=None,
     ):
-        self.properties = {"InternalName": internal_name, "TypeAsString": type_as_string}
+        super().__init__(offline_context())
+        payload = {"InternalName": internal_name, "TypeAsString": type_as_string}
         if read_only is not None:
-            self.properties["ReadOnlyField"] = read_only
+            payload["ReadOnlyField"] = read_only
         if lookup_list is not None:
-            self.properties["LookupList"] = lookup_list
+            payload["LookupList"] = lookup_list
         if field_id is not None:
-            self.properties["Id"] = field_id
+            payload["Id"] = field_id
         if text_field_id is not None:
-            self.properties["TextField"] = text_field_id
+            payload["TextField"] = text_field_id
+        if schema_xml is not None:
+            payload["SchemaXml"] = schema_xml
         if hidden is not None:
-            self.properties["Hidden"] = hidden
+            payload["Hidden"] = hidden
         if allow_multiple_values is not None:
-            self.properties["AllowMultipleValues"] = allow_multiple_values
-        self._schema_xml = schema_xml
-
-    @property
-    def id(self):
-        return self.properties.get("Id")
-
-    @property
-    def schema_xml(self):
-        return self._schema_xml
-
-    @property
-    def internal_name(self):
-        return self.properties.get("InternalName")
-
-    @property
-    def type_as_string(self):
-        return self.properties.get("TypeAsString")
-
-    @property
-    def hidden(self):
-        return self.properties.get("Hidden")
-
-    @property
-    def read_only_field(self):
-        return self.properties.get("ReadOnlyField")
+            payload["AllowMultipleValues"] = allow_multiple_values
+        self.hydrate(payload)
 
 
 class _TargetFields:
