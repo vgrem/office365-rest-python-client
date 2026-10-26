@@ -8,7 +8,6 @@ from typing import Optional
 from generator.builders.member import sanitize_member_name
 from generator.builders.resolution import TypeRegistry
 from generator.builders.type import TypeBuilder
-from generator.checkpoint import Checkpoint, checkpoint_path
 from generator.config import GeneratorOptions
 from generator.cycles import find_cyclic_types
 from generator.documentation.base import DocumentationProvider
@@ -126,7 +125,6 @@ class GeneratorPipeline:
             ),
             pollable_types=_pollable_types(model),
         )
-        self._checkpoint = Checkpoint(checkpoint_path(options.metadata_path, base_dir))
         self._output_root = Path(options.output_path).resolve()
         self._reporter = Reporter(self._metadata_path, report_path, options.dry_run)
         self._verifier = PostCommitVerifier(self._output_root, smoke=smoke, check=check)
@@ -138,48 +136,40 @@ class GeneratorPipeline:
             return
         targeted = bool(self._only_types)
         total = len(self._only_types) if targeted else len(self._model.types)
-        if not targeted:
-            self._skip_start_at_count()
-        else:
+        start_at = 0 if targeted else self._start_at_index()
+        if targeted:
             self._warn_unknown_types()
 
-        count = 0 if targeted else len(self._checkpoint.processed)
+        count = 0
         skipped_new = 0
         unrouted: dict[str, str] = {}
         planned: list[tuple[str, TypeBuilder]] = []
 
-        for name in self._model.types:
-            schema = self._model.types[name]
+        for index, (name, schema) in enumerate(self._model.types.items()):
             if targeted:
                 if name not in self._only_types:
                     continue
-            else:
-                if self._filter.before_start(name):
-                    self._checkpoint.add(name, persist=False)
-                    continue
-                if self._filter.should_skip(name, schema, self._checkpoint.processed):
-                    continue
+            elif index < start_at:
+                continue
+            elif self._filter.before_start(name) or self._filter.should_skip(name, schema):
+                continue
             builder = TypeBuilder(schema, self._builder_context, self._docs)
             if builder.skip_reason:
                 unrouted[name] = builder.skip_reason
-                self._checkpoint.add(name, persist=False)
                 continue
             if self._update_only and builder.state != "attached":
                 skipped_new += 1
-                self._checkpoint.add(name, persist=False)
                 continue
             count += 1
             print(f"[{count}/{total}] Processing: {name}")
             self._build(name, builder)
             if builder.built:
                 planned.append((name, builder))
-            self._checkpoint.add(name, persist=False)
 
         current_members = schema_members(self._model)
         changes = diff_members(self._previous.members, current_members) if self._previous else MetadataChanges([], {})
 
         self._commit(planned)
-        self._checkpoint.clear()
         self._reporter.summary(planned, skipped_new, unrouted)
         self._reporter.metadata_changes(changes)
         if not self._options.dry_run:
@@ -199,7 +189,6 @@ class GeneratorPipeline:
             self._previous,
             force=self._force,
             targeted=bool(self._only_types or self._report_path),
-            resumed=bool(self._checkpoint.processed),
         )
 
     def _warn_unknown_types(self) -> None:
@@ -207,13 +196,13 @@ class GeneratorPipeline:
         if missing:
             print(f"  Unknown type(s), not in metadata: {', '.join(missing)}")
 
-    def _skip_start_at_count(self) -> None:
+    def _start_at_index(self) -> int:
+        """Digit ``start_at``: begin N types into the metadata order."""
         start_at = self._filter.start_at
         if not start_at.isdigit() or int(start_at) <= 0:
-            return
-        for name in list(self._model.types)[: int(start_at)]:
-            self._checkpoint.processed.add(name)
+            return 0
         print(f"  Skipping first {start_at} types (start_at={start_at})")
+        return int(start_at)
 
     def _build(self, name: str, builder: TypeBuilder) -> None:
         """Build and validate a single type in memory (no write)."""
@@ -236,9 +225,8 @@ class GeneratorPipeline:
         for name, builder in planned:
             if not self._within_output(builder.file):
                 raise ValidationError(f"{name}: refusing to write outside the output tree: {builder.file}")
-        for name, builder in planned:
+        for _, builder in planned:
             builder.save()
-            self._checkpoint.add(name, persist=True)
 
     def _within_output(self, path: str) -> bool:
         try:

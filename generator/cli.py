@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 from generator.builders.resolution import TypeRegistry
-from generator.checkpoint import checkpoint_path
 from generator.config import ConfigError, GeneratorOptions
 from generator.documentation.subservices import fetch_service_map, load_service_map, write_service_map
 from generator.filters import TypeFilter
@@ -41,7 +40,6 @@ def generate(
         Manifest.load(options.metadata_path, GENERATOR_DIR),
         force=force,
         targeted=bool(only_types or report_path),
-        resumed=checkpoint_path(options.metadata_path, GENERATOR_DIR).exists(),
     ):
         print("Model is up to date (metadata and config unchanged); nothing to do.")
         return

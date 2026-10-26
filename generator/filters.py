@@ -27,12 +27,9 @@ class TypeFilter:
             start_at=options.start_at.strip(),
         )
 
-    def should_skip(self, name: str, schema: TypeInformation, processed: set[str]) -> bool:
-        """Whether ``name`` is out of scope (already processed / filtered / wrong base type)."""
-        if name in processed:
-            return True
+    def should_skip(self, name: str, schema: TypeInformation) -> bool:
+        """Whether ``name`` is out of scope (filtered or the wrong base type)."""
         if self.include_base_types and schema.BaseTypeFullName not in self.include_base_types:
-            processed.add(name)
             print(f"  Skipping {name} (BaseType={schema.BaseTypeFullName})")
             return True
         if name in self.exact_ignored or any(name.startswith(prefix) for prefix in self.prefix_ignored):

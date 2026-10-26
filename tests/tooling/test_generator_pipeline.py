@@ -94,6 +94,15 @@ def test_skipped_types_are_reported_with_their_reason(tmp_path: Path, monkeypatc
     }
 
 
+def test_start_at_skips_the_first_n_types(tmp_path: Path, monkeypatch) -> None:
+    """A numeric ``start_at`` resumes generation part-way through the metadata order."""
+    monkeypatch.setattr(pipeline_module, "TypeBuilder", _FakeBuilder)
+    _FakeBuilder.processed = []
+    options = replace(_options(tmp_path), start_at="1")
+    GeneratorPipeline(_model("SP.A", "SP.B", "SP.C"), options).run()
+    assert _FakeBuilder.processed == ["SP.B", "SP.C"]
+
+
 def _real_options(tmp_path: Path) -> GeneratorOptions:
     metadata = tmp_path / "meta.xml"
     metadata.write_text("<a/>", encoding="utf-8")
@@ -115,7 +124,6 @@ def test_up_to_date_only_when_the_recorded_signature_matches(tmp_path: Path) -> 
     assert is_up_to_date(options, recorded) is True
     assert is_up_to_date(options, recorded, force=True) is False
     assert is_up_to_date(options, recorded, targeted=True) is False
-    assert is_up_to_date(options, recorded, resumed=True) is False
     assert is_up_to_date(replace(options, dry_run=True), recorded) is False
 
 

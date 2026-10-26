@@ -17,8 +17,6 @@ tests/selfsigncert.pem
 # Docs build output (mkdocs)
 /site/
 
-# Generator run checkpoints
-generator/.checkpoints/
 
 # Generator run manifest (last synced metadata snapshot)
 generator/.state/
