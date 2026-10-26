@@ -676,36 +676,8 @@ class TypeBuilder(ast.NodeTransformer):
             returns=ast.Name(id="str", ctx=ast.Load()),
         )
 
-    @staticmethod
-    def _build_type_name_attribute(full_name: str) -> ast.Assign:
-        """Build the class-level name fact the runtime reads: ``_odata_type_name``.
-
-        ``entity_type_name`` is an instance property, so a caller holding only the
-        class cannot read the name without building an instance — and a
-        ``ClientObject`` cannot be built without a context. Declaring the name once,
-        at class level, keeps name resolution a lookup instead of an instantiation.
-        """
-        return ast.Assign(
-            targets=[ast.Name(id="_odata_type_name", ctx=ast.Store())],
-            value=ast.Constant(value=full_name),
-        )
-
-    @staticmethod
-    def _has_type_name_attribute(class_node: ast.ClassDef) -> bool:
-        """Whether the class already declares ``_odata_type_name``."""
-        for stmt in class_node.body:
-            if isinstance(stmt, ast.Assign):
-                targets = stmt.targets
-            elif isinstance(stmt, ast.AnnAssign):
-                targets = [stmt.target]
-            else:
-                continue
-            if any(isinstance(t, ast.Name) and t.id == "_odata_type_name" for t in targets):
-                return True
-        return False
-
     def _ensure_entity_type_name(self, class_node: ast.ClassDef):
-        """Ensure the class declares its OData name, at class level and as a property"""
+        """Ensure the class declares its OData name, once, as a property."""
 
         if self._schema.BaseTypeFullName not in [
             "ComplexType",
@@ -725,13 +697,6 @@ class TypeBuilder(ast.NodeTransformer):
             class_node.body.insert(index, entity_type_name_method)
             self._added_members.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
-            index += 1
-
-        if not self._has_type_name_attribute(class_node):
-            type_name_attribute = self._build_type_name_attribute(self._schema.FullName)
-            class_node.body.insert(index, type_name_attribute)
-            self._added_members.append(type_name_attribute)
-            self._changes.append("_odata_type_name attribute")
 
     @staticmethod
     def _type_name_property_index(class_node: ast.ClassDef) -> int:

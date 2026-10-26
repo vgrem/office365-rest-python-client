@@ -10,11 +10,13 @@ not string surgery::
     edm_type_name(Event)  # "microsoft.graph.Event"
     collection_type_name(Event)  # "Collection(microsoft.graph.Event)"
 
-A generated model declares its name once, as a class fact (``_odata_type_name``), so
-resolving a name never builds the model: a ``ClientObject`` subclass cannot be
-constructed without a context, and a lookup that *needs* one is a lookup with a
-hidden side effect. Classes generated before that fact existed fall back to reading
-the name off one throwaway instance (cached per class).
+A model declares its name once, as the ``entity_type_name`` property generated into
+every class. Reading that name off a *class* is not possible (a property needs an
+instance), so a class that must be asked without one also declares the
+``_odata_type_name`` class fact, and resolving a name then never builds the model:
+a ``ClientObject`` subclass cannot be constructed without a context, and a lookup
+that *needs* one is a lookup with a hidden side effect. Classes declaring neither
+fall back to one throwaway instance (cached per class).
 """
 
 from __future__ import annotations
@@ -82,9 +84,9 @@ def edm_type_name(client_type: type) -> Optional[str]:
     declare, and a marker naming a type nobody declared is worse than no marker.
 
     Resolution order: a primitive row in :data:`PRIMITIVE_PY_TYPES`, then the
-    ``_odata_type_name`` class fact generated into every model, then a plain
-    ``entity_type_name`` string attribute (a hand-written declaration), and only
-    then one cached instance — the last resort for models that predate the fact.
+    optional ``_odata_type_name`` class fact (a model that can be asked without an
+    instance), then a plain ``entity_type_name`` string attribute (a hand-written
+    declaration), and only then one cached instance.
 
     Args:
         client_type: a primitive Python type (``str``) or a model class.
