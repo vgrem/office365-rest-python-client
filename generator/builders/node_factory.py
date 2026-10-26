@@ -46,6 +46,31 @@ def existing_members(class_node: ast.ClassDef) -> set[str]:
     return names
 
 
+def declared_wire_name(node: ast.FunctionDef) -> str:
+    """The ``@odata(name=...)`` a getter declares, or ``""`` when it declares none.
+
+    A class may read a column under a name of its own (``CanvasContent1`` is read as
+    ``canvas_content``), so matching a schema property by Python name alone declares
+    the same column twice.
+    """
+    for decorator in node.decorator_list:
+        if not (isinstance(decorator, ast.Call) and _is_odata(decorator.func)):
+            continue
+        for keyword in decorator.keywords:
+            if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
+                return str(keyword.value.value)
+        if decorator.args and isinstance(decorator.args[0], ast.Constant):
+            return str(decorator.args[0].value)
+    return ""
+
+
+def _is_odata(func: ast.expr) -> bool:
+    """Whether a decorator's callee is ``odata`` (bare or attribute)."""
+    return (isinstance(func, ast.Name) and func.id == "odata") or (
+        isinstance(func, ast.Attribute) and func.attr == "odata"
+    )
+
+
 def build_get_property(builder: PropertyBuilder, runtime_import: str | None = None) -> ast.FunctionDef:
     """Build the getter property method.
 

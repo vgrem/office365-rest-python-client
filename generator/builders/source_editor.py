@@ -200,8 +200,7 @@ class SourceEditor:
             if pass_line is not None:
                 del lines[pass_line - 1]
                 class_end -= 1
-            body = "\n\n".join(render_member(node) for node in members)
-            lines[class_end:class_end] = ["", *body.splitlines()]
+            self._insert_members(lines, tree, members, class_end)
             if add_dataclass and not self._has_dataclass_decorator(tree):
                 class_line = self._class_line(tree)
                 if class_line is not None:
@@ -222,6 +221,44 @@ class SourceEditor:
             lines[0:0] = ["from __future__ import annotations", ""]
 
         return "\n".join(lines) + ("\n" if self.text.endswith("\n") else "")
+
+    def _insert_members(self, lines: list[str], tree: ast.Module, members: list[ast.stmt], class_end: int) -> None:
+        """Splice ``members`` into the target class body.
+
+        A dataclass field belongs in the field block, in wire-name order: appended
+        after the last method it splits the block in two, and the next run appends
+        to the new tail.
+        """
+        fields = self._declared_fields(tree)
+        if fields and all(isinstance(member, ast.AnnAssign) for member in members):
+            slots = [(self._field_slot(fields, member), member) for member in members]
+            # Bottom-up, so a splice never invalidates a line number still to be used.
+            for line, member in reversed(sorted(slots, key=lambda slot: slot[0])):
+                lines[line:line] = render_member(member).splitlines()
+            return
+        body = "\n\n".join(render_member(node) for node in members)
+        lines[class_end:class_end] = ["", *body.splitlines()]
+
+    def _declared_fields(self, tree: ast.Module) -> list[tuple[str, int]]:
+        """``(name, end line)`` of every field the target class declares, in order."""
+        for node in tree.body:
+            if not isinstance(node, ast.ClassDef) or node.name != self.class_name:
+                continue
+            return [
+                (field.target.id, field.end_lineno or field.lineno)
+                for field in node.body
+                if isinstance(field, ast.AnnAssign) and isinstance(field.target, ast.Name)
+            ]
+        return []
+
+    @staticmethod
+    def _field_slot(fields: list[tuple[str, int]], member: ast.stmt) -> int:
+        """The 0-based line index ``member`` goes before, keeping the block name-ordered."""
+        name = member.target.id if isinstance(member, ast.AnnAssign) and isinstance(member.target, ast.Name) else ""
+        for existing, lineno in fields:
+            if existing > name:
+                return lineno - 1
+        return fields[-1][1]
 
     def _class_line(self, tree: ast.Module) -> Optional[int]:
         """0-based line index of the ``class <name>`` statement."""

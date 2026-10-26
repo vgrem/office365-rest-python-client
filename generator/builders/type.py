@@ -24,7 +24,7 @@ from generator.builders.imports import (
 from generator.builders.member import MemberBuilder
 from generator.builders.method import MethodBuilder
 from generator.builders.naming import normalize_member_key, python_name, to_snake_case
-from generator.builders.node_factory import build_references, existing_members
+from generator.builders.node_factory import build_references, declared_wire_name, existing_members
 from generator.builders.placement import Placement, TypePlanner
 from generator.builders.property import PropertyBuilder
 from generator.builders.render import normalize_quotes, ruff_normalize
@@ -307,6 +307,8 @@ class TypeBuilder(ast.NodeTransformer):
             matching_prop = next(
                 (prop for prop in self._properties if normalize_member_key(prop.name) == node_key), None
             )
+            if matching_prop is None:
+                matching_prop = self._prop_declaring(declared_wire_name(node))
             if matching_prop:
                 matching_prop.status = "attached"
         else:
@@ -318,6 +320,12 @@ class TypeBuilder(ast.NodeTransformer):
                 matching_method.status = "attached"
 
         return self.generic_visit(node)
+
+    def _prop_declaring(self, wire_name: str) -> Optional[PropertyBuilder]:
+        """The schema property a getter's ``@odata(name=...)`` already declares."""
+        if not wire_name:
+            return None
+        return next((prop for prop in self._properties if prop.schema.Name == wire_name), None)
 
     def visit_Attribute(self, node: ast.Attribute):
         if (

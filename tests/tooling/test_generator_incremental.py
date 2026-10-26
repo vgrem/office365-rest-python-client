@@ -120,6 +120,63 @@ def test_inherited_dataclass_field_arent_redeclared(tmp_path: Path, monkeypatch)
     assert "displayName: str | None = None" in target.read_text(encoding="utf8")
 
 
+def test_property_already_declared_under_another_name_is_not_re_added(tmp_path: Path, monkeypatch):
+    """A column the class surfaces under its own name is not declared a second time.
+
+    ``CanvasContent1`` is read as ``canvas_content`` with ``@odata(name=...)``, so
+    matching the schema property by Python name alone makes it look missing and the
+    generator adds a shadow getter for the same wire name.
+    """
+    schema = TypeInformation(BaseTypeFullName="EntityType", FullName="SP.TestThing", IsValueObject=False)
+    schema.add_property(PropertyInformation(Name="CanvasContent1", TypeName="Edm.String"))
+    target = tmp_path / "test_thing.py"
+    target.write_text(
+        "class TestThing(Entity):\n"
+        '    @odata(name="CanvasContent1")\n'
+        "    @property\n"
+        "    def canvas_content(self) -> str | None:\n"
+        '        return self.properties.get("CanvasContent1", None)\n',
+        encoding="utf8",
+    )
+    monkeypatch.setattr(placement, "module_file", lambda name: str(target))
+
+    builder = TypeBuilder(schema, _options(tmp_path), resolver=_StubResolver())
+    builder.build()
+
+    assert builder.status is None
+
+
+def test_dataclass_field_joins_the_field_block_in_name_order(tmp_path: Path, monkeypatch):
+    """A new field lands among the fields, in wire-name order -- not after the last method."""
+    schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="graph.TestValue", IsValueObject=False)
+    for name in ("alpha", "charlie"):
+        schema.add_property(PropertyInformation(Name=name, TypeName="Edm.String"))
+    target = tmp_path / "test_value.py"
+    target.write_text(
+        "from dataclasses import dataclass\n"
+        "\n"
+        "from office365.runtime.client_value import ClientValue\n"
+        "\n\n"
+        "@dataclass\n"
+        "class TestValue(ClientValue):\n"
+        "    beta: str | None = None\n"
+        "\n"
+        "    @property\n"
+        "    def entity_type_name(self) -> str:\n"
+        '        return "TestValue"\n',
+        encoding="utf8",
+    )
+    monkeypatch.setattr(placement, "module_file", lambda name: str(target))
+
+    builder = TypeBuilder(schema, _options(tmp_path), resolver=_StubResolver())
+    builder.build()
+    builder.save()
+
+    source = target.read_text(encoding="utf8")
+    assert source.index("alpha:") < source.index("beta:") < source.index("charlie:")
+    assert source.index("charlie:") < source.index("def entity_type_name")
+
+
 def test_rejects_duplicate_top_level_class():
     builder = TypeBuilder(_schema(), BuilderContext(modules="office365.sharepoint"), resolver=_StubResolver())
     builder._placement = Placement(state="attached", file="x.py")
