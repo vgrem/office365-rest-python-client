@@ -1,7 +1,6 @@
 # Generator settings for the sharepoint model (see generator/config.py).
 metadata_path: ./metadata/SharePoint.xml
 output_path: ../office365
-template_path: ./templates/sharepoint
 context_type: ClientContext
 generate_methods: true
 include_base_types:

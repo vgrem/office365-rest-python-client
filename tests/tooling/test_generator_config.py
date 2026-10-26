@@ -10,13 +10,11 @@ from generator.config import ConfigError, GeneratorOptions, parse_list, split_ig
 _BASE = """
 metadata_path: ./metadata/Graph.xml
 output_path: ./office365
-template_path: ./templates
 modules: [office365]
 """
 
 
 def _write(tmp_path: Path, body: str) -> None:
-    (tmp_path / "templates").mkdir(exist_ok=True)
     (tmp_path / "office365").mkdir(exist_ok=True)
     (tmp_path / "settings.graph.yaml").write_text(body, encoding="utf-8")
 
@@ -45,7 +43,6 @@ type_routing:
     assert options.ignored_types == ["microsoft.graph.X", "microsoft.graph.Edu*"]
     assert options.routing == {"microsoft.graph.foo": "office365.foo"}
     assert options.type_routing == {"Bar*": "office365.bar"}
-    assert options.template_path == str((tmp_path / "templates").resolve())
 
 
 def test_missing_config_file(tmp_path: Path) -> None:
@@ -60,7 +57,7 @@ def test_unknown_top_level_key(tmp_path: Path) -> None:
 
 
 def test_missing_required_key(tmp_path: Path) -> None:
-    _write(tmp_path, "metadata_path: ./m.xml\ntemplate_path: ./templates\n")
+    _write(tmp_path, "metadata_path: ./m.xml\n")
     with pytest.raises(ConfigError, match="missing required key 'output_path'"):
         GeneratorOptions.load("graph", tmp_path)
 
@@ -68,13 +65,6 @@ def test_missing_required_key(tmp_path: Path) -> None:
 def test_unknown_filter_key(tmp_path: Path) -> None:
     _write(tmp_path, _BASE + "filters:\n  bogus: []\n")
     with pytest.raises(ConfigError, match="unknown filter key"):
-        GeneratorOptions.load("graph", tmp_path)
-
-
-def test_template_path_must_exist(tmp_path: Path) -> None:
-    (tmp_path / "office365").mkdir()
-    (tmp_path / "settings.graph.yaml").write_text(_BASE.replace("./templates", "./nope"), encoding="utf-8")
-    with pytest.raises(ConfigError, match="template_path is not a directory"):
         GeneratorOptions.load("graph", tmp_path)
 
 

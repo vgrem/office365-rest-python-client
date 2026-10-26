@@ -16,8 +16,6 @@ from generator.odata.property import PropertyInformation
 from generator.odata.type_information import TypeInformation
 from generator.validation import ValidationError
 
-_TEMPLATES = Path(__file__).resolve().parents[2] / "generator" / "templates" / "sharepoint"
-
 
 class _StubResolver:
     """Marks the type attached and reports its existing members (no real index)."""
@@ -46,7 +44,7 @@ def _schema() -> TypeInformation:
 
 
 def _options(tmp_path: Path) -> dict:
-    return {"template_path": str(_TEMPLATES), "output_path": str(tmp_path), "modules": "office365.sharepoint"}
+    return {"output_path": str(tmp_path), "modules": "office365.sharepoint"}
 
 
 def test_documentation_provider_injects_docstrings(tmp_path: Path):

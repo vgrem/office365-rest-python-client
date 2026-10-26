@@ -2,12 +2,9 @@ from __future__ import annotations
 
 import ast
 import keyword
-from typing import TYPE_CHECKING
 
+from generator.builders.node_factory import build_member
 from generator.odata.member import MemberInformation
-
-if TYPE_CHECKING:
-    from generator.builders.template_context import TemplateContext
 
 #: Names that are valid identifiers but trigger lint (``E741``) or are confusing.
 _AMBIGUOUS_NAMES = {"l", "I", "O"}
@@ -26,12 +23,12 @@ class MemberBuilder:
         self.status = status
         self.docstring = None
 
-    def build(self, template: TemplateContext) -> list:
+    def build(self) -> list:
         """Build AST nodes for this member"""
         if self.status == "attached":
             return []
 
-        member_node = template.build_member(self)
+        member_node = build_member(self)
 
         # Add docstring if available
         if self.docstring:

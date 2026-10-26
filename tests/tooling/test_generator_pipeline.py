@@ -59,7 +59,6 @@ def _options(tmp_path: Path) -> GeneratorOptions:
     return GeneratorOptions(
         metadata_path=str(tmp_path / "meta.xml"),
         output_path=str(tmp_path),
-        template_path=str(tmp_path),
         dry_run=True,
     )
 
@@ -84,7 +83,6 @@ def _real_options(tmp_path: Path) -> GeneratorOptions:
     return GeneratorOptions(
         metadata_path=str(metadata),
         output_path=str(tmp_path / "office365"),
-        template_path=str(tmp_path),
     )
 
 

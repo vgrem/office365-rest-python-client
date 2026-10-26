@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, List, Optional
 from office365.runtime.client_value import ClientValue
 
 from generator.builders.naming import item_name, python_name, to_snake_case
+from generator.builders.node_factory import build_get_property
 
 #: Python names that never need an import (builtins / stdlib shorthands).
 _SCALAR_TYPE_NAMES = {
@@ -26,7 +27,6 @@ _SCALAR_TYPE_NAMES = {
 
 if TYPE_CHECKING:
     from generator.builders.resolution import TypeRegistry
-    from generator.builders.template_context import TemplateContext
     from generator.odata.property import PropertyInformation
 
 
@@ -39,8 +39,8 @@ class PropertyBuilder:
         self.field_alias = "field"
         self._resolver = resolver
 
-    def build(self, template: TemplateContext) -> List[ast.stmt]:
-        getter_node = template.build_get_property(self, runtime_import=self.runtime_import())
+    def build(self) -> List[ast.stmt]:
+        getter_node = build_get_property(self, runtime_import=self.runtime_import())
 
         # Add docstring if available
         if self.docstring and getter_node.body:

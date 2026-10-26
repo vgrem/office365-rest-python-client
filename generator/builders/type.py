@@ -22,12 +22,12 @@ from generator.builders.imports import (
 from generator.builders.member import MemberBuilder
 from generator.builders.method import MethodBuilder
 from generator.builders.naming import normalize_member_key, python_name, to_snake_case
+from generator.builders.node_factory import build_references, existing_members
 from generator.builders.placement import Placement, TypePlanner
 from generator.builders.property import PropertyBuilder
 from generator.builders.render import normalize_quotes, ruff_normalize
 from generator.builders.resolution import TypeRegistry
 from generator.builders.source_editor import SourceEditor, suppress_long_lines
-from generator.builders.template_context import TemplateContext
 from generator.documentation.base import DocumentationProvider
 from generator.odata.type_information import TypeInformation
 from generator.odata.type_system import TypeRef
@@ -40,6 +40,16 @@ _RESERVED_METHOD_NAMES = (
 
 # Base model members that generated properties must not shadow (e.g. ``ResourcePath`` -> ``resource_path``).
 _RESERVED_PROPERTY_NAMES = {name for name in dir(ClientObject)} | {name for name in dir(ClientValue)}
+
+#: Where a brand-new class of each kind derives from. Members, their decorators and
+#: every other import are built by :mod:`generator.builders.node_factory`; the seed is
+#: a base class, and the SharePoint model roots ``Entity`` one package deeper.
+_SEEDS = {
+    "EntityType": ("office365.entity", "Entity"),
+    "ComplexType": ("office365.runtime.client_value", "ClientValue"),
+    "EnumType": ("enum", "Enum"),
+}
+_SHAREPOINT_SEEDS = {**_SEEDS, "EntityType": ("office365.sharepoint.entity", "Entity")}
 
 
 #: Bound operations with more parameters than this are skipped (unusable, and
@@ -60,7 +70,6 @@ class TypeBuilder(ast.NodeTransformer):
         self._schema = type_schema
         self._context = BuilderContext.from_options(options)
         self._docs_service = docs_service
-        self._template: Optional[TemplateContext] = None
         self._placement: Optional[Placement] = None
         self._source_tree: Optional[Module] = None
         self._status: Optional[str] = None
@@ -326,15 +335,13 @@ class TypeBuilder(ast.NodeTransformer):
         return node
 
     def build(self) -> Self:
-        self._template = TemplateContext(self._context.template_path, self._schema)
-
         if self.state == "attached":
             with open(self.file, encoding="utf-8") as f:
                 self._original_text = f.read()
             self._source_tree = ast.parse(self._original_text)
             self._status = "updated"
         else:
-            self._source_tree = self._template.load()
+            self._source_tree = ast.parse(self._seed())
             self._status = "created"
         self._process(self._source_tree)
         self._build_imports(self._source_tree)
@@ -349,9 +356,20 @@ class TypeBuilder(ast.NodeTransformer):
             self._status = None
         return self
 
+    def _seed(self) -> str:
+        """The file a new class starts as: ``__future__``, the kind's base, nothing else.
+
+        Every member, decorator and remaining import is built by the node factory, so
+        a service whose root model lives one package deeper is the only thing that
+        differs between the two models — a row, not a template file.
+        """
+        bases = _SEEDS if self._context.context_type == "GraphClient" else _SHAREPOINT_SEEDS
+        module, base = bases[self._schema.BaseTypeFullName]
+        header = f"from __future__ import annotations\n\nfrom {module} import {base}\n\n\n"
+        return f"{header}class {self._schema.BaseTypeFullName}({base}):\n    pass\n"
+
     def _build_imports(self, module: ast.Module) -> None:
         """Insert the imports the added members need (deduplicated)."""
-        assert self._template is not None
         collector = TypeReferenceCollector(self._resolver)
         collector.needs_dataclass = self._kind == "ComplexType" and bool(self._added_props)
         collector.needs_field = self._uses_field
@@ -394,38 +412,34 @@ class TypeBuilder(ast.NodeTransformer):
                     insert_index,
                 )
             )
-        self._added_imports.extend(
-            install_imports(module, self._template.build_references(collector), existing, insert_index)
-        )
+        self._added_imports.extend(install_imports(module, build_references(collector), existing, insert_index))
         self._added_imports = drop_unused_type_checking(module, self._added_imports)
 
     def _build_members(self, class_node: ast.ClassDef):
         if not self._members:
             return
 
-        assert self._template is not None
-        existing_members = self._template.get_existing_members(class_node)
+        names = existing_members(class_node)
 
         insert_pos = self._last_stmt_index(class_node.body, (ast.Assign,))
         existing_values = self._existing_member_values(class_node)
 
         for member_builder in self._members:
-            if member_builder.name in existing_members:
+            if member_builder.name in names:
                 continue
             value_key = str(member_builder.value)
             if value_key in existing_values:
                 # A distinct name with an already-used value is a Python Enum alias;
                 # emitting it trips ruff PIE796, so keep the canonical member only.
-                existing_members.add(member_builder.name)
+                names.add(member_builder.name)
                 continue
-            assert self._template is not None
-            member_nodes = member_builder.build(self._template)
+            member_nodes = member_builder.build()
             for node in member_nodes:
                 class_node.body.insert(insert_pos, node)
                 insert_pos += 1
             self._added_members.extend(member_nodes)
             self._changes.append(f"member: {member_builder.name}")
-            existing_members.add(member_builder.name)
+            names.add(member_builder.name)
             existing_values.add(value_key)
 
     @staticmethod
@@ -574,8 +588,7 @@ class TypeBuilder(ast.NodeTransformer):
 
         for prop in self._properties:
             if prop.status == "detached":
-                assert self._template is not None
-                property_methods = prop.build(self._template)
+                property_methods = prop.build()
 
                 for method in property_methods:
                     class_node.body.insert(insert_pos, method)

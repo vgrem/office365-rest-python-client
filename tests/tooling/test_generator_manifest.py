@@ -50,15 +50,10 @@ def test_manifest_round_trip(tmp_path):
     assert loaded.members == {"microsoft.graph.Thing": ["a", "b"]}
 
 
-def test_run_signature_tracks_metadata_config_and_templates(tmp_path):
+def test_run_signature_tracks_metadata_and_options(tmp_path):
     metadata = tmp_path / "graph.xml"
     metadata.write_text("<a/>", encoding="utf-8")
-    templates = tmp_path / "templates"
-    templates.mkdir()
-    (templates / "t.py").write_text("x = 1\n", encoding="utf-8")
-    options = GeneratorOptions(
-        metadata_path=str(metadata), output_path=str(tmp_path / "out"), template_path=str(templates)
-    )
+    options = GeneratorOptions(metadata_path=str(metadata), output_path=str(tmp_path / "out"))
 
     first = run_signature(options)
     assert run_signature(options) == first  # stable
@@ -71,21 +66,17 @@ def test_run_signature_tracks_metadata_config_and_templates(tmp_path):
     after_routing = run_signature(options)
     assert after_routing != after_metadata
 
-    (templates / "t.py").write_text("x = 2\n", encoding="utf-8")
+    options.ignored_types = ["microsoft.graph.Y"]
     assert run_signature(options) != after_routing
 
 
 def test_run_signature_includes_the_generator_source(tmp_path):
     metadata = tmp_path / "graph.xml"
     metadata.write_text("<a/>", encoding="utf-8")
-    templates = tmp_path / "templates"
-    templates.mkdir()
     source = tmp_path / "src"
     source.mkdir()
     (source / "mod.py").write_text("x = 1\n", encoding="utf-8")
-    options = GeneratorOptions(
-        metadata_path=str(metadata), output_path=str(tmp_path / "out"), template_path=str(templates)
-    )
+    options = GeneratorOptions(metadata_path=str(metadata), output_path=str(tmp_path / "out"))
 
     first = run_signature(options, source_root=source)
     assert run_signature(options, source_root=source) == first  # stable

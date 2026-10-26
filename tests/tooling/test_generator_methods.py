@@ -15,8 +15,6 @@ from generator.odata.type_information import TypeInformation
 from generator.odata.v3.metadata_reader import ODataV3Reader
 from generator.odata.v4.metadata_reader import ODataV4Reader
 
-_TEMPLATES = Path(__file__).resolve().parents[2] / "generator" / "templates" / "sharepoint"
-
 _V3_METADATA = """<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
   <edmx:DataServices>
@@ -193,7 +191,6 @@ def _build_static_method_type(tmp_path: Path, generate_methods: str) -> str:
         )
     )
     options = {
-        "template_path": str(_TEMPLATES),
         "output_path": str(tmp_path),
         "modules": "office365.sharepoint",
         "context_type": "ClientContext",

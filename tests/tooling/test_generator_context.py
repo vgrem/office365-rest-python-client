@@ -7,7 +7,6 @@ from generator.builders.context import BuilderContext
 
 def test_from_options_normalizes_legacy_dict() -> None:
     options = {
-        "template_path": "/t",
         "output_path": "/o",
         "modules": "office365",
         "namespace": "SP",
@@ -24,7 +23,6 @@ def test_from_options_normalizes_legacy_dict() -> None:
 
     context = BuilderContext.from_options(options)
 
-    assert context.template_path == "/t"
     assert context.output_path == "/o"
     assert context.routing == {"SP": "office365.sharepoint"}
     assert context.type_routing == {"Edu*": "office365.education"}
@@ -36,18 +34,18 @@ def test_from_options_normalizes_legacy_dict() -> None:
 
 
 def test_from_options_is_idempotent() -> None:
-    context = BuilderContext(template_path="/t", output_path="/o")
+    context = BuilderContext(output_path="/o")
     assert BuilderContext.from_options(context) is context
 
 
 def test_methods_enabled_variants() -> None:
-    assert BuilderContext("/t", "/o", generate_methods="YES").methods_enabled
-    assert not BuilderContext("/t", "/o", generate_methods="false").methods_enabled
-    assert not BuilderContext("/t", "/o").methods_enabled
+    assert BuilderContext("/o", generate_methods="YES").methods_enabled
+    assert not BuilderContext("/o", generate_methods="false").methods_enabled
+    assert not BuilderContext("/o").methods_enabled
 
 
 def test_with_plan_returns_an_enriched_copy() -> None:
-    context = BuilderContext(template_path="/t", output_path="/o")
+    context = BuilderContext(output_path="/o")
 
     planned = context.with_plan(
         known_types=frozenset({"SP.Foo"}),

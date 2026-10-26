@@ -15,8 +15,6 @@ from generator.odata.v3.metadata_reader import ODataV3Reader
 from generator.odata.v4.metadata_reader import ODataV4Reader
 from generator.pipeline import GeneratorPipeline
 
-_GENERATOR = Path(__file__).resolve().parents[2] / "generator"
-
 _V3_CSDL = """<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
   <edmx:DataServices>
@@ -69,14 +67,14 @@ _V4_CSDL = """<?xml version="1.0" encoding="utf-8"?>
 """
 
 
-def _options(tmp_path: Path, *, template: str, namespace: str, kinds: list[str], prefix: str) -> GeneratorOptions:
+def _options(tmp_path: Path, *, graph: bool, namespace: str, kinds: list[str], prefix: str) -> GeneratorOptions:
+    """Options for the fixture run. ``graph`` picks the seed base class, as the config does."""
     return GeneratorOptions(
         metadata_path=str(tmp_path / "metadata.xml"),
         output_path=str(tmp_path / "office365"),
-        template_path=str(_GENERATOR / "templates" / template),
         modules="office365.runtime.types",
         namespace=namespace,
-        context_type="GraphClient" if template == "graph" else "ClientContext",
+        context_type="GraphClient" if graph else "ClientContext",
         include_base_types=kinds,
         generate_methods="true",
         routing={prefix: "office365"},
@@ -97,7 +95,7 @@ def _source(tmp_path: Path, name: str) -> str:
 def test_sharepoint_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     (tmp_path / "metadata.xml").write_text(_V3_CSDL, encoding="utf-8")
     kinds = ["EntityType", "ComplexType", "EnumType"]
-    options = _options(tmp_path, template="sharepoint", namespace="SP", kinds=kinds, prefix="SP")
+    options = _options(tmp_path, graph=False, namespace="SP", kinds=kinds, prefix="SP")
 
     _run(options, ODataV3Reader, tmp_path)
 
@@ -123,7 +121,7 @@ def test_sharepoint_generates_all_kinds_and_methods(tmp_path: Path) -> None:
 def test_sharepoint_end_to_end_is_additions_only(tmp_path: Path) -> None:
     metadata = tmp_path / "metadata.xml"
     metadata.write_text(_V3_CSDL, encoding="utf-8")
-    options = _options(tmp_path, template="sharepoint", namespace="SP", kinds=["EntityType"], prefix="SP")
+    options = _options(tmp_path, graph=False, namespace="SP", kinds=["EntityType"], prefix="SP")
     _run(options, ODataV3Reader, tmp_path)
     widget = tmp_path / "office365" / "widget.py"
     before = widget.read_text(encoding="utf-8")
@@ -148,7 +146,7 @@ def test_sharepoint_end_to_end_is_additions_only(tmp_path: Path) -> None:
 def test_graph_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     (tmp_path / "metadata.xml").write_text(_V4_CSDL, encoding="utf-8")
     kinds = ["ComplexType", "EnumType", "EntityType"]
-    options = _options(tmp_path, template="graph", namespace="", kinds=kinds, prefix="microsoft.graph")
+    options = _options(tmp_path, graph=True, namespace="", kinds=kinds, prefix="microsoft.graph")
 
     _run(options, ODataV4Reader, tmp_path)
 

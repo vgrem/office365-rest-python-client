@@ -20,7 +20,6 @@ class ConfigError(Exception):
 _KNOWN_KEYS = {
     "metadata_path",
     "output_path",
-    "template_path",
     "context_type",
     "generate_methods",
     "modules",
@@ -86,7 +85,6 @@ class GeneratorOptions:
 
     metadata_path: str
     output_path: str
-    template_path: str
     context_type: str = "ClientContext"
     generate_methods: str = ""
     modules: str = ""
@@ -117,7 +115,7 @@ class GeneratorOptions:
         unknown = set(data) - _KNOWN_KEYS
         if unknown:
             raise ConfigError(f"{path}: unknown key(s): {', '.join(sorted(unknown))}")
-        for required in ("metadata_path", "output_path", "template_path"):
+        for required in ("metadata_path", "output_path"):
             if required not in data:
                 raise ConfigError(f"{path}: missing required key '{required}'")
 
@@ -129,16 +127,12 @@ class GeneratorOptions:
             raise ConfigError(f"{path}: unknown filter key(s): {', '.join(sorted(unknown_filters))}")
 
         output_path = resolve_path(base_dir, data["output_path"])
-        template_path = resolve_path(base_dir, data["template_path"])
-        if not Path(template_path).is_dir():
-            raise ConfigError(f"{path}: template_path is not a directory ({template_path})")
         modules = parse_list(data.get("modules"))
         _validate_modules(modules, output_path, str(path))
 
         return cls(
             metadata_path=resolve_path(base_dir, data["metadata_path"]),
             output_path=output_path,
-            template_path=template_path,
             context_type=str(data.get("context_type", "ClientContext")),
             generate_methods=str(data.get("generate_methods", "")).strip().lower(),
             modules=",".join(modules),
@@ -157,7 +151,6 @@ class GeneratorOptions:
     def builder_context(self) -> BuilderContext:
         """The typed, immutable context the builders consume."""
         return BuilderContext(
-            template_path=self.template_path,
             output_path=self.output_path,
             modules=self.modules,
             namespace=self.namespace,

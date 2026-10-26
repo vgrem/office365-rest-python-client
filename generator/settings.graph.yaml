@@ -1,7 +1,6 @@
 # Generator settings for the graph model (see generator/config.py).
 metadata_path: ./metadata/Graph.xml
 output_path: ../office365
-template_path: ./templates/graph
 context_type: GraphClient
 generate_methods: false
 include_base_types:

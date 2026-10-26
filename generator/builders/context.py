@@ -15,7 +15,6 @@ from typing import Any, Mapping, Optional
 class BuilderContext:
     """Everything a :class:`~generator.builders.type.TypeBuilder` needs."""
 
-    template_path: str
     output_path: str
     modules: str = ""
     namespace: str = ""
@@ -48,7 +47,6 @@ class BuilderContext:
             return options
         options = options or {}
         return cls(
-            template_path=options.get("template_path", options.get("templatepath", "")),
             output_path=options.get("output_path", options.get("outputpath", "")),
             modules=options.get("modules", ""),
             namespace=options.get("namespace", ""),

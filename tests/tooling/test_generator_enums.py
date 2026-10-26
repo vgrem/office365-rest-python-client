@@ -11,8 +11,6 @@ from generator.odata.member import MemberInformation
 from generator.odata.property import PropertyInformation
 from generator.odata.type_information import TypeInformation
 
-_TEMPLATES = Path(__file__).resolve().parents[2] / "generator" / "templates" / "graph"
-
 
 class _NullResolver:
     def resolve(self, type_name):
@@ -43,7 +41,7 @@ def _enum_schema(*members: tuple[str, str]) -> TypeInformation:
 
 
 def _build_enum(tmp_path: Path, schema: TypeInformation) -> str:
-    options = {"template_path": str(_TEMPLATES), "output_path": str(tmp_path), "modules": "office365"}
+    options = {"context_type": "GraphClient", "output_path": str(tmp_path), "modules": "office365"}
     builder = TypeBuilder(schema, options, resolver=_NullResolver())
     builder.build()
     source = builder.render()
@@ -77,7 +75,7 @@ def test_planned_enum_field_defaults_to_first_member(tmp_path: Path) -> None:
     schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="microsoft.graph.TestValue", IsValueObject=True)
     schema.add_property(PropertyInformation(Name="status", TypeName="microsoft.graph.TestEnum"))
     options = {
-        "template_path": str(_TEMPLATES),
+        "context_type": "GraphClient",
         "output_path": str(tmp_path),
         "modules": "office365",
         # The enum is planned in this run (not importable yet): default from metadata.

@@ -45,15 +45,14 @@ def _hash_files(digest: "hashlib._Hash", root: Path) -> None:
 def run_signature(options: "GeneratorOptions", source_root: Optional[Path] = None) -> str:
     """A hash of everything that changes generated output.
 
-    Covers the metadata, the effective options/flags, the template sources **and
-    the generator's own source**, so an unchanged signature means a run would be a
-    no-op (see the fast path) and a generator upgrade always invalidates it.
+    Covers the metadata, the effective options/flags **and the generator's own
+    source**, so an unchanged signature means a run would be a no-op (see the fast
+    path) and a generator upgrade always invalidates it.
     """
     digest = hashlib.sha1()
     digest.update(metadata_fingerprint(options.metadata_path).encode())
     payload = {
         "output_path": options.output_path,
-        "template_path": options.template_path,
         "context_type": options.context_type,
         "generate_methods": options.generate_methods,
         "modules": options.modules,
@@ -67,7 +66,6 @@ def run_signature(options: "GeneratorOptions", source_root: Optional[Path] = Non
         "type_routing": sorted(options.type_routing.items()),
     }
     digest.update(json.dumps(payload, sort_keys=True).encode())
-    _hash_files(digest, Path(options.template_path))
     _hash_files(digest, source_root or Path(__file__).parent)
     return digest.hexdigest()
 
