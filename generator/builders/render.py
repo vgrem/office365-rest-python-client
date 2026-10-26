@@ -90,11 +90,17 @@ def _ruff_stdin(ruff: str, args: list[str], source: str, filename: str) -> Optio
 
 
 def ruff_normalize(source: str, filename: str) -> str:
-    """Sort imports and format the source with ruff (repo style); best effort."""
+    """Sort imports and format the source with ruff (repo style); best effort.
+
+    ``filename`` is what picks the configuration: ruff walks up from it to the
+    project's ``pyproject.toml`` and wraps at the repo's 121 columns. Passing
+    ``--isolated`` fell back to ruff's own 88-column defaults, which re-wrapped every
+    long import in the file -- a one-property update rewrote 40 unrelated lines.
+    """
     ruff = ruff_binary()
     if ruff is None:
         return source
-    fixed = _ruff_stdin(ruff, ["check", "--isolated", "--select", "I001", "--fix"], source, filename)
+    fixed = _ruff_stdin(ruff, ["check", "--select", "I001", "--fix"], source, filename)
     if fixed:
         source = fixed
     formatted = _ruff_stdin(ruff, ["format"], source, filename)
