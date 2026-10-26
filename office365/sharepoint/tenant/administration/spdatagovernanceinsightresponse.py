@@ -15,6 +15,8 @@ class SPDataGovernanceInsightResponse(ClientValue):
     CountOfSitesInTenantUserPermissions: int | None = None
     CreatedDateTime: str | None = None
     EEEUType: str | None = None
+    EntriesWithNoData: StringCollection = field(default_factory=StringCollection)
+    InvalidEntries: StringCollection = field(default_factory=StringCollection)
     InvalidUserEntries: StringCollection = field(default_factory=StringCollection)
     LabelId: UUID | None = None
     LabelName: str | None = None
@@ -37,6 +39,7 @@ class SPDataGovernanceInsightResponse(ClientValue):
     SitesFoundEEEU: int | None = None
     SitesFoundSharingLink: int | None = None
     Status: str | None = None
+    TargetGroupNames: StringCollection = field(default_factory=StringCollection)
     TemplatesEEEU: StringCollection = field(default_factory=StringCollection)
     TemplatesSitePermissions: StringCollection | None = None
     TriggeredDateTime: str | None = None

@@ -916,3 +916,9 @@ class SiteProperties(Entity):
     def folder_anonymous_link_type(self) -> Optional[int]:
         """Gets the FolderAnonymousLinkType property"""
         return self.properties.get("FolderAnonymousLinkType", None)
+
+    @odata(name="RestrictAccessControlForAgenticUser")
+    @property
+    def restrict_access_control_for_agentic_user(self) -> Optional[bool]:
+        """Gets the RestrictAccessControlForAgenticUser property"""
+        return self.properties.get("RestrictAccessControlForAgenticUser", None)

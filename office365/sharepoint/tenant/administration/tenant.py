@@ -7389,3 +7389,9 @@ class Tenant(Entity):
         )
         self.context.add_query(qry)
         return self
+
+    @odata(name="IsTenantAdminReadOnlyAdvanceNoticeEnabled")
+    @property
+    def is_tenant_admin_read_only_advance_notice_enabled(self) -> Optional[bool]:
+        """Gets the IsTenantAdminReadOnlyAdvanceNoticeEnabled property"""
+        return self.properties.get("IsTenantAdminReadOnlyAdvanceNoticeEnabled", None)

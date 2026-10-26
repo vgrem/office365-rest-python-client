@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from office365.runtime.client_value import ClientValue
 
 
+@dataclass
 class DatasetMetadataInfo(ClientValue):
     createdDate: str | None = None
     createdInADLSDate: str | None = None
@@ -12,6 +15,7 @@ class DatasetMetadataInfo(ClientValue):
     lastSyncedInADLSDate: str | None = None
     subType: str | None = None
     uploadFileToADLSProgressStatus: str | None = None
+    window: str | None = None
 
     @property
     def entity_type_name(self) -> str:

@@ -18,6 +18,8 @@ class StorageUsageMetricsSnapshot(ClientValue):
     AvailableFreeStorageMB: int | None = None
     GeoLocations: StringCollection = field(default_factory=StringCollection)
     MetricsAggregationScope: int | None = None
+    SharePointEmbeddedActiveUsedStorageMB: int | None = None
+    SharePointEmbeddedArchivedUsedStorageMB: int | None = None
     SnapshotDate: datetime | None = field(default_factory=lambda: datetime.min)
     TotalAvailableStorageMB: int | None = None
     VersionsUsedStorageMB: int | None = None

@@ -913,3 +913,10 @@ class SiteMoveService(Entity):
         )
         self.context.add_query(qry)
         return return_type
+
+    def get_scp_status_json(self) -> ClientResult[str]:
+        """GetScpStatusJson operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetScpStatusJson", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
