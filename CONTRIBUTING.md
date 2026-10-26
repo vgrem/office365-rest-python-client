@@ -112,6 +112,19 @@ the exact bytes emitted, canonical checksums, and the rules the client derives
 before it ever sends a request. That pass took 1,112 tests to 812 and the
 statements `office365/` executes from 53,659 to 52,500 (2.2%).
 
+A third pass took the same criterion to its end. Eight files were about the
+exchange and nothing else — the two transport adapters, the `client-request-id`
+header, the batch envelope, the paging loop, and the streaming and chunked
+transfer loops — and every one of them pinned a shape a product suite already
+walks against a tenant: `tests/sharepoint/test_client.py` submits batches,
+`tests/sharepoint/test_large_list.py` pages a list, `tests/sharepoint/test_file.py`
+streams a large file up and down through the same transport. They are gone:
+77 tests and 2,001 lines. What stayed is what a tenant cannot script — a 429
+with a `Retry-After`, a 202 that polls through seven fractions, an awaitable
+token callback, a tolerant write, an idempotent ensure — because no run against
+a live service can provoke those on demand, and a fake is the only stimulus that
+reaches the branch.
+
 ### End-to-end tests (maintainers / optional)
 
 The product suites (`tests/sharepoint/`, `tests/onedrive/`, …) are end-to-end and

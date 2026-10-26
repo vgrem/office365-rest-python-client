@@ -2,7 +2,13 @@
 
 Test conventions:
 - Plain ``unittest.TestCase`` under ``tests/unit/`` = offline unit tests that run
-  with no credentials and are always executed.
+  with no credentials and are always executed. They assert a *value* or a
+  *decision* the client derives before it sends anything (a parsed object, the
+  bytes it would emit, a checksum, an idempotency rule, an error's type). A test
+  whose subject is the exchange itself -- the URL, the header, the batch
+  envelope, the paging loop, the transfer loop -- is not a unit test here: the
+  product suites below pin those against a real tenant, which is the only
+  authority on them.
 - ``SPTestCase`` / ``GraphDelegatedTestCase`` subclasses = live integration tests
   that require tenant credentials. They are skipped automatically when the
   matching credentials are not configured, so a fresh checkout stays green.
