@@ -6,6 +6,7 @@ import ast
 import textwrap
 from pathlib import Path
 
+from generator.builders.context import BuilderContext
 from generator.builders.method import MethodBuilder
 from generator.builders.resolution import TypeRegistry
 from generator.builders.type import TypeBuilder
@@ -190,12 +191,9 @@ def _build_static_method_type(tmp_path: Path, generate_methods: str) -> str:
             Kind="action",
         )
     )
-    options = {
-        "output_path": str(tmp_path),
-        "modules": "office365.sharepoint",
-        "context_type": "ClientContext",
-        "generate_methods": generate_methods,
-    }
+    options = BuilderContext(
+        output_path=str(tmp_path), modules="office365.sharepoint", generate_methods=generate_methods
+    )
     builder = TypeBuilder(schema, options)
     builder.build()
     builder.save()

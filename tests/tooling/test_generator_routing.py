@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from generator.builders.context import BuilderContext
 from generator.builders.resolution import TypeRegistry
 from generator.filters import TypeFilter
 from generator.odata.model import ODataModel
@@ -53,7 +54,11 @@ def test_router_prefers_exact_then_namespace_then_prefix():
 
 def test_router_from_options():
     router = Router.from_options(
-        {"routing_SP": "office365.sharepoint", "type_routing": {"microsoft.graph.KeyValue": "office365.common"}}
+        BuilderContext(
+            output_path="",
+            routing={"SP": " office365.sharepoint "},
+            type_routing={"microsoft.graph.KeyValue": "office365.common"},
+        )
     )
     assert router.namespace == {"SP": "office365.sharepoint"}
     assert router.module_for("microsoft.graph.KeyValue") == "office365.common"

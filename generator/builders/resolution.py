@@ -10,7 +10,7 @@ import importlib
 import inspect
 import pkgutil
 from functools import lru_cache
-from typing import Optional, Sequence, Tuple, Type
+from typing import Mapping, Optional, Sequence, Tuple, Type
 
 from generator.builders.naming import python_name
 from generator.builders.references import ReturnType
@@ -21,7 +21,9 @@ from generator.odata.type_system import TypeRef
 class TypeRegistry:
     """Maps OData type references to Python classes, modules and member names."""
 
-    def __init__(self, modules: Sequence[str], namespace: str = "", type_modules: Optional[dict] = None) -> None:
+    def __init__(
+        self, modules: Sequence[str], namespace: str = "", type_modules: Optional[Mapping[str, str]] = None
+    ) -> None:
         self.modules = tuple(sorted(m.strip() for m in modules if m and m.strip()))
         self.namespace = namespace
         self._index = _get_index(self.modules, namespace)

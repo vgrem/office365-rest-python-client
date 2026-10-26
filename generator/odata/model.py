@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Dict, Optional
 
 from typing_extensions import Self
@@ -38,15 +40,15 @@ class ODataModel:
         """Returns the type schema by name, or ``None`` when it is unknown."""
         return self._types.get(type_name)
 
-    def inherited_member_names(self) -> Dict[str, set]:
+    def inherited_member_names(self) -> dict[str, frozenset[str]]:
         """For each type, the properties/methods declared by its CSDL ancestors.
 
         Used to skip re-declaring inherited members on a subclass (the base may not
         exist on disk yet when both are generated in the same run).
         """
-        result: Dict[str, set] = {}
+        result: dict[str, frozenset[str]] = {}
         for name, schema in self._types.items():
-            names: set = set()
+            names: set[str] = set()
             seen = {name}
             base = schema.BaseTypeName
             while base and base in self._types and base not in seen:
@@ -55,7 +57,7 @@ class ODataModel:
                 names.update(ancestor.Properties)
                 names.update(ancestor.Methods)
                 base = ancestor.BaseTypeName
-            result[name] = names
+            result[name] = frozenset(names)
         return result
 
     def get_type(self, type_name: str) -> TypeInformation:

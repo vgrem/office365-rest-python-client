@@ -1,21 +1,20 @@
 """Typed, immutable configuration passed to the builders.
 
-Replaces the free-form ``dict`` (string keys, no validation) that used to be
-threaded through every builder. ``from_options`` still accepts the legacy dict
-so tests and the config adapter keep working.
+One type, not a free-form ``dict`` (string keys, no validation): a builder either
+receives a context or an empty one, and every knob has a name the checker sees.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
-from typing import Any, Mapping, Optional
+from typing import Mapping
 
 
 @dataclass(frozen=True)
 class BuilderContext:
     """Everything a :class:`~generator.builders.type.TypeBuilder` needs."""
 
-    output_path: str
+    output_path: str = ""
     modules: str = ""
     namespace: str = ""
     context_type: str = "ClientContext"
@@ -39,34 +38,6 @@ class BuilderContext:
     def methods_enabled(self) -> bool:
         """Whether operation method generation is enabled."""
         return str(self.generate_methods).strip().lower() in {"true", "1", "yes"}
-
-    @classmethod
-    def from_options(cls, options: Optional[Any]) -> "BuilderContext":
-        """Normalize a legacy options dict (or an existing context) to a context."""
-        if isinstance(options, BuilderContext):
-            return options
-        options = options or {}
-        return cls(
-            output_path=options.get("output_path", options.get("outputpath", "")),
-            modules=options.get("modules", ""),
-            namespace=options.get("namespace", ""),
-            context_type=options.get("context_type", "ClientContext"),
-            generate_methods=options.get("generate_methods", ""),
-            ignored_properties=tuple(options.get("ignored_properties") or ()),
-            ignored_methods=tuple(options.get("ignored_methods") or ()),
-            routing={key[len("routing_") :]: value for key, value in options.items() if key.startswith("routing_")},
-            type_routing=dict(options.get("type_routing") or {}),
-            known_types=frozenset(options.get("known_types") or ()),
-            type_modules=dict(options.get("type_modules") or {}),
-            cyclic_types=frozenset(options.get("cyclic_types") or ()),
-            enum_defaults=dict(options.get("enum_defaults") or {}),
-            entity_types=frozenset(options.get("entity_types") or ()),
-            pollable_types=frozenset(options.get("pollable_types") or ()),
-            inherited_members={
-                name: frozenset(members) for name, members in (options.get("inherited_members") or {}).items()
-            },
-            dry_run=bool(options.get("dry_run", False)),
-        )
 
     def with_plan(
         self,

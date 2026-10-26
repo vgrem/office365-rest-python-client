@@ -5,14 +5,14 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Sequence
+from typing import TYPE_CHECKING, Optional, Sequence, Tuple
 
 from generator.manifest import MetadataChanges
 
 if TYPE_CHECKING:
     from generator.builders.type import TypeBuilder
 
-Planned = Sequence[tuple[str, "TypeBuilder"]]
+Planned = Sequence[Tuple[str, "TypeBuilder"]]
 
 
 @dataclass

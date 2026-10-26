@@ -5,39 +5,6 @@ from __future__ import annotations
 from generator.builders.context import BuilderContext
 
 
-def test_from_options_normalizes_legacy_dict() -> None:
-    options = {
-        "output_path": "/o",
-        "modules": "office365",
-        "namespace": "SP",
-        "generate_methods": "true",
-        "ignored_properties": ["A"],
-        "ignored_methods": ["B"],
-        "routing_SP": "office365.sharepoint",
-        "type_routing": {"Edu*": "office365.education"},
-        "known_types": ["SP.Foo"],
-        "type_modules": {"SP.Foo": "office365.foo"},
-        "cyclic_types": ["SP.Bar"],
-        "enum_defaults": {"SP.E": "a"},
-    }
-
-    context = BuilderContext.from_options(options)
-
-    assert context.output_path == "/o"
-    assert context.routing == {"SP": "office365.sharepoint"}
-    assert context.type_routing == {"Edu*": "office365.education"}
-    assert context.known_types == frozenset({"SP.Foo"})
-    assert context.type_modules == {"SP.Foo": "office365.foo"}
-    assert context.cyclic_types == frozenset({"SP.Bar"})
-    assert context.enum_defaults == {"SP.E": "a"}
-    assert context.methods_enabled is True
-
-
-def test_from_options_is_idempotent() -> None:
-    context = BuilderContext(output_path="/o")
-    assert BuilderContext.from_options(context) is context
-
-
 def test_methods_enabled_variants() -> None:
     assert BuilderContext("/o", generate_methods="YES").methods_enabled
     assert not BuilderContext("/o", generate_methods="false").methods_enabled

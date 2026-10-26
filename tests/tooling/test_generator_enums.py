@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from generator.builders.context import BuilderContext
 from generator.builders.member import sanitize_member_name
 from generator.builders.type import TypeBuilder
 from generator.odata.member import MemberInformation
@@ -41,7 +42,7 @@ def _enum_schema(*members: tuple[str, str]) -> TypeInformation:
 
 
 def _build_enum(tmp_path: Path, schema: TypeInformation) -> str:
-    options = {"context_type": "GraphClient", "output_path": str(tmp_path), "modules": "office365"}
+    options = BuilderContext(context_type="GraphClient", output_path=str(tmp_path), modules="office365")
     builder = TypeBuilder(schema, options, resolver=_NullResolver())
     builder.build()
     source = builder.render()
@@ -74,13 +75,13 @@ def test_ambiguous_enum_member_is_renamed(tmp_path: Path) -> None:
 def test_planned_enum_field_defaults_to_first_member(tmp_path: Path) -> None:
     schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="microsoft.graph.TestValue", IsValueObject=True)
     schema.add_property(PropertyInformation(Name="status", TypeName="microsoft.graph.TestEnum"))
-    options = {
-        "context_type": "GraphClient",
-        "output_path": str(tmp_path),
-        "modules": "office365",
+    options = BuilderContext(
+        context_type="GraphClient",
+        output_path=str(tmp_path),
+        modules="office365",
         # The enum is planned in this run (not importable yet): default from metadata.
-        "enum_defaults": {"microsoft.graph.TestEnum": "active"},
-    }
+        enum_defaults={"microsoft.graph.TestEnum": "active"},
+    )
     builder = TypeBuilder(schema, options, resolver=_PlannedEnumResolver())
     builder.build()
     source = builder.render()

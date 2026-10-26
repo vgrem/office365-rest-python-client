@@ -8,8 +8,13 @@ Pure functions over an ``ast.Module``, isolated from
 from __future__ import annotations
 
 import ast
+from typing import Optional, Union
 
 from generator.builders.source_editor import is_type_checking
+
+#: The three statements an import install can add (an ``ImportFrom``, a bare
+#: ``Import``, or the ``TYPE_CHECKING`` block that wraps them).
+ImportNode = Union[ast.Import, ast.ImportFrom, ast.If]
 
 
 def class_name_collides_with_import(module: ast.Module, class_name: str) -> bool:
@@ -39,18 +44,19 @@ def existing_import_names(module: ast.Module) -> set:
     return names
 
 
-def make_import(module_name: str, names: list) -> ast.ImportFrom:
+def make_import(module_name: Optional[str], names: list) -> ast.ImportFrom:
     """Build a sorted ``from <module> import <names>`` statement."""
     return ast.ImportFrom(
         module=module_name, names=[ast.alias(name=name, asname=None) for name in sorted(names)], level=0
     )
 
 
-def insert_import(module: ast.Module, imp: ast.stmt, existing: set, index: int) -> bool:
+def insert_import(module: ast.Module, imp: ImportNode, existing: set, index: int) -> bool:
     """Insert an import (or ``TYPE_CHECKING`` block) with only the unbound names."""
     if isinstance(imp, ast.If):
-        body = []
-        for child in imp.body:
+        body: list[ast.stmt] = []
+        # A ``TYPE_CHECKING`` block only ever holds ``from … import …`` children.
+        for child in (node for node in imp.body if isinstance(node, ast.ImportFrom)):
             kept = [alias.name for alias in child.names if (alias.asname or alias.name) not in existing]
             if kept:
                 body.append(make_import(child.module, kept))

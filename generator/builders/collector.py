@@ -202,7 +202,7 @@ class TypeReferenceCollector:
             imports.append(self._import_from(module, names))
 
         if self._type_checking:
-            body = [
+            body: list[ast.stmt] = [
                 self._import_from(module, names) for module, names in sorted(self._group(self._type_checking).items())
             ]
             imports.append(ast.If(test=ast.Name(id="TYPE_CHECKING", ctx=ast.Load()), body=body, orelse=[]))

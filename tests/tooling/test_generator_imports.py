@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from generator.builders.context import BuilderContext
 from generator.builders.type import TypeBuilder
 from generator.odata.method import MethodInformation
 from generator.odata.property import PropertyInformation
@@ -35,7 +36,7 @@ def _build_navigation_type(tmp_path: Path) -> str:
     schema = TypeInformation(BaseTypeFullName="EntityType", FullName="SP.TestFile", IsValueObject=False)
     schema.add_property(PropertyInformation(Name="Web", TypeName="SP.Web", IsNavigation=True))
     schema.add_property(PropertyInformation(Name="Versions", TypeName="Collection(SP.FileVersion)", IsNavigation=True))
-    options = {"output_path": str(tmp_path), "modules": "office365.sharepoint"}
+    options = BuilderContext(output_path=str(tmp_path), modules="office365.sharepoint")
     builder = TypeBuilder(schema, options)
     builder.build()
     builder.save()
@@ -80,7 +81,7 @@ def test_a_value_typed_entity_getter_declares_its_type_at_runtime(tmp_path: Path
     """
     schema = TypeInformation(BaseTypeFullName="EntityType", FullName="SP.TestEvent", IsValueObject=False)
     schema.add_property(PropertyInformation(Name="start", TypeName="SP.DateValue"))
-    options = {"output_path": str(tmp_path), "modules": "office365.sharepoint"}
+    options = BuilderContext(output_path=str(tmp_path), modules="office365.sharepoint")
     builder = TypeBuilder(schema, options, resolver=_ValueResolver("office365.sharepoint.date_value"))
     builder.build()
     source = builder.render()
@@ -96,7 +97,7 @@ def test_complex_value_collection_does_not_emit_bracketed_import(tmp_path: Path)
     """A ClientValue collection imports the wrapper and item type, not ``CVC[X]``."""
     schema = TypeInformation(BaseTypeFullName="EntityType", FullName="SP.TestThing", IsValueObject=False)
     schema.add_property(PropertyInformation(Name="Entries", TypeName="Collection(SP.ResourceEntry)"))
-    options = {"output_path": str(tmp_path), "modules": "office365.sharepoint"}
+    options = BuilderContext(output_path=str(tmp_path), modules="office365.sharepoint")
     builder = TypeBuilder(schema, options)
     builder.build()
     source = builder.render()
@@ -108,7 +109,7 @@ def test_client_value_field_type_is_a_runtime_import(tmp_path: Path):
     """A dataclass field's ``default_factory=X`` needs X at runtime, not only under TYPE_CHECKING."""
     schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="microsoft.graph.TestValue", IsValueObject=True)
     schema.add_property(PropertyInformation(Name="Subject", TypeName="microsoft.graph.WorkflowSubject"))
-    options = {"context_type": "GraphClient", "output_path": str(tmp_path), "modules": "office365"}
+    options = BuilderContext(context_type="GraphClient", output_path=str(tmp_path), modules="office365")
     builder = TypeBuilder(schema, options, resolver=_FixedResolver("office365.workflow_subject"))
     builder.build()
     source = builder.render()
@@ -126,7 +127,7 @@ def test_dataclass_member_named_field_aliases_the_dataclasses_field_import(tmp_p
     schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="microsoft.graph.TestOption", IsValueObject=True)
     schema.add_property(PropertyInformation(Name="field", TypeName="Edm.String"))
     schema.add_property(PropertyInformation(Name="bucket", TypeName="microsoft.graph.Bucket"))
-    options = {"context_type": "GraphClient", "output_path": str(tmp_path), "modules": "office365"}
+    options = BuilderContext(context_type="GraphClient", output_path=str(tmp_path), modules="office365")
     builder = TypeBuilder(schema, options, resolver=_FixedResolver("office365.bucket"))
     builder.build()
     source = builder.render()
@@ -141,12 +142,12 @@ def test_entity_field_in_a_client_value_defaults_to_none(tmp_path: Path):
     """An entity field needs a context, so inside a ClientValue it defaults to None."""
     schema = TypeInformation(BaseTypeFullName="ComplexType", FullName="microsoft.graph.TestValue", IsValueObject=True)
     schema.add_property(PropertyInformation(Name="owner", TypeName="microsoft.graph.SomeEntity"))
-    options = {
-        "context_type": "GraphClient",
-        "output_path": str(tmp_path),
-        "modules": "office365",
-        "entity_types": {"microsoft.graph.SomeEntity"},
-    }
+    options = BuilderContext(
+        context_type="GraphClient",
+        output_path=str(tmp_path),
+        modules="office365",
+        entity_types=frozenset({"microsoft.graph.SomeEntity"}),
+    )
     builder = TypeBuilder(schema, options, resolver=_FixedResolver("office365.some_entity"))
     builder.build()
     source = builder.render()
@@ -169,11 +170,7 @@ def test_method_entity_return_is_imported_lazily(tmp_path: Path):
             Kind="function",
         )
     )
-    options = {
-        "output_path": str(tmp_path),
-        "modules": "office365.sharepoint",
-        "generate_methods": "true",
-    }
+    options = BuilderContext(output_path=str(tmp_path), modules="office365.sharepoint", generate_methods="true")
     builder = TypeBuilder(schema, options)
     builder.build()
     source = builder.render()

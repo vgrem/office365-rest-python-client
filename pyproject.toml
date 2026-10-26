@@ -160,4 +160,4 @@ pythonVersion = "3.8"
 # `.venv/lib/python3.11/site-packages` used to sit here and pointed at nothing.
 venv = ".venv"
 venvPath = "."
-include = [ "office365" ]
+include = [ "generator", "office365" ]

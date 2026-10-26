@@ -54,7 +54,7 @@ def _pollable_types(model: ODataModel) -> frozenset[str]:
             if is_operation_with_status(name):
                 return True
             schema = model.types.get(name)
-            name = getattr(schema, "BaseTypeName", None) if schema else ""
+            name = (getattr(schema, "BaseTypeName", None) or "") if schema else ""
         return False
 
     return frozenset(
@@ -133,7 +133,7 @@ class GeneratorPipeline:
     def run(self) -> None:
         """Build, validate and (unless dry-run) commit every in-scope type."""
         if self._can_skip():
-            print("Model is up to date (metadata, config and templates unchanged); nothing to do.")
+            print("Model is up to date (metadata and config unchanged); nothing to do.")
             return
         targeted = bool(self._only_types)
         total = len(self._only_types) if targeted else len(self._model.types)

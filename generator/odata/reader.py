@@ -25,7 +25,9 @@ class ODataReader(ABC):
 
     def __init__(self, metadata_path: str):
         self._metadata_path = metadata_path
-        self._document: Optional[CsdlDocument] = None
+        #: The parsed document, bound by the single :meth:`read` pass; every helper
+        #: below reads it, so it is not optional once parsing has begun.
+        self._document: CsdlDocument
 
     @property
     @abstractmethod
@@ -108,7 +110,7 @@ class ODataReader(ABC):
                 if schema:
                     type_schema.add_property(schema)
 
-        if base_type == "EntityType" and self._document is not None:
+        if base_type == "EntityType":
             for key in self._document.parse_alternate_keys(type_node):
                 type_schema.add_alternate_key(key)
 

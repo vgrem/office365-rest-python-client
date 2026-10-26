@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import ast
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
 from generator.builders import placement
+from generator.builders.context import BuilderContext
 from generator.builders.placement import Placement
 from generator.builders.resolution import TypeRegistry
 from generator.builders.source_editor import qualify_datetime
@@ -43,8 +45,8 @@ def _schema() -> TypeInformation:
     return schema
 
 
-def _options(tmp_path: Path) -> dict:
-    return {"output_path": str(tmp_path), "modules": "office365.sharepoint"}
+def _options(tmp_path: Path) -> BuilderContext:
+    return BuilderContext(output_path=str(tmp_path), modules="office365.sharepoint")
 
 
 def test_documentation_provider_injects_docstrings(tmp_path: Path):
@@ -86,7 +88,7 @@ def test_inherited_members_arent_redeclared_from_metadata(tmp_path: Path, monkey
     target = tmp_path / "test_thing.py"
     target.write_text("class TestThing:\n    pass\n", encoding="utf8")
     monkeypatch.setattr(placement, "module_file", lambda name: str(target))
-    options = {**_options(tmp_path), "inherited_members": {"SP.TestThing": {"Title"}}}
+    options = replace(_options(tmp_path), inherited_members={"SP.TestThing": frozenset({"Title"})})
 
     builder = TypeBuilder(_schema(), options, resolver=_StubResolver())
     builder.build()
@@ -119,7 +121,7 @@ def test_inherited_dataclass_field_arent_redeclared(tmp_path: Path, monkeypatch)
 
 
 def test_rejects_duplicate_top_level_class():
-    builder = TypeBuilder(_schema(), {"modules": "office365.sharepoint"}, resolver=_StubResolver())
+    builder = TypeBuilder(_schema(), BuilderContext(modules="office365.sharepoint"), resolver=_StubResolver())
     builder._placement = Placement(state="attached", file="x.py", routed=True)
     module = ast.parse("class TestThing:\n    pass\n\n\nclass TestThing:\n    pass\n")
     with pytest.raises(ValidationError):
@@ -154,7 +156,7 @@ def test_property_and_method_with_same_name_are_deduplicated(tmp_path: Path):
             Kind="function",
         )
     )
-    options = {**_options(tmp_path), "generate_methods": "true"}
+    options = replace(_options(tmp_path), generate_methods="true")
     builder = TypeBuilder(schema, options, resolver=_StubResolver())
     builder.build()
     source = builder.render()

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from generator.builders.property import PropertyBuilder
 
 
-def build_references(collector: TypeReferenceCollector) -> list[ast.ImportFrom]:
+def build_references(collector: TypeReferenceCollector) -> list[ast.stmt]:
     """Generate import statements from a TypeReferenceCollector."""
     return collector.build()
 

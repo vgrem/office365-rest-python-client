@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ast
 import importlib.util
 import inspect
@@ -5,7 +7,7 @@ import keyword
 import os
 from _ast import Module
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
@@ -63,12 +65,12 @@ class TypeBuilder(ast.NodeTransformer):
     def __init__(
         self,
         type_schema: TypeInformation,
-        options: Optional[Dict[str, str]] = None,
+        options: Optional[BuilderContext] = None,
         docs_service: Optional[DocumentationProvider] = None,
         resolver: Optional[TypeRegistry] = None,
     ):
         self._schema = type_schema
-        self._context = BuilderContext.from_options(options)
+        self._context = BuilderContext() if options is None else options
         self._docs_service = docs_service
         self._placement: Optional[Placement] = None
         self._source_tree: Optional[Module] = None
@@ -555,7 +557,7 @@ class TypeBuilder(ast.NodeTransformer):
                     # An entity needs a context, so it cannot be a zero-arg default.
                     default, make_optional = ast.Constant(value=None), True
             else:
-                member = self._enum_defaults.get(type_name)
+                member = self._enum_defaults.get(type_name) if type_name else None
                 if member:
                     default = self._member_attr(prop_type, member)
                 elif type_name in self._enum_defaults or type_name in self._context.entity_types:

@@ -49,7 +49,7 @@ def generate(
     definition = get_service(service)
     options = GeneratorOptions.load(service, GENERATOR_DIR, dry_run=dry_run)
     if _up_to_date(options, force=force, only_types=only_types, report_path=report_path):
-        print("Model is up to date (metadata, config and templates unchanged); nothing to do.")
+        print("Model is up to date (metadata and config unchanged); nothing to do.")
         return
     reader: ODataReader = definition.reader(options.metadata_path)
     documentation = definition.documentation() if definition.documentation else None

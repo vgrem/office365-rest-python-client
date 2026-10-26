@@ -21,6 +21,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
+from generator.builders.context import BuilderContext
 from generator.builders.naming import python_name, to_snake_case
 from generator.odata.type_system import TypeRef
 
@@ -67,16 +68,11 @@ class Router:
     types: dict[str, str] = field(default_factory=dict)
 
     @classmethod
-    def from_options(cls, options) -> "Router":
-        if isinstance(options, dict):
-            namespace = {
-                key[len("routing_") :]: value.strip() for key, value in options.items() if key.startswith("routing_")
-            }
-            types = {name: module.strip() for name, module in (options.get("type_routing") or {}).items()}
-        else:  # BuilderContext
-            namespace = {name: str(module).strip() for name, module in options.routing.items()}
-            types = {name: str(module).strip() for name, module in options.type_routing.items()}
-        return cls(namespace, types)
+    def from_options(cls, context: BuilderContext) -> "Router":
+        return cls(
+            {name: str(module).strip() for name, module in context.routing.items()},
+            {name: str(module).strip() for name, module in context.type_routing.items()},
+        )
 
     @property
     def fallback(self) -> str:
