@@ -106,11 +106,6 @@ class SiteProperties(Entity):
         """Block downloads for view-only files in SharePoint and OneDrive."""
         return self.properties.get("BlockDownloadMicrosoft365GroupIds", StringCollection())
 
-    @property
-    def block_download_policy_file_type_ids(self) -> Optional[StringCollection]:
-        """"""
-        return self.properties.get("BlockDownloadPolicyFileTypeIds", StringCollection())
-
     @odata(name="CreatedTime")
     @property
     def created_time(self) -> Optional[datetime]:
