@@ -2,7 +2,7 @@
 
 Placement is the one part of :class:`~generator.builders.type.TypeBuilder` that
 does not touch the AST: it maps an OData type to a target file (attached vs
-detached/routed) using the static index and the routing tables.
+detached) using the static index and the routing tables.
 """
 
 from __future__ import annotations
@@ -29,7 +29,6 @@ class Placement:
 
     state: str  # "attached" (existing file) or "detached" (new file)
     file: str
-    routed: bool
     reason: str = ""
 
     @property
@@ -72,7 +71,7 @@ class TypePlanner:
         module_name = self._resolver.strict_module_for(full_name, kind)
         origin = module_file(module_name) if module_name else None
         if origin is not None:
-            return Placement(_ATTACHED, origin, True)
+            return Placement(_ATTACHED, origin)
 
         namespace = full_name.rpartition(".")[0]
         module_path = self._router.module_for(full_name)
@@ -86,12 +85,12 @@ class TypePlanner:
         file_path = abspath(os.path.join(file_dir, file_stem + ".py"))
 
         if not module_path:
-            return Placement(_DETACHED, file_path, False, f"no routing entry for namespace '{namespace}'")
+            return Placement(_DETACHED, file_path, f"no routing entry for namespace '{namespace}'")
         if os.path.exists(file_path):
             if defines_class(file_path, class_name):
-                return Placement(_ATTACHED, file_path, True)
+                return Placement(_ATTACHED, file_path)
             # The routed file already exists but strict name resolution missed it
             # (metadata/model name drift). Update it in place only when the class
             # matches; never overwrite a foreign file.
-            return Placement(_DETACHED, file_path, False, f"target file exists without class '{class_name}'")
-        return Placement(_DETACHED, file_path, True)
+            return Placement(_DETACHED, file_path, f"target file exists without class '{class_name}'")
+        return Placement(_DETACHED, file_path)

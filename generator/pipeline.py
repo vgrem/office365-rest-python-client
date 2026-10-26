@@ -17,6 +17,7 @@ from generator.manifest import (
     Manifest,
     MetadataChanges,
     diff_members,
+    is_up_to_date,
     manifest_path,
     metadata_fingerprint,
     run_signature,
@@ -144,7 +145,7 @@ class GeneratorPipeline:
 
         count = 0 if targeted else len(self._checkpoint.processed)
         skipped_new = 0
-        unrouted: list[str] = []
+        unrouted: dict[str, str] = {}
         planned: list[tuple[str, TypeBuilder]] = []
 
         for name in self._model.types:
@@ -160,7 +161,7 @@ class GeneratorPipeline:
                     continue
             builder = TypeBuilder(schema, self._builder_context, self._docs)
             if builder.skip_reason:
-                unrouted.append(name)
+                unrouted[name] = builder.skip_reason
                 self._checkpoint.add(name, persist=False)
                 continue
             if self._update_only and builder.state != "attached":
@@ -170,7 +171,7 @@ class GeneratorPipeline:
             count += 1
             print(f"[{count}/{total}] Processing: {name}")
             self._build(name, builder)
-            if builder.status in {"created", "updated"}:
+            if builder.built:
                 planned.append((name, builder))
             self._checkpoint.add(name, persist=False)
 
@@ -193,11 +194,13 @@ class GeneratorPipeline:
 
     def _can_skip(self) -> bool:
         """True when a previous successful run already covered this exact input."""
-        if self._force or self._only_types or self._options.dry_run or self._previous is None:
-            return False
-        if self._checkpoint.processed:
-            return False  # an interrupted run must be resumed, not skipped
-        return bool(self._previous.signature) and self._previous.signature == run_signature(self._options)
+        return is_up_to_date(
+            self._options,
+            self._previous,
+            force=self._force,
+            targeted=bool(self._only_types or self._report_path),
+            resumed=bool(self._checkpoint.processed),
+        )
 
     def _warn_unknown_types(self) -> None:
         missing = [name for name in self._only_types if name not in self._model.types]
@@ -216,7 +219,7 @@ class GeneratorPipeline:
         """Build and validate a single type in memory (no write)."""
         try:
             builder.build()
-            if builder.status in {"created", "updated"}:
+            if builder.built:
                 source = builder.render()
                 issues = validate_source(source, builder.file) + semantic_issues(source, builder.file)
                 if issues:

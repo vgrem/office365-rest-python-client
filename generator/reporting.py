@@ -23,8 +23,8 @@ class Reporter:
     report_path: Optional[str] = None
     dry_run: bool = False
 
-    def summary(self, planned: Planned, skipped_new: int, unrouted: list[str]) -> None:
-        """Print the created/updated/skipped counts and the first unrouted types."""
+    def summary(self, planned: Planned, skipped_new: int, unrouted: dict[str, str]) -> None:
+        """Print the created/updated/skipped counts and why types were skipped."""
         created = sum(1 for _, builder in planned if builder.status == "created")
         updated = sum(1 for _, builder in planned if builder.status == "updated")
         prefix = "[dry-run] " if self.dry_run else ""
@@ -34,8 +34,8 @@ class Reporter:
         )
         if unrouted:
             print("  Skipped types (first 15):")
-            for name in unrouted[:15]:
-                print(f"    {name}")
+            for name, reason in list(unrouted.items())[:15]:
+                print(f"    {name} — {reason}")
 
     def metadata_changes(self, changes: MetadataChanges) -> None:
         """Report metadata deletions (kept in code — never auto-removed)."""
@@ -51,7 +51,7 @@ class Reporter:
             for name, members in list(changes.removed_members.items())[:15]:
                 print(f"    {name}: {', '.join(members)}")
 
-    def write(self, planned: Planned, unrouted: list[str], changes: MetadataChanges) -> None:
+    def write(self, planned: Planned, unrouted: dict[str, str], changes: MetadataChanges) -> None:
         """Write the JSON run report, when a path was configured."""
         if not self.report_path:
             return

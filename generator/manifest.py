@@ -70,6 +70,27 @@ def run_signature(options: "GeneratorOptions", source_root: Optional[Path] = Non
     return digest.hexdigest()
 
 
+def is_up_to_date(
+    options: "GeneratorOptions",
+    previous: Optional["Manifest"],
+    *,
+    force: bool = False,
+    targeted: bool = False,
+    resumed: bool = False,
+) -> bool:
+    """True when a previous successful run already covered this exact input.
+
+    The one place the no-op fast path is decided, for both the CLI and the
+    pipeline. ``targeted`` covers every request for output (``--types``,
+    ``--report``): a caller who asked for something must not be told there is
+    nothing to do. ``resumed`` means a checkpoint is waiting, i.e. an interrupted
+    run that must be finished rather than skipped.
+    """
+    if force or options.dry_run or targeted or resumed or previous is None:
+        return False
+    return bool(previous.signature) and previous.signature == run_signature(options)
+
+
 def schema_members(model: ODataModel) -> dict[str, list[str]]:
     """Every metadata member name, per type (properties + methods + enum members)."""
     return {

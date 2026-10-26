@@ -11,7 +11,7 @@ from generator.checkpoint import checkpoint_path
 from generator.config import ConfigError, GeneratorOptions
 from generator.documentation.subservices import fetch_service_map, load_service_map, write_service_map
 from generator.filters import TypeFilter
-from generator.manifest import Manifest, run_signature
+from generator.manifest import Manifest, is_up_to_date
 from generator.odata.reader import ODataReader
 from generator.pipeline import GeneratorPipeline
 from generator.routing import Router, render_suggestions
@@ -20,18 +20,6 @@ from generator.validation import ValidationError
 
 #: Config/paths are resolved relative to this directory, not the CWD.
 GENERATOR_DIR = Path(__file__).parent
-
-
-def _up_to_date(
-    options: GeneratorOptions, *, force: bool, only_types: Optional[Sequence[str]], report_path: Optional[str]
-) -> bool:
-    """True when the last successful run already covered this exact input."""
-    if force or only_types or report_path or options.dry_run:
-        return False
-    if checkpoint_path(options.metadata_path, GENERATOR_DIR).exists():
-        return False  # an interrupted run must be resumed
-    previous = Manifest.load(options.metadata_path, GENERATOR_DIR)
-    return bool(previous and previous.signature and previous.signature == run_signature(options))
 
 
 def generate(
@@ -48,7 +36,13 @@ def generate(
     """Read the service metadata and generate/update the corresponding model files."""
     definition = get_service(service)
     options = GeneratorOptions.load(service, GENERATOR_DIR, dry_run=dry_run)
-    if _up_to_date(options, force=force, only_types=only_types, report_path=report_path):
+    if is_up_to_date(
+        options,
+        Manifest.load(options.metadata_path, GENERATOR_DIR),
+        force=force,
+        targeted=bool(only_types or report_path),
+        resumed=checkpoint_path(options.metadata_path, GENERATOR_DIR).exists(),
+    ):
         print("Model is up to date (metadata and config unchanged); nothing to do.")
         return
     reader: ODataReader = definition.reader(options.metadata_path)

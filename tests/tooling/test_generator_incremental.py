@@ -122,7 +122,7 @@ def test_inherited_dataclass_field_arent_redeclared(tmp_path: Path, monkeypatch)
 
 def test_rejects_duplicate_top_level_class():
     builder = TypeBuilder(_schema(), BuilderContext(modules="office365.sharepoint"), resolver=_StubResolver())
-    builder._placement = Placement(state="attached", file="x.py", routed=True)
+    builder._placement = Placement(state="attached", file="x.py")
     module = ast.parse("class TestThing:\n    pass\n\n\nclass TestThing:\n    pass\n")
     with pytest.raises(ValidationError):
         builder._process(module)

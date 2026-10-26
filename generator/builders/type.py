@@ -348,9 +348,7 @@ class TypeBuilder(ast.NodeTransformer):
         self._process(self._source_tree)
         self._build_imports(self._source_tree)
 
-        if self._status in {"created", "updated"} and class_name_collides_with_import(
-            self._source_tree, self.client_type_name
-        ):
+        if self.built and class_name_collides_with_import(self._source_tree, self.client_type_name):
             print(f"  Skipping {self.client_type_name}: name collides with an imported type")
             self._status = None
 
@@ -781,17 +779,17 @@ class TypeBuilder(ast.NodeTransformer):
         return self._ensure_placement().state
 
     @property
-    def routed(self) -> bool:
-        """Whether a new (detached) type maps to a routed package (not the output root)."""
-        return self._ensure_placement().routed
-
-    @property
     def file(self):
         return self._ensure_placement().file
 
     @property
     def status(self):
         return self._status
+
+    @property
+    def built(self) -> bool:
+        """Whether this run produced (or, in a dry run, would produce) a file."""
+        return self._status in {"created", "updated"}
 
     @property
     def client_type_name(self):

@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
+from dataclasses import replace
 from pathlib import Path
 
 from generator import pipeline as pipeline_module
 from generator.config import GeneratorOptions
-from generator.manifest import Manifest, manifest_path, run_signature
+from generator.manifest import Manifest, is_up_to_date, manifest_path, run_signature
 from generator.odata.model import ODataModel
 from generator.odata.property import PropertyInformation
 from generator.odata.type_information import TypeInformation
@@ -16,7 +18,7 @@ from generator.pipeline import GeneratorPipeline
 class _FakeBuilder:
     """Stands in for ``TypeBuilder``: attached iff the type is named ``SP.Existing*``."""
 
-    built: list[str] = []
+    processed: list[str] = []
 
     def __init__(self, schema, options, docs=None, resolver=None):
         self._schema = schema
@@ -26,15 +28,15 @@ class _FakeBuilder:
         return "attached" if self._schema.FullName.startswith("SP.Existing") else "detached"
 
     @property
-    def routed(self) -> bool:
-        return True
-
-    @property
     def skip_reason(self) -> str:
         return ""
 
+    @property
+    def built(self) -> bool:
+        return True
+
     def build(self) -> None:
-        type(self).built.append(self._schema.FullName)
+        type(self).processed.append(self._schema.FullName)
 
     def render(self) -> str:
         return "class Placeholder:\n    pass\n"
@@ -65,16 +67,31 @@ def _options(tmp_path: Path) -> GeneratorOptions:
 
 def test_update_only_skips_new_types(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(pipeline_module, "TypeBuilder", _FakeBuilder)
-    _FakeBuilder.built = []
+    _FakeBuilder.processed = []
     GeneratorPipeline(_model("SP.ExistingThing", "SP.NewThing"), _options(tmp_path), update_only=True).run()
-    assert _FakeBuilder.built == ["SP.ExistingThing"]
+    assert _FakeBuilder.processed == ["SP.ExistingThing"]
 
 
 def test_default_processes_new_and_existing(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(pipeline_module, "TypeBuilder", _FakeBuilder)
-    _FakeBuilder.built = []
+    _FakeBuilder.processed = []
     GeneratorPipeline(_model("SP.ExistingThing", "SP.NewThing"), _options(tmp_path)).run()
-    assert _FakeBuilder.built == ["SP.ExistingThing", "SP.NewThing"]
+    assert _FakeBuilder.processed == ["SP.ExistingThing", "SP.NewThing"]
+
+
+def test_skipped_types_are_reported_with_their_reason(tmp_path: Path, monkeypatch) -> None:
+    """A skip reason is a fact about the run, so it reaches the report."""
+
+    class _Blocked(_FakeBuilder):
+        skip_reason = "target file exists without class 'Thing'"
+
+    report = tmp_path / "report.json"
+    monkeypatch.setattr(pipeline_module, "TypeBuilder", _Blocked)
+    GeneratorPipeline(_model("SP.Thing"), _options(tmp_path), report_path=str(report)).run()
+
+    assert json.loads(report.read_text(encoding="utf-8"))["skipped_unrouted"] == {
+        "SP.Thing": "target file exists without class 'Thing'"
+    }
 
 
 def _real_options(tmp_path: Path) -> GeneratorOptions:
@@ -86,27 +103,20 @@ def _real_options(tmp_path: Path) -> GeneratorOptions:
     )
 
 
-def test_can_skip_only_when_the_recorded_signature_matches(tmp_path: Path) -> None:
+def test_up_to_date_only_when_the_recorded_signature_matches(tmp_path: Path) -> None:
+    """The one fast-path decision, asked the way the CLI and the pipeline ask it."""
     options = _real_options(tmp_path)
-    Manifest(manifest_path(options.metadata_path, tmp_path), "fp", {}, run_signature(options)).save()
+    assert is_up_to_date(options, Manifest.load(options.metadata_path, tmp_path)) is False  # no record yet
 
-    assert GeneratorPipeline(_model(), options, base_dir=tmp_path)._can_skip() is True
-    assert GeneratorPipeline(_model(), options, base_dir=tmp_path, force=True)._can_skip() is False
-    assert GeneratorPipeline(_model(), options, base_dir=tmp_path, only_types=["SP.X"])._can_skip() is False
+    previous = Manifest(manifest_path(options.metadata_path, tmp_path), "fp", {}, run_signature(options))
+    previous.save()
+    recorded = Manifest.load(options.metadata_path, tmp_path)
 
-
-def test_cli_up_to_date_fast_path(tmp_path: Path, monkeypatch) -> None:
-    from generator import cli
-
-    monkeypatch.setattr(cli, "GENERATOR_DIR", tmp_path)
-    options = _real_options(tmp_path)
-    assert cli._up_to_date(options, force=False, only_types=None, report_path=None) is False
-
-    Manifest(manifest_path(options.metadata_path, tmp_path), "fp", {}, run_signature(options)).save()
-    assert cli._up_to_date(options, force=False, only_types=None, report_path=None) is True
-    assert cli._up_to_date(options, force=True, only_types=None, report_path=None) is False
-    assert cli._up_to_date(options, force=False, only_types=["SP.X"], report_path=None) is False
-    assert cli._up_to_date(options, force=False, only_types=None, report_path="r.json") is False
+    assert is_up_to_date(options, recorded) is True
+    assert is_up_to_date(options, recorded, force=True) is False
+    assert is_up_to_date(options, recorded, targeted=True) is False
+    assert is_up_to_date(options, recorded, resumed=True) is False
+    assert is_up_to_date(replace(options, dry_run=True), recorded) is False
 
 
 def test_pollable_types_marks_operation_families():
