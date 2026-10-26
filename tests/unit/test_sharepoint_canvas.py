@@ -5,9 +5,6 @@ from office365.sharepoint.publishing.pages.canvas import (
     parse_canvas_controls,
 )
 
-#: One canvas control, HTML-escaped exactly as SharePoint serializes it.
-_CONTROL = '<div data-sp-controldata="{&quot;controlType&quot;:%d}">%s</div>'
-
 
 def test_skips_malformed_and_non_object_blobs():
     canvas = (

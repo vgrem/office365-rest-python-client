@@ -66,9 +66,6 @@ def test_progress_bar_advances_a_fake_tqdm(monkeypatch):
     assert bar.closed is False
 
 
-_METADATA = {"__metadata": {"type": "SP.Folder"}}
-
-
 class _ScriptedTransport(BaseTransport):
     def __init__(self, payloads: list[dict]) -> None:
         self._payloads = payloads

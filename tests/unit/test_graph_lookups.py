@@ -15,16 +15,10 @@ from office365.graph_client import GraphClient
 from office365.runtime.types.exceptions import NotFoundException
 from tests._scripted_transport import ScriptedTransport
 
-USER = {"id": "u1", "displayName": "Ada Lovelace", "mail": "ada@contoso.com"}
 TODO_TASK = {"id": "tt1", "title": "Ship the release"}
 MAIL_FOLDER = {"id": "mf1", "displayName": "Archive"}
 NOTEBOOK = {"id": "nb1", "displayName": "SDK OneNote Tour"}
 SECTION = {"id": "sec1", "displayName": "SDK Examples"}
-PLANNER_TASK = {"id": "pkt1", "title": "Draft the plan"}
-PLANNER_BUCKET = {"id": "pbk1", "name": "Backlog"}
-TEAM = {"id": "g1", "displayName": "Team One", "resourceProvisioningOptions": ["Team"]}
-BUSINESS = {"id": "b1", "displayName": "Contoso Bookings"}
-DEVICE = {"id": "d1", "deviceName": "DESKTOP-1"}
 SKU = {"id": "s1", "skuId": "sku-guid", "skuPartNumber": "ENTERPRISEPACK"}
 
 

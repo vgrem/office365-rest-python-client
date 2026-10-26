@@ -16,7 +16,6 @@ from tests._scripted_transport import RoutingTransport
 SITE_ID = "contoso.sharepoint.com,site-guid,web-guid"
 APP_ID = "11111111-1111-1111-1111-111111111111"
 SP_OBJECT_ID = "22222222-2222-2222-2222-222222222222"
-APPLICATION_OBJECT_ID = "33333333-3333-3333-3333-333333333333"
 
 
 def _client(transport: RoutingTransport) -> GraphClient:

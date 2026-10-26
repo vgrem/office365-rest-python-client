@@ -12,7 +12,6 @@ _WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
 
 # A modern canvas control blob as SharePoint serializes it (HTML-encoded JSON).
 _WEB_PART_CONTROL = 'data-sp-controldata="{&quot;controlType&quot;:4}"'
-_SECTION_CONTROL = 'data-sp-controldata="{&quot;controlType&quot;:3}"'
 
 
 class _Items:

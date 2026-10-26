@@ -20,7 +20,6 @@ SHAREPOINT_APP_ID = "00000003-0000-0ff1-ce00-000000000000"
 SHAREPOINT_SP_ID = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
 ROLE_ID = "cccccccc-cccc-cccc-cccc-cccccccccccc"
 OTHER_ROLE_ID = "ffffffff-ffff-ffff-ffff-ffffffffffff"
-ASSIGNMENT_ID = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
 
 APP = {"id": CLIENT_OBJECT_ID, "appId": CLIENT_APP_ID, "displayName": "my-app"}
 APP_LIST = {"value": [APP]}
@@ -30,10 +29,6 @@ SHAREPOINT_SP = {
     "appId": SHAREPOINT_APP_ID,
     "appRoles": [{"id": ROLE_ID, "value": "Sites.Selected"}],
     "appRoleAssignedTo": [],
-}
-GRANTED_SP = {
-    **SHAREPOINT_SP,
-    "appRoleAssignedTo": [{"id": ASSIGNMENT_ID, "appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID}],
 }
 
 

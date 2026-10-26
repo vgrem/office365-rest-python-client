@@ -12,8 +12,6 @@ from office365.planner.tasks.task import PlannerTask
 from office365.planner.tasks.task_details import PlannerTaskDetails
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 
-TASK = {"id": "t1", "title": "Do it", "@odata.etag": 'W/"t1"'}
-
 
 def test_assignments_deserialize_to_typed_values():
     task = PlannerTask(GraphClient())

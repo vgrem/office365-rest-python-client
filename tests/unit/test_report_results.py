@@ -32,9 +32,6 @@ def test_report_result_csv_rows_are_keyed_by_header():
     ]
 
 
-_CSV = b"UserPrincipalName,Count\nalice@contoso.com,3\nbob@contoso.com,1\n"
-
-
 def _graph_client(payloads: list[Any]) -> GraphClient:
     client = GraphClient()
     client.pending_request().beforeExecute.clear()

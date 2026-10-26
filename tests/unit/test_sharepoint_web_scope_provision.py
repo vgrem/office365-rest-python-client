@@ -8,19 +8,6 @@ from office365.migration.sharepoint.structure import (
 )
 
 TEXT_SCHEMA = '<Field Type="Text" DisplayName="Region" Name="{name}" StaticName="{name}" ID="{{new}}" />'
-TAXONOMY_SCHEMA = """
-<Field Type="TaxonomyFieldType" DisplayName="Region" Name="{name}" StaticName="{name}">
-  <Customization>
-    <ArrayOfProperty>
-      <Property>
-        <Name>TermSetId</Name>
-        <Value xmlns:q6="http://schemas.datacontract.org/2004/07/System" p4:type="q6:string"
-          xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">a83fe90d-4bdb-4644-a484-7f75ee3f5730</Value>
-      </Property>
-    </ArrayOfProperty>
-  </Customization>
-</Field>
-"""
 
 
 class _Field:

@@ -5,8 +5,6 @@ from office365.directory.key_credential import KeyCredential
 from office365.directory.password_credential import PasswordCredential
 
 NOW = datetime.now(timezone.utc)
-TEN_DAYS = timedelta(days=10)
-EXPECTED_WHOLE_DAYS = 9
 
 
 def test_unset_end_date():

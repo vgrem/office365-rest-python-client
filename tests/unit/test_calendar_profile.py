@@ -162,6 +162,18 @@ def test_the_frequency_table_spells_every_pattern_the_service_sends(pattern, exp
     assert rrule({"pattern": pattern, "range": {"type": "noEnd"}}) == expected
 
 
+@pytest.mark.parametrize(("mapping", "enum", "complete"), TABLES)
+def test_every_dialect_row_names_a_member_the_enum_declares(mapping, enum, complete):
+    """A key the enum does not declare is a token for a word the service never sends.
+
+    The generated Graph enums are numeric on the wire, so the member's *name* is the
+    Graph word — that is what a dialect row is keyed by.
+    """
+    declared = {member.name for member in enum}
+    assert set(mapping) <= declared
+    assert not complete or declared <= set(mapping)
+
+
 def test_the_digest_is_stable_across_the_split():
     """A sidecar's digest is computed by both sides of an import, so it must not drift."""
     assert _digest(SIDECAR) == "79a81fa4bdc5daa7465a055d8f0c8a59"

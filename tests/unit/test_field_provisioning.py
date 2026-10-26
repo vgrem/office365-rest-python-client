@@ -107,19 +107,3 @@ def test_ensure_turns_on_required():
 
     assert transport.calls == 2  # noqa: PLR2004
     assert field.properties.get("Required") is True
-
-
-# --- create path -------------------------------------------------------------
-
-
-# --- schema-XML create path (migration fidelity) -----------------------------
-
-
-_SCHEMA = (
-    '<Field ID="{id}" Name="ProjectType" StaticName="ProjectType" '
-    'DisplayName="Project Type" Type="Choice" Format="Dropdown">'
-    "<CHOICES><CHOICE>Internal</CHOICE><CHOICE>External</CHOICE></CHOICES></Field>"
-)
-
-
-# --- schema copy -------------------------------------------------------------

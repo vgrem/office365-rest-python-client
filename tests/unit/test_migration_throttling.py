@@ -15,7 +15,6 @@ from office365.migration.logging import LOGGER_NAME
 from office365.runtime.transport.base import BaseTransport
 
 THROTTLE_AFTER = 10
-OTHER_THROTTLE_AFTER = 5
 PAUSE_SECONDS = 2
 SERVICE_UNAVAILABLE = 503
 TOO_MANY_REQUESTS = 429

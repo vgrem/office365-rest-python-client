@@ -25,8 +25,6 @@ from tests._scripted_transport import MethodRoutingTransport, build_response
 _CT_ID = "0x0100abcdefabcdefabcdefabcdefab"
 # a field-link round is read, written and read back
 _LINK_READS = 2
-# the atomic-rollback case links two columns, and loses both
-_LINKED_COLUMNS = 2
 
 _NOT_FOUND = {
     "http_status": 404,
@@ -155,20 +153,6 @@ def test_provision_creates_columns_content_type_links_and_view():
     assert any(u.endswith("views/Add") for u in urls)
 
 
-# --- content type creation information (regression: Group landed in Id) -------
-
-
-_LINK_REJECTED = {
-    "http_status": 400,
-    "body": {
-        "error": {
-            "code": "-2147024809, System.ArgumentException",
-            "message": {"lang": "en-US", "value": "Column 'ProjectType' does not exist."},
-        }
-    },
-}
-
-
 # --- lookup columns: repoint the schema at the target list --------------------
 
 _SOURCE_LIST_ID = "a6879990-804b-4064-bf5d-f0c5c65ef768"
@@ -232,9 +216,6 @@ _TAXONOMY_SCHEMA = (
     "</ArrayOfProperty></Customization>"
     "</Field>"
 )
-
-_NOTE_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-_WEB_ID = "ef40c956-7276-421a-b0a4-d81ccf839bd9"
 
 
 # --- container settings (versioning, moderation, item-level policy, ...) -------
