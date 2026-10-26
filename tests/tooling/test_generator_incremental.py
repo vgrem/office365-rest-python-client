@@ -13,6 +13,7 @@ from generator.builders.placement import Placement
 from generator.builders.resolution import TypeRegistry
 from generator.builders.source_editor import qualify_datetime
 from generator.builders.type import TypeBuilder
+from generator.odata.member import MemberInformation
 from generator.odata.method import MethodInformation
 from generator.odata.property import PropertyInformation
 from generator.odata.type_information import TypeInformation
@@ -175,6 +176,41 @@ def test_dataclass_field_joins_the_field_block_in_name_order(tmp_path: Path, mon
     source = target.read_text(encoding="utf8")
     assert source.index("alpha:") < source.index("beta:") < source.index("charlie:")
     assert source.index("charlie:") < source.index("def entity_type_name")
+
+
+def test_enum_member_joins_the_value_block_above_entity_type_name(tmp_path: Path, monkeypatch):
+    """A new enum member continues the value block -- it does not land under the property.
+
+    Enum members carry explicit values, so they extend the block in value order and
+    stay contiguous: spliced at the class end they would sit below
+    ``entity_type_name``, one blank line each, reading as unrelated assignments.
+    """
+    schema = TypeInformation(BaseTypeFullName="EnumType", FullName="microsoft.graph.TestEnum")
+    for name, value in (("gamma", "3"), ("delta", "4")):
+        schema.add_member(MemberInformation(Name=name, Value=value))
+    target = tmp_path / "test_enum.py"
+    target.write_text(
+        "from enum import Enum\n"
+        "\n\n"
+        "class TestEnum(Enum):\n"
+        '    alpha = "1"\n'
+        '    beta = "2"\n'
+        "\n"
+        "    @property\n"
+        "    def entity_type_name(self) -> str:\n"
+        '        return "microsoft.graph.TestEnum"\n',
+        encoding="utf8",
+    )
+    monkeypatch.setattr(placement, "module_file", lambda name: str(target))
+
+    builder = TypeBuilder(schema, _options(tmp_path), resolver=_StubResolver())
+    builder.build()
+    builder.save()
+
+    source = target.read_text(encoding="utf8")
+    assert 'beta = "2"\n    gamma = "3"' in source
+    assert 'gamma = "3"\n    delta = "4"' in source
+    assert source.index('delta = "4"') < source.index("def entity_type_name")
 
 
 def test_rejects_duplicate_top_level_class():

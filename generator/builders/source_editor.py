@@ -228,6 +228,10 @@ class SourceEditor:
         A dataclass field belongs in the field block, in wire-name order: appended
         after the last method it splits the block in two, and the next run appends
         to the new tail.
+
+        An enum member belongs in the value block, with no blank line between
+        members: appended at the class end it would land below
+        ``entity_type_name`` and read as a run of unrelated assignments.
         """
         fields = self._declared_fields(tree)
         if fields and all(isinstance(member, ast.AnnAssign) for member in members):
@@ -235,6 +239,12 @@ class SourceEditor:
             # Bottom-up, so a splice never invalidates a line number still to be used.
             for line, member in reversed(sorted(slots, key=lambda slot: slot[0])):
                 lines[line:line] = render_member(member).splitlines()
+            return
+        values = self._declared_enum_values(tree)
+        if values and all(self._is_enum_value(member) for member in members):
+            # Members carry explicit values, so they continue the block in value
+            # order rather than name order -- and stay contiguous with it.
+            lines[values[-1] : values[-1]] = [render_member(member) for member in members]
             return
         body = "\n\n".join(render_member(node) for node in members)
         lines[class_end:class_end] = ["", *body.splitlines()]
@@ -250,6 +260,29 @@ class SourceEditor:
                 if isinstance(field, ast.AnnAssign) and isinstance(field.target, ast.Name)
             ]
         return []
+
+    def _declared_enum_values(self, tree: ast.Module) -> list[int]:
+        """Insert index after the last enum member the target class declares.
+
+        Only string/int assignments count: those are the members an ``Enum`` body
+        collects, and they are what a new member has to stay contiguous with.
+        """
+        for node in tree.body:
+            if not isinstance(node, ast.ClassDef) or node.name != self.class_name:
+                continue
+            ends = [stmt.end_lineno or stmt.lineno for stmt in node.body if self._is_enum_value(stmt)]
+            return ends
+        return []
+
+    @staticmethod
+    def _is_enum_value(node: ast.stmt) -> bool:
+        """Whether ``node`` is an enum member: ``Name = <literal>``."""
+        return (
+            isinstance(node, ast.Assign)
+            and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+            and isinstance(node.value, ast.Constant)
+        )
 
     @staticmethod
     def _field_slot(fields: list[tuple[str, int]], member: ast.stmt) -> int:
