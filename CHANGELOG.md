@@ -7,1214 +7,378 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+Two stories. The model types now *declare* the metadata they read, so `$select`,
+`$expand`, comparison, provenance and throttling limits are derived from one
+declaration instead of hand-written at each call site. And the migration layer
+became a set of portable trees — mail, calendar, contacts, lists, navigation —
+built on those types, so a source and a target spell an item the same way.
+
+### Breaking
+
+Three of these reach shipped API — `Web.site_id`, the `SP.User` profile getters and
+the `NavNode`/`WebNavigation` records; the rest re-shape what this development line
+introduced.
+
+- The Teams export archive is the model's own JSON: `team.json` is
+  `team.to_json()` with `members`, `installedApps` and `channels` attached, and
+  `messages.ndjson` lines are `message.to_json()` plus `channel_id`. `TeamRecord`,
+  `ChannelRecord`, `MemberRecord`, `TabRecord`, `AppRecord` and the extractor
+  behind them are removed; `TeamsExportOptions` moved to
+  `migration.teams.adapters`.
+- Every mailbox sidecar is the model's own JSON with Graph's keys —
+  `Message.to_json()`, `Event.to_json()`, `Contact.to_json()` — plus the three
+  provenance keys a model cannot know. A tree written by a pre-release build is
+  refused by name (`refuse_legacy_sidecar`) instead of importing as empty fields.
+- SharePoint getters declare the OData names they read (4,013 declarations,
+  back-filled from the CSDL). `Web.select_all()` goes 39 → 118 columns and 2 → 50
+  navigations, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41; a projection built
+  from the old lists asked for navigation properties, which `$select` drops
+  silently. Request bodies are unchanged — a declaration says what a *response*
+  may carry, never what a request must.
+- `SP.User` loses the 58 profile getters that were a second copy of
+  `SP.Directory.User` (`about_me`, `skills`, `id_`, ...), plus
+  `User.get_user_profile_properties` and `Web.site_id`. The service drops those
+  names from `$select` silently; the profile fields live on
+  `sharepoint.directory.users.user.User` (63 declared) or behind
+  `PeopleManager.get_user_profile_properties`.
+- `NavNode` and `WebNavigation` are removed: a captured navigation is the model's
+  own tree, read through `Web.navigation.get_tree(recursive=True)`.
+- `MigrationItem` no longer carries `author_id`/`editor_id` — they are
+  `item.author.user_id` / `item.editor.user_id`, and the old keywords raise
+  `TypeError`. `ItemReport` keeps both columns.
+- `PagePayload` is gone (a page item is a `SitePage`), `PAGE_LIBRARY_TEMPLATE`,
+  `SITE_PAGE_CONTENT_TYPE_PREFIX` and `is_modern_page` left
+  `migration.sharepoint.pages` in favour of `is_page_library(list)`, and
+  `offline_context()` moved up to `office365.migration.offline`.
+- `IcsProfile` is `IcsDialect`, and each family's record is one class with methods
+  rather than a record type plus free functions: `CalendarEventRecord` and its
+  `event_*` helpers are `EventRecord`, the `contact_*` helpers are
+  `ContactRecord`, and `STANDALONE_EVENT_TYPES`/`event_kind` are gone.
+
 ### Added
 
 **Model metadata**
 
-- **Breaking:** the Teams export archive is the model's own JSON. `TeamRecord`,
-  `ChannelRecord`, `MemberRecord`, `TabRecord` and `AppRecord` (and the field-by-field
-  extractor behind them) are removed; `team.json` is `team.to_json()` with `members`,
-  `installedApps` and `channels` (each with `members` and `tabs`) attached, so its keys are
-  Graph's (`displayName`, `mailNickname`, `installedApps`, ...) and every returned property
-  is kept. `messages.ndjson` lines are `message.to_json()` plus `channel_id`: `from`,
-  `mentions`, `reactions` and `body` are JSON where they used to be the `repr` of a typed
-  object. `TeamsExportOptions` is unchanged and now lives in `migration.teams.adapters`.
-
-- A field declares what the service treats as the same value:
+- A field can declare what the service treats as the same value:
   `@odata(name="birthday", compare=Compare(format="date"))`
-  (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`, `default`,
-  `unordered`, `format`, `ignore`, `key`). `entity.to_json(COMPARABLE)`
-  (`office365.runtime.odata.comparable`) spells a model in that comparable form, so two
-  copies that differ only by what the service rewrites (an address-only email named after
-  itself, a birthday's time of day, the order of a label set, the width of a fractional
-  second, the markup around a body) compare equal and a real difference does not. It is
-  one more `JsonProfile`; `V4JsonFormat` output is unchanged. Declared on `EmailAddress`,
-  `Recipient`, `AttendeeBase`, `Attendee`, `DateTimeTimeZone`, `ItemBody`, `Location` and
-  the Outlook `Contact`/`Event`/item properties. The Outlook migration verifies imports
-  through it: the contact and calendar digests are now digests of that form, so a run
-  resumed across this change re-verifies its items once, and `calendar_profile` lost its
-  hand-written comparison helpers. A literal a `format` reduction cannot read (a date with
-  no time of day) is compared as it stands, not emptied into every other unreadable one.
-
-- `hydrate(payload, profile=None)` is the one in-place reading verb on `ClientObject`,
-  `ClientValue` and `ClientResult` (and so both collections) and answers `self`, so it
-  chains: `Event(context).hydrate(payload)`. `profile=None` reads what `to_json()` writes
-  with no profile; a payload off the wire still takes its own. `from_json` stays the
-  data-pipeline streaming entry (`from_csv`, `from_ndjson`, ...).
-  `JsonProfile.scoped(Model, only=...,
-  without=...)` narrows any profile to some properties of one model (attribute names,
-  checked against its declarations; a nested value that shares an OData name is untouched,
-  and a field the scope left out is not filled back in by a comparison rule).
-  `ClientValue.odata_name` is the mirror of `ClientObject.odata_name`, so a scope narrows a
-  value (`EmailAddress`) as well as an entity.
-  `ClientObject.to_json` is typed `Dict[str, Any]` (a collection's list form is its own
-  override), so entity callers no longer cast.
-
-- One serialization contract for the model types (`office365.runtime.serialization`:
-  `JsonSerializable.to_json(profile=None)` and `PropertyReceiver.set_property(name, value,
-  persist_changes)`, structural, nothing inherits from them). `ClientResult` gained
-  `to_json` and `hydrate`, `ClientValue` gained `hydrate`,
-  `ClientValue.to_json` is typed `Dict[str, Any]`, and `set_property` names its first two
-  parameters `name, value` everywhere (the eight overrides that spelled them `k, v` or
-  `key` followed). `persist_changes` stays `True` for models and `False` for the
-  response sinks (results, collections), and the protocol says why.
-
-- Generated Graph getters now declare their OData name in place
-  (`@odata(name="iCalUId")`, `office365.runtime.types.odata_property`), so nothing
-  spells an OData name twice and the awkward ones resolve:
-  `declared_type(Event, "iCalUId")` answers `str` where it used to answer `None`
-  (a `to_snake_case` guess spells it `i_cal_u_id`). `ODataPropertyMeta.navigation`
-  marks a CSDL `NavigationProperty` — the ones `$expand` reaches and `$select`
-  cannot name — so `Event.attachments` is distinguishable from a column.
-  `office365/outlook` is fully declared: `scripts/mark_odata.py` back-fills the
-  declaration onto files the generator will not re-render (it only renders members
-  that are missing), and `generator/templates/graph` emits it for new ones — with a
-  value or enum type a getter constructs imported at module level instead of under
-  `TYPE_CHECKING` only, so the annotation a new file gets is resolvable at run time. A
-  declaration that exists but says less than the metadata — a navigation property
-  without the flag, as every previously-hand-marked getter had — is finished in
-  place. The declarations are answerable at runtime, so a projection is derived
-  rather than hand-written: `Event.select_all()` returns the 41 OData names `$select`
-  accepts (navigation properties excluded, `id` included via `Entity`),
-  `Event.expand_all()` returns the 7 `$expand`-only ones, and
-  `Event.odata_name("ical_uid")` answers `"iCalUId"` rather than the snake-case
-  misspelling; an attribute with no declaration raises `AttributeError` listing the
-  ones that do. Declaring an enum-typed property makes a read answer with the
-  generated enum member instead of the raw string; `CalendarSource` compares `type`
-  through the member name, so calendar exports are unaffected.
-- Every column a served module declares now resolves a declared type: `declared_type(Event, "start")`
-  answers `DateTimeTimeZone` where it answered `None`. Twelve getters that construct a value
-  object carried either no return annotation (`Event.start`/`end`/`body`/`location`/`attendees`,
-  `Calendar.owner`, `Place.address`) or one naming a type imported only under `TYPE_CHECKING`
-  (`Event.onlineMeeting`, `Room.bookingType`/`teamsEnabledState`, `Workspace.mode`,
-  `EventMessage` dates/location/type, `Post`, `Person`, `ProfileCardProperty`,
-  `CheckInClaim`); both left hydration reading a bare dict where the model promises a value
-  object. `converters.value` now distinguishes an unresolvable annotation from a resolution
-  failure instead of swallowing every exception, and a test fails if any `$select` column of a
-  served package stops declaring its type.
-
-- **Breaking:** SharePoint getters declare their OData metadata too, so the same three
-  answers exist for the types the migrator reads. `scripts/mark_odata.py --service
-  sharepoint` (v3 CSDL) back-filled 4,013 declarations from
-  `generator/metadata/SharePoint.xml` — `Web`'s hand-marked `ContentTypes` names a navigation
-  property, not a column, so an existing declaration is finished as well as a missing one
-  added. Two passes were needed because a module names its type either way: `SP.Web` or
-  `Microsoft.SharePoint.Administration.Archiving.ArchiveFileSizeMetric`, the CSOM name of
-  the same type, so a name is resolved by asking the catalog rather than by stripping a
-  fixed prefix — and a module defining more than one class is resolved by name only when
-  exactly one candidate matches. `Web.select_all()` goes 39 → 119 columns and 2 → 50
-  navigations, `List` 21 → 98 and 2 → 21, `ListItem` 1 → 10 and 2 → 13, `Field` 3 → 41
-  and 0 → 2, `ContentType` 3 → 33 and 0 → 6, `Folder` 8 → 15 and 0 → 5, `File` 11 → 37
-  and 0 → 11, `View` 13 → 47 and 0 → 1. Probed live against `/sites/project`:
-  `web.select(Web.select_all())` answers 118 of 119 names and `List` 98 of 98, while
-  before, 33 of `Web`'s 39 names asked for navigation properties — which `$select` drops
-  silently, so a projection built from them read nothing. Request bodies are unchanged: a
-  fetched object still reports nothing and an edited one still sends only what was
-  edited, because a declaration says what a *response* may carry, never what a request
-  must.
-- The same run finished 18 getters it had missed on the Graph side, in six modules that
-  define more than one class (`CalendarPermission`, `RoomList`, `Category`,
-  `AttachmentItem`, `SearchFolder`, `MessageRule`), and `would mark:` is now 0 for both
-  services.
-- What is left is a list, not a guess: 186 getters in `office365/sharepoint` still spell a
-  OData name their own type's metadata does not declare — 96 in 24 modules whose class the
-  CSDL does not describe at all (`SPFarm`, `SPActivityEntity`, `Sitesharing`, ...), and 90
-  in 17 modules where the type exists but the name is not among its properties
-  (`principal/users/user.py` alone reads 56 of them — `aboutMe`, `accountEnabled` — and
-  `SP.User` declares 13 properties, none of them that; `Term.children_count` reads
-  `childrenCount` where the CSDL says `ChildrenCount`). Whether the service answers those
-  spellings is a live question, so none of them is declared on a guess.
-- `@odata(..., expandable=False)` marks a navigation `$expand` will not follow on its own:
-  `Event.expand_all()` no longer names `extensions`, which the service refuses without a
-  `$filter` (`ErrorGraphExtensionExpandRequiresFilter`). The CSDL says a member is a link;
-  it does not say the service will follow it, and neither metadata file carries an
-  expandability annotation, so the one exception is stated where it was measured and the
-  filtered spelling stays reachable through a raw path.
-- `@odata(..., system=True)` records where a name comes from: the metadata this client is
-  generated from does not declare it, the service spells it on the *item* payload. A list
-  item answers `AuthorId`, `EditorId`, `Created` and `Modified`, while `SP.ListItem`'s own
-  declaration is 24 names long and carries none of the four; a page adds `FileLeafRef`,
-  `WikiField` and `OData__ModerationStatus`, which the `sitepages` entity accepts and
-  answers nothing for. `ListItem.author_id`, `editor_id`, `created`, `modified` and
-  `SitePage`'s three item columns now say so, and so do `Tenant`'s `displayName`, `id` and
-  `serviceInfo` — that class's type is
-  `Microsoft.Online.SharePoint.TenantAdministration.Tenant`, which the CSDL describes
-  without those three names. The flag is *derived*, not written by hand:
-  `scripts/mark_odata.py` marks `system` exactly when the metadata has no declaration for
-  the name (before `navigation`, since a name the metadata lacks is neither a column nor a
-  navigation), and `TypeSchema.system` answers the set — the same place `@limit` and
-  `@odata` already meet. It is a fact about a declaration, so a request is unchanged:
-  `persist` still defaults to `False`. `tests/unit/test_odata_metadata.py` keeps the flag
-  equal to the fact by re-deriving it from the metadata for both services — over
-  properties only, because a `@odata` on a *method* names a function import
-  (`OutlookUser.supported_languages`), not a column.
-- `ClientObject._unselectable` states the columns a *type's own* service refuses to
-  project: `Web` answers 400 for `DescriptionTranslations` and `TitleTranslations`
-  ("Specified method is not supported") and, like `List`, for
-  `ShieldAddRoleAssignmentPushdown` ("Non-SPListItem objects are not supported"), while a
-  `ListItem` serves that one and refuses `Client_Title`, `DisplayName` and `IconOverlay`
-  instead. The declaration survives — hydration and comparison still know the OData name —
-  and `select_all()` leaves it out, so the projection is a request the service accepts.
+  (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`,
+  `default`, `unordered`, `format`, `ignore`, `key`). `entity.to_json(COMPARABLE)`
+  (`office365.runtime.odata.comparable`) spells a model in that comparable form,
+  so two copies that differ only by what the service rewrites — an address-only
+  email named after itself, a birthday's time of day, a label set's order, a
+  fractional second — compare equal and a real difference does not. It is one more
+  `JsonProfile`; `V4JsonFormat` output is unchanged.
+- `hydrate(payload, profile=None)` is the one in-place read verb on
+  `ClientObject`, `ClientValue` and `ClientResult`, answers `self` so it chains,
+  and `profile=None` reads what `to_json()` writes with no profile.
+  `JsonProfile.scoped(Model, only=..., without=...)` narrows any profile to some
+  properties of one model, and `ClientValue.odata_name` mirrors
+  `ClientObject.odata_name` so a scope narrows a value too.
+- `JsonProfile` keeps only what it uses: four accessors that re-exported a dialect
+  field (`metadata_type`, `collection`, `collection_next`, `etag`) are gone.
+- One serialization contract (`office365.runtime.serialization`:
+  `JsonSerializable.to_json(profile=None)`, `PropertyReceiver.set_property(name,
+  value, persist_changes)`), structural, nothing inherits from it.
+- Getters declare their OData name in place, so nothing spells a name twice:
+  `declared_type(Event, "iCalUId")` now answers `str`, `@odata(navigation=True)`
+  marks an `$expand`-only member, and `Event.select_all()` returns the 41 names
+  `$select` accepts, `expand_all()` the 7 `$expand`-only ones,
+  `odata_name("ical_uid")` the wire spelling. An enum-typed property reads back as
+  the generated enum member.
+- Every `$select` column of a served package resolves a declared type, including
+  the twelve value-object getters that carried no annotation, or one naming a type
+  imported only under `TYPE_CHECKING` — either way hydration read a bare dict where
+  the model promises a value object.
+- `@odata(..., expandable=False)` marks a navigation `$expand` will not follow
+  alone: `Event.expand_all()` no longer names `extensions`, which the service
+  refuses without a `$filter`.
+- `@odata(..., system=True)` records provenance: the metadata declares no such
+  name, the service spells it on the item payload. `ListItem.author_id`,
+  `editor_id`, `created`, `modified`, `SitePage`'s three item columns and
+  `Tenant.displayName`/`id`/`serviceInfo` say so — the flag is derived by the
+  codemod (absent from the CSDL ⇒ `system`) and answered by `TypeSchema.system`.
+- `ClientObject._unselectable` states the columns a type's own service refuses to
+  project (`Web` answers 400 for `DescriptionTranslations`; a `ListItem` refuses
+  `Client_Title`, `DisplayName`, `IconOverlay`). The declaration survives for
+  hydration and comparison, and `select_all()` leaves the name out.
 
 **Outlook mail**
 
-- `MessageCollection.add_from_mime(data)` creates a draft from an RFC 822 document — an
-  `.eml` file, bytes as they are on disk. Graph's MIME import is the one create whose body
-  *is* the message: the bytes are base64-encoded and posted as `text/plain`, and the
-  headers supply the recipients, subject, date and attachments, so nothing is translated.
-  `CreateEntityQuery` now types a raw `str`/`bytes` body as legal (a `cast` used to smuggle
-  it past the annotation), and the mail migration target calls the method instead of
-  building the request by hand — `migration/outlook/eml_import.py` lost its local MIME hook
-  and four imports.
-
-**Migration (identity)**
-
-- `IdentityMap` (`office365.migration`) maps source principals onto target
-  principals for authorship and ACLs, so a run can cross tenants (or follow a
-  login rename) without hand-editing the payload: entries from a CSV
-  (`source,target[,system_id]`), plus e-mail domain rewrites (`contoso.com` →
-  `fabrikam.com`, keeping the claims prefix) and an unmapped policy
-  (`skip` / `fail` / `fallback_owner`). The engine applies it to `item.author`,
-  `item.editor` and every `PermissionEntry` for both the REST and server-side
-  package targets, and a remapped principal drops the source PUID (a PUID only
-  means something in its own tenant) unless the CSV supplies the target one.
-  Unmapped principals are never silent: they are collected in `IdentityMap.unmapped`
-  and reported in the run summary (`identity_mappings`, `identity_rewritten`,
-  `identity_unmapped`, `identity_unmapped_principals`, `identity_policy`).
-  `MigrationSettings.user_mapping_file` now feeds it, and `automatic_user_mapping=False`
-  turns mapping off — both were previously listed as unhonored settings. There is
-  no directory lookup and groups are still not mapped.
-
-**Migration (mail)**
-
-- `MailFolderSource` + `MailExportTarget` (`office365.migration.outlook`) export a
-  mail folder and its subtree as a portable EML tree through the existing
-  `MigrationJob`: one `.eml` (RFC 822 bytes) plus one JSON sidecar per message —
-  the sidecar keeps what MIME cannot (Graph ids, read state, Outlook categories,
-  conversation id, folder path) — and a `manifest.jsonl` index. Destinations are
-  derived from the message (`date_subject_id-digest.eml`), so a resumed run skips
-  what is already on disk and `verify()` compares each file's MD5 against the
-  source MIME. `MailExportOptions` controls subfolders, drafts and extra
-  projection properties.
-- `EmlTreeSource` + `MailboxTarget` import that tree back into a mailbox folder
-  through `MessageCollection.add_from_mime`, recreating the folder chain with the exported
-  names, skipping messages the folder already has (matched by
-  `internetMessageId`) and replaying read state, categories and importance with
-  one `PATCH` per message (`MailImportOptions` turns that off). Verification uses
-  the new `mime_digest` — semantic headers plus a hash per decoded part — because
-  Exchange re-serializes every message and an imported message is never
-  byte-identical. Exchange limits, all reported rather than hidden: an imported
-  message is a draft (`isDraft` cannot be cleared by `PATCH`), `receivedDateTime`
-  is the import time (the original survives as `sentDateTime`), timestamps are not
-  restorable (so `preserve_timestamps` is refused up front), and messages over
-  4 MB are refused instead of truncated.
-- `MigrationItem.metadata` carries adapter-defined envelope attributes into the
-  manifest, so an export writes its own index from the plan instead of re-reading
-  the source.
-
-**Migration (calendar)**
-
-- `CalendarSource` + `IcsExportTarget` (`office365.migration.outlook`) export a
-  Graph calendar as a portable ICS tree through the same `MigrationJob`: one `.ics`
-  (iCalendar, CRLF and RFC 5545 folded, with `TZID`, `RRULE`, `VALARM`, `X-ALT-DESC`
-  for HTML bodies) plus one JSON sidecar per event, and a `manifest.jsonl` index.
-  The document is rendered from the event record, so `verify()` is an exact byte
-  checksum. A recurring event exports once as its series master (occurrences and
-  cancellations are opt-in: importing both a series and its instances would
-  duplicate every meeting), and Graph's own `recurrence` object travels in the
-  sidecar so an import can replay it without parsing `RRULE`.
-- `IcsTreeSource` + `CalendarTarget` import that tree back into a calendar through
-  the same `MigrationJob`, recreating each event — and each series as a
-  `seriesMaster` with Graph's own `recurrence` object — from the sidecar, which is
-  the import contract (an `.ics` alone is refused: iCalendar cannot carry the
-  recurrence object, so replaying a series from the document would silently turn
-  every meeting into a single event). The payload is posted as a Graph-spelled dict
-  through a raw `CreateEntityQuery`, because `EventCollection.add()` rewrites
-  `timeZone` to `UTC`, drops `transactionId` and rejects a dict `start` (all three
-  measured). A re-run skips what it already created — a created event comes back
-  with `iCalUid: null` and a fresh id, so the target matches on
-  `(subject, wall clock, zone)` and lets two source events that share all three
-  import as two — and a deterministic `transactionId` makes two concurrent runs
-  collide on the server, where the collision is adopted rather than failed.
-  `CalendarImportOptions` decides what is restored: attendees are **opt-in**
-  (`restore_attendees=False`, because creating an event with attendees makes
-  Exchange send a real invitation to each of them, and `responseRequested: false`
-  does not suppress it — measured), categories are on, and the run reports how many
-  attendee entries it left out. Verification is `event_digest` — the restorable
-  fields, with the service-owned ones and the body markup excluded — because
-  Exchange re-serializes the event.
-
-**Migration (contacts)**
-
-- `ContactSource` + `VcfExportTarget` (`office365.migration.outlook`) export a
-  contact folder and its child folders as a portable vCard tree through the same
-  `MigrationJob`: one `.vcf` (vCard 3.0, CRLF and folded at 75 octets) plus one JSON
-  sidecar per contact, and a `manifest.jsonl` index. The document is rendered from
-  the contact record, so `verify()` is an exact byte checksum, and the file name
-  carries a hash of the Graph id — a contact has no `internetMessageId` and no
-  `iCalUid`, so nothing the source knows survives an import. `ContactExportOptions`
-  controls the root name, the child-folder walk and extra projected properties.
-- `VcfTreeSource` + `ContactTarget` import that tree back into a contact folder,
-  recreating the folder chain with the exported names and replaying every office
-  field, both addresses, the phones, the IM addresses, the children, the notes and
-  the categories — the `.vcf` is what another client opens, the sidecar is what the
-  import restores, and an `.vcf` without one raises instead of importing a thinner
-  contact. The create body is built locally and posted raw, because
-  `ContactCollection.add()` takes four arguments and drops the rest (measured).
-  A re-run skips what the folder already has — a contact has no `transactionId`, so
-  the target matches on `(display name, first address)` instead, which also means
-  two concurrent runs can import the same contact twice (documented, not hidden) —
-  and verification is `ContactRecord.digest()`, a digest of the restorable fields read back
-  through a fresh handle, because Exchange normalises a birthday's time of day and
-  fills in a missing e-mail `name`. Reported rather than assumed: a photo is out of
-  scope on both sides (the entity exposes no `hasPhoto` column, so detecting one
-  costs a `GET /photo` that 404s per contact) and timestamps are not restorable (so
-  `preserve_timestamps` is refused up front). A category containing a comma is
-  refused client-side with the offending name, since Exchange rejects the whole
-  contact (`ErrorPropertyUpdate`) and the message names neither the field nor the
-  value.
-
-**Migration (fidelity forecast)**
-
-- `MigrationJob.plan()` now states the fidelity forecast before it enumerates: one
-  `plan.fidelity` event carrying the per-dimension matrix and the reason for every
-  dimension that is not `delivered`. `MigrationJob.fidelity()` returns that cached
-  report (it never raises). `export_reports` writes a new `FidelityReport` — one row
-  per dimension with its status and reason — and the summary row gains
-  `fidelity_ok`/`fidelity_summary`, so the run's promise sits in the hand-off pack
-  next to its results instead of nowhere. The `versions` reason now states what the
-  service actually does with history: every version is stamped with the file's
-  `TimeLastModified`, because per-version dates in the manifest are ignored
-  (measured on a live ingestion job).
-
-**Migration (bundles)**
-
-- `SharePointPackageTarget` accepts a captured list structure (`sp_list=` +
-  `structure=`) and replays it over REST **before** the ingestion job. The manifest
-  carries a file's list item, not the library's columns, content types, views or
-  container settings, so a package target built by hand (`migrate_library_serverside.py`,
-  a bundle produced on another machine) used to ingest into a bare library: field
-  values whose columns did not exist were silently dropped. `configure()` — the hook
-  the runner calls before the first write — now applies the snapshot through
-  `provision_list_structure`, `commit()` repeats the guard for a hand-built job, and
-  `on_conflict="skip"` makes both a no-op on a re-run; whatever the target cannot
-  reproduce is reported on `target.warnings` instead of being assumed. Live-verified:
-  a bare library gained the captured `ProjCode` column with no warnings, and a second
-  call wrote nothing. A task resolved by `resolve_task` already replays the structure
-  itself and does not pass one.
-- A library export can be **re-imported into a library that has none of its shape**.
-  `save_list_structure` / `load_list_structure` read and write the bundle's sidecar
-  (plain `ListStructure.to_dict()` JSON, the same file `capture_structure.py`
-  writes), and `SharePointLibraryTarget` / `SharePointListTarget` accept it as
-  `structure=`. Before, the content half of a bundle imported fine and the shape half
-  was simply absent: a file uploaded into a bare library carries no column values and
-  a record naming a missing column loses it. The snapshot is replayed by
-  `configure()` — the runner's pre-write hook — so a directly-built target provisions
-  too, a re-run is a no-op, and a `content_type_map` passed to the record target is
-  filled in place so records land under the recreated content types. Keep the sidecar
-  *beside* the content directory, not inside it: a files source migrates every file
-  it finds. Live-verified end to end through `migrate_library.py` (which now writes
-  the sidecar on export and auto-detects it on import): a bare target library had no
-  `CostCenter` column, gained it on import, and verified
-  `OK | source: 1, target: 1, checked: 1, missing: 0, extra: 0, issues: 0`.
-
-**Migration (group ACLs)**
-
-- The server-side package target grants **SharePoint groups** as well as users: a
-  role assignment whose member is a `PrincipalType.SharePointGroup` is captured
-  with its **title** (`PermissionEntry.principal_type="group"`, `display_name` =
-  the title, since the normalized `default:Members` name matches nothing on the
-  target) and emitted as a `UserGroup.xml` `<Group>` plus a `PrincipalId` grant.
-  Previously the docs claimed groups were skipped — live-verified they are not
-  skipped, they were simply never attempted. A `<Group>` **must** name an `Owner`:
-  an ownerless one fails the *entire* ingestion job at schema validation
-  (`The required attribute 'Owner' is missing`), not just that grant, so
-  `PermissionEntry` gained `owner` (a user with a PUID) and `owner_groups` (the
-  owner chain, nearest first — a group's owner may be another group, as a site's
-  `Visitors` group is owned by its `Owners` group, which owns itself). A group with
-  no readable owner is written self-owned rather than dropped or allowed to fail
-  the job. Distribution lists, security groups and unresolved principals are still
-  skipped with a warning: they are not site groups and do not match by title.
-
-**Long-running operations**
-
-- An operation is now **watchable, not just waitable**: `OperationPoller.stream()`
-  / `astream()` (and the same pair on `LongRunningOperationResult`) yield every
-  `OperationStatus` snapshot, the terminal one last, and raise nothing for a
-  failed or cancelled outcome — `wait()` is the same loop with the failure policy
-  applied. Abandoning the loop stops polling.
-- `OperationStatus` carries the operation's **timeline**: `created_date_time` and
-  `last_action_date_time` (timezone-aware, UTC when the service sends no offset,
-  so `now - last_action_date_time` is a stall check rather than a wall-clock mix)
-  and `retry_after` (what the poll response asked for). A `partiallySucceeded`
-  operation is **terminal but neither outcome** — SharePoint copy and migration
-  jobs report item-level failures that way, and it used to be an unknown status,
-  i.e. polled until `OperationTimeoutError`; `wait()` now returns it and
-  `status.is_partially_succeeded` reports it.
-- `RespondAsyncRequest.execute()` / `execute_async()` return an operation **either
-  way**: a pollable one when the service accepted `202`, and one that is already
-  terminal (no monitor URL, `wait()` answers without a request) when the service
-  completed the call in the submitting round-trip. `Prefer: respond-async` is a
-  preference, so a caller opting in had to branch on which answer it got — and
-  `None` also meant "no operation", which is indistinguishable from "it is
-  already done". `LongRunningOperationResult.completed(...)` is the new
-  constructor for the settled case, `is_completed` says which one you hold, and a
-  repeat `wait()` on a terminal operation no longer re-polls.
-- One **engine** behind every wait: `office365.runtime.operation.Operation` owns the
-  deadline, `Retry-After` pacing, jitter (`jitter=`), the progress hook, cooperative
-  cancel (which wakes a blocked `wait()` in another thread, or on the loop) and the
-  rule that a stream raises nothing; a family supplies what one poll *is*
-  (`_step` / `_step_async`) and what `wait()` hands back (`_outcome`).
-  `OperationPoller` (monitor URL) and `PollableOperation` (operation entity) are
-  specialisations of it, and `transient_statuses=` is data: which HTTP codes mean
-  "poll again" is a constructor argument, not a branch.
-- `PollableOperation` gains `stream()` / `astream()` and `cancel()` /
-  `cancel_async()`, which it had neither of. Its `404` gap is now an *attempt, not
-  an observation*: the wait retries it at `next_poll_delay()` and does not tell the
-  progress hook that the entity did anything.
-- `MigrationServerJob.job_wait()` (and `SharePointPackageTarget.job_wait()`) returns
-  the wait on an ingestion job instead of running it — a `MigrationJobWait`, so a
-  caller can stream the polls (`percentage_complete` per snapshot), cancel the wait,
-  or monitor several jobs concurrently in one event loop. A sync `status_fn` given
-  to an async wait is bridged with `asyncio.to_thread` (the read is a blocking GET).
-- `TeamsAsyncOperation.poll_for_status()` accepts any status as the thing it waits
-  for (`status_type`, default `succeeded`) and now ends on a status that says the
-  named one will never arrive (`failed`) as well as on the deadline — so it fires
-  exactly one callback instead of continuing to poll a job that already failed.
-  Both pollers are the shared wait, so `poll_for_status` also gained a real
-  `cancel()` and the stream.
-
-**Service limits (Graph throttling)**
-
-- Microsoft Graph's **throttling quotas are now data**: one `quotas` module per
-  product — `office365.outlook.quotas`, `office365.teams.quotas`,
-  `office365.onedrive.quotas` (files and lists), `office365.onedrive.workbooks.quotas`
-  (Excel), `office365.reports.quotas`, `office365.security.quotas`,
-  `office365.directory.quotas` and `office365.communications.quotas` — plus the one
-  row no product owns, `GLOBAL_QUOTAS` in `office365.runtime.limits` (**130,000
-  requests / 10 s per app across all tenants**). Each is a tuple of `Limit` rows that
-  registers itself at import (`register_catalog(..., product=...)`), so
-  `office365.limits.catalog(product="outlook")` answers from a fresh interpreter and
-  `catalog_products()` lists the keys. The rows are **reference only**: the library
-  reacts to the server signals it already parses (`Retry-After`, `x-ms-throttle-*`,
-  `RateLimit-*`, `X-SharePointHealthScore`) and deliberately does not simulate a
-  token bucket — a quota is a published fact to design a workload around, not a
-  client-side gate. Concurrency appears where the service states it
-  (`window_seconds=0`): Outlook's *4 concurrent requests per mailbox* and *4
-  sub-requests per JSON batch*.
-- A model **references** a quota row instead of re-spelling it: `CallRecord` and
-  `Workbook` carried their own inline `@limit(Limit(...))` declarations, which is the
-  same fact written twice and — for the four `CallRecord` rows — a fact that lived in
-  no catalog at all (`catalog()` grew by six unnamed rows merely because a model
-  module got imported). They now reference `CALL_RECORD_QUOTAS` and `EXCEL_QUOTAS`,
-  and importing `office365.graph_client`, `onedrive.workbooks.workbook` or
-  `sharepoint.client_context` leaves the registry byte-identical: a row lives in a
-  catalog, a model points at it.
-- A quota is bound **where the request is made**, not on the type whose name it
-  mentions. The call-record page states three budget rows for the *resources*
-  `callRecord`, `participant` and `session`, then a **40 / 20 s ceiling per call
-  record**, a separate **40 / 20 s ceiling for listing call records**, and a PSTN
-  table limited **per collection**. `CallRecord` now carries the three budgets, the
-  per-record ceiling moved onto the navigations that read a record's children
-  (`CallRecord.sessions`, `CallRecord.participants_v2`), listing got its own row on
-  `CallRecordCollection`, and `PSTN_RECORD_QUOTAS` (**1,000 / 60 s per tenant**,
-  **200 / 60 s per app per tenant**, **50 / 60 s per collection**) are declared on
-  `get_direct_routing_calls`, the only operation that reads those log rows. Two row
-  groups that had never been catalogued at all — *list call records* and the PSTN
-  table — are published now, and the Service limits page shows the binding
-  (`CallRecord.sessions`, `CallRecordCollection.get_direct_routing_calls`) instead of
-  a bare class name.
-- `@limit` **composes**: a second decorator on the same target adds its rows instead of
-  silently replacing the first (the marker was overwritten while the docstring
-  documented both, so `declared_limits()` and `help()` disagreed — the natural
-  spelling of "these budgets also apply here" would have lost a fact). Stacked
-  declarations also share a single `Limits:` docstring section now. `declared_limits()`
-  answers each row once even when two navigations share it, and
-  `collect_class_limits()` reads the `@limit` markers off the MRO instead of reading
-  back the `_schema` snapshot it had just filled — which counted every class-level row
-  twice.
-- Importing `office365.limits` **imports every catalog** (ten modules, ~3 ms), so
-  discovery does not depend on which product the caller happened to touch first; the
-  four SharePoint rows that had no `doc` now cite the limits page they come from, and
-  `Limit.request_type` documents the `delete` value the Teams table needs.
-- The **Service limits** page (`docs/scripts/gen_limits.py`) is regenerated from both
-  registries — the SharePoint boundaries table plus one Graph quota table with the
-  window, scope, request class and the model that declares each row — so the
-  published numbers cannot drift from the declarations.
-
-**SharePoint permissions**
-
-- **`BasePermissions` answers its own 64-bit mask, both ways.** SharePoint spells one
-  permission set two ways: CSOM splits it into `High`/`Low`, while a `PermMask` field —
-  a role assignment, a legacy form, a migration manifest's `AnonymousPermMask` — spells
-  it as one decimal. `BasePermissions.value` returns `(High << 32) | Low` and
-  `BasePermissions.from_value(mask)` builds from the one-number form, so no caller
-  derives the shift for itself. The SharePoint migrator derived it twice and its inverse
-  once, both times with the constant `32` written out (`_perm_mask` in `adapters.py`, the
-  inverse in `security.py`); all three now name the library property. `to_json()` and
-  every `High`/`Low` the service sees are unchanged — a differential over 511 masks
-  (empty, single-permission, both boundaries, full control, random 8/32/40/64-bit) gives
-  zero payload drift and zero round-trip drift.
-
-**SharePoint files**
-
-- **`FileVersion` sorts its own history.** A version label is `major.minor` (`"1.9"`,
-  `"1.10"`, `"2.0"`), so the labels have to be compared as numbers: as text, `"1.10"`
-  sorts before `"1.9"`, which puts a file's newest version in the middle of its history.
-  `FileVersion.sort_key` answers `(1, 10)` for `"1.10"` and `(0,)` for a label with a
-  part that is not a number — the label's shape is a service fact, not a caller's. The
-  SharePoint migrator's own string parser (`_version_sort_key`, untested) is gone.
-
-**SharePoint pages**
-
-- **The fields a page item carries are spelled once, by the library**
-  (`office365.sharepoint.publishing.pages.fields`): `PAGE_FIELDS` — the projection a
-  page copy reads — and `BODY_FIELDS` (`CanvasContent1`, `WikiField`). Every name is
-  derived from the type (`SitePage.odata_name("canvas_content")`), so a projection cannot
-  drift from the model it reads, and the modern/classic rule lives on the type rather
-  than in the migrator. The page's content type base is
-  `office365.sharepoint.contenttypes.builtin_content_type_id.SPBuiltInContentTypeId.SitePage`
-  ("Site Page", `0x0101…4118`, read back from a site's content type catalog — the
-  metadata this client is generated from carries no content type IDs), and a page
-  type *derives* from it, which is why the rule is a prefix match.
-  `office365.migration.sharepoint.pages` now names no field at all;
-  `is_page_library(list)` is public because an example had re-spelled the template
-  test inline. **Breaking:** `PAGE_LIBRARY_TEMPLATE`, `SITE_PAGE_CONTENT_TYPE_PREFIX`
-  and `is_modern_page` leave that module (the first is
-  `ListTemplateType.WebPageLibrary.value`, the other two are the library's).
-- **`SitePage` declares the three columns a page item answers and the entity does
-  not:** `file_leaf_ref` (`FileLeafRef`), `wiki` (`WikiField`) and
-  `moderation_status` (`OData__ModerationStatus`). A page is read through its
-  library's list-item projection — the `sitepages/pages` entity refuses any page whose
-  content type is not a modern site page ("This page does not have the site page
-  content type") — so its type has to spell what an item returns: `FileLeafRef`,
-  because this type spells the same fact `FileName` on the entity path, and the other
-  two because the entity accepts those names and answers nothing for them. Declaring
-  them is what makes a page hydrated from an item readable as a model
-  (`page.wiki`, `page.moderation_status`) instead of as a property bag, and what lets
-  the projection cite the type for all eleven of its names. `to_json()` of a hydrated
-  page is unchanged (properties are held whether or not they are declared); the only
-  schema difference is that `select_all()` names the three item columns as well.
-- **`SitePage` declares `canvas_content` and `layout_web_parts_content`, the two
-  properties that can be written.** The class declared each of those wire names twice:
-  `canvas_content`/`layout_web_parts_content` (with setters) and
-  `canvas_content1`/`layout_webparts_content` (read-only twins). The schema maps a wire
-  name to *one* attribute, so the later marker silently won and the round-trippable
-  property was the undeclared one — `select_all()` could not name it, and
-  `odata_name("canvas_content")` raised. The twins are deleted. A differential over the
-  type shows the only change is those two attribute names: `select_all()`,
-  `expand_all()`, the declared names and a hydrated `to_json()` are byte-identical.
-- **A page item is a `SitePage`, and its copy writes through that type.**
-  `migration.sharepoint.pages` carried a second model of the same rows —
-  `PagePayload` with its `to_dict()`, the `_CONTENT_FIELDS` tuple and the
-  `_MAX_PAGES_IN_NOTE` copy of the `+N more` rule — and it is deleted, along with
-  `_payload` and `_classify`. What a page *is* now lives on the type: `is_modern` (a
-  canvas, or a content type derived from "Site Page"), `is_classic` (a `WikiField` body
-  and not modern), `body` and `body_field` — the name the body is carried under, which
-  replaces the `(0, canvas)`/`(1, wiki)` position tuple the read-back verifier compared
-  by, so `_body()` is gone too. The write is `apply_page_payload(item, page)`, which walks
-  six attribute names and asks `SitePage.odata_name(attr)` for each spelling
-  (`_BLANK_IS_NOTHING`: an empty canvas means nothing to carry, not a blanked canvas), and
-  the publish decision is the library's predicate — `moderation_status in (None, 0, "0")`,
-  so a wiki page copied into a library without approval is published as it was.
-  `PageCopyReport.classic` is deleted: it was written and never read, and it meant the
-  opposite of `PageInfo.kind == "classic"` in the same module (a page that is *not*
-  copied, versus one that is). A live differential over the tenant's eleven pages — the
-  MERGE body each copy would `set_property`, the publish decision, the modern/classic
-  classification and the body — is identical to the model it replaces. **Breaking:**
-  `PagePayload` leaves `office365.migration.sharepoint`, and `offline_context()` moves up
-  to `office365.migration.offline` (`migration.outlook` is not the only package that
-  hydrates a model with no service behind it).
-
-### Changed
-
-**A model declares the names its type carries**
-
-- **Breaking:** `SP.User` (`office365.sharepoint.principal.users.user`) loses the 58
-  profile getters that were a second copy of `SP.Directory.User`: `about_me`, `skills`,
-  `schools`, `hire_date`, the `share_point_*_first_run` flags, and `id_`, which read `"id"`
-  where the payload says `"Id"` and so answered `None` always. `SP.User` carries thirteen
-  properties and two links and answers nothing else -- the service drops any other name
-  from `$select` silently -- and the profile fields live on
-  `office365.sharepoint.directory.users.user.User` (`SP.Directory.User`, all 63 declared)
-  or behind `PeopleManager.get_user_profile_properties`. `User.get_user_profile_properties`
-  goes as well: it returned a `UserProfilePropertiesForUser` entity that no query was ever
-  added to, and addressing that CSOM type on SharePoint Online answers
-  `InvalidClientQueryException`. The file goes from 451 to 148 lines. `Web.site_id` goes
-  too: it read `"SiteId"`, which `SP.Web` does not declare and
-  the service does not send on either a plain read or a projection (118 of 119 columns
-  answered live) -- a site collection's guid is `site.id`.
-- `PeopleManager.get_user_profile_properties` answers properties by name, not by the
-  ordinal the endpoint keys them with: `{"AboutMe": "", "Skills": None, ...}` (115 entries
-  live) instead of `{"0": {"Key": "0|AboutMe", "Value": "", "ValueType": "Edm.String"}}`.
-  The prefix is stripped once, in `parse_key_value`, so the plainly keyed
-  `PersonProperties.UserProfileProperties` and this reader agree and `ValueType` still
-  types each value. The two example snippets that printed `props.skills` and
-  `props.department` -- neither of which `PersonProperties` has -- now print what exists.
-- `scripts/mark_odata.py` loses its per-service type-prefix column, and `type_index` no
-  longer takes one: pass 2 replaced the prefix test with catalog membership, so the column
-  was dead. Both services now plan zero declarations (`0 lines in 0 modules`), and that is
-  pinned as a test: a getter added tomorrow that spells an OData name without declaring it
-  turns `tests/unit/test_odata_metadata.py` red.
-- **A list item's own columns are declared on the item.** `SP.ListItem` declares six more
-  names it always answered by reading the bag: `AuthorId`, `EditorId`, `Created`,
-  `Modified`, `FileRef` and `FileLeafRef`. All six are `system=True`, because that is the
-  fact the metadata was silent about — the item row spells them and `sp.listitem` does not
-  (of the wanted set the CSDL declares only `Id`). `_schema.system` therefore reads
-  `AuthorId, Created, EditorId, FileLeafRef, FileRef, Modified`, `select_all()` grows by
-  six, and a `create()`/`update()` body does not move: `system` is a declaration fact,
-  `persist` still defaults to `False`. `file_system_object_type` answers the enum its
-  annotation has always promised — the wire sends `0`/`1`/`2`, so the getter parses instead
-  of handing the number out (`Invalid` when the column is unprojected or unreadable).
-  `is_file` and `is_folder` are the two predicates that follow, and they read that column,
-  not the presence of an expanded `File` part: "the `File` navigation happens to be loaded"
-  and "this row is a file" were being spelled as one test, so a folder row (whose `File`
-  hydrates as `None`) read as neither, and a real file whose `File` was not expanded read as
-  not-a-file.
-
-**SharePoint navigation**
-
-- **A navigation node answers the two flags SharePoint actually sends.** `is_visible` and
-  `is_external` read `properties.get("isVisible")`/`("isExternal")` while the service spells
-  both with a capital `I`, and no `@odata` declaration named either — so on every site every
-  node answered `None`. That made an external link indistinguishable from an internal one,
-  and a hidden node indistinguishable from a shown one: the migrator's "copied visible"
-  warning could never fire. Probed live on a real web: **21 of 24** quick-launch nodes report
-  `IsExternal: true` (`News`, `Recent`, and the `/_layouts/15/Doc.aspx?...` links included),
-  and none of them was visible to the model. The two getters now read the OData spelling and
-  declare it, and the rest of the node is declared with them: nine projectable columns —
-  `Id`, `Title`, `Url`, `IsVisible`, `IsExternal`, `AudienceIds`, `CurrentLCID`, `IsDocLib`,
-  `ListTemplateType`, each proved projectable live ($select returns exactly those keys) — and
-  two navigations, `Children` (reached with `$expand`) and `TitleResource` (declared as a
-  column, silently dropped by `$select`, populated by `$expand`). So
-  `NavigationNode.select_all()` went from `['TitleResource']`, the one name it declared and a
-  projection cannot use, to the nine a read answers; `expandable()` is
-  `['Children', 'TitleResource']`. Six names are `readonly=True` because the service assigns
-  them (`Id`, `IsVisible`, `IsExternal`, `CurrentLCID`, `IsDocLib`, `ListTemplateType`), so
-  `to_json(profile)` keeps them out of a request while `to_json()` reports them. `Navigation`
-  follows the same rule: `UseShared` is its column and both bars are navigations, so
-  `select_all()` is `['UseShared']` instead of naming two properties `$expand` returns and
-  `$select` drops.
-
-  The migrator reads both flags through these getters, so a hidden source node raises the
-  warning the code always had. What it cannot do is copy a hidden node hidden: measured live,
-  a node created with `IsVisible: false` reads back `true`, and a merge of
-  `{"IsVisible": false}` at the node's own `QuickLaunch(<id>)` reads back `true` as well.
-
-  `add()` sends two fields, which is the whole create contract.
-  `NavigationNodeCreationInformation` describes five and looks like something that should be
-  posted as a whole; it is not. Probed live on the same web: `AsLastNode` and `PreviousNode`
-  are rejected outright — *"The property 'AsLastNode' does not exist on type
-  'SP.NavigationNode'"* — and `IsExternal` is the service's own computation, since an
-  off-site URL comes back `IsExternal: true` whether or not the body says so. So the fields
-  stay (CSOM has them), `add()` says which two leave the process, and
-  `tests/unit/test_navigation_node_create.py` pins the body it sends: posting the
-  information object instead fails that test rather than the tenant.
-
-- **Breaking:** a captured navigation is the model's own tree. `NavNode` and `WebNavigation`
-  were a third spelling of `{UseShared, QuickLaunch, TopNavigationBar}` and of a node
-  `{Title, Url, IsVisible, IsExternal, Children}` — and a copy is exactly how the two flags
-  stayed one step away from the wire, since the copy's names were the copy's own. The tree is
-  also the model in both directions, offline: `Navigation.to_json()` writes
-  `{'UseShared': False, 'QuickLaunch': [{'Title', 'Url', 'Children': [...]}]}` and
-  `Navigation(ctx).hydrate(payload)` reads it back as a typed `NavigationNodeCollection` →
-  `NavigationNode` → `NavigationNodeCollection`. So the walk moved into the library, where a
-  caller can ask for it: `Web.navigation.get_tree(recursive=True, progress=...)` expands both
-  bars — the response carries them as the model's own collections, since a plain read returns
-  only their URIs and each property builds a fresh collection per access — then walks each one
-  with `NavigationNodeCollection.get_all_nodes`, so one `execute_query()` returns the whole
-  tree. `get_all_nodes()` now walks a collection an `$expand` already filled as it stands
-  instead of reading that level a second time. `capture_navigation(web)` is therefore that one
-  call; `_sync_nodes` and `_verify_bar` take `NavigationNode`s, and a create is handed the two
-  fields it sends (`Title`, `Url`) instead of the `IsExternal`/`AsLastNode` `add()` never
-  posts. `office365.migration.sharepoint` lost two names (`__all__` 88 → 86), and the migrator
-  no longer builds an OData name by hand.
-
-  One row changes, deliberately: a differential probe over the same fixtures prints identical
-  created trees, warnings, flush counts and verification notes for all six paths — capture,
-  apply, verify, verify-after-apply, inherit, verify-inherit — and a different *captured* tree
-  for a dynamic node, which now carries the children the service computes for it
-  (`Recent` → `Depts`), because the walk reads every node's `Children`. Nothing derived is
-  copied: `_sync_nodes` still skips a URL-less node with a warning and `_verify_bar` does not
-  compare one, so the copy and the verify are what they were. A live read of the 24 + 2-node
-  site answers both bars and the nested children in one `execute_query()` (6.6 s, 10 keys per
-  node, JSON-serializable, `Home` → 1 child, `Recent` → 5). The three fakes that stood in for
-  the model (`_Node`, `_Nodes`, `_Navigation`) are gone, so the tests build real nodes over a
-  context that sends nothing — which is how the inherit path, counted by the old fake and
-  observed by no test, got one; the walk itself is pinned offline in
-  `tests/unit/test_navigation_tree.py`, which asserts the four requests one `get_tree()` makes
-  and the tree they leave.
-
-**SharePoint permissions**
-
-- **A securable declares the ACL flag it has always read, and the two navigations it had
-  spelled as columns.** `SecurableObject.has_unique_role_assignments` read
-  `HasUniqueRoleAssignments` out of `properties` while no `@odata` declaration named it, so
-  `odata_name("has_unique_role_assignments")` raised, `select_all()` omitted the only column
-  the type really has, and nothing stopped a stored flag from travelling back in a request.
-  It is now declared `readonly=True`, which is what that rule needs: a response still reports
-  it (`to_json()`), a request never carries it (`to_json(profile)` filters
-  `_schema.readonly`). Its two siblings are navigations, verified live — `$expand` returns
-  them (51 assignments on a list item) while `$select` silently drops them — so
-  `FirstUniqueAncestorSecurableObject` and `RoleAssignments` are declared `navigation=True`
-  and leave `select_all()`. `ListItem.select_all()` therefore went from two names that read
-  nothing to `['HasUniqueRoleAssignments']`, which a live read of a projected item now
-  answers (`False`); `List` went 22 → 21 names and `Web` 40 → 39, with `expandable()`
-  gaining both. The migrator's own `"HasUniqueRoleAssignments"` literals stay where they are:
-  they sit beside `AuthorId`/`EditorId`, which are per-list columns no `@odata` can declare,
-  so deriving one name from the schema would put two sources in one tuple. Unchanged and now
-  precisely identified: `Web.select_all()` is still rejected as a whole by the server, and a
-  bisect of its names leaves one offender — `DescriptionTranslations`, whose `$select` is
-  `NotSupportedException` — which asks for a "declared but not projectable" fact that no
-  `@odata` flag expresses yet.
-
-**Runtime**
-
-- **A collection of scalars prints as the list it is.** `str()` on a
-  `ClientValueCollection`/`StringCollection`/`GuidCollection` used to wrap the
-  values in the internal type name —
-  `ClientValueCollection[str]([freeBusyRead, limitedRead, read])` — so an example
-  that printed `allowed roles: {p.allowed_roles}` showed the generic spelling of
-  a type it was not even holding (`allowed_roles` is a `StringCollection`), at a
-  width that pushed the values off the line. It now renders `[freeBusyRead,
-  limitedRead, read]`, which is what the same collection already rendered as when
-  it appeared *inside* another value, so the nested and top-level renderings
-  finally agree. The type name moved to where it is unambiguous: `repr()` is
-  quoted and type-qualified (`StringCollection(['freeBusyRead', 'read'])`), a
-  record collection keeps its aligned table, and report/HTML headers keep the
-  label. Collection subclasses also keep their own `__repr__` now: the
-  dataclass-seeding in `ClientValue.__init_subclass__` copied `_render` over every
-  subclass, so `repr(StringCollection([...]))` was
-  `StringCollection(_data=[...], _item_type=<class 'str'>)` — private fields, no
-  bounding, and none of the collection's own rendering.
-
-- The `iso_z`/`wall_clock_text` pair in `office365.runtime.converters.scalars` owns the two
-  date spellings a SharePoint item write takes, so the fact lives where the request is made.
-  `iso_z(value)` now also accepts a *string* — the form `ValidateUpdateListItem` receives —
-  and passes a literal it cannot read through unchanged, so the server rejection names the
-  value instead of the caller having dropped it; a naive datetime is still assumed UTC, a
-  numeric offset is still converted, and fractional seconds are still truncated. Its sibling
-  `wall_clock_text(value)` answers the local `YYYY-MM-DD HH:MM:SS` spelling a *document* item
-  accepts (it ignores `datesInUTC` and parses in the web's locale, rejecting a trailing `Z`),
-  with an already-local value passed through as the service spelled it. The SharePoint
-  migrator's own `_sp_utc_timestamp`/`_sp_local_timestamp` were a duplicate of the first and
-  a copy of the second; they are gone (`adapters.py` −35 lines), proved by differential
-  equality over 21 values — `None`, `""`, naive, aware, offset, fractional, date-only and
-  three unreadable literals — with zero drift.
-
-- **A GUID has one spelling, read by the parser that already knew it.** `normalize_guid`
-  lived in the SharePoint migrator with a hand-rolled pattern that accepted only the bare and
-  the fully-braced form — and, on an unmatched brace, *returned the brace it had failed to
-  strip*, so the same list id arrived under two keys. It now lives in
-  `office365.runtime.converters.scalars` and asks `uuid.UUID`, which reads the braced,
-  `urn:uuid:` and 32-hex spellings and answers the canonical lower-case `8-4-4-4-12` form.
-  Four spellings therefore change what a comparison *keys on* — a stray brace on either side,
-  32-hex, `urn:uuid:` — and none changes what is *sent*: the function is a comparison key,
-  never a request payload. Its 16-line home in `structure.py` (and `_GUID_RE`) is gone, and
-  the migrator's three modules import the one parser. Proved by differential comparison
-  against the retired implementation over 24 spellings (four documented drifts; `None`, `""`,
-  `"not a guid"`, the all-zero GUID and both of its brace variants identical), and red-first
-  on both halves: the retired body fails with `'{a1b2…' != 'a1b2…'`, and a brace-fixing
-  variant of it still fails on the 32-hex form with `None != 'a1b2…'`.
-
-**Transports**
-
-- The bundled transports now bound the read phase as well as the connect phase:
-  the default timeout is `(10 s connect, 300 s read)` for `RequestsTransport`
-  and `10 s connect / 300 s read / 300 s write / 10 s pool` for
-  `HttpxTransport` (`DEFAULT_READ_TIMEOUT`, `DEFAULT_WRITE_TIMEOUT`,
-  `DEFAULT_POOL_TIMEOUT`). A server that stops responding mid-response now
-  fails with a transient transport error (`ConnectionError`/`Timeout`, so
-  `with_auto_retry` retries it) instead of blocking the caller forever —
-  previously only the connect phase was bounded. The read bound
-  is a per-byte gap, not a total-transfer bound, so a long upload or download
-  that keeps moving is unaffected. Override it per transport (`timeout=(10, 600)`)
-  or per request, and pass `NO_TIMEOUT` to remove it.
+- `MessageCollection.add_from_mime(data)` creates a draft from RFC 822 bytes —
+  an `.eml` file as it sits on disk — posting them base64-encoded as
+  `text/plain`, the one Graph create whose body *is* the message.
 
 **Migration**
 
-- `MigrationJob.plan()` now fails fast on a requested fidelity flag the adapter pair
-  cannot honor — before the enumeration, with the runner's own message — instead of
-  planning the whole source and raising at the first write. A caller that plans with
-  `preserve_versions`/`preserve_timestamps`/… on an unsuitable pair now sees
-  `NotImplementedError` one phase earlier.
-- **`MigrationItem` no longer carries `author_id`/`editor_id`** (breaking). Those were
-the site-local numeric ids the *source* used (`AuthorId`/`EditorId`), kept on the
-item only because nothing else could hold them; they now live where the rest of the
-identity does, as `Principal.user_id` on `item.author`/`item.editor` — set by the
-adapters from the same id they already resolved, so the change costs no requests.
-A `Principal` is the identity that travels (`system_id` is what `UserGroup.xml`
-writes) and `user_id` is scoped to its site, which is exactly why it does not
-deserve an item field. The `ItemReport` keeps its `author_id`/`editor_id` columns,
-now read from the principal, so report consumers are unaffected; the one visible
-difference is that an item whose author could not be resolved reports an empty
-column instead of an id that no principal carries. Constructing a `MigrationItem`
-with `author_id=`/`editor_id=` now raises `TypeError` — pass
-`author=Principal(..., user_id=…)` instead.
-
-**Migration (calendar)**
-
-- **The calendar's spelling, its document and its record are three modules.**
-  `calendar_profile` holds the ten tables that decide which iCalendar token a Graph
-  word becomes (`showAs` → `TRANSP`/`STATUS`, `sensitivity` → `CLASS`, `importance` →
-  `PRIORITY`, attendee type → `ROLE`, response → `PARTSTAT`, weekday/index/frequency →
-  `BYDAY`/`BYMONTH`, body content type → `X-ALT-DESC`/`DESCRIPTION`), plus the two
-  partial ones whose absence *is* the token — a busy event carries no `TRANSP`, an
-  accepted attendee no `STATUS` — and `COMPARED`, the ordered table that decides what a
-  verification digest sees and which options gate each field. `calendar_codec` writes the
-  document: escaping, folding at 75 octets, the `DTSTART`/`DTEND` pair, `RRULE`,
-  `VALARM`, `X-ALT-DESC`. `calendar_models` derives the four import artefacts. A Graph
-  enum that gains a member is now a row in a table, and a test fails if a row names a
-  member the generated enum does not declare or if a table meant to be complete misses
-  one — the two failures that used to be silent (a token for a word nothing sends, a
-  value that renders as nothing). The exported bytes are unchanged: a golden test pins
-  the document byte for byte.
-- **A mail sidecar is the message as the model serializes it**: `Message.to_json()` plus
-  the three keys no model can know (`folder_path`, `folder_display_path`, `eml_path`) —
-  the shape the calendar and contacts sidecars already took. Graph's own keys
-  (`internetMessageId`, `isRead`, `receivedDateTime`, `from`, `toRecipients`) replace the
-  snake_case copy this exporter kept (`internet_message_id`, `is_read`, `sender`,
-  `received`, and the rendered `Name <address>` strings), so a column the model declares
-  is exported and replayed with nothing in this package edited, and the import reads the
-  same names back. A tree exported by a pre-release build is refused with a message
-  naming the offending keys (`refuse_legacy_sidecar`, one rule for every family) instead
-  of importing every message with no read state and no identity. The record is
-  `MessageRecord` and what a verification compares is `mime_digest` — what the message
-  *says*, since Exchange re-serializes the bytes on the way in.
-- **A calendar sidecar is the event as the model serializes it**: `Event.to_json()` plus
-  the three keys no model can know (`calendar_path`, `calendar_display_path`,
-  `ics_path`), the same shape the contacts sidecar took. So nothing lists a field: a
-  column the model declares is exported, replayed and verified with no function edited,
-  and the keys are Graph's own (`id`, `iCalUId`, `isAllDay`, `showAs`,
-  `attendees[].status.response`, `onlineMeeting.joinUrl`) rather than a snake_case copy —
-  which also means a tree exported by a pre-release build is refused with a message
-  saying so, instead of importing as a wall of empty fields. `CalendarEventRecord` is
-  gone: it existed to *re-spell* the model into `show_as`/`is_all_day`/`graph_id`, so
-  with the sidecar being the model's own JSON it was a third representation with nothing
-  left to do — and the free functions over `(envelope, options)` that replaced it
-  (`event_ics`, `event_create_payload`, `event_dest_path`, …) are now the methods of one
-  `EventRecord`: `of(event, calendar)` during an export, `from_json(sidecar)` to read it
-  back, then `.payload(options)`, `.canonical(options)`, `.digest(options)`,
-  `.dedup_key`, `.transaction_id`, `.dropped_attendees(options)`, `.ics()`. The digest is
-  unchanged (`4a8cc8de…`): the canonical form compares the same values, read from
-  Graph's keys.
-
-**Migration (contacts)**
-
-- **A contact's sidecar record is the contact as Graph spells it**: `Contact.to_json()`
-  plus the three keys a model cannot know (`folder_path`, `folder_display_path`,
-  `vcf_path`). The keys are therefore Graph's camelCase (`displayName`,
-  `emailAddresses`, the phone lists, `businessAddress` with
-  `postalCode`/`countryOrRegion`) and the id column is `id`, not a snake_case copy with
-  `graph_id` — so a sidecar written by a pre-release build is not readable by this one.
-  The functions that read that record — `contact_envelope`, `contact_vcard`,
-  `contact_create_payload`, `contact_dest_path`, `contact_dedup_key`, `contact_digest`,
-  `contact_key` — are now the methods of one `ContactRecord`: `of(contact, folder)`
-  during an export, `from_json(sidecar)` to read it back, then `to_json()`, `vcard()`,
-  `payload()`, `dest_path`, `dedup_key`, `digest()` and `id`. The record holds a payload
-  and where it came from, never an entity, which is what lets an import verify a sidecar
-  against a contact the service returned with no client and no context.
-
-**Migration (Outlook, all three families)**
-
-- **One record base, two adapter bases, and 129 fewer lines.** `SidecarRecord`
-  (`migration.outlook.records`) is the declared shape of an exported item: a family sets
-  class attributes — `model`, `content_suffix`, `provenance` (exactly three keys, asserted
-  at class definition), `legacy_keys`, `identity`, `label`, `file_stamp_from`,
-  `modified_from`, `created_from`, `verified`, `columns`, `options_class` — and inherits
-  `of()`, `from_json()`, `to_json()`, `dest_path`, `canonical()`, `digest()`, `checksum()`.
-  Nothing in a family module lists a field, and `from_json` hydrates only the model's own
-  declared properties (so a provenance key can never become one) on the library's
-  credential-less context. On the adapter side `ServiceSource` owns the handle seam
-  (`_remember`/`_handle`, one lazy re-enumeration) and `SidecarTreeSource` owns the file
-  seam (`_path`, `_sidecar`, `_record`), so `EmlTreeSource`, `IcsTreeSource` and
-  `VcfTreeSource` are three class attributes and a docstring; `SidecarTreeTarget` derives
-  `content_suffix` and `payload_key` from its `record`, so a family cannot add one and
-  forget the other. `sidecar_required` is the one legitimate family difference — `False`
-  for mail, since RFC 822 bytes are complete on their own.
-- `IcsProfile` is `IcsDialect`: with `MailProfile` dissolved into `MessageRecord`, the
-  only thing left called a profile is the serialization dialect `to_json(profile)` takes.
-- `ContactFolder.child_folders` returns a `ContactFolderCollection`, so creating a folder
-  during an import is `folder.child_folders.ensure(name)` as it already was for mail — the
-  adapter had been re-implementing the library's own `ensure`.
-- `STANDALONE_EVENT_TYPES` and `event_kind` are gone: the two spellings of one
-  `event.type_ in (EventType.singleInstance, EventType.seriesMaster)` test are one test.
-- `JsonProfile` lost four accessors with no caller (`metadata_type`, `collection`,
-  `collection_next`, `etag`); each re-exported a dialect field that `to_json` reads from
-  the dialect itself.
-- One byte-identity helper: `checksum(data)` in `migration.adapters` replaced four private
-  `_md5`/`_checksum` copies, and `digest()` in `runtime.odata.comparable` replaced three
-  hand-written hashers. Two digests, two jobs: `checksum()` is of the bytes,
-  `digest()` is of the meaning.
+- `IdentityMap` (`office365.migration`) maps source principals onto target
+  principals for authorship and ACLs, so a run can cross tenants: entries from a
+  CSV (`source,target[,system_id]`), e-mail domain rewrites, and a policy for
+  unmapped principals (`skip` / `fail` / `fallback_owner`). Unmapped principals
+  are reported, never silent. `MigrationSettings.user_mapping_file` feeds it and
+  `automatic_user_mapping=False` turns it off — both were previously listed as
+  unhonored.
+- Mail as a portable tree: `MailFolderSource` + `MailExportTarget` write one
+  `.eml` plus one JSON sidecar per message and a `manifest.jsonl` index, with
+  destinations derived from the message so a resumed run skips what is on disk;
+  `EmlTreeSource` + `MailboxTarget` import it back through `add_from_mime`,
+  recreating the folder chain, skipping messages by `internetMessageId`, and
+  replaying read state, categories and importance. Each family has its options
+  class — `MailExportOptions`, `MailImportOptions` and a matching pair per family
+  — and mail is verified by `mime_digest` — the semantic
+  headers plus a hash per decoded part — because Exchange re-serializes every
+  message it stores, so the bytes are never the same.
+- `MigrationItem.metadata` carries adapter-defined envelope attributes (a mail
+  message's subject, recipients and categories) into the manifest, so a portable
+  export writes its own index; the runner never interprets it.
+- Calendars: `CalendarSource` + `IcsExportTarget` write one `.ics` (CRLF, RFC 5545
+  folding, `TZID`, `RRULE`, `VALARM`, `X-ALT-DESC`) plus a sidecar per event;
+  `IcsTreeSource` + `CalendarTarget` import it, replaying Graph's own
+  `recurrence` object from the sidecar (an `.ics` alone is refused). Attendees are
+  opt-in, because creating an event with attendees makes Exchange send a real
+  invitation.
+- Contacts: `ContactSource` + `VcfExportTarget` write one `.vcf` (vCard 3.0, folded
+  at 75 octets) plus a sidecar per contact; `VcfTreeSource` + `ContactTarget`
+  import it, restoring every office field, address, phone, IM address, child, note
+  and category.
+- `MigrationJob.plan()` states the fidelity forecast before it enumerates
+  (`plan.fidelity`, `MigrationJob.fidelity()`, `export_reports`), and
+  `describe_fidelity` reports a product's own dimensions instead of always
+  printing SharePoint's fourteen: an adapter may declare
+  `fidelity_dimensions`.
+- `SharePointPackageTarget` and the library/list record targets accept a captured
+  structure (`sp_list=` / `structure=`) and replay it before the first write, so a
+  bundle can be imported into a library that has none of its shape. Verification
+  reads each verified record once per run, and a source/target that disagree about
+  files versus records are refused when the task is resolved instead of at the
+  first write.
+- The server-side package target grants SharePoint **groups** as well as users:
+  `PermissionEntry.principal_type="group"` plus `owner`/`owner_groups`, because a
+  `<Group>` without an `Owner` fails the whole ingestion job at schema validation.
+- `FileVersion.sort_key` compares version labels as numbers (`"1.9"` before
+  `"1.10"`), and `BasePermissions.value` / `from_value(mask)` own the 64-bit
+  permission mask in both directions — no caller derives the shift.
+- A page's fields are spelled by the library
+  (`office365.sharepoint.publishing.pages.fields`: `PAGE_FIELDS`, `BODY_FIELDS`,
+  every name derived from `SitePage`), and `SPBuiltInContentTypeId.SitePage` is
+  the content type base a modern page derives from. `SitePage` declares the three
+  item columns it answers (`file_leaf_ref`, `wiki`, `moderation_status`) and the
+  two writable content properties, with the page predicates (`is_modern`,
+  `is_classic`, `body`, `body_field`) and the write (`apply_page_payload`) on the
+  type.
 
 **Long-running operations**
 
-- `LongRunningOperationResult.monitor_url` is `str | None`: `None` means "there is
-  no monitor URL", which is now a real state (an operation that finished in the
-  submitting round-trip) rather than an empty string. An empty string read like a
-  URL to every `if result.monitor_url:` that forgot to test it.
-- `MigrationServerJob.monitor()` / `monitor_async()` measure their deadline on the
-  clock, so a slow `GetMigrationJobProgress` read counts against the budget: the
-  loop they replaced added `interval` per iteration and never read the clock, so an
-  endpoint taking longer than the whole timeout still polled indefinitely. The
-  timeout raises `OperationTimeoutError` (a `TimeoutError`, so `except TimeoutError`
-  is unchanged), and a job that ends `failed` is still *reported* as `"failed"`
-  rather than raised — a monitor says what happened; the caller decides.
-- `PollableOperation.wait()`'s `sleep` argument now defaults to `None` (the
-  interruptible pause) rather than `time.sleep`, so a `cancel()` can wake it.
-- `TeamsAsyncOperation.poll_for_status()` polls to completion itself (through the
-  shared wait) instead of queueing a chain of `after_execute` callbacks for the
-  caller's `execute_query()` to drive. The outcome is unchanged — the callback fires
-  once, a failure reports rather than raises, and `create_and_wait()` /
-  `clone_and_wait()` still work in one `execute_query()` — but the loop no longer
-  blocks a real `time.sleep` inside a query handler, and it counts its deadline on
-  the clock.
+- An operation is watchable, not just waitable: `stream()` / `astream()` on every
+  poller yield each snapshot, terminal one last, and raise nothing for a failed
+  outcome. `wait()` is the same loop with the failure policy applied.
+- `OperationStatus` carries the operation's timeline (`created_date_time`,
+  `last_action_date_time` timezone-aware with UTC fallback, `retry_after`), and a
+  `partiallySucceeded` operation is terminal-but-neither-outcome instead of an
+  unknown status that polled until timeout.
+- `RespondAsyncRequest.execute()` returns an operation either way: pollable when
+  the service answered `202`, already terminal when it finished in the submitting
+  round-trip (`LongRunningOperationResult.completed(...)`, `is_completed`).
+- One engine behind every wait (`office365.runtime.operation.Operation`): deadline,
+  `Retry-After` pacing, jitter, progress hook, cooperative cancel, and
+  `transient_statuses=` as data. `OperationPoller` and `PollableOperation` are
+  specialisations of it, so `PollableOperation` gains `stream()` and `cancel()`.
+- `MigrationServerJob.job_wait()` returns the wait instead of running it, so polls
+  can be streamed, cancelled or monitored concurrently; a sync `status_fn` given to
+  an async wait is bridged with `asyncio.to_thread`.
+
+**Service limits**
+
+- Graph's throttling quotas are data: one `quotas` module per product
+  (`outlook`, `teams`, `onedrive`, `onedrive.workbooks`, `reports`, `security`,
+  `directory`, `communications`) plus `GLOBAL_QUOTAS` (130,000 requests / 10 s per
+  app), each registering itself at import. `office365.limits.catalog(product=...)`
+  answers from a fresh interpreter, `catalog_products()` lists the keys, and
+  importing `office365.limits` imports all of them. A row states where its number
+  comes from, and a concurrency ceiling appears where the service states one. The
+  rows are reference only: the library reacts to the server signals it already
+  parses and does not simulate a token bucket.
+- A model **references** a row instead of re-spelling it (`CALL_RECORD_QUOTAS`,
+  `EXCEL_QUOTAS`), and a quota is declared where the request is made, not on the
+  type whose name it mentions — including on a method, where a declaration may sit
+  on the operation that makes the call (`CallRecord` carries the table, and
+  `sessions`/`participants_v2` its per-resource row; `PSTN_RECORD_QUOTAS` rides
+  the direct-routing call listing).
+- `@limit` **composes**: a second decorator on one target adds its rows instead of
+  replacing the first, and stacked declarations share one `Limits:` section.
+  `declared_limits()` answers each row once, reads `@limit` off the MRO, and
+  `limits_of(cls)` now answers class-level rows too, de-duplicated by
+  declaration.
+- 97 of the 122 published rows are now reachable from some `_schema`, up from a
+  handful. The 25 that are not are named rather than forgotten: Teams' 12 default
+  rows (a default names no resource), one security surface this library does not
+  spell, two SharePoint rows that describe an object it does not address, and the
+  10 OneDrive/files rows whose bindings are still to come. The Service limits page
+  is generated from both registries, so a published number cannot drift from its
+  declaration.
+
+### Changed
+
+- **A list item's own columns are declared on the item.** `ListItem` declares
+  `AuthorId`, `EditorId`, `Created`, `Modified`, `FileRef` and `FileLeafRef` as
+  `system=True`; `file_system_object_type` answers the enum instead of the wire's
+  number, and `is_file` / `is_folder` read that column rather than the presence of
+  an expanded `File` part.
+- **A navigation node answers the flags the service sends.** `is_visible` and
+  `is_external` read `IsVisible`/`IsExternal` (they read `isVisible`, so every node
+  on every site answered `None` and the migrator's "copied visible" warning could
+  never fire). The node declares nine projectable columns and two navigations,
+  six of them `readonly` because the service assigns them; `Navigation` declares
+  `UseShared` and both bars as navigations. `add()` sends the two fields that are
+  the whole create contract. Measured live: a node created or merged with
+  `IsVisible: false` reads back `true`, so a hidden node cannot be copied hidden.
+- **A securable declares the ACL flag it has always read.**
+  `has_unique_role_assignments` is `readonly=True`, so a response reports it and a
+  request never carries it; `FirstUniqueAncestorSecurableObject` and
+  `RoleAssignments` are navigations, so they leave `select_all()`.
+- **`Field` answers what a column holds**, so a reader need not parse its schema:
+  `is_taxonomy`, `is_lookup`, `is_person`, `is_multi_valued`, `is_multi_choice`,
+  `is_value_object`, over the two named facts `schema_property(schema_xml, name)`
+  and `is_taxonomy_column(type_as_string, schema_xml)`. The classification is keyed
+  by `TypeAsString`, not by the Python class — a `Type="Note"` replayed from a
+  schema is still a term column — and `AllowMultipleValues` stays declared on the
+  types the metadata gives it to (`FieldLookup`, and so `FieldUser`) while
+  `is_multi_valued` reads the row, because a column created from a
+  `Mult="TRUE"` schema keeps the single-value spelling.
+- The runtime now owns the spelling facts the migrator had duplicated: `iso_z` /
+  `wall_clock_text` own the two date spellings a SharePoint write takes,
+  `normalize_guid` asks `uuid.UUID` (so a braced, 32-hex or `urn:uuid:` id keys
+  the same and never travels as a request payload), and `checksum(data)` is the
+  one byte-identity helper beside `digest()` for meaning.
+- The calendar's spelling, document and record are three modules
+  (`calendar_profile`, `calendar_codec`, `calendar_models`), so a Graph enum that
+  gains a member is a table row and a test fails if a row names a member the enum
+  does not declare. One `SidecarRecord` base carries the on-disk contract for all
+  three families (`model`, `provenance` — exactly three keys, asserted at class
+  definition —, `legacy_keys`, `identity`, `columns`, `options_class`), with
+  `ServiceSource`/`SidecarTreeSource`/`SidecarTreeTarget` owning the two seams;
+  `sidecar_required` is the one legitimate family difference (`False` for mail,
+  since RFC 822 bytes are complete on their own).
+- The bundled transports bound the read and write phases as well as connect
+  (`(10 s connect, 300 s read)`; httpx adds write and pool). A server that stops
+  responding mid-response now fails as a transient transport error, which
+  `with_auto_retry` retries, instead of blocking the caller forever. The read bound
+  is a per-byte gap, so a transfer that keeps moving is unaffected.
+- `MigrationJob.plan()` fails fast on a fidelity flag the adapter pair cannot
+  honour, one phase before the first write.
+- `LongRunningOperationResult.monitor_url` is `str | None`, so "no monitor URL" is
+  a state rather than an empty string; the ingestion-job monitor counts its
+  deadline on the clock instead of adding `interval` per iteration;
+  `PollableOperation.wait(sleep=None)` can be woken by `cancel()`.
 
 ### Fixed
 
 **Runtime**
 
-- **The security and report budgets are declared on the types that make the calls.**
-  `office365.security.quotas` published 8 rows and bound none, and `office365.reports.quotas`
-  3 and bound none: `declared_limits(Security)` was empty and the Service limits page printed
-  `—` for both tables. The detections-and-incidents rows name three endpoints at once (`alert,
-  securityActions, secureScore`), so they are grouped as `DETECTIONS_BUDGETS` and declared on
-  `Security` — the type all three requests go through — rather than on a sub-surface that owns
-  only one of them, and `Security` answers `150 requests / 60s`, `10,000 requests / 600s` and
-  the 4-in-flight cap. The endpoints that do own their resource are declared on the member
-  that names them: `EDISCOVERY_BUDGET` on `CasesRoot`, both `AUDIT_LOG_QUERY_BUDGETS` on
-  `AuditCoreRoot.queries`, and the one row that belongs to a *query* rather than a request
-  (`1,000,000 records`) on `AuditLogQuery`, whose `isRecordCountLimitExceeded` is how a
-  caller learns it was reached. The three report rows are all counted per report API and
-  every report API hangs off `ReportRoot`, so `@limit(*REPORT_QUOTAS)` rides that one type.
-  10 of those 11 rows are now reachable. The eleventh, `tiIndicator`, names a surface this
-  library does not spell — there is no `/security/tiIndicators` accessor — so it stays
-  published and unbound, and a test asserts that it is the only such row in the product,
-  which is how "declared but never handed out" reads for a limit.
-- **A window of a day is stated in hours.** `str(Limit)` printed the window in raw seconds,
-  so the audit-log submission budget rendered `200 requests / 86,400s` — a twenty-four-hour
-  allocation that reads like a per-second rate to anyone skimming the table. A window that is
-  a whole number of hours now renders as hours (`200 requests / 24h`, and SharePoint's
-  `100 GB / 1h` where it used to say `100 GB / 3,600s`); every other window is unchanged
-  (`60s`, `300s`, `600s`).
-- **The Teams budgets are declared on the calls they cap.** `office365.teams.quotas` published
-  32 rows, 20 of them a 1:1 map onto the eight throttled teams operations the public table
-  names — and not one was reachable from a `_schema`. The table was written for binding and
-  never bound: `declared_limits(Team)` was empty, and the Service limits page printed `—` for
-  the whole Teams table. The catalog now groups its rows by *operation* (`TEAM_READ`,
-  `TEAM_CHANNELS`, `CHANNEL_MESSAGES_READ`, `CHANNEL_MESSAGES_WRITE`, `CHAT_MESSAGES_READ`,
-  `CHAT_MESSAGES_WRITE`), because the operation is the resource a request is counted against,
-  so one `@limit(*GROUP)` binds one endpoint's rows — and each group rides the member that
-  names its endpoint: `Team` answers the 6 rows of `GET /teams/{id}`, `Team.channels` the 3
-  of `GET /teams/{id}/channels`, `Channel.messages` 7 (3 read + 4 write),
-  `Chat.messages` 7. `ChatMessageCollection` is what decides the placement: it serves a
-  channel and a chat, whose write budgets differ (500 against 200 requests a second), so a
-  row declared on the collection would be false for half its instances and the budget belongs
-  on the accessor that knows which parent it came from — the collection declares nothing. The
-  12 default rows stay unbound, since a default names no resource.
-- **A declared budget says what it is counted against, and one request is one request.**
-  Stacking a read group and a write group on one member made the `Limits:` section print
-  seven lines that all began `microsoft teams: … requests / 1s` — it could not say which row
-  was the read budget, which the write, nor whether *1* was per app, per user or per team.
-  Each line now names the row's request type and the dimension it is counted against
-  (`microsoft teams (read on app): 200 requests / 1s`, `… (write on team, channel or chat):
-  1 request / 1s`); a static threshold states neither, so its line renders exactly as before.
-  A singular value also takes a singular unit now (`1 request`, `1 item`, `1 byte`) — the
-  Teams table made it unavoidable, seven of its rows cap a single request a second.
-- **The Outlook budgets are declared on the mailbox, the upload and the batch they cap.**
-  `office365.outlook.quotas` published 4 rows and bound none of them, so
-  `declared_limits(Message)` was empty and the Service limits page printed `—` for the whole
-  Outlook table. The two per-mailbox rows (`10,000 requests / 600s`, and `4 in flight` — a
-  concurrency limit is a rate window of zero) are now `OUTLOOK_MAILBOX_BUDGETS`, declared on
-  `OutlookItem`, which is what `Message`, `Event` and `Contact` share, *and* on `OutlookUser`,
-  the `/outlook` root: the budget belongs to a mailbox, the two hierarchies above it do not
-  share a root, so it is written twice rather than invented once. The 150 MB / 300 s upload
-  budget rides `AttachmentCollection` — the only place a mailbox uploads — and the JSON-batch
-  cap rides `GraphClient.execute_batch`, where its note carries the qualification the row is
-  published with: the cap is Outlook's, so a batch that addresses other services is not bound
-  by it. One row, `OUTLOOK_BATCH`, is the reason a declaration may sit on a method rather than
-  a type; the other three are class-level, and `Message.select_all()` is unchanged at 31 names
-  because a budget declares no member.
-- **A byte budget inside a window prints as bytes.** `str(Limit)` chose its scale from the
-  window, not the unit, so the Outlook upload row rendered `157,286,400 bytes / 300s` — a
-  five-minute ceiling stated in single bytes. The bytes form now follows the unit wherever it
-  appears, so that row reads `150 MB / 300s`; a static byte ceiling is untouched (`250 GB`,
-  `8,000 bytes`).
-- **The SharePoint ceilings are declared on the objects they are ceilings about.**
-  `office365.sharepoint.thresholds.Limits` published 46 rows and reached 3 of them, so
-  `declared_limits(List)` was empty and the Service limits page printed `—` for everything
-  but the view threshold, the file upload and the batch. A static ceiling is not a request
-  budget, so it cannot be "declared where the request is made": it is a fact about an
-  *object*, and the row's own `scope` says which. The 10 rows scoped `list` or `query` — the
-  view and index thresholds, the item ceiling, the indexed-column and lookup-join caps, and
-  the four role-assignment ceilings — ride `List`, because a query against a list is a query
-  against `List`; `LIST_ROW_BYTES` rides `ListItem`; `LIST_ITEM_ATTACHMENT` rides the
-  `Attachment`, which is *not* the 250 GB a library file may be, so the two are deliberately
-  not written on `File` together; the two column rows ride `Field`; `RENAME_FOLDER` the
-  `Folder`; the 11 rows about a file's path, name, size, version count and transfer formats
-  ride `File`; the size, file-count and ZIP ceilings ride `MoveCopyUtil`, which is what
-  assembles all three; the 5 site ceilings ride `Site`, `GROUP_MEMBERS` the `Group`, and the
-  5 managed-metadata ceilings the `TermStore`. 44 of the 46 rows are now reachable, and the
-  two that are not name nothing this library addresses — a tenant-wide compliance-policy
-  budget and a OneDrive sync client's file count — so a test keeps them by name, and a newly
-  published row fails until somebody decides where it belongs. No projection moved:
-  `List.select_all()` is 98 names before and after, `File.select_all()` 37, and the schema
-  rebuild `@limit` performs on a class was diffed against pristine `HEAD` across 10 types —
-  identical columns, navigations, `readonly` set and `to_json()`.
-- **A batch is capped by item count and by payload size, and the two are separate facts.**
-  `@limit` takes `arg=` for exactly one limit — the one it enforces — so the 1 MB batch-shell
-  ceiling is a second decorator on `ClientContext.execute_batch`, which is also the one place
-  "declarations compose" is checked on a method: `limits_of(ClientContext.execute_batch)`
-  answers both rows and only `items_per_batch` carries an argument.
-- **A type answers the limits it declares on itself.** `limits_of(cls)` read only the
-  schema's `member_limits`, so a model that writes a quota on the class — every
-  `@limit(*QUOTAS)` model, such as `Workbook`'s two Excel ceilings — answered `()` and
-  `verify_limits(Workbook)` printed `0 limit(s)`, while `declared_limits()` answered both.
-  The class now reads the one object that holds the facts (`TypeSchema`), class rows
-  first, keeps them as declarations so an `arg=` binding survives, and de-duplicates by
-  declaration: two members that share a row and an argument are one ceiling on the type,
-  not two, so `limits_of(List)` answers 2 rows where it leaked 3 and `limits_of(CallRecord)`
-  its 4 published budgets. `@limit` stays a decorator of its own rather than keywords on
-  `@odata`: a limit is written on a call (9 classes, 8 methods, 2 properties) and `@odata`
-  names a member of the resource, so the two sets do not touch — see
-  `office365.runtime.limits` for why they stay apart and where they are already one.
-- **A throttled request now waits the interval the service asked for.**
-  `execute_query_retry` retried a `429`/`503` on its exponential backoff and ignored
-  `Retry-After` unless the caller passed a `failure_callback` of their own, so the
-  one entry point the docs recommend for polite retries was the one that re-sent a
-  throttled request at the worst moment — Microsoft's first instruction is *wait the
-  interval named in the header; do not retry immediately*. The transport paths
-  (`execute_query_retry_parallel`, the async sibling) already honoured it, which made
-  the same library answer two ways. The default `on_failure` policy is now the
-  server's `Retry-After` (`runtime.retry.retry_after_policy`), falling back to the
-  backoff only when the response names no interval, and `max_delay` bounds *any*
-  delay rather than just the exponential one — so a caller who passes a ceiling keeps
-  it even when the service asks for an hour, and a caller who passes none waits as
-  long as the service asked. Pinned offline: `Retry-After: 7` sleeps exactly 7 s
-  before the second attempt, and `max_delay=30` turns a `Retry-After: 600` into 30 s.
-- **A timestamp with seven fractional digits is read on every supported interpreter.**
-  `datetime.fromisoformat` only accepted more than six digits from Python 3.11 on, and
-  a .NET stamp carries seven (`.0000000`), so `parse_datetime` truncated the fraction
-  before parsing and now also falls back to `fromisoformat` for the ISO-8601 shapes the
-  fixed format list does not spell (a space separator, an omitted seconds field). The
-  long-running-operation status snapshot reads its stamps through it, so
-  `OperationStatus.last_action_date_time` no longer answers `None` on Python 3.10.
+- **A throttled request waits the interval the service asked for.**
+  `execute_query_retry` retried a `429`/`503` on its own backoff and ignored
+  `Retry-After`, so the entry point the docs recommend for polite retries re-sent a
+  throttled request at the worst moment, while the parallel paths honoured the
+  header — the same library answering two ways. The default policy is now
+  `Retry-After` with the backoff as fallback, and `max_delay` bounds *any* delay,
+  so a caller's ceiling holds even when the service asks for an hour.
+- **A timestamp with seven fractional digits is read on every supported
+  interpreter.** `.NET` stamps carry seven, `datetime.fromisoformat` accepted more
+  than six only from 3.11, so `parse_datetime` truncates and falls back to
+  `fromisoformat` for the shapes the fixed format list does not spell — and
+  `OperationStatus.last_action_date_time` no longer answers `None` on 3.10.
+- **`to_json()` no longer emits `__`-prefixed bookkeeping** (`__etag`,
+  `__deferred`, `__odata_type`): they describe the response, not the entity, and a
+  plain-dict `to_json()` used to put them in a payload. `serialize_value` descends
+  into a plain `dict`/`list`/`tuple`, so a hand-assembled payload is JSON-safe by
+  construction rather than by `default=str`.
+- **`DateTimeTimeZone.parse()` reads what callers pass.** A Graph `dict` raised
+  `AttributeError` (so `EventCollection.add(start={...})` was unusable) and an
+  aware `datetime` was flattened to UTC. It accepts a `datetime`, a Graph dict, a
+  string or `None`, keeps a named zone, and emits Graph's documented wire form;
+  `as_datetime()` reads the wall clock back, deliberately naive.
+- `str()` on a scalar collection renders the list (`[freeBusyRead, read]`) where it
+  used to print the internal type name, and `repr()` is quoted and type-qualified
+  (`StringCollection([...])`); collection subclasses keep their own `__repr__`.
+- **A limit prints what it measures.** A window that is a whole number of hours
+  renders as hours (`200 requests / 24h`, not `/ 86,400s`), a byte budget prints as
+  bytes wherever it appears (`150 MB / 300s`), a singular value takes a singular
+  unit (`1 request`), and a line names its request type and the dimension it is
+  counted against (`… (write on team, channel or chat)`).
 
 **SharePoint (client)**
 
-- **`List.export()` exports files.** The item loop tested
-  `item.file_system_object_type == FileSystemObjectType.File`, but the getter handed out the
-  wire's JSON number, and `0 == FileSystemObjectType.File` is `False` in Python — so the
-  comparison could never hold and every item, files included, was skipped. The getter now
-  answers the enum, and the comparison reads the fact it was written to read.
+- **`List.export()` exports files.** The loop tested
+  `item.file_system_object_type == FileSystemObjectType.File`, but the getter
+  handed out the wire's number and `0 == FileSystemObjectType.File` is `False`, so
+  every item was skipped.
 - **A query bound to a subweb addresses the subweb.** `ClientQuery.url` pasted the
-  query's own path onto the service root, so `sp.web.get_sub_web_by_url(...).webs`
-  and everything else reached through a subweb read the *root* web's collection —
-  the same object answered differently depending on which context built it. The URL
-  now derives from the bound object's own address (`binding_type.resource_url`, plus
-  whatever the query's path adds beyond `binding_type.resource_path`), with the
-  service-root fallback kept for a collection-bound query that has no `Url` yet. A
-  live probe against a subweb documents the difference the fix makes; the whole
-  `tests/sharepoint` suite now reaches the web it names.
+  query's own path onto the service root, so anything reached through a subweb read
+  the root web's collection; the URL now derives from the bound object's own
+  address.
 - **`FeatureCollection.add(verify_if_activated=True)` activates a feature the
-  collection does not list.** The guard asked `Site/Features/GetById('<guid>')`
-  whether the feature was on, but at site scope that endpoint answers
-  `{"d":{"GetById":null}}` *even for an activated feature* — and a dict holding one
-  `None` is truthy, so the guard read "activated" and queued nothing, silently. The
-  guard now reads the collection the operation already fetches and only writes when
-  the `DefinitionId` is absent. `tests/unit/test_feature_activation.py` pins both
-  halves offline: it asserts no `GetById` request is made at all, one `POST` when
-  the feature is missing and none when it is already present.
-- **`Utility.resolve_principal_in_current_context` accepts its flags as enums.**
-  `scopes` and `sources` are `Edm.Int32` bit flags, not strings; the call sent the
-  enum's repr where the service expects an integer and every input came back `null`.
-  Both parameters now take the enum *or* the integer and coerce, and neither is
-  omitted (an omitted flag is answered `null` too, not refused).
-- **A column says what it holds, so a reader need not parse its schema.** A `fields`
-  read that omits `FieldTypeKind` hands back base `Field` objects, and the list
-  migration's projection does exactly that — so every caller re-derived the answer from
-  `TypeAsString` plus a hand-rolled `<Customization>` regex, which is how five predicate
-  helpers and two schema parsers came to live in two different modules. `Field` now
-  answers `is_taxonomy`, `is_lookup`, `is_person`, `is_multi_valued`, `is_multi_choice`
-  and `is_value_object`, and the two facts behind them are named once at module scope:
-  `schema_property(schema_xml, name)` reads one `<Customization>` row (a managed metadata
-  column keeps its term-set binding there, not in a projected member) and
-  `is_taxonomy_column(type_as_string, schema_xml)` answers "managed metadata" for a live
-  column and for a replayed structure definition alike. `AllowMultipleValues` moved down
-  to `Field` — declared once, `system=True`, because `SP.Field` does not carry it while a
-  live `$select` of it against a 164-column collection is accepted — since a column
-  created from a `Type="Lookup" Mult="TRUE"` schema keeps the *single-value* spelling and
-  only the flag tells the truth; `FieldLookup`'s copy is deleted rather than repeated, and
-  a multi-term column (`TaxonomyFieldTypeMulti`) is now multi-valued too. Over that
-  tenant's 164 real columns the new classifiers agree with the deleted predicates on
-  every one, and the whole vocabulary is exercised: 71 lookups, 8 persons, 3 taxonomy
-  columns (each resolving its hidden note companion by id), 6 multi-value columns, 1
-  hyperlink.
-- **`SitePage.select_all()` is a projection the service accepts.** The entity declared
-  `TemplateScope` and therefore offered it to `$select`, which answers that one name with
-  `400 NotSupported` ("part of an experimental feature that is not supported in the
-  current environment") — and a `$select` is all-or-nothing, so the whole projection was
-  unusable. Bisecting the 60 declared names live isolated the offender and confirmed the
-  other 59 answer the site's 11 pages, so the type now states the refusal in
-  `_unselectable` (the mechanism `Web`, `List` and `ListItem` already use) and keeps the
-  declaration, which is what hydration and comparison read. No call site changes: the
-  method existed and could never have worked.
-- Two endpoints that cannot work over REST now say so where they are read:
-  `UserProfilePropertiesForUser` is a CSOM complex type — `GetPropertyNames`
-  answers `null` and any `propertyNames` argument is rejected as an invalid query
-  expression, so `PeopleManager.get_user_profile_properties` is the reader — and
+  collection does not list.** The guard asked `GetById('<guid>')`, which answers
+  `{"d":{"GetById":null}}` at site scope even for an activated feature — and a dict
+  holding one `None` is truthy, so it queued nothing. It now reads the collection
+  the operation already fetches.
+- **`Utility.resolve_principal_in_current_context` accepts its flags as enums:**
+  `scopes` and `sources` are `Edm.Int32` bit flags, and the call sent the enum's
+  repr, so every input came back `null`.
+- **`SitePage.select_all()` is a projection the service accepts:** `TemplateScope`
+  answers `400 NotSupported`, and a `$select` is all-or-nothing, so the type states
+  the refusal in `_unselectable`.
+- **A page's canvas is one property, not two.** `SitePage` declared
+  `canvas_content` twice — a read-only twin shadowed the writable one, so
+  `select_all()` could not name it and `odata_name("canvas_content")` raised. The
+  duplicate is deleted, and a differential over `select_all()` names,
+  `expand_all()` and a hydrated `to_json()` is byte-identical.
+- Two endpoints that cannot work over REST say so: `UserProfilePropertiesForUser`
+  is CSOM-only (`PeopleManager.get_user_profile_properties` is the reader), and
   `Tenant.get_site_subscription_id` raises `System.NotSupportedException`.
 
 **Migration (client-side)**
 
-- **The SharePoint assessment reads a list item's columns through the item.** Nine of the
-  `ITEMS`-container scans went behind the model to the JSON bag
-  (`item.properties.get("FileRef")` ten times, `"FileLeafRef"` four times,
-  `"HasUniqueRoleAssignments"` once), which is a second spelling of a name the library had
-  just declared and a silent coupling to a projection nobody checked. They now read
-  `item.file_ref`, `item.file_leaf_ref`, `item.is_file` and
-  `item.has_unique_role_assignments`, and the projection they read through is one named
-  constant per load (`assessor._ITEM_SCAN_SELECT`, `assessor._UNIQUE_ITEM_SCAN_SELECT`)
-  instead of an inline list per call. That projection gained exactly one name —
-  `FileSystemObjectType`, because the scans now filter on `is_file` and an unprojected
-  column reads as `Invalid`, which is neither a file nor a folder. A request-level
-  differential against a `HEAD` worktree over the live tenant's 252 assessment requests
-  shows the widened projection as the *only* difference: 124 `items` URLs, each one name
-  longer, and no request added, dropped or reordered.
-- **The list migration classifies a column once, through the column.** The source kept
-  five per-run caches (`_taxonomy_columns`, `_multi_choice_columns`, `_user_columns`,
-  `_multi_columns`, `_skipped_columns`) over a single `fields` read, each answering a
-  different predicate over `TypeAsString`, and the typed-value remapping (lookup ids,
-  person logins, multi-value reshaping, taxonomy note text) asked all five. They are
-  gone: `_source_fields()` reads the columns once and the questions are the column's own
-  (`field.is_taxonomy`, `is_person`, `is_lookup`, `is_multi_valued`, `is_multi_choice`,
-  `is_value_object`). The one question that needs the whole set — a taxonomy column names
-  its hidden note companion by id, and that companion is what a multi-value write payload
-  becomes — stays a single helper (`_taxonomy_note_columns`). The target's `_load_columns`
-  reads the same predicates instead of its own copies, so the source and target halves of
-  the pipeline can no longer disagree about what a column is. No projection changed: both
-  `$select` lists are byte-identical to `HEAD`, so the wire is untouched.
-- **A file's current version no longer appears twice in its history.** `File.Versions`
-  returns the file's current version as well (`IsCurrentVersion`), and
-  `SharePointLibrarySource.read_version_history` passed it through as an *older*
-  version — although its own docstring said the current version is excluded because
-  `read()` already supplies it. `PackageBuilder.add_file` then appends the current
-  version last (the Migration API promotes the last `<Versions>` entry), so where the
-  current version is also the newest label — the ordinary case — that label was listed
-  twice in `Manifest.xml`. A live read on a 13-version document shows the shape the
-  code had assumed away: labels `0.1, 0.2, …, 0.9, 0.10, 1.0 (IsCurrentVersion), 1.1,
-  1.2` with `UIVersionLabel` `1.3`. The read now skips `is_current_version`, exactly as
-  `MoveCopyUtil` already did for the same collection.
-- Verification reads each verified record once: the fresh target read behind
-  `SharePointListTarget.checksum`, `read_metadata`, `read_authorship` and
-  `read_permissions` is memoized for the run, so a verification pass costs one
-  request per sampled item instead of up to four (a 25-item fidelity verification
-  on a live list: 52 requests instead of 130, identical findings). Anything that
-  writes to the target (a fidelity write, a flushed chunk, or `configure()`
-  starting a new run) drops the memo.
-- **A plain list is no longer routed to the server-side package.** `use_migration_api`
-  now applies to document libraries only: a package can express an `SPFile` and an
-  `SPFolder`, and `Manifest.xml` has no `<List>` object, so a list record had no shape
-  there — `SharePointPackageTarget.write()` turned it into an `<File>` whose content
-  was the record's `dict` repr (`b"{'Title': 'Write the report', 'Status': 'Active'}"`),
-  with no exception and no warning. A list task now falls back to the REST adapters and
-  the target says so (`… is a list, not a document library: the server-side Migration
-  API carries files and folders only`), losing nothing — a record has no version
-  history. The package target additionally **refuses** any item type other than `file`
-  or `folder` (`ValueError`) instead of writing whatever it was handed.
-- **A view keeps the columns the target list can hold.** Replaying a view named every
-  captured column verbatim, so a pair whose templates disagree on a built-in column
-  failed the whole replay on `Column 'LinkTitle' does not exist`; the view is now
-  created with the columns that exist and the drop is returned as
-  `view 'X' was created without LinkTitle: the target list has no such column`.
-- **A source and target that disagree about files versus records are refused when the
-  task is resolved, not at the first write.** A file share (or a document library) aimed
-  at a plain list resolved fine and then failed *every* item with
-  `TypeError: object is not iterable`; the other direction was worse — a list aimed at a
-  document library wrote each record's `dict` repr into a file named after the item's id
-  and reported `Total: 2 | Success: 2 | Errors: 0`. Both now raise a `ValueError` naming
-  the two lists and what to point the task at. The adapters refuse the wrong payload
-  shape as well (`SharePointListTarget` a non-dict payload,
-  `SharePointLibraryTarget` a dict one), so a hand-built pair cannot corrupt a target
-  either.
+- **The SharePoint assessment reads a list item's columns through the item**
+  (`item.file_ref`, `is_file`, `has_unique_role_assignments`) instead of the JSON
+  bag, through one named projection per load. A request-level differential over 252
+  live assessment requests shows the widened projection as the only difference.
+- **The list migration classifies a column once, through the column.** Five
+  per-run caches over one `fields` read are replaced by `_source_fields()` and the
+  column's own predicates, and the target reads the same ones, so the two halves of
+  the pipeline can no longer disagree about what a column is. Both `$select` lists
+  are byte-identical.
+- **A file's current version no longer appears twice in its history.**
+  `File.Versions` includes the current version and the read passed it through as an
+  older one, so the ordinary case (current version is the newest label) listed that
+  label twice in `Manifest.xml`.
+- **A plain list is no longer routed to the server-side package.** `Manifest.xml`
+  has no `<List>` object, so a list record became a `<File>` whose content was the
+  record's `dict` repr, silently; a list task now falls back to the REST adapters
+  and says so, and the package target refuses any item that is not a file or a
+  folder.
+- A replayed view is created with the columns the target list has, and the drop is
+  reported rather than failing the whole replay with
+  `Column 'LinkTitle' does not exist`.
+- A re-run of `configure()` writes nothing, and whatever a structure replay cannot
+  reproduce is reported on `target.warnings` instead of assumed.
 
 **Migration (Outlook)**
 
-- Calendar and contact exports **derive their projection from the model**, and a
-  cancelled event no longer slips through. `EVENT_COLUMNS`/`CONTACT_COLUMNS` were
-  hand-kept `$select` lists; the calendar one named 33 columns and omitted
-  `isCancelled`, which the export filters on — and `$select` answers *only* the
-  columns it names (measured: a read asking for `id` alone returns a bag with `id`
-  and nothing else), so a cancelled event was exported with `is_cancelled: false`
-  even though `CalendarExportOptions.include_cancelled` defaults to False. Both
-  constants are now `Event.select_all()`/`Contact.select_all()` —
-  41 and 40 OData names, navigation properties excluded by construction — and the
-  adapters' narrower dedupe reads are spelled through `odata_name()`. The envelopes
-  read the model's getters (`event.subject`, `contact.display_name`) instead of
-  `get_property("displayName")`, so an OData name lives in exactly one place and the
-  `iCalUId`-style typo that `get_property` answers with `None` is unrepresentable.
-  Live: a seeded calendar exported, imported into a second calendar, re-imported
-  (3 skipped as already present) with matching digests; the same round trip for a
-  two-folder contact tree.
-- Calendar export records the **`iCalUId`** the service actually sends. The envelope
-  read `get_property("iCalUid")` — one capital short of Graph's spelling — and
-  `get_property()` answers `None` for a name it does not know, so every exported
-  calendar sidecar carried `"ical_uid": null` and the `.ics` `UID` fell back to the
-  tenant-local Graph event id (`UID:e1`) instead of the interoperable identifier other
-  calendar clients match on. `event_envelope()` now reads the model's own
-  `Event.ical_uid` getter and `EVENT_COLUMNS` selects `iCalUId`, so the sidecar and the
-  `.ics` both carry the meeting identity. A tree exported by 3.3.0 keeps its fallback
-  `UID` (re-export to pick up the real one); the replay itself is unchanged, since
-  import matches on `graph_id` and the created event gets a fresh `iCalUId` anyway.
-- Calendar export writes a **JSON-safe sidecar**: Graph's `recurrence` object is
-  flattened through `to_json()` instead of being handed to `json.dumps` as a typed
-  value. A recurring event's sidecar previously carried
-  `"recurrence": "PatternedRecurrence(pattern=…)"` — `repr` text, produced by
-  `json.dumps(..., default=str)` — which no import could replay.
-- Calendar import **verifies in the source's timezone**. Exchange renders event
-  times in the signed-in mailbox's own zone, so a migration into a mailbox set to a
-  different zone reported every event as a content mismatch while the instants were
-  identical (an event created as `09:00 Europe/Kiev` reads back as `06:00 UTC`
-  unasked — measured). The verification read now asks for the item's own zone with
-  `Prefer: outlook.timezone`, exposed as the new `prefer_outlook_timezone`
-  (`office365.runtime.http.prefer`, works with Windows and IANA names).
-- Migration fidelity reports **a product's own dimensions** instead of SharePoint's.
-  `describe_fidelity` used to probe the adapter pair and always print the fourteen
-  SharePoint dimensions, so a mail export forecast read
-  `attachments=unsupported — list-item attachments are carried only between list
-  adapters` and `views=unsupported`. An adapter can now carry a
-  `fidelity_dimensions` mapping of `dimension -> (status, reason)`; the source is
-  asked first, a declaration replaces the probe, and an unknown status name raises
-  rather than being reported. The four Outlook directions declare theirs in
-  `office365.migration.outlook.fidelity`, and a mail export now reports
-  `content`/`structure`/`timestamps`/`item_state`/`attachments` — delivered — plus
-  `permissions`/`versions` as unsupported. SharePoint pairs declare nothing and are
-  unchanged.
-
-### Fixed
-
-- `ClientObject.to_json()` and `ClientValue.to_json()` (`office365.runtime`) no
-  longer emit `__`-prefixed bookkeeping. A response hands back `__etag` (so
-  `If-Match` can be built), `__deferred` and `__odata_type`; those describe the
-  response, not the entity, and a `to_json()` that asked for a plain dict used to
-  put them in a payload. A dialect's own control marker (`__metadata`) is still
-  added, after the filter. `serialize_value` (`office365.runtime.converters`)
-  now descends into a plain `dict`/`list`/`tuple` as well, so a payload assembled
-  by hand is JSON-safe by construction rather than by `default=str` at the call
-  site; a collection type that subclasses a container keeps its own `to_json`.
-- `DateTimeTimeZone.parse()` (`office365.outlook.calendar`) now reads what callers
-  actually pass. A `dict` in Graph's own spelling raised
-  `AttributeError: 'dict' object has no attribute 'replace'`, which made
-  `EventCollection.add(start={"dateTime": …, "timeZone": …})` unusable; a
-  `datetime` was flattened to UTC even when it carried a zone. It accepts a
-  `datetime` (an aware one keeps its own zone, an unnamed offset is converted so
-  the instant survives, a naive one is read as UTC as before), a Graph dict, a
-  string, or `None`, and emits the wire form Graph documents — seven fractional
-  digits, no offset appended (measured: Exchange accepts both and honours a named
-  zone, so an offset in `dateTime` was only a competing second zone). New
-  `DateTimeTimeZone.as_datetime()` reads the wall clock back, and is deliberately
-  naive: turning "W. Europe Standard Time" into an offset needs a time-zone
-  database this runtime does not ship.
+- **Calendar and contact exports derive their projection from the model**
+  (`Event.select_all()` / `Contact.select_all()`). The hand-kept list omitted
+  `isCancelled`, which the export filters on — and `$select` answers only the names
+  it lists — so a cancelled event was exported with `is_cancelled: false`.
+- **`iCalUId` is read as the service spells it.** The envelope asked
+  `get_property("iCalUid")` — one capital short — so every sidecar carried
+  `"ical_uid": null` and the `.ics` `UID` fell back to the tenant-local Graph id
+  instead of the identifier other calendar clients match on.
+- A recurring event's sidecar carries JSON, not `repr` text: `recurrence` is
+  flattened through `to_json()` instead of reaching `json.dumps` as a typed value,
+  which no import could replay.
+- **Verification compares in the source's timezone.** Exchange renders times in the
+  signed-in mailbox's zone, so a migration into a differently-zoned mailbox
+  reported every event as a mismatch while the instants were identical; the read
+  now asks for the item's own zone with `Prefer: outlook.timezone`
+  (`prefer_outlook_timezone`).
 
 ## [3.3.0] - 2026-10-18
 
