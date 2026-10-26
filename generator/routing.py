@@ -101,12 +101,14 @@ class Router:
         exact = self.types.get(short)
         if exact:
             return exact
-        for pattern, target in self.types.items():
-            if pattern == "*" and not allow_fallback:
-                continue
-            if pattern.endswith("*") and short.startswith(pattern[:-1]):
-                return target
-        return None
+        # Prefix rules, narrowest first: ``Printer*`` beats ``Print*`` wherever the
+        # table happens to spell them, so line order is not load-bearing.
+        for pattern in sorted(self.types, key=len, reverse=True):
+            if pattern != "*" and pattern.endswith("*") and short.startswith(pattern[:-1]):
+                return self.types[pattern]
+        # ``*`` is a catch-all, not a prefix rule with an empty prefix: it answers
+        # only once every specific rule has declined.
+        return (self.fallback or None) if allow_fallback else None
 
 
 def module_directory(module_path: str, output_base: str) -> str:

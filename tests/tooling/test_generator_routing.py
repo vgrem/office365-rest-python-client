@@ -87,6 +87,25 @@ def test_router_fallback_and_bucket_detection():
     assert not _in_fallback("office365.directory.user", router.fallback)
 
 
+def test_prefix_specificity_does_not_depend_on_table_order():
+    """A narrower prefix wins wherever the table happens to spell it."""
+    narrow_first = Router(types={"Printer*": "office365.printers", "Print*": "office365.print"})
+    narrow_last = Router(types={"Print*": "office365.print", "Printer*": "office365.printers"})
+
+    for router in (narrow_first, narrow_last):
+        assert router.module_for("microsoft.graph.PrinterShare") == "office365.printers"
+        assert router.module_for("microsoft.graph.PrintJob") == "office365.print"
+
+
+def test_catch_all_answers_only_after_every_prefix_rule_declines():
+    """``*`` means "everything else", not "everything from here on"."""
+    router = Router(types={"*": "office365.common", "Foo*": "office365.foo"})
+
+    assert router.module_for("microsoft.graph.FooBar") == "office365.foo"
+    assert router.module_for("microsoft.graph.Bar") == "office365.common"
+    assert router.module_for("microsoft.graph.Bar", allow_fallback=False) is None
+
+
 def test_owning_module_prefers_ancestor_of_the_dominant_referrer():
     from collections import Counter
 
