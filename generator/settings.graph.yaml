@@ -551,6 +551,34 @@ type_routing:
   WindowsSetting: office365.directory.users
   WindowsSettingInstance: office365.directory.users
 
+# Backup & recovery protection reports, read off backupRestoreRoot.
+  BackupReport: office365.backuprestore
+  BackupPolicyReport: office365.backuprestore
+  BackupCountStatistics: office365.backuprestore
+
+# Exchange cross-tenant migration, hung off solutionsRoot/migrationsRoot. Not
+# office365.migration: that package is this library's own migration engine.
+  CrossTenantMigrationJob: office365.directory
+  CrossTenantMigrationTask: office365.directory
+  CrossTenantMigrationJobStatus: office365.directory
+  CrossTenantMigrationJobType: office365.directory
+  CrossTenantMigrationServiceStatus: office365.directory
+  CrossTenantMigrationServiceStatusDetails: office365.directory
+  CrossTenantMigrationCancelResponse: office365.directory
+  ExchangeOnlineCrossTenantMigrationSettings: office365.directory
+  MigrationsRoot: office365.directory
+
+  DirectoryRoleManagementDeletedItemContainer: office365.directory.rolemanagement
+  ResourceAccountKeyAuthenticationMethod: office365.directory.authentication.methods
+
+# Information protection: both are read off sensitivityLabel.
+  ApplicationMode: office365.security.datasecurity
+  CurrentLabel: office365.security.datasecurity
+
+# The OData error envelope the runtime already parses (innerError,
+# PublicError/PublicInnerError): a model, not a new public error type.
+  Error: office365.runtime.types
+
 # Fallback: any remaining bare microsoft.graph.* type lands in the shared bucket.
   "*": office365.common
 
