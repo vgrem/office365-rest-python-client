@@ -15,6 +15,9 @@ if TYPE_CHECKING:
     from office365.common.software_oath_authentication_method import (
         SoftwareOathAuthenticationMethod,
     )
+    from office365.directory.authentication.methods.resource_account_key_authentication_method import (
+        ResourceAccountKeyAuthenticationMethod,
+    )
     from office365.directory.authentication.platform_credential_authentication_method import (
         PlatformCredentialAuthenticationMethod,
     )
@@ -203,5 +206,22 @@ class Authentication(Entity):
                 self.context,
                 WindowsHelloForBusinessAuthenticationMethod,
                 ResourcePath("windowsHelloForBusinessMethods", self.resource_path),
+            ),
+        )
+
+    @odata(name="resourceAccountKeyAuthenticationMethods", navigation=True)
+    @property
+    def resource_account_key_authentication_methods(self) -> EntityCollection[ResourceAccountKeyAuthenticationMethod]:
+        """Gets the resourceAccountKeyAuthenticationMethods property"""
+        from office365.directory.authentication.methods.resource_account_key_authentication_method import (
+            ResourceAccountKeyAuthenticationMethod,
+        )
+
+        return self.properties.get(
+            "resourceAccountKeyAuthenticationMethods",
+            EntityCollection[ResourceAccountKeyAuthenticationMethod](
+                self.context,
+                ResourceAccountKeyAuthenticationMethod,
+                ResourcePath("resourceAccountKeyAuthenticationMethods", self.resource_path),
             ),
         )

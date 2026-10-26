@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.common.string_dictionary import StringDictionary
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
@@ -86,3 +88,15 @@ class Place(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Place"
+
+    @odata(name="customProperties")
+    @property
+    def custom_properties(self) -> Optional[StringDictionary]:
+        """Gets the customProperties property"""
+        return self.properties.get("customProperties", None)
+
+    @odata(name="lastUpdatedTime")
+    @property
+    def last_updated_time(self) -> Optional[datetime]:
+        """Gets the lastUpdatedTime property"""
+        return self.properties.get("lastUpdatedTime", datetime.min)

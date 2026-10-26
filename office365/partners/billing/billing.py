@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.partners.billing.azure_usage import AzureUsage
@@ -7,6 +9,10 @@ from office365.partners.billing.manifest import Manifest
 from office365.partners.billing.operation import Operation
 from office365.partners.billing.reconciliation import BillingReconciliation
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.partners.billing.azure_aggregated_usage import AzureAggregatedUsage
 
 
 class Billing(Entity):
@@ -41,3 +47,13 @@ class Billing(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.partners.billing.Billing"
+
+    @odata(name="aggregatedUsage", navigation=True)
+    @property
+    def aggregated_usage(self) -> AzureAggregatedUsage:
+        """Gets the aggregatedUsage property"""
+        from office365.partners.billing.azure_aggregated_usage import AzureAggregatedUsage
+
+        return self.properties.get(
+            "aggregatedUsage", AzureAggregatedUsage(self.context, ResourcePath("aggregatedUsage", self.resource_path))
+        )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.extensions.extension import Extension
 from office365.directory.extensions.open_type import OpenTypeExtension
@@ -9,8 +9,12 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.types.odata_property import odata
 from office365.todo.tasks.collection import TodoTaskCollection
 from office365.todo.tasks.wellknownlistname import WellknownListName
+
+if TYPE_CHECKING:
+    from office365.common.single_value_extended_property import SingleValueExtendedProperty
 
 
 class TodoTaskList(Entity):
@@ -75,3 +79,18 @@ class TodoTaskList(Entity):
     @property
     def entity_type_name(self) -> str:
         return None  # type: ignore
+
+    @odata(name="singleValueExtendedProperties", navigation=True)
+    @property
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueExtendedProperty]:
+        """Gets the singleValueExtendedProperties property"""
+        from office365.common.single_value_extended_property import SingleValueExtendedProperty
+
+        return self.properties.get(
+            "singleValueExtendedProperties",
+            EntityCollection[SingleValueExtendedProperty](
+                self.context,
+                SingleValueExtendedProperty,
+                ResourcePath("singleValueExtendedProperties", self.resource_path),
+            ),
+        )

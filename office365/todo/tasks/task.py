@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 from os import PathLike
-from typing import IO, Optional, Union
+from typing import IO, TYPE_CHECKING, Optional, Union
 
 from office365.directory.extensions.extension import Extension
 from office365.directory.extensions.open_type import OpenTypeExtension
@@ -24,6 +24,9 @@ from office365.todo.attachments.task_file import TaskFileAttachment
 from office365.todo.checklist_item import ChecklistItem
 from office365.todo.linked_resource import LinkedResource
 from office365.todo.tasks.taskstatus import TaskStatus
+
+if TYPE_CHECKING:
+    from office365.common.single_value_extended_property import SingleValueExtendedProperty
 
 DEFAULT_ATTACHMENT_CHUNK_SIZE = 4 * 1024 * 1024
 MAX_SIMPLE_ATTACHMENT_BYTES = 3 * 1024 * 1024
@@ -270,3 +273,18 @@ class TodoTask(Entity):
     @property
     def entity_type_name(self) -> str:
         return None  # type: ignore
+
+    @odata(name="singleValueExtendedProperties", navigation=True)
+    @property
+    def single_value_extended_properties(self) -> EntityCollection[SingleValueExtendedProperty]:
+        """Gets the singleValueExtendedProperties property"""
+        from office365.common.single_value_extended_property import SingleValueExtendedProperty
+
+        return self.properties.get(
+            "singleValueExtendedProperties",
+            EntityCollection[SingleValueExtendedProperty](
+                self.context,
+                SingleValueExtendedProperty,
+                ResourcePath("singleValueExtendedProperties", self.resource_path),
+            ),
+        )

@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.backuprestore.restorejobtype import RestoreJobType
@@ -91,3 +92,9 @@ class RestoreSessionBase(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.RestoreSessionBase"
+
+    @odata(name="policyId")
+    @property
+    def policy_id(self) -> Optional[str]:
+        """Gets the policyId property"""
+        return self.properties.get("policyId", None)

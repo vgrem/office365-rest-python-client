@@ -17,6 +17,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.directory.rolemanagement.roles.management_deleted_item_container import (
+        DirectoryRoleManagementDeletedItemContainer,
+    )
     from office365.directory.unified_rbac_resource_namespace import (
         UnifiedRbacResourceNamespace,
     )
@@ -179,3 +182,16 @@ class RbacApplication(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.RbacApplication"
+
+    @odata(name="deletedItems", navigation=True)
+    @property
+    def deleted_items(self) -> DirectoryRoleManagementDeletedItemContainer:
+        """Gets the deletedItems property"""
+        from office365.directory.rolemanagement.roles.management_deleted_item_container import (
+            DirectoryRoleManagementDeletedItemContainer,
+        )
+
+        return self.properties.get(
+            "deletedItems",
+            DirectoryRoleManagementDeletedItemContainer(self.context, ResourcePath("deletedItems", self.resource_path)),
+        )

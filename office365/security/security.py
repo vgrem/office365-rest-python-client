@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from office365.security.collaboration.collaboration_root import (
         CollaborationRoot,
     )
+    from office365.security.rules_root import RulesRoot
     from office365.security.securescores.secure_score import SecureScore
 
 
@@ -209,3 +210,11 @@ class Security(Entity):
             "secureScores",
             EntityCollection[SecureScore](self.context, SecureScore, ResourcePath("secureScores", self.resource_path)),
         )
+
+    @odata(name="rules", navigation=True)
+    @property
+    def rules(self) -> RulesRoot:
+        """Gets the rules property"""
+        from office365.security.rules_root import RulesRoot
+
+        return self.properties.get("rules", RulesRoot(self.context, ResourcePath("rules", self.resource_path)))

@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
+from office365.security.datasecurity.application_mode import ApplicationMode
 
 if TYPE_CHECKING:
     from office365.onedrive.sensitivitylabels.labelactionsource import LabelActionSource
@@ -115,3 +117,9 @@ class SensitivityLabel(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.SensitivityLabel"
+
+    @odata(name="applicationMode")
+    @property
+    def application_mode(self) -> Optional[ApplicationMode]:
+        """Gets the applicationMode property"""
+        return self.properties.get("applicationMode", None)

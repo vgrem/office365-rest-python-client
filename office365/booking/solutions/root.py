@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from office365.backuprestore.root import BackupRestoreRoot
 from office365.booking.business.collection import BookingBusinessCollection
 from office365.booking.currency import BookingCurrency
@@ -6,6 +10,9 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.migrations_root import MigrationsRoot
 
 
 class SolutionsRoot(Entity):
@@ -53,3 +60,17 @@ class SolutionsRoot(Entity):
                 ResourcePath("virtualEvents", self.resource_path),
             ),
         )
+
+    @odata(name="migrations", navigation=True)
+    @property
+    def migrations(self) -> MigrationsRoot:
+        """Gets the migrations property"""
+        from office365.directory.migrations_root import MigrationsRoot
+
+        return self.properties.get(
+            "migrations", MigrationsRoot(self.context, ResourcePath("migrations", self.resource_path))
+        )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.SolutionsRoot"

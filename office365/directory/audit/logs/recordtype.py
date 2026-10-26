@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 
 
@@ -474,6 +476,40 @@ class AuditLogRecordType(Enum):
     DefenderSecurityForAIConfiguration = "474"
     SparkCoreCustomLivePool = "475"
     unknownFutureValue = "476"
+    PlannerCustomFieldDefinitionList = "477"
+    SyntheticMediaDetectionEvent = "478"
+    VivaGlintVivaInsightsIntegration = "479"
+    PeopleSkillsAdmin = "480"
+    PeopleSkillsUser = "481"
+    DSPMAdminActivity = "482"
+    OnDemandExchangeClassification = "483"
+    UniversalPrintSecureScan = "484"
+    CloudSecurityManagement = "485"
+    CloudSecurityConnector = "486"
+    CloudSecurityEnablement = "487"
+    MCSRawEmailContentMetadata = "488"
+    AIGuardrail = "489"
+    A365AIGuardrail = "490"
+    WorkIQAdminActivity = "491"
+    VivaGlintClientConfiguration = "492"
+    VivaGlintDataRetention = "493"
+    FilteringTeamsMessageFileInfo = "494"
+    SharePointFileArchivePolicy = "495"
+    DefenderAutomationRule = "496"
+    DefenderGeneratedPlaybook = "497"
+    DefenderIntegration = "498"
+    P4AIDagSitePermissionsRecord = "499"
+    PlannerDependency = "500"
+    PlannerDependencyList = "501"
+    CSCContentMetadata = "502"
+    MicrosoftSecurityForAIConfiguration = "503"
+    MicrosoftSecurityForAIRealTimeProtection = "504"
+    MTPContentMetadata = "505"
+    ComplianceEvaluationIncomplete = "506"
+    ComplianceEndpointEvaluationIncomplete = "507"
+    MicrosoftTeamsMoveMessages = "508"
+    ECSContentMetadata = "509"
+    MESRawEmailContentMetadata = "510"
 
     @property
     def entity_type_name(self) -> str:

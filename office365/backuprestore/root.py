@@ -15,6 +15,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.backuprestore.backup_report import BackupReport
     from office365.backuprestore.browse_session_base import BrowseSessionBase
     from office365.backuprestore.email_notifications_setting import (
         EmailNotificationsSetting,
@@ -400,3 +401,11 @@ class BackupRestoreRoot(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.BackupRestoreRoot"
+
+    @odata(name="reports", navigation=True)
+    @property
+    def reports(self) -> BackupReport:
+        """Gets the reports property"""
+        from office365.backuprestore.backup_report import BackupReport
+
+        return self.properties.get("reports", BackupReport(self.context, ResourcePath("reports", self.resource_path)))

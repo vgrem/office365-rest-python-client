@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from office365.communications.onlinemeetings.provider_type import OnlineMeetingProviderType
@@ -235,3 +237,9 @@ class Calendar(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Calendar"
+
+    @odata(name="isSharedWithMe")
+    @property
+    def is_shared_with_me(self) -> Optional[bool]:
+        """Gets the isSharedWithMe property"""
+        return self.properties.get("isSharedWithMe", None)
