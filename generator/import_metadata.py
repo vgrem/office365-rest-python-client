@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from xml.dom import minidom
 
 from office365.graph_client import GraphClient
+from office365.graph_version import GraphVersion
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import client_id, client_secret, password, site_url, tenant, username
 
@@ -24,11 +25,22 @@ parser.add_argument(
     "-p",
     "--path",
     dest="path",
-    default="./metadata/Graph.xml",
-    help="Import metadata endpoint",
+    default=None,
+    help="Output file (default: ./metadata/Graph.xml, or ./metadata/GraphBeta.xml for the beta endpoint)",
+)
+parser.add_argument(
+    "-V",
+    "--version",
+    dest="version",
+    choices=[v.value for v in GraphVersion],
+    default=GraphVersion.default().value,
+    help="Microsoft Graph API version to download the metadata from (graph endpoint only)",
 )
 
 args = parser.parse_args()
+if args.path is None:
+    beta = args.endpoint == "graph" and GraphVersion(args.version).is_beta
+    args.path = "./metadata/GraphBeta.xml" if beta else "./metadata/Graph.xml"
 
 if args.endpoint == "sharepoint":
     print("Importing SharePoint model metadata...")
@@ -36,7 +48,7 @@ if args.endpoint == "sharepoint":
     result = ctx.get_metadata().execute_query()
     export_to_file(args.path, result.value)
 elif args.endpoint == "graph":
-    print("Importing Microsoft Graph model metadata...")
-    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    print(f"Importing Microsoft Graph model metadata ({args.version})...")
+    client = GraphClient(tenant=tenant, version=GraphVersion(args.version)).with_client_secret(client_id, client_secret)
     result = client.get_metadata().execute_query()
     export_to_file(args.path, result.value)

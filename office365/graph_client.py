@@ -49,6 +49,7 @@ from office365.directory.users.user import User
 from office365.education.root import EducationRoot
 from office365.entity_collection import EntityCollection
 from office365.graph_request import GraphRequest
+from office365.graph_version import GraphVersion
 from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.management.app_management import DeviceAppManagement
 from office365.intune.devices.management.management import DeviceManagement
@@ -108,6 +109,7 @@ class GraphClient(ClientRuntimeContext):
         token_cache: Any = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
         authority: Optional[str] = None,
+        version: GraphVersion = GraphVersion.default(),
     ):
         """
         Initialize Microsoft Graph client
@@ -120,9 +122,18 @@ class GraphClient(ClientRuntimeContext):
                 https://msal-python.readthedocs.io/en/latest/#msal.SerializableTokenCache
             environment: Azure environment (default: AzureEnvironment.Global)
             authority: Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
+            version: Graph API version to address, ``v1.0`` (default) or ``beta``.
+                The version selects the service root, not what the model offers: a
+                member only the beta metadata declares is still spellable here, and
+                reports itself when a request would carry it to ``v1.0``.
         """
 
         super().__init__()
+        #: Seeds the first :class:`GraphRequest`; the request owns the version afterwards,
+        #: so :attr:`version` reads it there instead of keeping a second copy to disagree
+        #: with (``client.pending_request().version = ...`` predates this client having a
+        #: ``version``, and must not leave the two saying different things).
+        self._version = version
         self._token_callback = token_callback
         self._tenant = tenant
         self._token_cache = token_cache
@@ -551,7 +562,10 @@ class GraphClient(ClientRuntimeContext):
         """Get or create the pending request"""
         if self._pending_request is None:
             self._pending_request = GraphRequest(
-                tenant=self._tenant, environment=self._environment, authority=self._authority
+                version=self._version,
+                tenant=self._tenant,
+                environment=self._environment,
+                authority=self._authority,
             )
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
@@ -897,6 +911,29 @@ class GraphClient(ClientRuntimeContext):
     def tenant_name(self) -> Optional[str]:
         """Tenant id or domain name"""
         return self._tenant
+
+    @property
+    def version(self) -> GraphVersion:
+        """The API version this client addresses.
+
+        The pending request decides it, because the request is what spells the base
+        URL; reading it there keeps a direct ``pending_request().version = ...`` and
+        this property from ever disagreeing.
+
+        Passing ``GraphVersion.BETA`` sends every request to ``/beta``. The model is
+        the same either way, because what a version declares is a fact about the
+        declaration, not about the client in front of it.
+        """
+        return self.pending_request().version
+
+    @version.setter
+    def version(self, value: GraphVersion) -> None:
+        # The seed is load-bearing only while no request exists: it is what that request
+        # gets built with. Once one does, the request is updated instead -- and both are
+        # kept current so a replacement request cannot resurrect the old version.
+        self._version = value
+        if isinstance(self._pending_request, GraphRequest):
+            self._pending_request.version = value
 
     def has_delegated_permission(self, scope: str, app_id: str) -> bool:
         """Check if an app has a delegated permission on Microsoft Graph.
