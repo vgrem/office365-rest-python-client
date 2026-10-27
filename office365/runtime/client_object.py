@@ -31,6 +31,7 @@ from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 from office365.runtime.schema import EMPTY, TypeSchema
+from office365.runtime.types.odata_property import request_version
 
 if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection
@@ -456,6 +457,7 @@ class ClientObject:
         Returns:
             The property value or default value
         """
+        name = type(self)._schema.canonical(name)
         if default_value is None:
             meta = type(self)._schema.properties.get(name)
             if meta is not None:
@@ -481,6 +483,9 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
+        # A preview response spells a renamed member the preview way; the model holds one
+        # name per member, so both spellings land on the same declaration from here on.
+        name = type(self)._schema.canonical(name)
         if name == "__odata_type":
             return self
         if persist_changes:
@@ -545,6 +550,17 @@ class ClientObject:
         if self.resource_path is None:
             return None
         return self.context.service_root_url + str(self.resource_path)
+
+    def wire_name(self, name: str) -> str:
+        """The name this client's service root spells ``name`` with.
+
+        One model tree serves both roots, and a navigation's path segment is the wire
+        name, so a getter that builds a path asks here rather than hard-coding the
+        stable spelling: ``AccessPackage.catalog`` is ``catalog`` on v1.0 and
+        ``accessPackageCatalog`` on the preview root. A member the client's root does
+        not declare raises -- that is the whole gate for reading one.
+        """
+        return type(self)._schema.wire_name(name, request_version(self.context))
 
     @property
     def context(self) -> ClientRuntimeContext:
@@ -646,10 +662,15 @@ class ClientObject:
         if profile is None:
             json = {k: self.get_property(k) for k in self._properties}
         else:
+            version = request_version(self.context)
             persistable, readonly = self._schema.persistable, self._schema.readonly
             declared = self._schema.properties
+            # The payload is spelled the way the client's service root spells it, so a
+            # renamed member goes out under the name that root declares -- and a member
+            # that root does not declare raises instead of being sent into a schema that
+            # has no room for it.
             json = {
-                k: self.get_property(k)
+                self._schema.wire_name(k, version): self.get_property(k)
                 for k in self._properties
                 if k not in readonly
                 and profile.includes(self, declared.get(k), k, k in self._changes or k in persistable)

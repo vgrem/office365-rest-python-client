@@ -1,12 +1,54 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, is_dataclass
-from typing import Any, Dict, Optional, TypeVar
+from typing import Any, Dict, Optional, TypeVar, Union
 
 _ODATA_MARKER = "__odata__"
 _T = TypeVar("_T")
 
+PREVIEW = "beta"
+"""The version token of the preview service root -- ``GraphVersion.BETA.value``.
+
+The token is spelled here because it is what a declaration compares a client's
+version against, and a declaration is written by the generator, not by hand:
+``beta=PREVIEW`` -- written as ``beta=True`` -- is the difference between a member
+both service roots declare and one only the preview one does.
+"""
+
 _FIELD_DECLARATIONS: Dict[type, Dict[str, "ODataPropertyMeta"]] = {}
+
+
+def request_version(context: Any) -> Optional[str]:
+    """The API version a client addresses, when the client names one at all.
+
+    A SharePoint context addresses no version of anything, so the answer is ``None``
+    and no declaration that states a version applies to it. The runtime asks the
+    context instead of importing a service enum: Graph states the fact on
+    ``GraphRequest.version``, and that is all the runtime needs to know.
+    """
+    version = getattr(context, "version", None)
+    return getattr(version, "value", version)
+
+
+class NotSupportedInVersion(ValueError):
+    """A member the model holds, but the client's API version does not declare.
+
+    There is one model tree for both service roots, so a preview member is an
+    attribute of the class a stable client instantiates. Holding it is not the error
+    -- naming it is: a stable client that selects it, or sends it, would be describing
+    an entity the stable root has no schema for.
+    """
+
+    def __init__(self, member: str, version: Optional[str], declared_by: Optional[str] = None) -> None:
+        super().__init__(
+            f"{member} is declared by the {declared_by} service root only, "
+            f"and this client addresses {version if version is not None else 'no version'}"
+            if declared_by is not None
+            else f"{member} is not declared by the {version} service root"
+        )
+        self.member = member
+        self.version = version
+        self.declared_by = declared_by
 
 
 @dataclass(frozen=True)
@@ -72,6 +114,19 @@ class ODataPropertyMeta:
     searchable: bool = False
     compare: Optional[Compare] = None
     description: str = ""
+    #: What the preview service root does with this member, when it differs from the
+    #: stable root. One attribute, four answers, because it is one fact::
+    #:
+    #:     beta=None                    every root declares it, same spelling
+    #:     beta="accessPackageCatalog"  every root declares it, the preview root renames it
+    #:     beta=True                    only the preview root declares it
+    #:     beta=False                   only the stable root declares it
+    #:
+    #: Beta renames in place -- ``accessPackage.catalog`` is ``accessPackageCatalog``
+    #: there -- so one member can have two wire names. The model holds one of them (the
+    #: stable spelling) and translates at the two edges, which is why a generated getter
+    #: reads a name that is the same under either client.
+    beta: Optional[Union[bool, str]] = None
 
 
 class odata(dict):
@@ -104,11 +159,21 @@ class odata(dict):
     the service does. Everything a list item carries beyond ``Id`` is such a name, so a
     reader who sees one knows the CSDL is silent about it and the wire is not -- and
     ``tests/unit/test_odata_metadata.py`` keeps the flag equal to that fact.
+    ``beta=`` records what the preview root does with the member -- declares it the same,
+    declares it under another name, declares it alone, or dropped it -- because one model
+    tree serves both roots and that is the whole difference::
+
+        @odata(name="catalog", beta="accessPackageCatalog")  # both roots, renamed in preview
+        def catalog(self): ...
+
+
+        @odata(name="uniqueName", beta=True)  # the preview root only
+        def unique_name(self): ...
     """
 
     meta: ODataPropertyMeta
 
-    def __init__(self, name: str, **attrs: bool | str | Compare) -> None:
+    def __init__(self, name: str, **attrs: bool | str | None | Compare) -> None:
         self.meta = ODataPropertyMeta(name=name, **attrs)  # type: ignore[arg-type]
         super().__init__({_ODATA_MARKER: self.meta})
 
