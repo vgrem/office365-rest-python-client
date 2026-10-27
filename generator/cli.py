@@ -6,11 +6,14 @@ import argparse
 from pathlib import Path
 from typing import Optional, Sequence
 
+from generator.beta_markers import plan_markers
+from generator.beta_markers import write_report as write_marker_report
 from generator.builders.resolution import TypeRegistry
 from generator.config import ConfigError, GeneratorOptions
 from generator.documentation.subservices import fetch_service_map, load_service_map, write_service_map
 from generator.filters import TypeFilter
 from generator.manifest import Manifest, is_up_to_date
+from generator.metadata_diff import diff_metadata, write_report
 from generator.odata.reader import ODataReader
 from generator.pipeline import GeneratorPipeline
 from generator.routing import Router, render_suggestions
@@ -79,6 +82,39 @@ def suggest_routing(service: str) -> None:
     )
 
 
+def compare_metadata(service: str, other_path: str, report_path: Optional[str] = None) -> None:
+    """Print what another metadata snapshot declares on top of the configured one.
+
+    The report carries the delta and the ``beta=`` markers it justifies, because the
+    second is what a generation pass consumes and the first is how a reviewer checks
+    it: every marker in the report is a member the two snapshots disagree about.
+    """
+    definition = get_service(service)
+    options = GeneratorOptions.load(service, GENERATOR_DIR)
+    other = Path(other_path) if Path(other_path).is_absolute() else GENERATOR_DIR / other_path
+    base = definition.reader(options.metadata_path).read()
+    target = definition.reader(str(other)).read()
+    delta = diff_metadata(
+        base,
+        target,
+        base_label=Path(options.metadata_path).name,
+        target_label=other.name,
+    )
+    plan = plan_markers(delta)
+    print(delta.render())
+    print(f"\n{plan.render()}")
+    if report_path:
+        write_report(delta, report_path)
+        write_marker_report(plan, None, _marker_report_path(report_path))
+        print(f"\nFull report written to {report_path}")
+
+
+def _marker_report_path(report_path: str) -> str:
+    """``delta.json`` -> ``beta_markers.json``, next to it."""
+    path = Path(report_path)
+    return str(path.with_name("beta_markers" + path.suffix))
+
+
 def report_duplicates(service: str) -> None:
     """Print OData names claimed by more than one module (one shadows another)."""
     options = GeneratorOptions.load(service, GENERATOR_DIR)
@@ -104,6 +140,23 @@ def fetch_services() -> None:
         return
     path = write_service_map(services)
     print(f"Fetched {len(services)} type->service mappings -> {path}")
+
+
+def _run_standalone_command(args) -> Optional[int]:
+    """Run a one-shot report command, or return ``None`` to generate the model."""
+    if args.diff_metadata:
+        compare_metadata(args.service, args.diff_metadata, args.diff_report)
+        return 0
+    if args.fetch_services:
+        fetch_services()
+        return 0
+    if args.suggest_routing:
+        suggest_routing(args.service)
+        return 0
+    if args.report_duplicates:
+        report_duplicates(args.service)
+        return 0
+    return None
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -161,16 +214,22 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         action="store_true",
         help="print OData names claimed by more than one module and exit",
     )
+    parser.add_argument(
+        "--diff-metadata",
+        dest="diff_metadata",
+        metavar="PATH",
+        help="compare the configured metadata with another snapshot (e.g. metadata/GraphBeta.xml) and exit",
+    )
+    parser.add_argument(
+        "--diff-report",
+        dest="diff_report",
+        metavar="PATH",
+        help="write the --diff-metadata comparison to this JSON file",
+    )
     args = parser.parse_args(argv)
-    if args.fetch_services:
-        fetch_services()
-        return 0
-    if args.suggest_routing:
-        suggest_routing(args.service)
-        return 0
-    if args.report_duplicates:
-        report_duplicates(args.service)
-        return 0
+    handled = _run_standalone_command(args)
+    if handled is not None:
+        return handled
     try:
         generate(
             args.service,
