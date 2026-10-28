@@ -108,8 +108,6 @@ type_routing:
   ConfigurationManager*: office365.intune
   Compliance*: office365.intune
   M365Capability*: office365.intune
-  AirPrintSettings: office365.intune
-  ArchivedPrintJob: office365.intune
   AppsInstallationOptions*: office365.intune
   EdgeSearchEngine*: office365.intune
   MediaContentRating*: office365.intune
@@ -579,7 +577,136 @@ type_routing:
 # PublicError/PublicInnerError): a model, not a new public error type.
   Error: office365.runtime.types
 
-# Fallback: any remaining bare microsoft.graph.* type lands in the shared bucket.
+# Types the table used to leave to the catch-all, placed by their nearest *placed*
+# neighbour in the reference graph (a type one hop from an Outlook type and one hop
+# from a Teams type is shared by construction, so it kept no product and stayed in
+# office365.common). 104 of the 184 parked types resolved to one product this way;
+# the other 80 are the shared and unreferenced remainder below the fallback.
+
+# Directory: the nearest placed neighbour of each is an Entra type.
+  "AgentIdentity": office365.directory
+  "AgentIdentityBlueprint": office365.directory
+  "AgentIdentityBlueprintPrincipal": office365.directory
+  "AttributeSet": office365.directory
+  "ConfigurationBaseline": office365.directory
+  "CrossTenantIdentitySyncPolicyPartner": office365.directory
+  "CustomAuthenticationExtension": office365.directory
+  "CustomDataProvidedResource": office365.directory
+  "EmailAuthenticationMethodConfiguration": office365.directory
+  "EndUserSettings": office365.directory
+  "EngagementRoleMember": office365.directory
+  "EnterpriseCodeSigningCertificate": office365.directory
+  "ExternalAuthenticationMethod": office365.directory
+  "ExternalAuthenticationMethodConfiguration": office365.directory
+  "ExternalUsersSelfServiceSignUpEventsFlow": office365.directory
+  "Fido2AuthenticationMethodConfiguration": office365.directory
+  "IpNamedLocation": office365.directory
+  "MicrosoftAuthenticatorAuthenticationMethodConfiguration": office365.directory
+  "MicrosoftAuthenticatorAuthenticationMethodTarget": office365.directory
+  "OidcIdentityProvider": office365.directory
+  "OnAttributeCollectionListener": office365.directory
+  "OnAttributeCollectionStartCustomExtension": office365.directory
+  "OnAttributeCollectionStartListener": office365.directory
+  "OnAttributeCollectionSubmitCustomExtension": office365.directory
+  "OnAttributeCollectionSubmitListener": office365.directory
+  "OnAuthenticationMethodLoadStartListener": office365.directory
+  "OnEmailOtpSendListener": office365.directory
+  "OnFraudProtectionLoadStartListener": office365.directory
+  "OnInteractiveAuthFlowStartListener": office365.directory
+  "OnOtpSendCustomExtension": office365.directory
+  "OnPasswordSubmitCustomExtension": office365.directory
+  "OnPasswordSubmitListener": office365.directory
+  "OnTokenIssuanceStartListener": office365.directory
+  "OnUserCreateStartListener": office365.directory
+  "OnVerifiedIdClaimValidationListener": office365.directory
+  "PasskeyAuthenticationMethodTarget": office365.directory
+  "PasskeyProfile": office365.directory
+  "QrCode": office365.directory
+  "QrCodePinAuthenticationMethod": office365.directory
+  "QrCodePinAuthenticationMethodConfiguration": office365.directory
+  "QrPin": office365.directory
+  "Request": office365.directory
+  "SoftwareOathAuthenticationMethod": office365.directory
+  "SoftwareOathAuthenticationMethodConfiguration": office365.directory
+  "TemporaryAccessPassAuthenticationMethodConfiguration": office365.directory
+  "VoiceAuthenticationMethodConfiguration": office365.directory
+  "WhatIfAnalysisResult": office365.directory
+
+# Backup and restore: protection units, restore points, restore artifacts.
+  "DriveRestoreArtifact": office365.backuprestore
+  "DriveRestoreArtifactsBulkAdditionRequest": office365.backuprestore
+  "ExchangeProtectionPolicy": office365.backuprestore
+  "ExchangeRestoreSession": office365.backuprestore
+  "GranularDriveRestoreArtifact": office365.backuprestore
+  "GranularMailboxRestoreArtifact": office365.backuprestore
+  "GranularRestoreArtifactBase": office365.backuprestore
+  "GranularSiteRestoreArtifact": office365.backuprestore
+  "MailboxProtectionRule": office365.backuprestore
+  "MailboxProtectionUnit": office365.backuprestore
+  "MailboxProtectionUnitsBulkAdditionJob": office365.backuprestore
+  "MailboxRestoreArtifact": office365.backuprestore
+  "MailboxRestoreArtifactsBulkAdditionRequest": office365.backuprestore
+  "RestorePoint": office365.backuprestore
+  "SiteProtectionRule": office365.backuprestore
+  "SiteProtectionUnit": office365.backuprestore
+  "SiteProtectionUnitsBulkAdditionJob": office365.backuprestore
+  "SiteRestoreArtifact": office365.backuprestore
+  "SiteRestoreArtifactsBulkAdditionRequest": office365.backuprestore
+
+# Intune: app and configuration subtypes the anchor navigates into.
+  "EditionUpgradeConfiguration": office365.intune
+  "EnrollmentTroubleshootingEvent": office365.intune
+  "ImportedWindowsAutopilotDeviceIdentityUpload": office365.intune
+  "ManagedAndroidLobApp": office365.intune
+  "ManagedAndroidStoreApp": office365.intune
+  "ManagedAppStatusRaw": office365.intune
+  "ManagedIOSLobApp": office365.intune
+  "ManagedIOSStoreApp": office365.intune
+  "ManagedMobileLobApp": office365.intune
+  "MicrosoftStoreForBusinessApp": office365.intune
+  "SharedPCConfiguration": office365.intune
+
+# Outlook: buildings, maps and the response message the calendar places carry.
+  "Building": office365.outlook
+  "BuildingMap": office365.outlook
+  "EventMessageResponse": office365.outlook
+  "FixtureMap": office365.outlook
+  "FootprintMap": office365.outlook
+  "LevelMap": office365.outlook
+  "SectionMap": office365.outlook
+  "SingleValueExtendedProperty": office365.outlook
+  "StringDictionary": office365.outlook
+  "UnitMap": office365.outlook
+
+# Exchange administration: mailbox and message-trace types.
+  "ExchangeSettings": office365.admin
+  "Mailbox": office365.admin
+  "MailboxFolder": office365.admin
+  "MailboxItem": office365.admin
+  "Privacy": office365.admin
+
+# Education: Reading Coach and Reflect submissions.
+  "ReadingAssignmentSubmission": office365.education
+  "ReadingCoachPassage": office365.education
+  "ReflectCheckInResponse": office365.education
+  "ReportsRoot": office365.education
+  "SpeakerAssignmentSubmission": office365.education
+
+# Communications: participant events and DTMF operations.
+  "DeltaParticipants": office365.communications
+  "ParticipantJoiningNotification": office365.communications
+  "ParticipantLeftNotification": office365.communications
+  "SendDtmfTonesOperation": office365.communications
+
+# Teams: Viva Engage, emergency calling.
+  "EmergencyCallEvent": office365.teams
+  "EngagementAsyncOperation": office365.teams
+  "EngagementRole": office365.teams
+
+# Fallback: the 80 types that belong to no single product -- 20 shared by two or more
+# (IntuneBrand, Desk, AiInteraction), 58 that nothing in this snapshot references, and
+# the two whose short names are ambiguous (Operation is every product's LRO base,
+# Endpoint is callRecords' and security's).
   "*": office365.common
 
 # Reference-based (2-stage) placements for bare Graph entity types.

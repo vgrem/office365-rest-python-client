@@ -88,3 +88,44 @@ def test_parse_list_accepts_lists_strings_and_none() -> None:
 
 def test_split_ignored_separates_prefix_patterns() -> None:
     assert split_ignored(["X", "Edu*"]) == (["X"], ["Edu"])
+
+
+def _load_strictly(path: Path) -> object:
+    """Parse a settings file, refusing a mapping that repeats a key.
+
+    ``yaml.safe_load`` keeps the *last* of two equal keys and says nothing, so a
+    710-entry hand-maintained ``type_routing`` table can silently re-route a type by
+    being edited twice. Two entries did exactly that (``AirPrintSettings`` and
+    ``ArchivedPrintJob``, at ``office365.intune`` and ``office365.intune.print``).
+    """
+    import yaml
+
+    class _Strict(yaml.SafeLoader):
+        pass
+
+    def construct_mapping(loader: yaml.SafeLoader, node: yaml.MappingNode, deep: bool = False) -> dict:
+        seen: set = set()
+        for key_node, _ in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            if key in seen:
+                raise ValueError(f"duplicate key {key!r} at line {key_node.start_mark.line + 1}")
+            seen.add(key)
+        return yaml.SafeLoader.construct_mapping(loader, node, deep=deep)
+
+    _Strict.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping)
+    return yaml.load(path.read_text(encoding="utf-8"), Loader=_Strict)
+
+
+@pytest.mark.parametrize("service", ["graph", "sharepoint"])
+def test_the_settings_files_never_repeat_a_key(service: str) -> None:
+    settings = Path(__file__).parents[2] / "generator" / f"settings.{service}.yaml"
+
+    _load_strictly(settings)
+
+
+def test_every_routed_type_names_a_package_module() -> None:
+    settings = Path(__file__).parents[2] / "generator" / "settings.graph.yaml"
+    routing = _load_strictly(settings)["type_routing"]
+
+    wrong = {name: module for name, module in routing.items() if not str(module).startswith("office365.")}
+    assert wrong == {}
