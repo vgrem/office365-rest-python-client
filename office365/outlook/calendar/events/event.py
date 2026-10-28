@@ -528,3 +528,15 @@ class Event(OutlookItem):
             "exceptionOccurrences",
             EntityCollection[Event](self.context, Event, ResourcePath("exceptionOccurrences", self.resource_path)),
         )
+
+    @odata(name="occurrenceId", beta=True)
+    @property
+    def occurrence_id(self) -> Optional[str]:
+        """Gets the occurrenceId property"""
+        return self.properties.get("occurrenceId", None)
+
+    @odata(name="uid", beta=True)
+    @property
+    def uid(self) -> Optional[str]:
+        """Gets the uid property"""
+        return self.properties.get("uid", None)

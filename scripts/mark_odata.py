@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import functools
 import pathlib
 import sys
 from typing import Dict, List, NamedTuple, Optional, Set
@@ -56,6 +57,12 @@ _SERVICES = {
     "graph": ("graph", ODataV4Reader),
     "sharepoint": ("sharepoint", ODataV3Reader),
 }
+
+#: The preview root's snapshot, read when it sits next to the stable one. ``system=True``
+#: claims the metadata has never heard of a name, and a member that only the preview
+#: declares (``Event.uid``) is heard of: answering ``system`` for it would say the
+#: column is invented by the client when it is a documented preview member.
+_PREVIEW_SNAPSHOT = {"graph": "GraphBeta.xml", "sharepoint": "GraphBeta.xml"}
 
 
 class Declared(NamedTuple):
@@ -81,11 +88,23 @@ class Edit(NamedTuple):
 Edits = List[Edit]
 
 
+@functools.lru_cache(maxsize=None)
 def load_catalog(service: str) -> Catalog:
-    """Map each CSDL type name to the properties it declares itself."""
+    """Map each CSDL type name to the properties it declares itself, both roots."""
     source, reader = _SERVICES[service]
     options = GeneratorOptions.load(source, _GENERATOR_DIR)
-    model = reader(options.metadata_path).read()
+    catalog = _catalog_of(reader(options.metadata_path).read())
+    preview = pathlib.Path(options.metadata_path).parent / _PREVIEW_SNAPSHOT[service]
+    if preview.is_file():
+        for name, properties in _catalog_of(reader(str(preview)).read()).items():
+            declared = catalog.setdefault(name, {})
+            for prop, declaration in properties.items():
+                declared.setdefault(prop, declaration)
+    return catalog
+
+
+def _catalog_of(model) -> Catalog:
+    """The declarations one snapshot carries, type name lowercased."""
 
     def is_enum(type_name: str) -> bool:
         bare = type_name[len("Collection(") : -1] if type_name.startswith("Collection(") else type_name
@@ -244,7 +263,7 @@ def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str,
     if found is None:
         return []
     markers = pending_markers(tree, found.node, found.properties, source.splitlines(keepends=True))
-    if not markers or _ODATA_IMPORT in source:
+    if not markers or _imports_odata(tree):
         return markers
     last_import = max(
         node.end_lineno or node.lineno
@@ -253,6 +272,16 @@ def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str,
         and not (isinstance(node, ast.ImportFrom) and node.module == "__future__")
     )
     return markers + [Edit(last_import + 1, None, _ODATA_IMPORT + "\n")]
+
+
+def _imports_odata(tree: ast.Module) -> bool:
+    """Whether the module already imports ``odata``, however it spells the import line."""
+    return any(
+        isinstance(node, ast.ImportFrom)
+        and node.module == "office365.runtime.types.odata_property"
+        and any(alias.name == "odata" for alias in node.names)
+        for node in tree.body
+    )
 
 
 def mark_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]]) -> int:

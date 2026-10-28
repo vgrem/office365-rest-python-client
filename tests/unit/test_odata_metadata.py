@@ -69,6 +69,43 @@ def test_every_getter_that_spells_an_odata_name_declares_it(service: str, root: 
     assert planned == {}
 
 
+_PREVIEW_GETTER = """
+from office365.runtime.types.odata_property import odata
+
+
+class Event:
+    @staticmethod
+    def entity_type_name():
+        return "microsoft.graph.Event"
+
+    @odata(name="uid")
+    @property
+    def uid(self):
+        return self.properties.get("uid", None)
+"""
+
+
+def _plan(tmp_path: pathlib.Path, source: str) -> list:
+    module = tmp_path / "event.py"
+    module.write_text(source, encoding="utf-8")
+    catalog = _mark_odata.load_catalog("graph")
+    return _mark_odata.plan_module(module, catalog, _mark_odata.type_index(catalog))
+
+
+def test_a_member_only_the_preview_declares_is_not_a_system_column(tmp_path: pathlib.Path) -> None:
+    """``system=True`` says the metadata has never heard of the name; beta has."""
+    assert _plan(tmp_path, _PREVIEW_GETTER) == []
+
+
+def test_a_getter_is_marked_without_re_importing_odata_beside_another_name(tmp_path: pathlib.Path) -> None:
+    """``from ... import Compare, odata`` is an import of ``odata``; do not add a second."""
+    source = _PREVIEW_GETTER.replace("import odata", "import Compare, odata").replace('    @odata(name="uid")\n', "")
+
+    edits = _plan(tmp_path, source)
+
+    assert [edit.new for edit in edits] == ['    @odata(name="uid")\n']
+
+
 def _says_system(call: ast.Call) -> bool:
     """Whether the ``@odata`` call carries ``system=True``."""
     for keyword in call.keywords:

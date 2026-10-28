@@ -243,3 +243,15 @@ class Calendar(Entity):
     def is_shared_with_me(self) -> Optional[bool]:
         """Gets the isSharedWithMe property"""
         return self.properties.get("isSharedWithMe", None)
+
+    @odata(name="calendarGroupId", beta=True)
+    @property
+    def calendar_group_id(self) -> Optional[str]:
+        """Gets the calendarGroupId property"""
+        return self.properties.get("calendarGroupId", None)
+
+    @odata(name="isShared", beta=True)
+    @property
+    def is_shared(self) -> Optional[bool]:
+        """Gets the isShared property"""
+        return self.properties.get("isShared", None)
