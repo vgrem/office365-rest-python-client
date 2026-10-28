@@ -457,7 +457,7 @@ class ServicePrincipal(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path)),
         )
 
-    @odata(name="oauth2PermissionScopes")
+    @odata(name="oauth2PermissionScopes", beta=False)
     @property
     def oauth2_permission_scopes(self) -> ClientValueCollection[PermissionScope]:
         """

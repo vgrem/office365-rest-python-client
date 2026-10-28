@@ -12,6 +12,7 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
 from office365.outlook.calendar.events.event import Event
+from office365.outlook.contacts.contact import Contact
 from office365.runtime.client_object import ClientObject
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
@@ -191,3 +192,28 @@ def test_a_preview_only_member_never_reaches_a_stable_select():
 
     assert ReadEntityQuery(stable).url.endswith("?$select=" + ",".join(columns[:-2]))
     assert ReadEntityQuery(preview).url.endswith("?$select=" + ",".join(columns))
+
+
+def test_the_contact_columns_a_stable_client_selects_are_the_ones_it_always_selected():
+    """The other direction of the pilot: 7 members the preview root dropped.
+
+    ``select_all()`` still lists them because the model declares them -- the stable root
+    answers them and a v1.0 export must keep asking. What changes is the preview
+    projection, where they are gone: beta replaced the three phone fields with
+    ``phones``, so a beta ``$select`` asking for ``businessPhones`` would be rejected.
+    """
+    schema = Contact._schema
+    columns = list(Contact.select_all())
+
+    assert schema.stable_only == {
+        "businessAddress",
+        "businessHomePage",
+        "businessPhones",
+        "homeAddress",
+        "homePhones",
+        "mobilePhone",
+        "otherAddress",
+    }
+    assert schema.projection(columns, "v1.0") == columns
+    assert schema.projection(columns, PREVIEW) == [name for name in columns if name not in schema.stable_only]
+    assert len(columns) == len(schema.projection(columns, PREVIEW)) + 7

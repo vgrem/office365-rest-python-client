@@ -343,7 +343,7 @@ class Site(BaseItem):
         """The default termStore under this site."""
         return self.properties.get("termStore", Store(self.context, ResourcePath("termStore", self.resource_path)))
 
-    @odata(name="termStores")
+    @odata(name="termStores", beta=False)
     @property
     def term_stores(self) -> EntityCollection[Store]:
         """The collection of termStores under this site."""

@@ -488,7 +488,7 @@ class Application(DirectoryObject):
             ),
         )
 
-    @odata(name="addIns")
+    @odata(name="addIns", beta=False)
     @property
     def add_ins(self) -> ClientValueCollection[AddIn]:
         """Gets the addIns property"""

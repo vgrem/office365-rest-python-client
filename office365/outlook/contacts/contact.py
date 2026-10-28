@@ -36,7 +36,7 @@ class Contact(OutlookItem):
         self.context.add_query(qry)
         return self
 
-    @odata(name="businessPhones")
+    @odata(name="businessPhones", beta=False)
     @property
     def business_phones(self) -> StringCollection:
         """The contact's business phone numbers."""
@@ -66,7 +66,7 @@ class Contact(OutlookItem):
         """Sets name of the contact's manager."""
         self.set_property("manager", value)
 
-    @odata(name="mobilePhone")
+    @odata(name="mobilePhone", beta=False)
     @property
     def mobile_phone(self) -> Optional[str]:
         """The contact's mobile phone number."""
@@ -77,7 +77,7 @@ class Contact(OutlookItem):
         """Sets contact's mobile phone number."""
         self.set_property("mobilePhone", value)
 
-    @odata(name="homeAddress")
+    @odata(name="homeAddress", beta=False)
     @property
     def home_address(self) -> PhysicalAddress:
         """The contact's home address."""
@@ -141,13 +141,13 @@ class Contact(OutlookItem):
         """Gets the birthday property"""
         return self.properties.get("birthday", datetime.min)
 
-    @odata(name="businessAddress")
+    @odata(name="businessAddress", beta=False)
     @property
     def business_address(self) -> PhysicalAddress:
         """Gets the businessAddress property"""
         return self.properties.get("businessAddress", PhysicalAddress())
 
-    @odata(name="businessHomePage")
+    @odata(name="businessHomePage", beta=False)
     @property
     def business_home_page(self) -> Optional[str]:
         """Gets the businessHomePage property"""
@@ -189,7 +189,7 @@ class Contact(OutlookItem):
         """Gets the givenName property"""
         return self.properties.get("givenName", None)
 
-    @odata(name="homePhones")
+    @odata(name="homePhones", beta=False)
     @property
     def home_phones(self) -> StringCollection:
         """Gets the homePhones property"""
@@ -235,7 +235,7 @@ class Contact(OutlookItem):
         """Gets the officeLocation property"""
         return self.properties.get("officeLocation", None)
 
-    @odata(name="otherAddress")
+    @odata(name="otherAddress", beta=False)
     @property
     def other_address(self) -> PhysicalAddress:
         """Gets the otherAddress property"""

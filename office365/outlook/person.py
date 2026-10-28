@@ -47,7 +47,7 @@ class Person(Entity):
         """Gets the givenName property"""
         return self.properties.get("givenName", None)
 
-    @odata(name="imAddress")
+    @odata(name="imAddress", beta=False)
     @property
     def im_address(self) -> Optional[str]:
         """Gets the imAddress property"""
@@ -59,7 +59,7 @@ class Person(Entity):
         """Gets the isFavorite property"""
         return self.properties.get("isFavorite", None)
 
-    @odata(name="jobTitle")
+    @odata(name="jobTitle", beta=False)
     @property
     def job_title(self) -> Optional[str]:
         """Gets the jobTitle property"""
@@ -123,7 +123,7 @@ class Person(Entity):
         """Gets the personType property"""
         return self.properties.get("personType", PersonType())
 
-    @odata(name="scoredEmailAddresses")
+    @odata(name="scoredEmailAddresses", beta=False)
     @property
     def scored_email_addresses(self) -> ClientValueCollection[ScoredEmailAddress]:
         """Gets the scoredEmailAddresses property"""
