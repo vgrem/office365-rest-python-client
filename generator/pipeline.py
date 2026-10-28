@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from generator.builders.member import sanitize_member_name
 from generator.builders.resolution import TypeRegistry
@@ -62,6 +62,34 @@ def _pollable_types(model: ODataModel) -> frozenset[str]:
     )
 
 
+def _qualified_types(requested: Iterable[str], model: ODataModel) -> Tuple[Tuple[str, ...], Dict[str, str]]:
+    """The model's own spelling of each requested type, and why the rest cannot be used.
+
+    ``--type Event`` and ``--type microsoft.graph.Event`` mean the same thing, and both
+    surfaces stayed reachable for a while: the pipeline wanted the qualified name while
+    the marker plan accepted the short one, so the same flag worked in one mode and
+    silently selected nothing in the other. The metadata decides here, as it does
+    everywhere else -- and a short name two types share is reported, never guessed.
+    """
+    by_short: Dict[str, List[str]] = {}
+    for name in model.types:
+        by_short.setdefault(name.rsplit(".", maxsplit=1)[-1].lower(), []).append(name)
+    qualified: List[str] = []
+    unresolved: Dict[str, str] = {}
+    for name in requested:
+        if name in model.types:
+            qualified.append(name)
+            continue
+        candidates = by_short.get(name.rsplit(".", maxsplit=1)[-1].lower(), [])
+        if len(candidates) == 1:
+            qualified.append(candidates[0])
+        elif candidates:
+            unresolved[name] = f"ambiguous, the metadata has {', '.join(sorted(candidates))}"
+        else:
+            unresolved[name] = "not in metadata"
+    return tuple(qualified), unresolved
+
+
 class GeneratorPipeline:
     """Runs one generation pass over an :class:`ODataModel`.
 
@@ -87,7 +115,8 @@ class GeneratorPipeline:
         self._options = options
         self._docs = docs_service
         self._update_only = update_only
-        self._only_types = tuple(only_types or ())
+        self._requested_types = tuple(only_types or ())
+        self._only_types, self._unresolved_types = _qualified_types(self._requested_types, model)
         self._force = force
         self._metadata_path = options.metadata_path
         self._base_dir = base_dir
@@ -134,7 +163,9 @@ class GeneratorPipeline:
         if self._can_skip():
             print("Model is up to date (metadata and config unchanged); nothing to do.")
             return
-        targeted = bool(self._only_types)
+        # A request that resolved to nothing is still a targeted run: falling back to
+        # the whole metadata would answer a mistyped --type by writing every file.
+        targeted = bool(self._requested_types)
         total = len(self._only_types) if targeted else len(self._model.types)
         start_at = 0 if targeted else self._start_at_index()
         if targeted:
@@ -188,13 +219,12 @@ class GeneratorPipeline:
             self._options,
             self._previous,
             force=self._force,
-            targeted=bool(self._only_types or self._report_path),
+            targeted=bool(self._requested_types or self._report_path),
         )
 
     def _warn_unknown_types(self) -> None:
-        missing = [name for name in self._only_types if name not in self._model.types]
-        if missing:
-            print(f"  Unknown type(s), not in metadata: {', '.join(missing)}")
+        for name, reason in self._unresolved_types.items():
+            print(f"  Unusable --type {name}: {reason}")
 
     def _start_at_index(self) -> int:
         """Digit ``start_at``: begin N types into the metadata order."""

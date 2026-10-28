@@ -103,6 +103,34 @@ def test_start_at_skips_the_first_n_types(tmp_path: Path, monkeypatch) -> None:
     assert _FakeBuilder.processed == ["SP.B", "SP.C"]
 
 
+def test_a_short_type_name_selects_the_one_type_it_abbreviates(tmp_path: Path, monkeypatch) -> None:
+    """``--type Event`` and ``--type microsoft.graph.Event`` are the same request."""
+    monkeypatch.setattr(pipeline_module, "TypeBuilder", _FakeBuilder)
+    _FakeBuilder.processed = []
+
+    GeneratorPipeline(
+        _model("microsoft.graph.Event", "microsoft.graph.Calendar"),
+        _options(tmp_path),
+        only_types=["Event"],
+    ).run()
+
+    assert _FakeBuilder.processed == ["microsoft.graph.Event"]
+
+
+def test_a_short_type_name_two_types_share_is_refused_not_guessed(tmp_path: Path, monkeypatch, capsys) -> None:
+    monkeypatch.setattr(pipeline_module, "TypeBuilder", _FakeBuilder)
+    _FakeBuilder.processed = []
+
+    GeneratorPipeline(
+        _model("microsoft.graph.Event", "microsoft.other.Event", "microsoft.graph.Calendar"),
+        _options(tmp_path),
+        only_types=["Event"],
+    ).run()
+
+    assert _FakeBuilder.processed == []
+    assert "Unusable --type Event: ambiguous" in capsys.readouterr().out
+
+
 def _real_options(tmp_path: Path) -> GeneratorOptions:
     metadata = tmp_path / "meta.xml"
     metadata.write_text("<a/>", encoding="utf-8")
