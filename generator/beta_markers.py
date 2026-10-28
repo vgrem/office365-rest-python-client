@@ -70,6 +70,20 @@ class MarkerPlan:
     def by_reason(self, reason: str) -> List[MemberMarker]:
         return [marker for marker in self.markers if marker.reason == reason]
 
+    def restricted(self, types: Iterable[str]) -> "MarkerPlan":
+        """The part of the plan that lands on ``types`` (short or qualified names).
+
+        A whole-tree plan is the honest default, but a first pass onto a handful of
+        types is how the machinery earns trust: the plan is still derived from the
+        snapshots, only its reach is narrowed.
+        """
+        wanted = {name.rsplit(".", 1)[-1].lower() for name in types}
+        return MarkerPlan(
+            base=self.base,
+            target=self.target,
+            markers=[marker for marker in self.markers if marker.type_name.rsplit(".", 1)[-1].lower() in wanted],
+        )
+
     def to_dict(self) -> dict:
         return {
             "metadata": {"base": self.base, "target": self.target},

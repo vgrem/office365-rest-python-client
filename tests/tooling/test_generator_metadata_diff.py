@@ -42,6 +42,61 @@ def test_identical_snapshots_report_nothing():
     assert delta.render() == "beta declares nothing v1 does not."
 
 
+def test_a_member_the_base_declares_is_not_gained_by_re_declaring_it():
+    """Beta flattens AccessPackageQuestion off Entity and declares ``id`` itself.
+
+    ``id`` is not new: the stable root exposes it through ``Entity``. Reading declared
+    members alone would call it preview-only, and a marker saying so refuses ``id`` on
+    every stable request.
+    """
+    base = _model(
+        _type("graph.Entity", "id"),
+        _type("graph.AccessPackageQuestion", "text", base_type="graph.Entity"),
+    )
+    target = _model(
+        _type("graph.Entity", "id"),
+        _type("graph.AccessPackageQuestion", "id", "text"),
+    )
+
+    delta = diff_metadata(base, target, "v1", "beta")
+
+    assert delta.is_empty
+
+
+def test_a_member_that_moves_to_the_base_is_not_lost():
+    """The same change seen from the other side: ``displayName`` stays reachable."""
+    base = _model(
+        _type("graph.Entity"),
+        _type("graph.BookingBusiness", "displayName", base_type="graph.Entity"),
+    )
+    target = _model(
+        _type("graph.Entity", "displayName"),
+        _type("graph.BookingBusiness", base_type="graph.Entity"),
+    )
+
+    delta = diff_metadata(base, target, "v1", "beta")
+
+    # The base is where the member now lives, so that is the only type that gains it.
+    assert delta.properties_only_in_base == {}
+    assert delta.properties_only_in_target == {"graph.Entity": ["displayName"]}
+
+
+def test_suppressing_an_inherited_gain_does_not_hide_a_genuinely_new_member():
+    """The suppression is about one name, not about the type's diff as a whole."""
+    base = _model(
+        _type("graph.Entity", "id"),
+        _type("graph.AccessPackageQuestion", "text", base_type="graph.Entity"),
+    )
+    target = _model(
+        _type("graph.Entity", "id"),
+        _type("graph.AccessPackageQuestion", "id", "text", "isRequired"),
+    )
+
+    delta = diff_metadata(base, target, "v1", "beta")
+
+    assert delta.properties_only_in_target == {"graph.AccessPackageQuestion": ["isRequired"]}
+
+
 def test_a_type_only_in_the_target_is_reported_whole():
     delta = diff_metadata(
         _model(_type("graph.User", "displayName")),

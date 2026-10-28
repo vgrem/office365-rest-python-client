@@ -24,7 +24,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
 
+from generator.odata.method import MethodInformation
 from generator.odata.model import ODataModel
+from generator.odata.property import PropertyInformation
+from generator.odata.type_information import TypeInformation
 
 #: How many names to show per bucket in the text report; the JSON has them all.
 _PREVIEW = 8
@@ -212,21 +215,33 @@ def diff_metadata(base: ODataModel, target: ODataModel, base_label: str, target_
     delta.types_only_in_base = sorted(base_names - target_names)
 
     for name in sorted(base_names & target_names):
-        _diff_type(base.types[name], target.types[name], delta)
+        _diff_type(name, base, target, delta)
     return delta
 
 
-def _diff_type(base_type, target_type, delta: MetadataDelta) -> None:
-    type_name = target_type.FullName
-    base_members = _members_by_kind(base_type)
-    target_members = _members_by_kind(target_type)
+def _diff_type(type_name: str, base: ODataModel, target: ODataModel, delta: MetadataDelta) -> None:
+    """Diff one type twice over: what it declares, and what it can be asked for.
+
+    Declarations are the unit of generation -- a member a type merely inherits is not
+    written into its file -- so they are what the buckets report. Exposure is what a
+    request can name, and it is what keeps a declaration change from looking like a
+    service change: beta flattens ``AccessPackageQuestion`` off ``Entity`` and declares
+    ``id`` itself, and ``BookingBusiness.displayName`` moves the other way. Neither is
+    news to a caller, so neither may become a marker.
+    """
+    base_own = _members_by_kind(base.types[type_name].Properties)
+    target_own = _members_by_kind(target.types[type_name].Properties)
+    base_inherited = _members_by_kind(_inherited(base, type_name))
+    target_inherited = _members_by_kind(_inherited(target, type_name))
+    base_methods = set(base.types[type_name].Methods) | set(_inherited_methods(base, type_name))
+    target_methods = set(target.types[type_name].Methods) | set(_inherited_methods(target, type_name))
 
     for kind, bucket_in_target, bucket_in_base in (
         (PROPERTY, delta.properties_only_in_target, delta.properties_only_in_base),
         (NAVIGATION, delta.navigations_only_in_target, delta.navigations_only_in_base),
     ):
-        lost = sorted(set(base_members[kind]) - set(target_members[kind]))
-        gained = sorted(set(target_members[kind]) - set(base_members[kind]))
+        lost = sorted(set(base_own[kind]) - set(target_own[kind]) - set(target_inherited[kind]))
+        gained = sorted(set(target_own[kind]) - set(base_own[kind]) - set(base_inherited[kind]))
         renames = _pair_renames(lost, gained)
         delta.renamed.extend(MemberRename(type_name, kind, before, after) for before, after in sorted(renames.items()))
         if remaining := [name for name in lost if name not in renames]:
@@ -235,25 +250,52 @@ def _diff_type(base_type, target_type, delta: MetadataDelta) -> None:
             bucket_in_target[type_name] = remaining
         delta.rename_candidates.extend(_ambiguities(type_name, kind, lost, gained, renames))
 
-    for member in sorted(set(base_type.Properties) & set(target_type.Properties)):
-        before, after = base_type.Properties[member].TypeName, target_type.Properties[member].TypeName
+    for member in sorted(set(base.types[type_name].Properties) & set(target.types[type_name].Properties)):
+        before = base.types[type_name].Properties[member].TypeName
+        after = target.types[type_name].Properties[member].TypeName
         if before != after:
             delta.member_type_conflicts.append(MemberTypeConflict(type_name, member, before or "", after or ""))
 
-    _diff_enum(base_type, target_type, delta)
+    _diff_enum(base.types[type_name], target.types[type_name], delta)
 
-    added_methods = sorted(set(target_type.Methods) - set(base_type.Methods))
+    added_methods = sorted(set(target.types[type_name].Methods) - base_methods)
     if added_methods:
         delta.methods_only_in_target[type_name] = added_methods
-    removed_methods = sorted(set(base_type.Methods) - set(target_type.Methods))
+    removed_methods = sorted(set(base.types[type_name].Methods) - target_methods)
     if removed_methods:
         delta.methods_only_in_base[type_name] = removed_methods
 
 
-def _members_by_kind(schema) -> Dict[str, List[str]]:
+def _inherited(model: ODataModel, type_name: str) -> Dict[str, PropertyInformation]:
+    """The properties ``type_name`` can name without declaring them itself."""
+    inherited: Dict[str, PropertyInformation] = {}
+    for schema in _ancestors(model, type_name):
+        inherited.update({name: prop for name, prop in schema.Properties.items() if name not in inherited})
+    return inherited
+
+
+def _inherited_methods(model: ODataModel, type_name: str) -> Dict[str, MethodInformation]:
+    """The methods ``type_name`` can call without declaring them itself."""
+    inherited: Dict[str, MethodInformation] = {}
+    for schema in _ancestors(model, type_name):
+        inherited.update({name: method for name, method in schema.Methods.items() if name not in inherited})
+    return inherited
+
+
+def _ancestors(model: ODataModel, type_name: str) -> Iterable[TypeInformation]:
+    seen = {type_name}
+    current = model.types[type_name].BaseTypeName
+    while current and current not in seen and current in model.types:
+        seen.add(current)
+        schema = model.types[current]
+        yield schema
+        current = schema.BaseTypeName
+
+
+def _members_by_kind(properties: Mapping[str, PropertyInformation]) -> Dict[str, List[str]]:
     """Split a type's members the way the model splits them: property vs navigation."""
     members: Dict[str, List[str]] = {PROPERTY: [], NAVIGATION: []}
-    for name, prop in schema.Properties.items():
+    for name, prop in properties.items():
         members[NAVIGATION if prop.IsNavigation else PROPERTY].append(name)
     return members
 

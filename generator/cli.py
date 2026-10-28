@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional, Sequence
 
-from generator.beta_markers import plan_markers
+from generator.beta_markers import compare_markers, plan_markers, read_declared_markers
 from generator.beta_markers import write_report as write_marker_report
 from generator.builders.resolution import TypeRegistry
 from generator.config import ConfigError, GeneratorOptions
@@ -34,10 +35,20 @@ def generate(
     force: bool = False,
     smoke: bool = True,
     check: bool = False,
+    metadata: Optional[str] = None,
 ) -> None:
-    """Read the service metadata and generate/update the corresponding model files."""
+    """Read the service metadata and generate/update the corresponding model files.
+
+    ``metadata`` reads a different snapshot than the configured one -- the preview CSDL
+    -- while the routing, filters and output tree stay exactly what the service config
+    says. That is what makes one model possible: the tree is the union, the snapshot
+    decides what is new, and the marker pass records which root declares what.
+    """
     definition = get_service(service)
     options = GeneratorOptions.load(service, GENERATOR_DIR, dry_run=dry_run)
+    if metadata:
+        source = Path(metadata) if Path(metadata).is_absolute() else GENERATOR_DIR / metadata
+        options = replace(options, metadata_path=str(source))
     if is_up_to_date(
         options,
         Manifest.load(options.metadata_path, GENERATOR_DIR),
@@ -82,12 +93,24 @@ def suggest_routing(service: str) -> None:
     )
 
 
-def compare_metadata(service: str, other_path: str, report_path: Optional[str] = None) -> None:
+def compare_metadata(
+    service: str,
+    other_path: str,
+    report_path: Optional[str] = None,
+    *,
+    apply: bool = False,
+    only_types: Optional[Sequence[str]] = None,
+    dry_run: bool = False,
+) -> None:
     """Print what another metadata snapshot declares on top of the configured one.
 
     The report carries the delta and the ``beta=`` markers it justifies, because the
     second is what a generation pass consumes and the first is how a reviewer checks
     it: every marker in the report is a member the two snapshots disagree about.
+
+    ``apply`` brings the model's own decorators in line with the plan -- adding a
+    marker the snapshots now justify, changing one they no longer spell the same way,
+    and **removing** one they have stopped justifying (a preview that went stable).
     """
     definition = get_service(service)
     options = GeneratorOptions.load(service, GENERATOR_DIR)
@@ -107,6 +130,25 @@ def compare_metadata(service: str, other_path: str, report_path: Optional[str] =
         write_report(delta, report_path)
         write_marker_report(plan, None, _marker_report_path(report_path))
         print(f"\nFull report written to {report_path}")
+    if apply:
+        _apply_marker_pass(options, plan.restricted(only_types) if only_types else plan, dry_run=dry_run)
+
+
+def _apply_marker_pass(options: GeneratorOptions, plan, *, dry_run: bool) -> None:
+    """Write the markers the plan justifies into the model, and say what it wrote."""
+    from generator.marker_apply import TypeFiles, apply_markers
+
+    files = TypeFiles(Path(options.output_path))
+    sources = {marker.type_name: files.path_of(marker.type_name) for marker in plan.markers}
+    declared = read_declared_markers({name: path for name, path in sources.items() if path is not None})
+    report = apply_markers(compare_markers(plan, declared), files, dry_run=dry_run)
+    print(f"\n{report.render()}")
+    for edit in report.edits:
+        print(f"  {edit.action:<7} {Path(edit.path).name}  {edit.type_name.rsplit('.', 1)[-1]}.{edit.member}")
+    for marker, reason in report.skipped:
+        print(f"  skipped {marker.type_name.rsplit('.', 1)[-1]}.{marker.member}: {reason}")
+    if dry_run and report.edits:
+        print("\nDry run: no file was written.")
 
 
 def _marker_report_path(report_path: str) -> str:
@@ -145,7 +187,14 @@ def fetch_services() -> None:
 def _run_standalone_command(args) -> Optional[int]:
     """Run a one-shot report command, or return ``None`` to generate the model."""
     if args.diff_metadata:
-        compare_metadata(args.service, args.diff_metadata, args.diff_report)
+        compare_metadata(
+            args.service,
+            args.diff_metadata,
+            args.diff_report,
+            apply=args.apply_markers,
+            only_types=args.types,
+            dry_run=args.dry_run,
+        )
         return 0
     if args.fetch_services:
         fetch_services()
@@ -180,7 +229,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         action="append",
         default=[],
         metavar="ODATA_TYPE",
-        help="only process this OData type (e.g. SP.File); repeatable",
+        help="only process this OData type (e.g. SP.File); repeatable; with --apply-markers, only mark it",
+    )
+    parser.add_argument(
+        "--metadata",
+        metavar="PATH",
+        help="read this metadata snapshot instead of the configured one (e.g. metadata/GraphBeta.xml)",
     )
     parser.add_argument("--report", dest="report_path", help="write a JSON run report to this path")
     parser.add_argument(
@@ -226,6 +280,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         metavar="PATH",
         help="write the --diff-metadata comparison to this JSON file",
     )
+    parser.add_argument(
+        "--apply-markers",
+        dest="apply_markers",
+        action="store_true",
+        help="with --diff-metadata: write the justified @odata(beta=...) markers into the model",
+    )
     args = parser.parse_args(argv)
     handled = _run_standalone_command(args)
     if handled is not None:
@@ -237,6 +297,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             update_only=args.update_only,
             only_types=args.types,
             report_path=args.report_path,
+            metadata=args.metadata,
             force=args.force,
             smoke=args.smoke,
             check=args.check,
