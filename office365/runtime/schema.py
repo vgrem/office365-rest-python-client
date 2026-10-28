@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Dict, Mapping, Optional, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple
 
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
@@ -172,6 +172,20 @@ class TypeSchema:
         if preview and isinstance(declared.beta, str):
             return declared.beta
         return name
+
+    def projection(self, names: Iterable[str], version: Optional[str]) -> List[str]:
+        """The names of ``names`` that ``version`` declares, spelled as it spells them.
+
+        A projection is bulk by nature -- ``select_all()`` is a class-level list of
+        names, and a manifest carries names read from another snapshot -- so a name the
+        root does not declare is *dropped* here rather than raising. Refusing stays
+        where one member is written (:meth:`wire_name`, and through it ``to_json``):
+        that is one name, and the caller can be told which.
+        """
+        if version is None:
+            return list(names)
+        excluded = self.stable_only if version == PREVIEW else self.beta_only
+        return [self.wire_name(name, version) for name in names if name not in excluded]
 
     def declared_limits(self) -> Tuple[Limit, ...]:
         """Every limit the type is subject to: its own, then its members'.

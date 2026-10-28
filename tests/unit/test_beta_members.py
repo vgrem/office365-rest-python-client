@@ -1,8 +1,9 @@
 """One model tree, two service roots: a client's version decides what it can name.
 
-The declaration carries the difference -- ``beta=`` for a member the preview root
-renames, ``since=`` for one only it declares -- and everything else is derived from
-it: the payload key, the navigation path segment, and the error a stable client gets
+The declaration carries the difference -- ``beta=True`` for a member only the preview
+root declares, ``beta="otherName"`` for one it renames, ``beta=False`` for one it
+dropped -- and everything else is derived from it: the payload key, the navigation
+path segment, the ``$select`` a projection carries, and the error a stable client gets
 for naming something the stable schema has no room for.
 """
 
@@ -10,8 +11,11 @@ import pytest
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import AccessPackage
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
+from office365.outlook.calendar.events.event import Event
 from office365.runtime.client_object import ClientObject
 from office365.runtime.odata.v4.json_format import V4JsonFormat
+from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.types.odata_property import PREVIEW, NotSupportedInVersion, odata
 
 TENANT = "contoso.onmicrosoft.com"
@@ -120,3 +124,70 @@ def test_a_member_no_version_disagrees_about_is_named_as_it_always_was():
     package = AccessPackage(_client(GraphVersion.BETA)).set_property("displayName", "Contoso")
 
     assert _payload(package) == {"displayName": "Contoso"}
+
+
+def test_a_projection_keeps_the_names_the_root_declares_and_spells_them_its_way():
+    """$select and $expand are bulk, so they are narrowed rather than refused."""
+    schema = AccessPackage._schema
+
+    assert schema.projection(["id", "uniqueName"], "v1.0") == ["id"]
+    assert schema.projection(["id", "uniqueName"], PREVIEW) == ["id", "uniqueName"]
+    # No version at all is SharePoint: nothing here has an opinion, so nothing moves.
+    assert schema.projection(["id", "uniqueName"], None) == ["id", "uniqueName"]
+    # A name the model never declared is not this gate's business.
+    assert schema.projection(["dataSource"], "v1.0") == ["dataSource"]
+    # An expanded navigation is spelled the way the request's root spells it.
+    assert schema.projection(["catalog"], PREVIEW) == ["accessPackageCatalog"]
+
+
+def test_select_all_is_narrowed_to_what_the_root_can_honour():
+    """``select_all()`` is one class-level list; the URL carries what the root has."""
+    assert AccessPackage.select_all() == [
+        "id",
+        "catalogId",
+        "createdBy",
+        "isRoleScopesVisible",
+        "modifiedBy",
+        "uniqueName",
+    ]
+
+    stable = AccessPackage(_client(), ResourcePath("accessPackages"))
+    preview = AccessPackage(_client(GraphVersion.BETA), ResourcePath("accessPackages"))
+    stable.query_options.select = list(AccessPackage.select_all())
+    preview.query_options.select = list(AccessPackage.select_all())
+
+    assert ReadEntityQuery(stable).url.endswith("?$select=id")
+    assert ReadEntityQuery(preview).url.endswith(
+        "?$select=id,catalogId,createdBy,isRoleScopesVisible,modifiedBy,uniqueName"
+    )
+
+
+def test_the_narrowing_does_not_rewrite_the_projection_the_caller_built():
+    """The gate answers for one request; the object keeps the list it was given."""
+    stable = AccessPackage(_client(), ResourcePath("accessPackages"))
+    stable.query_options.select = list(AccessPackage.select_all())
+
+    url = ReadEntityQuery(stable).url
+
+    assert url.endswith("?$select=id")
+    assert stable.query_options.select == list(AccessPackage.select_all())
+
+
+def test_a_preview_only_member_never_reaches_a_stable_select():
+    """The pilot's exit test: an Event export written before beta selects the same names.
+
+    ``Event.select_all()`` grew by the two members beta declares, which is additive and
+    harmless. What must not happen is a stable request asking for them: Microsoft Graph
+    rejects a ``$select`` it cannot honour, so a marker that leaked into the projection
+    would break every existing calendar export rather than add a column.
+    """
+    columns = Event.select_all()
+    assert columns[-2:] == ["occurrenceId", "uid"]
+
+    stable = Event(_client(), ResourcePath("events"))
+    preview = Event(_client(GraphVersion.BETA), ResourcePath("events"))
+    stable.query_options.select = list(columns)
+    preview.query_options.select = list(columns)
+
+    assert ReadEntityQuery(stable).url.endswith("?$select=" + ",".join(columns[:-2]))
+    assert ReadEntityQuery(preview).url.endswith("?$select=" + ",".join(columns))

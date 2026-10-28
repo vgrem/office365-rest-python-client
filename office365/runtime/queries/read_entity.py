@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING, List, Optional, cast
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery, ReturnT
+from office365.runtime.types.odata_property import request_version
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
     from office365.runtime.odata.query_options import QueryOptions
+    from office365.runtime.schema import TypeSchema
 
 
 class ReadEntityQuery(ClientQuery[ReturnT]):
@@ -50,7 +53,8 @@ class ReadEntityQuery(ClientQuery[ReturnT]):
     @property
     def url(self) -> str:
         assert self.binding_type is not None
-        if self.query_options.is_empty:
+        query_options = self._wire_projection()
+        if query_options.is_empty:
             return self.binding_type.resource_url or ""
 
         delimiter = "?"
@@ -59,4 +63,33 @@ class ReadEntityQuery(ClientQuery[ReturnT]):
             delimiter = "&"
         resource_url = self.binding_type.resource_url
         assert resource_url is not None
-        return resource_url + delimiter + str(self.query_options)
+        return resource_url + delimiter + str(query_options)
+
+    def _wire_projection(self) -> "QueryOptions":
+        """The query options as the request's service root can honour them.
+
+        A projection is built from the model, not from a client: ``Event.select_all()``
+        is one list of names whichever root the request goes to, and a manifest names
+        columns read from some snapshot. So the names this root does not declare are
+        dropped here -- at the single edge where a projection becomes a URL.
+        """
+        query_options = self.query_options
+        version = request_version(self.context)
+        schema = self._declared_schema()
+        if version is None or schema is None:
+            return query_options
+        return replace(
+            query_options,
+            select=schema.projection(query_options.select, version),
+            expand=schema.projection(query_options.expand, version),
+        )
+
+    def _declared_schema(self) -> Optional["TypeSchema"]:
+        """The schema the projection applies to: the item type, for a collection."""
+        from office365.runtime.client_object import ClientObject
+        from office365.runtime.client_object_collection import ClientObjectCollection
+
+        binding = self.binding_type
+        if isinstance(binding, ClientObjectCollection):
+            return getattr(binding._item_type, "_schema", None)
+        return getattr(binding, "_schema", None) if isinstance(binding, ClientObject) else None
