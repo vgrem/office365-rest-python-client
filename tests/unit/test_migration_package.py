@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import base64
+import importlib
 import xml.etree.ElementTree as ET
+from types import SimpleNamespace
 
 import pytest
 from office365.migration.package import (
@@ -143,6 +145,66 @@ def test_file_system_staging_writes_both_containers(tmp_path):
     assert (tmp_path / "content" / file_id).read_bytes() == b"hi"
     assert (tmp_path / "manifest" / "Manifest.xml").exists()
     assert (tmp_path / "manifest" / "ExportSettings.xml").exists()
+
+
+def test_file_system_staging_records_the_job_beside_the_manifest(tmp_path):
+    staging = FileSystemStaging(tmp_path / "content", tmp_path / "manifest")
+    assert staging.recorded_job("web-id/Documents") is None  # nothing submitted yet
+
+    staging.record_job("job-9", "web-id/Documents")
+
+    assert staging.recorded_job("web-id/Documents") == "job-9"
+    # A record for another destination is not this package's job.
+    assert staging.recorded_job("web-id/Reports") is None
+    # A record this version cannot read must not look like a job to re-attach to.
+    (tmp_path / "manifest" / "job.json").write_text("{not json", encoding="utf-8")
+    assert staging.recorded_job("web-id/Documents") is None
+
+
+class _StoredBlob:
+    """A blob that keeps what was uploaded, like a container would across processes."""
+
+    def __init__(self) -> None:
+        self.data = None
+        self.metadata = None
+
+    def upload_blob(self, data, overwrite=False, metadata=None):
+        self.data, self.metadata = data, metadata
+
+    def get_blob_properties(self):
+        return SimpleNamespace(metadata=self.metadata)
+
+    def download_blob(self):
+        return SimpleNamespace(readall=lambda: self.data)
+
+
+class _ContainerClient:
+    def __init__(self) -> None:
+        self.blobs: dict = {}
+
+    def from_container_url(self, url):
+        return self
+
+    def get_blob_client(self, name):
+        return self.blobs.setdefault(name, _StoredBlob())
+
+
+def test_blob_staging_records_the_job_through_the_encrypted_container(monkeypatch):
+    # The record travels the same path as every other manifest blob: encrypted with
+    # the key, so re-reading it has to decrypt before it is JSON again.
+    staging_module = importlib.import_module("office365.migration.package.staging")
+    store = _ContainerClient()
+    monkeypatch.setattr(staging_module, "_container_client", lambda: store)
+    key = base64.b64encode(bytes(range(32))).decode("ascii")
+    staging = BlobStaging("https://a/content?sig=x", "https://a/manifest?sig=y", encryption_key=key)
+
+    staging.record_job("job-7", "web-id/Documents")
+
+    record = store.blobs["job.json"]
+    assert b"job-7" not in record.data  # encrypted at rest
+    assert record.metadata["IV"]
+    assert staging.recorded_job("web-id/Documents") == "job-7"
+    assert staging.recorded_job("web-id/Reports") is None
 
 
 class _FakeBlob:

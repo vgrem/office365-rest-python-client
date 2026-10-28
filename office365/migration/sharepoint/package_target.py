@@ -400,13 +400,27 @@ class SharePointPackageTarget:
         self._staging.stage(package)
         return package
 
-    def commit(self, options=None) -> None:
-        """Stage the package and submit the ingestion job (called by the runner)."""
+    def commit(self, options=None, resubmit: bool = False) -> None:
+        """Stage the package and submit the ingestion job (called by the runner).
+
+        Submitting twice for one package would ingest the same content twice, and the
+        two jobs' outcomes are then indistinguishable. So a run that finds the job a
+        previous run submitted — recorded by the staging strategy, which is what
+        outlives the process — **re-attaches** to it instead of submitting again.
+        ``resubmit=True`` is the deliberate opt-out: it submits a new job anyway, for
+        the case where the recorded job has already failed and the package changed.
+        """
         if not (self._content_uri and self._manifest_uri):
             raise ValueError("content_uri and manifest_uri are required to submit an ingestion job")
         # A caller that never ran ``configure`` (a hand-built job) still needs the
         # structure in place before the first item is ingested.
         self.apply_structure()
+        scope = f"{self._web_id}/{self._list_title}"
+        if not resubmit:
+            recorded = self._staging.recorded_job(scope)
+            if recorded is not None:
+                self.job_id = recorded
+                return
         self.stage()
         server = MigrationServerJob(self._site)
         if self._encryption_key is not None:
@@ -424,6 +438,9 @@ class SharePointPackageTarget:
                 self._manifest_uri,
                 self._azure_queue_report_uri,
             )
+        # Recorded after the submit, before anything else can fail: the id is the only
+        # handle on a job the service keeps running when this process does not.
+        self._staging.record_job(self.job_id, scope)
 
     def job_wait(self, interval: float = 5, timeout: float = 1800, progress=None) -> MigrationJobWait:
         """The wait on the submitted job, without running it (stream it, or cancel it)."""

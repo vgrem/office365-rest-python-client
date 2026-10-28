@@ -372,6 +372,19 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
 - A re-run of `configure()` writes nothing, and whatever a structure replay cannot
   reproduce is reported on `target.warnings` instead of assumed.
 
+**Migration (server-side package path)**
+
+- **A resumed package run re-attaches to the job it already submitted.** The job id
+  lived only in memory, so the runner's resume drove `commit()` again and submitted a
+  *second* ingestion job for the same package: the service ingests the same content
+  twice, and neither job's outcome is attributable to a run. The id is now recorded
+  with the package's paperwork — `FileSystemStaging` writes `job.json` beside
+  `Manifest.xml`, `BlobStaging` uploads the same record (encrypted) to the manifest
+  container — and `commit()` adopts it instead of submitting, unless
+  `resubmit=True` says the recorded job is known-failed. The record names its
+  destination (web id + list title), so a second library reusing the directory does
+  not adopt the first one's job.
+
 **Migration (Outlook)**
 
 - **Calendar and contact exports derive their projection from the model**

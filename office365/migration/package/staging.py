@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import base64
 import importlib
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
@@ -39,11 +40,30 @@ _AZURE_EXTRA_HINT = "Azure staging requires the 'azure' extra: pip install offic
 _AZURE_BLOB_HOSTS = ("blob.core.windows.net", "blob.core.usgovcloudapi.net")
 
 
+#: The record of the job a run submitted, written beside the package's paperwork.
+JOB_RECORD = "job.json"
+
+
 class Staging:
     """Strategy that places a package's content + manifest blobs for ingestion."""
 
     def stage(self, package: "Package") -> None:
         raise NotImplementedError
+
+    def record_job(self, job_id: str, scope: str) -> None:
+        """Remember the submitted ingestion job, so a resumed run can re-attach to it.
+
+        ``scope`` identifies the package's destination (web id + list title): a record
+        naming a different target is not this run's job, and re-attaching to it would
+        monitor someone else's content while this package is never ingested.
+
+        Optional: a strategy that cannot keep a durable record (or whose location a
+        re-run would not reuse) leaves this a no-op, and :meth:`recorded_job` says so.
+        """
+
+    def recorded_job(self, scope: str) -> str | None:
+        """The job a previous run submitted for this ``scope``, if it is still knowable."""
+        return None
 
 
 class FileSystemStaging(Staging):
@@ -68,6 +88,19 @@ class FileSystemStaging(Staging):
             (self._content_dir / name).write_bytes(data)
         for name, data in package.blobs().items():
             (self._manifest_dir / name).write_bytes(data)
+
+    def record_job(self, job_id: str, scope: str) -> None:
+        """Write the job id next to the manifest: a re-run of this directory finds it."""
+        self._manifest_dir.mkdir(parents=True, exist_ok=True)
+        record = {"job_id": job_id, "scope": scope}
+        (self._manifest_dir / JOB_RECORD).write_text(json.dumps(record), encoding="utf-8")
+
+    def recorded_job(self, scope: str) -> str | None:
+        try:
+            record = json.loads((self._manifest_dir / JOB_RECORD).read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError):
+            return None  # no record, or one this version cannot read
+        return record["job_id"] if record.get("scope") == scope else None
 
 
 class BlobStaging(Staging):
@@ -136,6 +169,22 @@ class BlobStaging(Staging):
             return decrypt(data, self._key, iv)
         except Exception:  # noqa: BLE001 — not encrypted with our key; return raw
             return data
+
+    def record_job(self, job_id: str, scope: str) -> None:
+        """Record the job id in the manifest container.
+
+        The containers are provisioned per run, so this only re-attaches a run that
+        reuses the same container set — a fresh provisioning has no memory of the job.
+        """
+        blob = _container_client().from_container_url(self._manifest_uri).get_blob_client(JOB_RECORD)
+        self._upload(blob, json.dumps({"job_id": job_id, "scope": scope}).encode("utf-8"))
+
+    def recorded_job(self, scope: str) -> str | None:
+        try:
+            record = json.loads(self.read_manifest_blob(JOB_RECORD).decode("utf-8"))
+        except Exception:  # noqa: BLE001 — no record, an unreadable one, or no Read grant
+            return None
+        return record["job_id"] if record.get("scope") == scope else None
 
 
 # Back-compat alias (the class was introduced as ``AzureBlobStaging``).

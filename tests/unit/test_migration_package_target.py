@@ -44,7 +44,7 @@ class _Site:
 
     def create_migration_ingestion_job(self, **kwargs):
         self.calls.append(("ingestion", kwargs))
-        return _Result("job-1")
+        return _Result(f"job-{len(self.calls)}")
 
     def create_migration_job_encrypted(self, **kwargs):
         self.calls.append(("encrypted", kwargs))
@@ -83,6 +83,57 @@ def test_commit_stages_and_submits(tmp_path):
     assert kwargs["azure_queue_report_uri"] == "https://a/queue?sig=z"
     assert (tmp_path / "manifest" / "Manifest.xml").exists()
     assert list((tmp_path / "content").iterdir())  # a content blob was staged
+
+
+def test_a_rerun_reattaches_to_the_job_it_already_submitted(tmp_path):
+    # The runner drives ``commit`` again when a job is resumed, and the staging
+    # directory outlives the process: submitting a second ingestion job would ingest
+    # the same package twice, and the two jobs' outcomes would be indistinguishable.
+    site = _Site()
+    first = _target(tmp_path, site=site)
+    first.write(MigrationItem("src/b.txt", "b.txt", item_type="file"), b"hi")
+    first.commit()
+
+    resumed = _target(tmp_path, site=site)
+    resumed.write(MigrationItem("src/b.txt", "b.txt", item_type="file"), b"hi")
+    resumed.commit()
+
+    assert resumed.job_id == first.job_id == "job-1"
+    assert [call[0] for call in site.calls] == ["ingestion"]
+    record = json.loads((tmp_path / "manifest" / "job.json").read_text(encoding="utf-8"))
+    assert record == {"job_id": "job-1", "scope": "web-id/Documents"}
+
+
+def test_a_staging_directory_shared_with_another_list_is_not_adopted(tmp_path):
+    # The record names its destination, or a second library reusing the directory would
+    # monitor the first library's job while its own content is never ingested.
+    site = _Site()
+    documents = _target(tmp_path, site=site)
+    documents.write(MigrationItem("src/b.txt", "b.txt", item_type="file"), b"hi")
+    documents.commit()
+
+    reports = _target(tmp_path, site=site, list_title="Reports")
+    reports.write(MigrationItem("src/r.txt", "r.txt", item_type="file"), b"hi")
+    reports.commit()
+
+    assert reports.job_id == "job-2"
+    assert [call[0] for call in site.calls] == ["ingestion", "ingestion"]
+
+
+def test_a_resubmit_is_possible_when_the_recorded_job_failed(tmp_path):
+    site = _Site()
+    first = _target(tmp_path, site=site)
+    first.write(MigrationItem("src/b.txt", "b.txt", item_type="file"), b"hi")
+    first.commit()
+
+    again = _target(tmp_path, site=site)
+    again.write(MigrationItem("src/b.txt", "b.txt", item_type="file"), b"hi")
+    again.commit(resubmit=True)
+
+    assert [call[0] for call in site.calls] == ["ingestion", "ingestion"]
+    assert again.job_id == "job-2"
+    record = json.loads((tmp_path / "manifest" / "job.json").read_text(encoding="utf-8"))
+    assert record == {"job_id": "job-2", "scope": "web-id/Documents"}
 
 
 def test_configure_replays_a_captured_structure_once(tmp_path, monkeypatch):
