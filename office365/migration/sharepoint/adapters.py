@@ -1367,10 +1367,9 @@ class SharePointListSource:
         source_item = self._items.get(item.dest_path)
         if source_item is None:
             return None
-        properties = source_item.properties
         return {
-            "created": iso_or_none(properties.get("Created")),
-            "modified": iso_or_none(properties.get("Modified")),
+            "created": iso_or_none(source_item.created),
+            "modified": iso_or_none(source_item.modified),
         }
 
     def read_authorship(self, item: MigrationItem) -> tuple[str | None, str | None]:
@@ -2374,10 +2373,9 @@ class SharePointListTarget:
         target_item = self._fresh_target_item(item)
         if target_item is None:
             return None
-        properties = target_item.properties
         return {
-            "created": iso_or_none(properties.get("Created")),
-            "modified": iso_or_none(properties.get("Modified")),
+            "created": iso_or_none(target_item.created),
+            "modified": iso_or_none(target_item.modified),
         }
 
     def read_authorship(self, item: MigrationItem) -> tuple[str | None, str | None]:
@@ -2385,10 +2383,9 @@ class SharePointListTarget:
         target_item = self._fresh_target_item(item)
         if target_item is None:
             return (None, None)
-        properties = target_item.properties
         return (
-            _user_login(self._list.context.web, properties.get("AuthorId"), self._login_cache),
-            _user_login(self._list.context.web, properties.get("EditorId"), self._login_cache),
+            _user_login(self._list.context.web, target_item.author_id, self._login_cache),
+            _user_login(self._list.context.web, target_item.editor_id, self._login_cache),
         )
 
     def read_permissions(self, item: MigrationItem) -> list[PermissionEntry]:
@@ -3302,10 +3299,9 @@ class SharePointLibraryTarget:
         securable = self._fresh_securable(item)
         if securable is None:
             return (None, None)
-        properties = securable.properties
         return (
-            _user_login(self._folder.context.web, properties.get("AuthorId"), self._login_cache),
-            _user_login(self._folder.context.web, properties.get("EditorId"), self._login_cache),
+            _user_login(self._folder.context.web, securable.author_id, self._login_cache),
+            _user_login(self._folder.context.web, securable.editor_id, self._login_cache),
         )
 
     def _securable(self, item: MigrationItem):
