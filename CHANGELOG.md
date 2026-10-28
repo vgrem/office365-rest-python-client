@@ -274,6 +274,17 @@ introduced.
 
 **Runtime**
 
+**Runtime**
+
+- **The library imports on Python 3.11 again.** `TypeSchema` gave five `Mapping` fields
+a `mappingproxy` instance as their dataclass default; 3.11 rejects an unhashable
+default at class creation — 3.12 relaxed the check back to `list`/`dict`/`set` — so
+`from office365.sharepoint.listitems.listitem import ListItem` raised `ValueError:
+mutable default <class 'mappingproxy'> for field properties is not allowed`, and
+with it every model, on a version `pyproject.toml` claims and that CI never ran.
+The defaults are now `field(default_factory=...)`, the test matrix runs 3.10–3.13,
+and `tests/unit/test_dataclass_field_defaults.py` fails on any interpreter when a
+dataclass under `office365.runtime` defaults to an unhashable instance.
 - **A throttled request waits the interval the service asked for.**
   `execute_query_retry` retried a `429`/`503` on its own backoff and ignored
   `Retry-After`, so the entry point the docs recommend for polite retries re-sent a

@@ -24,7 +24,7 @@ which it becomes readable — and the reason the two halves do not share a build
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Dict, Mapping, Optional, Tuple
 
@@ -37,6 +37,18 @@ from office365.runtime.types.odata_property import (
 )
 
 _EMPTY_MAP: Mapping = MappingProxyType({})
+
+
+def _empty_map() -> Mapping:
+    """The shared empty mapping, as a dataclass default.
+
+    Python 3.11 refuses an unhashable *instance* as a dataclass default (3.12 relaxed
+    the check back to ``list``/``dict``/``set``), and a ``mappingproxy`` is unhashable,
+    so writing ``= _EMPTY_MAP`` in a class body made this module unimportable there —
+    which made every model unimportable. The factory keeps the one shared instance
+    without putting it in the class body.
+    """
+    return _EMPTY_MAP
 
 
 def _collect_properties(model: type) -> Dict[str, ODataPropertyMeta]:
@@ -68,13 +80,13 @@ class TypeSchema:
     """
 
     #: OData name -> declaration, in declaration order (base class first).
-    properties: Mapping[str, ODataPropertyMeta] = _EMPTY_MAP
+    properties: Mapping[str, ODataPropertyMeta] = field(default_factory=_empty_map)
     #: The OData names ``$select`` accepts: declarations that are not navigations.
     columns: Tuple[str, ...] = ()
     #: The OData names ``$expand`` can reach.
     navigations: Tuple[str, ...] = ()
     #: Python attribute name -> OData name, for the declared getters.
-    by_attr: Mapping[str, str] = _EMPTY_MAP
+    by_attr: Mapping[str, str] = field(default_factory=_empty_map)
     #: OData names the service assigns: a response carries them, a request may not.
     readonly: frozenset[str] = frozenset()
     #: OData names a request always sends, even when nobody set them.
@@ -86,12 +98,12 @@ class TypeSchema:
     #: subclass is subject to its base class's limits and its own.
     class_limits: Tuple[LimitDecl, ...] = ()
     #: Member name -> the ``@limit`` declarations carried by that method or property.
-    member_limits: Mapping[str, Tuple[LimitDecl, ...]] = _EMPTY_MAP
+    member_limits: Mapping[str, Tuple[LimitDecl, ...]] = field(default_factory=_empty_map)
     #: OData name -> the name the preview service root spells it with, where they differ.
     #: Beta renames in place, so one member can have two wire names; the model holds one.
-    beta_names: Mapping[str, str] = _EMPTY_MAP
+    beta_names: Mapping[str, str] = field(default_factory=_empty_map)
     #: The reverse of :attr:`beta_names`: a preview name -> the name the model holds.
-    canonical_names: Mapping[str, str] = _EMPTY_MAP
+    canonical_names: Mapping[str, str] = field(default_factory=_empty_map)
     #: Names only the preview service root declares: a stable client cannot name them.
     beta_only: frozenset[str] = frozenset()
     #: Names only the stable root declares: a preview client cannot name them either.
