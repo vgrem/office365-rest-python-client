@@ -7,7 +7,11 @@ receives a context or an empty one, and every knob has a name the checker sees.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+from types import MappingProxyType
 from typing import Mapping
+
+#: Shared empty mapping, so a defaulted ``Mapping`` parameter is not a mutable literal.
+_NO_PROPERTIES: Mapping[str, frozenset[str]] = MappingProxyType({})
 
 
 @dataclass(frozen=True)
@@ -32,6 +36,10 @@ class BuilderContext:
     #: (they get the ``PollableOperation`` mixin so they can be awaited).
     pollable_types: frozenset[str] = frozenset()
     inherited_members: Mapping[str, frozenset[str]] = field(default_factory=dict)
+    #: Every type's property names with its ancestors' folded in, as normalized
+    #: member keys. Asked when a class's ``entity_type_name`` names a type other
+    #: than the one being built: its members say which type it actually models.
+    declared_properties: Mapping[str, frozenset[str]] = field(default_factory=dict)
     dry_run: bool = False
 
     @property
@@ -49,6 +57,7 @@ class BuilderContext:
         inherited_members: Mapping[str, frozenset[str]],
         entity_types: frozenset[str] = frozenset(),
         pollable_types: frozenset[str] = frozenset(),
+        declared_properties: Mapping[str, frozenset[str]] = _NO_PROPERTIES,
     ) -> "BuilderContext":
         """Return a copy enriched with the run plan (known types, modules, cycles)."""
         return replace(
@@ -60,4 +69,5 @@ class BuilderContext:
             entity_types=frozenset(entity_types),
             pollable_types=frozenset(pollable_types),
             inherited_members={name: frozenset(members) for name, members in inherited_members.items()},
+            declared_properties={name: frozenset(names) for name, names in declared_properties.items()},
         )

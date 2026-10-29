@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from generator.builders.member import sanitize_member_name
+from generator.builders.naming import normalize_member_key
 from generator.builders.resolution import TypeRegistry
 from generator.builders.type import TypeBuilder
 from generator.config import GeneratorOptions
@@ -153,6 +154,10 @@ class GeneratorPipeline:
                 name for name, schema in model.types.items() if schema.BaseTypeFullName == "EntityType"
             ),
             pollable_types=_pollable_types(model),
+            declared_properties={
+                name: frozenset(normalize_member_key(key) for key in keys)
+                for name, keys in model.effective_property_names().items()
+            },
         )
         self._output_root = Path(options.output_path).resolve()
         self._reporter = Reporter(self._metadata_path, report_path, options.dry_run)

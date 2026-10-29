@@ -55,6 +55,23 @@ into it with the prefix stripped —
 - **No gaps**: every in-scope type resolves to a module — the fallback bucket
   guarantees it (nothing is silently unrouted).
 
+## One module, two types
+
+Placement names a file after the **class**, so two CSDL types that differ only by
+namespace resolve to one module — `microsoft.graph.Alert` and
+`microsoft.graph.security.Alert` both land in `office365/security/alerts/alert.py`.
+The v1.0 snapshot has 12 such modules; they are frozen in
+`tests/tooling/test_generator_type_identity.py`, so a new one fails that test
+instead of quietly becoming a `system=True` marker.
+
+The file holds one class, and `entity_type_name` is written once (a later run never
+overwrites it), so the class can answer for a member set it does not belong to.
+`generator/type_identity.py` decides from the class's own members: when it spells a
+name only the type being built declares, and none that only the name it answers
+with declares, the literal is corrected (one line, reported on stdout). When it
+spells members of both, the class is **merged** — which name it answers with is
+then a placement question, and the audit reports it rather than rewriting it.
+
 ## Adding routing (2-stage workflow)
 
 1. `python -m generator.generate_model <service> --suggest-routing` proposes

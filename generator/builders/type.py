@@ -33,6 +33,11 @@ from generator.builders.source_editor import SourceEditor, suppress_long_lines
 from generator.documentation.base import DocumentationProvider
 from generator.odata.type_information import TypeInformation
 from generator.odata.type_system import TypeRef
+from generator.type_identity import (
+    entity_type_name_literal,
+    entity_type_name_return,
+    modelled_type,
+)
 from generator.validation import ValidationError
 
 # Base model members that generated operation methods must not shadow.
@@ -82,6 +87,8 @@ class TypeBuilder(ast.NodeTransformer):
         self._changes: List[str] = []
         self._docstring: Optional[str] = None
         self._entity_type_name_exists: bool = False
+        #: 1-based original line -> replacement text, for a name that is corrected.
+        self._renamed_lines: dict[int, str] = {}
         self._pollable = self._schema.FullName in self._context.pollable_types
         self._pollable_base_added = False
         self._known_types: set[str] = set(self._context.known_types)
@@ -624,7 +631,7 @@ class TypeBuilder(ast.NodeTransformer):
             self._changes.append(f"method: {method.name}")
 
     def _build_post(self, class_node: ast.ClassDef):
-        """Remove pass, insert/replace type-level description, ensure entity_type_name."""
+        """Name the type, remove pass, insert/replace type-level description."""
         if self._docstring:
             doc = self._docstring.replace("\\n", "\n")
             new_stmt = ast.Expr(value=ast.Constant(value=doc))
@@ -637,6 +644,8 @@ class TypeBuilder(ast.NodeTransformer):
                 class_node.body[0] = new_stmt
             else:
                 class_node.body.insert(0, new_stmt)
+
+        self._correct_entity_type_name(class_node)
 
         if not (self._properties or self._members or self._methods):
             return
@@ -668,7 +677,11 @@ class TypeBuilder(ast.NodeTransformer):
         add_dataclass = self._schema.BaseTypeFullName == "ComplexType"
         extra_bases = ["PollableOperation"] if self._pollable_base_added else None
         return editor.splice(
-            self._added_members, self._added_imports, add_dataclass=add_dataclass, extra_bases=extra_bases
+            self._added_members,
+            self._added_imports,
+            add_dataclass=add_dataclass,
+            extra_bases=extra_bases,
+            renamed_lines=self._renamed_lines,
         )
 
     def save(self):
@@ -718,6 +731,36 @@ class TypeBuilder(ast.NodeTransformer):
             class_node.body.insert(index, entity_type_name_method)
             self._added_members.append(entity_type_name_method)
             self._changes.append("entity_type_name property")
+
+    def _correct_entity_type_name(self, class_node: ast.ClassDef) -> None:
+        """Answer with the type the class's members come from, not the one it names.
+
+        Two CSDL types that share a short name resolve to one module, so the file's
+        single class answers for both -- with whichever of them it was first written
+        for. The members decide (see :mod:`generator.type_identity`): a name the type
+        being built declares and the current one does not, and none the other way
+        round. Anything less one-sided is left alone and shows up as a ``system=True``
+        candidate instead of being rewritten.
+        """
+        if not self._entity_type_name_exists:
+            return
+        declared = entity_type_name_literal(class_node)
+        if not declared:
+            return
+        owner = modelled_type(
+            class_node,
+            declared=declared,
+            candidate=self._schema.FullName,
+            declared_properties=self._context.declared_properties,
+        )
+        if owner is None:
+            return
+        node = entity_type_name_return(class_node)
+        if node is None:
+            return
+        self._renamed_lines[node.lineno] = " " * node.col_offset + f'return "{owner}"'
+        self._changes.append(f"entity_type_name: {declared} -> {owner}")
+        print(f"  {self.client_type_name}: entity_type_name {declared} -> {owner}")
 
     @staticmethod
     def _type_name_property_index(class_node: ast.ClassDef) -> int:

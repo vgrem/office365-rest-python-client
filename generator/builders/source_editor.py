@@ -140,16 +140,22 @@ class SourceEditor:
         *,
         add_dataclass: bool = False,
         extra_bases: Optional[list[str]] = None,
+        renamed_lines: Optional[dict[int, str]] = None,
     ) -> str:
         """Return the source with ``members``/``imports`` spliced in.
 
         ``extra_bases`` are mixins to prepend to the class's base list (e.g.
         ``PollableOperation`` when an operation entity becomes awaitable).
+        ``renamed_lines`` replaces whole 1-based lines (a corrected
+        ``entity_type_name``); each replacement keeps the line's count, so the
+        insertions below stay valid.
         """
         tree = ast.parse(self.text)
         members, imports = self._qualify(members, imports, tree)
         runtime_lines, type_checking_lines = self._split_imports(imports)
-        return self._assemble(tree, members, runtime_lines, type_checking_lines, add_dataclass, extra_bases or [])
+        return self._assemble(
+            tree, members, runtime_lines, type_checking_lines, add_dataclass, extra_bases or [], renamed_lines or {}
+        )
 
     @staticmethod
     def _qualify(
@@ -186,8 +192,12 @@ class SourceEditor:
         type_checking_lines: list[str],
         add_dataclass: bool,
         extra_bases: list[str],
+        renamed_lines: dict[int, str],
     ) -> str:
         lines = self.text.splitlines()
+        # First: a replacement keeps the line count, so nothing below shifts.
+        for lineno, text in renamed_lines.items():
+            lines[lineno - 1] = text
         class_end = self._class_body_end_line(tree)
         runtime_insert = self._last_runtime_import_line(tree)
         tc_block = self._find_type_checking_block(tree)

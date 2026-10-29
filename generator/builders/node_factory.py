@@ -46,7 +46,7 @@ def existing_members(class_node: ast.ClassDef) -> set[str]:
     return names
 
 
-def declared_wire_name(node: ast.FunctionDef) -> str:
+def declared_wire_name(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
     """The ``@odata(name=...)`` a getter declares, or ``""`` when it declares none.
 
     A class may read a column under a name of its own (``CanvasContent1`` is read as

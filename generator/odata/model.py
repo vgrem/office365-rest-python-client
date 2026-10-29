@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from typing_extensions import Self
 
@@ -40,6 +40,37 @@ class ODataModel:
         """Returns the type schema by name, or ``None`` when it is unknown."""
         return self._types.get(type_name)
 
+    def effective_property_names(self) -> dict[str, frozenset[str]]:
+        """For each type, every property name it declares, its ancestors' included.
+
+        The CSDL states only what a type *adds*, so asking a type's own node what it
+        has answers a subset: an inherited column would look like a name the
+        metadata has never heard of. Folded once here, every reader of "does type X
+        declare name Y" reads the same answer.
+        """
+        result: dict[str, frozenset[str]] = {}
+        for name, ancestors in self._ancestors().items():
+            names = set(self._types[name].Properties)
+            for ancestor in ancestors:
+                names.update(ancestor.Properties)
+            result[name] = frozenset(names)
+        return result
+
+    def _ancestors(self) -> dict[str, Tuple["TypeInformation", ...]]:
+        """For each type, its CSDL ancestors, nearest first; a looping chain is cut."""
+        result: dict[str, Tuple["TypeInformation", ...]] = {}
+        for name, schema in self._types.items():
+            chain: list[TypeInformation] = []
+            seen = {name}
+            base = schema.BaseTypeName
+            while base and base in self._types and base not in seen:
+                seen.add(base)
+                ancestor = self._types[base]
+                chain.append(ancestor)
+                base = ancestor.BaseTypeName
+            result[name] = tuple(chain)
+        return result
+
     def inherited_member_names(self) -> dict[str, frozenset[str]]:
         """For each type, the properties/methods declared by its CSDL ancestors.
 
@@ -47,16 +78,11 @@ class ODataModel:
         exist on disk yet when both are generated in the same run).
         """
         result: dict[str, frozenset[str]] = {}
-        for name, schema in self._types.items():
+        for name, ancestors in self._ancestors().items():
             names: set[str] = set()
-            seen = {name}
-            base = schema.BaseTypeName
-            while base and base in self._types and base not in seen:
-                seen.add(base)
-                ancestor = self._types[base]
+            for ancestor in ancestors:
                 names.update(ancestor.Properties)
                 names.update(ancestor.Methods)
-                base = ancestor.BaseTypeName
             result[name] = frozenset(names)
         return result
 
