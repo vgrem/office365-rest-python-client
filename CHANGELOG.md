@@ -101,6 +101,18 @@ introduced.
   project (`Web` answers 400 for `DescriptionTranslations`; a `ListItem` refuses
   `Client_Title`, `DisplayName`, `IconOverlay`). The declaration survives for
   hydration and comparison, and `select_all()` leaves the name out.
+- `@key("tenantId")` declares which property spells a *type's* identity, above the
+  class next to `@version`: what re-anchors an entity's path when the value is set,
+  and what a read forces into `$select`. No declaration means the family default
+  (`id` for Graph, `Id` for SharePoint), so a class that states nothing behaves
+  exactly as it did; a composite key raises `CompositeKeyNotSupported` rather than
+  half-addressing. Nine v1.0 Graph types were addressed by `id` that no request can
+  satisfy (`WorkflowVersion` is keyed by `versionNumber`,
+  `CrossTenantAccessPolicyConfigurationPartner` by `tenantId`,
+  `AuthenticationConditionApplication` by `appId`, …); the generator now derives
+  the declaration from the CSDL `<Key>` — `--plan-keys` reports, `--apply-keys`
+  writes, and a mode the metadata cannot be trusted for (`keys_authoritative=False`,
+  SharePoint states 613 keys, 284 of which name a member no class has) refuses to write at all.
 
 **Outlook mail**
 

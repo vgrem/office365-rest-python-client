@@ -3,11 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import key
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.workflow.setting import WorkflowSetting
 
 
+@key("versionNumber")
 class WorkflowVersion(Entity):
     @property
     def version_number(self) -> Optional[int]:

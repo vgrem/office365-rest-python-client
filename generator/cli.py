@@ -12,6 +12,8 @@ from generator.beta_markers import write_report as write_marker_report
 from generator.builders.resolution import TypeRegistry
 from generator.config import ConfigError, GeneratorOptions
 from generator.documentation.subservices import fetch_service_map, load_service_map, write_service_map
+from generator.entity_keys import KeyPlan, plan_keys
+from generator.entity_keys import write_report as write_key_report
 from generator.filters import TypeFilter
 from generator.manifest import Manifest, is_up_to_date
 from generator.metadata_diff import diff_metadata, write_report
@@ -158,6 +160,69 @@ def _apply_marker_pass(options: GeneratorOptions, plan, *, dry_run: bool) -> Non
         print("\nDry run: no file was written.")
 
 
+def key_pass(
+    service: str,
+    *,
+    apply: bool,
+    only_types: Optional[Sequence[str]] = None,
+    report_path: Optional[str] = None,
+    dry_run: bool = False,
+    metadata: Optional[str] = None,
+) -> None:
+    """Bring the model's ``@key(...)`` declarations in line with what the snapshot states.
+
+    A key is read from one snapshot, not compared across two, so this is not a
+    ``--diff-metadata`` operation: the plan is the snapshot plus what the classes already
+    say. Without ``apply`` it only reports -- which is the mode SharePoint uses, because
+    its v3 metadata states keys a client cannot address an entity by.
+    """
+    from generator.marker_apply import TypeFiles, apply_keys
+
+    definition = get_service(service)
+    if apply and not definition.keys_authoritative:
+        raise ConfigError(
+            f"{service}: this snapshot states keys a client cannot address an entity by, "
+            "so its keys are reported rather than written -- run --plan-keys and review"
+        )
+    options = GeneratorOptions.load(service, GENERATOR_DIR)
+    if metadata:
+        source = Path(metadata) if Path(metadata).is_absolute() else GENERATOR_DIR / metadata
+        options = replace(options, metadata_path=str(source))
+    model = definition.reader(options.metadata_path).read()
+    root = Path(options.output_path)
+    files = TypeFiles(root / definition.model_package if definition.model_package else root)
+    plan: KeyPlan = plan_keys(
+        model,
+        files,
+        metadata=Path(options.metadata_path).name,
+        default=definition.default_key,
+        only=only_types,
+    )
+    print(plan.render())
+    if report_path:
+        write_key_report(plan, report_path)
+        print(f"\nFull plan written to {report_path}")
+    if not apply:
+        _print_key_plan(plan)
+        return
+    report = apply_keys(plan, files, dry_run=dry_run)
+    print(f"\n{report.render()}")
+    for edit in report.edits:
+        print(f"  {edit.action:<7} {Path(edit.path).name}  {edit.type_name.rsplit('.', 1)[-1]}.{edit.member}")
+    for marker, reason in report.skipped:
+        print(f"  skipped {marker.type_name.rsplit('.', 1)[-1]}.{marker.member}: {reason}")
+    if dry_run and report.edits:
+        print("\nDry run: no file was written.")
+
+
+def _print_key_plan(plan: KeyPlan) -> None:
+    """Say what the plan would write, and why it refuses the rest."""
+    for marker in plan.markers:
+        print(f"  declare {marker.type_name.rsplit('.', 1)[-1]} = {marker.key}")
+    for marker, reason in plan.skipped:
+        print(f"  skipped {marker.type_name.rsplit('.', 1)[-1]} ({marker.key}): {reason}")
+
+
 def _marker_report_path(report_path: str) -> str:
     """``delta.json`` -> ``beta_markers.json``, next to it."""
     path = Path(report_path)
@@ -193,6 +258,16 @@ def fetch_services() -> None:
 
 def _run_standalone_command(args) -> Optional[int]:
     """Run a one-shot report command, or return ``None`` to generate the model."""
+    if args.plan_keys or args.apply_keys:
+        key_pass(
+            args.service,
+            apply=args.apply_keys,
+            only_types=args.types,
+            report_path=args.keys_report,
+            dry_run=args.dry_run,
+            metadata=args.metadata,
+        )
+        return 0
     if args.diff_metadata:
         compare_metadata(
             args.service,
@@ -288,16 +363,34 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="write the --diff-metadata comparison to this JSON file",
     )
     parser.add_argument(
+        "--plan-keys",
+        dest="plan_keys",
+        action="store_true",
+        help="print the @key(...) declarations the metadata justifies and exit",
+    )
+    parser.add_argument(
+        "--apply-keys",
+        dest="apply_keys",
+        action="store_true",
+        help="write the @key(...) declarations the metadata justifies into the model (with --dry-run: preview)",
+    )
+    parser.add_argument(
+        "--keys-report",
+        dest="keys_report",
+        metavar="PATH",
+        help="with --plan-keys/--apply-keys: write the plan to this JSON file",
+    )
+    parser.add_argument(
         "--apply-markers",
         dest="apply_markers",
         action="store_true",
         help="with --diff-metadata: write the justified @odata(beta=...) markers into the model",
     )
     args = parser.parse_args(argv)
-    handled = _run_standalone_command(args)
-    if handled is not None:
-        return handled
     try:
+        handled = _run_standalone_command(args)
+        if handled is not None:
+            return handled
         generate(
             args.service,
             dry_run=args.dry_run,

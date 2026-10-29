@@ -162,7 +162,8 @@ class odata(dict):
     ``tests/unit/test_odata_metadata.py`` keeps the flag equal to that fact.
     ``beta=`` records what the preview root does with the member -- declares it the same,
     declares it under another name, declares it alone, or dropped it -- because one model
-    tree serves both roots and that is the whole difference::
+    tree serves both roots and that is the whole difference (see also :func:`key`, which
+    states the same kind of fact about a type rather than about one of its attributes)::
 
         @odata(name="catalog", beta="accessPackageCatalog")  # both roots, renamed in preview
         def catalog(self): ...
@@ -208,6 +209,46 @@ def version(service_root: str, *others: str) -> Callable[[_Cls], _Cls]:
 
     def decorate(cls: _Cls) -> _Cls:
         cls._versions = declared
+        return cls
+
+    return decorate
+
+
+class CompositeKeyNotSupported(ValueError):
+    """A type keyed by more than one property, which one path segment cannot hold.
+
+    The CSDL allows a key to be spelled with several ``PropertyRef``s, and the preview
+    snapshot declares one. The runtime addresses an entity with a single segment --
+    ``<collection>/<value>`` -- so a composite key has no spelling here: stating it
+    would be a claim the addressing code cannot honour.
+    """
+
+
+def key(*names: str) -> Callable[[_Cls], _Cls]:
+    """Declare which property spells a *type's* identity.
+
+    ``property_ref_name`` answers the question: it is what re-anchors an entity's path
+    when the value is set, and what widens the ``$select`` of a read. This decorator is
+    where the answer comes from, when the metadata declares one and the family default
+    is wrong::
+
+        @key("tenantId")
+        class CrossTenantAccessPolicyConfigurationPartner(Entity): ...
+
+    No declaration means the family default -- ``id`` for Graph, ``Id`` for SharePoint --
+    which is what a derived type inherits, and why the snapshot leaves ``<Key>`` off most
+    types. A class that writes ``property_ref_name`` itself is not decorated: the override
+    is the same fact stated in place, and two spellings of one fact is the thing this
+    decorator exists to remove.
+    """
+
+    def decorate(cls: _Cls) -> _Cls:
+        if len(names) != 1:
+            raise CompositeKeyNotSupported(
+                f"{cls.__name__} is keyed by {'/'.join(names) or 'nothing'}; "
+                "an entity is addressed by exactly one property"
+            )
+        cls._key = names
         return cls
 
     return decorate

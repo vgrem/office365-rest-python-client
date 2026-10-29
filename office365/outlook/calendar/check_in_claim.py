@@ -5,9 +5,10 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.outlook.check_in_method import CheckInMethod
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 
 
+@key("calendarEventId")
 class CheckInClaim(Entity):
     @odata(name="calendarEventId")
     @property

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import key
 
 if TYPE_CHECKING:
     from office365.common.cross_tenant_identity_sync_policy_partner import (
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.m365_capability_base import M365CapabilityBase
 
 
+@key("tenantId")
 class CrossTenantAccessPolicyConfigurationPartner(Entity):
     @property
     def app_service_connect_inbound(self) -> CrossTenantAccessPolicyAppServiceConnectSetting:

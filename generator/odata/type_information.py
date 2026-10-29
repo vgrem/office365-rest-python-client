@@ -29,6 +29,10 @@ class TypeInformation:
     #: ``uniqueName``, user ``userPrincipalName``, application/servicePrincipal
     #: ``appId``, device ``deviceId``, directoryRole ``roleTemplateId``.
     AlternateKeys: List[Tuple[str, ...]] = field(default_factory=list)
+    #: The properties that spell the type's identity (CSDL ``<Key>``), in order. One
+    #: member for every type that states one; empty when the document states nothing,
+    #: which is a derived type inheriting its base's key -- 1,226 of Graph's 1,239.
+    Key: Tuple[str, ...] = ()
 
     @property
     def alternate_key_names(self) -> List[str]:

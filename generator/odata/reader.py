@@ -117,6 +117,7 @@ class ODataReader(ABC):
         if base_type == "EntityType":
             for key in self._document.parse_alternate_keys(type_node):
                 type_schema.add_alternate_key(key)
+            type_schema.Key = self._document.parse_entity_key(type_node)
 
         self._mark_computed(type_schema)
 

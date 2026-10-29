@@ -244,7 +244,14 @@ class Entity(ClientObject):
 
     @property
     def property_ref_name(self) -> str:
-        return "Id"
+        """The property a SharePoint entity is addressed by.
+
+        ``Id`` unless the type declares its own ``@key(...)``: the v3 metadata names a
+        key on 613 of 871 entity types and the ones it names are not always an address
+        (``Alert`` is keyed by ``AlertFrequency``), so the declaration is still written
+        by hand after review -- the runtime only has to honour it.
+        """
+        return type(self)._key[0] if type(self)._key else "Id"
 
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """

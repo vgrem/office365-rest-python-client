@@ -5,8 +5,10 @@ from typing import Optional
 from office365.entity import Entity
 from office365.onedrive.filestorage.containertypes.app_permission import FileStorageContainerTypeAppPermission
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import key
 
 
+@key("appId")
 class FileStorageContainerTypeAppPermissionGrant(Entity):
     @property
     def app_id(self) -> Optional[str]:

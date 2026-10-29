@@ -43,6 +43,9 @@ _DECLARATION_IMPORT = re.compile(rf"^from {re.escape(DECLARATION_MODULE)} import
 #: The member name a type-level gate reports under: the decorator, not its storage.
 VERSION = "version"
 
+#: The same, for the identity a type declares above the class.
+KEY = "key"
+
 ADDED = "added"
 CHANGED = "changed"
 REMOVED = "removed"
@@ -76,6 +79,9 @@ class ApplyReport:
 
     edits: List[AppliedEdit]
     skipped: List[Tuple[MemberMarker, str]]
+    #: What the pass calls itself in a one-line summary; the same shape writes the
+    #: ``beta=`` markers and the ``@key`` declarations.
+    label: str = "beta markers"
 
     @property
     def is_empty(self) -> bool:
@@ -93,9 +99,9 @@ class ApplyReport:
 
     def render(self) -> str:
         if self.is_empty:
-            return "beta markers: model already declares every marker the snapshots justify"
+            return f"{self.label}: model already declares every marker the snapshots justify"
         counts = ", ".join(f"{len(self.by_action(a))} {a}" for a in (ADDED, CHANGED, REMOVED))
-        text = f"beta markers: {counts}"
+        text = f"{self.label}: {counts}"
         if self.skipped:
             text += f", {len(self.skipped)} unresolved"
         return text
@@ -151,6 +157,26 @@ class TypeFiles:
                 return path, node
         return None
 
+    def declaring(self, name: str) -> List[Tuple[Path, ast.ClassDef]]:
+        """Every class in the tree that carries ``@<name>(...)``, whatever its type name."""
+        found: List[Tuple[Path, ast.ClassDef]] = []
+        for path, tree in self._trees.items():
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef) and decorator_line(node, name) is not None:
+                    found.append((path, node))
+        return found
+
+    def class_chain(self, type_name: str) -> List[Tuple[Path, ast.ClassDef]]:
+        """The class that declares ``type_name`` and its declared bases, nearest first.
+
+        A fact can be stated anywhere on the chain, and which class states it decides the
+        file it belongs in: a member declared on a base class is marked in *that* class.
+        """
+        located = self.class_for(type_name)
+        if located is None:
+            return []
+        return [located, *_bases(self, type_name)]
+
     def is_addressed(self, type_name: str) -> bool:
         """Whether a request can name the type, which is the only thing a gate can refuse."""
         located = self.class_for(type_name)
@@ -202,18 +228,120 @@ def apply_markers(edits: MarkerEdits, files: TypeFiles, *, dry_run: bool = False
                 after=after,
             )
         )
-    # Every queued operation indexes the file as it was read, so they run after the
-    # one-line rewrites (which never change a line count) and from the bottom up: an edit
-    # never moves a line the loop has not reached yet. A decorator and a class that lost
-    # one can sit in the same file, so insertions and deletions share one ordering.
-    for path, start, end, replacement in sorted(ops, key=lambda op: (str(op[0]), -op[1])):
-        lines = lines_of[path]
-        lines[start:end] = replacement
+    _flush(lines_of, ops, dry_run=dry_run)
+    return report
 
+
+def apply_keys(plan, files: TypeFiles, *, dry_run: bool = False) -> ApplyReport:
+    """Write the ``@key(...)`` declarations ``plan`` justifies, and remove the rest.
+
+    The plan decides *what* is true; this decides nothing and writes it -- the same split
+    ``apply_markers`` keeps with :mod:`generator.beta_markers`. The removal half is what
+    keeps the tree honest: a key the next snapshot stops stating, or starts stating as the
+    family default, must not stay on the class claiming a rule nobody derives any more.
+    """
+    skipped = [
+        (MemberMarker(marker.type_name, KEY, "", marker.key, STABLE_ONLY), reason) for marker, reason in plan.skipped
+    ]
+    report = ApplyReport(edits=[], skipped=skipped, label="keys")
+    ops: List[Tuple[Path, int, int, List[str]]] = []
+    lines_of: Dict[Path, List[str]] = {}
+    kept = set()
+    for marker in plan.markers:
+        located = files.class_for(marker.type_name)
+        if located is not None:
+            kept.add((located[0], located[1].name))
+        _queue_key(report, files, ops, lines_of, marker)
+    for path, class_node in files.declaring(KEY):
+        if (path, class_node.name) not in kept:
+            _queue_unkey(report, ops, lines_of, path, class_node)
+    _flush(lines_of, ops, dry_run=dry_run)
+    return report
+
+
+def _flush(lines_of: Dict[Path, List[str]], ops: List[Tuple[Path, int, int, List[str]]], *, dry_run: bool) -> None:
+    """Apply the queued operations bottom-up, then write the files that changed.
+
+    Every queued operation indexes the file as it was read, so they run after the
+    one-line rewrites (which never change a line count) and from the bottom up: an edit
+    never moves a line the loop has not reached yet. A decorator and a class that lost
+    one can sit in the same file, so insertions and deletions share one ordering.
+    """
+    for path, start, end, replacement in sorted(ops, key=lambda op: (str(op[0]), -op[1])):
+        lines_of[path][start:end] = replacement
     if not dry_run:
         for path, lines in lines_of.items():
             path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return report
+
+
+def _queue_key(
+    report: ApplyReport,
+    files: TypeFiles,
+    ops: List[Tuple[Path, int, int, List[str]]],
+    lines_of: Dict[Path, List[str]],
+    marker,
+) -> None:
+    """Declare ``@key(...)`` above the class ``marker`` names, or say it is already right."""
+    located = files.class_for(marker.type_name)
+    if located is None:
+        report.skipped.append(
+            (MemberMarker(marker.type_name, KEY, "", marker.key, STABLE_ONLY), "no class declares this type")
+        )
+        return
+    path, class_node = located
+    lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
+    wanted = _key_decorator(marker)
+    declared_at = decorator_line(class_node, KEY)
+    if declared_at is not None:
+        before = lines[declared_at]
+        if before.strip() == wanted:
+            return
+        ops.append((path, declared_at, declared_at + 1, [wanted]))
+        action = CHANGED
+    else:
+        at = _below_decorators(class_node)
+        ops.append((path, at, at, [wanted]))
+        before = ""
+        action = ADDED
+    _declare_import(ops, path, lines, KEY)
+    report.edits.append(
+        AppliedEdit(
+            path=str(path),
+            type_name=marker.type_name,
+            member=KEY,
+            action=action,
+            before=before,
+            after=wanted,
+        )
+    )
+
+
+def _queue_unkey(
+    report: ApplyReport,
+    ops: List[Tuple[Path, int, int, List[str]]],
+    lines_of: Dict[Path, List[str]],
+    path: Path,
+    class_node: ast.ClassDef,
+) -> None:
+    """Remove a ``@key(...)`` the snapshot stops justifying, and its import with it."""
+    declared_at = decorator_line(class_node, KEY)
+    if declared_at is None:
+        return
+    lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
+    before = lines[declared_at]
+    ops.append((path, declared_at, declared_at + 1, []))
+    if not any(line.lstrip().startswith("@key(") for index, line in enumerate(lines) if index != declared_at):
+        _drop_import(ops, path, lines, KEY)
+    report.edits.append(
+        AppliedEdit(
+            path=str(path),
+            type_name=_entity_type_name(class_node) or class_node.name,
+            member=KEY,
+            action=REMOVED,
+            before=before,
+            after="",
+        )
+    )
 
 
 def _queue_version(
@@ -313,12 +441,17 @@ def _queue_ungate(
     )
 
 
-def _version_line(class_node: ast.ClassDef) -> Optional[int]:
-    """The 0-based line the class's ``@version(...)`` decorator occupies."""
+def decorator_line(class_node: ast.ClassDef, name: str) -> Optional[int]:
+    """The 0-based line the class's ``@<name>(...)`` decorator occupies."""
     for decorator in class_node.decorator_list:
-        if isinstance(decorator, ast.Call) and getattr(decorator.func, "id", None) == "version":
+        if isinstance(decorator, ast.Call) and getattr(decorator.func, "id", None) == name:
             return decorator.lineno - 1
     return None
+
+
+def _version_line(class_node: ast.ClassDef) -> Optional[int]:
+    """The 0-based line the class's ``@version(...)`` decorator occupies."""
+    return decorator_line(class_node, VERSION)
 
 
 def _decorator_start(class_node: ast.ClassDef) -> int:
@@ -336,40 +469,45 @@ def _version_statement(class_node: ast.ClassDef) -> Optional[Tuple[int, int]]:
     return None
 
 
-def _declare_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str]) -> None:
-    """Add ``version`` to the declaration-module import the generated file already spells."""
+def _declare_import(
+    ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str], name: str = VERSION
+) -> None:
+    """Add ``name`` to the declaration-module import the generated file already spells."""
     for index, line in enumerate(lines):
         match = _DECLARATION_IMPORT.match(line.strip())
         if match is None:
             continue
-        names = [name.strip() for name in match.group(1).split(",")]
-        if "version" in names or any(queued[0] == path and queued[1] == index for queued in ops):
+        names = [declared.strip() for declared in match.group(1).split(",")]
+        pending = [queued[3][0] for queued in ops if queued[0] == path and queued[1] == index and queued[3]]
+        if name in names or any(name in line for line in pending):
             return
-        written = ", ".join(names + ["version"])
+        written = ", ".join(sorted({*names, name}))
         ops.append((path, index, index + 1, [f"from {DECLARATION_MODULE} import {written}"]))
         return
-    _insert_import(ops, path, lines)
+    _insert_import(ops, path, lines, name)
 
 
-def _insert_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str]) -> None:
+def _insert_import(
+    ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str], name: str = VERSION
+) -> None:
     """Write the import whole, for a class the template gave no other declaration."""
-    statement = f"from {DECLARATION_MODULE} import version"
+    statement = f"from {DECLARATION_MODULE} import {name}"
     candidates = [index for index, line in enumerate(lines) if line.startswith("from office365")]
     before = [index for index in candidates if lines[index] > statement]
     at = before[0] if before else (candidates[-1] + 1 if candidates else 0)
     ops.append((path, at, at, [statement]))
 
 
-def _drop_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str]) -> None:
-    """Take ``version`` back out, so an import nothing names does not outlive the gate."""
+def _drop_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str], name: str = VERSION) -> None:
+    """Take ``name`` back out, so an import nothing names does not outlive the declaration."""
     for index, line in enumerate(lines):
         match = _DECLARATION_IMPORT.match(line.strip())
         if match is None:
             continue
-        names = [name.strip() for name in match.group(1).split(",")]
-        if "version" not in names:
+        names = [declared.strip() for declared in match.group(1).split(",")]
+        if name not in names:
             return
-        kept = [name for name in names if name != "version"]
+        kept = [declared for declared in names if declared != name]
         if not kept:
             ops.append((path, index, index + 1, []))
             return
@@ -382,6 +520,21 @@ def _is_addressed(class_node: ast.ClassDef) -> bool:
     if any(getattr(node, "id", None) == "dataclass" for node in class_node.decorator_list):
         return False
     return "Enum" not in {getattr(base, "id", None) or getattr(base, "attr", None) for base in class_node.bases}
+
+
+def _below_decorators(class_node: ast.ClassDef) -> int:
+    """The 0-based line the ``class`` statement begins on: under every decorator it has.
+
+    A type's facts stack outwards -- ``@version`` refuses a request before ``@key`` decides
+    an address -- so a new one is written closest to the class, where a reader meets it
+    last and in the same place a hand-written file puts it.
+    """
+    return class_node.lineno - 1
+
+
+def _key_decorator(marker) -> str:
+    """The decorator, as source: the wire name of the key property, quoted."""
+    return f"@key({json.dumps(marker.key)})"
 
 
 def _version_decorator(marker: VersionMarker) -> str:

@@ -153,10 +153,14 @@ class Entity(ClientObject):
     def property_ref_name(self) -> str:
         """Gets the name of the key property used for entity reference.
 
+        The answer is the type's own ``@key(...)`` when it declares one, and ``id``
+        otherwise -- which is what ``microsoft.graph.entity`` declares, so a type that
+        states nothing here is stating nothing because there is nothing to say.
+
         Returns:
             str: The property name used as entity key (default: "id")
         """
-        return "id"
+        return type(self)._key[0] if type(self)._key else "id"
 
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """Sets a property value and updates the resource path if needed.

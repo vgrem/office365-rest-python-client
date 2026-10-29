@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import key
 
 if TYPE_CHECKING:
     from office365.directory.policies.crosstenant.user_sync_inbound import (
@@ -10,6 +11,7 @@ if TYPE_CHECKING:
     )
 
 
+@key("tenantId")
 class CrossTenantIdentitySyncPolicyPartner(Entity):
     @property
     def display_name(self) -> Optional[str]:

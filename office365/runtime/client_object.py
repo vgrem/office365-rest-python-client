@@ -10,6 +10,7 @@ from typing import (
     Dict,
     List,
     Optional,
+    Sequence,
     Tuple,
     TypeVar,
 )
@@ -94,6 +95,12 @@ class ClientObject:
     #: on a type only the preview root declares, so an attempt to build one on a stable
     #: client fails here, before it becomes a 404.
     _versions: ClassVar[Collection[str]] = ()
+
+    #: The property that spells this type's identity, declared by ``@key(...)`` on the
+    #: class. Empty -- every type whose key is its family's default -- leaves
+    #: :attr:`property_ref_name` answering the base class's own spelling, so a class that
+    #: states nothing behaves exactly as it did before the declaration existed.
+    _key: ClassVar[Sequence[str]] = ()
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)

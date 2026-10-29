@@ -2,8 +2,10 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import key
 
 
+@key("stageNumber")
 class DispositionReviewStage(Entity):
     """Represents a disposition review stage for a retention label."""
 

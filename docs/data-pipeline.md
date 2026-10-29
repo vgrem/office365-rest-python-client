@@ -49,6 +49,12 @@ lst.to_csv("items.csv").execute_query()  # the type's columns, then the rest
 lst.select(["Title", "Modified"]).to_csv("s.csv")  # exactly these two
 ```
 
+A type states its identity above the class — `@key("tenantId")` — and a read always
+asks for it even when `.select(...)` omitted it, because that column is what the next
+request addresses the item by. Nine Graph types whose key the v1.0 CSDL states as
+something other than `id` say so; everything else leaves it at the family default and
+behaves as before.
+
 ## Formats
 
 `csv`, `tsv`, `json` (array), `ndjson`, `excel`, `parquet`, `orc`, `feather`,

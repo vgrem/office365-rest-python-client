@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import key
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.m365_capability_inbound_access import (
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
     )
 
 
+@key("name")
 class M365CapabilityBase(Entity):
     @property
     def inbound_access(self) -> Optional[M365CapabilityInboundAccess]:

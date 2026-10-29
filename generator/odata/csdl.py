@@ -105,6 +105,20 @@ class CsdlDocument:
                         result.append(tuple(names))
         return result
 
+    def parse_entity_key(self, node: Element) -> tuple[str, ...]:
+        """The properties an entity type's identity is spelled with (CSDL ``<Key>``).
+
+        ``<Key>`` holds one ``<PropertyRef>`` per member, in declaration order. A derived
+        type declares none and inherits its base's, which is why the answer is empty on
+        most types: it means the document states nothing, not that the type has no key.
+        """
+        declared = node.find("xmlns:Key", self._namespaces)
+        if declared is None:
+            return ()
+        return tuple(
+            name for name in (ref.get("Name") for ref in declared.findall("xmlns:PropertyRef", self._namespaces)) if name
+        )
+
     def _property_ref_name(self, prop_ref: Element) -> Optional[str]:
         """The property path of a ``PropertyRef`` record (its ``Name`` value)."""
         for prop_value in prop_ref.findall("xmlns:PropertyValue", self._namespaces):
