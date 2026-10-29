@@ -16,6 +16,9 @@ from generator.odata.type_system import TypeRef, normalize_class_name
 #: CSDL annotation term that declares alternate keys on an entity type.
 _ALTERNATE_KEYS_TERM = "Org.OData.Core.V1.AlternateKeys"
 
+#: CSDL annotation term for a member the service assigns, not the client.
+_COMPUTED_TERM = "Org.OData.Core.V1.Computed"
+
 
 class CsdlDocument:
     """Namespaces, schema aliases and traversal for one CSDL document."""
@@ -108,6 +111,30 @@ class CsdlDocument:
             if prop_value.get("Property") == "Name":
                 return prop_value.get("PropertyPath")
         return None
+
+    def parse_computed_members(self) -> set[tuple[str, str]]:
+        """Members the service assigns rather than the client (``Core.Computed``).
+
+        Graph writes these on schema-level ``<Annotations Target="Type/member">``
+        blocks, never on the property element, so the fact exists only here --
+        reading a ``<Property>`` node alone can never tell that the service owns
+        its value. The target's type part is qualified like any other type
+        reference, so an aliased target matches the type's own ``FullName``.
+        """
+        declared: set[tuple[str, str]] = set()
+        for schema in self.schemas():
+            for block in schema.findall("xmlns:Annotations", self._namespaces):
+                terms = {node.get("Term") for node in block.findall("xmlns:Annotation", self._namespaces)}
+                if _COMPUTED_TERM not in terms:
+                    continue
+                target = block.get("Target") or ""
+                type_name, sep, member = target.rpartition("/")
+                if not sep or not member or member == "$Kind":
+                    continue
+                qualified = self.qualified_type_name(type_name)
+                if qualified:
+                    declared.add((qualified, member))
+        return declared
 
     def parse_parameters(self, node: Element) -> list:
         """Extract ``<Parameter>`` children into plain dicts (types qualified)."""

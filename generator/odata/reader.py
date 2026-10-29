@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict, Optional
+from typing import Dict, Optional, Set, Tuple
 from xml.etree.ElementTree import Element
 
 from generator.odata.csdl import CsdlDocument
@@ -28,6 +28,9 @@ class ODataReader(ABC):
         #: The parsed document, bound by the single :meth:`read` pass; every helper
         #: below reads it, so it is not optional once parsing has begun.
         self._document: CsdlDocument
+        #: Members the service assigns (``Core.Computed``), as ``(type, member)``.
+        #: Empty until :meth:`read` has indexed the document's annotations.
+        self._computed: Set[Tuple[str, str]] = set()
 
     @property
     @abstractmethod
@@ -38,6 +41,7 @@ class ODataReader(ABC):
         """Parses the metadata file and returns the populated model."""
         model = ODataModel()
         self._document = CsdlDocument.load(self._metadata_path, self.xml_namespaces)
+        self._computed = self._document.parse_computed_members()
         self._parse_types(model)
         self.process_operations(model)
         model.anchors = self._document.entity_anchors()
@@ -114,7 +118,23 @@ class ODataReader(ABC):
             for key in self._document.parse_alternate_keys(type_node):
                 type_schema.add_alternate_key(key)
 
+        self._mark_computed(type_schema)
+
         return type_schema
+
+    def _mark_computed(self, type_schema: TypeInformation) -> None:
+        """Flags the members the service assigns (``Core.Computed``) as read-only.
+
+        The annotation is indexed per ``(type, member)`` because it never appears
+        on the property element itself; a computed member is one the client may
+        read but must not send back, which is what ``ReadOnly`` means to the
+        payload builder.
+        """
+        if not self._computed:
+            return
+        for name, schema in type_schema.Properties.items():
+            if (type_schema.FullName, name) in self._computed:
+                schema.ReadOnly = True
 
     @abstractmethod
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:

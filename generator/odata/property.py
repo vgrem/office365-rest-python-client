@@ -11,7 +11,8 @@ class PropertyInformation:
 
     Attributes:
         Name: The name of the property
-        ReadOnly: Whether the property is read-only
+        ReadOnly: True when the service assigns the value (CSDL ``Core.Computed``),
+            so a request may read it but never send it back
     """
 
     Name: str = ""

@@ -89,6 +89,44 @@ def test_parse_alternate_keys_absent_returns_empty() -> None:
     assert _document().parse_alternate_keys(node) == []
 
 
+_COMPUTED_XML = """<?xml version="1.0"?>
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+  <edmx:DataServices>
+    <Schema Namespace="microsoft.graph" Alias="graph" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="thing">
+        <Property Name="id" Type="Edm.String" />
+        <Property Name="subject" Type="Edm.String" />
+        <NavigationProperty Name="owner" Type="graph.user" />
+      </EntityType>
+      <Annotations Target="microsoft.graph.thing/id">
+        <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+      </Annotations>
+      <Annotations Target="graph.thing/owner">
+        <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+      </Annotations>
+      <Annotations Target="graph.thing/$Kind">
+        <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+      </Annotations>
+      <Annotations Target="graph.thing/subject">
+        <Annotation Term="Org.OData.Core.V1.Description" String="not computed" />
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
+"""
+
+
+def test_parse_computed_members() -> None:
+    document = CsdlDocument(ET.fromstring(_COMPUTED_XML), _NAMESPACES)
+
+    # A qualified or aliased target names the same type; $Kind describes the type
+    # itself, and a block carrying another term says nothing about ownership.
+    assert document.parse_computed_members() == {
+        ("microsoft.graph.Thing", "id"),
+        ("microsoft.graph.Thing", "owner"),
+    }
+
+
 def test_entity_anchors_map_root_types_to_container_names() -> None:
     assert _document().entity_anchors() == {
         "microsoft.graph.User": "users",

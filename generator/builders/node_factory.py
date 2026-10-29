@@ -120,12 +120,24 @@ def build_get_property(builder: PropertyBuilder, runtime_import: str | None = No
     if runtime_import:
         body_lines.append(f"    {runtime_import}")
     body_lines.append(f'    return self.properties.get("{prop_name}", {default_value})')
-    # The wire name travels with the property: callers never spell it again,
-    # and ``navigation`` records that $expand, not $select, reaches this one.
-    decorator = f'@odata(name="{prop_name}"' + (", navigation=True)" if builder.is_object_type else ")")
+    decorator = _declaration(builder, prop_name)
     property_code = (
         decorator + "\n@property\n" + f"def {method_name}(self) -> {type_annotation}:\n" + "\n".join(body_lines)
     )
 
     parsed = ast.parse(property_code)
     return cast(ast.FunctionDef, parsed.body[0])
+
+
+def _declaration(builder: PropertyBuilder, prop_name: str) -> str:
+    """The ``@odata(...)`` line of a getter: the wire name, plus what it is.
+
+    The wire name travels with the property so callers never spell it again,
+    ``navigation`` records that $expand, not $select, reaches this one, and
+    ``readonly`` records a value the service assigns (CSDL ``Core.Computed``) --
+    reading it is fine, sending it back is a write to a member it owns.
+    """
+    flags = ["navigation=True"] if builder.is_object_type else []
+    if builder.schema.ReadOnly:
+        flags.append("readonly=True")
+    return f'@odata(name="{prop_name}"' + "".join(f", {flag}" for flag in flags) + ")"

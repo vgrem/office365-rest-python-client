@@ -169,3 +169,45 @@ def test_graph_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     # Idempotent on an unchanged metadata.
     _run(options, ODataV4Reader, tmp_path, force=True)
     assert _source(tmp_path, "widget.py") == entity
+
+
+_COMPUTED_CSDL = """<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="microsoft.graph" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Widget">
+        <Key><PropertyRef Name="id" /></Key>
+        <Property Name="id" Type="Edm.String" Nullable="false" />
+        <Property Name="subject" Type="Edm.String" />
+        <NavigationProperty Name="owner" Type="Collection(microsoft.graph.Widget)" />
+      </EntityType>
+      <Annotations Target="microsoft.graph.Widget/id">
+        <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+      </Annotations>
+      <Annotations Target="microsoft.graph.Widget/owner">
+        <Annotation Term="Org.OData.Core.V1.Computed" Bool="true" />
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
+"""
+
+
+def test_a_computed_member_is_generated_read_only(tmp_path: Path) -> None:
+    """The service assigns it, so the payload must not carry it back.
+
+    Graph states this one level above the property, on an ``<Annotations
+    Target="Type/member">`` block, which is why the property node alone can never
+    answer it -- without this the model claims it may write ``id``.
+    """
+    (tmp_path / "metadata.xml").write_text(_COMPUTED_CSDL, encoding="utf-8")
+    options = _options(tmp_path, graph=True, namespace="", kinds=["EntityType"], prefix="microsoft.graph")
+
+    _run(options, ODataV4Reader, tmp_path)
+
+    entity = _source(tmp_path, "widget.py")
+    assert '@odata(name="id", readonly=True)' in entity
+    # A member that is neither computed nor a navigation is declared plainly.
+    assert '@odata(name="subject")' in entity
+    # A computed navigation keeps both facts: $expand reaches it, a write does not.
+    assert '@odata(name="owner", navigation=True, readonly=True)' in entity
