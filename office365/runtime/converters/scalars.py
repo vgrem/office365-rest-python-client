@@ -16,7 +16,7 @@ _TRUE_VALUES = {"true", "1", "yes", "y"}
 _FALSE_VALUES = {"false", "0", "no", "n"}
 
 
-def parse_enum(enum_type: type[Enum], value: str | int) -> Optional[Enum]:
+def parse_enum(enum_type: type[Enum], value: str | int) -> Any:
     """Safely converts a value to the specified enum type.
 
     Args:
@@ -24,7 +24,8 @@ def parse_enum(enum_type: type[Enum], value: str | int) -> Optional[Enum]:
         value: The raw value to convert
 
     Returns:
-        The enum member or None if conversion fails
+        The enum member, the wire value when it names a combination of members, or
+        None if conversion fails
     """
     try:
         return enum_type(value)
@@ -32,7 +33,26 @@ def parse_enum(enum_type: type[Enum], value: str | int) -> Optional[Enum]:
         try:
             return enum_type[str(value)]  # fallback: lookup by name
         except KeyError:
-            return None
+            return _parse_flags(enum_type, value)
+
+
+def _parse_flags(enum_type: type[Enum], value: Any) -> Optional[str]:
+    """The wire value of a ``IsFlags`` enum, or ``None`` when it names no combination.
+
+    A flags member set travels as the member names joined by commas
+    (``"password,voice"`` -- ``authenticationMethodModes``, ``applicationDataType``),
+    and no member names that combination. Resolving every part is what tells a
+    combination from an unknown value: returning ``None`` here would store ``None``
+    and the next payload would write it back as null, dropping a setting the service
+    had reported. The string is therefore kept as the service sent it -- it is also
+    what the service accepts back.
+    """
+    if not isinstance(value, str) or "," not in value:
+        return None
+    parts = [part.strip() for part in value.split(",")]
+    if not all(part in enum_type.__members__ for part in parts):
+        return None
+    return value
 
 
 def parse_bool(value: Any) -> Any:
