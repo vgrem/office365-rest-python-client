@@ -136,6 +136,32 @@ def test_a_member_a_base_type_declares_is_not_one_the_metadata_is_silent_about(t
     assert _plan(tmp_path, _INHERITED_GETTER) == []
 
 
+_OTHER_SPELLING_GETTER = """
+from office365.runtime.types.odata_property import odata
+
+
+class Drive:
+    def entity_type_name(self):
+        return "microsoft.graph.Drive"
+
+    @odata(name="sharepointIds")
+    @property
+    def sharepoint_ids(self):
+        return self.properties.get("sharepointIds", None)
+"""
+
+
+def test_a_member_the_type_spells_otherwise_is_not_a_system_column(tmp_path: pathlib.Path) -> None:
+    """``drive`` declares ``sharePointIds``; ``driveItem`` declares ``sharepointIds``.
+
+    The getter reads the other type's spelling, so an exact lookup misses it and would
+    call the member one the metadata has never heard of -- it has, and the flag is about
+    the member, not about the bytes we typed. The declaration is left alone either way:
+    ``navigation``/``readonly`` belong to ``sharePointIds``, not to this spelling.
+    """
+    assert _plan(tmp_path, _OTHER_SPELLING_GETTER) == []
+
+
 def test_a_getter_that_reads_an_inherited_member_declares_it(tmp_path: pathlib.Path) -> None:
     """The same fold decides the back-fill: an inherited column is a column of this type."""
     source = _INHERITED_GETTER.replace('    @odata(name="joinInformation")\n', "")
@@ -206,7 +232,8 @@ def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, roo
                 continue  # a method's ``@odata`` names a function import, not a column
             call = _mark_odata.declaration(node)
             name = _mark_odata.declared_name(call) if call is not None else None
-            if name is not None and _says_system(call) != (name not in found.properties):
+            declared = _mark_odata.declared_of(found.properties, name or "")
+            if name is not None and _says_system(call) != (declared is None):
                 wrong.append(f"{path.relative_to(_REPO_ROOT)}:{call.lineno} {found.node.name}.{name}")
     assert wrong == []
 

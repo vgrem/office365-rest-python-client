@@ -237,6 +237,25 @@ def read_spelled_names(getter: ast.FunctionDef) -> Set[str]:
     return names
 
 
+def declared_of(properties: Dict[str, Declared], name: str) -> Optional[Declared]:
+    """The member a name refers to, spelling case aside, or ``None``.
+
+    The snapshot spells one member differently on different types -- ``drive`` declares
+    ``sharePointIds``, ``driveItem`` declares ``sharepointIds``; ``sitePage`` declares
+    ``webParts``, ``verticalSection`` declares ``webparts``. A getter that reads another
+    type's spelling still names a member the metadata declares, so it is not a ``system``
+    column: the flag says the metadata is silent, which is a fact about the member, not
+    about the bytes we happened to type.
+    """
+    if not name:
+        return None
+    declared = properties.get(name)
+    if declared is not None:
+        return declared
+    key = name.lower()
+    return next((found for spelling, found in properties.items() if spelling.lower() == key), None)
+
+
 def declaration(getter: ast.FunctionDef) -> Optional[ast.Call]:
     """The ``@odata(...)`` call the getter already carries, if any."""
     for decorator in getter.decorator_list:
@@ -293,9 +312,14 @@ def pending_markers(
             continue
         existing = declaration(node)
         if existing is not None:
-            declared = properties.get(declared_name(existing) or "")
-            if declared is None:  # a column the metadata does not describe
-                wanted = ["system"]
+            name = declared_name(existing) or ""
+            declared = properties.get(name)
+            if declared is None:
+                # A member this type spells otherwise (``sharepointIds`` beside
+                # ``sharePointIds``) is declared, so it is not a ``system`` column, and
+                # the facts of that member do not belong on this spelling: nothing to do
+                # but leave the declaration to whoever fixes the name.
+                wanted = [] if declared_of(properties, name) is not None else ["system"]
             else:
                 wanted = [
                     keyword
@@ -315,7 +339,11 @@ def pending_markers(
         name = names.pop()
         declared = properties.get(name)
         if declared is None:
-            continue  # a client-side convenience, not a column of this type
+            # A client-side convenience, or this type's member under the spelling another
+            # type uses (``sharepointIds`` beside ``sharePointIds``). Either way there is
+            # no declaration to write: the codemod names a column only as the metadata
+            # spells it, and this getter reads a name this type does not carry.
+            continue
         suffix = "".join(
             f", {keyword}=True"
             for keyword, wanted in (("navigation", declared.navigation), ("readonly", declared.readonly))
