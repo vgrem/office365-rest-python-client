@@ -95,7 +95,7 @@ class Place(Entity):
         """Gets the customProperties property"""
         return self.properties.get("customProperties", None)
 
-    @odata(name="lastUpdatedTime")
+    @odata(name="lastUpdatedTime", readonly=True)
     @property
     def last_updated_time(self) -> Optional[datetime]:
         """Gets the lastUpdatedTime property"""

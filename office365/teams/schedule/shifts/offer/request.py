@@ -8,7 +8,7 @@ from office365.teams.schedule.change_request import ScheduleChangeRequest
 class OfferShiftRequest(ScheduleChangeRequest):
     """Represents a request to offer a shift to another user in the team."""
 
-    @odata(name="recipientActionDateTime")
+    @odata(name="recipientActionDateTime", readonly=True)
     @property
     def recipient_action_datetime(self):
         """

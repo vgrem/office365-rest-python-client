@@ -28,7 +28,7 @@ class SharedInsight(Entity):
         """Details about the shared item. Read-only"""
         return self.properties.get("lastShared", SharingDetail())
 
-    @odata(name="resourceReference")
+    @odata(name="resourceReference", readonly=True)
     @property
     def resource_reference(self) -> ResourceReference:
         """Reference properties of the used document, such as the url and type of the document. Read-only"""

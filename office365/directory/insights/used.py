@@ -26,7 +26,7 @@ class UsedInsight(Entity):
         """Information about when the item was last viewed or modified by the user."""
         return self.properties.get("lastUsed", UsageDetails())
 
-    @odata(name="resourceReference")
+    @odata(name="resourceReference", readonly=True)
     @property
     def resource_reference(self) -> ResourceReference:
         """Reference properties of the used document, such as the url and type of the document. Read-only"""

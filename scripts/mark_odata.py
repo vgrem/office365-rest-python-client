@@ -15,6 +15,12 @@ and one that names a column the metadata has never heard of, which says
 ``system=True`` instead (a list item's ``AuthorId``, a page's ``FileLeafRef``:
 the CSDL describes the object graph, not the item row).
 
+A member the service assigns rather than the client is finished the same way, with
+``readonly=True`` (CSDL ``Org.OData.Core.V1.Computed``: ``createdDateTime``,
+``id`` on some types, every ``lastModifiedDateTime``). The fact lives on a
+schema-level ``<Annotations Target="Type/member">`` block, never on the property
+element, so it is read out of the document and carried per member here.
+
 The OData name is never derived from the attribute name: ``iCalUId`` and ``icalUid``
 both survive a snake-case round trip, and only one of them is a real column. The
 literal in the getter is the ground truth; the metadata only vouches for it and
@@ -71,6 +77,7 @@ class Declared(NamedTuple):
     name: str
     navigation: bool
     enum: bool
+    readonly: bool = False
 
 
 #: CSDL type name (lowercased) -> {OData name: declaration}
@@ -99,7 +106,13 @@ def load_catalog(service: str) -> Catalog:
         for name, properties in _catalog_of(reader(str(preview)).read()).items():
             declared = catalog.setdefault(name, {})
             for prop, declaration in properties.items():
-                declared.setdefault(prop, declaration)
+                known = declared.get(prop)
+                if known is None:
+                    declared[prop] = declaration
+                elif declaration.readonly and not known.readonly:
+                    # Ownership is a fact of the service: a member the preview already
+                    # reports as computed is computed under either root.
+                    declared[prop] = known._replace(readonly=True)
     return catalog
 
 
@@ -113,7 +126,7 @@ def _catalog_of(model) -> Catalog:
 
     return {
         name.lower(): {
-            prop.Name: Declared(prop.Name, bool(prop.IsNavigation), is_enum(prop.TypeName or ""))
+            prop.Name: Declared(prop.Name, bool(prop.IsNavigation), is_enum(prop.TypeName or ""), bool(prop.ReadOnly))
             for prop in schema.Properties.values()
         }
         for name, schema in model.types.items()
@@ -207,22 +220,38 @@ def declared_name(call: ast.Call) -> Optional[str]:
     return None
 
 
-def marker_edit(call: ast.Call, keyword: str, source_line: str) -> Optional[Edit]:
-    """Add ``keyword=True`` to a marker that still fits on one line."""
-    if any(k.arg == keyword for k in call.keywords):
+def marker_edit(call: ast.Call, keywords: List[str], source_line: str) -> Optional[Edit]:
+    """Add ``keyword=True`` for each of ``keywords`` the marker lacks, on one line.
+
+    One edit, not one per keyword: two edits on the same line cannot both write it,
+    and a declaration that is missing two facts is still one declaration.
+    """
+    missing = [keyword for keyword in keywords if not any(k.arg == keyword for k in call.keywords)]
+    if not missing:
         return None
     if call.end_lineno != call.lineno:  # a wrapped declaration: leave it to a human
         return None
     stripped = source_line.rstrip("\n")
     if not stripped.endswith(")"):
         return None
-    return Edit(call.lineno, source_line, stripped[:-1] + f", {keyword}=True)\n")
+    added = "".join(f", {keyword}=True" for keyword in missing)
+    return Edit(call.lineno, source_line, stripped[:-1] + added + ")\n")
 
 
 def pending_markers(
-    tree: ast.Module, class_node: ast.ClassDef, properties: Dict[str, Declared], lines: List[str]
+    tree: ast.Module,
+    class_node: ast.ClassDef,
+    properties: Dict[str, Declared],
+    lines: List[str],
+    *,
+    only: Optional[Set[str]] = None,
 ) -> Edits:
-    """The declarations a class still needs, and the markers that need finishing."""
+    """The declarations a class still needs, and the markers that need finishing.
+
+    ``only`` finishes those facts and nothing else, and adds no declaration: declaring
+    a name changes what a property holds (an enum-typed one starts answering a member),
+    so the back-fill is its own decision, and one fact can land without it.
+    """
     markers = []
     for node in class_node.body:
         if not isinstance(node, ast.FunctionDef):
@@ -233,12 +262,19 @@ def pending_markers(
         if existing is not None:
             declared = properties.get(declared_name(existing) or "")
             if declared is None:  # a column the metadata does not describe
-                finish = "system"
+                wanted = ["system"]
             else:
-                finish = "navigation" if declared.navigation else ""
-            edit = marker_edit(existing, finish, lines[existing.lineno - 1]) if finish else None
+                wanted = [
+                    keyword
+                    for keyword, declared_by in (("navigation", declared.navigation), ("readonly", declared.readonly))
+                    if declared_by
+                ]
+            finishes = [keyword for keyword in wanted if only is None or keyword in only]
+            edit = marker_edit(existing, finishes, lines[existing.lineno - 1]) if finishes else None
             if edit is not None:
                 markers.append(edit)
+            continue
+        if only is not None:
             continue
         names = read_spelled_names(node)
         if len(names) != 1:
@@ -247,13 +283,23 @@ def pending_markers(
         declared = properties.get(name)
         if declared is None:
             continue  # a client-side convenience, not a column of this type
-        suffix = ", navigation=True" if declared.navigation else ""
+        suffix = "".join(
+            f", {keyword}=True"
+            for keyword, wanted in (("navigation", declared.navigation), ("readonly", declared.readonly))
+            if wanted
+        )
         marker = f'    @odata(name="{name}"{suffix})\n'
         markers.append(Edit(node.decorator_list[0].lineno, None, marker))
     return markers
 
 
-def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]]) -> Edits:
+def plan_module(
+    path: pathlib.Path,
+    catalog: Catalog,
+    index: Dict[str, Dict[str, Declared]],
+    *,
+    only: Optional[Set[str]] = None,
+) -> Edits:
     """The line insertions one module needs, without touching it."""
     source = path.read_text(encoding="utf-8")
     if "@property" not in source:
@@ -262,7 +308,7 @@ def plan_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str,
     found = subject(tree, catalog, index)
     if found is None:
         return []
-    markers = pending_markers(tree, found.node, found.properties, source.splitlines(keepends=True))
+    markers = pending_markers(tree, found.node, found.properties, source.splitlines(keepends=True), only=only)
     if not markers or _imports_odata(tree):
         return markers
     last_import = max(
@@ -284,9 +330,15 @@ def _imports_odata(tree: ast.Module) -> bool:
     )
 
 
-def mark_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str, Declared]]) -> int:
+def mark_module(
+    path: pathlib.Path,
+    catalog: Catalog,
+    index: Dict[str, Dict[str, Declared]],
+    *,
+    only: Optional[Set[str]] = None,
+) -> int:
     """Apply the planned declarations to one module; return how many were applied."""
-    markers = plan_module(path, catalog, index)
+    markers = plan_module(path, catalog, index, only=only)
     if not markers:
         return 0
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -301,18 +353,25 @@ def mark_module(path: pathlib.Path, catalog: Catalog, index: Dict[str, Dict[str,
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("root", help="package directory to update, e.g. office365/outlook")
     parser.add_argument("--service", choices=sorted(_SERVICES), default="graph", help="which CSDL to read")
     parser.add_argument("--dry-run", action="store_true", help="report the diff size without writing")
+    parser.add_argument(
+        "--only",
+        action="append",
+        metavar="FACT",
+        help="finish only this fact (navigation, readonly, system), and add no declaration",
+    )
     args = parser.parse_args(argv)
 
     catalog = load_catalog(args.service)
     index = type_index(catalog)
     files = markers = 0
     for path in sorted(pathlib.Path(args.root).rglob("*.py")):
-        planned = plan_module(path, catalog, index) if args.dry_run else None
-        added = len(planned) if planned is not None else mark_module(path, catalog, index)
+        only = set(args.only) if args.only else None
+        planned = plan_module(path, catalog, index, only=only) if args.dry_run else None
+        added = len(planned) if planned is not None else mark_module(path, catalog, index, only=only)
         if added:
             files += 1
             markers += added

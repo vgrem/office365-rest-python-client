@@ -261,19 +261,19 @@ class ManagedDevice(Entity):
         """Gets the ethernetMacAddress property"""
         return self.properties.get("ethernetMacAddress", None)
 
-    @odata(name="exchangeAccessState")
+    @odata(name="exchangeAccessState", readonly=True)
     @property
     def exchange_access_state(self) -> DeviceManagementExchangeAccessState:
         """Gets the exchangeAccessState property"""
         return self.properties.get("exchangeAccessState", DeviceManagementExchangeAccessState.none)
 
-    @odata(name="exchangeAccessStateReason")
+    @odata(name="exchangeAccessStateReason", readonly=True)
     @property
     def exchange_access_state_reason(self) -> DeviceManagementExchangeAccessStateReason:
         """Gets the exchangeAccessStateReason property"""
         return self.properties.get("exchangeAccessStateReason", DeviceManagementExchangeAccessStateReason.none)
 
-    @odata(name="exchangeLastSuccessfulSyncDateTime")
+    @odata(name="exchangeLastSuccessfulSyncDateTime", readonly=True)
     @property
     def exchange_last_successful_sync_date_time(self) -> datetime:
         """Gets the exchangeLastSuccessfulSyncDateTime property"""
@@ -309,7 +309,7 @@ class ManagedDevice(Entity):
         """Gets the jailBroken property"""
         return self.properties.get("jailBroken", None)
 
-    @odata(name="lastSyncDateTime")
+    @odata(name="lastSyncDateTime", readonly=True)
     @property
     def last_sync_date_time(self) -> datetime:
         """Gets the lastSyncDateTime property"""
@@ -326,19 +326,19 @@ class ManagedDevice(Entity):
         """Gets the managedDeviceOwnerType property"""
         return self.properties.get("managedDeviceOwnerType", ManagedDeviceOwnerType.unknown)
 
-    @odata(name="managementAgent")
+    @odata(name="managementAgent", readonly=True)
     @property
     def management_agent(self) -> ManagementAgentType:
         """Gets the managementAgent property"""
         return self.properties.get("managementAgent", ManagementAgentType.eas)
 
-    @odata(name="managementCertificateExpirationDate")
+    @odata(name="managementCertificateExpirationDate", readonly=True)
     @property
     def management_certificate_expiration_date(self) -> datetime:
         """Gets the managementCertificateExpirationDate property"""
         return self.properties.get("managementCertificateExpirationDate", datetime.min)
 
-    @odata(name="managementState")
+    @odata(name="managementState", readonly=True)
     @property
     def management_state(self) -> ManagementState:
         """Gets the managementState property"""
@@ -364,7 +364,7 @@ class ManagedDevice(Entity):
         """Gets the osVersion property"""
         return self.properties.get("osVersion", None)
 
-    @odata(name="partnerReportedThreatState")
+    @odata(name="partnerReportedThreatState", readonly=True)
     @property
     def partner_reported_threat_state(self) -> ManagedDevicePartnerReportedHealthState:
         """Gets the partnerReportedThreatState property"""

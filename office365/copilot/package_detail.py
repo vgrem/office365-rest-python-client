@@ -93,7 +93,7 @@ class CopilotPackageDetail(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CopilotPackageDetail"
 
-    @odata(name="requestMetadata")
+    @odata(name="requestMetadata", readonly=True)
     @property
     def request_metadata(self) -> Optional[CopilotPackageRequestMetadata]:
         """Gets the requestMetadata property"""

@@ -24,7 +24,7 @@ class Trending(Entity):
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
-    @odata(name="resourceReference")
+    @odata(name="resourceReference", readonly=True)
     @property
     def resource_reference(self) -> ResourceReference:
         """Reference properties of the trending document, such as the url and type of the document."""
