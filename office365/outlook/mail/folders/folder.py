@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Optional
 from typing_extensions import Self
 
 if TYPE_CHECKING:
+    from office365.common.mail_folder_operation import MailFolderOperation
+    from office365.common.user_configuration import UserConfiguration
     from office365.outlook.mail.folders.collection import MailFolderCollection
 
 from office365.directory.extensions.extended_property import (
@@ -175,3 +177,35 @@ class MailFolder(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.MailFolder"
+
+    @odata(name="wellKnownName", beta=True)
+    @property
+    def well_known_name(self) -> Optional[str]:
+        """Gets the wellKnownName property"""
+        return self.properties.get("wellKnownName", None)
+
+    @odata(name="operations", beta=True, navigation=True)
+    @property
+    def operations(self) -> EntityCollection[MailFolderOperation]:
+        """Gets the operations property"""
+        from office365.common.mail_folder_operation import MailFolderOperation
+
+        return self.properties.get(
+            "operations",
+            EntityCollection[MailFolderOperation](
+                self.context, MailFolderOperation, ResourcePath("operations", self.resource_path)
+            ),
+        )
+
+    @odata(name="userConfigurations", beta=True, navigation=True)
+    @property
+    def user_configurations(self) -> EntityCollection[UserConfiguration]:
+        """Gets the userConfigurations property"""
+        from office365.common.user_configuration import UserConfiguration
+
+        return self.properties.get(
+            "userConfigurations",
+            EntityCollection[UserConfiguration](
+                self.context, UserConfiguration, ResourcePath("userConfigurations", self.resource_path)
+            ),
+        )

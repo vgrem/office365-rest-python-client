@@ -3,10 +3,11 @@ from __future__ import annotations
 import os
 import uuid
 from datetime import datetime
-from typing import IO, AnyStr, Callable, List, Optional, Tuple, Union
+from typing import IO, TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, Union
 
 from typing_extensions import Self
 
+from office365.common.mentions_preview import MentionsPreview
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -27,7 +28,11 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.common.mention import Mention
 
 
 class Message(OutlookItem):
@@ -551,3 +556,31 @@ class Message(OutlookItem):
         from office365.outlook.mail.recipient import Recipient
 
         return self.properties.get("from", Recipient())
+
+    @odata(name="mentionsPreview", beta=True)
+    @property
+    def mentions_preview(self) -> Optional[MentionsPreview]:
+        """Gets the mentionsPreview property"""
+        return self.properties.get("mentionsPreview", None)
+
+    @odata(name="unsubscribeData", beta=True)
+    @property
+    def unsubscribe_data(self) -> StringCollection:
+        """Gets the unsubscribeData property"""
+        return self.properties.get("unsubscribeData", StringCollection())
+
+    @odata(name="unsubscribeEnabled", beta=True)
+    @property
+    def unsubscribe_enabled(self) -> Optional[bool]:
+        """Gets the unsubscribeEnabled property"""
+        return self.properties.get("unsubscribeEnabled", None)
+
+    @odata(name="mentions", beta=True, navigation=True)
+    @property
+    def mentions(self) -> EntityCollection[Mention]:
+        """Gets the mentions property"""
+        from office365.common.mention import Mention
+
+        return self.properties.get(
+            "mentions", EntityCollection[Mention](self.context, Mention, ResourcePath("mentions", self.resource_path))
+        )
