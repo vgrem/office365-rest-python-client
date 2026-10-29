@@ -218,6 +218,17 @@ introduced.
 
 ### Changed
 
+- **An export is a projection of the type, not of the response.** Every writer that
+  goes through `records.iter_records` (CSV, TSV, JSON, NDJSON, Excel, Parquet, ORC,
+  Feather, SQL, DuckDB, dataframe) used to derive its columns from the page it had
+  just read, sorted — so an item carrying an extra field reordered every header, a
+  declared column the service left out of a page vanished instead of arriving empty,
+  and the column set differed between two pages of the same query. The columns are now
+  the type's declared ones, in declaration order, spoken in the client's own service
+  root: `Message` exports 31 columns to a v1.0 client and 34 to a beta one, and a
+  preview-only name the page happened to carry is dropped rather than exported. A name
+  the metadata does not describe — a list item's site columns — still follows, sorted,
+  so nothing the service sent is lost; `.select(...)` still means exactly what it names.
 - **A list item's own columns are declared on the item.** `ListItem` declares
   `AuthorId`, `EditorId`, `Created`, `Modified`, `FileRef` and `FileLeafRef` as
   `system=True`; `file_system_object_type` answers the enum instead of the wire's

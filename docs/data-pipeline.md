@@ -35,6 +35,20 @@ lst.from_dataframe(pd.read_csv("stocks.csv", chunksize=2000), key=["Name", "date
 df = lst.to_dataframe().execute_query().value
 ```
 
+## Columns
+
+An export is a projection of the **type**, not of the response: the columns are the
+type's declared ones (`select_all()`), in declaration order, spelled the way the
+client's service root spells them — so a stable client exports no preview column, and
+every format, every page and every run answer the same headers. A name only the page
+carries (a SharePoint list item's site columns, which no CSDL describes) follows,
+sorted. `.select(...)` replaces that with exactly the names you gave.
+
+```python
+lst.to_csv("items.csv").execute_query()  # the type's columns, then the rest
+lst.select(["Title", "Modified"]).to_csv("s.csv")  # exactly these two
+```
+
 ## Formats
 
 `csv`, `tsv`, `json` (array), `ndjson`, `excel`, `parquet`, `orc`, `feather`,

@@ -25,11 +25,11 @@ def _cell(value: Any) -> str:
 def write_csv(collection: ClientObjectCollection, file: IO[str], delimiter: str = ",") -> None:
     """Write collection items to CSV using the shared record projection.
 
-    The projection (``records.iter_records``) mirrors the previous behaviour:
-    when no ``.select()`` is set all item properties are exported; plain select
-    fields (e.g. ``"displayName"``) produce one column; dotted select fields
-    (e.g. ``"members/displayName"``) walk into an expanded navigation property —
-    one CSV row is emitted per child item.
+    The projection (``records.iter_records``) asks the type for its columns: when no
+    ``.select()`` is set the declared ones come first, in declaration order, and a
+    name only the page carries follows. Plain select fields (e.g. ``"displayName"``)
+    produce one column; dotted select fields (e.g. ``"members/displayName"``) walk
+    into an expanded navigation property — one CSV row is emitted per child item.
 
     Usage:
         >>> collection.get_all() \\

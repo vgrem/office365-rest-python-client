@@ -224,7 +224,10 @@ def test_to_dataframe_returns_dataframe_result():
     assert isinstance(result, DataFrameResult)
     # the after_execute callback materializes .value on the loaded collection
     write_dataframe(col, result)
-    assert list(result.value.columns) == ["displayName"]
+    # The columns are the type's, in declaration order, then the name only this page
+    # carried: a row is a row of the model, not of the response.
+    assert list(result.value.columns) == [*User.select_all(), "displayName"]
+    assert result.value["displayName"].tolist() == ["John Doe"]
 
 
 def test_field_type_mapping():

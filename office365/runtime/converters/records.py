@@ -3,6 +3,10 @@
 This is the shared extension point for every tabular exporter (CSV, pandas,
 future formats). Format-specific writers consume ``iter_records`` and apply
 their own value coercion on top of the native, JSON-safe values produced here.
+
+The column set is the *type's*, not the page's: a row of a model should carry the
+same names the serializer, ``$select`` and the migration imports use, or every
+exporter re-derives them for itself.
 """
 
 from __future__ import annotations
@@ -11,6 +15,7 @@ from typing import TYPE_CHECKING, Any, Dict, List
 
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters.value import serialize_value
+from office365.runtime.types.odata_property import request_version
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
@@ -22,7 +27,8 @@ def iter_records(collection: "ClientObjectCollection", raw: bool = False) -> Lis
     Mirrors ``csv_writer.write_csv``: plain select fields become columns,
     dotted select fields (e.g. ``"members/displayName"``) walk into a single
     expanded navigation property — one record is emitted per child item.
-    When no ``.select()`` is set, all item properties are exported (sorted).
+    When no ``.select()`` is set, the type's declared columns are exported, in
+    declaration order (see :func:`declared_columns`).
 
     Every selected key is emitted (``None``-filled when absent) so column order
     and headers are stable across formats.
@@ -41,6 +47,31 @@ def iter_records(collection: "ClientObjectCollection", raw: bool = False) -> Lis
     )
 
 
+def declared_columns(items: List["ClientObject"]) -> List[str]:
+    """The columns of these items: the type's declarations, then the rest of the page.
+
+    The response used to answer this question — the keys one page happened to carry,
+    sorted — which made the column set and its order a property of the *page*: an
+    item carrying an extra field reordered every header, and a declared column the
+    service left out of a page vanished instead of arriving empty. ``select_all()``
+    is that question answered by the model, spelled as the client's own service root
+    spells it (a stable client exports no preview column), so those names come first,
+    in declaration order.
+
+    A name the metadata does not describe still follows, sorted, rather than being
+    dropped: a list item's site columns exist on the wire and not in the CSDL, and an
+    exporter that silently lost them would be the lossy one. The whole candidate list
+    goes through one :meth:`TypeSchema.projection`, so a name the client's root does
+    not declare is dropped whether the model declares it or the page merely carried it.
+    """
+    model = type(items[0])
+    declared = model.select_all()
+    carried = {key for item in items for key in item.properties.keys()}
+    return model._schema.projection(
+        [*declared, *sorted(carried.difference(declared))], request_version(items[0].context)
+    )
+
+
 def records_from_items(
     items: List["ClientObject"],
     select: List[str],
@@ -54,7 +85,7 @@ def records_from_items(
     """
     if not items:
         return []
-    select = list(select) if select else sorted({key for item in items for key in item.properties.keys()})
+    select = list(select) if select else declared_columns(items)
     expand = set(expand)
     dotted = [field.split("/", 1) for field in select if "/" in field]
     navs = {nav for nav, _ in dotted}
