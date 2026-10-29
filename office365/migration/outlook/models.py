@@ -178,6 +178,12 @@ class MessageRecord(SidecarRecord):
     file_stamp_from = ("received_date_time", "sent_date_time")
     modified_from = ("last_modified_date_time", "received_date_time", "sent_date_time")
     created_from = ("received_date_time", "sent_date_time")
+    #: The one family that reads *less* than its type declares: the body is the payload.
+    #: ``Message.get_content()`` fetches the RFC 822 bytes per message, so selecting
+    #: ``body``/``uniqueBody`` here would download every message twice, and
+    #: ``internetMessageHeaders`` is unbounded. Everything else a message declares is
+    #: read, because the sidecar is what an import replays -- ``bccRecipients``,
+    #: ``sender`` and ``replyTo`` are exactly the fields an operator notices are gone.
     columns = (
         "id",
         "internetMessageId",

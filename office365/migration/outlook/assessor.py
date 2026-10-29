@@ -21,8 +21,12 @@ from office365.migration.outlook.scanner import MailFolderData, OutlookOptions
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.runtime.converters.scalars import parse_int
 
-# Graph mailFolder properties the walker selects
-_FOLDER_COLUMNS = ["displayName", "totalItemCount", "unreadItemCount", "childFolderCount"]
+#: What the walker selects: the folder type's own declarations, never a list kept beside
+#: it. It reads four names the walker uses (``displayName``, ``totalItemCount``,
+#: ``unreadItemCount``, ``childFolderCount``) and four it does not -- a mailbox has a few
+#: hundred folders, so the difference is free, and a folder column the model gains cannot
+#: go missing from the walk.
+_FOLDER_COLUMNS = MailFolder.select_all()
 
 
 class MailboxAssessor:
