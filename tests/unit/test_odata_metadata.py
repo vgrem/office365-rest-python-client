@@ -288,6 +288,21 @@ def test_a_column_the_service_assigns_never_travels_back():
     assert item.has_unique_role_assignments is True
 
 
+def test_a_fact_no_consumer_enforces_is_not_accepted():
+    """Five fields were carried by every declaration, set by none, read by nothing.
+
+    ``filterable``/``sortable``/``searchable`` answer a question the product answers, not
+    the member (``QueryCapabilities`` denies per product, because Graph states it in
+    prose and the snapshots state nothing); ``description`` is the getter's docstring,
+    written from the same OpenAPI summary; and ``nullable`` says a *request* must carry
+    the member, which nothing here checks. A keyword that is accepted and ignored is a
+    promise that cannot be kept, so it now raises instead.
+    """
+    for fact in ("filterable", "sortable", "searchable", "nullable", "description"):
+        with pytest.raises(TypeError, match=fact):
+            odata(name="x", **{fact: True})
+
+
 def test_odata_name_answers_for_an_attribute_and_refuses_an_unknown_one():
     assert Event.odata_name("ical_uid") == "iCalUId"
     assert Message.odata_name("from_") == "from"  # a reserved word, renamed by the generator

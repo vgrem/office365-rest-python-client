@@ -230,6 +230,16 @@ introduced.
 
 ### Changed
 
+- **A declaration carries no fact nobody reads.** `ODataPropertyMeta` and
+  `@odata(...)` accepted `filterable`, `sortable`, `searchable`, `nullable` and
+  `description`; of the 4,883 declarations in the tree, not one set any of them, and
+  no code read them. Four of the five have a different owner anyway — whether a name
+  is legal in `$filter`/`$orderby`/`$search` is a *product's* answer
+  (`QueryCapabilities`, a deny-list per product, because Graph states it in prose and
+  neither snapshot states it as a capability: the `searchable` matches in `Graph.xml`
+  are properties named `isSearchable`), a description is the getter's docstring,
+  written from the same OpenAPI summary, and `nullable` would describe a request rule
+  nothing enforces. Passing one now raises instead of being accepted and ignored.
 - **An export is a projection of the type, not of the response.** Every writer that
   goes through `records.iter_records` (CSV, TSV, JSON, NDJSON, Excel, Parquet, ORC,
   Feather, SQL, DuckDB, dataframe) used to derive its columns from the page it had

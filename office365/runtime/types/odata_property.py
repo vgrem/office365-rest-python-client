@@ -92,6 +92,18 @@ class ODataPropertyMeta:
 
     ``name`` is the JSON/OData key; ``attr`` is the Python attribute name,
     filled in by ``ClientObject.__init_subclass__`` at class creation.
+
+    What one member may be *queried* by is deliberately not here. Whether a name is
+    legal in ``$filter``/``$orderby``/``$search`` is a product's answer, not a
+    member's: Graph states it in prose ("Not filterable.", "Supports ``$filter`` (eq,
+    ne)"), the snapshots state nothing, so the declaration is
+    :class:`office365.runtime.query_capabilities.QueryCapabilities` -- a deny-list per
+    product, checked once per request. A description is likewise the getter's own
+    docstring, which the generator writes from the same OpenAPI summary, and
+    ``nullable`` has no reader at all (a CSDL ``Nullable="false"`` says a *request*
+    must carry the member, which no code here enforces). Those five fields were
+    accepted, ignored and never set by a single declaration, so a keyword that
+    silently did nothing is now a ``TypeError`` rather than a promise.
     """
 
     name: str
@@ -109,12 +121,7 @@ class ODataPropertyMeta:
     #: ``FileLeafRef``, ``WikiField`` and ``OData__ModerationStatus``. ``SP.ListItem``'s
     #: own declaration is 24 names long and carries none of the seven.
     system: bool = False
-    filterable: bool = False
-    nullable: bool = True
-    sortable: bool = False
-    searchable: bool = False
     compare: Optional[Compare] = None
-    description: str = ""
     #: What the preview service root does with this member, when it differs from the
     #: stable root. One attribute, four answers, because it is one fact::
     #:
