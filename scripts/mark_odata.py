@@ -97,13 +97,23 @@ Edits = List[Edit]
 
 @functools.lru_cache(maxsize=None)
 def load_catalog(service: str) -> Catalog:
-    """Map each CSDL type name to the properties it declares itself, both roots."""
+    """Map each CSDL type name to the properties it has, its base types included.
+
+    A CSDL type declares what it *adds*: ``onlineMeeting`` has no ``joinInformation``,
+    its base ``onlineMeetingBase`` has. Answering from the type's own node alone would
+    read that member as one the metadata has never heard of -- which is exactly what
+    ``system=True`` claims -- and would hide every inherited column from the back-fill.
+    So the base chain is folded in here, once, nearest declaration winning.
+    """
     source, reader = _SERVICES[service]
     options = GeneratorOptions.load(source, _GENERATOR_DIR)
-    catalog = _catalog_of(reader(options.metadata_path).read())
+    model = reader(options.metadata_path).read()
+    catalog = _catalog_of(model)
+    bases = _bases_of(model)
     preview = pathlib.Path(options.metadata_path).parent / _PREVIEW_SNAPSHOT[service]
     if preview.is_file():
-        for name, properties in _catalog_of(reader(str(preview)).read()).items():
+        model = reader(str(preview)).read()
+        for name, properties in _catalog_of(model).items():
             declared = catalog.setdefault(name, {})
             for prop, declaration in properties.items():
                 known = declared.get(prop)
@@ -113,7 +123,30 @@ def load_catalog(service: str) -> Catalog:
                     # Ownership is a fact of the service: a member the preview already
                     # reports as computed is computed under either root.
                     declared[prop] = known._replace(readonly=True)
-    return catalog
+        bases.update(_bases_of(model))
+    return {name: _inherited(name, catalog, bases) for name in catalog}
+
+
+def _bases_of(model) -> Dict[str, str]:
+    """CSDL type name (lowercased) -> the type it derives from, if any."""
+    return {name.lower(): (schema.BaseTypeName or "").lower() for name, schema in model.types.items()}
+
+
+def _inherited(name: str, own: Catalog, bases: Dict[str, str]) -> Dict[str, Declared]:
+    """One type's declarations with its base chain folded in.
+
+    Nearest declaration wins, so a type that narrows a member it inherits keeps its own
+    answer. A chain that loops is cut rather than followed: the snapshot is data.
+    """
+    properties: Dict[str, Declared] = {}
+    seen: Set[str] = set()
+    current = name
+    while current and current not in seen:
+        seen.add(current)
+        for prop, declaration in own.get(current, {}).items():
+            properties.setdefault(prop, declaration)
+        current = bases.get(current, "")
+    return properties
 
 
 def _catalog_of(model) -> Catalog:

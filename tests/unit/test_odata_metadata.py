@@ -74,8 +74,7 @@ from office365.runtime.types.odata_property import odata
 
 
 class Event:
-    @staticmethod
-    def entity_type_name():
+    def entity_type_name(self):
         return "microsoft.graph.Event"
 
     @odata(name="uid")
@@ -85,16 +84,80 @@ class Event:
 """
 
 
-def _plan(tmp_path: pathlib.Path, source: str) -> list:
+_PER_LIST_TYPE_NAME = """
+from office365.runtime.types.odata_property import odata
+
+
+class TicketRow:
+    def entity_type_name(self):
+        return self._ticket.entity_type_name()
+
+    @odata(name="AuthorId")
+    @property
+    def author_id(self):
+        return self.properties.get("AuthorId", None)
+"""
+
+
+def _plan(tmp_path: pathlib.Path, source: str, *, service: str = "graph") -> list:
     module = tmp_path / "event.py"
     module.write_text(source, encoding="utf-8")
-    catalog = _mark_odata.load_catalog("graph")
+    catalog = _mark_odata.load_catalog(service)
     return _mark_odata.plan_module(module, catalog, _mark_odata.type_index(catalog))
+
+
+def test_a_type_name_the_instance_decides_names_no_csdl_type(tmp_path: pathlib.Path) -> None:
+    """A list item answers with its list's type per instance -- not a name to read here."""
+    assert _plan(tmp_path, _PER_LIST_TYPE_NAME, service="sharepoint") == []
 
 
 def test_a_member_only_the_preview_declares_is_not_a_system_column(tmp_path: pathlib.Path) -> None:
     """``system=True`` says the metadata has never heard of the name; beta has."""
     assert _plan(tmp_path, _PREVIEW_GETTER) == []
+
+
+_INHERITED_GETTER = """
+from office365.runtime.types.odata_property import odata
+
+
+class OnlineMeeting:
+    def entity_type_name(self):
+        return "microsoft.graph.OnlineMeeting"
+
+    @odata(name="joinInformation")
+    @property
+    def join_information(self):
+        return self.properties.get("joinInformation", None)
+"""
+
+
+def test_a_member_a_base_type_declares_is_not_one_the_metadata_is_silent_about(tmp_path: pathlib.Path) -> None:
+    """``joinInformation`` is ``onlineMeetingBase``'s; ``system=True`` would deny it."""
+    assert _plan(tmp_path, _INHERITED_GETTER) == []
+
+
+def test_a_getter_that_reads_an_inherited_member_declares_it(tmp_path: pathlib.Path) -> None:
+    """The same fold decides the back-fill: an inherited column is a column of this type."""
+    source = _INHERITED_GETTER.replace('    @odata(name="joinInformation")\n', "")
+
+    edits = _plan(tmp_path, source)
+
+    assert [edit.new for edit in edits] == ['    @odata(name="joinInformation")\n']
+
+
+def test_a_type_keeps_its_own_answer_for_a_member_it_inherits() -> None:
+    """A redeclaration narrows: the nearest declaration wins, and a looped chain is cut."""
+    own = {
+        "a": {"x": _mark_odata.Declared("x", False, False, True)},
+        "b": {"x": _mark_odata.Declared("x", False, False, False), "y": _mark_odata.Declared("y", False, False, True)},
+        "c": {},
+    }
+    bases = {"a": "b", "b": "c", "c": "b"}  # c <-> b: data, not a promise
+
+    inherited = _mark_odata._inherited("a", own, bases)
+
+    assert inherited["x"].readonly is True  # a's own declaration, not b's
+    assert inherited["y"].readonly is True
 
 
 def test_a_getter_is_marked_without_re_importing_odata_beside_another_name(tmp_path: pathlib.Path) -> None:
