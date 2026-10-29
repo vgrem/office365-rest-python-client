@@ -7,7 +7,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Optional, Sequence
 
-from generator.beta_markers import compare_markers, plan_markers, read_declared_markers
+from generator.beta_markers import compare_markers, plan_markers, read_declared_markers, read_declared_versions
 from generator.beta_markers import write_report as write_marker_report
 from generator.builders.resolution import TypeRegistry
 from generator.config import ConfigError, GeneratorOptions
@@ -139,9 +139,16 @@ def _apply_marker_pass(options: GeneratorOptions, plan, *, dry_run: bool) -> Non
     from generator.marker_apply import TypeFiles, apply_markers
 
     files = TypeFiles(Path(options.output_path))
-    sources = {marker.type_name: files.path_of(marker.type_name) for marker in plan.markers}
-    declared = read_declared_markers({name: path for name, path in sources.items() if path is not None})
-    report = apply_markers(compare_markers(plan, declared), files, dry_run=dry_run)
+    names = [marker.type_name for marker in plan.markers] + [marker.type_name for marker in plan.types]
+    sources = {name: files.path_of(name) for name in names}
+    known = {name: path for name, path in sources.items() if path is not None}
+    declared = read_declared_markers(known)
+    # Only a gate something enforces counts as declared: an ``@version`` left on a complex
+    # type is a comment claiming to be a rule, and the pass that wrote it must take it back.
+    declared_versions = {
+        name: versions for name, versions in read_declared_versions(known).items() if files.is_addressed(name)
+    }
+    report = apply_markers(compare_markers(plan, declared, declared_versions), files, dry_run=dry_run)
     print(f"\n{report.render()}")
     for edit in report.edits:
         print(f"  {edit.action:<7} {Path(edit.path).name}  {edit.type_name.rsplit('.', 1)[-1]}.{edit.member}")

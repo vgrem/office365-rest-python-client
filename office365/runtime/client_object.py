@@ -6,6 +6,7 @@ from typing import (
     Any,
     Callable,
     ClassVar,
+    Collection,
     Dict,
     List,
     Optional,
@@ -31,7 +32,26 @@ from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 from office365.runtime.schema import EMPTY, TypeSchema
-from office365.runtime.types.odata_property import request_version
+from office365.runtime.types.odata_property import PREVIEW, NotSupportedInVersion, request_version
+
+
+def require_declared_version(name: str, declared: Collection[str], context: Any) -> None:
+    """Refuse to build ``name`` on a client whose service root does not declare it.
+
+    One model tree serves both service roots, so a preview-only class is an attribute of
+    the tree a stable client sees, and holding the class is not the error -- building one
+    is: the request it carries names a path the stable root has no entity for, and the
+    service answers 404 rather than naming the version that would have worked. A client
+    that names no version (a SharePoint context) is never refused: the declaration states
+    a fact about Graph, not a rule about every service.
+    """
+    if not declared:
+        return
+    version = request_version(context)
+    if version is None or version in declared:
+        return
+    raise NotSupportedInVersion(name, version, PREVIEW)
+
 
 if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection
@@ -67,6 +87,13 @@ class ClientObject:
     #: ``ListItem`` and refused on a ``Web`` -- so it is stated by the type that saw the
     #: refusal, and the declaration stays intact for hydration and comparison.
     _unselectable: ClassVar[Tuple[str, ...]] = ()
+
+    #: The service roots whose metadata declares this type, declared by
+    #: ``@version(...)`` on the class. Empty -- every hand-written class, and every type
+    #: both roots declare -- means all of them. The generator states ``@version("beta")``
+    #: on a type only the preview root declares, so an attempt to build one on a stable
+    #: client fails here, before it becomes a 404.
+    _versions: ClassVar[Collection[str]] = ()
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
@@ -129,6 +156,7 @@ class ClientObject:
         """
         self._properties: dict[str, Any] = {}
         self._changes: set[str] = set(type(self)._schema.persistable)
+        require_declared_version(type(self).__name__, type(self)._versions, context)
         self._query_options = QueryOptions()
         self._parent_collection = parent_collection
         self._context = context

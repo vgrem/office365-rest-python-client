@@ -18,9 +18,11 @@ from __future__ import annotations
 
 import ast
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
+
+from office365.runtime.types.odata_property import PREVIEW
 
 from generator.metadata_diff import METHOD, NAVIGATION, PROPERTY, MetadataDelta
 
@@ -59,6 +61,23 @@ class MemberMarker:
         }
 
 
+@dataclass(frozen=True)
+class VersionMarker:
+    """A type only one service root declares, as a fact to state on the class itself.
+
+    A member marker says "this attribute is the preview root's"; this one says "the type
+    is". They are separate answers because they fail separately: a stable client that
+    selects a preview member is refused by the projection, while a stable client that
+    builds a preview-only *class* asks its root for an entity the root has no schema for.
+    """
+
+    type_name: str
+    version: str
+
+    def to_dict(self) -> dict:
+        return {"type": self.type_name, "version": self.version}
+
+
 @dataclass
 class MarkerPlan:
     """Every marker the target snapshot justifies, across the whole model."""
@@ -66,6 +85,7 @@ class MarkerPlan:
     base: str
     target: str
     markers: List[MemberMarker]
+    types: Tuple[VersionMarker, ...] = ()
 
     def by_reason(self, reason: str) -> List[MemberMarker]:
         return [marker for marker in self.markers if marker.reason == reason]
@@ -82,6 +102,7 @@ class MarkerPlan:
             base=self.base,
             target=self.target,
             markers=[marker for marker in self.markers if marker.type_name.rsplit(".", 1)[-1].lower() in wanted],
+            types=tuple(marker for marker in self.types if marker.type_name.rsplit(".", 1)[-1].lower() in wanted),
         )
 
     def to_dict(self) -> dict:
@@ -89,14 +110,19 @@ class MarkerPlan:
             "metadata": {"base": self.base, "target": self.target},
             "count": len(self.markers),
             "markers": [marker.to_dict() for marker in self.markers],
+            "count_types": len(self.types),
+            "types": [marker.to_dict() for marker in self.types],
         }
 
     def render(self) -> str:
         counts = {reason: len(self.by_reason(reason)) for reason in (BETA_ONLY, RENAMED, STABLE_ONLY)}
-        return (
+        text = (
             f"{self.target} markers: {len(self.markers)} total -- "
             f"{counts[BETA_ONLY]} beta-only, {counts[RENAMED]} renamed, {counts[STABLE_ONLY]} stable-only"
         )
+        if self.types:
+            text += f"; {len(self.types)} type(s) the target alone declares"
+        return text
 
 
 @dataclass
@@ -106,14 +132,16 @@ class MarkerEdits:
     added: List[MemberMarker]
     changed: List[MemberMarker]
     removed: List[MemberMarker]
+    types_added: List[VersionMarker] = field(default_factory=list)
+    types_removed: List[VersionMarker] = field(default_factory=list)
 
     @property
     def is_empty(self) -> bool:
-        return not (self.added or self.changed or self.removed)
+        return not (self.added or self.changed or self.removed or self.types_added or self.types_removed)
 
     @property
     def count(self) -> int:
-        return len(self.added) + len(self.changed) + len(self.removed)
+        return len(self.added) + len(self.changed) + len(self.removed) + len(self.types_added) + len(self.types_removed)
 
     def to_dict(self) -> dict:
         return {
@@ -121,12 +149,17 @@ class MarkerEdits:
             "added": [marker.to_dict() for marker in self.added],
             "changed": [marker.to_dict() for marker in self.changed],
             "removed": [marker.to_dict() for marker in self.removed],
+            "types_added": [marker.to_dict() for marker in self.types_added],
+            "types_removed": [marker.to_dict() for marker in self.types_removed],
         }
 
     def render(self) -> str:
         if self.is_empty:
             return "beta markers: up to date"
-        return f"beta markers: {len(self.added)} to add, {len(self.changed)} to change, {len(self.removed)} to remove"
+        text = f"beta markers: {len(self.added)} to add, {len(self.changed)} to change, {len(self.removed)} to remove"
+        if self.types_added or self.types_removed:
+            text += f"; {len(self.types_added)} type(s) to gate, {len(self.types_removed)} to ungate"
+        return text
 
 
 def plan_markers(delta: MetadataDelta) -> MarkerPlan:
@@ -144,10 +177,19 @@ def plan_markers(delta: MetadataDelta) -> MarkerPlan:
         MemberMarker(rename.type_name, rename.base, rename.kind, rename.target, RENAMED) for rename in delta.renamed
     )
     markers.sort(key=lambda marker: (marker.type_name, marker.kind, marker.member))
-    return MarkerPlan(base=delta.base, target=delta.target, markers=markers)
+    return MarkerPlan(
+        base=delta.base,
+        target=delta.target,
+        markers=markers,
+        types=tuple(VersionMarker(name, PREVIEW) for name in sorted(delta.types_only_in_target)),
+    )
 
 
-def compare_markers(plan: MarkerPlan, declared: Mapping[Tuple[str, str], MarkerValue]) -> MarkerEdits:
+def compare_markers(
+    plan: MarkerPlan,
+    declared: Mapping[Tuple[str, str], MarkerValue],
+    declared_versions: Optional[Mapping[str, Iterable[str]]] = None,
+) -> MarkerEdits:
     """Diff the plan against what the model declares now: add, change, remove.
 
     ``declared`` is keyed by ``(type name, member)`` and holds the marker the source
@@ -169,6 +211,19 @@ def compare_markers(plan: MarkerPlan, declared: Mapping[Tuple[str, str], MarkerV
         type_name, member = key
         edits.removed.append(MemberMarker(type_name, member, "", value, STABLE_ONLY))
     edits.removed.sort(key=lambda marker: marker.key)
+
+    # The type-level fact is compared the same way: whatever the class states now must be
+    # what the plan says, and a gate the snapshots no longer justify is removed.
+    has_versions = declared_versions if declared_versions is not None else {}
+    wanted_types = {marker.type_name: marker for marker in plan.types}
+    for marker in plan.types:
+        current = frozenset(has_versions.get(marker.type_name, ()))
+        if current != frozenset({marker.version}):
+            edits.types_added.append(marker)
+    for type_name, versions in has_versions.items():
+        if type_name not in wanted_types and frozenset(versions):
+            edits.types_removed.append(VersionMarker(type_name, PREVIEW))
+    edits.types_removed.sort(key=lambda marker: marker.type_name)
     return edits
 
 
@@ -183,6 +238,22 @@ def read_declared_markers(sources: Mapping[str, Union[str, Path]]) -> Dict[Tuple
         text = Path(source).read_text(encoding="utf-8") if isinstance(source, Path) else source
         for member, beta in _declared_in(text):
             declared[(type_name, member)] = beta
+    return declared
+
+
+def read_declared_versions(sources: Mapping[str, Union[str, Path]]) -> Dict[str, frozenset]:
+    """Read the ``@version(...)`` each class declares, keyed by the CSDL type its file holds.
+
+    The same rule as :func:`read_declared_markers`: the caller knows which type a file
+    holds, so only the decorators are read -- and nothing is imported.
+    """
+    declared: Dict[str, frozenset] = {}
+    for type_name, source in sources.items():
+        text = Path(source).read_text(encoding="utf-8") if isinstance(source, Path) else source
+        for name, versions in _versions_in(text):
+            # A file holds the type its caller names; a file holding several classes says
+            # which one states the gate on the class itself.
+            declared[name or type_name] = versions
     return declared
 
 
@@ -217,6 +288,41 @@ def _declared_in(text: str) -> Iterable[Tuple[str, MarkerValue]]:
             beta = _literal(keywords.get("beta"))
             if isinstance(name, str) and beta is not None:
                 yield name, beta
+
+
+def _versions_in(text: str) -> Iterable[Tuple[Optional[str], frozenset]]:
+    """Yield ``(odata type name, versions)`` for every ``@version(...)`` a class declares."""
+    for node in ast.walk(ast.parse(text)):
+        if not isinstance(node, ast.ClassDef):
+            continue
+        versions = _declared_roots(node)
+        if versions:
+            yield _odata_name_of(node), versions
+
+
+def _declared_roots(class_node: ast.ClassDef) -> frozenset:
+    """The service roots ``@version("beta")`` names, as written."""
+    for decorator in class_node.decorator_list:
+        if not isinstance(decorator, ast.Call) or getattr(decorator.func, "id", None) != "version":
+            continue
+        return frozenset(
+            argument.value
+            for argument in decorator.args
+            if isinstance(argument, ast.Constant) and isinstance(argument.value, str)
+        )
+    return frozenset()
+
+
+def _odata_name_of(node: ast.ClassDef) -> Optional[str]:
+    """The ``_odata_type_name`` a class states, if it states one."""
+    for statement in node.body:
+        if not isinstance(statement, ast.Assign):
+            continue
+        targets = [target.id for target in statement.targets if isinstance(target, ast.Name)]
+        value = statement.value
+        if targets == ["_odata_type_name"] and isinstance(value, ast.Constant) and isinstance(value.value, str):
+            return value.value
+    return None
 
 
 def _literal(node: Optional[ast.expr]) -> MarkerValue:

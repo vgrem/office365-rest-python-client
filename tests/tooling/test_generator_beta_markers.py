@@ -13,6 +13,7 @@ from generator.beta_markers import (
     RENAMED,
     STABLE_ONLY,
     MemberMarker,
+    VersionMarker,
     compare_markers,
     plan_markers,
     read_declared_markers,
@@ -21,6 +22,9 @@ from generator.metadata_diff import diff_metadata
 from generator.odata.model import ODataModel
 from generator.odata.property import PropertyInformation
 from generator.odata.type_information import TypeInformation
+
+#: The marker value the preview root answers to, as the runtime spells it.
+PREVIEW_VERSION = "beta"
 
 
 def _model(*types: TypeInformation) -> ODataModel:
@@ -191,3 +195,43 @@ def test_the_json_report_carries_the_plan_and_the_edits(tmp_path):
     assert '"count": 3' in payload
     assert '"reason": "renamed"' in payload
     assert '"removed": []' in payload
+
+
+def _plan_a_type_only_the_target_declares():
+    return plan_markers(
+        diff_metadata(_model(NOW), _model(PREVIEW, _type("graph.Mention", "application")), "Graph.xml", "GraphBeta.xml")
+    )
+
+
+def test_a_type_only_the_target_declares_is_carried_by_the_plan():
+    """A member marker says "this attribute is the preview root's"; a type can be too."""
+    plan = _plan_a_type_only_the_target_declares()
+
+    assert plan.types == (VersionMarker("graph.Mention", PREVIEW_VERSION),)
+    assert "1 type(s) the target alone declares" in plan.render()
+
+
+def test_a_type_the_model_does_not_gate_needs_it_added():
+    edits = compare_markers(_plan_a_type_only_the_target_declares(), declared={}, declared_versions={})
+
+    assert [marker.type_name for marker in edits.types_added] == ["graph.Mention"]
+    assert "1 type(s) to gate" in edits.render()
+
+
+def test_a_type_that_already_states_the_right_version_is_left_alone():
+    plan = _plan_a_type_only_the_target_declares()
+    declared = {marker.key: marker.beta for marker in plan.markers}
+
+    edits = compare_markers(plan, declared, declared_versions={"graph.Mention": {"beta"}})
+
+    assert edits.is_empty
+
+
+def test_a_gate_the_snapshots_stop_justifying_is_removed():
+    """Beta dropping a type, or adopting it, withdraws the gate the same way a marker is."""
+    settled = plan_markers(diff_metadata(_model(NOW), _model(PREVIEW), "Graph.xml", "GraphBeta.xml"))
+
+    edits = compare_markers(settled, declared={}, declared_versions={"graph.Mention": frozenset({"beta"})})
+
+    assert [marker.type_name for marker in edits.types_removed] == ["graph.Mention"]
+    assert "1 to ungate" in edits.render()

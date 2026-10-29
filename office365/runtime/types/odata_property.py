@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, fields, is_dataclass
-from typing import Any, Dict, Optional, TypeVar, Union
+from typing import Any, Callable, Dict, Optional, TypeVar, Union
 
 _ODATA_MARKER = "__odata__"
 _T = TypeVar("_T")
@@ -12,7 +12,8 @@ PREVIEW = "beta"
 The token is spelled here because it is what a declaration compares a client's
 version against, and a declaration is written by the generator, not by hand:
 ``beta=PREVIEW`` -- written as ``beta=True`` -- is the difference between a member
-both service roots declare and one only the preview one does.
+both service roots declare and one only the preview one does, and ``@version(PREVIEW)``
+-- written as ``@version("beta")`` -- is the same difference for a whole type.
 """
 
 _FIELD_DECLARATIONS: Dict[type, Dict[str, "ODataPropertyMeta"]] = {}
@@ -181,6 +182,35 @@ class odata(dict):
         target = method.fget if isinstance(method, property) else method  # type: ignore[attr-defined]
         setattr(target, _ODATA_MARKER, self.meta)
         return method
+
+
+_Cls = TypeVar("_Cls", bound=type)
+
+
+def version(service_root: str, *others: str) -> Callable[[_Cls], _Cls]:
+    """Declare the service roots whose metadata declares a *type*.
+
+    One model tree serves both roots, so a class only the preview root declares is
+    still an attribute of the module a stable client imports. The gate states that,
+    and :func:`require_declared_version` refuses to build the object -- or a collection
+    of it -- on a client addressing another root::
+
+        @version("beta")
+        class Mention(Entity): ...
+
+    A member states the same kind of fact with ``beta=`` on ``@odata``; a type states
+    it with a set of roots, which is why it is a second decorator rather than another
+    argument of the first. ``@odata`` describes one attribute of an instance -- it needs
+    a wire name, and on a class there is none -- while ``@version`` describes the class,
+    and one decorator taking both grammars would have to branch on what it was handed.
+    """
+    declared = frozenset((service_root, *others))
+
+    def decorate(cls: _Cls) -> _Cls:
+        cls._versions = declared
+        return cls
+
+    return decorate
 
 
 def field_declarations(cls: type) -> Dict[str, ODataPropertyMeta]:

@@ -29,12 +29,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from generator.beta_markers import MarkerEdits, MemberMarker
+from generator.beta_markers import STABLE_ONLY, MarkerEdits, MemberMarker, VersionMarker
 
 #: ``, beta=True`` / ``, beta="otherName"`` / ``, beta=False`` -- with any spacing.
 _BETA_ARGUMENT = re.compile(r",\s*beta=(?:True|False|\"[^\"]*\"|'[^']*')")
 #: The ``name="..."`` argument, which is where a marker belongs (right after it).
 _NAME_ARGUMENT = re.compile(r"(name=(?:\"[^\"]*\"|'[^']*'))")
+
+#: The declaration module, whose import a gated class extends by one name.
+DECLARATION_MODULE = "office365.runtime.types.odata_property"
+_DECLARATION_IMPORT = re.compile(rf"^from {re.escape(DECLARATION_MODULE)} import ([^()\n]+)$")
+
+#: The member name a type-level gate reports under: the decorator, not its storage.
+VERSION = "version"
 
 ADDED = "added"
 CHANGED = "changed"
@@ -124,6 +131,31 @@ class TypeFiles:
     def paths_for_class(self, class_name: str) -> List[Path]:
         return self._by_class.get(class_name, [])
 
+    def class_for(self, type_name: str) -> Optional[Tuple[Path, ast.ClassDef]]:
+        """The class that *is* ``type_name`` -- never a same-named type from another waypoint.
+
+        ``path_of`` falls back to the class name, which is right for finding the decorator
+        a member belongs to and wrong here: ``microsoft.graph.UserConfiguration`` and
+        ``microsoft.graph.industryData.UserConfiguration`` share a short name, so a gate
+        for the one that was never generated would land on the other one's file.
+        """
+        path = self.path_of(type_name)
+        if path is None:
+            return None
+        short = _short(type_name)
+        for node in ast.walk(self.tree(path)):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            declared = _entity_type_name(node)
+            if declared == type_name or (declared is None and node.name == short):
+                return path, node
+        return None
+
+    def is_addressed(self, type_name: str) -> bool:
+        """Whether a request can name the type, which is the only thing a gate can refuse."""
+        located = self.class_for(type_name)
+        return located is not None and _is_addressed(located[1])
+
     def path_of(self, type_name: str) -> Optional[Path]:
         for candidate in (self._by_odata.get(type_name), self.paths_for_class(_short(type_name))):
             if candidate and len(set(candidate)) == 1:
@@ -135,12 +167,18 @@ def apply_markers(edits: MarkerEdits, files: TypeFiles, *, dry_run: bool = False
     """Bring the model's decorators in line with ``edits``, one decorator at a time."""
     report = ApplyReport(edits=[], skipped=[])
     rewrites: List[Tuple[Path, int, int, int, Optional[bool | str], MemberMarker, object]] = []
+    ops: List[Tuple[Path, int, int, List[str]]] = []
     for marker in edits.added + edits.changed:
         _collect(report, rewrites, files, marker, marker.beta)
     for marker in edits.removed:
         _collect(report, rewrites, files, marker, None)
 
     lines_of: Dict[Path, List[str]] = {}
+    for marker in edits.types_added:
+        _queue_version(report, files, ops, lines_of, marker)
+    for marker in edits.types_removed:
+        _queue_ungate(report, files, ops, lines_of, marker)
+
     for path, lineno, start, end, value, marker, declared in rewrites:
         lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
         line = lines[lineno]
@@ -164,10 +202,192 @@ def apply_markers(edits: MarkerEdits, files: TypeFiles, *, dry_run: bool = False
                 after=after,
             )
         )
+    # Every queued operation indexes the file as it was read, so they run after the
+    # one-line rewrites (which never change a line count) and from the bottom up: an edit
+    # never moves a line the loop has not reached yet. A decorator and a class that lost
+    # one can sit in the same file, so insertions and deletions share one ordering.
+    for path, start, end, replacement in sorted(ops, key=lambda op: (str(op[0]), -op[1])):
+        lines = lines_of[path]
+        lines[start:end] = replacement
+
     if not dry_run:
         for path, lines in lines_of.items():
             path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return report
+
+
+def _queue_version(
+    report: ApplyReport,
+    files: TypeFiles,
+    ops: List[Tuple[Path, int, int, List[str]]],
+    lines_of: Dict[Path, List[str]],
+    marker: VersionMarker,
+) -> None:
+    """Declare ``@version(...)`` above the class ``marker`` names, or say it is already right."""
+    located = files.class_for(marker.type_name)
+    if located is None:
+        report.skipped.append(
+            (MemberMarker(marker.type_name, VERSION, "", marker.version, STABLE_ONLY), "no class declares this type")
+        )
+        return
+    path, class_node = located
+    lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
+    if not _is_addressed(class_node):
+        # Nothing would enforce it: a complex value or an enum is never the entity a
+        # request names, so a gate there is a comment pretending to be a rule.
+        if _version_line(class_node) is not None:
+            _queue_ungate(report, files, ops, lines_of, marker)
+        else:
+            report.skipped.append(
+                (
+                    MemberMarker(marker.type_name, VERSION, "", marker.version, STABLE_ONLY),
+                    "a complex or enum type is not addressed by a request",
+                )
+            )
+        return
+    wanted = _version_decorator(marker)
+    declared_at = _version_line(class_node)
+    if declared_at is not None:
+        before = lines[declared_at]
+        if before.strip() == wanted:
+            return
+        ops.append((path, declared_at, declared_at + 1, [wanted]))
+        action = CHANGED
+    else:
+        after = _decorator_start(class_node)
+        if any(queued[0] == path and queued[1] == after for queued in ops):
+            return
+        ops.append((path, after, after, [wanted]))
+        # A gate written by an older spelling as a body statement would still be there,
+        # shadowed by the decorator and read by nobody: the pass takes its own litter out.
+        stale = _version_statement(class_node)
+        if stale is not None:
+            # The declaration was the class body's first line, so the blank line after it
+            # goes too -- otherwise the body starts with an empty line.
+            stop = stale[1] + 1 if stale[1] < len(lines) and not lines[stale[1]].strip() else stale[1]
+            ops.append((path, stale[0], stop, []))
+        before = ""
+        action = ADDED
+    _declare_import(ops, path, lines)
+    report.edits.append(
+        AppliedEdit(
+            path=str(path),
+            type_name=marker.type_name,
+            member=VERSION,
+            action=action,
+            before=before,
+            after=wanted,
+        )
+    )
+
+
+def _queue_ungate(
+    report: ApplyReport,
+    files: TypeFiles,
+    ops: List[Tuple[Path, int, int, List[str]]],
+    lines_of: Dict[Path, List[str]],
+    marker: VersionMarker,
+) -> None:
+    """Remove an ``@version(...)`` the snapshots stop justifying, and its import with it."""
+    located = files.class_for(marker.type_name)
+    if located is None:
+        return
+    path, class_node = located
+    declared_at = _version_line(class_node)
+    if declared_at is None:
+        return
+    lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
+    before = lines[declared_at]
+    ops.append((path, declared_at, declared_at + 1, []))
+    if not any(line.lstrip().startswith("@version(") for index, line in enumerate(lines) if index != declared_at):
+        _drop_import(ops, path, lines)
+    report.edits.append(
+        AppliedEdit(
+            path=str(path),
+            type_name=marker.type_name,
+            member=VERSION,
+            action=REMOVED,
+            before=before,
+            after="",
+        )
+    )
+
+
+def _version_line(class_node: ast.ClassDef) -> Optional[int]:
+    """The 0-based line the class's ``@version(...)`` decorator occupies."""
+    for decorator in class_node.decorator_list:
+        if isinstance(decorator, ast.Call) and getattr(decorator.func, "id", None) == "version":
+            return decorator.lineno - 1
+    return None
+
+
+def _decorator_start(class_node: ast.ClassDef) -> int:
+    """The 0-based line the class's decorators start on -- above all of them, not below."""
+    return min([decorator.lineno for decorator in class_node.decorator_list] + [class_node.lineno]) - 1
+
+
+def _version_statement(class_node: ast.ClassDef) -> Optional[Tuple[int, int]]:
+    """The span of a body ``_versions = ...`` an older spelling left behind."""
+    for node in class_node.body:
+        if isinstance(node, ast.Assign):
+            targets = [target.id for target in node.targets if isinstance(target, ast.Name)]
+            if targets == ["_versions"] and node.end_lineno is not None:
+                return node.lineno - 1, node.end_lineno
+    return None
+
+
+def _declare_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str]) -> None:
+    """Add ``version`` to the declaration-module import the generated file already spells."""
+    for index, line in enumerate(lines):
+        match = _DECLARATION_IMPORT.match(line.strip())
+        if match is None:
+            continue
+        names = [name.strip() for name in match.group(1).split(",")]
+        if "version" in names or any(queued[0] == path and queued[1] == index for queued in ops):
+            return
+        written = ", ".join(names + ["version"])
+        ops.append((path, index, index + 1, [f"from {DECLARATION_MODULE} import {written}"]))
+        return
+    _insert_import(ops, path, lines)
+
+
+def _insert_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str]) -> None:
+    """Write the import whole, for a class the template gave no other declaration."""
+    statement = f"from {DECLARATION_MODULE} import version"
+    candidates = [index for index, line in enumerate(lines) if line.startswith("from office365")]
+    before = [index for index in candidates if lines[index] > statement]
+    at = before[0] if before else (candidates[-1] + 1 if candidates else 0)
+    ops.append((path, at, at, [statement]))
+
+
+def _drop_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines: List[str]) -> None:
+    """Take ``version`` back out, so an import nothing names does not outlive the gate."""
+    for index, line in enumerate(lines):
+        match = _DECLARATION_IMPORT.match(line.strip())
+        if match is None:
+            continue
+        names = [name.strip() for name in match.group(1).split(",")]
+        if "version" not in names:
+            return
+        kept = [name for name in names if name != "version"]
+        if not kept:
+            ops.append((path, index, index + 1, []))
+            return
+        ops.append((path, index, index + 1, [f"from {DECLARATION_MODULE} import {', '.join(kept)}"]))
+        return
+
+
+def _is_addressed(class_node: ast.ClassDef) -> bool:
+    """Whether a request can name the type -- which is the only thing a gate can refuse."""
+    if any(getattr(node, "id", None) == "dataclass" for node in class_node.decorator_list):
+        return False
+    return "Enum" not in {getattr(base, "id", None) or getattr(base, "attr", None) for base in class_node.bases}
+
+
+def _version_decorator(marker: VersionMarker) -> str:
+    """The decorator, as source: one root per argument, in a stable order."""
+    roots = ", ".join(json.dumps(root) for root in sorted({marker.version}))
+    return f"@version({roots})"
 
 
 def _collect(

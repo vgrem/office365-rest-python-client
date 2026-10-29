@@ -15,8 +15,10 @@ from generator.beta_markers import (
     MarkerEdits,
     MarkerPlan,
     MemberMarker,
+    VersionMarker,
     compare_markers,
     read_declared_markers,
+    read_declared_versions,
 )
 from generator.marker_apply import TypeFiles, apply_markers
 
@@ -44,6 +46,18 @@ class Widget(Entity):
         return "microsoft.graph.Widget"
 """
 
+VALUE_SOURCE = """from dataclasses import dataclass
+
+
+@dataclass
+class Widget(ClientValue):
+    is_mentioned: bool | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Widget"
+"""
+
 BASE_SOURCE = """from office365.runtime.types.odata_property import odata
 
 
@@ -64,6 +78,11 @@ def _tree(tmp_path: Path, **files: str) -> TypeFiles:
 def _apply(edits: MarkerEdits, tmp_path: Path, **files: str):
     files = files or {"widget": SOURCE}
     return apply_markers(edits, _tree(tmp_path, **files))
+
+
+def _apply_again(edits: MarkerEdits, tmp_path: Path):
+    """Apply to the tree as it stands: the seeding helper would reset the file."""
+    return apply_markers(edits, TypeFiles(tmp_path))
 
 
 def _marker(member: str, beta, kind: str = "property") -> MemberMarker:
@@ -186,3 +205,80 @@ def test_a_rename_the_preview_adopted_is_marked_as_a_rename(tmp_path):
 
     assert '@odata(name="mentions", beta="widgetMentions", navigation=True)' in _text(tmp_path)
     assert "beta=" in _text(tmp_path)
+
+
+def _gate() -> MarkerEdits:
+    return MarkerEdits(added=[], changed=[], removed=[], types_added=[VersionMarker("microsoft.graph.Widget", "beta")])
+
+
+def test_a_type_only_the_preview_root_declares_states_its_version(tmp_path):
+    """The class is where the version is knowable, so the class is where the fact is written."""
+    report = _apply(_gate(), tmp_path)
+
+    assert '@version("beta")\nclass Widget(Entity):\n' in _text(tmp_path)
+    assert "from office365.runtime.types.odata_property import odata, version" in _text(tmp_path)
+    assert [(edit.action, edit.member) for edit in report.edits] == [("added", "version")]
+    assert read_declared_versions({"microsoft.graph.Widget": tmp_path / "widget.py"}) == {
+        "microsoft.graph.Widget": frozenset({"beta"})
+    }
+
+
+def test_the_gate_is_written_once_even_when_the_run_repeats(tmp_path):
+    _apply(_gate(), tmp_path)
+    first = _text(tmp_path)
+
+    report = _apply_again(_gate(), tmp_path)
+
+    assert _text(tmp_path) == first
+    assert report.edits == []
+
+
+def test_a_gate_the_snapshots_stop_justifying_is_removed(tmp_path):
+    _apply(_gate(), tmp_path)
+
+    ungated = MarkerEdits(
+        added=[], changed=[], removed=[], types_removed=[VersionMarker("microsoft.graph.Widget", "beta")]
+    )
+    report = _apply_again(ungated, tmp_path)
+
+    assert "@version(" not in _text(tmp_path)
+    assert "import odata\n" in _text(tmp_path)
+    assert [(edit.action, edit.member) for edit in report.edits] == [("removed", "version")]
+
+
+def test_a_value_type_is_not_gated_because_no_request_can_name_it(tmp_path):
+    """A gate nothing enforces is a comment pretending to be a rule."""
+    report = apply_markers(_gate(), _tree(tmp_path, widget=VALUE_SOURCE))
+
+    assert "@version(" not in _text(tmp_path)
+    assert "not addressed by a request" in report.skipped[0][1]
+
+
+NO_DECLARATION_IMPORT = """from office365.entity import Entity
+
+
+class Widget(Entity):
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.Widget"
+"""
+
+
+def test_the_import_is_written_for_a_class_that_declares_nothing_else(tmp_path):
+    """A type with no properties imports no declaration module; the gate brings it in."""
+    _apply(_gate(), tmp_path, widget=NO_DECLARATION_IMPORT)
+
+    assert "from office365.entity import Entity\nfrom office365.runtime.types.odata_property import version\n" in _text(
+        tmp_path
+    )
+
+
+def test_the_import_goes_back_out_with_the_last_gate(tmp_path):
+    """An import nothing names is litter, so un-gating takes it back."""
+    _apply(_gate(), tmp_path, widget=NO_DECLARATION_IMPORT)
+    _apply_again(
+        MarkerEdits(added=[], changed=[], removed=[], types_removed=[VersionMarker("microsoft.graph.Widget", "beta")]),
+        tmp_path,
+    )
+
+    assert "odata_property" not in _text(tmp_path)

@@ -17,7 +17,7 @@ from typing import (
 
 from typing_extensions import Self
 
-from office365.runtime.client_object import ClientObject, ClientObjectT
+from office365.runtime.client_object import ClientObject, ClientObjectT, require_declared_version
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.prefer import add_prefer
 from office365.runtime.http.request_options import RequestOptions
@@ -78,6 +78,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             parent: Parent object that owns this collection
         """
         super().__init__(context, resource_path)
+        # A collection is how a stable client reaches a preview-only type: the item type
+        # is named here, before any page is asked for, so the refusal lands on
+        # ``message.mentions`` rather than on a 404 from the stable root.
+        require_declared_version(item_type.__name__, getattr(item_type, "_versions", ()), context)
         self._data: list[ClientObjectT] = []
         self._item_type: Type[ClientObjectT] = item_type
         self._page_loaded: EventHandler = EventHandler(False)
