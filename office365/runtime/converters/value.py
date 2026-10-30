@@ -12,12 +12,20 @@ from __future__ import annotations
 import re
 import types
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union, get_args, get_origin, get_type_hints
 
-from office365.runtime.converters.scalars import parse_bool, parse_datetime, parse_enum, try_float, try_int
+from office365.runtime.converters.scalars import (
+    parse_bool,
+    parse_datetime,
+    parse_duration,
+    parse_enum,
+    try_float,
+    try_int,
+)
 from office365.runtime.schema import EMPTY
+from office365.runtime.types.duration import Duration
 
 if TYPE_CHECKING:
     from office365.runtime.odata.json_format import JsonProfile
@@ -30,6 +38,7 @@ _SCALAR_CONVERTERS = {
     int: try_int,
     float: try_float,
     datetime: parse_datetime,
+    timedelta: parse_duration,
 }
 
 _declared_cache: Dict[Tuple[type, str], Any] = {}
@@ -79,6 +88,8 @@ def serialize_value(  # noqa: PLR0911 - one return per stored-value kind
         return value.decode("utf-8")
     if isinstance(value, (datetime, date)):
         return value.isoformat()
+    if isinstance(value, timedelta):
+        return Duration.parse(value)
     if hasattr(value, "to_json"):
         return value.to_json(profile)
     if isinstance(value, dict):

@@ -362,8 +362,16 @@ introduced.
   would close an import cycle or redefine a name the module already binds (978
   imports in 481 modules over both slices), and
   `tests/unit/test_getter_annotations.py` holds both halves: the codemod plans
-  nothing left to hoist, and for every column whose annotation resolves (12,933 of
+  nothing left to hoist, and for every column whose annotation resolves (13,078 of
   them) the declaration is that annotation.
+- **A `timedelta` column held the ISO string.** Sixteen columns declare `timedelta` —
+  `BookingAppointment.duration`, `ManagedAppProtection.period_before_pin_reset`,
+  `LearningContent.duration` — and `_SCALAR_CONVERTERS` had no entry for it, so a read
+  gave `'PT30M'`. `parse_duration` reads the ISO 8601 forms (`PT30M`, `P1DT2H`, `PT0S`,
+  negatives) and `serialize_value` writes a `timedelta` back through `Duration.parse`,
+  which no longer drops the seconds: 90 seconds was `PT1M` and is `PT1M30S`. A form with
+  no `timedelta` equivalent — `P1M` names a month, not thirty days — is kept as the
+  service sent it, like an unrecognized boolean.
 
 **Runtime**
 

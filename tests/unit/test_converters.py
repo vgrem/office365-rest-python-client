@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import cast
 
+from office365.booking.appointment import BookingAppointment
 from office365.communications.callrecords.call_record import CallRecord
 from office365.communications.callrecords.type import CallType
 from office365.directory.users.password_profile import PasswordProfile
@@ -21,6 +22,7 @@ from office365.runtime.converters.scalars import (
     iso_z,
     normalize_guid,
     parse_datetime,
+    parse_duration,
     parse_int,
     wall_clock,
     wall_clock_text,
@@ -28,9 +30,52 @@ from office365.runtime.converters.scalars import (
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
+from office365.runtime.types.duration import Duration
 from office365.search.hits.container import SearchHitsContainer
 from office365.search.response import SearchResponse
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
+
+
+class TestDuration(unittest.TestCase):
+    """``Edm.Duration`` is text on the wire and a ``timedelta`` in the model."""
+
+    def test_the_forms_the_service_sends(self):
+        self.assertEqual(parse_duration("PT30M"), timedelta(minutes=30))
+        self.assertEqual(parse_duration("PT1H30M"), timedelta(hours=1, minutes=30))
+        self.assertEqual(parse_duration("P1DT2H"), timedelta(days=1, hours=2))
+        self.assertEqual(parse_duration("PT0S"), timedelta(0))
+        self.assertEqual(parse_duration("-PT1M30S"), -timedelta(seconds=90))
+        self.assertEqual(parse_duration(timedelta(minutes=5)), timedelta(minutes=5))
+
+    def test_a_form_with_no_timedelta_equivalent_is_kept_as_sent(self):
+        # A month is not thirty days, so guessing would be a wrong answer, and dropping
+        # it to None would write null back over a value the service reported.
+        self.assertEqual(parse_duration("P1M"), "P1M")
+        self.assertEqual(parse_duration("P1Y"), "P1Y")
+        self.assertEqual(parse_duration("PT"), "PT")
+        self.assertEqual(parse_duration(None), None)
+
+    def test_a_round_trip_keeps_the_seconds(self):
+        """``Duration.parse`` used to write only hours and minutes, losing them."""
+        for duration in (
+            timedelta(0),
+            timedelta(minutes=30),
+            timedelta(hours=1, minutes=30),
+            timedelta(seconds=90),
+            -timedelta(seconds=90),
+            timedelta(days=1, hours=2, microseconds=250000),
+        ):
+            with self.subTest(duration=duration):
+                self.assertEqual(parse_duration(Duration.parse(duration)), duration)
+
+    def test_a_duration_column_reads_and_writes_as_a_duration(self):
+        appointment = BookingAppointment(None)
+        appointment.set_property("duration", "PT30M")
+        self.assertEqual(appointment.duration, timedelta(minutes=30))
+        self.assertEqual(appointment.to_json()["duration"], "PT30M")
+        # An assigned ``timedelta`` is written back as the text the service takes.
+        appointment.set_property("duration", timedelta(minutes=45))
+        self.assertEqual(appointment.to_json()["duration"], "PT45M")
 
 
 class TestScalarConverters(unittest.TestCase):
