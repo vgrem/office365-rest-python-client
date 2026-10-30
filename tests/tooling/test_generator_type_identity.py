@@ -134,6 +134,33 @@ class Severity(Enum):
     assert _decide(node, _PROPERTIES, "acme.gadget.Severity") is None
 
 
+def test_the_same_type_spelled_otherwise_is_not_a_rename() -> None:
+    """The model key Pascal-cases the CSDL's last segment; the wire name need not be.
+
+    ``Microsoft.SharePoint.Comments.comment`` reads as ``...Comments.Comment`` in the
+    model, and a class answers with the spelling the service uses -- one type, two
+    spellings, so there is nothing to rename.
+    """
+    node = _class(
+        """
+class Comment(Entity):
+    @property
+    def entity_type_name(self):
+        return "SP.Comments.comment"
+"""
+    )
+
+    assert (
+        modelled_type(
+            node,
+            declared="SP.Comments.comment",
+            candidate="SP.Comments.Comment",
+            declared_properties={"SP.Comments.Comment": frozenset({"text"})},
+        )
+        is None
+    )
+
+
 def test_a_name_the_type_already_answers_is_not_a_correction() -> None:
     node = _class(_WIDGET)
 

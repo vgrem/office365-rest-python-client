@@ -101,7 +101,10 @@ def identity_evidence(
     against anything -- it declares nothing -- so such a class is decided on the same
     evidence as one that answers with a sibling.
     """
-    if declared == candidate:
+    if declared.lower() == candidate.lower():
+        # One type, two spellings: the model key Pascal-cases the CSDL's last segment
+        # (``Microsoft.SharePoint.Comments.comment`` reads as ``...Comments.Comment``),
+        # while ``entity_type_name`` answers with the name the wire uses. Not a rename.
         return frozenset(), frozenset()
     spelled = class_spellings(class_node)
     better = declared_properties.get(candidate, frozenset())
