@@ -54,11 +54,9 @@ introduced.
   kept as the service sent it instead of being coerced to `None`.
 - A complex-typed Graph column declares its type as well: 592 `ClientValue` imports
   in 328 modules moved the same way, and 745 more columns answer the type they name
-  (1,760 in total; 269 still answer `None` — 149 name a type their module cannot
-  reach, the `if TYPE_CHECKING:`-only shape, and 120 are hand-written getters
-  annotated `-> None` such as `Call.call_routes`). Writes behave as before — a
-  getter that builds its default instance already hydrated the value — but a column
-  with no declared type was *skipped* by the record importer as unknown, so
+  (1,760 value-typed columns in total). Writes behave as before — a getter that builds
+  its default instance already hydrated the value — but a column with no declared type
+  was *skipped* by the record importer as unknown, so
   `coerce_records(BrowserSharedCookie, [{"history": …}])` dropped that column with
   `Skipping unknown column 'history'` and keeps it now.
 - The names only a dead `if TYPE_CHECKING:` block binds are reachable too: 25 imports in
@@ -362,8 +360,8 @@ introduced.
   would close an import cycle or redefine a name the module already binds (978
   imports in 481 modules over both slices), and
   `tests/unit/test_getter_annotations.py` holds both halves: the codemod plans
-  nothing left to hoist, and for every column whose annotation resolves (13,078 of
-  them) the declaration is that annotation.
+  nothing left to hoist, and for every column whose annotation resolves the
+  declaration is that annotation.
 - **A `timedelta` column held the ISO string.** Sixteen columns declare `timedelta` —
   `BookingAppointment.duration`, `ManagedAppProtection.period_before_pin_reset`,
   `LearningContent.duration` — and `_SCALAR_CONVERTERS` had no entry for it, so a read
@@ -379,9 +377,26 @@ introduced.
   the annotation with the getter's own imports: the source is parsed, not run, so
   learning what a getter declares never calls it. `OnlineMeeting.chatInfo` arrives as a
   `ChatInfo` instead of the dict the service sent, and `coerce_records` keeps the column
-  instead of warning `Skipping unknown column 'chatInfo'`. The 120 columns that still
-  declare nothing are getters written without a return annotation (`Call.callRoutes`),
-  where the fix is an annotation rather than an import.
+  instead of warning `Skipping unknown column 'chatInfo'`.
+- **A column whose getter stated no type was a column the runtime could not read.**
+  The last 120 — `Call.call_routes`, `SPActivityEntity.times`, `Field.indexed` — were
+  hand-written getters whose only mention of a type was the fallback they passed to
+  `properties.get`, and a fallback value is not a declaration. So
+  `coerce_records(Call, [{"callRoutes": …}])` warned `Skipping unknown column
+  'callRoutes'` and returned a record without it, and `set_property` stored the wire
+  value verbatim. All 120 now state their return type, in 53 modules, taken from the
+  CSDL property each getter reads (`Edm.String` → `str`, `Edm.DateTime` → `datetime`,
+  `Collection(graph.callRoute)` → `ClientValueCollection[CallRoute]`) and checked
+  against the default the getter builds. `Call.call_routes` is a
+  `ClientValueCollection[CallRoute]` and `Field.indexed` a `bool` rather than the
+  service's own text. Every one of the 13,205 columns `select_all()` returns now
+  declares a type, and the next test pins it by name: the first getter that states
+  none fails `test_every_column_states_the_type_it_holds`.
+- **`SharingInformation.domain_restriction_settings` read the anonymous-link
+  expiry.** The getter spelled `anonymousLinkExpirationRestrictionDays` — the name its
+  neighbour already owns — so the domain restriction settings a sharing report carries
+  were never read, and its own value was read as an `int`. It reads
+  `domainRestrictionSettings` now, the name the CSDL gives it.
 
 **Runtime**
 

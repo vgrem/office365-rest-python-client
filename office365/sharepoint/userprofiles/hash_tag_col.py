@@ -10,7 +10,7 @@ class HashTagCollection(Entity):
 
     @odata(name="Items")
     @property
-    def items(self):
+    def items(self) -> ClientValueCollection[HashTag]:
         return self.properties.get("Items", ClientValueCollection(HashTag))
 
     @property

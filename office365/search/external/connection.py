@@ -24,7 +24,7 @@ class ExternalConnection(Entity):
 
     @odata(name="configuration")
     @property
-    def configuration(self):
+    def configuration(self) -> Configuration:
         """
         Specifies additional application IDs that are allowed to manage the connection and to index
         content in the connection. Optional.
@@ -33,7 +33,7 @@ class ExternalConnection(Entity):
 
     @odata(name="searchSettings")
     @property
-    def search_settings(self):
+    def search_settings(self) -> SearchSettings:
         """
         The settings configuring the search experience for content in this connection,
         such as the display templates for search results.

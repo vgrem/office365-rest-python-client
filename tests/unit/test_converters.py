@@ -11,6 +11,7 @@ from office365.booking.appointment import BookingAppointment
 from office365.communications.callrecords.call_record import CallRecord
 from office365.communications.callrecords.type import CallType
 from office365.communications.calls.call import Call
+from office365.communications.calls.route import CallRoute
 from office365.communications.onlinemeetings.base import OnlineMeetingBase
 from office365.communications.onlinemeetings.collection import ChatInfo
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
@@ -20,6 +21,7 @@ from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
+from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -40,6 +42,14 @@ from office365.runtime.types.duration import Duration
 from office365.search.hits.container import SearchHitsContainer
 from office365.search.response import SearchResponse
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
+
+
+class _Unannotated(ClientObject):
+    """A hand-written getter that names its type only in the default it returns."""
+
+    @property
+    def call_routes(self):
+        return self.properties.get("callRoutes", ClientValueCollection(CallRoute))
 
 
 class TestCyclicDeclaredType(unittest.TestCase):
@@ -63,9 +73,17 @@ class TestCyclicDeclaredType(unittest.TestCase):
         self.assertEqual(meeting.chat_info.threadId, "19:abc")
 
     def test_a_getter_that_annotates_nothing_still_declares_nothing(self):
-        # ``Call.call_routes`` names its type only in the default it passes to
-        # ``properties.get``; an annotation is what states it, and there is none.
-        self.assertIsNone(declared_type(Call, "callRoutes"))
+        # An annotation is what states a type. A default passed to ``properties.get``
+        # is a fallback value, not a declaration, so a getter that states nothing is
+        # read as ``None`` -- which is why the unannotated ones were backfilled rather
+        # than taught to the resolver.
+        self.assertIsNone(declared_type(_Unannotated, "callRoutes"))
+
+    def test_a_getter_that_states_its_type_in_the_signature_declares_it(self):
+        # ``Call.call_routes`` used to name ``CallRoute`` only in the default it passed
+        # to ``properties.get``, so ``callRoutes`` was an unknown column to
+        # ``coerce_records`` and the service's routes arrived as plain dicts.
+        self.assertEqual(declared_type(Call, "callRoutes"), ClientValueCollection[CallRoute])
 
 
 class TestDuration(unittest.TestCase):

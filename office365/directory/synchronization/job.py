@@ -44,7 +44,7 @@ class SynchronizationJob(Entity):
 
     @odata(name="status")
     @property
-    def status(self):
+    def status(self) -> SynchronizationStatus:
         """Status of the job, which includes when the job was last run, current job state, and errors."""
         return self.properties.get("status", SynchronizationStatus())
 

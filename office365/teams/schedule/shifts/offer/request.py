@@ -10,7 +10,7 @@ class OfferShiftRequest(ScheduleChangeRequest):
 
     @odata(name="recipientActionDateTime", readonly=True)
     @property
-    def recipient_action_datetime(self):
+    def recipient_action_datetime(self) -> datetime:
         """
         The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time.
         """

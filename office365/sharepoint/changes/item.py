@@ -21,25 +21,25 @@ class ChangeItem(Change):
 
     @odata(name="ContentTypeId", beta=True)
     @property
-    def content_type_id(self):
+    def content_type_id(self) -> ContentTypeId:
         """Specifies an identifier for the content type"""
         return self.properties.get("ContentTypeId", ContentTypeId())
 
     @odata(name="Editor")
     @property
-    def editor(self):
+    def editor(self) -> str:
         """Specifies the editor of the changed item."""
         return self.properties.get("Editor", None)
 
     @odata(name="EditorEmailHint")
     @property
-    def editor_email_hint(self):
+    def editor_email_hint(self) -> str:
         """Returns the email corresponding to Editor."""
         return self.properties.get("EditorEmailHint", None)
 
     @odata(name="EditorLoginName", beta=True)
     @property
-    def editor_login_name(self):
+    def editor_login_name(self) -> str:
         """Returns login name of the Editor."""
         return self.properties.get("EditorLoginName", None)
 
@@ -68,13 +68,13 @@ class ChangeItem(Change):
 
     @odata(name="SharedByUser")
     @property
-    def shared_by_user(self):
+    def shared_by_user(self) -> SharedWithUser:
         """Return the sharedBy User Information in sharing action for change log."""
         return self.properties.get("SharedByUser", SharedWithUser())
 
     @odata(name="SharedWithUsers")
     @property
-    def shared_with_users(self):
+    def shared_with_users(self) -> ClientValueCollection[SharedWithUser]:
         """Returns the array of users that have been shared in sharing action for the change log."""
         return self.properties.get("SharedWithUsers", ClientValueCollection(SharedWithUser))
 

@@ -69,13 +69,13 @@ class Alert(Entity):
 
     @odata(name="evidence")
     @property
-    def evidence(self):
+    def evidence(self) -> ClientValueCollection[AlertEvidence]:
         """Collection of evidence related to the alert."""
         return self.properties.get("evidence", ClientValueCollection(AlertEvidence))
 
     @odata(name="historyStates", system=True)
     @property
-    def history_states(self):
+    def history_states(self) -> ClientValueCollection[AlertHistoryState]:
         """Collection of changes for the alert."""
         return self.properties.get("historyStates", ClientValueCollection(AlertHistoryState))
 

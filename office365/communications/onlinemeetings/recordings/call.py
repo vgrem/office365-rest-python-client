@@ -13,7 +13,7 @@ class CallRecording(Entity):
 
     @odata(name="callId")
     @property
-    def call_id(self):
+    def call_id(self) -> str:
         """The unique identifier for the call that is related to this recording. Read-only."""
         return self.properties.get("callId", None)
 

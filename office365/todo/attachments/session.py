@@ -27,7 +27,7 @@ class AttachmentSession(Entity):
 
     @odata(name="content")
     @property
-    def content(self):
+    def content(self) -> bytes:
         """The content streams that are uploaded."""
         return self.properties.get("content", None)
 

@@ -17,7 +17,7 @@ class PickerSettings(Entity):
 
     @odata(name="AllowEmailAddresses")
     @property
-    def allow_email_addresses(self):
+    def allow_email_addresses(self) -> bool:
         """
         Boolean value indicating whether the picker control will allow the resolution of arbitrary email addresses.
         """
@@ -25,7 +25,7 @@ class PickerSettings(Entity):
 
     @odata(name="AllowOnlyEmailAddresses")
     @property
-    def allow_only_email_addresses(self):
+    def allow_only_email_addresses(self) -> bool:
         """
         Boolean value indicating whether the picker control will only allow the resolution of email addresses.
         """
@@ -33,7 +33,7 @@ class PickerSettings(Entity):
 
     @odata(name="QuerySettings")
     @property
-    def query_settings(self):
+    def query_settings(self) -> PeoplePickerQuerySettings:
         """
         The query settings to be used by the picker control.
         """

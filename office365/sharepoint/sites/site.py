@@ -1012,7 +1012,7 @@ class Site(Entity):
 
     @odata(name="UpgradeInfo")
     @property
-    def upgrade_info(self):
+    def upgrade_info(self) -> UpgradeInfo:
         """Specifies the upgrade information of this site collection."""
         return self.properties.get("UpgradeInfo", UpgradeInfo())
 

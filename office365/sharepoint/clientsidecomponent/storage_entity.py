@@ -9,7 +9,7 @@ class StorageEntity(Entity):
 
     @odata(name="Value", beta=True)
     @property
-    def value(self):
+    def value(self) -> str:
         """The value inside the storage entity."""
         return self.properties.get("Value", None)
 

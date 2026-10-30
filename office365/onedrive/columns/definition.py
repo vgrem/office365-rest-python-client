@@ -187,7 +187,7 @@ class ColumnDefinition(BaseItem):
 
     @odata(name="thumbnail")
     @property
-    def thumbnail(self):
+    def thumbnail(self) -> ThumbnailColumn:
         """This column stores thumbnail values."""
         return self.properties.get("thumbnail", ThumbnailColumn())
 

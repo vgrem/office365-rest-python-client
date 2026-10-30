@@ -7,6 +7,7 @@ from office365.onedrive.workbooks.filter import WorkbookFilter
 from office365.onedrive.workbooks.ranges.range import WorkbookRange
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
 
 
@@ -33,7 +34,7 @@ class WorkbookTableColumn(Entity):
 
     @odata(name="values")
     @property
-    def values(self):
+    def values(self) -> Json:
         """
         Represents the raw values of the specified range. The data returned could be of type string, number,
         or a boolean. Cell that contain an error will return the error string.

@@ -2327,7 +2327,7 @@ class Web(SecurableObject):
 
     @odata(name="Configuration")
     @property
-    def configuration(self):
+    def configuration(self) -> int:
         """
         Specifies the identifier (ID) of the site definition that was used to create the site (2). If the site (2)
         was created with a custom site template this specifies the identifier (ID) of the site definition from which

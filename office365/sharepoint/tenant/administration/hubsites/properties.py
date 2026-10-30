@@ -14,7 +14,7 @@ from office365.sharepoint.tenant.administration.hubsites.permission import (
 class HubSiteProperties(Entity):
     @odata(name="Permissions")
     @property
-    def permissions(self):
+    def permissions(self) -> ClientValueCollection[HubSitePermission]:
         return self.properties.get("Permissions", ClientValueCollection(HubSitePermission))
 
     @odata(name="SiteId")

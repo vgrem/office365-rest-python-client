@@ -40,13 +40,13 @@ class SharedWithMeDocument(Entity):
 
     @odata(name="Editors")
     @property
-    def editors(self):
+    def editors(self) -> ClientValueCollection[SharedWithMeDocumentUser]:
         """Specifies a list of users that can edit the document."""
         return self.properties.get("Editors", ClientValueCollection(SharedWithMeDocumentUser))
 
     @odata(name="Modified")
     @property
-    def modified(self):
+    def modified(self) -> datetime:
         """Specifies the date and time when the document was last modified."""
         return self.properties.get("Modified", datetime.min)
 

@@ -6,7 +6,7 @@ from office365.sharepoint.entity import Entity
 class TranslationNotificationRecipientUsers(Entity):
     @odata(name="LanguageCode")
     @property
-    def language_code(self):
+    def language_code(self) -> str:
         return self.properties.get("LanguageCode", None)
 
     @odata(name="Recipients", navigation=True)

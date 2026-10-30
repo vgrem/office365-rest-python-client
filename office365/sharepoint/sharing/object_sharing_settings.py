@@ -84,7 +84,7 @@ class ObjectSharingSettings(Entity):
 
     @odata(name="Roles")
     @property
-    def roles(self):
+    def roles(self) -> dict:
         """
         A dictionary object that lists the display name and the id of the SharePoint regular roles.
         """

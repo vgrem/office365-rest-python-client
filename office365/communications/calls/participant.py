@@ -81,7 +81,7 @@ class Participant(Entity):
 
     @odata(name="restrictedExperience")
     @property
-    def restricted_experience(self):
+    def restricted_experience(self) -> OnlineMeetingRestricted:
         """Information about the reason or reasons media content from a participant is restricted."""
         return self.properties.get("restrictedExperience", OnlineMeetingRestricted())
 

@@ -12,7 +12,7 @@ class InviteParticipantsOperation(CommsOperation):
 
     @odata(name="participants")
     @property
-    def participants(self):
+    def participants(self) -> ClientValueCollection[InvitationParticipantInfo]:
         """
         The participants to invite.
         """

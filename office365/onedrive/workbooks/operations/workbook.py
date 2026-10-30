@@ -11,7 +11,7 @@ class WorkbookOperation(PollableOperation, Entity):
 
     @odata(name="error")
     @property
-    def error(self):
+    def error(self) -> WorkbookOperationError:
         """The error returned by the operation."""
         return self.properties.get("error", WorkbookOperationError())
 

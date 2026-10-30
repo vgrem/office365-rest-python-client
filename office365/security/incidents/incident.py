@@ -45,7 +45,7 @@ class Incident(Entity):
 
     @odata(name="comments")
     @property
-    def comments(self):
+    def comments(self) -> ClientValueCollection[AlertComment]:
         """Array of comments created by the Security Operations (SecOps) team when the incident is managed."""
         return self.properties.get("comments", ClientValueCollection(AlertComment))
 

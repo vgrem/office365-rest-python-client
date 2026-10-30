@@ -49,7 +49,7 @@ class ProvisioningObjectSummary(Entity):
 
     @odata(name="servicePrincipal")
     @property
-    def service_principal(self):
+    def service_principal(self) -> ProvisioningServicePrincipal:
         """Represents the service principal used for provisioning."""
         return self.properties.get("servicePrincipal", ProvisioningServicePrincipal())
 

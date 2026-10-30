@@ -22,13 +22,13 @@ class AuditEvent(Entity):
 
     @odata(name="actor")
     @property
-    def actor(self):
+    def actor(self) -> AuditActor:
         """AAD user and application that are associated with the audit event."""
         return self.properties.get("actor", AuditActor())
 
     @odata(name="resources")
     @property
-    def resources(self):
+    def resources(self) -> ClientValueCollection[AuditResource]:
         """Resources being modified"""
         return self.properties.get("resources", ClientValueCollection(AuditResource))
 

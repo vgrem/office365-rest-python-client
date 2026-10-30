@@ -35,7 +35,7 @@ class AccessReviewHistoryDefinition(Entity):
 
     @odata(name="scopes")
     @property
-    def scopes(self):
+    def scopes(self) -> ClientValueCollection[AccessReviewScope]:
         """
         Used to scope what reviews are included in the fetched history data. Fetches reviews whose scope matches with
         this provided scope. Required.

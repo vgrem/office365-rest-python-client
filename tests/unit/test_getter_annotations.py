@@ -142,10 +142,8 @@ def _unwrap_optional(annotation: typing.Any) -> typing.Any:
 def test_where_an_annotation_resolves_it_is_the_declared_type(root: str) -> None:
     """A column's declaration is the type its own getter names, across the whole tree.
 
-    ``13,078`` columns resolve today; the ones that do not yet are the four cyclic
-    value types, and the hand-written getters annotated ``-> None``. As those are
-    finished this test starts covering them: the count it observes is not pinned, the
-    agreement is.
+    Every column resolves today; the count it observes is not pinned, the agreement
+    is. A getter that states nothing is the next test's subject.
     """
     mismatches: list[str] = []
     for module in _modules(root):
@@ -168,9 +166,30 @@ def test_where_an_annotation_resolves_it_is_the_declared_type(root: str) -> None
     assert mismatches == []
 
 
+@pytest.mark.parametrize("root", _service_roots())
+def test_every_column_states_the_type_it_holds(root: str) -> None:
+    """A column whose getter states no type is a column the runtime cannot coerce.
+
+    ``coerce_records`` drops it as an unknown column, ``set_property`` stores the wire
+    value verbatim, and a value column arrives as the dict the service sent -- the
+    defects the annotation slices fixed one kind at a time. What was left after them
+    was 120 hand-written getters that named their type only in the value they passed
+    to ``properties.get``: ``Call.call_routes`` defaulted to
+    ``ClientValueCollection(CallRoute)``, so ``callRoutes`` was skipped as unknown.
+    Stating the type in the signature is what makes it a declaration, so this ratchet
+    holds every column to having one -- no list of 120 to forget to extend.
+    """
+    silent: list[str] = []
+    for module in _modules(root):
+        for cls in _client_objects(module):
+            for name in cls.select_all():
+                if declared_type(cls, name) is None:
+                    silent.append(f"{module.__name__}: {cls.__name__} reads '{name}' and states no type")
+    assert silent == []
+
+
 def test_a_name_only_the_type_checking_block_binds_is_hoisted(tmp_path: pathlib.Path, monkeypatch) -> None:
     """``Optional`` in ``if TYPE_CHECKING:`` never binds, so the annotation cannot resolve.
-
     The getter states no import of its own to move; the repair is the block's import,
     written once at module level and dropped where it was.
     """

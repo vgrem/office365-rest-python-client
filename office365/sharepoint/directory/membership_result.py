@@ -6,7 +6,7 @@ from office365.sharepoint.entity import Entity
 class MembershipResult(Entity):
     @odata(name="GroupsList")
     @property
-    def groups_list(self):
+    def groups_list(self) -> StringCollection:
         return self.properties.get("GroupsList", StringCollection())
 
     @property

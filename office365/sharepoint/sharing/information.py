@@ -32,7 +32,7 @@ class SharingInformation(Entity):
 
     @odata(name="accessRequestSettings")
     @property
-    def access_request_settings(self):
+    def access_request_settings(self) -> AccessRequestSettings:
         """
         AccessRequestSettings is an optional property set to retrieve details for pending access requests if present.
         """
@@ -44,15 +44,15 @@ class SharingInformation(Entity):
         """Tenant's anonymous link expiration restriction in days."""
         return self.properties.get("anonymousLinkExpirationRestrictionDays", None)
 
-    @odata(name="anonymousLinkExpirationRestrictionDays")
+    @odata(name="domainRestrictionSettings")
     @property
-    def domain_restriction_settings(self):
+    def domain_restriction_settings(self) -> DomainRestrictionSettings:
         """Whether DomainRestrictionSettings is used to limit the external Users set by Admin."""
-        return self.properties.get("anonymousLinkExpirationRestrictionDays", DomainRestrictionSettings())
+        return self.properties.get("domainRestrictionSettings", DomainRestrictionSettings())
 
     @odata(name="permissionsInformation")
     @property
-    def permissions_information(self):
+    def permissions_information(self) -> PermissionCollection:
         """
         The PermissionCollection that are on the list item. It contains a collection of PrincipalInfo and LinkInfo.
         """
@@ -69,7 +69,7 @@ class SharingInformation(Entity):
 
     @odata(name="sharingAbilities", beta=True)
     @property
-    def sharing_abilities(self):
+    def sharing_abilities(self) -> SharingAbilities:
         """
         Matrix of possible sharing abilities per sharing type and the state of each capability for the current user
         on the list item."""
@@ -77,7 +77,7 @@ class SharingInformation(Entity):
 
     @odata(name="sharingLinkTemplates")
     @property
-    def sharing_link_templates(self):
+    def sharing_link_templates(self) -> SharingLinkDefaultTemplatesCollection:
         """"""
         return self.properties.get("sharingLinkTemplates", SharingLinkDefaultTemplatesCollection())
 

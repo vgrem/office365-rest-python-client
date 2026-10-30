@@ -27,10 +27,10 @@ class TranslationStatusCollection(Entity):
 
     @odata(name="UntranslatedLanguages")
     @property
-    def untranslated_languages(self):
+    def untranslated_languages(self) -> StringCollection:
         return self.properties.get("UntranslatedLanguages", StringCollection())
 
     @odata(name="Items")
     @property
-    def items(self):
+    def items(self) -> ClientValueCollection[TranslationStatus]:
         return self.properties.get("Items", ClientValueCollection(TranslationStatus))

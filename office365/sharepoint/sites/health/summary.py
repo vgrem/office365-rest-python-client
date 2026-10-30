@@ -29,7 +29,7 @@ class SiteHealthSummary(Entity):
 
     @odata(name="Results")
     @property
-    def results(self):
+    def results(self) -> ClientValueCollection[SiteHealthResult]:
         """Specifies a list of site collection sitehealth rule results, one for each site collection sitehealth rule that
         was run."""
         return self.properties.get("Results", ClientValueCollection(SiteHealthResult))

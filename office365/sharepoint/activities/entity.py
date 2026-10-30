@@ -17,32 +17,32 @@ class SPActivityEntity(Entity):
 
     @odata(name="action")
     @property
-    def action(self):
+    def action(self) -> ActionFacet:
         return self.properties.get("action", ActionFacet())
 
     @odata(name="actor")
     @property
-    def actor(self):
+    def actor(self) -> Principal:
         return self.properties.get("actor", Principal())
 
     @odata(name="isCoalesced")
     @property
-    def is_coalesced(self):
+    def is_coalesced(self) -> CoalescedFacet:
         return self.properties.get("isCoalesced", CoalescedFacet())
 
     @odata(name="docDetails")
     @property
-    def doc_details(self):
+    def doc_details(self) -> InDocFacet:
         return self.properties.get("docDetails", InDocFacet())
 
     @odata(name="resource")
     @property
-    def resource(self):
+    def resource(self) -> ResourceFacet:
         return self.properties.get("resource", ResourceFacet())
 
     @odata(name="times")
     @property
-    def times(self):
+    def times(self) -> ActivityTimeFacet:
         return self.properties.get("times", ActivityTimeFacet())
 
     @property

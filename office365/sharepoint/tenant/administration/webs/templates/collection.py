@@ -7,7 +7,7 @@ from office365.sharepoint.tenant.administration.webs.templates.template import S
 class SPOTenantWebTemplateCollection(Entity):
     @odata(name="Items")
     @property
-    def items(self):
+    def items(self) -> ClientValueCollection[SPOTenantWebTemplate]:
         return self.properties.get("Items", ClientValueCollection(SPOTenantWebTemplate))
 
     @property

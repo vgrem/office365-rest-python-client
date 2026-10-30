@@ -19,7 +19,7 @@ class SharingRestrictions(Entity):
 
     @odata(name="anonymousLinkUseLimit", beta=True)
     @property
-    def anonymous_link_use_limit(self):
+    def anonymous_link_use_limit(self) -> CAnonymousLinkUseLimit:
         return self.properties.get("anonymousLinkUseLimit", CAnonymousLinkUseLimit())
 
     @property

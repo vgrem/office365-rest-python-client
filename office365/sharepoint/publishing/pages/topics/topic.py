@@ -28,12 +28,12 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 class TopicSitePage(SitePage):
     @odata(name="EntityId", beta=True)
     @property
-    def entity_id(self):
+    def entity_id(self) -> str:
         return self.properties.get("EntityId", None)
 
     @odata(name="EntityType", beta=True)
     @property
-    def entity_type(self):
+    def entity_type(self) -> str:
         return self.properties.get("EntityType", None)
 
     @odata(name="EntityRelations", beta=True)

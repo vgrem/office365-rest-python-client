@@ -307,7 +307,7 @@ class ServicePrincipal(DirectoryObject):
 
     @odata(name="alternativeNames")
     @property
-    def alternative_names(self):
+    def alternative_names(self) -> StringCollection:
         """
         Used to retrieve service principals by subscription, identify resource group and full resource ids for
         managed identities. Supports $filter (eq, not, ge, le, startsWith).
@@ -362,7 +362,7 @@ class ServicePrincipal(DirectoryObject):
 
     @odata(name="appRoles")
     @property
-    def app_roles(self):
+    def app_roles(self) -> AppRoleCollection:
         """The roles exposed by the application which this service principal represents."""
         return self.properties.get("appRoles", AppRoleCollection())
 

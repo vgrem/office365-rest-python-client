@@ -23,7 +23,7 @@ class CommsOperation(PollableOperation, Entity):
 
     @odata(name="clientContext")
     @property
-    def client_context(self):
+    def client_context(self) -> str:
         """
         Unique Client Context string. Max limit is 256 chars.
         """
@@ -31,7 +31,7 @@ class CommsOperation(PollableOperation, Entity):
 
     @odata(name="resultInfo")
     @property
-    def result_info(self):
+    def result_info(self) -> ResultInfo:
         """
         The result information.
         """

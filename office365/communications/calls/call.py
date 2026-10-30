@@ -129,19 +129,19 @@ class Call(Entity):
 
     @odata(name="callbackUri")
     @property
-    def callback_uri(self):
+    def callback_uri(self) -> str:
         """The callback URL on which callbacks will be delivered. Must be https."""
         return self.properties.get("callbackUri", None)
 
     @odata(name="callRoutes")
     @property
-    def call_routes(self):
+    def call_routes(self) -> ClientValueCollection[CallRoute]:
         """The routing information on how the call was retargeted. Read-only."""
         return self.properties.get("callRoutes", ClientValueCollection(CallRoute))
 
     @odata(name="incomingContext")
     @property
-    def incoming_context(self):
+    def incoming_context(self) -> IncomingContext:
         """Call context associated with an incoming call."""
         return self.properties.get("incomingContext", IncomingContext())
 

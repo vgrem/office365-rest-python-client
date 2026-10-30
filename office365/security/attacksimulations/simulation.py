@@ -42,7 +42,7 @@ class Simulation(Entity):
 
     @odata(name="report")
     @property
-    def report(self):
+    def report(self) -> SimulationReport:
         """Report of the attack simulation and training campaign."""
         return self.properties.get("report", SimulationReport())
 

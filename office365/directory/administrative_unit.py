@@ -33,7 +33,7 @@ class AdministrativeUnit(DirectoryObject):
 
     @odata(name="visibility")
     @property
-    def visibility(self):
+    def visibility(self) -> str:
         """
         Controls whether the administrative unit and its members are hidden or public. Can be set to HiddenMembership.
         If not set (value is null), the default behavior is public. When set to HiddenMembership, only members of

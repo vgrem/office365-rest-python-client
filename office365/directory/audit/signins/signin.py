@@ -86,7 +86,7 @@ class SignIn(Entity):
 
     @odata(name="location")
     @property
-    def location(self):
+    def location(self) -> SignInLocation:
         """
         Provides the city, state, and country code where the sign-in originated.
         Supports $filter (eq and startsWith operators only) on city, state, and countryOrRegion properties.

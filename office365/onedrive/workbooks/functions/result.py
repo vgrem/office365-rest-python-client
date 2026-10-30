@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
 
 
@@ -11,7 +12,7 @@ class WorkbookFunctionResult(Entity):
 
     @odata(name="value")
     @property
-    def value(self):
+    def value(self) -> Json:
         return self.properties.get("value", None)
 
     @odata(name="error")

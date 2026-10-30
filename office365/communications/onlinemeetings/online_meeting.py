@@ -46,7 +46,7 @@ class OnlineMeeting(OnlineMeetingBase):
 
     @odata(name="allowedPresenters")
     @property
-    def allowed_presenters(self):
+    def allowed_presenters(self) -> StringCollection:
         """Specifies who can be a presenter in a meeting. Possible values are listed in the following table."""
         return self.properties.get("allowedPresenters", StringCollection())
 
@@ -88,7 +88,7 @@ class OnlineMeeting(OnlineMeetingBase):
 
     @odata(name="startDateTime")
     @property
-    def start_datetime(self):
+    def start_datetime(self) -> datetime:
         """Gets the meeting start time in UTC."""
         return self.properties.get("startDateTime", datetime.min)
 
@@ -98,7 +98,7 @@ class OnlineMeeting(OnlineMeetingBase):
 
     @odata(name="endDateTime")
     @property
-    def end_datetime(self):
+    def end_datetime(self) -> datetime:
         """Gets the meeting end time in UTC."""
         return self.properties.get("endDateTime", datetime.min)
 

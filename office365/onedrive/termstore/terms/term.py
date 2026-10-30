@@ -23,13 +23,13 @@ class Term(Entity):
 
     @odata(name="descriptions")
     @property
-    def descriptions(self):
+    def descriptions(self) -> ClientValueCollection[LocalizedDescription]:
         """Description about term that is dependent on the languageTag."""
         return self.properties.get("descriptions", ClientValueCollection(LocalizedDescription))
 
     @odata(name="labels")
     @property
-    def labels(self):
+    def labels(self) -> ClientValueCollection[LocalizedLabel]:
         """Label metadata for a term."""
         return self.properties.get("labels", ClientValueCollection(LocalizedLabel))
 

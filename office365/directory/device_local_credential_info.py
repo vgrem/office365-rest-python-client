@@ -23,13 +23,13 @@ class DeviceLocalCredentialInfo(Entity):
 
     @odata(name="lastBackupDateTime")
     @property
-    def last_backup_datetime(self):
+    def last_backup_datetime(self) -> datetime:
         """When the local administrator account credential was backed up to Azure Active Directory."""
         return self.properties.get("lastBackupDateTime", datetime.min)
 
     @odata(name="refreshDateTime")
     @property
-    def refresh_datetime(self):
+    def refresh_datetime(self) -> datetime:
         """When the local administrator account credential will be refreshed and backed up to Azure Active Directory."""
         return self.properties.get("refreshDateTime", datetime.min)
 

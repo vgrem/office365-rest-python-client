@@ -70,6 +70,7 @@ from office365.sharepoint.navigation.configured_metadata_item_col import (
 from office365.sharepoint.pages.wiki_page_creation_information import (
     WikiPageCreationInformation,
 )
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.object_sharing_settings import ObjectSharingSettings
@@ -1622,17 +1623,15 @@ class List(SecurableObject):
 
     @odata(name="EffectiveBasePermissions")
     @property
-    def effective_base_permissions(self):
+    def effective_base_permissions(self) -> BasePermissions:
         """
         Specifies the effective permissions on the list that are assigned to the current user.
         """
-        from office365.sharepoint.permissions.base_permissions import BasePermissions
-
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
     @odata(name="EffectiveBasePermissionsForUI")
     @property
-    def effective_base_permissions_for_ui(self):
+    def effective_base_permissions_for_ui(self) -> BasePermissions:
         """
         Specifies the effective base permissions for the current user as they SHOULD be displayed in user interface (UI)
         If the list is not in read-only UI mode, the value of EffectiveBasePermissionsForUI MUST be the same as the

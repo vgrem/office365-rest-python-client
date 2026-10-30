@@ -45,7 +45,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
 
     @odata(name="phoneNumber")
     @property
-    def phone_number(self):
+    def phone_number(self) -> str:
         """
         The phone number to text or call for authentication.
         Phone numbers use the format +{country code} {number}x{extension}, with extension optional.

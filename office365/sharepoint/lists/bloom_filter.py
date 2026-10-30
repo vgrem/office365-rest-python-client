@@ -19,7 +19,7 @@ class ListBloomFilter(Entity):
 
     @odata(name="IndexMap")
     @property
-    def index_map(self):
+    def index_map(self) -> ClientValueCollection[int]:
         """Specifies a list of bloom indexes for item."""
         return self.properties.get("IndexMap", ClientValueCollection(int))
 

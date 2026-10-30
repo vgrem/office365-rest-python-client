@@ -16,7 +16,7 @@ class SocialRestFeed(Entity):
 
     @odata(name="SocialFeed")
     @property
-    def social_feed(self):
+    def social_feed(self) -> SocialFeed:
         return self.properties.get("SocialFeed", SocialFeed())
 
     @property

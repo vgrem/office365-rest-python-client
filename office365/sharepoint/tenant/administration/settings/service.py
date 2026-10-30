@@ -69,7 +69,7 @@ class TenantAdminSettingsService(Entity):
 
     @odata(name="AutoQuotaEnabled", beta=True)
     @property
-    def auto_quota_enabled(self):
+    def auto_quota_enabled(self) -> AutoQuotaEnabled:
         """Controls whether automatic quota management is enabled for SharePoint Online site collections.
         When this feature is enabled, SharePoint Online automatically adjusts the storage quota for site collections
         based on their usage, helping to ensure that site collections don't run out of space.
@@ -78,7 +78,7 @@ class TenantAdminSettingsService(Entity):
 
     @odata(name="AvailableManagedPathsForSiteCreation", beta=True)
     @property
-    def available_managed_paths_for_site_creation(self):
+    def available_managed_paths_for_site_creation(self) -> StringCollection:
         """
         Specifies the managed paths that are available for the creation of new SharePoint sites within a tenant.
         """
@@ -86,7 +86,7 @@ class TenantAdminSettingsService(Entity):
 
     @odata(name="DisableGroupify", beta=True)
     @property
-    def disable_groupify(self):
+    def disable_groupify(self) -> DisableGroupify:
         """
         Controls whether SharePoint site owners in your tenant are allowed to convert classic SharePoint sites into
         Microsoft 365 Groups (a process commonly known as "groupifying" a site)
@@ -95,26 +95,26 @@ class TenantAdminSettingsService(Entity):
 
     @odata(name="DisableSelfServiceSiteCreation", beta=True)
     @property
-    def disable_self_service_site_creation(self):
+    def disable_self_service_site_creation(self) -> DisableSelfServiceSiteCreation:
         """ " """
         return self.properties.get("DisableSelfServiceSiteCreation", DisableSelfServiceSiteCreation())
 
     @odata(name="EnableAutoNewsDigest", beta=True)
     @property
-    def enable_auto_news_digest(self):
+    def enable_auto_news_digest(self) -> EnableAutoNewsDigest:
         """ " """
         return self.properties.get("EnableAutoNewsDigest", EnableAutoNewsDigest())
 
     @odata(name="SmtpServer", beta=True)
     @property
-    def smtp_server(self):
+    def smtp_server(self) -> SmtpServer:
         """Specifies the server address or endpoint of the SMTP server that SharePoint Online or tenant-related
         services use for sending emails"""
         return self.properties.get("SmtpServer", SmtpServer())
 
     @odata(name="TenantDefaultTimeZoneId", beta=True)
     @property
-    def tenant_default_time_zone_id(self):
+    def tenant_default_time_zone_id(self) -> TenantDefaultTimeZoneId:
         """Default time zone configured for a SharePoint Online tenant"""
         return self.properties.get("TenantDefaultTimeZoneId", TenantDefaultTimeZoneId())
 

@@ -27,7 +27,7 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 class SitePage3D(SitePage):
     @odata(name="SpaceContent", beta=True)
     @property
-    def space_content(self):
+    def space_content(self) -> str:
         return self.properties.get("SpaceContent", None)
 
     @property

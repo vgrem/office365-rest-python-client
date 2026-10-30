@@ -21,7 +21,7 @@ class SharedDocumentInfo(Entity):
 
     @odata(name="Author")
     @property
-    def author(self):
+    def author(self) -> Principal:
         """"""
         return self.properties.get("Author", Principal())
 
