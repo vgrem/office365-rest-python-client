@@ -16,11 +16,13 @@ class RecycleBinItem(BaseItem):
         ISO 8601 format and is always in UTC."""
         return self.properties.get("deletedDateTime", datetime.min)
 
+    @odata(name="deletedFromLocation")
     @property
     def deleted_from_location(self) -> Optional[str]:
         """Relative URL of the list or folder that originally contained the item."""
         return self.properties.get("deletedFromLocation", None)
 
+    @odata(name="size")
     @property
     def size(self) -> Optional[int]:
         """Size of the item in bytes."""

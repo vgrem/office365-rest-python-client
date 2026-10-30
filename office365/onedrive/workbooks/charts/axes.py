@@ -7,7 +7,7 @@ from office365.runtime.types.odata_property import odata
 class WorkbookChartAxes(Entity):
     """Represents the chart axes."""
 
-    @odata(name="categoryAxis")
+    @odata(name="categoryAxis", navigation=True)
     @property
     def category_axis(self) -> WorkbookChartAxis:
         """Represents the category axis in a chart."""
@@ -16,7 +16,7 @@ class WorkbookChartAxes(Entity):
             WorkbookChartAxis(self.context, ResourcePath("categoryAxis", self.resource_path)),
         )
 
-    @odata(name="seriesAxis")
+    @odata(name="seriesAxis", navigation=True)
     @property
     def series_axis(self) -> WorkbookChartAxis:
         """Represents the series axis of a 3-dimensional chart."""
@@ -25,7 +25,7 @@ class WorkbookChartAxes(Entity):
             WorkbookChartAxis(self.context, ResourcePath("seriesAxis", self.resource_path)),
         )
 
-    @odata(name="valueAxis")
+    @odata(name="valueAxis", navigation=True)
     @property
     def value_axis(self) -> WorkbookChartAxis:
         """Represents the value axis in an axis."""

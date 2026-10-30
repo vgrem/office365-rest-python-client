@@ -11,6 +11,7 @@ from office365.runtime.types.odata_property import odata
 class DocumentSetVersion(ListItemVersion):
     """Represents the version of a document set item in a list."""
 
+    @odata(name="comment")
     @property
     def comment(self) -> Optional[str]:
         """Comment about the captured version."""
@@ -27,11 +28,13 @@ class DocumentSetVersion(ListItemVersion):
         """Date and time when this version was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="items")
     @property
     def items(self) -> ClientValueCollection[DocumentSetVersionItem]:
         """Items within the document set that are captured as part of this version."""
         return self.properties.get("items", ClientValueCollection(DocumentSetVersionItem))
 
+    @odata(name="shouldCaptureMinorVersion")
     @property
     def should_capture_minor_version(self) -> Optional[bool]:
         """

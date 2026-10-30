@@ -70,6 +70,7 @@ class WorkbookWorksheet(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="charts", navigation=True)
     @property
     def charts(self) -> EntityCollection[WorkbookChart]:
         """Returns collection of charts that are part of the worksheet"""
@@ -78,11 +79,13 @@ class WorkbookWorksheet(Entity):
             EntityCollection(self.context, WorkbookChart, ResourcePath("charts", self.resource_path)),
         )
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """The display name of the worksheet."""
         return self.properties.get("name", None)
 
+    @odata(name="names", navigation=True)
     @property
     def names(self) -> EntityCollection[WorkbookNamedItem]:
         """Returns collection of names that are associated with the worksheet"""
@@ -95,6 +98,7 @@ class WorkbookWorksheet(Entity):
             ),
         )
 
+    @odata(name="tables", navigation=True)
     @property
     def tables(self) -> WorkbookTableCollection:
         """Collection of tables that are part of the worksheet."""
@@ -103,7 +107,7 @@ class WorkbookWorksheet(Entity):
             WorkbookTableCollection(self.context, ResourcePath("tables", self.resource_path)),
         )
 
-    @odata(name="pivotTables")
+    @odata(name="pivotTables", navigation=True)
     @property
     def pivot_tables(self) -> WorkbookPivotTableCollection:
         """Collection of PivotTables that are part of the worksheet."""
@@ -115,6 +119,7 @@ class WorkbookWorksheet(Entity):
             ),
         )
 
+    @odata(name="protection", navigation=True)
     @property
     def protection(self) -> WorkbookWorksheetProtection:
         """Returns sheet protection object for a worksheet."""
@@ -123,11 +128,13 @@ class WorkbookWorksheet(Entity):
             WorkbookWorksheetProtection(self.context, ResourcePath("protection", self.resource_path)),
         )
 
+    @odata(name="position")
     @property
     def position(self) -> Optional[int]:
         """Gets the position property"""
         return self.properties.get("position", None)
 
+    @odata(name="visibility")
     @property
     def visibility(self) -> Optional[str]:
         """Gets the visibility property"""

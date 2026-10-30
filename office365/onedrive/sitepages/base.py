@@ -17,6 +17,7 @@ class BaseSitePage(BaseItem):
         """The publishing status and the MM.mm version of the page."""
         return self.properties.get("publishingState", PublicationFacet())
 
+    @odata(name="pageLayout")
     @property
     def page_layout(self) -> Optional[str]:
         """
@@ -25,6 +26,7 @@ class BaseSitePage(BaseItem):
         """
         return self.properties.get("pageLayout", None)
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """Title of the sitePage."""

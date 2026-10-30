@@ -10,7 +10,7 @@ class ItemAnalytics(Entity):
     This resource is currently only available on SharePoint and OneDrive for Business.
     """
 
-    @odata(name="allTime")
+    @odata(name="allTime", navigation=True)
     @property
     def all_time(self) -> ItemActivityStat:
         """Analytics over the item's lifespan."""
@@ -19,7 +19,7 @@ class ItemAnalytics(Entity):
             ItemActivityStat(self.context, ResourcePath("allTime", self.resource_path)),
         )
 
-    @odata(name="itemActivityStats")
+    @odata(name="itemActivityStats", navigation=True)
     @property
     def item_activity_stats(self) -> EntityCollection[ItemActivityStat]:
         return self.properties.get(
@@ -31,7 +31,7 @@ class ItemAnalytics(Entity):
             ),
         )
 
-    @odata(name="lastSevenDays")
+    @odata(name="lastSevenDays", navigation=True)
     @property
     def last_seven_days(self) -> ItemActivityStat:
         """Analytics for the last seven days."""

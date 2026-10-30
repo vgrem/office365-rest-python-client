@@ -9,7 +9,7 @@ from office365.runtime.types.odata_property import odata
 class CanvasLayout(Entity):
     """Represents the layout of the content in a given SharePoint page."""
 
-    @odata(name="horizontalSections")
+    @odata(name="horizontalSections", navigation=True)
     @property
     def horizontal_sections(self) -> EntityCollection[HorizontalSection]:
         """Collection of horizontal sections on the SharePoint page."""
@@ -18,7 +18,7 @@ class CanvasLayout(Entity):
             EntityCollection(self.context, HorizontalSection, ResourcePath("horizontalSections", self.resource_path)),
         )
 
-    @odata(name="verticalSection")
+    @odata(name="verticalSection", navigation=True)
     @property
     def vertical_section(self) -> VerticalSection:
         """Vertical section on the SharePoint page."""

@@ -21,6 +21,7 @@ class BaseItemVersion(Entity):
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="publication")
     @property
     def publication(self) -> PublicationFacet:
         """Indicates the publication status of this particular version. Read-only."""

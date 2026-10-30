@@ -5,6 +5,7 @@ from office365.onedrive.listitems.field_value_set import FieldValueSet
 from office365.onedrive.versions.base_item import BaseItemVersion
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class ListItemVersion(BaseItemVersion):
@@ -19,6 +20,7 @@ class ListItemVersion(BaseItemVersion):
         self.context.add_query(qry)
         return self
 
+    @odata(name="fields", navigation=True)
     @property
     def fields(self) -> EntityCollection[FieldValueSet]:
         """A collection of the fields and values for this version of the list item."""

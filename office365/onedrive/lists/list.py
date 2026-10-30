@@ -26,21 +26,25 @@ class List(BaseItem):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The displayable title of the list"""
         return self.properties.get("displayName", None)
 
+    @odata(name="list")
     @property
     def list(self) -> ListInfo:
         """Provides additional details about the list."""
         return self.properties.get("list", ListInfo())
 
+    @odata(name="sharepointIds")
     @property
     def sharepoint_ids(self) -> SharePointIds:
         """Returns identifiers useful for SharePoint REST compatibility."""
         return self.properties.get("sharepointIds", SharePointIds())
 
+    @odata(name="drive", navigation=True)
     @property
     def drive(self):
         """Only present on document libraries. Allows access to the list as a drive resource with driveItems."""
@@ -48,6 +52,7 @@ class List(BaseItem):
 
         return self.properties.get("drive", Drive(self.context, ResourcePath("drive", self.resource_path)))
 
+    @odata(name="columns", navigation=True)
     @property
     def columns(self) -> ColumnDefinitionCollection:
         """The collection of columns under this site."""
@@ -56,7 +61,7 @@ class List(BaseItem):
             ColumnDefinitionCollection(self.context, ResourcePath("columns", self.resource_path), self),
         )
 
-    @odata(name="contentTypes")
+    @odata(name="contentTypes", navigation=True)
     @property
     def content_types(self) -> ContentTypeCollection:
         """The collection of content types under this site."""
@@ -65,6 +70,7 @@ class List(BaseItem):
             ContentTypeCollection(self.context, ResourcePath("contentTypes", self.resource_path)),
         )
 
+    @odata(name="items", navigation=True)
     @property
     def items(self) -> ListItemCollection:
         """All items contained in the list."""
@@ -73,6 +79,7 @@ class List(BaseItem):
             ListItemCollection(self.context, ResourcePath("items", self.resource_path)),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[RichLongRunningOperation]:
         """The collection of long-running operations on the list."""
@@ -85,6 +92,7 @@ class List(BaseItem):
             ),
         )
 
+    @odata(name="subscriptions", navigation=True)
     @property
     def subscriptions(self) -> EntityCollection[Subscription]:
         """The set of subscriptions on the list."""
@@ -97,6 +105,7 @@ class List(BaseItem):
             ),
         )
 
+    @odata(name="system")
     @property
     def system(self) -> SystemFacet:
         """Gets the system property"""
@@ -104,6 +113,7 @@ class List(BaseItem):
 
         return self.properties.get("system", SystemFacet())
 
+    @odata(name="permissions", navigation=True)
     @property
     def permissions(self) -> EntityCollection[Permission]:
         """Gets the permissions property"""

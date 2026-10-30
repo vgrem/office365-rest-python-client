@@ -1258,11 +1258,13 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @odata(name="audio")
     @property
     def audio(self) -> Audio:
         """Audio metadata, if the item is an audio file. Read-only."""
         return self.properties.get("audio", Audio())
 
+    @odata(name="image")
     @property
     def image(self) -> Image:
         """
@@ -1270,11 +1272,13 @@ class DriveItem(BaseItem):
         """
         return self.properties.get("image", Image())
 
+    @odata(name="photo")
     @property
     def photo(self) -> Photo:
         """Photo metadata, if the item is a photo. Read-only."""
         return self.properties.get("photo", Photo())
 
+    @odata(name="location")
     @property
     def location(self) -> GeoCoordinates:
         """Location metadata, if the item has location data"""
@@ -1286,11 +1290,13 @@ class DriveItem(BaseItem):
         """File system information on client."""
         return self.properties.get("fileSystemInfo", FileSystemInfo())
 
+    @odata(name="folder")
     @property
     def folder(self) -> Folder:
         """Folder metadata, if the item is a folder."""
         return self.properties.get("folder", Folder())
 
+    @odata(name="file")
     @property
     def file(self) -> File:
         """File metadata, if the item is a file."""
@@ -1306,22 +1312,26 @@ class DriveItem(BaseItem):
         """Determines whether the provided drive item is file facet"""
         return self.is_property_available("file")
 
+    @odata(name="size")
     @property
     def size(self) -> int | None:
         """File metadata, if the item is a file."""
         return self.properties.get("size", None)
 
+    @odata(name="shared")
     @property
     def shared(self) -> Shared:
         """Indicates that the item has been shared with others and provides information about the shared state
         of the item. Read-only."""
         return self.properties.get("shared", Shared())
 
+    @odata(name="webDavUrl")
     @property
     def web_dav_url(self) -> str | None:
         """WebDAV compatible URL for the item."""
         return self.properties.get("webDavUrl", None)
 
+    @odata(name="children", navigation=True)
     @property
     @require_permission(
         delegated=[
@@ -1346,6 +1356,7 @@ class DriveItem(BaseItem):
             DriveItemCollection(self.context, ChildrenPath(self.resource_path)),
         )
 
+    @odata(name="listItem", navigation=True)
     @property
     def listItem(self) -> ListItem:
         """For drives in SharePoint, the associated document library list item."""
@@ -1354,6 +1365,7 @@ class DriveItem(BaseItem):
             ListItem(self.context, ResourcePath("listItem", self.resource_path)),
         )
 
+    @odata(name="workbook", navigation=True)
     @property
     def workbook(self) -> Workbook:
         """For files that are Excel spreadsheets, accesses the workbook API to work with the spreadsheet's contents."""
@@ -1362,12 +1374,14 @@ class DriveItem(BaseItem):
             Workbook(self.context, ResourcePath("workbook", self.resource_path)),
         )
 
+    @odata(name="pendingOperations")
     @property
     def pending_operations(self) -> PendingOperations:
         """If present, indicates that one or more operations that might affect the state of the driveItem are pending
         completion. Read-only."""
         return self.properties.get("pendingOperations", PendingOperations())
 
+    @odata(name="permissions", navigation=True)
     @property
     def permissions(self) -> PermissionCollection:
         """The set of permissions for the item. Read-only. Nullable."""
@@ -1376,6 +1390,7 @@ class DriveItem(BaseItem):
             PermissionCollection(self.context, ResourcePath("permissions", self.resource_path)),
         )
 
+    @odata(name="retentionLabel", navigation=True)
     @property
     def retention_label(self) -> ItemRetentionLabel:
         """Information about retention label and settings enforced on the driveItem."""
@@ -1384,6 +1399,7 @@ class DriveItem(BaseItem):
             ItemRetentionLabel(self.context, ResourcePath("retentionLabel", self.resource_path)),
         )
 
+    @odata(name="publication")
     @property
     def publication(self) -> PublicationFacet:
         """Provides information about the published or checked-out state of an item,
@@ -1403,6 +1419,7 @@ class DriveItem(BaseItem):
         """If the current item is also available as a special folder, this facet is returned. Read-only."""
         return self.properties.get("specialFolder", SpecialFolder())
 
+    @odata(name="versions", navigation=True)
     @property
     def versions(self) -> EntityCollection[DriveItemVersion]:
         """The list of previous versions of the item. For more info, see getting previous versions.
@@ -1416,6 +1433,7 @@ class DriveItem(BaseItem):
             ),
         )
 
+    @odata(name="thumbnails", navigation=True)
     @property
     def thumbnails(self) -> EntityCollection[ThumbnailSet]:
         """Collection containing ThumbnailSet objects associated with the item. For more info, see getting thumbnails.
@@ -1429,6 +1447,7 @@ class DriveItem(BaseItem):
             ),
         )
 
+    @odata(name="analytics", navigation=True)
     @property
     def analytics(self) -> ItemAnalytics:
         """Analytics about the view activities that took place on this item."""
@@ -1457,6 +1476,7 @@ class DriveItem(BaseItem):
             DeltaCollection(self.context, DriveItem, DeltaPath(self.resource_path)),
         )
 
+    @odata(name="subscriptions", navigation=True)
     @property
     def subscriptions(self) -> SubscriptionCollection:
         """The set of subscriptions on the driveItem."""
@@ -1469,6 +1489,7 @@ class DriveItem(BaseItem):
     def property_ref_name(self) -> str:
         return "id"
 
+    @odata(name="bundle")
     @property
     def bundle(self) -> Bundle:
         """Gets the bundle property"""
@@ -1476,16 +1497,19 @@ class DriveItem(BaseItem):
 
         return self.properties.get("bundle", Bundle())
 
+    @odata(name="content")
     @property
     def content(self) -> Optional[bytes]:
         """Gets the content property"""
         return self.properties.get("content", None)
 
+    @odata(name="cTag")
     @property
     def ctag(self) -> Optional[str]:
         """Gets the cTag property"""
         return self.properties.get("cTag", None)
 
+    @odata(name="malware")
     @property
     def malware(self) -> Malware:
         """Gets the malware property"""
@@ -1493,6 +1517,7 @@ class DriveItem(BaseItem):
 
         return self.properties.get("malware", Malware())
 
+    @odata(name="package")
     @property
     def package(self) -> Package:
         """Gets the package property"""
@@ -1500,6 +1525,7 @@ class DriveItem(BaseItem):
 
         return self.properties.get("package", Package())
 
+    @odata(name="root")
     @property
     def root(self) -> Root:
         """Gets the root property"""
@@ -1507,6 +1533,7 @@ class DriveItem(BaseItem):
 
         return self.properties.get("root", Root())
 
+    @odata(name="searchResult")
     @property
     def search_result(self) -> SearchResult:
         """Gets the searchResult property"""
@@ -1514,6 +1541,7 @@ class DriveItem(BaseItem):
 
         return self.properties.get("searchResult", SearchResult())
 
+    @odata(name="video")
     @property
     def video(self) -> Video:
         """Gets the video property"""

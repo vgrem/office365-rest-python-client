@@ -71,7 +71,7 @@ class WorkbookChart(Entity):
             WorkbookChartAxes(self.context, ResourcePath("axes", self.resource_path)),
         )
 
-    @odata(name="dataLabels")
+    @odata(name="dataLabels", navigation=True)
     @property
     def data_labels(self) -> WorkbookChartDataLabels:
         """Represents the data labels on the chart."""
@@ -80,6 +80,7 @@ class WorkbookChart(Entity):
             WorkbookChartDataLabels(self.context, ResourcePath("dataLabels", self.resource_path)),
         )
 
+    @odata(name="legend", navigation=True)
     @property
     def legend(self) -> WorkbookChartLegend:
         """Represents the legend on the chart."""
@@ -88,6 +89,7 @@ class WorkbookChart(Entity):
             WorkbookChartLegend(self.context, ResourcePath("legend", self.resource_path)),
         )
 
+    @odata(name="series", navigation=True)
     @property
     def series(self) -> EntityCollection[WorkbookChartSeries]:
         """Represents chart series."""
@@ -100,6 +102,7 @@ class WorkbookChart(Entity):
             ),
         )
 
+    @odata(name="title", navigation=True)
     @property
     def title(self) -> WorkbookChartTitle:
         """Represents the title on the chart."""
@@ -108,6 +111,7 @@ class WorkbookChart(Entity):
             WorkbookChartTitle(self.context, ResourcePath("title", self.resource_path)),
         )
 
+    @odata(name="worksheet", navigation=True)
     @property
     def worksheet(self):
         """The worksheet containing the current chart."""
@@ -118,31 +122,37 @@ class WorkbookChart(Entity):
             WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
 
+    @odata(name="height")
     @property
     def height(self) -> Optional[float]:
         """Gets the height property"""
         return self.properties.get("height", None)
 
+    @odata(name="left")
     @property
     def left(self) -> Optional[float]:
         """Gets the left property"""
         return self.properties.get("left", None)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="top")
     @property
     def top(self) -> Optional[float]:
         """Gets the top property"""
         return self.properties.get("top", None)
 
+    @odata(name="width")
     @property
     def width(self) -> Optional[float]:
         """Gets the width property"""
         return self.properties.get("width", None)
 
+    @odata(name="format", navigation=True)
     @property
     def format(self) -> WorkbookChartAreaFormat:
         """Gets the format property"""

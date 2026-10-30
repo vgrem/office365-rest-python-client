@@ -4,11 +4,13 @@ from office365.onedrive.sitepages.horizontalsectionlayouttype import HorizontalS
 from office365.onedrive.sitepages.sectionemphasistype import SectionEmphasisType
 from office365.onedrive.sitepages.sections.horizontal_column import HorizontalSectionColumn
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class HorizontalSection(Entity):
     """Represents a horizontal section in a given SharePoint page."""
 
+    @odata(name="columns", navigation=True)
     @property
     def columns(self) -> EntityCollection[HorizontalSectionColumn]:
         """The set of vertical columns in this section."""
@@ -17,11 +19,13 @@ class HorizontalSection(Entity):
             EntityCollection(self.context, HorizontalSectionColumn, ResourcePath("columns", self.resource_path)),
         )
 
+    @odata(name="emphasis")
     @property
     def emphasis(self) -> SectionEmphasisType:
         """Gets the emphasis property"""
         return self.properties.get("emphasis", SectionEmphasisType.none)
 
+    @odata(name="layout")
     @property
     def layout(self) -> HorizontalSectionLayoutType:
         """Gets the layout property"""

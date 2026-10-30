@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.onedrive.workbooks.filter_criteria import WorkbookFilterCriteria
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookFilter(Entity):
@@ -29,6 +30,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="criteria")
     @property
     def criteria(self) -> Optional[WorkbookFilterCriteria]:
         """The currently applied filter on the given column."""

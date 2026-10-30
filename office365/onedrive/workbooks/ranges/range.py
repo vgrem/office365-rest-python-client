@@ -9,6 +9,7 @@ from office365.onedrive.workbooks.ranges.view import WorkbookRangeView
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.runtime.types.json import Json
@@ -89,6 +90,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="address")
     @property
     def address(self) -> Optional[str]:
         """
@@ -97,36 +99,43 @@ class WorkbookRange(Entity):
         """
         return self.properties.get("address", None)
 
+    @odata(name="addressLocal")
     @property
     def address_local(self) -> Optional[str]:
         """Represents range reference for the specified range in the language of the user."""
         return self.properties.get("addressLocal", None)
 
+    @odata(name="cellCount")
     @property
     def cell_count(self) -> Optional[int]:
         """Number of cells in the range. Read-only."""
         return self.properties.get("cellCount", None)
 
+    @odata(name="columnCount")
     @property
     def column_count(self) -> Optional[int]:
         """Represents the total number of columns in the range. Read-only."""
         return self.properties.get("columnCount", None)
 
+    @odata(name="columnHidden")
     @property
     def column_hidden(self) -> Optional[bool]:
         """Represents if all columns of the current range are hidden."""
         return self.properties.get("columnHidden", None)
 
+    @odata(name="columnIndex")
     @property
     def column_index(self) -> Optional[int]:
         """Represents the column number of the first cell in the range. Zero-indexed. Read-only."""
         return self.properties.get("columnIndex", None)
 
+    @odata(name="rowIndex")
     @property
     def row_index(self) -> Optional[int]:
         """Returns the row number of the first cell in the range. Zero-indexed. Read-only."""
         return self.properties.get("rowIndex", None)
 
+    @odata(name="format", navigation=True)
     @property
     def format(self):
         """Returns a format object, encapsulating the range's font, fill, borders, alignment, and other properties"""
@@ -135,6 +144,7 @@ class WorkbookRange(Entity):
             WorkbookRangeFormat(self.context, ResourcePath("format", self.resource_path)),
         )
 
+    @odata(name="sort", navigation=True)
     @property
     def sort(self):
         """The worksheet containing the current range."""
@@ -143,18 +153,21 @@ class WorkbookRange(Entity):
             WorkbookRangeSort(self.context, ResourcePath("sort", self.resource_path)),
         )
 
+    @odata(name="values")
     @property
     def values(self) -> list | None:
         """Represents the raw values of the specified range. The data returned could be of type string, number,
         or a boolean. Cell that contains an error returns the error string."""
         return self.properties.get("values", None)
 
+    @odata(name="valueTypes")
     @property
     def value_types(self) -> list | None:
         """Represents the type of data of each cell. The possible values are:
         Unknown, Empty, String, Integer, Double, Boolean, Error."""
         return self.properties.get("valueTypes", None)
 
+    @odata(name="worksheet", navigation=True)
     @property
     def worksheet(self):
         """The worksheet containing the current range"""
@@ -165,6 +178,7 @@ class WorkbookRange(Entity):
             WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
 
+    @odata(name="formulas")
     @property
     def formulas(self) -> Json:
         """Gets the formulas property"""
@@ -172,6 +186,7 @@ class WorkbookRange(Entity):
 
         return self.properties.get("formulas", Json())
 
+    @odata(name="formulasLocal")
     @property
     def formulas_local(self) -> Json:
         """Gets the formulasLocal property"""
@@ -179,6 +194,7 @@ class WorkbookRange(Entity):
 
         return self.properties.get("formulasLocal", Json())
 
+    @odata(name="formulasR1C1")
     @property
     def formulas_r1_c1(self) -> Json:
         """Gets the formulasR1C1 property"""
@@ -186,11 +202,13 @@ class WorkbookRange(Entity):
 
         return self.properties.get("formulasR1C1", Json())
 
+    @odata(name="hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Gets the hidden property"""
         return self.properties.get("hidden", None)
 
+    @odata(name="numberFormat")
     @property
     def number_format(self) -> Json:
         """Gets the numberFormat property"""
@@ -198,16 +216,19 @@ class WorkbookRange(Entity):
 
         return self.properties.get("numberFormat", Json())
 
+    @odata(name="rowCount")
     @property
     def row_count(self) -> Optional[int]:
         """Gets the rowCount property"""
         return self.properties.get("rowCount", None)
 
+    @odata(name="rowHidden")
     @property
     def row_hidden(self) -> Optional[bool]:
         """Gets the rowHidden property"""
         return self.properties.get("rowHidden", None)
 
+    @odata(name="text")
     @property
     def text(self) -> Json:
         """Gets the text property"""

@@ -90,6 +90,7 @@ class Drive(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="driveType")
     @property
     def drive_type(self) -> Optional[str]:
         """
@@ -104,16 +105,19 @@ class Drive(BaseItem):
         """Returns identifiers useful for SharePoint REST compatibility."""
         return self.properties.get("sharepointIds", SharePointIds())
 
+    @odata(name="system")
     @property
     def system(self) -> SystemFacet:
         """Optional. The user account that owns the drive. Read-only."""
         return self.properties.get("system", SystemFacet())
 
+    @odata(name="owner")
     @property
     def owner(self) -> IdentitySet:
         """If present, indicates that this is a system-managed drive. Read-only."""
         return self.properties.get("owner", IdentitySet())
 
+    @odata(name="root", navigation=True)
     @property
     @require_permission(
         delegated=[
@@ -133,11 +137,13 @@ class Drive(BaseItem):
             "root", DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path))
         )
 
+    @odata(name="list", navigation=True)
     @property
     def list(self) -> List:
         """For drives in SharePoint, the underlying document library list."""
         return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
 
+    @odata(name="bundles", navigation=True)
     @property
     def bundles(self) -> EntityCollection[DriveItem]:
         """Bundle metadata, if the item is a bundle."""
@@ -145,11 +151,13 @@ class Drive(BaseItem):
             "bundles", DriveItemCollection(self.context, ResourcePath("bundles", self.resource_path))
         )
 
+    @odata(name="items", navigation=True)
     @property
     def items(self) -> EntityCollection[DriveItem]:
         """All items contained in the drive."""
         return self.properties.get("items", DriveItemCollection(self.context, ResourcePath("items", self.resource_path)))
 
+    @odata(name="following", navigation=True)
     @property
     @require_permission(
         delegated=[
@@ -169,11 +177,13 @@ class Drive(BaseItem):
             "following", DriveItemCollection(self.context, ResourcePath("following", self.resource_path))
         )
 
+    @odata(name="quota")
     @property
     def quota(self) -> Quota:
         """Optional. Information about the drive's storage space quota. Read-only."""
         return self.properties.get("quota", Quota())
 
+    @odata(name="special", navigation=True)
     @property
     @require_permission(
         delegated=[

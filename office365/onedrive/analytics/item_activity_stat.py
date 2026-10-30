@@ -14,21 +14,25 @@ class ItemActivityStat(Entity):
     """The itemActivityStat resource provides information about activities that took place
     within an interval of time."""
 
+    @odata(name="access")
     @property
     def access(self) -> ItemActionStat:
         """Statistics about the access actions in this interval."""
         return self.properties.get("access", ItemActionStat())
 
+    @odata(name="create")
     @property
     def create(self) -> ItemActionStat:
         """Statistics about the create actions in this interval."""
         return self.properties.get("create", ItemActionStat())
 
+    @odata(name="delete")
     @property
     def delete(self) -> ItemActionStat:
         """Statistics about the delete actions in this interval."""
         return self.properties.get("delete", ItemActionStat())
 
+    @odata(name="edit")
     @property
     def edit(self) -> ItemActionStat:
         """Statistics about the edit actions in this interval."""
@@ -39,11 +43,13 @@ class ItemActivityStat(Entity):
         """When the interval ends. Read-only."""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="isTrending")
     @property
     def is_trending(self) -> Optional[bool]:
         """Indicates whether the item is trending."""
         return self.properties.get("isTrending", None)
 
+    @odata(name="move")
     @property
     def move(self) -> ItemActionStat:
         """Statistics about the move actions in this interval."""
@@ -55,6 +61,7 @@ class ItemActivityStat(Entity):
         """When the interval starts."""
         return self.properties.get("startDateTime", datetime.min)
 
+    @odata(name="activities", navigation=True)
     @property
     def activities(self) -> EntityCollection[ItemActivity]:
         """Exposes the itemActivities represented in this itemActivityStat resource."""

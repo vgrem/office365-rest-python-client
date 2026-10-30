@@ -5,11 +5,13 @@ from office365.onedrive.filestorage.containers.container import FileStorageConta
 from office365.onedrive.filestorage.containertypes.collection import FileStorageContainerTypeCollection
 from office365.onedrive.filestorage.containertypes.registration import FileStorageContainerTypeRegistration
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class FileStorage(Entity):
     """Represents the structure of active and deleted fileStorageContainer objects."""
 
+    @odata(name="containers", navigation=True)
     @property
     def containers(self) -> FileStorageContainerCollection:
         """The collection of active fileStorageContainers"""
@@ -17,6 +19,7 @@ class FileStorage(Entity):
             "containers", FileStorageContainerCollection(self.context, ResourcePath("containers", self.resource_path))
         )
 
+    @odata(name="containerTypes", navigation=True)
     @property
     def container_types(self) -> FileStorageContainerTypeCollection:
         """The collection of fileStorageContainerTypes"""
@@ -25,6 +28,7 @@ class FileStorage(Entity):
             FileStorageContainerTypeCollection(self.context, ResourcePath("containerTypes", self.resource_path)),
         )
 
+    @odata(name="containerTypeRegistrations", navigation=True)
     @property
     def container_type_registrations(self) -> EntityCollection[FileStorageContainerTypeRegistration]:
         """Gets the containerTypeRegistrations property"""
@@ -37,6 +41,7 @@ class FileStorage(Entity):
             ),
         )
 
+    @odata(name="deletedContainers", navigation=True)
     @property
     def deleted_containers(self) -> EntityCollection[FileStorageContainer]:
         """Gets the deletedContainers property"""

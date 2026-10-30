@@ -1,11 +1,13 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ColumnLink(Entity):
     """A columnLink on a contentType attaches a site columnDefinition to that content type."""
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """The name of the column in this content type."""

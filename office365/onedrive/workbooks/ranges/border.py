@@ -1,17 +1,20 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookRangeBorder(Entity):
     """Represents the border of an object."""
 
+    @odata(name="color")
     @property
     def color(self) -> Optional[str]:
         """The HTML color code that represents the color of the border line. Can either be of the form #RRGGBB,
         for example "FFA500", or a named HTML color, for example orange."""
         return self.properties.get("color", None)
 
+    @odata(name="sideIndex")
     @property
     def side_index(self) -> Optional[str]:
         """Indicates the specific side of the border.
@@ -19,12 +22,14 @@ class WorkbookRangeBorder(Entity):
         DiagonalDown, DiagonalUp. Read-only."""
         return self.properties.get("sideIndex", None)
 
+    @odata(name="style")
     @property
     def style(self) -> Optional[str]:
         """Indicates the line style for the border. The possible values are: None, Continuous, Dash, DashDot,
         DashDotDot, Dot, Double, SlantDashDot."""
         return self.properties.get("style", None)
 
+    @odata(name="weight")
     @property
     def weight(self) -> Optional[str]:
         """The weight of the border around a range. The possible values are: Hairline, Thin, Medium, Thick."""

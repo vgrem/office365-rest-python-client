@@ -98,6 +98,7 @@ class ContentType(BaseItem):
         """
         return self.properties.get("documentTemplate", DocumentSetContent())
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """The name of the content type."""
@@ -108,6 +109,7 @@ class ContentType(BaseItem):
         """Sets the name of the content type."""
         self.set_property("name", value)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """The descriptive text for the item."""
@@ -118,16 +120,19 @@ class ContentType(BaseItem):
         """Sets the descriptive text for the item."""
         self.set_property("description", value)
 
+    @odata(name="parentId")
     @property
     def parent_id(self) -> Optional[str]:
         """The unique identifier of the content type."""
         return self.properties.get("parentId", None)
 
+    @odata(name="propagateChanges")
     @property
     def propagate_changes(self) -> Optional[bool]:
         """If 'true', changes to this column will be propagated to lists that implement the column."""
         return self.properties.get("propagateChanges", None)
 
+    @odata(name="readOnly")
     @property
     def read_only(self) -> Optional[bool]:
         """If true, the content type cannot be modified unless this value is first set to false."""
@@ -142,7 +147,7 @@ class ContentType(BaseItem):
         """
         return self.properties.get("inheritedFrom", ItemReference())
 
-    @odata(name="columnLinks")
+    @odata(name="columnLinks", navigation=True)
     @property
     def column_links(self) -> EntityCollection[ColumnLink]:
         """The collection of columns that are required by this content type"""
@@ -155,6 +160,7 @@ class ContentType(BaseItem):
             ),
         )
 
+    @odata(name="base", navigation=True)
     @property
     def base(self) -> "ContentType":
         """Parent contentType from which this content type is derived."""
@@ -163,7 +169,7 @@ class ContentType(BaseItem):
             ContentType(self.context, ResourcePath("base", self.resource_path)),
         )
 
-    @odata(name="baseTypes")
+    @odata(name="baseTypes", navigation=True)
     @property
     def base_types(self) -> EntityCollection[ContentType]:
         """The collection of content types that are ancestors of this content type."""
@@ -172,6 +178,7 @@ class ContentType(BaseItem):
             EntityCollection(self.context, ContentType, ResourcePath("baseTypes", self.resource_path)),
         )
 
+    @odata(name="columns", navigation=True)
     @property
     def columns(self) -> EntityCollection[ColumnDefinition]:
         """The collection of column definitions for this contentType."""
@@ -184,7 +191,7 @@ class ContentType(BaseItem):
             ),
         )
 
-    @odata(name="columnPositions")
+    @odata(name="columnPositions", navigation=True)
     @property
     def column_positions(self) -> EntityCollection[ColumnDefinition]:
         """Column order information in a content type."""
@@ -197,26 +204,31 @@ class ContentType(BaseItem):
             ),
         )
 
+    @odata(name="order")
     @property
     def order(self) -> ContentTypeOrder:
         """Specifies the order in which the content type appears in the selection UI."""
         return self.properties.get("order", ContentTypeOrder())
 
+    @odata(name="group")
     @property
     def group(self) -> Optional[str]:
         """Gets the group property"""
         return self.properties.get("group", None)
 
+    @odata(name="hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Gets the hidden property"""
         return self.properties.get("hidden", None)
 
+    @odata(name="isBuiltIn")
     @property
     def is_built_in(self) -> Optional[bool]:
         """Gets the isBuiltIn property"""
         return self.properties.get("isBuiltIn", None)
 
+    @odata(name="sealed")
     @property
     def sealed(self) -> Optional[bool]:
         """Gets the sealed property"""

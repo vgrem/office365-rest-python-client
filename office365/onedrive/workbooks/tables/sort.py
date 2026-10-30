@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.onedrive.workbooks.sort_field import WorkbookSortField
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookTableSort(Entity):
@@ -35,6 +36,7 @@ class WorkbookTableSort(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="fields")
     @property
     def fields(self) -> ClientValueCollection[WorkbookSortField]:
         """Gets the fields property"""
@@ -42,11 +44,13 @@ class WorkbookTableSort(Entity):
 
         return self.properties.get("fields", ClientValueCollection[WorkbookSortField](WorkbookSortField))
 
+    @odata(name="matchCase")
     @property
     def match_case(self) -> Optional[bool]:
         """Gets the matchCase property"""
         return self.properties.get("matchCase", None)
 
+    @odata(name="method")
     @property
     def method(self) -> Optional[str]:
         """Gets the method property"""

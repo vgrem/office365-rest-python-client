@@ -41,16 +41,19 @@ class ColumnDefinition(BaseItem):
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The user-facing name of the column."""
         return self.properties.get("displayName", None)
 
+    @odata(name="enforceUniqueValues")
     @property
     def enforce_unique_values(self) -> Optional[bool]:
         """If true, no two list items may have the same value for this column."""
         return self.properties.get("enforceUniqueValues", None)
 
+    @odata(name="indexed")
     @property
     def indexed(self) -> Optional[bool]:
         """Specifies whether the column values can used for sorting and searching."""
@@ -62,36 +65,43 @@ class ColumnDefinition(BaseItem):
         """This column stores content approval status."""
         return self.properties.get("contentApprovalStatus", ContentApprovalStatusColumn())
 
+    @odata(name="columnGroup")
     @property
     def column_group(self) -> Optional[str]:
         """For site columns, the name of the group this column belongs to. Helps organize related columns."""
         return self.properties.get("columnGroup", None)
 
+    @odata(name="boolean")
     @property
     def boolean(self) -> BooleanColumn:
         """This column stores boolean values."""
         return self.properties.get("boolean", BooleanColumn())
 
+    @odata(name="geolocation")
     @property
     def geolocation(self) -> GeolocationColumn:
         """This column stores a geolocation."""
         return self.properties.get("geolocation", GeolocationColumn())
 
+    @odata(name="calculated")
     @property
     def calculated(self) -> CalculatedColumn:
         """This column's data is calculated based on other columns."""
         return self.properties.get("calculated", CalculatedColumn())
 
+    @odata(name="choice")
     @property
     def choice(self) -> ChoiceColumn:
         """This column stores data from a list of choices."""
         return self.properties.get("choice", ChoiceColumn())
 
+    @odata(name="currency")
     @property
     def currency(self) -> CurrencyColumn:
         """This column stores currency values."""
         return self.properties.get("currency", CurrencyColumn())
 
+    @odata(name="dateTime")
     @property
     def datetime(self) -> DateTimeColumn:
         """This column stores DateTime values."""
@@ -103,21 +113,25 @@ class ColumnDefinition(BaseItem):
         """This column stores Person or Group values."""
         return self.properties.get("personOrGroup", PersonOrGroupColumn())
 
+    @odata(name="text")
     @property
     def text(self) -> TextColumn:
         """This column stores text values."""
         return self.properties.get("text", TextColumn())
 
+    @odata(name="validation")
     @property
     def validation(self) -> ColumnValidation:
         """This column stores validation formula and message for the column."""
         return self.properties.get("validation", ColumnValidation())
 
+    @odata(name="number")
     @property
     def number(self) -> NumberColumn:
         """This column stores number values."""
         return self.properties.get("number", NumberColumn())
 
+    @odata(name="lookup")
     @property
     def lookup(self) -> LookupColumn:
         """This column's data is looked up from another source in the site."""
@@ -135,42 +149,49 @@ class ColumnDefinition(BaseItem):
         """This column stores hyperlink or picture values."""
         return self.properties.get("hyperlinkOrPicture", HyperlinkOrPictureColumn())
 
+    @odata(name="hidden")
     @property
     def hidden(self) -> Optional[bool]:
         """Specifies whether the column is displayed in the user interface."""
         return self.properties.get("hidden", None)
 
+    @odata(name="isDeletable")
     @property
     def is_deletable(self) -> Optional[bool]:
         """Indicates whether this column can be deleted."""
         return self.properties.get("isDeletable", None)
 
+    @odata(name="isReorderable")
     @property
     def is_reorderable(self) -> Optional[bool]:
         """Indicates whether values in the column can be reordered."""
         return self.properties.get("isReorderable", None)
 
+    @odata(name="isSealed")
     @property
     def is_sealed(self) -> Optional[bool]:
         """Specifies whether the column can be changed."""
         return self.properties.get("isSealed", None)
 
+    @odata(name="propagateChanges")
     @property
     def propagate_changes(self) -> Optional[bool]:
         """If 'true', changes to this column will be propagated to lists that implement the column."""
         return self.properties.get("propagateChanges", None)
 
+    @odata(name="readOnly")
     @property
     def read_only(self) -> Optional[bool]:
         """Specifies whether the column values can be modified."""
         return self.properties.get("readOnly", None)
 
+    @odata(name="thumbnail")
     @property
     def thumbnail(self):
         """This column stores thumbnail values."""
         return self.properties.get("thumbnail", ThumbnailColumn())
 
-    @odata(name="sourceColumn")
+    @odata(name="sourceColumn", navigation=True)
     @property
     def source_column(self) -> "ColumnDefinition":
         """The source column for the content type column."""
@@ -185,16 +206,19 @@ class ColumnDefinition(BaseItem):
         """ContentType from which this column is inherited from. Present only in contentTypes columns response."""
         return self.properties.get("sourceContentType", ContentTypeInfo())
 
+    @odata(name="term")
     @property
     def term(self) -> TermColumn:
         """This column stores taxonomy terms."""
         return self.properties.get("term", TermColumn())
 
+    @odata(name="type")
     @property
     def type(self) -> Optional[str]:
         """For site columns, the type of column."""
         return self.properties.get("type", None)
 
+    @odata(name="required")
     @property
     def required(self) -> Optional[bool]:
         """Gets the required property"""

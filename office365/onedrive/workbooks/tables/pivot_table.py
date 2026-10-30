@@ -5,6 +5,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookPivotTable(Entity):
@@ -30,6 +31,7 @@ class WorkbookPivotTable(Entity):
         """Name of the PivotTable."""
         return self.properties.get("Name", None)
 
+    @odata(name="worksheet", navigation=True)
     @property
     def worksheet(self):
         """The worksheet containing the current PivotTable"""

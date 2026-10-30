@@ -19,6 +19,7 @@ class BaseItem(Entity):
     """The baseItem resource is an abstract resource that contains a auth set of properties shared among several
     other resources types"""
 
+    @odata(name="eTag")
     @property
     def etag(self) -> Optional[str]:
         """ETag for the item."""
@@ -35,6 +36,7 @@ class BaseItem(Entity):
         """Indicates that the item was deleted. Present only in delta responses."""
         return self.properties.get("deleted", None) is not None
 
+    @odata(name="createdByUser", navigation=True)
     @property
     def created_by_user(self) -> User:
         """Identity of the user who created the item"""
@@ -50,7 +52,7 @@ class BaseItem(Entity):
         """Identity of the user, device, and application which last modified the item."""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
-    @odata(name="lastModifiedByUser")
+    @odata(name="lastModifiedByUser", navigation=True)
     @property
     def last_modified_by_user(self) -> User:
         """Identity of the user who last modified the item."""
@@ -70,6 +72,7 @@ class BaseItem(Entity):
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name of the item."""
@@ -80,6 +83,7 @@ class BaseItem(Entity):
         """Sets the name of the item."""
         self.set_property("name", value)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Provides a user-visible description of the item."""
@@ -89,6 +93,7 @@ class BaseItem(Entity):
     def description(self, value: str) -> None:
         self.set_property("description", value)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> str:
         """URL that displays the resource in the browser"""

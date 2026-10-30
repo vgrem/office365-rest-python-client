@@ -22,6 +22,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 @limit(*EXCEL_QUOTAS)
@@ -87,6 +88,7 @@ class Workbook(Entity):
         self.context.add_query(qry).before_execute(_construct_request)
         return self
 
+    @odata(name="application", navigation=True)
     @property
     def application(self) -> WorkbookApplication:
         """"""
@@ -95,6 +97,7 @@ class Workbook(Entity):
             WorkbookApplication(self.context, ResourcePath("application", self.resource_path)),
         )
 
+    @odata(name="comments", navigation=True)
     @property
     def comments(self) -> EntityCollection[WorkbookComment]:
         """"""
@@ -107,6 +110,7 @@ class Workbook(Entity):
             ),
         )
 
+    @odata(name="functions", navigation=True)
     @property
     def functions(self) -> WorkbookFunctions:
         """"""
@@ -115,6 +119,7 @@ class Workbook(Entity):
             WorkbookFunctions(self.context, ResourcePath("functions", self.resource_path)),
         )
 
+    @odata(name="tables", navigation=True)
     @property
     def tables(self) -> WorkbookTableCollection:
         """Represents a collection of tables associated with the workbook. Read-only."""
@@ -123,6 +128,7 @@ class Workbook(Entity):
             WorkbookTableCollection(self.context, ResourcePath("tables", self.resource_path)),
         )
 
+    @odata(name="names", navigation=True)
     @property
     def names(self) -> WorkbookNamedItemCollection:
         """Represents a collection of workbook scoped named items (named ranges and constants). Read-only."""
@@ -134,6 +140,7 @@ class Workbook(Entity):
             ),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[WorkbookOperation]:
         """The status of workbook operations. Getting an operation collection is not supported, but you can get the
@@ -148,6 +155,7 @@ class Workbook(Entity):
             ),
         )
 
+    @odata(name="worksheets", navigation=True)
     @property
     def worksheets(self) -> WorkbookWorksheetCollection:
         """Represents a collection of worksheets associated with the workbook. Read-only."""

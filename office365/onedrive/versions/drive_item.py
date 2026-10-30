@@ -5,6 +5,7 @@ from typing_extensions import Self
 from office365.directory.permissions.require_permission import require_permission
 from office365.onedrive.versions.base_item import BaseItemVersion
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class DriveItemVersion(BaseItemVersion):
@@ -30,11 +31,13 @@ class DriveItemVersion(BaseItemVersion):
         self.context.add_query(qry)
         return self
 
+    @odata(name="content")
     @property
     def content(self) -> Optional[AnyStr]:
         """The content stream for this version of the item."""
         return self.properties.get("content", None)
 
+    @odata(name="size")
     @property
     def size(self) -> Optional[int]:
         """Indicates the size of the content stream for this version of the item."""

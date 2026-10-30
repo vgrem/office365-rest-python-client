@@ -15,6 +15,7 @@ class ItemRetentionLabel(Entity):
     Currently, supported only for driveItem.
     """
 
+    @odata(name="isLabelAppliedExplicitly")
     @property
     def is_label_applied_explicitly(self) -> Optional[bool]:
         """Specifies whether the label is applied explicitly on the item.
@@ -22,6 +23,7 @@ class ItemRetentionLabel(Entity):
         Read-only."""
         return self.properties.get("isLabelAppliedExplicitly", None)
 
+    @odata(name="labelAppliedBy")
     @property
     def label_applied_by(self) -> Optional[IdentitySet]:
         """Identity of the user who applied the label. Read-only."""
@@ -35,6 +37,7 @@ class ItemRetentionLabel(Entity):
         """
         return self.properties.get("labelAppliedDateTime", datetime.min)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """The retention label on the document. Read-write."""

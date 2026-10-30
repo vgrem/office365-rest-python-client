@@ -17,33 +17,37 @@ from office365.runtime.types.odata_property import odata
 class SharedDriveItem(BaseItem):
     """The sharedDriveItem resource is returned when using the Shares API to access a shared driveItem."""
 
+    @odata(name="items", navigation=True)
     @property
     def items(self) -> EntityCollection[DriveItem]:
         """All driveItems contained in the sharing root. This collection cannot be enumerated."""
         return self.properties.get("items", DriveItemCollection(self.context, ResourcePath("items", self.resource_path)))
 
-    @odata(name="listItem")
+    @odata(name="listItem", navigation=True)
     @property
     def list_item(self) -> ListItem:
         """Used to access the underlying listItem"""
         return self.properties.get("listItem", ListItem(self.context, ResourcePath("listItem", self.resource_path)))
 
+    @odata(name="list", navigation=True)
     @property
     def list(self) -> List:
         """Used to access the underlying list"""
         return self.properties.get("list", List(self.context, ResourcePath("list", self.resource_path)))
 
-    @odata(name="driveItem")
+    @odata(name="driveItem", navigation=True)
     @property
     def drive_item(self) -> DriveItem:
         """Used to access the underlying driveItem"""
         return self.properties.get("driveItem", DriveItem(self.context, ResourcePath("driveItem", self.resource_path)))
 
+    @odata(name="owner")
     @property
     def owner(self) -> IdentitySet:
         """Information about the owner of the shared item being referenced."""
         return self.properties.get("owner", IdentitySet())
 
+    @odata(name="root", navigation=True)
     @property
     def root(self) -> DriveItem:
         """Used to access the underlying driveItem.
@@ -53,11 +57,13 @@ class SharedDriveItem(BaseItem):
             "root", DriveItem(self.context, RootPath(self.resource_path, self.items.resource_path))
         )
 
+    @odata(name="site", navigation=True)
     @property
     def site(self) -> Site:
         """Used to access the underlying site"""
         return self.properties.get("site", Site(self.context, ResourcePath("site", self.resource_path)))
 
+    @odata(name="permission", navigation=True)
     @property
     def permission(self) -> Permission:
         """Used to access the permission representing the underlying sharing link"""

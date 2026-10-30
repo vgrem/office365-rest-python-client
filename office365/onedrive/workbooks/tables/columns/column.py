@@ -7,6 +7,7 @@ from office365.onedrive.workbooks.filter import WorkbookFilter
 from office365.onedrive.workbooks.ranges.range import WorkbookRange
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookTableColumn(Entity):
@@ -30,6 +31,7 @@ class WorkbookTableColumn(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="values")
     @property
     def values(self):
         """
@@ -38,6 +40,7 @@ class WorkbookTableColumn(Entity):
         """
         return self.properties.get("values", None)
 
+    @odata(name="filter", navigation=True)
     @property
     def filter(self) -> WorkbookFilter:
         """Retrieve the filter applied to the column."""
@@ -46,11 +49,13 @@ class WorkbookTableColumn(Entity):
             WorkbookFilter(self.context, ResourcePath("filter", self.resource_path)),
         )
 
+    @odata(name="index")
     @property
     def index(self) -> Optional[int]:
         """Gets the index property"""
         return self.properties.get("index", None)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""

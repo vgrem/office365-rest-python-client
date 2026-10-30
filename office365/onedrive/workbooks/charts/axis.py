@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.workbooks.charts.axis_format import WorkbookChartAxisFormat
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 class WorkbookChartAxis(Entity):
     """Represents a single axis in a chart."""
 
+    @odata(name="majorUnit")
     @property
     def major_unit(self) -> Json:
         """Gets the majorUnit property"""
@@ -22,6 +24,7 @@ class WorkbookChartAxis(Entity):
 
         return self.properties.get("majorUnit", Json())
 
+    @odata(name="maximum")
     @property
     def maximum(self) -> Json:
         """Gets the maximum property"""
@@ -29,6 +32,7 @@ class WorkbookChartAxis(Entity):
 
         return self.properties.get("maximum", Json())
 
+    @odata(name="minimum")
     @property
     def minimum(self) -> Json:
         """Gets the minimum property"""
@@ -36,6 +40,7 @@ class WorkbookChartAxis(Entity):
 
         return self.properties.get("minimum", Json())
 
+    @odata(name="minorUnit")
     @property
     def minor_unit(self) -> Json:
         """Gets the minorUnit property"""
@@ -43,6 +48,7 @@ class WorkbookChartAxis(Entity):
 
         return self.properties.get("minorUnit", Json())
 
+    @odata(name="format", navigation=True)
     @property
     def format(self) -> WorkbookChartAxisFormat:
         """Gets the format property"""
@@ -52,6 +58,7 @@ class WorkbookChartAxis(Entity):
             "format", WorkbookChartAxisFormat(self.context, ResourcePath("format", self.resource_path))
         )
 
+    @odata(name="majorGridlines", navigation=True)
     @property
     def major_gridlines(self) -> WorkbookChartGridlines:
         """Gets the majorGridlines property"""
@@ -61,6 +68,7 @@ class WorkbookChartAxis(Entity):
             "majorGridlines", WorkbookChartGridlines(self.context, ResourcePath("majorGridlines", self.resource_path))
         )
 
+    @odata(name="minorGridlines", navigation=True)
     @property
     def minor_gridlines(self) -> WorkbookChartGridlines:
         """Gets the minorGridlines property"""
@@ -70,6 +78,7 @@ class WorkbookChartAxis(Entity):
             "minorGridlines", WorkbookChartGridlines(self.context, ResourcePath("minorGridlines", self.resource_path))
         )
 
+    @odata(name="title", navigation=True)
     @property
     def title(self) -> WorkbookChartAxisTitle:
         """Gets the title property"""

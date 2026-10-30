@@ -5,14 +5,17 @@ from office365.entity_collection import EntityCollection
 from office365.onedrive.sharepoint.migration.container_info import SharePointMigrationContainerInfo
 from office365.onedrive.sharepoint.migration.event import SharePointMigrationEvent
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class SharePointMigrationJob(Entity):
+    @odata(name="containerInfo")
     @property
     def container_info(self) -> SharePointMigrationContainerInfo:
         """Gets the containerInfo property"""
         return self.properties.get("containerInfo", SharePointMigrationContainerInfo())
 
+    @odata(name="progressEvents", navigation=True)
     @property
     def progress_events(self) -> EntityCollection[SharePointMigrationEvent]:
         """Gets the progressEvents property"""

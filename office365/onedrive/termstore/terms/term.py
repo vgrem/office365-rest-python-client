@@ -10,6 +10,7 @@ from office365.onedrive.termstore.terms.description import LocalizedDescription
 from office365.onedrive.termstore.terms.label import LocalizedLabel
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.termstore.terms.collection import TermCollection
@@ -20,11 +21,13 @@ class Term(Entity):
     be used as a metadata to tag content. Multiple terms can be organized in a hierarchical manner within a set.
     """
 
+    @odata(name="descriptions")
     @property
     def descriptions(self):
         """Description about term that is dependent on the languageTag."""
         return self.properties.get("descriptions", ClientValueCollection(LocalizedDescription))
 
+    @odata(name="labels")
     @property
     def labels(self):
         """Label metadata for a term."""
@@ -37,11 +40,13 @@ class Term(Entity):
             return default.name
         return None
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """Timestamp at which the term was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="children", navigation=True)
     @property
     def children(self) -> TermCollection:
         """Children of current term."""
@@ -57,6 +62,7 @@ class Term(Entity):
             ),
         )
 
+    @odata(name="relations", navigation=True)
     @property
     def relations(self):
         """To indicate which terms are related to the current term as either pinned or reused."""
@@ -67,6 +73,7 @@ class Term(Entity):
             EntityCollection(self.context, Relation, ResourcePath("relations", self.resource_path)),
         )
 
+    @odata(name="set", navigation=True)
     @property
     def set(self):
         """The set in which the term is created."""
@@ -78,6 +85,7 @@ class Term(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.termStore.term"
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""

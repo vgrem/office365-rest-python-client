@@ -59,6 +59,7 @@ class Store(Entity):
         )
         return self.import_tree(data)
 
+    @odata(name="defaultLanguageTag")
     @property
     def default_language_tag(self) -> Optional[str]:
         """Default language of the term store."""
@@ -70,11 +71,13 @@ class Store(Entity):
         """List of languages for the term store."""
         return self.properties.get("languageTags", StringCollection())
 
+    @odata(name="groups", navigation=True)
     @property
     def groups(self) -> GroupCollection:
         """Collection of all groups available in the term store."""
         return self.properties.get("groups", GroupCollection(self.context, ResourcePath("groups", self.resource_path)))
 
+    @odata(name="sets", navigation=True)
     @property
     def sets(self) -> SetCollection:
         """Collection of all sets available in the term store."""

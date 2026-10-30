@@ -63,6 +63,7 @@ class FileStorageContainer(Entity):
     def entity_type_name(self) -> str:
         return "graph.fileStorageContainer"
 
+    @odata(name="assignedSensitivityLabel")
     @property
     def assigned_sensitivity_label(self) -> AssignedLabel:
         """Gets the assignedSensitivityLabel property"""
@@ -70,11 +71,13 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("assignedSensitivityLabel", AssignedLabel())
 
+    @odata(name="containerTypeId")
     @property
     def container_type_id(self) -> Optional[UUID]:
         """Gets the containerTypeId property"""
         return self.properties.get("containerTypeId", None)
 
+    @odata(name="customProperties")
     @property
     def custom_properties(self) -> FileStorageContainerCustomPropertyDictionary:
         """Gets the customProperties property"""
@@ -84,16 +87,19 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("customProperties", FileStorageContainerCustomPropertyDictionary())
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lockState")
     @property
     def lock_state(self) -> SiteLockState:
         """Gets the lockState property"""
@@ -101,6 +107,7 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("lockState", SiteLockState.unlocked)
 
+    @odata(name="settings")
     @property
     def settings(self) -> FileStorageContainerSettings:
         """Gets the settings property"""
@@ -110,6 +117,7 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("settings", FileStorageContainerSettings())
 
+    @odata(name="status")
     @property
     def status(self) -> FileStorageContainerStatus:
         """Gets the status property"""
@@ -119,6 +127,7 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("status", FileStorageContainerStatus.inactive)
 
+    @odata(name="viewpoint")
     @property
     def viewpoint(self) -> FileStorageContainerViewpoint:
         """Gets the viewpoint property"""
@@ -128,6 +137,7 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("viewpoint", FileStorageContainerViewpoint())
 
+    @odata(name="columns", navigation=True)
     @property
     def columns(self) -> EntityCollection[ColumnDefinition]:
         """Gets the columns property"""
@@ -140,6 +150,7 @@ class FileStorageContainer(Entity):
             ),
         )
 
+    @odata(name="drive", navigation=True)
     @property
     def drive(self) -> Drive:
         """Gets the drive property"""
@@ -147,6 +158,7 @@ class FileStorageContainer(Entity):
 
         return self.properties.get("drive", Drive(self.context, ResourcePath("drive", self.resource_path)))
 
+    @odata(name="migrationJobs", navigation=True)
     @property
     def migration_jobs(self) -> EntityCollection[SharePointMigrationJob]:
         """Gets the migrationJobs property"""
@@ -161,6 +173,7 @@ class FileStorageContainer(Entity):
             ),
         )
 
+    @odata(name="permissions", navigation=True)
     @property
     def permissions(self) -> EntityCollection[Permission]:
         """Gets the permissions property"""
@@ -171,6 +184,7 @@ class FileStorageContainer(Entity):
             EntityCollection[Permission](self.context, Permission, ResourcePath("permissions", self.resource_path)),
         )
 
+    @odata(name="recycleBin", navigation=True)
     @property
     def recycle_bin(self) -> RecycleBin:
         """Gets the recycleBin property"""
@@ -180,6 +194,7 @@ class FileStorageContainer(Entity):
             "recycleBin", RecycleBin(self.context, ResourcePath("recycleBin", self.resource_path))
         )
 
+    @odata(name="sharePointGroups", navigation=True)
     @property
     def sharepoint_groups(self) -> EntityCollection[SharePointGroup]:
         """Gets the sharePointGroups property"""

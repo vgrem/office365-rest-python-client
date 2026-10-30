@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.workbooks.charts.gridlines_format import (
@@ -12,11 +13,13 @@ if TYPE_CHECKING:
 
 
 class WorkbookChartGridlines(Entity):
+    @odata(name="visible")
     @property
     def visible(self) -> Optional[bool]:
         """Gets the visible property"""
         return self.properties.get("visible", None)
 
+    @odata(name="format", navigation=True)
     @property
     def format(self) -> WorkbookChartGridlinesFormat:
         """Gets the format property"""

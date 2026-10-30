@@ -49,6 +49,7 @@ class ListItem(BaseItem):
         self.context.add_query(qry)
         return qry.return_type  # type: ignore
 
+    @odata(name="fields", navigation=True)
     @property
     def fields(self) -> FieldValueSet:
         """The values of the columns set on this list item."""
@@ -57,6 +58,7 @@ class ListItem(BaseItem):
             FieldValueSet(self.context, ResourcePath("fields", self.resource_path)),
         )
 
+    @odata(name="versions", navigation=True)
     @property
     def versions(self) -> EntityCollection[ListItemVersion]:
         """The list of previous versions of the list item."""
@@ -69,7 +71,7 @@ class ListItem(BaseItem):
             ),
         )
 
-    @odata(name="driveItem")
+    @odata(name="driveItem", navigation=True)
     @property
     def drive_item(self) -> DriveItem:
         """For document libraries, the driveItem relationship exposes the listItem as a driveItem."""
@@ -86,6 +88,7 @@ class ListItem(BaseItem):
         """The content type of this list item"""
         return self.properties.get("contentType", ContentTypeInfo())
 
+    @odata(name="analytics", navigation=True)
     @property
     def analytics(self) -> ItemAnalytics:
         """Analytics about the view activities that took place on this item."""
@@ -94,7 +97,7 @@ class ListItem(BaseItem):
             ItemAnalytics(self.context, ResourcePath("analytics", self.resource_path)),
         )
 
-    @odata(name="documentSetVersions")
+    @odata(name="documentSetVersions", navigation=True)
     @property
     def document_set_versions(self) -> EntityCollection[DocumentSetVersion]:
         """Version information for a document set version created by a user."""
@@ -111,6 +114,7 @@ class ListItem(BaseItem):
     def entity_type_name(self) -> str:
         return "microsoft.graph.listItem"
 
+    @odata(name="permissions", navigation=True)
     @property
     def permissions(self) -> EntityCollection[Permission]:
         """Gets the permissions property"""

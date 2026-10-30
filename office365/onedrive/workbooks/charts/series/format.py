@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.workbooks.charts.fill import WorkbookChartFill
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 class WorkbookChartSeriesFormat(Entity):
     """Encapsulates the format properties for the chart series"""
 
+    @odata(name="fill", navigation=True)
     @property
     def fill(self) -> WorkbookChartFill:
         """Gets the fill property"""
@@ -20,6 +22,7 @@ class WorkbookChartSeriesFormat(Entity):
 
         return self.properties.get("fill", WorkbookChartFill(self.context, ResourcePath("fill", self.resource_path)))
 
+    @odata(name="line", navigation=True)
     @property
     def line(self) -> WorkbookChartLineFormat:
         """Gets the line property"""

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.workbooks.charts.point_format import WorkbookChartPointFormat
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 class WorkbookChartPoint(Entity):
     """Represents a point of a series in a chart."""
 
+    @odata(name="value")
     @property
     def value(self) -> Json:
         """Gets the value property"""
@@ -20,6 +22,7 @@ class WorkbookChartPoint(Entity):
 
         return self.properties.get("value", Json())
 
+    @odata(name="format", navigation=True)
     @property
     def format(self) -> WorkbookChartPointFormat:
         """Gets the format property"""

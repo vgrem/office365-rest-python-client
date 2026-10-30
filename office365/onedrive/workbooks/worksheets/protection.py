@@ -9,6 +9,7 @@ from office365.onedrive.workbooks.worksheets.protection_options import (
     WorkbookWorksheetProtectionOptions,
 )
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookWorksheetProtection(Entity):
@@ -26,11 +27,13 @@ class WorkbookWorksheetProtection(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="options")
     @property
     def options(self) -> WorkbookWorksheetProtectionOptions:
         """ """
         return self.properties.get("options", WorkbookWorksheetProtectionOptions())
 
+    @odata(name="protected")
     @property
     def protected(self) -> Optional[bool]:
         """Gets the protected property"""

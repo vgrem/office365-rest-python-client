@@ -17,11 +17,13 @@ class VerticalSection(Entity):
             "webParts", EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
         )
 
+    @odata(name="emphasis")
     @property
     def emphasis(self) -> SectionEmphasisType:
         """Gets the emphasis property"""
         return self.properties.get("emphasis", SectionEmphasisType.none)
 
+    @odata(name="webparts", navigation=True)
     @property
     def webparts(self) -> EntityCollection[WebPart]:
         """Gets the webparts property"""

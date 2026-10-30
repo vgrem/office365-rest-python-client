@@ -92,21 +92,25 @@ class SitePage(BaseSitePage):
             raise ValueError("Parent collection is not set")
         return cast(List, self.parent_collection.parent)
 
+    @odata(name="promotionKind")
     @property
     def promotion_kind(self) -> Optional[str]:
         """Indicates the promotion kind of the sitePage."""
         return self.properties.get("promotionKind", None)
 
+    @odata(name="showComments")
     @property
     def show_comments(self) -> Optional[bool]:
         """Determines whether or not to show comments at the bottom of the page."""
         return self.properties.get("showComments", None)
 
+    @odata(name="showRecommendedPages")
     @property
     def show_recommended_pages(self) -> Optional[bool]:
         """Determines whether or not to show recommended pages at the bottom of the page."""
         return self.properties.get("showRecommendedPages", None)
 
+    @odata(name="thumbnailWebUrl")
     @property
     def thumbnail_web_url(self) -> Optional[str]:
         """Indicates the promotion kind of the sitePage."""
@@ -118,7 +122,7 @@ class SitePage(BaseSitePage):
         """Title area on the SharePoint page."""
         return self.properties.get("titleArea", TitleArea())
 
-    @odata(name="canvasLayout")
+    @odata(name="canvasLayout", navigation=True)
     @property
     def canvas_layout(self) -> CanvasLayout:
         """The default termStore under this site."""
@@ -126,7 +130,7 @@ class SitePage(BaseSitePage):
             "canvasLayout", CanvasLayout(self.context, ResourcePath("canvasLayout", self.resource_path))
         )
 
-    @odata(name="webParts")
+    @odata(name="webParts", navigation=True)
     @property
     def web_parts(self) -> EntityCollection[WebPart]:
         """Collection of webparts on the SharePoint page."""
@@ -134,6 +138,7 @@ class SitePage(BaseSitePage):
             "webParts", EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
         )
 
+    @odata(name="reactions")
     @property
     def reactions(self) -> ReactionsFacet:
         """Gets the reactions property"""

@@ -40,6 +40,7 @@ class Set(Entity):
         self.children.expand(["children"]).get().after_execute(_on_terms_loaded)
         return self
 
+    @odata(name="children", navigation=True)
     @property
     def children(self) -> TermCollection:
         """Children terms of set in term store."""
@@ -63,7 +64,7 @@ class Set(Entity):
             return self.localized_names[0].name
         return None
 
-    @odata(name="parentGroup")
+    @odata(name="parentGroup", navigation=True)
     @property
     def parent_group(self):
         """The parent group that contains the set."""
@@ -74,6 +75,7 @@ class Set(Entity):
             Group(self.context, ResourcePath("parentGroup", self.resource_path)),
         )
 
+    @odata(name="relations", navigation=True)
     @property
     def relations(self) -> EntityCollection[Relation]:
         """Indicates which terms have been pinned or reused directly under the set."""
@@ -82,6 +84,7 @@ class Set(Entity):
             EntityCollection(self.context, Relation, ResourcePath("relations", self.resource_path)),
         )
 
+    @odata(name="terms", navigation=True)
     @property
     def terms(self) -> TermCollection:
         """All the terms under the set."""
@@ -94,11 +97,13 @@ class Set(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.termStore.set"
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""

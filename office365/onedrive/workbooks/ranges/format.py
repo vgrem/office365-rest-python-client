@@ -11,33 +11,39 @@ from office365.onedrive.workbooks.ranges.format_protection import (
     WorkbookFormatProtection,
 )
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookRangeFormat(Entity):
     """A format object encapsulating the range's font, fill, borders, alignment, and other properties."""
 
+    @odata(name="columnWidth")
     @property
     def column_width(self) -> Optional[float]:
         """Gets or sets the width of all columns within the range. If the column widths aren't uniform,
         null will be returned."""
         return self.properties.get("columnWidth", None)
 
+    @odata(name="horizontalAlignment")
     @property
     def horizontal_alignment(self) -> Optional[str]:
         """Represents the horizontal alignment for the specified object"""
         return self.properties.get("horizontalAlignment", None)
 
+    @odata(name="rowHeight")
     @property
     def row_height(self) -> Optional[float]:
         """Gets or sets the height of all rows in the range. If the row heights aren't uniform null will be returned."""
         return self.properties.get("rowHeight", None)
 
+    @odata(name="verticalAlignment")
     @property
     def vertical_alignment(self) -> Optional[str]:
         """Represents the vertical alignment for the specified object.
         Possible values are: Top, Center, Bottom, Justify, Distributed."""
         return self.properties.get("verticalAlignment", None)
 
+    @odata(name="wrapText")
     @property
     def wrap_text(self) -> Optional[bool]:
         """Indicates if Excel wraps the text in the object.
@@ -45,6 +51,7 @@ class WorkbookRangeFormat(Entity):
         """
         return self.properties.get("wrapText", None)
 
+    @odata(name="borders", navigation=True)
     @property
     def borders(self) -> EntityCollection[WorkbookRangeBorder]:
         """Collection of border objects that apply to the overall range selected."""
@@ -57,6 +64,7 @@ class WorkbookRangeFormat(Entity):
             ),
         )
 
+    @odata(name="fill", navigation=True)
     @property
     def fill(self) -> WorkbookRangeFill:
         """Returns the fill object defined on the overall range"""
@@ -65,6 +73,7 @@ class WorkbookRangeFormat(Entity):
             WorkbookRangeFill(self.context, ResourcePath("fill", self.resource_path)),
         )
 
+    @odata(name="font", navigation=True)
     @property
     def font(self) -> WorkbookRangeFont:
         """Returns the font object defined on the overall range selected"""
@@ -73,6 +82,7 @@ class WorkbookRangeFormat(Entity):
             WorkbookRangeFont(self.context, ResourcePath("font", self.resource_path)),
         )
 
+    @odata(name="protection", navigation=True)
     @property
     def protection(self) -> WorkbookFormatProtection:
         """Returns the format protection object for a range"""

@@ -18,11 +18,13 @@ class HorizontalSectionColumn(Entity):
             "webParts", EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
         )
 
+    @odata(name="width")
     @property
     def width(self) -> Optional[int]:
         """Gets the width property"""
         return self.properties.get("width", None)
 
+    @odata(name="webparts", navigation=True)
     @property
     def webparts(self) -> EntityCollection[WebPart]:
         """Gets the webparts property"""

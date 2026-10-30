@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookApplication(Entity):
@@ -23,6 +24,7 @@ class WorkbookApplication(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="calculationMode")
     @property
     def calculation_mode(self) -> Optional[str]:
         """Returns the calculation mode used in the workbook. Possible values are:

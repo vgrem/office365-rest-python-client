@@ -16,6 +16,7 @@ from office365.onedrive.workbooks.tables.sort import WorkbookTableSort
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class WorkbookTable(Entity):
@@ -57,16 +58,19 @@ class WorkbookTable(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="highlightFirstColumn")
     @property
     def highlight_first_column(self) -> Optional[bool]:
         """Indicates whether the first column contains special formatting."""
         return self.properties.get("highlightFirstColumn", None)
 
+    @odata(name="highlightLastColumn")
     @property
     def highlight_last_column(self) -> Optional[bool]:
         """Indicates whether the last column contains special formatting."""
         return self.properties.get("highlightLastColumn", None)
 
+    @odata(name="legacyId")
     @property
     def legacy_id(self) -> Optional[str]:
         """Legacy Id used in older Excel clients. The value of the identifier remains the same even when the table
@@ -74,34 +78,40 @@ class WorkbookTable(Entity):
         other type."""
         return self.properties.get("legacyId", None)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Name of the table."""
         return self.properties.get("name", None)
 
+    @odata(name="showBandedColumns")
     @property
     def show_banded_columns(self) -> Optional[bool]:
         """Indicates whether the columns show banded formatting in which odd columns are highlighted differently
         from even ones to make reading the table easier."""
         return self.properties.get("showBandedColumns", None)
 
+    @odata(name="showBandedRows")
     @property
     def show_banded_rows(self) -> Optional[bool]:
         """Indicates whether the rows show banded formatting in which odd rows are highlighted differently from even
         ones to make reading the table easier."""
         return self.properties.get("showBandedRows", None)
 
+    @odata(name="showFilterButton")
     @property
     def show_filter_button(self) -> Optional[bool]:
         """Indicates whether the filter buttons are visible at the top of each column header. Setting this is only
         allowed if the table contains a header row."""
         return self.properties.get("showFilterButton", None)
 
+    @odata(name="showHeaders")
     @property
     def show_headers(self) -> Optional[bool]:
         """Indicates whether the header row is visible or not. This value can be set to show or remove the header row"""
         return self.properties.get("showHeaders", None)
 
+    @odata(name="columns", navigation=True)
     @property
     def columns(self) -> WorkbookTableColumnCollection:
         """Represents a collection of all the columns in the table."""
@@ -110,6 +120,7 @@ class WorkbookTable(Entity):
             WorkbookTableColumnCollection(self.context, ResourcePath("columns", self.resource_path)),
         )
 
+    @odata(name="rows", navigation=True)
     @property
     def rows(self) -> WorkbookTableRowCollection:
         """Represents a collection of all the rows in the table."""
@@ -118,6 +129,7 @@ class WorkbookTable(Entity):
             WorkbookTableRowCollection(self.context, ResourcePath("rows", self.resource_path)),
         )
 
+    @odata(name="sort", navigation=True)
     @property
     def sort(self) -> WorkbookTableSort:
         """Represents the sorting for the table."""
@@ -126,6 +138,7 @@ class WorkbookTable(Entity):
             WorkbookTableSort(self.context, ResourcePath("sort", self.resource_path)),
         )
 
+    @odata(name="worksheet", navigation=True)
     @property
     def worksheet(self):
         """The worksheet containing the current table."""
@@ -136,11 +149,13 @@ class WorkbookTable(Entity):
             WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
 
+    @odata(name="showTotals")
     @property
     def show_totals(self) -> Optional[bool]:
         """Gets the showTotals property"""
         return self.properties.get("showTotals", None)
 
+    @odata(name="style")
     @property
     def style(self) -> Optional[str]:
         """Gets the style property"""

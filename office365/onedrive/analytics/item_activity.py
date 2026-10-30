@@ -13,12 +13,13 @@ class ItemActivity(Entity):
     Currently only available on SharePoint and OneDrive for Business.
     """
 
+    @odata(name="actor")
     @property
     def actor(self) -> IdentitySet:
         """Identity of who performed the action."""
         return self.properties.get("actor", IdentitySet())
 
-    @odata(name="driveItem")
+    @odata(name="driveItem", navigation=True)
     @property
     def drive_item(self):
         """Exposes the driveItem that was the target of this activity."""
@@ -26,11 +27,13 @@ class ItemActivity(Entity):
 
         return self.properties.get("driveItem", DriveItem(self.context, ResourcePath("driveItem", self.resource_path)))
 
+    @odata(name="access")
     @property
     def access(self) -> AccessAction:
         """Gets the access property"""
         return self.properties.get("access", AccessAction())
 
+    @odata(name="activityDateTime")
     @property
     def activity_date_time(self) -> datetime:
         """Gets the activityDateTime property"""
