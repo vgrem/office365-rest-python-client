@@ -6,6 +6,7 @@ from office365.communications.virtualevents.virtual_event import VirtualEvent
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.meetings.audience import MeetingAudience
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
 class VirtualEventTownhall(VirtualEvent):
     """Represents information about a virtual event town hall."""
 
+    @odata(name="audience")
     @property
     def audience(self) -> MeetingAudience:
         """Gets the audience property"""
@@ -29,11 +31,13 @@ class VirtualEventTownhall(VirtualEvent):
 
         return self.properties.get("audience", MeetingAudience.everyone)
 
+    @odata(name="capacity")
     @property
     def capacity(self) -> Optional[int]:
         """Gets the capacity property"""
         return self.properties.get("capacity", None)
 
+    @odata(name="coOrganizers")
     @property
     def co_organizers(self) -> ClientValueCollection[CommunicationsUserIdentity]:
         """Gets the coOrganizers property"""
@@ -43,6 +47,7 @@ class VirtualEventTownhall(VirtualEvent):
             "coOrganizers", ClientValueCollection[CommunicationsUserIdentity](CommunicationsUserIdentity)
         )
 
+    @odata(name="invitedAttendees")
     @property
     def invited_attendees(self) -> ClientValueCollection[Identity]:
         """Gets the invitedAttendees property"""
@@ -50,11 +55,13 @@ class VirtualEventTownhall(VirtualEvent):
 
         return self.properties.get("invitedAttendees", ClientValueCollection[Identity](Identity))
 
+    @odata(name="isInviteOnly")
     @property
     def is_invite_only(self) -> Optional[bool]:
         """Gets the isInviteOnly property"""
         return self.properties.get("isInviteOnly", None)
 
+    @odata(name="registrationConfiguration", navigation=True)
     @property
     def registration_configuration(self) -> VirtualEventTownhallRegistrationConfiguration:
         """Gets the registrationConfiguration property"""
@@ -69,6 +76,7 @@ class VirtualEventTownhall(VirtualEvent):
             ),
         )
 
+    @odata(name="registrations", navigation=True)
     @property
     def registrations(self) -> EntityCollection[VirtualEventRegistration]:
         """Gets the registrations property"""

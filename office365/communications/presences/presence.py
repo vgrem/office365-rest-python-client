@@ -13,6 +13,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.duration import Duration
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.out_of_office_settings import OutOfOfficeSettings
@@ -111,6 +112,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="activity")
     @property
     def activity(self) -> Optional[str]:
         """
@@ -120,6 +122,7 @@ class Presence(Entity):
         """
         return self.properties.get("activity", None)
 
+    @odata(name="availability")
     @property
     def availability(self) -> Optional[str]:
         """
@@ -129,11 +132,13 @@ class Presence(Entity):
         """
         return self.properties.get("availability", None)
 
+    @odata(name="sequenceNumber", readonly=True)
     @property
     def sequence_number(self) -> Optional[str]:
         """Gets the sequenceNumber property"""
         return self.properties.get("sequenceNumber", None)
 
+    @odata(name="statusMessage")
     @property
     def status_message(self) -> PresenceStatusMessage:
         """Gets the statusMessage property"""
@@ -143,6 +148,7 @@ class Presence(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Presence"
 
+    @odata(name="outOfOfficeSettings")
     @property
     def out_of_office_settings(self) -> OutOfOfficeSettings:
         """Gets the outOfOfficeSettings property"""
@@ -150,6 +156,7 @@ class Presence(Entity):
 
         return self.properties.get("outOfOfficeSettings", OutOfOfficeSettings())
 
+    @odata(name="workLocation")
     @property
     def work_location(self) -> UserWorkLocation:
         """Gets the workLocation property"""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.communications.result_info import ResultInfo
 from office365.entity import Entity
 from office365.runtime.pollable import PollableOperation
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.operationstatus import OperationStatus
@@ -24,6 +25,7 @@ class CommsOperation(PollableOperation, Entity):
     come via the notification channel.
     """
 
+    @odata(name="clientContext")
     @property
     def client_context(self):
         """
@@ -31,6 +33,7 @@ class CommsOperation(PollableOperation, Entity):
         """
         return self.properties.get("clientContext", None)
 
+    @odata(name="resultInfo")
     @property
     def result_info(self):
         """
@@ -38,6 +41,7 @@ class CommsOperation(PollableOperation, Entity):
         """
         return self.properties.get("resultInfo", ResultInfo())
 
+    @odata(name="status")
     @property
     def status(self) -> OperationStatus:
         """Gets the status property"""

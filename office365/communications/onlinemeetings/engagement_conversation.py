@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.viva.engagement.conversationmoderationstate import (
     EngagementConversationModerationState,
 )
@@ -14,21 +15,25 @@ if TYPE_CHECKING:
 
 
 class OnlineMeetingEngagementConversation(Entity):
+    @odata(name="moderationState")
     @property
     def moderation_state(self) -> EngagementConversationModerationState:
         """Gets the moderationState property"""
         return self.properties.get("moderationState", EngagementConversationModerationState.published)
 
+    @odata(name="onlineMeetingId")
     @property
     def online_meeting_id(self) -> Optional[str]:
         """Gets the onlineMeetingId property"""
         return self.properties.get("onlineMeetingId", None)
 
+    @odata(name="upvoteCount", readonly=True)
     @property
     def upvote_count(self) -> Optional[int]:
         """Gets the upvoteCount property"""
         return self.properties.get("upvoteCount", None)
 
+    @odata(name="onlineMeeting", navigation=True)
     @property
     def online_meeting(self) -> OnlineMeeting:
         """Gets the onlineMeeting property"""
@@ -40,6 +45,7 @@ class OnlineMeetingEngagementConversation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.OnlineMeetingEngagementConversation"
 
+    @odata(name="organizer", readonly=True)
     @property
     def organizer(self) -> EngagementIdentitySet:
         """Gets the organizer property"""

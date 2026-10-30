@@ -15,6 +15,7 @@ from office365.communications.operations.stop_hold_music import StopHoldMusicOpe
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.callrecords.media_stream import MediaStream
@@ -68,31 +69,37 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="info")
     @property
     def info(self) -> ParticipantInfo:
         """Information about the participant."""
         return self.properties.get("info", ParticipantInfo())
 
+    @odata(name="metadata")
     @property
     def metadata(self) -> Optional[str]:
         """A blob of data provided by the participant in the roster."""
         return self.properties.get("metadata", None)
 
+    @odata(name="restrictedExperience")
     @property
     def restricted_experience(self):
         """Information about the reason or reasons media content from a participant is restricted."""
         return self.properties.get("restrictedExperience", OnlineMeetingRestricted())
 
+    @odata(name="isInLobby")
     @property
     def is_in_lobby(self) -> Optional[bool]:
         """Gets the isInLobby property"""
         return self.properties.get("isInLobby", None)
 
+    @odata(name="isMuted")
     @property
     def is_muted(self) -> Optional[bool]:
         """Gets the isMuted property"""
         return self.properties.get("isMuted", None)
 
+    @odata(name="mediaStreams")
     @property
     def media_streams(self) -> ClientValueCollection[MediaStream]:
         """Gets the mediaStreams property"""
@@ -100,6 +107,7 @@ class Participant(Entity):
 
         return self.properties.get("mediaStreams", ClientValueCollection[MediaStream](MediaStream))
 
+    @odata(name="recordingInfo")
     @property
     def recording_info(self) -> RecordingInfo:
         """Gets the recordingInfo property"""
@@ -107,6 +115,7 @@ class Participant(Entity):
 
         return self.properties.get("recordingInfo", RecordingInfo())
 
+    @odata(name="removedState")
     @property
     def removed_state(self) -> RemovedState:
         """Gets the removedState property"""
@@ -114,6 +123,7 @@ class Participant(Entity):
 
         return self.properties.get("removedState", RemovedState())
 
+    @odata(name="rosterSequenceNumber")
     @property
     def roster_sequence_number(self) -> Optional[int]:
         """Gets the rosterSequenceNumber property"""

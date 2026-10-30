@@ -7,6 +7,7 @@ from office365.communications.virtualevents.webinar import VirtualEventWebinar
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.virtualevents.virtual_event import VirtualEvent
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 class VirtualEventsRoot(Entity):
     """The container for virtual event APIs."""
 
+    @odata(name="townhalls", navigation=True)
     @property
     def townhalls(self) -> EntityCollection[VirtualEventTownhall]:
         """A collection of town halls. Nullable."""
@@ -27,6 +29,7 @@ class VirtualEventsRoot(Entity):
             ),
         )
 
+    @odata(name="webinars", navigation=True)
     @property
     def webinars(self) -> EntityCollection[VirtualEventWebinar]:
         """A collection of webinars. Nullable."""
@@ -39,6 +42,7 @@ class VirtualEventsRoot(Entity):
             ),
         )
 
+    @odata(name="events", navigation=True)
     @property
     def events(self) -> EntityCollection[VirtualEvent]:
         """Gets the events property"""

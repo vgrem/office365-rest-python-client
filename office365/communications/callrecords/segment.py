@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.communications.callrecords.endpoint import Endpoint
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.callrecords.failure_info import FailureInfo
@@ -18,11 +19,13 @@ class Segment(Entity):
     there will be multiple segments per session due to additional server-to-server communication required to connect
     the call."""
 
+    @odata(name="callee")
     @property
     def callee(self) -> Endpoint:
         """Endpoint that answered this segment."""
         return self.properties.get("callee", Endpoint())
 
+    @odata(name="caller")
     @property
     def caller(self) -> Endpoint:
         """Endpoint that initiated this segment."""
@@ -32,11 +35,13 @@ class Segment(Entity):
     def entity_type_name(self):
         return "microsoft.graph.callRecords.segment"
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> Optional[datetime]:
         """Gets the endDateTime property"""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="failureInfo")
     @property
     def failure_info(self) -> FailureInfo:
         """Gets the failureInfo property"""
@@ -44,6 +49,7 @@ class Segment(Entity):
 
         return self.properties.get("failureInfo", FailureInfo())
 
+    @odata(name="media")
     @property
     def media(self) -> ClientValueCollection[Media]:
         """Gets the media property"""
@@ -51,6 +57,7 @@ class Segment(Entity):
 
         return self.properties.get("media", ClientValueCollection[Media](Media))
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> Optional[datetime]:
         """Gets the startDateTime property"""

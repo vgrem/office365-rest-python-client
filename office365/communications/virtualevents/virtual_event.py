@@ -11,6 +11,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.virtualevents.communications_identity_set import (
@@ -34,6 +35,7 @@ class VirtualEvent(Entity):
         """A description of the virtual event."""
         return self.properties.get("Description", ItemBody())
 
+    @odata(name="presenters", navigation=True)
     @property
     def presenters(self):
         """The virtual event presenters."""
@@ -46,6 +48,7 @@ class VirtualEvent(Entity):
             ),
         )
 
+    @odata(name="sessions", navigation=True)
     @property
     def sessions(self):
         """The virtual event presenters."""
@@ -58,6 +61,7 @@ class VirtualEvent(Entity):
             ),
         )
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> CommunicationsIdentitySet:
         """Gets the createdBy property"""
@@ -67,11 +71,13 @@ class VirtualEvent(Entity):
 
         return self.properties.get("createdBy", CommunicationsIdentitySet())
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> DateTimeTimeZone:
         """Gets the endDateTime property"""
@@ -79,6 +85,7 @@ class VirtualEvent(Entity):
 
         return self.properties.get("endDateTime", DateTimeTimeZone())
 
+    @odata(name="externalEventInformation")
     @property
     def external_event_information(self) -> ClientValueCollection[VirtualEventExternalInformation]:
         """Gets the externalEventInformation property"""
@@ -91,11 +98,13 @@ class VirtualEvent(Entity):
             ClientValueCollection[VirtualEventExternalInformation](VirtualEventExternalInformation),
         )
 
+    @odata(name="isRegistrationRequired")
     @property
     def is_registration_required(self) -> Optional[bool]:
         """Gets the isRegistrationRequired property"""
         return self.properties.get("isRegistrationRequired", None)
 
+    @odata(name="settings")
     @property
     def settings(self) -> VirtualEventSettings:
         """Gets the settings property"""
@@ -103,6 +112,7 @@ class VirtualEvent(Entity):
 
         return self.properties.get("settings", VirtualEventSettings())
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> DateTimeTimeZone:
         """Gets the startDateTime property"""
@@ -110,6 +120,7 @@ class VirtualEvent(Entity):
 
         return self.properties.get("startDateTime", DateTimeTimeZone())
 
+    @odata(name="status")
     @property
     def status(self) -> VirtualEventStatus:
         """Gets the status property"""

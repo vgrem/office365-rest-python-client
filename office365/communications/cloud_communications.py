@@ -33,12 +33,13 @@ class CloudCommunications(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="calls", navigation=True)
     @property
     def calls(self) -> CallCollection:
         """ " """
         return self.properties.get("calls", CallCollection(self.context, ResourcePath("calls", self.resource_path)))
 
-    @odata(name="callRecords")
+    @odata(name="callRecords", navigation=True)
     @property
     def call_records(self) -> CallRecordCollection:
         """ " """
@@ -46,7 +47,7 @@ class CloudCommunications(Entity):
             "callRecords", CallRecordCollection(self.context, ResourcePath("callRecords", self.resource_path))
         )
 
-    @odata(name="onlineMeetings")
+    @odata(name="onlineMeetings", navigation=True)
     @property
     def online_meetings(self) -> OnlineMeetingCollection:
         """ " """
@@ -54,6 +55,7 @@ class CloudCommunications(Entity):
             "onlineMeetings", OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path))
         )
 
+    @odata(name="presences", navigation=True)
     @property
     def presences(self) -> EntityCollection[Presence]:
         """ " """
@@ -65,6 +67,7 @@ class CloudCommunications(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudCommunications"
 
+    @odata(name="adhocCalls", navigation=True)
     @property
     def adhoc_calls(self) -> EntityCollection[AdhocCall]:
         """Gets the adhocCalls property"""
@@ -75,6 +78,7 @@ class CloudCommunications(Entity):
             EntityCollection[AdhocCall](self.context, AdhocCall, ResourcePath("adhocCalls", self.resource_path)),
         )
 
+    @odata(name="onlineMeetingConversations", navigation=True)
     @property
     def online_meeting_conversations(self) -> EntityCollection[OnlineMeetingEngagementConversation]:
         """Gets the onlineMeetingConversations property"""

@@ -6,6 +6,7 @@ from office365.communications.virtualevents.virtual_event import VirtualEvent
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.meetings.audience import MeetingAudience
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
 class VirtualEventWebinar(VirtualEvent):
     """Contains information about a virtual event webinar."""
 
+    @odata(name="audience")
     @property
     def audience(self) -> MeetingAudience:
         """Gets the audience property"""
@@ -28,6 +30,7 @@ class VirtualEventWebinar(VirtualEvent):
 
         return self.properties.get("audience", MeetingAudience.everyone)
 
+    @odata(name="coOrganizers")
     @property
     def co_organizers(self) -> ClientValueCollection[CommunicationsUserIdentity]:
         """Gets the coOrganizers property"""
@@ -37,6 +40,7 @@ class VirtualEventWebinar(VirtualEvent):
             "coOrganizers", ClientValueCollection[CommunicationsUserIdentity](CommunicationsUserIdentity)
         )
 
+    @odata(name="registrationConfiguration", navigation=True)
     @property
     def registration_configuration(self) -> VirtualEventWebinarRegistrationConfiguration:
         """Gets the registrationConfiguration property"""
@@ -51,6 +55,7 @@ class VirtualEventWebinar(VirtualEvent):
             ),
         )
 
+    @odata(name="registrations", navigation=True)
     @property
     def registrations(self) -> EntityCollection[VirtualEventRegistration]:
         """Gets the registrations property"""

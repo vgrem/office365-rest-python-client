@@ -32,11 +32,13 @@ class OnlineMeeting(OnlineMeetingBase):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="allowAttendeeToEnableCamera")
     @property
     def allow_attendee_to_enable_camera(self) -> Optional[bool]:
         """Indicates whether attendees can turn on their camera."""
         return self.properties.get("allowAttendeeToEnableCamera", None)
 
+    @odata(name="allowAttendeeToEnableMic")
     @property
     def allow_attendee_to_enable_mic(self) -> Optional[bool]:
         """Indicates whether attendees can turn on their microphone."""
@@ -48,11 +50,13 @@ class OnlineMeeting(OnlineMeetingBase):
         """Specifies who can be a presenter in a meeting. Possible values are listed in the following table."""
         return self.properties.get("allowedPresenters", StringCollection())
 
+    @odata(name="allowParticipantsToChangeName")
     @property
     def allow_participants_to_change_name(self) -> Optional[bool]:
         """Specifies if participants are allowed to rename themselves in an instance of the meeting."""
         return self.properties.get("allowParticipantsToChangeName", None)
 
+    @odata(name="attendeeReport")
     @property
     def attendee_report(self) -> Optional[bytes]:
         """The content stream of the attendee report of a Microsoft Teams live event."""
@@ -64,6 +68,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """Settings related to a live event."""
         return self.properties.get("broadcastSettings", BroadcastMeetingSettings())
 
+    @odata(name="participants")
     @property
     def participants(self) -> MeetingParticipants:
         """
@@ -71,6 +76,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """
         return self.properties.get("participants", MeetingParticipants())
 
+    @odata(name="subject")
     @property
     def subject(self) -> Optional[str]:
         """The subject of the online meeting."""
@@ -106,16 +112,19 @@ class OnlineMeeting(OnlineMeetingBase):
         """The join URL of the online meeting. Read-only."""
         return self.properties.get("joinInformation", ItemBody())
 
+    @odata(name="joinWebUrl")
     @property
     def join_web_url(self) -> Optional[str]:
         """The join URL of the online meeting. Read-only."""
         return self.properties.get("joinWebUrl", None)
 
+    @odata(name="videoTeleconferenceId")
     @property
     def video_teleconference_id(self) -> Optional[str]:
         """The video teleconferencing ID."""
         return self.properties.get("videoTeleconferenceId", None)
 
+    @odata(name="recordings", navigation=True)
     @property
     def recordings(self) -> EntityCollection[CallRecording]:
         """The recordings of an online meeting"""
@@ -123,6 +132,7 @@ class OnlineMeeting(OnlineMeetingBase):
             "recordings", EntityCollection(self.context, CallRecording, ResourcePath("recordings", self.resource_path))
         )
 
+    @odata(name="creationDateTime")
     @property
     def creation_date_time(self) -> Optional[datetime]:
         """Gets the creationDateTime property"""
@@ -133,16 +143,19 @@ class OnlineMeeting(OnlineMeetingBase):
         """Gets the endDateTime property"""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="externalId")
     @property
     def external_id(self) -> Optional[str]:
         """Gets the externalId property"""
         return self.properties.get("externalId", None)
 
+    @odata(name="isBroadcast")
     @property
     def is_broadcast(self) -> Optional[bool]:
         """Gets the isBroadcast property"""
         return self.properties.get("isBroadcast", None)
 
+    @odata(name="meetingTemplateId")
     @property
     def meeting_template_id(self) -> Optional[str]:
         """Gets the meetingTemplateId property"""
@@ -153,6 +166,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """Gets the startDateTime property"""
         return self.properties.get("startDateTime", datetime.min)
 
+    @odata(name="transcripts", navigation=True)
     @property
     def transcripts(self) -> EntityCollection[CallTranscript]:
         """Gets the transcripts property"""

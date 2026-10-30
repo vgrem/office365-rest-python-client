@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 class Session(Entity):
     """Represents a user-user communication or a user-meeting communication in the case of a conference call."""
 
+    @odata(name="segments", navigation=True)
     @property
     def segments(self) -> EntityCollection[Segment]:
         """
@@ -28,11 +29,13 @@ class Session(Entity):
             "segments", EntityCollection(self.context, Segment, ResourcePath("segments", self.resource_path))
         )
 
+    @odata(name="callee")
     @property
     def callee(self) -> Endpoint:
         """Gets the callee property"""
         return self.properties.get("callee", Endpoint())
 
+    @odata(name="caller")
     @property
     def caller(self) -> Endpoint:
         """Gets the caller property"""
@@ -44,11 +47,13 @@ class Session(Entity):
         """Gets the endDateTime property"""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="isTest")
     @property
     def is_test(self) -> Optional[bool]:
         """Gets the isTest property"""
         return self.properties.get("isTest", None)
 
+    @odata(name="modalities")
     @property
     def modalities(self) -> ClientValueCollection[Modality]:
         """Gets the modalities property"""
@@ -64,6 +69,7 @@ class Session(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.callRecords.Session"
 
+    @odata(name="failureInfo")
     @property
     def failure_info(self) -> FailureInfo:
         """Gets the failureInfo property"""

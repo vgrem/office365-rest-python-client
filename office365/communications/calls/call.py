@@ -33,6 +33,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.calls.audio_routing_group import AudioRoutingGroup
@@ -126,21 +127,25 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="callbackUri")
     @property
     def callback_uri(self):
         """The callback URL on which callbacks will be delivered. Must be https."""
         return self.properties.get("callbackUri", None)
 
+    @odata(name="callRoutes")
     @property
     def call_routes(self):
         """The routing information on how the call was retargeted. Read-only."""
         return self.properties.get("callRoutes", ClientValueCollection(CallRoute))
 
+    @odata(name="incomingContext")
     @property
     def incoming_context(self):
         """Call context associated with an incoming call."""
         return self.properties.get("incomingContext", IncomingContext())
 
+    @odata(name="participants", navigation=True)
     @property
     def participants(self):
         """
@@ -150,6 +155,7 @@ class Call(Entity):
             "participants", EntityCollection(self.context, Participant, ResourcePath("participants", self.resource_path))
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self):
         """
@@ -159,61 +165,73 @@ class Call(Entity):
             "operations", EntityCollection(self.context, CommsOperation, ResourcePath("operations", self.resource_path))
         )
 
+    @odata(name="callChainId")
     @property
     def call_chain_id(self) -> Optional[str]:
         """Gets the callChainId property"""
         return self.properties.get("callChainId", None)
 
+    @odata(name="callOptions")
     @property
     def call_options(self) -> CallOptions:
         """Gets the callOptions property"""
         return self.properties.get("callOptions", CallOptions())
 
+    @odata(name="chatInfo")
     @property
     def chat_info(self) -> ChatInfo:
         """Gets the chatInfo property"""
         return self.properties.get("chatInfo", ChatInfo())
 
+    @odata(name="direction")
     @property
     def direction(self) -> CallDirection:
         """Gets the direction property"""
         return self.properties.get("direction", CallDirection.incoming)
 
+    @odata(name="meetingInfo")
     @property
     def meeting_info(self) -> MeetingInfo:
         """Gets the meetingInfo property"""
         return self.properties.get("meetingInfo", MeetingInfo())
 
+    @odata(name="myParticipantId")
     @property
     def my_participant_id(self) -> Optional[str]:
         """Gets the myParticipantId property"""
         return self.properties.get("myParticipantId", None)
 
+    @odata(name="requestedModalities")
     @property
     def requested_modalities(self) -> ClientValueCollection[Modality]:
         """Gets the requestedModalities property"""
         return self.properties.get("requestedModalities", ClientValueCollection[Modality](Modality))
 
+    @odata(name="resultInfo")
     @property
     def result_info(self) -> ResultInfo:
         """Gets the resultInfo property"""
         return self.properties.get("resultInfo", ResultInfo())
 
+    @odata(name="source")
     @property
     def source(self) -> ParticipantInfo:
         """Gets the source property"""
         return self.properties.get("source", ParticipantInfo())
 
+    @odata(name="state")
     @property
     def state(self) -> CallState:
         """Gets the state property"""
         return self.properties.get("state", CallState.incoming)
 
+    @odata(name="subject")
     @property
     def subject(self) -> Optional[str]:
         """Gets the subject property"""
         return self.properties.get("subject", None)
 
+    @odata(name="targets")
     @property
     def targets(self) -> ClientValueCollection[InvitationParticipantInfo]:
         """Gets the targets property"""
@@ -221,6 +239,7 @@ class Call(Entity):
             "targets", ClientValueCollection[InvitationParticipantInfo](InvitationParticipantInfo)
         )
 
+    @odata(name="tenantId")
     @property
     def tenant_id(self) -> Optional[str]:
         """Gets the tenantId property"""
@@ -230,6 +249,7 @@ class Call(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Call"
 
+    @odata(name="mediaConfig")
     @property
     def media_config(self) -> MediaConfig:
         """Gets the mediaConfig property"""
@@ -237,6 +257,7 @@ class Call(Entity):
 
         return self.properties.get("mediaConfig", MediaConfig())
 
+    @odata(name="mediaState")
     @property
     def media_state(self) -> CallMediaState:
         """Gets the mediaState property"""
@@ -244,6 +265,7 @@ class Call(Entity):
 
         return self.properties.get("mediaState", CallMediaState())
 
+    @odata(name="toneInfo")
     @property
     def tone_info(self) -> ToneInfo:
         """Gets the toneInfo property"""
@@ -251,6 +273,7 @@ class Call(Entity):
 
         return self.properties.get("toneInfo", ToneInfo())
 
+    @odata(name="transcription")
     @property
     def transcription(self) -> CallTranscriptionInfo:
         """Gets the transcription property"""
@@ -260,6 +283,7 @@ class Call(Entity):
 
         return self.properties.get("transcription", CallTranscriptionInfo())
 
+    @odata(name="audioRoutingGroups", navigation=True)
     @property
     def audio_routing_groups(self) -> EntityCollection[AudioRoutingGroup]:
         """Gets the audioRoutingGroups property"""
@@ -272,6 +296,7 @@ class Call(Entity):
             ),
         )
 
+    @odata(name="contentSharingSessions", navigation=True)
     @property
     def content_sharing_sessions(self) -> EntityCollection[ContentSharingSession]:
         """Gets the contentSharingSessions property"""
