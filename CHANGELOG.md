@@ -356,12 +356,13 @@ introduced.
   call `parse_enum` — so `set_property("sourceEnvironment", "2")` stored `'2'` where
   the snapshot says `both`. The imports are now where the generator's own rule
   (`needs_runtime_import`, an enum default evaluated at class creation) always said
-  they belonged, `scripts/hoist_imports.py` closes the drift and refuses an edge that
-  would close an import cycle or redefine a name the module already binds (978
-  imports in 481 modules over both slices), and
-  `tests/unit/test_getter_annotations.py` holds both halves: the codemod plans
-  nothing left to hoist, and for every column whose annotation resolves the
-  declaration is that annotation.
+  they belonged: a one-time codemod moved them there — 978 imports in 481 modules over
+  both slices — refusing an edge that would close an import cycle or redefine a name
+  the module already binds, and was deleted once the tree had converged. The two sites
+  a hoist cannot fix stay lazy and resolve through the getter's own import instead.
+  `tests/unit/test_getter_annotations.py` holds the outcome: every column states a
+  type, and for every column whose annotation resolves the declaration is that
+  annotation.
 - **A `timedelta` column held the ISO string.** Sixteen columns declare `timedelta` —
   `BookingAppointment.duration`, `ManagedAppProtection.period_before_pin_reset`,
   `LearningContent.duration` — and `_SCALAR_CONVERTERS` had no entry for it, so a read
