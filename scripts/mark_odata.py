@@ -64,11 +64,13 @@ _SERVICES = {
     "sharepoint": ("sharepoint", ODataV3Reader),
 }
 
-#: The preview root's snapshot, read when it sits next to the stable one. ``system=True``
-#: claims the metadata has never heard of a name, and a member that only the preview
-#: declares (``Event.uid``) is heard of: answering ``system`` for it would say the
-#: column is invented by the client when it is a documented preview member.
-_PREVIEW_SNAPSHOT = {"graph": "GraphBeta.xml", "sharepoint": "GraphBeta.xml"}
+#: Service -> the preview root's snapshot, read when it sits next to the stable one.
+#: ``system=True`` claims the metadata has never heard of a name, and a member that only
+#: the preview declares (``Event.uid``) is heard of: answering ``system`` for it would
+#: say the column is invented by the client when it is a documented preview member.
+#: Graph has a ``/beta`` root; SharePoint has one v3 document, and naming the Graph file
+#: for it as well handed the v3 reader a document no type could be read out of.
+_PREVIEW_SNAPSHOT = {"graph": "GraphBeta.xml"}
 
 
 class Declared(NamedTuple):
@@ -110,8 +112,9 @@ def load_catalog(service: str) -> Catalog:
     model = reader(options.metadata_path).read()
     catalog = _catalog_of(model)
     bases = _bases_of(model)
-    preview = pathlib.Path(options.metadata_path).parent / _PREVIEW_SNAPSHOT[service]
-    if preview.is_file():
+    preview_name = _PREVIEW_SNAPSHOT.get(service)
+    preview = pathlib.Path(options.metadata_path).parent / preview_name if preview_name else None
+    if preview is not None and preview.is_file():
         model = reader(str(preview)).read()
         for name, properties in _catalog_of(model).items():
             declared = catalog.setdefault(name, {})

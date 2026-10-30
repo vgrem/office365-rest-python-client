@@ -116,6 +116,24 @@ def test_a_member_only_the_preview_declares_is_not_a_system_column(tmp_path: pat
     assert _plan(tmp_path, _PREVIEW_GETTER) == []
 
 
+def test_the_preview_snapshot_is_in_the_checkout_and_merged() -> None:
+    """The declarations this file pins are read out of the preview snapshot, so it ships.
+
+    ``Event.uid`` is declared only by ``/beta``: the test above passes because the codemod
+    merged ``GraphBeta.xml``, not because the stable root happens to name it. Keeping that
+    file untracked made the guarantee local-only -- CI answered 4,019 types instead of
+    8,074 and four neighbours here failed with diffs that never named the cause.
+    """
+    snapshot = _REPO_ROOT / "generator" / "metadata" / "GraphBeta.xml"
+    assert snapshot.is_file(), f"{snapshot} is a build input, not a scratch download"
+    assert _mark_odata.declared_of(_mark_odata.load_catalog("graph")["microsoft.graph.event"], "uid") is not None
+
+
+def test_only_the_root_that_has_a_preview_snapshot_reads_one() -> None:
+    """Graph has a ``/beta`` root; the v3 service has one document and no second spelling."""
+    assert _mark_odata._PREVIEW_SNAPSHOT == {"graph": "GraphBeta.xml"}
+
+
 _INHERITED_GETTER = """
 from office365.runtime.types.odata_property import odata
 
