@@ -160,9 +160,14 @@ class TypeSchema:
         ``uniqueName`` would be describing an entity the stable schema has no member
         for, and a preview client that sent a name the preview root dropped would be
         describing nothing at all.
+
+        A client that states no version is not gated by one. ``version`` is ``None`` for
+        every context that names no API version -- SharePoint addresses one service root
+        and has no switch to throw -- so the markers its document carries are provenance:
+        ``SP.Field.customFormatter`` is one value, not one of two spellings.
         """
         declared = self.properties.get(name)
-        if declared is None:
+        if declared is None or version is None:
             return name
         preview = version == PREVIEW
         if declared.beta is True and not preview:

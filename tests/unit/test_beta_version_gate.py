@@ -14,7 +14,7 @@ from office365.entity import Entity
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
 from office365.outlook.mail.messages.message import Message
-from office365.runtime.types.odata_property import NotSupportedInVersion, version
+from office365.runtime.types.odata_property import NotSupportedInVersion, odata, version
 
 TENANT = "contoso.onmicrosoft.com"
 
@@ -79,3 +79,19 @@ def test_a_beta_client_reaches_the_same_collection():
 def test_a_type_with_no_gate_is_never_refused():
     """Absence of a gate means "every root", which is what a hand-written class says."""
     assert Message(_stable()) is not None
+
+
+class _PreviewMember(Entity):
+    """One member only the preview root declares -- the shape SharePoint also uses."""
+
+    @odata(name="preview", beta=True)
+    @property
+    def preview(self):
+        return self.properties.get("preview", None)
+
+
+def test_a_client_that_states_no_version_is_not_gated_by_one():
+    """A marker in a tree whose service has no second root is provenance, not a switch."""
+    assert _PreviewMember._schema.wire_name("preview", None) == "preview"
+    with pytest.raises(NotSupportedInVersion):
+        _PreviewMember._schema.wire_name("preview", GraphVersion.V1.value)
