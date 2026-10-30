@@ -139,9 +139,13 @@ def _declaration(builder: PropertyBuilder, prop_name: str) -> str:
     The wire name travels with the property so callers never spell it again,
     ``navigation`` records that $expand, not $select, reaches this one, and
     ``readonly`` records a value the service assigns (CSDL ``Core.Computed``) --
-    reading it is fine, sending it back is a write to a member it owns.
+    reading it is fine, sending it back is a write to a member it owns. ``system``
+    records that this type's own CSDL does not declare the name: every subtype does
+    (see :mod:`generator.intrinsic_members`).
     """
     flags = ["navigation=True"] if builder.is_object_type else []
     if builder.schema.ReadOnly:
         flags.append("readonly=True")
+    if builder.schema.IsSystem:
+        flags.append("system=True")
     return f'@odata(name="{prop_name}"' + "".join(f", {flag}" for flag in flags) + ")"

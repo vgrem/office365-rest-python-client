@@ -591,6 +591,11 @@ class _MetaListItem:
         self.selected = list(columns)
         return self
 
+    @property
+    def moderation_status(self):
+        """The column's getter, as ``SP.ListItem`` declares it."""
+        return self.properties.get("OData__ModerationStatus", None)
+
     def get(self) -> "_MetaListItem":
         return self
 

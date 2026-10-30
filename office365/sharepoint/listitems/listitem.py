@@ -836,6 +836,7 @@ class ListItem(SecurableObject):
         """Document ID fora document"""
         return self.properties.get("OData__dlc_DocId", None)
 
+    @odata(name="EncodedAbsUrl", system=True)
     @property
     def encoded_abs_url(self) -> Optional[str]:
         """Gets the EncodedAbsUrl property"""
@@ -1414,3 +1415,261 @@ class ListItem(SecurableObject):
         )
         self.context.add_query(qry)
         return self
+
+    @odata(name="ContentTypeId", system=True)
+    @property
+    def content_type_id(self) -> Optional[str]:
+        """Gets the ContentTypeId property"""
+        return self.properties.get("ContentTypeId", None)
+
+    @odata(name="OData__HasCopyDestinations", system=True)
+    @property
+    def has_copy_destinations(self) -> Optional[bool]:
+        """Gets the OData__HasCopyDestinations property"""
+        return self.properties.get("OData__HasCopyDestinations", None)
+
+    @odata(name="OData__CopySource", system=True)
+    @property
+    def copy_source(self) -> Optional[str]:
+        """Gets the OData__CopySource property"""
+        return self.properties.get("OData__CopySource", None)
+
+    @odata(name="OData__ModerationStatus", system=True)
+    @property
+    def moderation_status(self) -> Optional[int]:
+        """Gets the OData__ModerationStatus property"""
+        return self.properties.get("OData__ModerationStatus", None)
+
+    @odata(name="OData__ModerationComments", system=True)
+    @property
+    def moderation_comments(self) -> Optional[str]:
+        """Gets the OData__ModerationComments property"""
+        return self.properties.get("OData__ModerationComments", None)
+
+    @odata(name="FileDirRef", system=True)
+    @property
+    def file_dir_ref(self) -> Optional[str]:
+        """Gets the FileDirRef property"""
+        return self.properties.get("FileDirRef", None)
+
+    @odata(name="FSObjType", system=True)
+    @property
+    def fs_obj_type(self) -> Optional[int]:
+        """Gets the FSObjType property"""
+        return self.properties.get("FSObjType", None)
+
+    @odata(name="PermMask", system=True)
+    @property
+    def perm_mask(self) -> Optional[str]:
+        """Gets the PermMask property"""
+        return self.properties.get("PermMask", None)
+
+    @odata(name="PrincipalCount", system=True)
+    @property
+    def principal_count(self) -> Optional[str]:
+        """Gets the PrincipalCount property"""
+        return self.properties.get("PrincipalCount", None)
+
+    @odata(name="UniqueId", system=True)
+    @property
+    def unique_id(self) -> Optional[UUID]:
+        """Gets the UniqueId property"""
+        return self.properties.get("UniqueId", None)
+
+    @odata(name="File_x0020_Type", system=True)
+    @property
+    def file_type(self) -> Optional[str]:
+        """Gets the File_x0020_Type property"""
+        return self.properties.get("File_x0020_Type", None)
+
+    @odata(name="HTML_x0020_File_x0020_Type", system=True)
+    @property
+    def html_file_type(self) -> Optional[str]:
+        """Gets the HTML_x0020_File_x0020_Type property"""
+        return self.properties.get("HTML_x0020_File_x0020_Type", None)
+
+    @odata(name="OData__EditMenuTableStart", system=True)
+    @property
+    def edit_menu_table_start(self) -> Optional[str]:
+        """Gets the OData__EditMenuTableStart property"""
+        return self.properties.get("OData__EditMenuTableStart", None)
+
+    @odata(name="OData__EditMenuTableStart2", system=True)
+    @property
+    def edit_menu_table_start2(self) -> Optional[str]:
+        """Gets the OData__EditMenuTableStart2 property"""
+        return self.properties.get("OData__EditMenuTableStart2", None)
+
+    @odata(name="OData__EditMenuTableEnd", system=True)
+    @property
+    def edit_menu_table_end(self) -> Optional[str]:
+        """Gets the OData__EditMenuTableEnd property"""
+        return self.properties.get("OData__EditMenuTableEnd", None)
+
+    @odata(name="LinkFilenameNoMenu", system=True)
+    @property
+    def link_filename_no_menu(self) -> Optional[str]:
+        """Gets the LinkFilenameNoMenu property"""
+        return self.properties.get("LinkFilenameNoMenu", None)
+
+    @odata(name="LinkFilename", system=True)
+    @property
+    def link_filename(self) -> Optional[str]:
+        """Gets the LinkFilename property"""
+        return self.properties.get("LinkFilename", None)
+
+    @odata(name="LinkFilename2", system=True)
+    @property
+    def link_filename2(self) -> Optional[str]:
+        """Gets the LinkFilename2 property"""
+        return self.properties.get("LinkFilename2", None)
+
+    @odata(name="DocIcon", system=True)
+    @property
+    def doc_icon(self) -> Optional[str]:
+        """Gets the DocIcon property"""
+        return self.properties.get("DocIcon", None)
+
+    @odata(name="ServerUrl", system=True)
+    @property
+    def server_url(self) -> Optional[str]:
+        """Gets the ServerUrl property"""
+        return self.properties.get("ServerUrl", None)
+
+    @odata(name="BaseName", system=True)
+    @property
+    def base_name(self) -> Optional[str]:
+        """Gets the BaseName property"""
+        return self.properties.get("BaseName", None)
+
+    @odata(name="OData__Level", system=True)
+    @property
+    def level(self) -> Optional[int]:
+        """Gets the OData__Level property"""
+        return self.properties.get("OData__Level", None)
+
+    @odata(name="OData__IsCurrentVersion", system=True)
+    @property
+    def is_current_version(self) -> Optional[bool]:
+        """Gets the OData__IsCurrentVersion property"""
+        return self.properties.get("OData__IsCurrentVersion", None)
+
+    @odata(name="OData__IsRecord", system=True)
+    @property
+    def is_record(self) -> Optional[str]:
+        """Gets the OData__IsRecord property"""
+        return self.properties.get("OData__IsRecord", None)
+
+    @odata(name="OData__ColorHex", system=True)
+    @property
+    def color_hex(self) -> Optional[str]:
+        """Gets the OData__ColorHex property"""
+        return self.properties.get("OData__ColorHex", None)
+
+    @odata(name="OData__ColorTag", system=True)
+    @property
+    def color_tag(self) -> Optional[str]:
+        """Gets the OData__ColorTag property"""
+        return self.properties.get("OData__ColorTag", None)
+
+    @odata(name="OData__Emoji", system=True)
+    @property
+    def emoji(self) -> Optional[str]:
+        """Gets the OData__Emoji property"""
+        return self.properties.get("OData__Emoji", None)
+
+    @odata(name="MainLinkSettings", system=True)
+    @property
+    def main_link_settings(self) -> Optional[str]:
+        """Gets the MainLinkSettings property"""
+        return self.properties.get("MainLinkSettings", None)
+
+    @odata(name="AppAuthorId", system=True)
+    @property
+    def app_author_id(self) -> Optional[int]:
+        """Gets the AppAuthorId property"""
+        return self.properties.get("AppAuthorId", None)
+
+    @odata(name="AppEditorId", system=True)
+    @property
+    def app_editor_id(self) -> Optional[int]:
+        """Gets the AppEditorId property"""
+        return self.properties.get("AppEditorId", None)
+
+    @odata(name="SelectTitle", system=True)
+    @property
+    def select_title(self) -> Optional[str]:
+        """Gets the SelectTitle property"""
+        return self.properties.get("SelectTitle", None)
+
+    @odata(name="Edit", system=True)
+    @property
+    def edit(self) -> Optional[str]:
+        """Gets the Edit property"""
+        return self.properties.get("Edit", None)
+
+    @odata(name="owshiddenversion", system=True)
+    @property
+    def owshiddenversion(self) -> Optional[int]:
+        """Gets the owshiddenversion property"""
+        return self.properties.get("owshiddenversion", None)
+
+    @odata(name="OData__UIVersion", system=True)
+    @property
+    def ui_version(self) -> Optional[int]:
+        """Gets the OData__UIVersion property"""
+        return self.properties.get("OData__UIVersion", None)
+
+    @odata(name="OData__UIVersionString", system=True)
+    @property
+    def ui_version_string(self) -> Optional[str]:
+        """Gets the OData__UIVersionString property"""
+        return self.properties.get("OData__UIVersionString", None)
+
+    @odata(name="InstanceID", system=True)
+    @property
+    def instance_id(self) -> Optional[int]:
+        """Gets the InstanceID property"""
+        return self.properties.get("InstanceID", None)
+
+    @odata(name="Order", system=True)
+    @property
+    def order(self) -> Optional[float]:
+        """Gets the Order property"""
+        return self.properties.get("Order", None)
+
+    @odata(name="GUID", system=True)
+    @property
+    def guid(self) -> Optional[UUID]:
+        """Gets the GUID property"""
+        return self.properties.get("GUID", None)
+
+    @odata(name="WorkflowVersion", system=True)
+    @property
+    def workflow_version(self) -> Optional[int]:
+        """Gets the WorkflowVersion property"""
+        return self.properties.get("WorkflowVersion", None)
+
+    @odata(name="WorkflowInstanceID", system=True)
+    @property
+    def workflow_instance_id(self) -> Optional[UUID]:
+        """Gets the WorkflowInstanceID property"""
+        return self.properties.get("WorkflowInstanceID", None)
+
+    @odata(name="ComplianceAssetId", system=True)
+    @property
+    def compliance_asset_id(self) -> Optional[str]:
+        """Gets the ComplianceAssetId property"""
+        return self.properties.get("ComplianceAssetId", None)
+
+    @odata(name="Last_x0020_Modified", system=True)
+    @property
+    def last_modified(self) -> Optional[datetime.datetime]:
+        """Gets the Last_x0020_Modified property"""
+        return self.properties.get("Last_x0020_Modified", None)
+
+    @odata(name="Created_x0020_Date", system=True)
+    @property
+    def created_date(self) -> Optional[datetime.datetime]:
+        """Gets the Created_x0020_Date property"""
+        return self.properties.get("Created_x0020_Date", None)

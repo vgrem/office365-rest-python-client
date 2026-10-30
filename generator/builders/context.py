@@ -8,10 +8,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 from types import MappingProxyType
-from typing import Mapping
+from typing import Mapping, Tuple
+
+from generator.odata.property import PropertyInformation
 
 #: Shared empty mapping, so a defaulted ``Mapping`` parameter is not a mutable literal.
 _NO_PROPERTIES: Mapping[str, frozenset[str]] = MappingProxyType({})
+_NO_INTRINSIC: Mapping[str, Tuple[PropertyInformation, ...]] = MappingProxyType({})
 
 
 @dataclass(frozen=True)
@@ -45,6 +48,9 @@ class BuilderContext:
     #: member keys. Asked when a class's ``entity_type_name`` names a type other
     #: than the one being built: its members say which type it actually models.
     declared_properties: Mapping[str, frozenset[str]] = field(default_factory=dict)
+    #: Members every subtype of a type declares and the type itself does not, so the
+    #: base type carries them by construction (see :mod:`generator.intrinsic_members`).
+    intrinsic_properties: Mapping[str, Tuple[PropertyInformation, ...]] = field(default_factory=dict)
     dry_run: bool = False
 
     @property
@@ -64,6 +70,7 @@ class BuilderContext:
         client_value_types: frozenset[str] = frozenset(),
         pollable_types: frozenset[str] = frozenset(),
         declared_properties: Mapping[str, frozenset[str]] = _NO_PROPERTIES,
+        intrinsic_properties: Mapping[str, Tuple[PropertyInformation, ...]] = _NO_INTRINSIC,
     ) -> "BuilderContext":
         """Return a copy enriched with the run plan (known types, modules, cycles)."""
         return replace(
@@ -77,4 +84,5 @@ class BuilderContext:
             pollable_types=frozenset(pollable_types),
             inherited_members={name: frozenset(members) for name, members in inherited_members.items()},
             declared_properties={name: frozenset(names) for name, names in declared_properties.items()},
+            intrinsic_properties=dict(intrinsic_properties),
         )

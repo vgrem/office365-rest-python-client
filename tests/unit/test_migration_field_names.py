@@ -9,8 +9,11 @@ the field says which column it is: a literal turns a rename in the model into a 
 The rule is about the *shape*, not about the string: projection lists (``select([...])``)
 and payload keys are wire names by nature and keep spelling them, while a read of a
 ``properties`` bag — directly or through a local alias — goes through the field. The set is
-derived from ``ListItem._schema.system`` so the declaration stays the owner; the six are
-pinned because an empty ``system`` mapping would otherwise turn the guard into a no-op.
+derived from ``ListItem._schema.system`` so the declaration stays the owner; the columns are
+pinned because an empty ``system`` mapping would otherwise turn the guard into a no-op, and
+because they are the item row the v3 CSDL never states: 51 names every one of the 147
+``SP.Data.*Item`` types declares, promoted onto ``SP.ListItem`` by the generator (all but
+``ID``, which the base already answers as the entity key).
 """
 
 from __future__ import annotations
@@ -20,6 +23,65 @@ import pathlib
 from typing import Iterator, Tuple
 
 from office365.sharepoint.listitems.listitem import ListItem
+
+#: The item row ``SP.ListItem`` carries by construction: every per-list ``SP.Data.*Item``
+#: type declares these and the base type declares none of them (see
+#: ``generator/intrinsic_members.py``). Pinned by hand, so a refresh that silently drops
+#: or re-spells one fails here rather than in a migration.
+_SYSTEM_COLUMNS = frozenset(
+    {
+        "AppAuthorId",
+        "AppEditorId",
+        "AuthorId",
+        "BaseName",
+        "ComplianceAssetId",
+        "ContentTypeId",
+        "Created",
+        "Created_x0020_Date",
+        "DocIcon",
+        "Edit",
+        "EditorId",
+        "EncodedAbsUrl",
+        "FSObjType",
+        "FileDirRef",
+        "FileLeafRef",
+        "FileRef",
+        "File_x0020_Type",
+        "GUID",
+        "HTML_x0020_File_x0020_Type",
+        "InstanceID",
+        "Last_x0020_Modified",
+        "LinkFilename",
+        "LinkFilename2",
+        "LinkFilenameNoMenu",
+        "MainLinkSettings",
+        "Modified",
+        "OData__ColorHex",
+        "OData__ColorTag",
+        "OData__CopySource",
+        "OData__EditMenuTableEnd",
+        "OData__EditMenuTableStart",
+        "OData__EditMenuTableStart2",
+        "OData__Emoji",
+        "OData__HasCopyDestinations",
+        "OData__IsCurrentVersion",
+        "OData__IsRecord",
+        "OData__Level",
+        "OData__ModerationComments",
+        "OData__ModerationStatus",
+        "OData__UIVersion",
+        "OData__UIVersionString",
+        "Order",
+        "PermMask",
+        "PrincipalCount",
+        "SelectTitle",
+        "ServerUrl",
+        "UniqueId",
+        "WorkflowInstanceID",
+        "WorkflowVersion",
+        "owshiddenversion",
+    }
+)
 
 
 def _bag_reads(source: str) -> Iterator[Tuple[int, str]]:
@@ -61,7 +123,7 @@ def test_the_layer_reads_a_system_column_through_its_field() -> None:
     from office365.migration.sharepoint import __path__ as package
 
     forbidden = _declared_system_columns()
-    assert forbidden == {"AuthorId", "EditorId", "Created", "Modified", "FileLeafRef", "FileRef"}, (
+    assert forbidden == _SYSTEM_COLUMNS, (
         "ListItem._schema.system changed: it owns these spellings, so a new system column "
         "belongs here (and the layer reads it through its field)"
     )

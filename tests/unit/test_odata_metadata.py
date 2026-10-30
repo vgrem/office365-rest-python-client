@@ -234,6 +234,11 @@ def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, roo
     among the 24. A declaration cannot invent that difference from memory, so the flag is
     read back against the same catalog the names came from -- in both directions, because
     a ``system`` marker on a name the metadata does declare would be as wrong.
+
+    The catalog answers for both kinds of declaration: an absent name means the metadata
+    only ever states it on some other type, and a name every subtype of this type states
+    is present with ``Declared.system`` set (``generator.intrinsic_members``). Either way
+    the flag is the catalog's fact, not the module's.
     """
     catalog = _mark_odata.load_catalog(service)
     index = _mark_odata.type_index(catalog)
@@ -251,9 +256,40 @@ def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, roo
             call = _mark_odata.declaration(node)
             name = _mark_odata.declared_name(call) if call is not None else None
             declared = _mark_odata.declared_of(found.properties, name or "")
-            if name is not None and _says_system(call) != (declared is None):
+            if name is not None and _says_system(call) != (declared is None or declared.system):
                 wrong.append(f"{path.relative_to(_REPO_ROOT)}:{call.lineno} {found.node.name}.{name}")
     assert wrong == []
+
+
+_INTRINSIC_GETTER = """
+from office365.runtime.types.odata_property import odata
+
+
+class ListItem:
+    def entity_type_name(self):
+        return "SP.ListItem"
+
+    @property
+    def file_ref(self):
+        return self.properties.get("FileRef", None)
+"""
+
+
+def test_a_member_every_subtype_declares_is_backfilled_as_system(tmp_path: pathlib.Path) -> None:
+    """``SP.ListItem`` declares 24 names; its 147 per-list subtypes each add ``FileRef``.
+
+    The catalog answers for that kind too -- ``Declared.system``, read from
+    ``generator.intrinsic_members`` -- so the back-fill declares the column instead of
+    leaving it as the one bare getter in the row, and finishes a marker that is already
+    there without the flag.
+    """
+    edits = _plan(tmp_path, _INTRINSIC_GETTER, service="sharepoint")
+    assert [edit.new for edit in edits] == ['    @odata(name="FileRef", system=True)\n']
+
+    marked = _INTRINSIC_GETTER.replace("    @property\n", '    @odata(name="FileRef")\n    @property\n')
+    assert [edit.new for edit in _plan(tmp_path, marked, service="sharepoint")] == [
+        '    @odata(name="FileRef", system=True)\n'
+    ]
 
 
 def test_an_item_row_column_declares_that_the_metadata_is_silent():

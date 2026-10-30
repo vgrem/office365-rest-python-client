@@ -22,8 +22,11 @@ from generator.builders.naming import to_snake_case
         ("iCalUId", "ical_uid"),
         ("iOS", "ios"),
         ("ASite", "a_site"),
-        ("OData__AuthorByline", "o_data__author_byline"),
-        ("Access_x0020_RequestsItem", "access_x0020_requests_item"),
+        ("OData__AuthorByline", "author_byline"),
+        ("Access_x0020_RequestsItem", "access_requests_item"),
+        ("File_x0020_Type", "file_type"),
+        ("HTML_x0020_File_x0020_Type", "html_file_type"),
+        ("Last_x0020_Modified", "last_modified"),
     ],
 )
 def test_to_snake_case(name: str, expected: str):

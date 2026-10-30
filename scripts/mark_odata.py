@@ -50,6 +50,7 @@ from typing import Dict, List, NamedTuple, Optional, Set
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from generator.config import GeneratorOptions  # noqa: E402
+from generator.intrinsic_members import intrinsic_members  # noqa: E402
 from generator.odata.v3.metadata_reader import ODataV3Reader  # noqa: E402
 from generator.odata.v4.metadata_reader import ODataV4Reader  # noqa: E402
 
@@ -80,6 +81,9 @@ class Declared(NamedTuple):
     navigation: bool
     enum: bool
     readonly: bool = False
+    #: The type's own CSDL is silent and every one of its subtypes states it, so the
+    #: column exists on every instance (see :mod:`generator.intrinsic_members`).
+    system: bool = False
 
 
 #: CSDL type name (lowercased) -> {OData name: declaration}
@@ -160,13 +164,19 @@ def _catalog_of(model) -> Catalog:
         declared = model.types.get(bare)
         return declared is not None and declared.BaseTypeFullName == "EnumType"
 
-    return {
-        name.lower(): {
+    intrinsic = intrinsic_members(model)
+    catalog: Catalog = {}
+    for name, schema in model.types.items():
+        properties = {
             prop.Name: Declared(prop.Name, bool(prop.IsNavigation), is_enum(prop.TypeName or ""), bool(prop.ReadOnly))
             for prop in schema.Properties.values()
         }
-        for name, schema in model.types.items()
-    }
+        catalog[name.lower()] = properties
+        # A promoted member is not declared by this type, so it is not in the loop above:
+        # it is the subtypes' declaration, which is what ``system=True`` says.
+        for prop in intrinsic.get(name, ()):
+            properties.setdefault(prop.Name, Declared(prop.Name, bool(prop.IsNavigation), False, False, True))
+    return catalog
 
 
 def declared_type_name(tree: ast.Module, catalog: Catalog) -> Optional[str]:
@@ -326,7 +336,11 @@ def pending_markers(
             else:
                 wanted = [
                     keyword
-                    for keyword, declared_by in (("navigation", declared.navigation), ("readonly", declared.readonly))
+                    for keyword, declared_by in (
+                        ("navigation", declared.navigation),
+                        ("readonly", declared.readonly),
+                        ("system", declared.system),
+                    )
                     if declared_by
                 ]
             finishes = [keyword for keyword in wanted if only is None or keyword in only]
@@ -349,7 +363,11 @@ def pending_markers(
             continue
         suffix = "".join(
             f", {keyword}=True"
-            for keyword, wanted in (("navigation", declared.navigation), ("readonly", declared.readonly))
+            for keyword, wanted in (
+                ("navigation", declared.navigation),
+                ("readonly", declared.readonly),
+                ("system", declared.system),
+            )
             if wanted
         )
         marker = f'    @odata(name="{name}"{suffix})\n'

@@ -229,3 +229,9 @@ class SecurableObject(Entity):
     def shield_add_role_assignment_pushdown(self) -> Optional[bool]:
         """Gets the ShieldAddRoleAssignmentPushdown property"""
         return self.properties.get("ShieldAddRoleAssignmentPushdown", None)
+
+    @odata(name="EffectiveBasePermissions", system=True)
+    @property
+    def effective_base_permissions(self) -> BasePermissions:
+        """Gets the EffectiveBasePermissions property"""
+        return self.properties.get("EffectiveBasePermissions", BasePermissions())

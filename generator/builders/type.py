@@ -206,11 +206,17 @@ class TypeBuilder(ast.NodeTransformer):
         ignored_properties = set(self._context.ignored_properties)
         self._properties = []
         seen_props: set[str] = set()
-        if any(name == "field" for name in self._schema.Properties):
+        properties = dict(self._schema.Properties)
+        # A property every subtype declares, which this type does not, belongs here too:
+        # the instances always carry it (see ``generator.intrinsic_members``). Declared
+        # first, so the type's own row leads.
+        for prop_schema in self._context.intrinsic_properties.get(self._schema.FullName, ()):
+            properties.setdefault(prop_schema.Name, prop_schema)
+        if any(name == "field" for name in properties):
             # A dataclass field named ``field`` would shadow ``dataclasses.field``
             # used by later fields, so import it under an alias instead.
             self._field_alias = "field_"
-        for name, prop_schema in self._schema.Properties.items():
+        for name, prop_schema in properties.items():
             snake = to_snake_case(name)
             member_key = normalize_member_key(snake)
             if name in ignored_properties or member_key in reserved_props or member_key in seen_props:

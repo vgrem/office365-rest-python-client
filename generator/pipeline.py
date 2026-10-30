@@ -13,6 +13,7 @@ from generator.config import GeneratorOptions
 from generator.cycles import find_cyclic_types
 from generator.documentation.base import DocumentationProvider
 from generator.filters import TypeFilter
+from generator.intrinsic_members import intrinsic_members
 from generator.manifest import (
     Manifest,
     MetadataChanges,
@@ -161,6 +162,7 @@ class GeneratorPipeline:
                 name: frozenset(normalize_member_key(key) for key in keys)
                 for name, keys in model.effective_property_names().items()
             },
+            intrinsic_properties=intrinsic_members(model),
         )
         self._output_root = Path(options.output_path).resolve()
         self._reporter = Reporter(self._metadata_path, report_path, options.dry_run)

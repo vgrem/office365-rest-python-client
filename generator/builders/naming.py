@@ -18,6 +18,31 @@ def _protect_compounds(name: str) -> str:
     return name
 
 
+#: ``File_x0020_Type`` -- the one code point SharePoint's XML names spell out. Others
+#: are left as written rather than guessed at.
+_SPACE_ESCAPE = "0020"
+
+
+def _decode_wire_escapes(name: str) -> str:
+    """Undo the two escapes SharePoint's wire names carry, in the wire spelling only.
+
+    OData has no leading underscore, so a column ``_ModerationStatus`` travels as
+    ``OData__ModerationStatus``, and XML has no spaces, so ``File Type`` travels as
+    ``File_x0020_Type``. Both are escapes, not part of the name: the reviewed,
+    hand-written answer for the first is ``moderation_status``
+    (``sharepoint/publishing/pages/page.py``); ``o_data__moderation_status`` would be
+    a port of the wire format into Python. Only the escape is decoded -- the name in
+    ``@odata(name=...)`` keeps its wire spelling.
+    """
+    if name.startswith("OData__"):
+        name = name[len("OData__") :]
+    return re.sub(
+        r"_x([0-9A-Fa-f]{4})_",
+        lambda m: "_" if m.group(1).lower() == _SPACE_ESCAPE else m.group(0),
+        name,
+    )
+
+
 def to_snake_case(name: str, avoid_keywords: bool = True, avoid_builtins: bool = False) -> str:
     """Converts a PascalCase/camelCase identifier to snake_case.
 
@@ -36,7 +61,7 @@ def to_snake_case(name: str, avoid_keywords: bool = True, avoid_builtins: bool =
             ``flake8-builtins`` (A002).
     """
     # lower -> upper boundary (emailIDs -> email_IDs)
-    s1 = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", _protect_compounds(name))
+    s1 = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", _protect_compounds(_decode_wire_escapes(name)))
     # keep a digit that sits inside an acronym joined (B2_B -> B2B)
     s1 = re.sub(r"([A-Z])(\d)_([A-Z])", r"\1\2\3", s1)
     # single capital followed by a word (ASite -> A_Site, IFollowed -> I_Followed)

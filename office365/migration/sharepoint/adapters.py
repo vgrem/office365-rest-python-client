@@ -3277,7 +3277,7 @@ class SharePointLibraryTarget:
             securable.select(["OData__ModerationStatus"]).get().execute_query()
         except Exception:  # noqa: BLE001 — a library without moderation has no such column
             return None
-        status = securable.properties.get("OData__ModerationStatus")
+        status = securable.moderation_status
         return None if status is None else str(status)
 
     def read_permissions(self, item: MigrationItem) -> list[PermissionEntry]:
