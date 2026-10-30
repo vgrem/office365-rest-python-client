@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import ast
+import datetime
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
 from generator.builders import placement
 from generator.builders.context import BuilderContext
+from generator.builders.node_factory import build_get_property
 from generator.builders.placement import Placement
+from generator.builders.property import PropertyBuilder
 from generator.builders.resolution import TypeRegistry
 from generator.builders.source_editor import qualify_datetime
 from generator.builders.type import TypeBuilder
@@ -328,6 +331,29 @@ def test_datetime_references_use_the_module_form():
     """When a file uses ``import datetime``, generated refs become ``datetime.datetime``."""
     node = ast.parse("def f(x: datetime) -> None: ...").body[0]
     assert "datetime.datetime" in ast.unparse(qualify_datetime(node))
+
+
+def test_an_absent_datetime_reads_as_none_even_where_the_module_binds_datetime():
+    """The value a getter answers when the column is missing outlives the call site.
+
+    Resolving ``Edm.DateTime`` to the class (what a module that says
+    ``import datetime`` gives) used to make the getter body default to
+    ``datetime.min``, while the same property generated into a fresh module
+    defaulted to ``None`` -- and in ``SP.ListItem``, which binds ``datetime`` only
+    under ``if TYPE_CHECKING:``, the qualified default raised ``NameError`` on
+    every read of an absent column.
+    """
+
+    class _DatetimeResolver(_StubResolver):
+        def resolve(self, type_name):
+            return datetime.datetime if type_name == "Edm.DateTime" else None
+
+    prop = PropertyBuilder(PropertyInformation(Name="Due", TypeName="Edm.DateTime"), resolver=_DatetimeResolver())
+
+    code = ast.unparse(build_get_property(prop))
+
+    assert 'self.properties.get("Due", None)' in code.replace("'", '"')
+    assert "datetime.min" not in code
 
 
 def test_update_targets_the_named_class_in_a_multi_class_module(tmp_path: Path, monkeypatch):

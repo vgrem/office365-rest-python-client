@@ -7,7 +7,6 @@ starts as is a table in :mod:`generator.builders.type`, so no file is read.
 from __future__ import annotations
 
 import ast
-import datetime
 import inspect
 from enum import Enum
 from typing import TYPE_CHECKING, cast
@@ -76,6 +75,13 @@ def build_get_property(builder: PropertyBuilder, runtime_import: str | None = No
 
     ``runtime_import`` is a function-local import (e.g. a cyclic navigation
     type) placed at the top of the getter body.
+
+    An absent primitive reads as ``None``, ``datetime`` included: the annotation
+    already says optional, and a ``datetime.min`` default made the body name a
+    module the surrounding file may bind only for the type checker (so updating
+    ``SP.ListItem`` produced a getter that raised ``NameError``). What a getter
+    returns when the column is missing is not allowed to depend on which imports
+    the file already carries.
     """
     docstring = f"Gets the {builder.schema.Name} property"
     method_name = builder.name
@@ -111,8 +117,6 @@ def build_get_property(builder: PropertyBuilder, runtime_import: str | None = No
                 members = list(resolved)
                 if members:
                     default_value = f"{prop_type_name}.{members[0].name}"
-            elif resolved is datetime.datetime:
-                default_value = "datetime.min"
             elif not TypeRef.parse(builder.schema.TypeName).is_primitive:
                 default_value = f"{prop_type_name}()"
 
