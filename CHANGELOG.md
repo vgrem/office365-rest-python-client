@@ -35,6 +35,15 @@ introduced.
   from the old lists asked for navigation properties, which `$select` drops
   silently. Request bodies are unchanged — a declaration says what a *response*
   may carry, never what a request must.
+- Graph getters declare the OData names they read: 6,911 declarations in 1,057
+  modules, back-filled from `Graph.xml` and its preview snapshot, and the
+  codemod's graph queue is empty (`mark_odata.py --service graph --dry-run`: 0
+  lines pending, per package and tree-wide). `select_all()` is derived from the
+  declarations, so projections grow: `User` 21 → 81 columns, `Group` 13 → 53,
+  `DriveItem` 10 → 32, `Team` 9 → 17, `Channel` 5 → 13, `AccessPackage` 6 → 11.
+  175 members that were declared as columns are now declared as the navigations
+  they are, so `$select` no longer asks for them — Graph drops those silently,
+  the same failure the SharePoint half had. Request bodies are unchanged.
 - `SP.User` loses the 58 profile getters that were a second copy of
   `SP.Directory.User` (`about_me`, `skills`, `id_`, ...), plus
   `User.get_user_profile_properties` and `Web.site_id`. The service drops those
@@ -304,6 +313,20 @@ introduced.
   `PollableOperation.wait(sleep=None)` can be woken by `cancel()`.
 
 ### Fixed
+
+**Model**
+
+- **`Team.messaging_settings` read the guest settings.** The getter spelled
+  `guestSettings` in its body, so a team that had messaging settings answered as if it
+  had none, and writing it back put the guest settings on the wire under a name they
+  were not read from.
+- **`SignIn.location` read the status.** The sign-in's city, state and country came
+  back as an empty `SignInLocation` for every audit record, because the getter spelled
+  `status` — the name a neighbouring getter already owned.
+- **`FileStorageContainer.entity_type_name` named no namespace.** It answered
+  `graph.fileStorageContainer`, the only entity type name in the tree that does not
+  start with `microsoft.graph.`, so a payload it serialised carried a type name the
+  service has never heard of.
 
 **Runtime**
 
