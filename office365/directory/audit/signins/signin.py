@@ -84,7 +84,7 @@ class SignIn(Entity):
         Provides the city, state, and country code where the sign-in originated.
         Supports $filter (eq and startsWith operators only) on city, state, and countryOrRegion properties.
         """
-        return self.properties.get("status", SignInLocation())
+        return self.properties.get("location", SignInLocation())
 
     @property
     def resource_display_name(self) -> Optional[str]:
