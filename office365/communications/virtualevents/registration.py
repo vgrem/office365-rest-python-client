@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.communications.virtualevents.attendeeregistrationstatus import VirtualEventAttendeeRegistrationStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,9 +11,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.communications.virtualevents.attendeeregistrationstatus import (
-        VirtualEventAttendeeRegistrationStatus,
-    )
     from office365.communications.virtualevents.external_registration_information import (
         VirtualEventExternalRegistrationInformation,
     )
@@ -92,10 +90,6 @@ class VirtualEventRegistration(Entity):
     @property
     def status(self) -> VirtualEventAttendeeRegistrationStatus:
         """Gets the status property"""
-        from office365.communications.virtualevents.attendeeregistrationstatus import (
-            VirtualEventAttendeeRegistrationStatus,
-        )
-
         return self.properties.get("status", VirtualEventAttendeeRegistrationStatus.registered)
 
     @odata(name="userId")

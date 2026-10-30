@@ -8,6 +8,8 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.ssl_certificate import SslCertificate
+from office365.security.threatintelligence.host_port_protocol import HostPortProtocol
+from office365.security.threatintelligence.host_port_status import HostPortStatus
 
 if TYPE_CHECKING:
     from office365.security.threatintelligence.host import Host
@@ -16,12 +18,6 @@ if TYPE_CHECKING:
     )
     from office365.security.threatintelligence.host_port_component import (
         HostPortComponent,
-    )
-    from office365.security.threatintelligence.host_port_protocol import (
-        HostPortProtocol,
-    )
-    from office365.security.threatintelligence.host_port_status import (
-        HostPortStatus,
     )
 
 
@@ -89,10 +85,6 @@ class HostPort(Entity):
     @property
     def protocol(self) -> HostPortProtocol:
         """Gets the protocol property"""
-        from office365.security.threatintelligence.host_port_protocol import (
-            HostPortProtocol,
-        )
-
         return self.properties.get("protocol", HostPortProtocol.tcp)
 
     @odata(name="services")
@@ -109,8 +101,4 @@ class HostPort(Entity):
     @property
     def status(self) -> HostPortStatus:
         """Gets the status property"""
-        from office365.security.threatintelligence.host_port_status import (
-            HostPortStatus,
-        )
-
         return self.properties.get("status", HostPortStatus.open)

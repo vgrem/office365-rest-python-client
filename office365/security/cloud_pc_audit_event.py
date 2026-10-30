@@ -4,21 +4,17 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityoperationtype import (  # noqa: E501
+    CloudPcAuditActivityOperationType,
+)
+from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityresult import CloudPcAuditActivityResult
+from office365.intune.devices.management.virtualendpoint.cloudpcs.auditcategory import CloudPcAuditCategory
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityoperationtype import (
-        CloudPcAuditActivityOperationType,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityresult import (
-        CloudPcAuditActivityResult,
-    )
     from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactor import (
         CloudPcAuditActor,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.auditcategory import (
-        CloudPcAuditCategory,
     )
     from office365.intune.devices.management.virtualendpoint.cloudpcs.auditresource import (
         CloudPcAuditResource,
@@ -42,20 +38,12 @@ class CloudPcAuditEvent(Entity):
     @property
     def activity_operation_type(self) -> CloudPcAuditActivityOperationType:
         """Gets the activityOperationType property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityoperationtype import (
-            CloudPcAuditActivityOperationType,
-        )
-
         return self.properties.get("activityOperationType", CloudPcAuditActivityOperationType.create)
 
     @odata(name="activityResult")
     @property
     def activity_result(self) -> CloudPcAuditActivityResult:
         """Gets the activityResult property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityresult import (
-            CloudPcAuditActivityResult,
-        )
-
         return self.properties.get("activityResult", CloudPcAuditActivityResult.success)
 
     @odata(name="activityType")
@@ -78,10 +66,6 @@ class CloudPcAuditEvent(Entity):
     @property
     def category(self) -> CloudPcAuditCategory:
         """Gets the category property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.auditcategory import (
-            CloudPcAuditCategory,
-        )
-
         return self.properties.get("category", CloudPcAuditCategory.cloudPC)
 
     @odata(name="componentName")

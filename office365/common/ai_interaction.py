@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
+from office365.teams.aiinteractions.interactiontype import AiInteractionType
 
 if TYPE_CHECKING:
     from office365.copilot.ai_interaction_attachment import AiInteractionAttachment
@@ -14,7 +15,6 @@ if TYPE_CHECKING:
     from office365.copilot.ai_interaction_mention import AiInteractionMention
     from office365.directory.identity_set import IdentitySet
     from office365.outlook.mail.item_body import ItemBody
-    from office365.teams.aiinteractions.interactiontype import AiInteractionType
 
 
 class AiInteraction(Entity):
@@ -80,8 +80,6 @@ class AiInteraction(Entity):
     @property
     def interaction_type(self) -> AiInteractionType:
         """Gets the interactionType property"""
-        from office365.teams.aiinteractions.interactiontype import AiInteractionType
-
         return self.properties.get("interactionType", AiInteractionType.userPrompt)
 
     @odata(name="links")

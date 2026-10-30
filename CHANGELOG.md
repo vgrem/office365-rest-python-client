@@ -44,6 +44,14 @@ introduced.
   175 members that were declared as columns are now declared as the navigations
   they are, so `$select` no longer asks for them — Graph drops those silently,
   the same failure the SharePoint half had. Request bodies are unchanged.
+- An enum-typed Graph column returns the member, not the wire string: 386 type
+  imports in 241 modules moved from the getter's own body (and the dead
+  `if TYPE_CHECKING:` entry beside it) to the module block — 403 columns, because
+  one import serves every getter that names it — so `declared_type` can see what
+  the annotation says. `BrowserSharedCookie.source_environment` is
+  a `BrowserSharedCookieSourceEnvironment` rather than `'2'`; compare by
+  `.name`, which is what the service accepts back. A value no member names is
+  kept as the service sent it instead of being coerced to `None`.
 - `SP.User` loses the 58 profile getters that were a second copy of
   `SP.Directory.User` (`about_me`, `skills`, `id_`, ...), plus
   `User.get_user_profile_properties` and `Web.site_id`. The service drops those
@@ -327,8 +335,17 @@ introduced.
   `graph.fileStorageContainer`, the only entity type name in the tree that does not
   start with `microsoft.graph.`, so a payload it serialised carried a type name the
   service has never heard of.
-
-**Runtime**
+- **An enum column kept the wire string.** The generator writes a getter's type as a
+  function-local import plus an `if TYPE_CHECKING:` entry, and both are invisible to
+  `typing.get_type_hints`, which `declared_type` uses: the annotation raised
+  `NameError`, the declaration resolved to `None`, and `coerce_value` had no reason to
+  call `parse_enum` — so `set_property("sourceEnvironment", "2")` stored `'2'` where
+  the snapshot says `both`. The imports are now where the generator's own rule
+  (`needs_runtime_import`, an enum default evaluated at class creation) always said
+  they belonged, `scripts/hoist_imports.py` closes the drift and refuses an edge that
+  would close an import cycle, and `tests/unit/test_getter_annotations.py` holds both
+  halves: the codemod plans nothing left to hoist, and for every column whose
+  annotation resolves (12,188 of them) the declaration is that annotation.
 
 **Runtime**
 

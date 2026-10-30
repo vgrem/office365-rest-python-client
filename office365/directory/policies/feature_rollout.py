@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.policies.stagedfeaturename import StagedFeatureName
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.stagedfeaturename import StagedFeatureName
 
 
 class FeatureRolloutPolicy(Entity):
@@ -55,8 +53,6 @@ class FeatureRolloutPolicy(Entity):
     @property
     def feature(self) -> StagedFeatureName:
         """Gets the feature property"""
-        from office365.directory.policies.stagedfeaturename import StagedFeatureName
-
         return self.properties.get("feature", StagedFeatureName.passthroughAuthentication)
 
     @odata(name="isAppliedToOrganization")

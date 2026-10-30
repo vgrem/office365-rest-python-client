@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.communications.meetings.requesttype import MeetingRequestType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.communications.meetings.requesttype import MeetingRequestType
     from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
     from office365.outlook.mail.location import Location
 
@@ -22,8 +22,6 @@ class EventMessageRequest(Entity):
     @property
     def meeting_request_type(self) -> MeetingRequestType:
         """Gets the meetingRequestType property"""
-        from office365.communications.meetings.requesttype import MeetingRequestType
-
         return self.properties.get("meetingRequestType", MeetingRequestType.none)
 
     @odata(name="previousEndDateTime")

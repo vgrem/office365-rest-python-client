@@ -5,6 +5,9 @@ from uuid import UUID
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.managed.windows.information_protection_enforcement_level import (  # noqa: E501
+    WindowsInformationProtectionEnforcementLevel,
+)
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -12,9 +15,6 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.protections.targeted_managed_app_policy_assignment import (
         TargetedManagedAppPolicyAssignment,
-    )
-    from office365.intune.devices.management.managed.windows.information_protection_enforcement_level import (
-        WindowsInformationProtectionEnforcementLevel,
     )
     from office365.intune.devices.management.windows_information_protection_app import (
         WindowsInformationProtectionApp,
@@ -115,10 +115,6 @@ class WindowsInformationProtection(Entity):
     @property
     def enforcement_level(self) -> WindowsInformationProtectionEnforcementLevel:
         """Gets the enforcementLevel property"""
-        from office365.intune.devices.management.managed.windows.information_protection_enforcement_level import (
-            WindowsInformationProtectionEnforcementLevel,
-        )
-
         return self.properties.get("enforcementLevel", WindowsInformationProtectionEnforcementLevel.noProtection)
 
     @odata(name="enterpriseInternalProxyServers")

@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.backuprestore.restorepoints.tags import RestorePointTags
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.backuprestore.protection_unit_base import ProtectionUnitBase
-    from office365.backuprestore.restorepoints.tags import RestorePointTags
 
 
 class RestorePoint(Entity):
@@ -29,8 +29,6 @@ class RestorePoint(Entity):
     @property
     def tags(self) -> RestorePointTags:
         """Gets the tags property"""
-        from office365.backuprestore.restorepoints.tags import RestorePointTags
-
         return self.properties.get("tags", RestorePointTags.none)
 
     @odata(name="protectionUnit", navigation=True)

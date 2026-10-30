@@ -8,16 +8,12 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.attacksimulations.simulationcontentsource import SimulationContentSource
+from office365.security.attacksimulations.trainingavailabilitystatus import TrainingAvailabilityStatus
+from office365.security.attacksimulations.trainingtype import TrainingType
 
 if TYPE_CHECKING:
     from office365.directory.permissions.email_identity import EmailIdentity
-    from office365.security.attacksimulations.simulationcontentsource import (
-        SimulationContentSource,
-    )
-    from office365.security.attacksimulations.trainingavailabilitystatus import (
-        TrainingAvailabilityStatus,
-    )
-    from office365.security.attacksimulations.trainingtype import TrainingType
     from office365.security.training_language_detail import (
         TrainingLanguageDetail,
     )
@@ -28,10 +24,6 @@ class Training(Entity):
     @property
     def availability_status(self) -> TrainingAvailabilityStatus:
         """Gets the availabilityStatus property"""
-        from office365.security.attacksimulations.trainingavailabilitystatus import (
-            TrainingAvailabilityStatus,
-        )
-
         return self.properties.get("availabilityStatus", TrainingAvailabilityStatus.unknown)
 
     @odata(name="createdBy")
@@ -90,10 +82,6 @@ class Training(Entity):
     @property
     def source(self) -> SimulationContentSource:
         """Gets the source property"""
-        from office365.security.attacksimulations.simulationcontentsource import (
-            SimulationContentSource,
-        )
-
         return self.properties.get("source", SimulationContentSource.unknown)
 
     @odata(name="supportedLocales")
@@ -112,10 +100,6 @@ class Training(Entity):
     @property
     def type(self) -> TrainingType:
         """Gets the type property"""
-        from office365.security.attacksimulations.trainingtype import (
-            TrainingType,
-        )
-
         return self.properties.get("type", TrainingType.unknown)
 
     @odata(name="languageDetails", navigation=True)

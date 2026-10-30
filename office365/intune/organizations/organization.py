@@ -10,8 +10,10 @@ from office365.directory.domains.verified import VerifiedDomain
 from office365.directory.extensions.extension import Extension
 from office365.directory.licenses.assigned_plan import AssignedPlan
 from office365.directory.objects.object import DirectoryObject
+from office365.directory.tenantinformation.partner_tenant_type import PartnerTenantType
 from office365.directory.users.provisioned_plan import ProvisionedPlan
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.mdmauthority import MdmAuthority
 from office365.intune.organizations.branding import OrganizationalBranding
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -19,10 +21,6 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.tenantinformation.partner_tenant_type import (
-        PartnerTenantType,
-    )
-    from office365.intune.devices.mdmauthority import MdmAuthority
     from office365.intune.organizations.privacy_profile import PrivacyProfile
 
 
@@ -148,10 +146,6 @@ class Organization(DirectoryObject):
     @property
     def partner_tenant_type(self) -> PartnerTenantType:
         """Gets the partnerTenantType property"""
-        from office365.directory.tenantinformation.partner_tenant_type import (
-            PartnerTenantType,
-        )
-
         return self.properties.get("partnerTenantType", PartnerTenantType.microsoftSupport)
 
     @odata(name="postalCode")
@@ -214,8 +208,6 @@ class Organization(DirectoryObject):
     @property
     def mobile_device_management_authority(self) -> MdmAuthority:
         """Gets the mobileDeviceManagementAuthority property"""
-        from office365.intune.devices.mdmauthority import MdmAuthority
-
         return self.properties.get("mobileDeviceManagementAuthority", MdmAuthority.unknown)
 
     @property

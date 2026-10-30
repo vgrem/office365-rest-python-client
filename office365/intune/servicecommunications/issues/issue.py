@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Optional
 from office365.intune.servicecommunications.announcement_base import (
     ServiceAnnouncementBase,
 )
+from office365.intune.servicecommunications.health.origin import ServiceHealthOrigin
+from office365.intune.servicecommunications.health.status import ServiceHealthStatus
 from office365.intune.servicecommunications.health.types import (
     ServiceHealthClassificationType,
 )
@@ -14,8 +16,6 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.servicecommunications.health.origin import ServiceHealthOrigin
-    from office365.intune.servicecommunications.health.status import ServiceHealthStatus
     from office365.intune.servicecommunications.service_health_issue_post import ServiceHealthIssuePost
 
 
@@ -76,10 +76,6 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
     @property
     def origin(self) -> ServiceHealthOrigin:
         """Gets the origin property"""
-        from office365.intune.servicecommunications.health.origin import (
-            ServiceHealthOrigin,
-        )
-
         return self.properties.get("origin", ServiceHealthOrigin.microsoft)
 
     @odata(name="posts")
@@ -100,10 +96,6 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
     @property
     def status(self) -> ServiceHealthStatus:
         """Gets the status property"""
-        from office365.intune.servicecommunications.health.status import (
-            ServiceHealthStatus,
-        )
-
         return self.properties.get("status", ServiceHealthStatus.serviceOperational)
 
     @property

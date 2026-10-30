@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.android.workprofilecrossprofiledatasharingtype import (  # noqa: E501
+    AndroidWorkProfileCrossProfileDataSharingType,
+)
+from office365.intune.devices.configurations.android.workprofiledefaultapppermissionpolicytype import (  # noqa: E501
+    AndroidWorkProfileDefaultAppPermissionPolicyType,
+)
+from office365.intune.devices.configurations.android.workprofilerequiredpasswordtype import (  # noqa: E501
+    AndroidWorkProfileRequiredPasswordType,
+)
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.android.workprofilecrossprofiledatasharingtype import (
-        AndroidWorkProfileCrossProfileDataSharingType,
-    )
-    from office365.intune.devices.configurations.android.workprofiledefaultapppermissionpolicytype import (
-        AndroidWorkProfileDefaultAppPermissionPolicyType,
-    )
-    from office365.intune.devices.configurations.android.workprofilerequiredpasswordtype import (
-        AndroidWorkProfileRequiredPasswordType,
-    )
 
 
 class AndroidWorkProfileGeneralDeviceConfiguration(Entity):
@@ -58,10 +56,6 @@ class AndroidWorkProfileGeneralDeviceConfiguration(Entity):
     @property
     def password_required_type(self) -> AndroidWorkProfileRequiredPasswordType:
         """Gets the passwordRequiredType property"""
-        from office365.intune.devices.configurations.android.workprofilerequiredpasswordtype import (
-            AndroidWorkProfileRequiredPasswordType,
-        )
-
         return self.properties.get("passwordRequiredType", AndroidWorkProfileRequiredPasswordType.deviceDefault)
 
     @odata(name="passwordSignInFailureCountBeforeFactoryReset")
@@ -128,10 +122,6 @@ class AndroidWorkProfileGeneralDeviceConfiguration(Entity):
     @property
     def work_profile_data_sharing_type(self) -> AndroidWorkProfileCrossProfileDataSharingType:
         """Gets the workProfileDataSharingType property"""
-        from office365.intune.devices.configurations.android.workprofilecrossprofiledatasharingtype import (
-            AndroidWorkProfileCrossProfileDataSharingType,
-        )
-
         return self.properties.get(
             "workProfileDataSharingType", AndroidWorkProfileCrossProfileDataSharingType.deviceDefault
         )
@@ -140,10 +130,6 @@ class AndroidWorkProfileGeneralDeviceConfiguration(Entity):
     @property
     def work_profile_default_app_permission_policy(self) -> AndroidWorkProfileDefaultAppPermissionPolicyType:
         """Gets the workProfileDefaultAppPermissionPolicy property"""
-        from office365.intune.devices.configurations.android.workprofiledefaultapppermissionpolicytype import (
-            AndroidWorkProfileDefaultAppPermissionPolicyType,
-        )
-
         return self.properties.get(
             "workProfileDefaultAppPermissionPolicy", AndroidWorkProfileDefaultAppPermissionPolicyType.deviceDefault
         )
@@ -224,10 +210,6 @@ class AndroidWorkProfileGeneralDeviceConfiguration(Entity):
     @property
     def work_profile_password_required_type(self) -> AndroidWorkProfileRequiredPasswordType:
         """Gets the workProfilePasswordRequiredType property"""
-        from office365.intune.devices.configurations.android.workprofilerequiredpasswordtype import (
-            AndroidWorkProfileRequiredPasswordType,
-        )
-
         return self.properties.get(
             "workProfilePasswordRequiredType", AndroidWorkProfileRequiredPasswordType.deviceDefault
         )

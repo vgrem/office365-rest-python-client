@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.applications.assignmenttype import AssignmentType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.applications.assignmenttype import AssignmentType
     from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
     from office365.outlook.mail.item_body import ItemBody
 
@@ -29,8 +29,6 @@ class LearningAssignment(Entity):
     @property
     def assignment_type(self) -> AssignmentType:
         """Gets the assignmentType property"""
-        from office365.directory.applications.assignmenttype import AssignmentType
-
         return self.properties.get("assignmentType", AssignmentType.required)
 
     @odata(name="dueDateTime")

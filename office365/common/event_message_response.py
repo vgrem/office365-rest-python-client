@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.outlook.mail.messages.responsetype import ResponseType
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
-    from office365.outlook.mail.messages.responsetype import ResponseType
 
 
 class EventMessageResponse(Entity):
@@ -23,8 +23,6 @@ class EventMessageResponse(Entity):
     @property
     def response_type(self) -> ResponseType:
         """Gets the responseType property"""
-        from office365.outlook.mail.messages.responsetype import ResponseType
-
         return self.properties.get("responseType", ResponseType.none)
 
     @property

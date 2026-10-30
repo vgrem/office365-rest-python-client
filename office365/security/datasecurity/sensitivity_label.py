@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.onedrive.sensitivitylabels.labelactionsource import LabelActionSource
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.datasecurity.application_mode import ApplicationMode
 
 if TYPE_CHECKING:
-    from office365.onedrive.sensitivitylabels.labelactionsource import LabelActionSource
     from office365.security.datasecurity.sensitivity_label import (
         SensitivityLabel,
     )
@@ -53,10 +53,6 @@ class SensitivityLabel(Entity):
     @property
     def action_source(self) -> LabelActionSource:
         """Gets the actionSource property"""
-        from office365.onedrive.sensitivitylabels.labelactionsource import (
-            LabelActionSource,
-        )
-
         return self.properties.get("actionSource", LabelActionSource.manual)
 
     @odata(name="autoTooltip")

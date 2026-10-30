@@ -4,6 +4,10 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningpolicyimagetype import (  # noqa: E501
+    CloudPcProvisioningPolicyImageType,
+)
+from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningtype import CloudPcProvisioningType
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -15,12 +19,6 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningpolicyautopatch import (
         CloudPcProvisioningPolicyAutopatch,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningpolicyimagetype import (
-        CloudPcProvisioningPolicyImageType,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningtype import (
-        CloudPcProvisioningType,
     )
     from office365.intune.devices.management.virtualendpoint.provisioningpolicies.microsoft_managed_desktop import (
         MicrosoftManagedDesktop,
@@ -112,10 +110,6 @@ class CloudPcProvisioningPolicy(Entity):
     @property
     def image_type(self) -> CloudPcProvisioningPolicyImageType:
         """Gets the imageType property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningpolicyimagetype import (
-            CloudPcProvisioningPolicyImageType,
-        )
-
         return self.properties.get("imageType", CloudPcProvisioningPolicyImageType.gallery)
 
     @odata(name="localAdminEnabled")
@@ -138,10 +132,6 @@ class CloudPcProvisioningPolicy(Entity):
     @property
     def provisioning_type(self) -> CloudPcProvisioningType:
         """Gets the provisioningType property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningtype import (
-            CloudPcProvisioningType,
-        )
-
         return self.properties.get("provisioningType", CloudPcProvisioningType.dedicated)
 
     @odata(name="windowsSetting")

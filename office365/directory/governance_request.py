@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.request_status import RequestStatus
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.relationship_policy import RelationshipPolicy
-    from office365.directory.request_status import RequestStatus
     from office365.directory.tenant_governance_policy_template import (
         TenantGovernancePolicyTemplate,
     )
@@ -64,8 +64,6 @@ class GovernanceRequest(Entity):
     @property
     def status(self) -> RequestStatus:
         """Gets the status property"""
-        from office365.directory.request_status import RequestStatus
-
         return self.properties.get("status", RequestStatus.pending)
 
     @odata(name="governancePolicyTemplate", navigation=True)

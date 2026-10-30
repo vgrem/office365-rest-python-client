@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.outlook.place_feature_enablement import PlaceFeatureEnablement
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
@@ -10,7 +11,6 @@ if TYPE_CHECKING:
     from office365.booking.mailbox_details import MailboxDetails
     from office365.booking.place_mode import PlaceMode
     from office365.booking.place_service_plan_info import PlaceServicePlanInfo
-    from office365.outlook.place_feature_enablement import PlaceFeatureEnablement
 
 
 class Desk(Entity):
@@ -24,8 +24,6 @@ class Desk(Entity):
     @property
     def height_adjustable_state(self) -> PlaceFeatureEnablement:
         """Gets the heightAdjustableState property"""
-        from office365.outlook.place_feature_enablement import PlaceFeatureEnablement
-
         return self.properties.get("heightAdjustableState", PlaceFeatureEnablement.unknown)
 
     @odata(name="mailboxDetails")

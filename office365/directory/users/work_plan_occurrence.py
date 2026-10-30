@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.communications.presences.work_location_type import WorkLocationType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.communications.presences.work_location_type import WorkLocationType
     from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
     from office365.teams.schedule.time_off_details import TimeOffDetails
 
@@ -52,10 +52,6 @@ class WorkPlanOccurrence(Entity):
     @property
     def work_location_type(self) -> WorkLocationType:
         """Gets the workLocationType property"""
-        from office365.communications.presences.work_location_type import (
-            WorkLocationType,
-        )
-
         return self.properties.get("workLocationType", WorkLocationType.unspecified)
 
     @property

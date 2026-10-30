@@ -3,14 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.protection.unitsbulkjobstatus import ProtectionUnitsBulkJobStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identity_set import IdentitySet
-    from office365.directory.protection.unitsbulkjobstatus import (
-        ProtectionUnitsBulkJobStatus,
-    )
     from office365.runtime.types.public_error import PublicError
 
 
@@ -61,10 +59,6 @@ class ProtectionUnitsBulkJobBase(Entity):
     @property
     def status(self) -> ProtectionUnitsBulkJobStatus:
         """Gets the status property"""
-        from office365.directory.protection.unitsbulkjobstatus import (
-            ProtectionUnitsBulkJobStatus,
-        )
-
         return self.properties.get("status", ProtectionUnitsBulkJobStatus.unknown)
 
     @property

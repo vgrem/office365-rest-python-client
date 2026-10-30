@@ -1,18 +1,14 @@
 from __future__ import annotations
 
 from datetime import time
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.windows.miracastchannel import MiracastChannel
+from office365.intune.devices.configurations.windows.welcomescreenmeetinginformation import (  # noqa: E501
+    WelcomeScreenMeetingInformation,
+)
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.miracastchannel import (
-        MiracastChannel,
-    )
-    from office365.intune.devices.configurations.windows.welcomescreenmeetinginformation import (
-        WelcomeScreenMeetingInformation,
-    )
 
 
 class Windows10TeamGeneralConfiguration(Entity):
@@ -68,10 +64,6 @@ class Windows10TeamGeneralConfiguration(Entity):
     @property
     def miracast_channel(self) -> MiracastChannel:
         """Gets the miracastChannel property"""
-        from office365.intune.devices.configurations.windows.miracastchannel import (
-            MiracastChannel,
-        )
-
         return self.properties.get("miracastChannel", MiracastChannel.userDefined)
 
     @odata(name="miracastRequirePin")
@@ -138,10 +130,6 @@ class Windows10TeamGeneralConfiguration(Entity):
     @property
     def welcome_screen_meeting_information(self) -> WelcomeScreenMeetingInformation:
         """Gets the welcomeScreenMeetingInformation property"""
-        from office365.intune.devices.configurations.windows.welcomescreenmeetinginformation import (
-            WelcomeScreenMeetingInformation,
-        )
-
         return self.properties.get("welcomeScreenMeetingInformation", WelcomeScreenMeetingInformation.userDefined)
 
     @property

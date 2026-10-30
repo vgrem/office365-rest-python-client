@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.admin.drift_status import DriftStatus
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.admin.drift_status import DriftStatus
     from office365.directory.drifted_property import DriftedProperty
     from office365.teams.members.open_complex_dictionary_type import (
         OpenComplexDictionaryType,
@@ -62,8 +62,6 @@ class ConfigurationDrift(Entity):
     @property
     def status(self) -> DriftStatus:
         """Gets the status property"""
-        from office365.admin.drift_status import DriftStatus
-
         return self.properties.get("status", DriftStatus.active)
 
     @odata(name="tenantId", readonly=True)

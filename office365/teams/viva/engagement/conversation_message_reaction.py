@@ -5,12 +5,10 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.teams.viva.engagement.conversationmessagereactiontype import EngagementConversationMessageReactionType
 
 if TYPE_CHECKING:
     from office365.communications.engagement_identity_set import EngagementIdentitySet
-    from office365.teams.viva.engagement.conversationmessagereactiontype import (
-        EngagementConversationMessageReactionType,
-    )
 
 
 class EngagementConversationMessageReaction(Entity):
@@ -34,10 +32,6 @@ class EngagementConversationMessageReaction(Entity):
     @property
     def reaction_type(self) -> EngagementConversationMessageReactionType:
         """Gets the reactionType property"""
-        from office365.teams.viva.engagement.conversationmessagereactiontype import (
-            EngagementConversationMessageReactionType,
-        )
-
         return self.properties.get("reactionType", EngagementConversationMessageReactionType.like)
 
     @property

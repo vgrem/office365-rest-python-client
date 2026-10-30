@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.teams.viva.learning.courses.status import CourseStatus
+from office365.teams.viva.learning.courses.status import CourseStatus
 
 
 class LearningCourseActivity(Entity):
@@ -53,8 +51,6 @@ class LearningCourseActivity(Entity):
     @property
     def status(self) -> CourseStatus:
         """Gets the status property"""
-        from office365.teams.viva.learning.courses.status import CourseStatus
-
         return self.properties.get("status", CourseStatus.notStarted)
 
     @property

@@ -1,18 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.exchangeconnectors.status import DeviceManagementExchangeConnectorStatus
+from office365.intune.devices.management.exchangeconnectors.type import DeviceManagementExchangeConnectorType
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.exchangeconnectors.status import (
-        DeviceManagementExchangeConnectorStatus,
-    )
-    from office365.intune.devices.management.exchangeconnectors.type import (
-        DeviceManagementExchangeConnectorType,
-    )
 
 
 class DeviceManagementExchangeConnector(Entity):
@@ -32,10 +26,6 @@ class DeviceManagementExchangeConnector(Entity):
     @property
     def exchange_connector_type(self) -> DeviceManagementExchangeConnectorType:
         """Gets the exchangeConnectorType property"""
-        from office365.intune.devices.management.exchangeconnectors.type import (
-            DeviceManagementExchangeConnectorType,
-        )
-
         return self.properties.get("exchangeConnectorType", DeviceManagementExchangeConnectorType.onPremises)
 
     @odata(name="exchangeOrganization")
@@ -66,10 +56,6 @@ class DeviceManagementExchangeConnector(Entity):
     @property
     def status(self) -> DeviceManagementExchangeConnectorStatus:
         """Gets the status property"""
-        from office365.intune.devices.management.exchangeconnectors.status import (
-            DeviceManagementExchangeConnectorStatus,
-        )
-
         return self.properties.get("status", DeviceManagementExchangeConnectorStatus.none)
 
     @odata(name="version")

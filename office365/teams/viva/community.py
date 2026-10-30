@@ -6,11 +6,11 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.teams.community_privacy import CommunityPrivacy
 
 if TYPE_CHECKING:
     from office365.directory.groups.group import Group
     from office365.directory.users.user import User
-    from office365.teams.community_privacy import CommunityPrivacy
 
 
 class Community(Entity):
@@ -49,8 +49,6 @@ class Community(Entity):
     @property
     def privacy(self) -> CommunityPrivacy:
         """Gets the privacy property"""
-        from office365.teams.community_privacy import CommunityPrivacy
-
         return self.properties.get("privacy", CommunityPrivacy.public)
 
     @odata(name="group", navigation=True)

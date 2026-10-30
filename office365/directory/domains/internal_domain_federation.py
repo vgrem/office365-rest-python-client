@@ -2,18 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.domains.federatedidpmfabehavior import FederatedIdpMfaBehavior
+from office365.directory.domains.promptloginbehavior import PromptLoginBehavior
 from office365.entity import Entity
+from office365.intune.devices.management.system_browser_enabled_on import SystemBrowserEnabledOn
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.authentication.signing_certificate_update_status import (
         SigningCertificateUpdateStatus,
     )
-    from office365.directory.domains.federatedidpmfabehavior import (
-        FederatedIdpMfaBehavior,
-    )
-    from office365.directory.domains.promptloginbehavior import PromptLoginBehavior
-    from office365.intune.devices.management.system_browser_enabled_on import SystemBrowserEnabledOn
 
 
 class InternalDomainFederation(Entity):
@@ -27,10 +25,6 @@ class InternalDomainFederation(Entity):
     @property
     def federated_idp_mfa_behavior(self) -> FederatedIdpMfaBehavior:
         """Gets the federatedIdpMfaBehavior property"""
-        from office365.directory.domains.federatedidpmfabehavior import (
-            FederatedIdpMfaBehavior,
-        )
-
         return self.properties.get("federatedIdpMfaBehavior", FederatedIdpMfaBehavior.acceptIfMfaDoneByFederatedIdp)
 
     @odata(name="isSignedAuthenticationRequestRequired")
@@ -55,8 +49,6 @@ class InternalDomainFederation(Entity):
     @property
     def prompt_login_behavior(self) -> PromptLoginBehavior:
         """Gets the promptLoginBehavior property"""
-        from office365.directory.domains.promptloginbehavior import PromptLoginBehavior
-
         return self.properties.get("promptLoginBehavior", PromptLoginBehavior.translateToFreshPasswordAuthentication)
 
     @odata(name="signingCertificateUpdateStatus")
@@ -79,8 +71,6 @@ class InternalDomainFederation(Entity):
     @property
     def system_browser_enabled_on(self) -> SystemBrowserEnabledOn:
         """Gets the systemBrowserEnabledOn property"""
-        from office365.intune.devices.management.system_browser_enabled_on import SystemBrowserEnabledOn
-
         return self.properties.get("systemBrowserEnabledOn", SystemBrowserEnabledOn.none)
 
     @property

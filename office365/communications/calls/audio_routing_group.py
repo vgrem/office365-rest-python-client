@@ -1,13 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+from office365.communications.calls.routingmode import RoutingMode
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.calls.routingmode import RoutingMode
 
 
 class AudioRoutingGroup(Entity):
@@ -21,8 +17,6 @@ class AudioRoutingGroup(Entity):
     @property
     def routing_mode(self) -> RoutingMode:
         """Gets the routingMode property"""
-        from office365.communications.calls.routingmode import RoutingMode
-
         return self.properties.get("routingMode", RoutingMode.oneToOne)
 
     @odata(name="sources")

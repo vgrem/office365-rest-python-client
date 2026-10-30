@@ -8,6 +8,8 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.onedrive.filestorage.containers.status import FileStorageContainerStatus
+from office365.onedrive.filestorage.sitelockstate import SiteLockState
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -22,13 +24,9 @@ if TYPE_CHECKING:
     from office365.onedrive.filestorage.containers.settings import (
         FileStorageContainerSettings,
     )
-    from office365.onedrive.filestorage.containers.status import (
-        FileStorageContainerStatus,
-    )
     from office365.onedrive.filestorage.containers.viewpoint import (
         FileStorageContainerViewpoint,
     )
-    from office365.onedrive.filestorage.sitelockstate import SiteLockState
     from office365.onedrive.permissions.permission import Permission
     from office365.onedrive.recyclebin.recyclebin import RecycleBin
     from office365.onedrive.sharepoint.group import SharePointGroup
@@ -103,8 +101,6 @@ class FileStorageContainer(Entity):
     @property
     def lock_state(self) -> SiteLockState:
         """Gets the lockState property"""
-        from office365.onedrive.filestorage.sitelockstate import SiteLockState
-
         return self.properties.get("lockState", SiteLockState.unlocked)
 
     @odata(name="settings")
@@ -121,10 +117,6 @@ class FileStorageContainer(Entity):
     @property
     def status(self) -> FileStorageContainerStatus:
         """Gets the status property"""
-        from office365.onedrive.filestorage.containers.status import (
-            FileStorageContainerStatus,
-        )
-
         return self.properties.get("status", FileStorageContainerStatus.inactive)
 
     @odata(name="viewpoint")

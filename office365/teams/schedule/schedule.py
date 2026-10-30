@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.operationstatus import OperationStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -13,8 +15,6 @@ from office365.teams.schedule.shifts.shift import Shift
 from office365.teams.schedule.time_off_reason import TimeOffReason
 
 if TYPE_CHECKING:
-    from office365.directory.identitygovernance.operationstatus import OperationStatus
-    from office365.outlook.calendar.dayofweek import DayOfWeek
     from office365.teams.schedule.day_note import DayNote
     from office365.teams.schedule.open_shift import OpenShift
     from office365.teams.schedule.shifts.offer.request import OfferShiftRequest
@@ -117,10 +117,6 @@ class Schedule(Entity):
     @property
     def provision_status(self) -> OperationStatus:
         """Gets the provisionStatus property"""
-        from office365.directory.identitygovernance.operationstatus import (
-            OperationStatus,
-        )
-
         return self.properties.get("provisionStatus", OperationStatus.NotStarted)
 
     @odata(name="provisionStatusCode", readonly=True)
@@ -133,8 +129,6 @@ class Schedule(Entity):
     @property
     def start_day_of_week(self) -> DayOfWeek:
         """Gets the startDayOfWeek property"""
-        from office365.outlook.calendar.dayofweek import DayOfWeek
-
         return self.properties.get("startDayOfWeek", DayOfWeek.sunday)
 
     @odata(name="swapShiftsRequestsEnabled")

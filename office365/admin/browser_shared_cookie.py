@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.browser.sharedcookiesourceenvironment import BrowserSharedCookieSourceEnvironment
+from office365.intune.browser.sharedcookiestatus import BrowserSharedCookieStatus
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
@@ -12,10 +14,6 @@ if TYPE_CHECKING:
         BrowserSharedCookieHistory,
     )
     from office365.directory.identity_set import IdentitySet
-    from office365.intune.browser.sharedcookiesourceenvironment import (
-        BrowserSharedCookieSourceEnvironment,
-    )
-    from office365.intune.browser.sharedcookiestatus import BrowserSharedCookieStatus
 
 
 class BrowserSharedCookie(Entity):
@@ -91,20 +89,12 @@ class BrowserSharedCookie(Entity):
     @property
     def source_environment(self) -> BrowserSharedCookieSourceEnvironment:
         """Gets the sourceEnvironment property"""
-        from office365.intune.browser.sharedcookiesourceenvironment import (
-            BrowserSharedCookieSourceEnvironment,
-        )
-
         return self.properties.get("sourceEnvironment", BrowserSharedCookieSourceEnvironment.microsoftEdge)
 
     @odata(name="status")
     @property
     def status(self) -> BrowserSharedCookieStatus:
         """Gets the status property"""
-        from office365.intune.browser.sharedcookiestatus import (
-            BrowserSharedCookieStatus,
-        )
-
         return self.properties.get("status", BrowserSharedCookieStatus.published)
 
     @property

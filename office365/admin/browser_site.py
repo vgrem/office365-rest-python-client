@@ -4,20 +4,16 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.browser.sitecompatibilitymode import BrowserSiteCompatibilityMode
+from office365.intune.browser.sitemergetype import BrowserSiteMergeType
+from office365.intune.browser.sitestatus import BrowserSiteStatus
+from office365.intune.browser.sitetargetenvironment import BrowserSiteTargetEnvironment
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identity_set import IdentitySet
     from office365.intune.browser.browser_site_history import BrowserSiteHistory
-    from office365.intune.browser.sitecompatibilitymode import (
-        BrowserSiteCompatibilityMode,
-    )
-    from office365.intune.browser.sitemergetype import BrowserSiteMergeType
-    from office365.intune.browser.sitestatus import BrowserSiteStatus
-    from office365.intune.browser.sitetargetenvironment import (
-        BrowserSiteTargetEnvironment,
-    )
 
 
 class BrowserSite(Entity):
@@ -37,10 +33,6 @@ class BrowserSite(Entity):
     @property
     def compatibility_mode(self) -> BrowserSiteCompatibilityMode:
         """Gets the compatibilityMode property"""
-        from office365.intune.browser.sitecompatibilitymode import (
-            BrowserSiteCompatibilityMode,
-        )
-
         return self.properties.get("compatibilityMode", BrowserSiteCompatibilityMode.default)
 
     @odata(name="createdDateTime")
@@ -81,26 +73,18 @@ class BrowserSite(Entity):
     @property
     def merge_type(self) -> BrowserSiteMergeType:
         """Gets the mergeType property"""
-        from office365.intune.browser.sitemergetype import BrowserSiteMergeType
-
         return self.properties.get("mergeType", BrowserSiteMergeType.noMerge)
 
     @odata(name="status")
     @property
     def status(self) -> BrowserSiteStatus:
         """Gets the status property"""
-        from office365.intune.browser.sitestatus import BrowserSiteStatus
-
         return self.properties.get("status", BrowserSiteStatus.published)
 
     @odata(name="targetEnvironment")
     @property
     def target_environment(self) -> BrowserSiteTargetEnvironment:
         """Gets the targetEnvironment property"""
-        from office365.intune.browser.sitetargetenvironment import (
-            BrowserSiteTargetEnvironment,
-        )
-
         return self.properties.get("targetEnvironment", BrowserSiteTargetEnvironment.internetExplorerMode)
 
     @odata(name="webUrl")

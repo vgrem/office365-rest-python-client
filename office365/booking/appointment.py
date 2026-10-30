@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.booking.pricetype import BookingPriceType
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -12,7 +13,6 @@ if TYPE_CHECKING:
     from office365.booking.customers.informationbase import (
         BookingCustomerInformationBase,
     )
-    from office365.booking.pricetype import BookingPriceType
     from office365.booking.reminder import BookingReminder
     from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
     from office365.outlook.mail.location import Location
@@ -170,8 +170,6 @@ class BookingAppointment(Entity):
     @property
     def price_type(self) -> BookingPriceType:
         """Gets the priceType property"""
-        from office365.booking.pricetype import BookingPriceType
-
         return self.properties.get("priceType", BookingPriceType.undefined)
 
     @odata(name="reminders")

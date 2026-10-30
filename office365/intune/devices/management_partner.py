@@ -4,18 +4,14 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.partnerapptype import DeviceManagementPartnerAppType
+from office365.intune.devices.management.partnertenantstate import DeviceManagementPartnerTenantState
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.partner_assignment import (
         DeviceManagementPartnerAssignment,
-    )
-    from office365.intune.devices.management.partnerapptype import (
-        DeviceManagementPartnerAppType,
-    )
-    from office365.intune.devices.management.partnertenantstate import (
-        DeviceManagementPartnerTenantState,
     )
 
 
@@ -55,20 +51,12 @@ class DeviceManagementPartner(Entity):
     @property
     def partner_app_type(self) -> DeviceManagementPartnerAppType:
         """Gets the partnerAppType property"""
-        from office365.intune.devices.management.partnerapptype import (
-            DeviceManagementPartnerAppType,
-        )
-
         return self.properties.get("partnerAppType", DeviceManagementPartnerAppType.unknown)
 
     @odata(name="partnerState")
     @property
     def partner_state(self) -> DeviceManagementPartnerTenantState:
         """Gets the partnerState property"""
-        from office365.intune.devices.management.partnertenantstate import (
-            DeviceManagementPartnerTenantState,
-        )
-
         return self.properties.get("partnerState", DeviceManagementPartnerTenantState.unknown)
 
     @odata(name="singleTenantAppId")

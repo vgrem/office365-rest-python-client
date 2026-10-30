@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.authentication.protocol import AuthenticationProtocol
 from office365.directory.identities.providers.base import IdentityProviderBase
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.authentication.protocol import AuthenticationProtocol
 
 
 class SamlOrWsFedProvider(IdentityProviderBase):
@@ -35,8 +33,6 @@ class SamlOrWsFedProvider(IdentityProviderBase):
     @property
     def preferred_authentication_protocol(self) -> AuthenticationProtocol:
         """Gets the preferredAuthenticationProtocol property"""
-        from office365.directory.authentication.protocol import AuthenticationProtocol
-
         return self.properties.get("preferredAuthenticationProtocol", AuthenticationProtocol.wsFed)
 
     @odata(name="signingCertificate")

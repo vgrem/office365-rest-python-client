@@ -3,18 +3,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatus import (  # noqa: E501
+    CloudPcOnPremisesConnectionStatus,
+)
+from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (  # noqa: E501
+    CloudPcOnPremisesConnectionType,
+)
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatus import (
-        CloudPcOnPremisesConnectionStatus,
-    )
     from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatusdetail import (
         CloudPcOnPremisesConnectionStatusDetail,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (
-        CloudPcOnPremisesConnectionType,
     )
 
 
@@ -47,10 +47,6 @@ class CloudPcOnPremisesConnection(Entity):
     @property
     def connection_type(self) -> CloudPcOnPremisesConnectionType:
         """Gets the connectionType property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (
-            CloudPcOnPremisesConnectionType,
-        )
-
         return self.properties.get("connectionType", CloudPcOnPremisesConnectionType.hybridAzureADJoin)
 
     @odata(name="displayName")
@@ -69,10 +65,6 @@ class CloudPcOnPremisesConnection(Entity):
     @property
     def health_check_status(self) -> CloudPcOnPremisesConnectionStatus:
         """Gets the healthCheckStatus property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatus import (
-            CloudPcOnPremisesConnectionStatus,
-        )
-
         return self.properties.get("healthCheckStatus", CloudPcOnPremisesConnectionStatus.pending)
 
     @odata(name="healthCheckStatusDetail")

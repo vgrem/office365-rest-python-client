@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.actiontype import DeviceComplianceActionType
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.compliance.actiontype import (
-        DeviceComplianceActionType,
-    )
 
 
 class DeviceComplianceActionItem(Entity):
@@ -17,10 +13,6 @@ class DeviceComplianceActionItem(Entity):
     @property
     def action_type(self) -> DeviceComplianceActionType:
         """Gets the actionType property"""
-        from office365.intune.devices.compliance.actiontype import (
-            DeviceComplianceActionType,
-        )
-
         return self.properties.get("actionType", DeviceComplianceActionType.noAction)
 
     @odata(name="gracePeriodHours")

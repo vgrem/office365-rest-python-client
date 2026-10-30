@@ -4,15 +4,13 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.partnertenantstate import DeviceManagementPartnerTenantState
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.compliance.management_partner_assignment import (
         ComplianceManagementPartnerAssignment,
-    )
-    from office365.intune.devices.management.partnertenantstate import (
-        DeviceManagementPartnerTenantState,
     )
 
 
@@ -90,10 +88,6 @@ class ComplianceManagementPartner(Entity):
     @property
     def partner_state(self) -> DeviceManagementPartnerTenantState:
         """Gets the partnerState property"""
-        from office365.intune.devices.management.partnertenantstate import (
-            DeviceManagementPartnerTenantState,
-        )
-
         return self.properties.get("partnerState", DeviceManagementPartnerTenantState.unknown)
 
     @property

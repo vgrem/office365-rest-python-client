@@ -5,16 +5,16 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
+from office365.backuprestore.restorejobtype import RestoreJobType
+from office365.backuprestore.restoresessions.status import RestoreSessionStatus
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.backuprestore.restorejobtype import RestoreJobType
     from office365.backuprestore.restoresessions.artifact_count import (
         RestoreSessionArtifactCount,
     )
-    from office365.backuprestore.restoresessions.status import RestoreSessionStatus
     from office365.directory.identity_set import IdentitySet
     from office365.runtime.types.public_error import PublicError
 
@@ -76,8 +76,6 @@ class RestoreSessionBase(Entity):
     @property
     def restore_job_type(self) -> RestoreJobType:
         """Gets the restoreJobType property"""
-        from office365.backuprestore.restorejobtype import RestoreJobType
-
         return self.properties.get("restoreJobType", RestoreJobType.standard)
 
     @odata(name="restoreSessionArtifactCount")
@@ -94,8 +92,6 @@ class RestoreSessionBase(Entity):
     @property
     def status(self) -> RestoreSessionStatus:
         """Gets the status property"""
-        from office365.backuprestore.restoresessions.status import RestoreSessionStatus
-
         return self.properties.get("status", RestoreSessionStatus.draft)
 
     @property

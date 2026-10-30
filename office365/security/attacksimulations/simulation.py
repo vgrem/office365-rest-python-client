@@ -6,9 +6,13 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.security.attacksimulations.payloaddeliveryplatform import PayloadDeliveryPlatform
 from office365.security.attacksimulations.reports.report import (
     SimulationReport,
 )
+from office365.security.attacksimulations.simulationattacktechnique import SimulationAttackTechnique
+from office365.security.attacksimulations.simulationattacktype import SimulationAttackType
+from office365.security.attacksimulations.simulationstatus import SimulationStatus
 
 if TYPE_CHECKING:
     from office365.directory.o_auth_consent_app_detail import OAuthConsentAppDetail
@@ -17,18 +21,6 @@ if TYPE_CHECKING:
     from office365.security.attacksimulations.landing_page import LandingPage
     from office365.security.attacksimulations.login_page import LoginPage
     from office365.security.attacksimulations.payload import Payload
-    from office365.security.attacksimulations.payloaddeliveryplatform import (
-        PayloadDeliveryPlatform,
-    )
-    from office365.security.attacksimulations.simulationattacktechnique import (
-        SimulationAttackTechnique,
-    )
-    from office365.security.attacksimulations.simulationattacktype import (
-        SimulationAttackType,
-    )
-    from office365.security.attacksimulations.simulationstatus import (
-        SimulationStatus,
-    )
     from office365.security.end_user_notification_setting import (
         EndUserNotificationSetting,
     )
@@ -60,20 +52,12 @@ class Simulation(Entity):
     @property
     def attack_technique(self) -> SimulationAttackTechnique:
         """Gets the attackTechnique property"""
-        from office365.security.attacksimulations.simulationattacktechnique import (
-            SimulationAttackTechnique,
-        )
-
         return self.properties.get("attackTechnique", SimulationAttackTechnique.unknown)
 
     @odata(name="attackType")
     @property
     def attack_type(self) -> SimulationAttackType:
         """Gets the attackType property"""
-        from office365.security.attacksimulations.simulationattacktype import (
-            SimulationAttackType,
-        )
-
         return self.properties.get("attackType", SimulationAttackType.unknown)
 
     @odata(name="automationId")
@@ -188,20 +172,12 @@ class Simulation(Entity):
     @property
     def payload_delivery_platform(self) -> PayloadDeliveryPlatform:
         """Gets the payloadDeliveryPlatform property"""
-        from office365.security.attacksimulations.payloaddeliveryplatform import (
-            PayloadDeliveryPlatform,
-        )
-
         return self.properties.get("payloadDeliveryPlatform", PayloadDeliveryPlatform.unknown)
 
     @odata(name="status")
     @property
     def status(self) -> SimulationStatus:
         """Gets the status property"""
-        from office365.security.attacksimulations.simulationstatus import (
-            SimulationStatus,
-        )
-
         return self.properties.get("status", SimulationStatus.unknown)
 
     @odata(name="trainingSetting")

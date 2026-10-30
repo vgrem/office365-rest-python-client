@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.onedrive.termstore.relation_type import RelationType
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.onedrive.termstore.relation_type import RelationType
     from office365.onedrive.termstore.sets.set import Set
 
 
@@ -65,6 +65,4 @@ class Relation(Entity):
     @property
     def relationship(self) -> RelationType:
         """Gets the relationship property"""
-        from office365.onedrive.termstore.relation_type import RelationType
-
         return self.properties.get("relationship", RelationType.pin)

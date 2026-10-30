@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identities.userflows.userflowtype import UserFlowType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identities.userflows.userflowtype import UserFlowType
 
 
 class IdentityUserFlow(Entity):
@@ -14,8 +12,6 @@ class IdentityUserFlow(Entity):
     @property
     def user_flow_type(self) -> UserFlowType:
         """Gets the userFlowType property"""
-        from office365.directory.identities.userflows.userflowtype import UserFlowType
-
         return self.properties.get("userFlowType", UserFlowType.signUp)
 
     @odata(name="userFlowTypeVersion")

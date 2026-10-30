@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.backuprestore.artifactrestorestatus import ArtifactRestoreStatus
+from office365.backuprestore.destinationtype import DestinationType
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.backuprestore.artifactrestorestatus import ArtifactRestoreStatus
-    from office365.backuprestore.destinationtype import DestinationType
     from office365.common.restore_point import RestorePoint
     from office365.runtime.types.public_error import PublicError
 
@@ -25,8 +25,6 @@ class RestoreArtifactBase(Entity):
     @property
     def destination_type(self) -> DestinationType:
         """Gets the destinationType property"""
-        from office365.backuprestore.destinationtype import DestinationType
-
         return self.properties.get("destinationType", DestinationType.new)
 
     @odata(name="error")
@@ -47,8 +45,6 @@ class RestoreArtifactBase(Entity):
     @property
     def status(self) -> ArtifactRestoreStatus:
         """Gets the status property"""
-        from office365.backuprestore.artifactrestorestatus import ArtifactRestoreStatus
-
         return self.properties.get("status", ArtifactRestoreStatus.added)
 
     @odata(name="restorePoint", navigation=True)

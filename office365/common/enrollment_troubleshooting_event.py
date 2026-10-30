@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.enrollment.failurereason import DeviceEnrollmentFailureReason
+from office365.intune.devices.enrollment.type import DeviceEnrollmentType
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.enrollment.failurereason import (
-        DeviceEnrollmentFailureReason,
-    )
-    from office365.intune.devices.enrollment.type import DeviceEnrollmentType
 
 
 class EnrollmentTroubleshootingEvent(Entity):
@@ -23,18 +19,12 @@ class EnrollmentTroubleshootingEvent(Entity):
     @property
     def enrollment_type(self) -> DeviceEnrollmentType:
         """Gets the enrollmentType property"""
-        from office365.intune.devices.enrollment.type import DeviceEnrollmentType
-
         return self.properties.get("enrollmentType", DeviceEnrollmentType.unknown)
 
     @odata(name="failureCategory")
     @property
     def failure_category(self) -> DeviceEnrollmentFailureReason:
         """Gets the failureCategory property"""
-        from office365.intune.devices.enrollment.failurereason import (
-            DeviceEnrollmentFailureReason,
-        )
-
         return self.properties.get("failureCategory", DeviceEnrollmentFailureReason.unknown)
 
     @odata(name="failureReason")

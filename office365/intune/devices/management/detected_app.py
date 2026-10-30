@@ -4,13 +4,11 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.detectedappplatformtype import DetectedAppPlatformType
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.detectedappplatformtype import (
-        DetectedAppPlatformType,
-    )
     from office365.intune.devices.management.managed.managed import ManagedDevice
 
 
@@ -31,10 +29,6 @@ class DetectedApp(Entity):
     @property
     def platform(self) -> DetectedAppPlatformType:
         """Gets the platform property"""
-        from office365.intune.devices.management.detectedappplatformtype import (
-            DetectedAppPlatformType,
-        )
-
         return self.properties.get("platform", DetectedAppPlatformType.unknown)
 
     @odata(name="publisher")

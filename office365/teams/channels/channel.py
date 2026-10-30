@@ -13,19 +13,19 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.teams.channels.layout_type import ChannelLayoutType
 from office365.teams.channels.membership_type import ChannelMembershipType
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
 from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.members.conversation import ConversationMember
+from office365.teams.migration_mode import MigrationMode
 from office365.teams.quotas import CHANNEL_MESSAGES_READ, CHANNEL_MESSAGES_WRITE
 from office365.teams.tabs.tab import TeamsTab
 
 if TYPE_CHECKING:
     from office365.teams.apps.app import TeamsApp
-    from office365.teams.channels.layout_type import ChannelLayoutType
     from office365.teams.channels.summary import ChannelSummary
-    from office365.teams.migration_mode import MigrationMode
 
 
 class Channel(Entity):
@@ -220,16 +220,12 @@ class Channel(Entity):
     @property
     def layout_type(self) -> ChannelLayoutType:
         """Gets the layoutType property"""
-        from office365.teams.channels.layout_type import ChannelLayoutType
-
         return self.properties.get("layoutType", ChannelLayoutType.post)
 
     @odata(name="migrationMode")
     @property
     def migration_mode(self) -> MigrationMode:
         """Gets the migrationMode property"""
-        from office365.teams.migration_mode import MigrationMode
-
         return self.properties.get("migrationMode", MigrationMode.inProgress)
 
     @odata(name="originalCreatedDateTime")

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.certificates.status import CertificateStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.certificates.status import CertificateStatus
 
 
 class EnterpriseCodeSigningCertificate(Entity):
@@ -39,8 +37,6 @@ class EnterpriseCodeSigningCertificate(Entity):
     @property
     def status(self) -> CertificateStatus:
         """Gets the status property"""
-        from office365.directory.certificates.status import CertificateStatus
-
         return self.properties.get("status", CertificateStatus.notProvisioned)
 
     @odata(name="subject")

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
@@ -19,9 +20,6 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.mobileapps.win32.lob_app_rule import (
         Win32LobAppRule,
     )
-    from office365.intune.devices.management.mobileapps.windows.architecture import (
-        WindowsArchitecture,
-    )
 
 
 class Win32LobApp(Entity):
@@ -29,20 +27,12 @@ class Win32LobApp(Entity):
     @property
     def allowed_architectures(self) -> WindowsArchitecture:
         """Gets the allowedArchitectures property"""
-        from office365.intune.devices.management.mobileapps.windows.architecture import (
-            WindowsArchitecture,
-        )
-
         return self.properties.get("allowedArchitectures", WindowsArchitecture.none)
 
     @odata(name="applicableArchitectures")
     @property
     def applicable_architectures(self) -> WindowsArchitecture:
         """Gets the applicableArchitectures property"""
-        from office365.intune.devices.management.mobileapps.windows.architecture import (
-            WindowsArchitecture,
-        )
-
         return self.properties.get("applicableArchitectures", WindowsArchitecture.none)
 
     @odata(name="installCommandLine")

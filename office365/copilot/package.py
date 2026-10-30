@@ -3,17 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.copilot.copilot_package_request_status import CopilotPackageRequestStatus
+from office365.copilot.copilot_package_request_type import CopilotPackageRequestType
+from office365.copilot.package_type import PackageType
 from office365.entity import Entity
+from office365.intune.devices.management.package_status import PackageStatus
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.copilot.copilot_package_request_status import (
-        CopilotPackageRequestStatus,
-    )
-    from office365.copilot.copilot_package_request_type import CopilotPackageRequestType
-    from office365.copilot.package_type import PackageType
-    from office365.intune.devices.management.package_status import PackageStatus
     from office365.runtime.types.json import Json
 
 
@@ -40,8 +38,6 @@ class CopilotPackage(Entity):
     @property
     def available_to(self) -> PackageStatus:
         """Gets the availableTo property"""
-        from office365.intune.devices.management.package_status import PackageStatus
-
         return self.properties.get("availableTo", PackageStatus.none)
 
     @odata(name="createdDateTime")
@@ -54,8 +50,6 @@ class CopilotPackage(Entity):
     @property
     def deployed_to(self) -> PackageStatus:
         """Gets the deployedTo property"""
-        from office365.intune.devices.management.package_status import PackageStatus
-
         return self.properties.get("deployedTo", PackageStatus.none)
 
     @odata(name="displayName")
@@ -124,20 +118,12 @@ class CopilotPackage(Entity):
     @property
     def request_status(self) -> CopilotPackageRequestStatus:
         """Gets the requestStatus property"""
-        from office365.copilot.copilot_package_request_status import (
-            CopilotPackageRequestStatus,
-        )
-
         return self.properties.get("requestStatus", CopilotPackageRequestStatus.pending)
 
     @odata(name="requestType")
     @property
     def request_type(self) -> CopilotPackageRequestType:
         """Gets the requestType property"""
-        from office365.copilot.copilot_package_request_type import (
-            CopilotPackageRequestType,
-        )
-
         return self.properties.get("requestType", CopilotPackageRequestType.publish)
 
     @odata(name="shortDescription")
@@ -156,8 +142,6 @@ class CopilotPackage(Entity):
     @property
     def type(self) -> PackageType:
         """Gets the type property"""
-        from office365.copilot.package_type import PackageType
-
         return self.properties.get("type", PackageType.microsoft)
 
     @odata(name="version")

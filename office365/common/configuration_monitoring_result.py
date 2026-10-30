@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.monitor_run_status import MonitorRunStatus
 
 if TYPE_CHECKING:
     from office365.common.error_detail import ErrorDetail
-    from office365.security.monitor_run_status import MonitorRunStatus
 
 
 class ConfigurationMonitoringResult(Entity):
@@ -49,8 +49,6 @@ class ConfigurationMonitoringResult(Entity):
     @property
     def run_status(self) -> MonitorRunStatus:
         """Gets the runStatus property"""
-        from office365.security.monitor_run_status import MonitorRunStatus
-
         return self.properties.get("runStatus", MonitorRunStatus.successful)
 
     @odata(name="tenantId", readonly=True)

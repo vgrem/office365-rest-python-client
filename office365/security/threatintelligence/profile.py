@@ -12,14 +12,12 @@ from office365.runtime.types.odata_property import odata
 from office365.security.intelligence_profile_indicator import (
     IntelligenceProfileIndicator,
 )
+from office365.security.intelligence_profile_kind import IntelligenceProfileKind
 
 if TYPE_CHECKING:
     from office365.security.formatted_content import FormattedContent
     from office365.security.intelligence_profile_country_or_region_of_origin import (
         IntelligenceProfileCountryOrRegionOfOrigin,
-    )
-    from office365.security.intelligence_profile_kind import (
-        IntelligenceProfileKind,
     )
 
 
@@ -102,10 +100,6 @@ class IntelligenceProfile(Entity):
     @property
     def kind(self) -> IntelligenceProfileKind:
         """Gets the kind property"""
-        from office365.security.intelligence_profile_kind import (
-            IntelligenceProfileKind,
-        )
-
         return self.properties.get("kind", IntelligenceProfileKind.actor)
 
     @odata(name="summary")

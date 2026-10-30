@@ -3,15 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.onedrive.share_point_migration_job_error_level import SharePointMigrationJobErrorLevel
+from office365.onedrive.share_point_migration_object_type import SharePointMigrationObjectType
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.onedrive.share_point_migration_job_error_level import (
-        SharePointMigrationJobErrorLevel,
-    )
-    from office365.onedrive.share_point_migration_object_type import (
-        SharePointMigrationObjectType,
-    )
     from office365.runtime.types.public_error import PublicError
 
 
@@ -50,18 +46,10 @@ class SharePointMigrationJobErrorEvent(Entity):
     @property
     def error_level(self) -> SharePointMigrationJobErrorLevel:
         """Gets the errorLevel property"""
-        from office365.onedrive.share_point_migration_job_error_level import (
-            SharePointMigrationJobErrorLevel,
-        )
-
         return self.properties.get("errorLevel", SharePointMigrationJobErrorLevel.important)
 
     @odata(name="objectType")
     @property
     def object_type(self) -> SharePointMigrationObjectType:
         """Gets the objectType property"""
-        from office365.onedrive.share_point_migration_object_type import (
-            SharePointMigrationObjectType,
-        )
-
         return self.properties.get("objectType", SharePointMigrationObjectType.site)

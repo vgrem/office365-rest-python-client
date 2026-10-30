@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
+from office365.intune.devices.management.mobileapps.windows.devicetype import WindowsDeviceType
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -14,12 +16,6 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.mobileapps.contained_app import (
         MobileContainedApp,
     )
-    from office365.intune.devices.management.mobileapps.windows.architecture import (
-        WindowsArchitecture,
-    )
-    from office365.intune.devices.management.mobileapps.windows.devicetype import (
-        WindowsDeviceType,
-    )
 
 
 class WindowsUniversalAppX(Entity):
@@ -27,20 +23,12 @@ class WindowsUniversalAppX(Entity):
     @property
     def applicable_architectures(self) -> WindowsArchitecture:
         """Gets the applicableArchitectures property"""
-        from office365.intune.devices.management.mobileapps.windows.architecture import (
-            WindowsArchitecture,
-        )
-
         return self.properties.get("applicableArchitectures", WindowsArchitecture.none)
 
     @odata(name="applicableDeviceTypes")
     @property
     def applicable_device_types(self) -> WindowsDeviceType:
         """Gets the applicableDeviceTypes property"""
-        from office365.intune.devices.management.mobileapps.windows.devicetype import (
-            WindowsDeviceType,
-        )
-
         return self.properties.get("applicableDeviceTypes", WindowsDeviceType.none)
 
     @odata(name="identityName")

@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.relationship_creation_type import RelationshipCreationType
+from office365.directory.relationship_status import RelationshipStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.relationship_creation_type import RelationshipCreationType
     from office365.directory.relationship_policy import RelationshipPolicy
-    from office365.directory.relationship_status import RelationshipStatus
 
 
 class GovernanceRelationship(Entity):
@@ -17,10 +17,6 @@ class GovernanceRelationship(Entity):
     @property
     def created_type(self) -> RelationshipCreationType:
         """Gets the createdType property"""
-        from office365.directory.relationship_creation_type import (
-            RelationshipCreationType,
-        )
-
         return self.properties.get("createdType", RelationshipCreationType.approvedByAdmin)
 
     @odata(name="creationDateTime")
@@ -65,8 +61,6 @@ class GovernanceRelationship(Entity):
     @property
     def status(self) -> RelationshipStatus:
         """Gets the status property"""
-        from office365.directory.relationship_status import RelationshipStatus
-
         return self.properties.get("status", RelationshipStatus.active)
 
     @property

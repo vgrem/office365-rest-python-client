@@ -3,18 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.applisttype import AppListType
+from office365.intune.devices.configurations.ios.general.ratingappstype import RatingAppsType
+from office365.intune.devices.configurations.webbrowsercookiesettings import WebBrowserCookieSettings
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.compliance.requiredpasswordtype import (
-        RequiredPasswordType,
-    )
-    from office365.intune.devices.configurations.applisttype import AppListType
-    from office365.intune.devices.configurations.ios.general.ratingappstype import (
-        RatingAppsType,
-    )
     from office365.intune.devices.configurations.ios.network_usage_rule import (
         IosNetworkUsageRule,
     )
@@ -34,9 +31,6 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.configurations.media_content_rating_united_states import (
         MediaContentRatingUnitedStates,
-    )
-    from office365.intune.devices.configurations.webbrowsercookiesettings import (
-        WebBrowserCookieSettings,
     )
     from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 
@@ -140,8 +134,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def apps_visibility_list_type(self) -> AppListType:
         """Gets the appsVisibilityListType property"""
-        from office365.intune.devices.configurations.applisttype import AppListType
-
         return self.properties.get("appsVisibilityListType", AppListType.none)
 
     @odata(name="bluetoothBlockModification")
@@ -208,8 +200,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def compliant_app_list_type(self) -> AppListType:
         """Gets the compliantAppListType property"""
-        from office365.intune.devices.configurations.applisttype import AppListType
-
         return self.properties.get("compliantAppListType", AppListType.none)
 
     @odata(name="compliantAppsList")
@@ -578,10 +568,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def media_content_rating_apps(self) -> RatingAppsType:
         """Gets the mediaContentRatingApps property"""
-        from office365.intune.devices.configurations.ios.general.ratingappstype import (
-            RatingAppsType,
-        )
-
         return self.properties.get("mediaContentRatingApps", RatingAppsType.allAllowed)
 
     @odata(name="mediaContentRatingAustralia")
@@ -764,10 +750,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def passcode_required_type(self) -> RequiredPasswordType:
         """Gets the passcodeRequiredType property"""
-        from office365.intune.devices.compliance.requiredpasswordtype import (
-            RequiredPasswordType,
-        )
-
         return self.properties.get("passcodeRequiredType", RequiredPasswordType.deviceDefault)
 
     @odata(name="passcodeSignInFailureCountBeforeWipe")
@@ -810,10 +792,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def safari_cookie_settings(self) -> WebBrowserCookieSettings:
         """Gets the safariCookieSettings property"""
-        from office365.intune.devices.configurations.webbrowsercookiesettings import (
-            WebBrowserCookieSettings,
-        )
-
         return self.properties.get("safariCookieSettings", WebBrowserCookieSettings.browserDefault)
 
     @odata(name="safariManagedDomains")

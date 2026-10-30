@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
+from office365.directory.protection.source import ProtectionSource
+from office365.directory.protection.unitstatus import ProtectionUnitStatus
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identity_set import IdentitySet
-    from office365.directory.protection.source import ProtectionSource
-    from office365.directory.protection.unitstatus import ProtectionUnitStatus
     from office365.runtime.types.public_error import PublicError
 
 
@@ -85,16 +85,12 @@ class ProtectionUnitBase(Entity):
     @property
     def protection_sources(self) -> ProtectionSource:
         """Gets the protectionSources property"""
-        from office365.directory.protection.source import ProtectionSource
-
         return self.properties.get("protectionSources", ProtectionSource.none)
 
     @odata(name="status")
     @property
     def status(self) -> ProtectionUnitStatus:
         """Gets the status property"""
-        from office365.directory.protection.unitstatus import ProtectionUnitStatus
-
         return self.properties.get("status", ProtectionUnitStatus.protectRequested)
 
     @property

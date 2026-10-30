@@ -7,11 +7,10 @@ from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.antispam_directionality import AntispamDirectionality
+from office365.security.threat_type import ThreatType
 
 if TYPE_CHECKING:
-    from office365.security.antispam_directionality import (
-        AntispamDirectionality,
-    )
     from office365.security.collaboration.analyzed_email_attachment import (
         AnalyzedEmailAttachment,
     )
@@ -39,7 +38,6 @@ if TYPE_CHECKING:
     from office365.security.threat_detection_detail import (
         ThreatDetectionDetail,
     )
-    from office365.security.threat_type import ThreatType
     from office365.security.timeline_event import TimelineEvent
 
 
@@ -218,10 +216,6 @@ class AnalyzedEmail(Entity):
     @property
     def directionality(self) -> AntispamDirectionality:
         """Gets the directionality property"""
-        from office365.security.antispam_directionality import (
-            AntispamDirectionality,
-        )
-
         return self.properties.get("directionality", AntispamDirectionality.unknown)
 
     @odata(name="dlpRules")
@@ -303,8 +297,6 @@ class AnalyzedEmail(Entity):
     @property
     def threat_types(self) -> ClientValueCollection[ThreatType]:
         """Gets the threatTypes property"""
-        from office365.security.threat_type import ThreatType
-
         return self.properties.get("threatTypes", ClientValueCollection[ThreatType](ThreatType))
 
     @odata(name="timelineEvents")

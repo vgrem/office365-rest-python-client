@@ -7,6 +7,8 @@ from office365.entity_collection import EntityCollection
 from office365.intune.servicecommunications.announcement_base import (
     ServiceAnnouncementBase,
 )
+from office365.intune.servicecommunications.updatecategory import ServiceUpdateCategory
+from office365.intune.servicecommunications.updateseverity import ServiceUpdateSeverity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -17,12 +19,6 @@ if TYPE_CHECKING:
     )
     from office365.intune.servicecommunications.service_update_message_viewpoint import (
         ServiceUpdateMessageViewpoint,
-    )
-    from office365.intune.servicecommunications.updatecategory import (
-        ServiceUpdateCategory,
-    )
-    from office365.intune.servicecommunications.updateseverity import (
-        ServiceUpdateSeverity,
     )
     from office365.outlook.mail.item_body import ItemBody
 
@@ -59,10 +55,6 @@ class ServiceUpdateMessage(ServiceAnnouncementBase):
     @property
     def category(self) -> ServiceUpdateCategory:
         """Gets the category property"""
-        from office365.intune.servicecommunications.updatecategory import (
-            ServiceUpdateCategory,
-        )
-
         return self.properties.get("category", ServiceUpdateCategory.preventOrFixIssue)
 
     @odata(name="hasAttachments")
@@ -87,10 +79,6 @@ class ServiceUpdateMessage(ServiceAnnouncementBase):
     @property
     def severity(self) -> ServiceUpdateSeverity:
         """Gets the severity property"""
-        from office365.intune.servicecommunications.updateseverity import (
-            ServiceUpdateSeverity,
-        )
-
         return self.properties.get("severity", ServiceUpdateSeverity.normal)
 
     @odata(name="tags")

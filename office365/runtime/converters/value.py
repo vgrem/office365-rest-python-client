@@ -164,6 +164,20 @@ def _client_value_origin(target: Any) -> type:
     return target if isinstance(target, type) else get_origin(target)
 
 
+def _coerce_enum(enum_type: type, value: Any) -> Any:
+    """The member naming ``value``, or ``value`` itself when no member does.
+
+    ``parse_enum`` answers ``None`` for a value the snapshot does not list -- a member
+    the service added since. Storing ``None`` would drop what the service reported and
+    write null back on the next update, so an unfamiliar value is kept as sent, the
+    same way ``parse_bool`` keeps one it cannot read.
+    """
+    parsed = parse_enum(enum_type, value)
+    if parsed is None and value is not None:
+        return value
+    return parsed
+
+
 def deserialize_declared(value: Any, declared_type: Any) -> Any:
     """Coerce a value to a declared scalar or enum type.
 
@@ -174,7 +188,7 @@ def deserialize_declared(value: Any, declared_type: Any) -> Any:
     if converter is not None:
         return converter(value)
     if isinstance(declared_type, type) and issubclass(declared_type, Enum):
-        return parse_enum(declared_type, value)
+        return _coerce_enum(declared_type, value)
     return _UNSET
 
 
@@ -217,5 +231,5 @@ def coerce_value(target_type: Any, value: Any, current: Any, persist_changes: bo
     if isinstance(current, datetime):
         return parse_datetime(value)
     if isinstance(current, Enum):
-        return current if value is None else parse_enum(type(current), value)
+        return current if value is None else _coerce_enum(type(current), value)
     return value

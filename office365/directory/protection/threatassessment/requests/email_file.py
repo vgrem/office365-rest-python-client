@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.protection.threatassessment.requests.maildestinationroutingreason import (  # noqa: E501
+    MailDestinationRoutingReason,
+)
 from office365.directory.protection.threatassessment.requests.request import (
     ThreatAssessmentRequest,
 )
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.protection.threatassessment.requests.maildestinationroutingreason import (
-        MailDestinationRoutingReason,
-    )
 
 
 class EmailFileAssessmentRequest(ThreatAssessmentRequest):
@@ -38,10 +36,6 @@ class EmailFileAssessmentRequest(ThreatAssessmentRequest):
     @property
     def destination_routing_reason(self) -> MailDestinationRoutingReason:
         """Gets the destinationRoutingReason property"""
-        from office365.directory.protection.threatassessment.requests.maildestinationroutingreason import (
-            MailDestinationRoutingReason,
-        )
-
         return self.properties.get("destinationRoutingReason", MailDestinationRoutingReason.none)
 
     @odata(name="recipientEmail")

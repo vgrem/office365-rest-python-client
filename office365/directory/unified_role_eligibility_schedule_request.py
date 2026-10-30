@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (  # noqa: E501
+    UnifiedRoleScheduleRequestActions,
+)
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
-    from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (
-        UnifiedRoleScheduleRequestActions,
-    )
     from office365.directory.request_schedule import RequestSchedule
     from office365.directory.rolemanagement.app_scope import AppScope
     from office365.directory.rolemanagement.unifiedrole.definition import (
@@ -27,10 +27,6 @@ class UnifiedRoleEligibilityScheduleRequest(Entity):
     @property
     def action(self) -> UnifiedRoleScheduleRequestActions:
         """Gets the action property"""
-        from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (
-            UnifiedRoleScheduleRequestActions,
-        )
-
         return self.properties.get("action", UnifiedRoleScheduleRequestActions.adminAssign)
 
     @odata(name="appScopeId")

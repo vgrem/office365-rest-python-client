@@ -3,33 +3,33 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.windows.applicationguardblockclipboardsharingtype import (  # noqa: E501
+    ApplicationGuardBlockClipboardSharingType,
+)
+from office365.intune.devices.configurations.windows.applicationguardblockfiletransfertype import (  # noqa: E501
+    ApplicationGuardBlockFileTransferType,
+)
+from office365.intune.devices.configurations.windows.applockerapplicationcontroltype import (  # noqa: E501
+    AppLockerApplicationControlType,
+)
+from office365.intune.devices.configurations.windows.firewallcertificaterevocationlistcheckmethodtype import (  # noqa: E501
+    FirewallCertificateRevocationListCheckMethodType,
+)
+from office365.intune.devices.configurations.windows.firewallpacketqueueingmethodtype import (  # noqa: E501
+    FirewallPacketQueueingMethodType,
+)
+from office365.intune.devices.configurations.windows.firewallpresharedkeyencodingmethodtype import (  # noqa: E501
+    FirewallPreSharedKeyEncodingMethodType,
+)
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.applicationguardblockclipboardsharingtype import (
-        ApplicationGuardBlockClipboardSharingType,
-    )
-    from office365.intune.devices.configurations.windows.applicationguardblockfiletransfertype import (
-        ApplicationGuardBlockFileTransferType,
-    )
-    from office365.intune.devices.configurations.windows.applockerapplicationcontroltype import (
-        AppLockerApplicationControlType,
-    )
     from office365.intune.devices.configurations.windows.bit_locker_removable_drive_policy import (
         BitLockerRemovableDrivePolicy,
     )
     from office365.intune.devices.configurations.windows.firewall_network_profile import (
         WindowsFirewallNetworkProfile,
-    )
-    from office365.intune.devices.configurations.windows.firewallcertificaterevocationlistcheckmethodtype import (
-        FirewallCertificateRevocationListCheckMethodType,
-    )
-    from office365.intune.devices.configurations.windows.firewallpacketqueueingmethodtype import (
-        FirewallPacketQueueingMethodType,
-    )
-    from office365.intune.devices.configurations.windows.firewallpresharedkeyencodingmethodtype import (
-        FirewallPreSharedKeyEncodingMethodType,
     )
 
 
@@ -68,10 +68,6 @@ class Windows10EndpointProtectionConfiguration(Entity):
     @property
     def application_guard_block_clipboard_sharing(self) -> ApplicationGuardBlockClipboardSharingType:
         """Gets the applicationGuardBlockClipboardSharing property"""
-        from office365.intune.devices.configurations.windows.applicationguardblockclipboardsharingtype import (
-            ApplicationGuardBlockClipboardSharingType,
-        )
-
         return self.properties.get(
             "applicationGuardBlockClipboardSharing", ApplicationGuardBlockClipboardSharingType.notConfigured
         )
@@ -80,10 +76,6 @@ class Windows10EndpointProtectionConfiguration(Entity):
     @property
     def application_guard_block_file_transfer(self) -> ApplicationGuardBlockFileTransferType:
         """Gets the applicationGuardBlockFileTransfer property"""
-        from office365.intune.devices.configurations.windows.applicationguardblockfiletransfertype import (
-            ApplicationGuardBlockFileTransferType,
-        )
-
         return self.properties.get(
             "applicationGuardBlockFileTransfer", ApplicationGuardBlockFileTransferType.notConfigured
         )
@@ -110,10 +102,6 @@ class Windows10EndpointProtectionConfiguration(Entity):
     @property
     def app_locker_application_control(self) -> AppLockerApplicationControlType:
         """Gets the appLockerApplicationControl property"""
-        from office365.intune.devices.configurations.windows.applockerapplicationcontroltype import (
-            AppLockerApplicationControlType,
-        )
-
         return self.properties.get("appLockerApplicationControl", AppLockerApplicationControlType.notConfigured)
 
     @odata(name="bitLockerDisableWarningForOtherDiskEncryption")
@@ -190,10 +178,6 @@ class Windows10EndpointProtectionConfiguration(Entity):
     @property
     def firewall_certificate_revocation_list_check_method(self) -> FirewallCertificateRevocationListCheckMethodType:
         """Gets the firewallCertificateRevocationListCheckMethod property"""
-        from office365.intune.devices.configurations.windows.firewallcertificaterevocationlistcheckmethodtype import (
-            FirewallCertificateRevocationListCheckMethodType,
-        )
-
         return self.properties.get(
             "firewallCertificateRevocationListCheckMethod",
             FirewallCertificateRevocationListCheckMethodType.deviceDefault,
@@ -239,20 +223,12 @@ class Windows10EndpointProtectionConfiguration(Entity):
     @property
     def firewall_packet_queueing_method(self) -> FirewallPacketQueueingMethodType:
         """Gets the firewallPacketQueueingMethod property"""
-        from office365.intune.devices.configurations.windows.firewallpacketqueueingmethodtype import (
-            FirewallPacketQueueingMethodType,
-        )
-
         return self.properties.get("firewallPacketQueueingMethod", FirewallPacketQueueingMethodType.deviceDefault)
 
     @odata(name="firewallPreSharedKeyEncodingMethod")
     @property
     def firewall_pre_shared_key_encoding_method(self) -> FirewallPreSharedKeyEncodingMethodType:
         """Gets the firewallPreSharedKeyEncodingMethod property"""
-        from office365.intune.devices.configurations.windows.firewallpresharedkeyencodingmethodtype import (
-            FirewallPreSharedKeyEncodingMethodType,
-        )
-
         return self.properties.get(
             "firewallPreSharedKeyEncodingMethod", FirewallPreSharedKeyEncodingMethodType.deviceDefault
         )

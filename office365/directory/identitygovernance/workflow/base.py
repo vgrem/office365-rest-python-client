@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identitygovernance.lifecycleworkflows.category import (
     LifecycleWorkflowCategory,
 )
+from office365.directory.identitygovernance.subject_type import SubjectType
 from office365.directory.identitygovernance.task import Task
 from office365.directory.identitygovernance.workflow.executionconditions import (
     WorkflowExecutionConditions,
@@ -16,9 +17,6 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.subject_type import SubjectType
 
 
 class WorkflowBase(Entity):
@@ -113,6 +111,4 @@ class WorkflowBase(Entity):
     @property
     def target_subject_type(self) -> SubjectType:
         """Gets the targetSubjectType property"""
-        from office365.directory.identitygovernance.subject_type import SubjectType
-
         return self.properties.get("targetSubjectType", SubjectType.user)

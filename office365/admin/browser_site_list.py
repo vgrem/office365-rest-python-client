@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.browser.siteliststatus import BrowserSiteListStatus
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -12,7 +13,6 @@ if TYPE_CHECKING:
     from office365.admin.browser_shared_cookie import BrowserSharedCookie
     from office365.admin.browser_site import BrowserSite
     from office365.directory.identity_set import IdentitySet
-    from office365.intune.browser.siteliststatus import BrowserSiteListStatus
 
 
 class BrowserSiteList(Entity):
@@ -66,8 +66,6 @@ class BrowserSiteList(Entity):
     @property
     def status(self) -> BrowserSiteListStatus:
         """Gets the status property"""
-        from office365.intune.browser.siteliststatus import BrowserSiteListStatus
-
         return self.properties.get("status", BrowserSiteListStatus.draft)
 
     @odata(name="sharedCookies", navigation=True)

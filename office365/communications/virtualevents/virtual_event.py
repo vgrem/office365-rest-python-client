@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.communications.quotas import VIRTUAL_EVENT_QUOTAS
 from office365.communications.virtualevents.presenter import VirtualEventPresenter
 from office365.communications.virtualevents.session import VirtualEventSession
+from office365.communications.virtualevents.status import VirtualEventStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
@@ -21,7 +22,6 @@ if TYPE_CHECKING:
         VirtualEventExternalInformation,
     )
     from office365.communications.virtualevents.settings import VirtualEventSettings
-    from office365.communications.virtualevents.status import VirtualEventStatus
     from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 
 
@@ -124,8 +124,6 @@ class VirtualEvent(Entity):
     @property
     def status(self) -> VirtualEventStatus:
         """Gets the status property"""
-        from office365.communications.virtualevents.status import VirtualEventStatus
-
         return self.properties.get("status", VirtualEventStatus.draft)
 
     @property

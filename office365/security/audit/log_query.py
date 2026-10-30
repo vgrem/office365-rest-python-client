@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.audit.logs.recordtype import AuditLogRecordType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,13 +11,10 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.audit.audit_log_query_status import AuditLogQueryStatus
 from office365.security.quotas import AUDIT_LOG_QUERY_RECORDS
 
 if TYPE_CHECKING:
-    from office365.directory.audit.logs.recordtype import AuditLogRecordType
-    from office365.security.audit.audit_log_query_status import (
-        AuditLogQueryStatus,
-    )
     from office365.security.audit.log_record import AuditLogRecord
 
 
@@ -92,8 +90,6 @@ class AuditLogQuery(Entity):
     @property
     def record_type_filters(self) -> ClientValueCollection[AuditLogRecordType]:
         """Gets the recordTypeFilters property"""
-        from office365.directory.audit.logs.recordtype import AuditLogRecordType
-
         return self.properties.get("recordTypeFilters", ClientValueCollection[AuditLogRecordType](AuditLogRecordType))
 
     @odata(name="serviceFilters")
@@ -106,10 +102,6 @@ class AuditLogQuery(Entity):
     @property
     def status(self) -> AuditLogQueryStatus:
         """Gets the status property"""
-        from office365.security.audit.audit_log_query_status import (
-            AuditLogQueryStatus,
-        )
-
         return self.properties.get("status", AuditLogQueryStatus.notStarted)
 
     @odata(name="userPrincipalNameFilters")

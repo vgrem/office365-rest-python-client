@@ -4,14 +4,10 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.teams.schedule.eligibilityfilteringenabledentities import EligibilityFilteringEnabledEntities
+from office365.teams.teamwork.workforce_integration_supported_entities import WorkforceIntegrationSupportedEntities
 
 if TYPE_CHECKING:
-    from office365.teams.schedule.eligibilityfilteringenabledentities import (
-        EligibilityFilteringEnabledEntities,
-    )
-    from office365.teams.teamwork.workforce_integration_supported_entities import (
-        WorkforceIntegrationSupportedEntities,
-    )
     from office365.teams.workforce_integration_encryption import (
         WorkforceIntegrationEncryption,
     )
@@ -34,10 +30,6 @@ class WorkforceIntegration(Entity):
     @property
     def eligibility_filtering_enabled_entities(self) -> EligibilityFilteringEnabledEntities:
         """Gets the eligibilityFilteringEnabledEntities property"""
-        from office365.teams.schedule.eligibilityfilteringenabledentities import (
-            EligibilityFilteringEnabledEntities,
-        )
-
         return self.properties.get("eligibilityFilteringEnabledEntities", EligibilityFilteringEnabledEntities.none)
 
     @odata(name="encryption")
@@ -60,10 +52,6 @@ class WorkforceIntegration(Entity):
     @property
     def supported_entities(self) -> WorkforceIntegrationSupportedEntities:
         """Gets the supportedEntities property"""
-        from office365.teams.teamwork.workforce_integration_supported_entities import (
-            WorkforceIntegrationSupportedEntities,
-        )
-
         return self.properties.get("supportedEntities", WorkforceIntegrationSupportedEntities.none)
 
     @odata(name="url")

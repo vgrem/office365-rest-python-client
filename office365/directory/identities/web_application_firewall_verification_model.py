@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identities.riskPrevention.web_application_firewall_provider_type import (  # noqa: E501
+    WebApplicationFirewallProviderType,
+)
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identities.riskPrevention.web_application_firewall_provider_type import (
-        WebApplicationFirewallProviderType,
-    )
     from office365.directory.identities.riskPrevention.web_application_firewall_verification_result import (
         WebApplicationFirewallVerificationResult,
     )
@@ -26,10 +26,6 @@ class WebApplicationFirewallVerificationModel(Entity):
     @property
     def provider_type(self) -> WebApplicationFirewallProviderType:
         """Gets the providerType property"""
-        from office365.directory.identities.riskPrevention.web_application_firewall_provider_type import (
-            WebApplicationFirewallProviderType,
-        )
-
         return self.properties.get("providerType", WebApplicationFirewallProviderType.akamai)
 
     @odata(name="verificationResult")

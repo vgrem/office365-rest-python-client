@@ -7,11 +7,11 @@ from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.teams.apps.publishingstate import TeamsAppPublishingState
 from office365.teams.bots.teamwork_bot import TeamworkBot
 
 if TYPE_CHECKING:
     from office365.teams.apps.authorization import TeamsAppAuthorization
-    from office365.teams.apps.publishingstate import TeamsAppPublishingState
 
 
 class TeamsAppDefinition(Entity):
@@ -65,8 +65,6 @@ class TeamsAppDefinition(Entity):
     @property
     def publishing_state(self) -> TeamsAppPublishingState:
         """Gets the publishingState property"""
-        from office365.teams.apps.publishingstate import TeamsAppPublishingState
-
         return self.properties.get("publishingState", TeamsAppPublishingState.submitted)
 
     @odata(name="shortDescription")

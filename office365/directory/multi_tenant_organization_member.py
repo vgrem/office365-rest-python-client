@@ -4,16 +4,12 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
+from office365.directory.tenantinformation.multitenantorganizationmemberrole import MultiTenantOrganizationMemberRole
+from office365.directory.tenantinformation.multitenantorganizationmemberstate import MultiTenantOrganizationMemberState
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.tenantinformation.multitenantorganizationmemberrole import (
-        MultiTenantOrganizationMemberRole,
-    )
-    from office365.directory.tenantinformation.multitenantorganizationmemberstate import (
-        MultiTenantOrganizationMemberState,
-    )
     from office365.security.audit.multi_tenant_organization_member_transition_details import (
         MultiTenantOrganizationMemberTransitionDetails,
     )
@@ -48,20 +44,12 @@ class MultiTenantOrganizationMember(Entity):
     @property
     def role(self) -> MultiTenantOrganizationMemberRole:
         """Gets the role property"""
-        from office365.directory.tenantinformation.multitenantorganizationmemberrole import (
-            MultiTenantOrganizationMemberRole,
-        )
-
         return self.properties.get("role", MultiTenantOrganizationMemberRole.owner)
 
     @odata(name="state")
     @property
     def state(self) -> MultiTenantOrganizationMemberState:
         """Gets the state property"""
-        from office365.directory.tenantinformation.multitenantorganizationmemberstate import (
-            MultiTenantOrganizationMemberState,
-        )
-
         return self.properties.get("state", MultiTenantOrganizationMemberState.pending)
 
     @odata(name="tenantId")

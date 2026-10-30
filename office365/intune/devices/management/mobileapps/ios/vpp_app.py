@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.vpptokens.accounttype import VppTokenAccountType
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -11,9 +12,6 @@ if TYPE_CHECKING:
         IosDeviceType,
     )
     from office365.intune.devices.management.mobileapps.vpp_licensing_type import VppLicensingType
-    from office365.intune.devices.management.vpptokens.accounttype import (
-        VppTokenAccountType,
-    )
 
 
 class IosVppApp(Entity):
@@ -69,10 +67,6 @@ class IosVppApp(Entity):
     @property
     def vpp_token_account_type(self) -> VppTokenAccountType:
         """Gets the vppTokenAccountType property"""
-        from office365.intune.devices.management.vpptokens.accounttype import (
-            VppTokenAccountType,
-        )
-
         return self.properties.get("vppTokenAccountType", VppTokenAccountType.business)
 
     @odata(name="vppTokenAppleId")

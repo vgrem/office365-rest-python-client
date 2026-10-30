@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.authentication.methods.keystrength import AuthenticationMethodKeyStrength
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.authentication.methods.keystrength import (
-        AuthenticationMethodKeyStrength,
-    )
     from office365.intune.devices.device import Device
 
 
@@ -24,10 +22,6 @@ class WindowsHelloForBusinessAuthenticationMethod(Entity):
     @property
     def key_strength(self) -> AuthenticationMethodKeyStrength:
         """Gets the keyStrength property"""
-        from office365.directory.authentication.methods.keystrength import (
-            AuthenticationMethodKeyStrength,
-        )
-
         return self.properties.get("keyStrength", AuthenticationMethodKeyStrength.normal)
 
     @odata(name="device", navigation=True)

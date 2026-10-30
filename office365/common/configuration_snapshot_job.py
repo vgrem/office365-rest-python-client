@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.admin.snapshot_job_status import SnapshotJobStatus
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.admin.snapshot_job_status import SnapshotJobStatus
     from office365.directory.identity_set import IdentitySet
 
 
@@ -67,8 +67,6 @@ class ConfigurationSnapshotJob(Entity):
     @property
     def status(self) -> SnapshotJobStatus:
         """Gets the status property"""
-        from office365.admin.snapshot_job_status import SnapshotJobStatus
-
         return self.properties.get("status", SnapshotJobStatus.notStarted)
 
     @odata(name="tenantId", readonly=True)

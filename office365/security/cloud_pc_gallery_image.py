@@ -1,15 +1,11 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.virtualendpoint.cloudpcs.galleryimagestatus import CloudPcGalleryImageStatus
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.galleryimagestatus import (
-        CloudPcGalleryImageStatus,
-    )
 
 
 class CloudPcGalleryImage(Entity):
@@ -71,10 +67,6 @@ class CloudPcGalleryImage(Entity):
     @property
     def status(self) -> CloudPcGalleryImageStatus:
         """Gets the status property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.galleryimagestatus import (
-            CloudPcGalleryImageStatus,
-        )
-
         return self.properties.get("status", CloudPcGalleryImageStatus.supported)
 
     @property

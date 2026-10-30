@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identitygovernance.operationstatus import OperationStatus
 from office365.entity import Entity
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.operationstatus import OperationStatus
 
 
 class Operation(PollableOperation, Entity):
@@ -28,10 +26,6 @@ class Operation(PollableOperation, Entity):
     @property
     def status(self) -> OperationStatus:
         """Gets the status property"""
-        from office365.directory.identitygovernance.operationstatus import (
-            OperationStatus,
-        )
-
         return self.properties.get("status", OperationStatus.NotStarted)
 
     @property

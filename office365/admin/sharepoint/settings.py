@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional
 
 from office365.admin.sharepoint.idle_session_signout import IdleSessionSignOut
+from office365.admin.sharepoint.imagetaggingchoice import ImageTaggingChoice
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.admin.sharepoint.imagetaggingchoice import ImageTaggingChoice
 
 
 class SharepointSettings(Entity):
@@ -129,8 +127,6 @@ class SharepointSettings(Entity):
     @property
     def image_tagging_option(self) -> ImageTaggingChoice:
         """Gets the imageTaggingOption property"""
-        from office365.admin.sharepoint.imagetaggingchoice import ImageTaggingChoice
-
         return self.properties.get("imageTaggingOption", ImageTaggingChoice.disabled)
 
     @odata(name="isFileActivityNotificationEnabled")

@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.threatprotectionlevel import DeviceThreatProtectionLevel
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.compliance.requiredpasswordtype import (
-        RequiredPasswordType,
-    )
-    from office365.intune.devices.threatprotectionlevel import (
-        DeviceThreatProtectionLevel,
-    )
 
 
 class IosCompliancePolicy(Entity):
@@ -25,10 +19,6 @@ class IosCompliancePolicy(Entity):
     @property
     def device_threat_protection_required_security_level(self) -> DeviceThreatProtectionLevel:
         """Gets the deviceThreatProtectionRequiredSecurityLevel property"""
-        from office365.intune.devices.threatprotectionlevel import (
-            DeviceThreatProtectionLevel,
-        )
-
         return self.properties.get(
             "deviceThreatProtectionRequiredSecurityLevel", DeviceThreatProtectionLevel.unavailable
         )
@@ -97,10 +87,6 @@ class IosCompliancePolicy(Entity):
     @property
     def passcode_required_type(self) -> RequiredPasswordType:
         """Gets the passcodeRequiredType property"""
-        from office365.intune.devices.compliance.requiredpasswordtype import (
-            RequiredPasswordType,
-        )
-
         return self.properties.get("passcodeRequiredType", RequiredPasswordType.deviceDefault)
 
     @odata(name="securityBlockJailbrokenDevices")

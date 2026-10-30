@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.recovery.recovery_status import RecoveryStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
@@ -10,7 +11,6 @@ if TYPE_CHECKING:
     from office365.directory.recovery.job_filtering_criteria_base import (
         RecoveryJobFilteringCriteriaBase,
     )
-    from office365.directory.recovery.recovery_status import RecoveryStatus
 
 
 class RecoveryJobBase(Entity):
@@ -40,8 +40,6 @@ class RecoveryJobBase(Entity):
     @property
     def status(self) -> RecoveryStatus:
         """Gets the status property"""
-        from office365.directory.recovery.recovery_status import RecoveryStatus
-
         return self.properties.get("status", RecoveryStatus.initialized)
 
     @odata(name="targetStateDateTime")

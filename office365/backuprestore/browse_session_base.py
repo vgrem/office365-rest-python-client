@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.backuprestore.restoresessions.browse_session_status import BrowseSessionStatus
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -15,9 +16,6 @@ if TYPE_CHECKING:
     from office365.backuprestore.restoresessions.browse_query_order import BrowseQueryOrder
     from office365.backuprestore.restoresessions.browse_query_response_item import (
         BrowseQueryResponseItem,
-    )
-    from office365.backuprestore.restoresessions.browse_session_status import (
-        BrowseSessionStatus,
     )
     from office365.runtime.client_value_collection import ClientValueCollection
     from office365.runtime.types.public_error import PublicError
@@ -98,10 +96,6 @@ class BrowseSessionBase(Entity):
     @property
     def status(self) -> BrowseSessionStatus:
         """Gets the status property"""
-        from office365.backuprestore.restoresessions.browse_session_status import (
-            BrowseSessionStatus,
-        )
-
         return self.properties.get("status", BrowseSessionStatus.creating)
 
     @property

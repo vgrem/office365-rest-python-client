@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.planner.assignments import PlannerAssignments
 from office365.planner.entity import PlannerEntity
+from office365.planner.tasks.previewtype import PlannerPreviewType
 from office365.planner.tasks.task_details import PlannerTaskDetails
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -24,7 +25,6 @@ if TYPE_CHECKING:
     from office365.planner.progress_task_board_task_format import (
         PlannerProgressTaskBoardTaskFormat,
     )
-    from office365.planner.tasks.previewtype import PlannerPreviewType
 
 
 class PlannerTask(PlannerEntity):
@@ -215,8 +215,6 @@ class PlannerTask(PlannerEntity):
     @property
     def preview_type(self) -> PlannerPreviewType:
         """Gets the previewType property"""
-        from office365.planner.tasks.previewtype import PlannerPreviewType
-
         return self.properties.get("previewType", PlannerPreviewType.automatic)
 
     @odata(name="referenceCount")

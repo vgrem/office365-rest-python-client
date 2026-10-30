@@ -4,33 +4,25 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.enablement import Enablement
+from office365.intune.devices.configurations.windows.automaticupdatemode import AutomaticUpdateMode
+from office365.intune.devices.configurations.windows.autorestartnotificationdismissalmethod import (  # noqa: E501
+    AutoRestartNotificationDismissalMethod,
+)
+from office365.intune.devices.configurations.windows.deliveryoptimizationmode import WindowsDeliveryOptimizationMode
+from office365.intune.devices.configurations.windows.prereleasefeatures import PrereleaseFeatures
+from office365.intune.devices.configurations.windows.updateforbusinessupdateweeks import (  # noqa: E501
+    WindowsUpdateForBusinessUpdateWeeks,
+)
+from office365.intune.devices.configurations.windows.updatenotificationdisplayoption import (  # noqa: E501
+    WindowsUpdateNotificationDisplayOption,
+)
+from office365.intune.devices.configurations.windows.updatetype import WindowsUpdateType
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.configurations.enablement import Enablement
-    from office365.intune.devices.configurations.windows.automaticupdatemode import (
-        AutomaticUpdateMode,
-    )
-    from office365.intune.devices.configurations.windows.autorestartnotificationdismissalmethod import (
-        AutoRestartNotificationDismissalMethod,
-    )
-    from office365.intune.devices.configurations.windows.deliveryoptimizationmode import (
-        WindowsDeliveryOptimizationMode,
-    )
-    from office365.intune.devices.configurations.windows.prereleasefeatures import (
-        PrereleaseFeatures,
-    )
     from office365.intune.devices.configurations.windows.update_install_schedule_type import (
         WindowsUpdateInstallScheduleType,
-    )
-    from office365.intune.devices.configurations.windows.updateforbusinessupdateweeks import (
-        WindowsUpdateForBusinessUpdateWeeks,
-    )
-    from office365.intune.devices.configurations.windows.updatenotificationdisplayoption import (
-        WindowsUpdateNotificationDisplayOption,
-    )
-    from office365.intune.devices.configurations.windows.updatetype import (
-        WindowsUpdateType,
     )
 
 
@@ -45,20 +37,12 @@ class WindowsUpdateForBusinessConfiguration(Entity):
     @property
     def automatic_update_mode(self) -> AutomaticUpdateMode:
         """Gets the automaticUpdateMode property"""
-        from office365.intune.devices.configurations.windows.automaticupdatemode import (
-            AutomaticUpdateMode,
-        )
-
         return self.properties.get("automaticUpdateMode", AutomaticUpdateMode.userDefined)
 
     @odata(name="autoRestartNotificationDismissal")
     @property
     def auto_restart_notification_dismissal(self) -> AutoRestartNotificationDismissalMethod:
         """Gets the autoRestartNotificationDismissal property"""
-        from office365.intune.devices.configurations.windows.autorestartnotificationdismissalmethod import (
-            AutoRestartNotificationDismissalMethod,
-        )
-
         return self.properties.get(
             "autoRestartNotificationDismissal", AutoRestartNotificationDismissalMethod.notConfigured
         )
@@ -67,10 +51,6 @@ class WindowsUpdateForBusinessConfiguration(Entity):
     @property
     def business_ready_updates_only(self) -> WindowsUpdateType:
         """Gets the businessReadyUpdatesOnly property"""
-        from office365.intune.devices.configurations.windows.updatetype import (
-            WindowsUpdateType,
-        )
-
         return self.properties.get("businessReadyUpdatesOnly", WindowsUpdateType.userDefined)
 
     @odata(name="deadlineForFeatureUpdatesInDays")
@@ -95,10 +75,6 @@ class WindowsUpdateForBusinessConfiguration(Entity):
     @property
     def delivery_optimization_mode(self) -> WindowsDeliveryOptimizationMode:
         """Gets the deliveryOptimizationMode property"""
-        from office365.intune.devices.configurations.windows.deliveryoptimizationmode import (
-            WindowsDeliveryOptimizationMode,
-        )
-
         return self.properties.get("deliveryOptimizationMode", WindowsDeliveryOptimizationMode.userDefined)
 
     @odata(name="driversExcluded")
@@ -189,10 +165,6 @@ class WindowsUpdateForBusinessConfiguration(Entity):
     @property
     def prerelease_features(self) -> PrereleaseFeatures:
         """Gets the prereleaseFeatures property"""
-        from office365.intune.devices.configurations.windows.prereleasefeatures import (
-            PrereleaseFeatures,
-        )
-
         return self.properties.get("prereleaseFeatures", PrereleaseFeatures.userDefined)
 
     @odata(name="qualityUpdatesDeferralPeriodInDays")
@@ -253,36 +225,24 @@ class WindowsUpdateForBusinessConfiguration(Entity):
     @property
     def update_notification_level(self) -> WindowsUpdateNotificationDisplayOption:
         """Gets the updateNotificationLevel property"""
-        from office365.intune.devices.configurations.windows.updatenotificationdisplayoption import (
-            WindowsUpdateNotificationDisplayOption,
-        )
-
         return self.properties.get("updateNotificationLevel", WindowsUpdateNotificationDisplayOption.notConfigured)
 
     @odata(name="updateWeeks")
     @property
     def update_weeks(self) -> WindowsUpdateForBusinessUpdateWeeks:
         """Gets the updateWeeks property"""
-        from office365.intune.devices.configurations.windows.updateforbusinessupdateweeks import (
-            WindowsUpdateForBusinessUpdateWeeks,
-        )
-
         return self.properties.get("updateWeeks", WindowsUpdateForBusinessUpdateWeeks.userDefined)
 
     @odata(name="userPauseAccess")
     @property
     def user_pause_access(self) -> Enablement:
         """Gets the userPauseAccess property"""
-        from office365.intune.devices.configurations.enablement import Enablement
-
         return self.properties.get("userPauseAccess", Enablement.notConfigured)
 
     @odata(name="userWindowsUpdateScanAccess")
     @property
     def user_windows_update_scan_access(self) -> Enablement:
         """Gets the userWindowsUpdateScanAccess property"""
-        from office365.intune.devices.configurations.enablement import Enablement
-
         return self.properties.get("userWindowsUpdateScanAccess", Enablement.notConfigured)
 
     @property

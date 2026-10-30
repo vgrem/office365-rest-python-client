@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.externalconnectors.content_category import ContentCategory
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.search.external.configuration import Configuration
@@ -13,7 +14,6 @@ if TYPE_CHECKING:
     from office365.externalconnectors.activity_settings import ActivitySettings
     from office365.externalconnectors.connection_operation import ConnectionOperation
     from office365.externalconnectors.connectionstate import ConnectionState
-    from office365.externalconnectors.content_category import ContentCategory
     from office365.externalconnectors.external_group import ExternalGroup
     from office365.externalconnectors.schema import Schema
     from office365.search.external.item import ExternalItem
@@ -60,8 +60,6 @@ class ExternalConnection(Entity):
     @property
     def content_category(self) -> ContentCategory:
         """Gets the contentCategory property"""
-        from office365.externalconnectors.content_category import ContentCategory
-
         return self.properties.get("contentCategory", ContentCategory.uncategorized)
 
     @odata(name="description")

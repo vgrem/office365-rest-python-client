@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.education.readingcoachstorytype import ReadingCoachStoryType
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.education.readingcoachstorytype import ReadingCoachStoryType
 
 
 class ReadingCoachPassage(Entity):
@@ -40,8 +38,6 @@ class ReadingCoachPassage(Entity):
     @property
     def story_type(self) -> ReadingCoachStoryType:
         """Gets the storyType property"""
-        from office365.education.readingcoachstorytype import ReadingCoachStoryType
-
         return self.properties.get("storyType", ReadingCoachStoryType.aiGenerated)
 
     @odata(name="studentId")

@@ -2,15 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.communications.max_work_location_details import MaxWorkLocationDetails
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.communications.max_work_location_details import (
-        MaxWorkLocationDetails,
-    )
     from office365.directory.users.work_plan_occurrence import WorkPlanOccurrence
     from office365.directory.users.work_plan_recurrence import WorkPlanRecurrence
 
@@ -20,10 +18,6 @@ class WorkHoursAndLocationsSetting(Entity):
     @property
     def max_shared_work_location_details(self) -> MaxWorkLocationDetails:
         """Gets the maxSharedWorkLocationDetails property"""
-        from office365.communications.max_work_location_details import (
-            MaxWorkLocationDetails,
-        )
-
         return self.properties.get("maxSharedWorkLocationDetails", MaxWorkLocationDetails.unknown)
 
     @odata(name="occurrences", navigation=True)

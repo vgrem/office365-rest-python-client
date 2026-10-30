@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -11,11 +11,9 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.alerts.alert import Alert
 from office365.security.alerts.comment import AlertComment
-
-if TYPE_CHECKING:
-    from office365.security.alerts.determination import AlertDetermination
-    from office365.security.alerts.severity import AlertSeverity
-    from office365.security.incidents.status import IncidentStatus
+from office365.security.alerts.determination import AlertDetermination
+from office365.security.alerts.severity import AlertSeverity
+from office365.security.incidents.status import IncidentStatus
 
 
 class Incident(Entity):
@@ -86,8 +84,6 @@ class Incident(Entity):
     @property
     def determination(self) -> AlertDetermination:
         """Gets the determination property"""
-        from office365.security.alerts.determination import AlertDetermination
-
         return self.properties.get("determination", AlertDetermination.unknown)
 
     @odata(name="displayName")
@@ -136,16 +132,12 @@ class Incident(Entity):
     @property
     def severity(self) -> AlertSeverity:
         """Gets the severity property"""
-        from office365.security.alerts.severity import AlertSeverity
-
         return self.properties.get("severity", AlertSeverity.unknown)
 
     @odata(name="status")
     @property
     def status(self) -> IncidentStatus:
         """Gets the status property"""
-        from office365.security.incidents.status import IncidentStatus
-
         return self.properties.get("status", IncidentStatus.active)
 
     @odata(name="summary")

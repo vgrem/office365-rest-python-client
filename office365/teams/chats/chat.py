@@ -16,6 +16,7 @@ from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.chats.messages.info import ChatMessageInfo
 from office365.teams.chats.viewpoint import ChatViewpoint
 from office365.teams.members.conversation_collection import ConversationMemberCollection
+from office365.teams.migration_mode import MigrationMode
 from office365.teams.operations.async_operation import TeamsAsyncOperation
 from office365.teams.quotas import CHAT_MESSAGES_READ, CHAT_MESSAGES_WRITE
 from office365.teams.tabs.tab import TeamsTab
@@ -24,7 +25,6 @@ from office365.teams.teamwork.online_meeting_info import TeamworkOnlineMeetingIn
 if TYPE_CHECKING:
     from office365.teams.chats.pinned_chat_message_info import PinnedChatMessageInfo
     from office365.teams.chats.targeted_chat_message import TargetedChatMessage
-    from office365.teams.migration_mode import MigrationMode
 
 
 class Chat(Entity):
@@ -166,8 +166,6 @@ class Chat(Entity):
     @property
     def migration_mode(self) -> MigrationMode:
         """Gets the migrationMode property"""
-        from office365.teams.migration_mode import MigrationMode
-
         return self.properties.get("migrationMode", MigrationMode.inProgress)
 
     @odata(name="pinnedMessages", navigation=True)

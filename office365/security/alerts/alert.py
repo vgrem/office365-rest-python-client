@@ -12,13 +12,15 @@ from office365.security.alerts.comment import AlertComment
 from office365.security.alerts.detectionsource import DetectionSource
 from office365.security.alerts.determination import AlertDetermination
 from office365.security.alerts.evidence import AlertEvidence
+from office365.security.alerts.feedback import AlertFeedback
 from office365.security.alerts.history_state import AlertHistoryState
 from office365.security.alerts.severity import AlertSeverity
 from office365.security.alerts.status import AlertStatus
+from office365.security.investigation_state import InvestigationState
+from office365.security.service_source import ServiceSource
 
 if TYPE_CHECKING:
     from office365.security.alerts.detection import AlertDetection
-    from office365.security.alerts.feedback import AlertFeedback
     from office365.security.alerts.file_security_state import (
         FileSecurityState,
     )
@@ -31,7 +33,6 @@ if TYPE_CHECKING:
     from office365.security.investigation_security_state import (
         InvestigationSecurityState,
     )
-    from office365.security.investigation_state import InvestigationState
     from office365.security.malware_state import MalwareState
     from office365.security.message_security_state import MessageSecurityState
     from office365.security.network_connection import NetworkConnection
@@ -41,7 +42,6 @@ if TYPE_CHECKING:
     from office365.security.security_vendor_information import (
         SecurityVendorInformation,
     )
-    from office365.security.service_source import ServiceSource
     from office365.security.uri_click_security_state import (
         UriClickSecurityState,
     )
@@ -283,16 +283,12 @@ class Alert(Entity):
     @property
     def investigation_state(self) -> InvestigationState:
         """Gets the investigationState property"""
-        from office365.security.investigation_state import InvestigationState
-
         return self.properties.get("investigationState", InvestigationState.unknown)
 
     @odata(name="serviceSource")
     @property
     def service_source(self) -> ServiceSource:
         """Gets the serviceSource property"""
-        from office365.security.service_source import ServiceSource
-
         return self.properties.get("serviceSource", ServiceSource.unknown)
 
     @property
@@ -344,8 +340,6 @@ class Alert(Entity):
     @property
     def feedback(self) -> AlertFeedback:
         """Gets the feedback property"""
-        from office365.security.alerts.feedback import AlertFeedback
-
         return self.properties.get("feedback", AlertFeedback.unknown)
 
     @property

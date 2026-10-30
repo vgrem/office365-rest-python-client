@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.subject_lifecycle import (  # noqa: E501
+    AccessPackageSubjectLifecycle,
+)
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.subjecttype import (
     AccessPackageSubjectType,
 )
@@ -10,9 +13,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.subject_lifecycle import (
-        AccessPackageSubjectLifecycle,
-    )
     from office365.directory.identitygovernance.entitlementmanagement.connected_organization import (
         ConnectedOrganization,
     )
@@ -63,10 +63,6 @@ class AccessPackageSubject(Entity):
     @property
     def subject_lifecycle(self) -> AccessPackageSubjectLifecycle:
         """Gets the subjectLifecycle property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.subject_lifecycle import (
-            AccessPackageSubjectLifecycle,
-        )
-
         return self.properties.get("subjectLifecycle", AccessPackageSubjectLifecycle.notDefined)
 
     @odata(name="connectedOrganization", navigation=True)

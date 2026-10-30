@@ -10,6 +10,7 @@ from office365.directory.applications.roles.assignment_collection import (
     AppRoleAssignmentCollection,
 )
 from office365.directory.extensions.extension import Extension
+from office365.directory.groups.access_type import GroupAccessType
 from office365.directory.groups.assigned_label import AssignedLabel
 from office365.directory.groups.lifecycle_policy import GroupLifecyclePolicy
 from office365.directory.groups.on_premises_sync_behavior import OnPremisesSyncBehavior
@@ -49,7 +50,6 @@ from office365.runtime.types.odata_property import odata
 from office365.teams.team import Team
 
 if TYPE_CHECKING:
-    from office365.directory.groups.access_type import GroupAccessType
     from office365.directory.users.onpremisesextensionattributes import (
         OnPremisesExtensionAttributes,
     )
@@ -750,8 +750,6 @@ class Group(DirectoryObject):
     @property
     def access_type(self) -> GroupAccessType:
         """Gets the accessType property"""
-        from office365.directory.groups.access_type import GroupAccessType
-
         return self.properties.get("accessType", GroupAccessType.none)
 
     @odata(name="isFavorite")

@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.types.odata_property import odata
+from office365.teams.chats.messages.type import ChatMessageType
 
 if TYPE_CHECKING:
     from office365.teams.chats.event_message_detail import EventMessageDetail
     from office365.teams.chats.messages.from_identity_set import (
         ChatMessageFromIdentitySet,
     )
-    from office365.teams.chats.messages.type import ChatMessageType
 
 
 class ChatMessageInfo(Entity):
@@ -61,8 +61,6 @@ class ChatMessageInfo(Entity):
     @property
     def message_type(self) -> ChatMessageType:
         """Gets the messageType property"""
-        from office365.teams.chats.messages.type import ChatMessageType
-
         return self.properties.get("messageType", ChatMessageType.message)
 
     @property

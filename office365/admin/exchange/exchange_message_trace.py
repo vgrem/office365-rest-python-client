@@ -1,15 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.admin.exchange.exchange_message_trace_status import ExchangeMessageTraceStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.admin.exchange.exchange_message_trace_status import (
-        ExchangeMessageTraceStatus,
-    )
 
 
 class ExchangeMessageTrace(Entity):
@@ -69,8 +65,4 @@ class ExchangeMessageTrace(Entity):
     @property
     def status(self) -> ExchangeMessageTraceStatus:
         """Gets the status property"""
-        from office365.admin.exchange.exchange_message_trace_status import (
-            ExchangeMessageTraceStatus,
-        )
-
         return self.properties.get("status", ExchangeMessageTraceStatus.gettingStatus)

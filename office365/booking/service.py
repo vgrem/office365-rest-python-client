@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.booking.pricetype import BookingPriceType
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
@@ -10,7 +11,6 @@ from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.booking.chedulingpolicy import BookingSchedulingPolicy
-    from office365.booking.pricetype import BookingPriceType
     from office365.booking.questionassignment import BookingQuestionAssignment
     from office365.booking.reminder import BookingReminder
     from office365.outlook.mail.location import Location
@@ -69,8 +69,6 @@ class BookingService(Entity):
     @property
     def default_price_type(self) -> BookingPriceType:
         """Gets the defaultPriceType property"""
-        from office365.booking.pricetype import BookingPriceType
-
         return self.properties.get("defaultPriceType", BookingPriceType.undefined)
 
     @odata(name="defaultReminders")

@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
-
-if TYPE_CHECKING:
-    from office365.teams.schedule.changerequestactor import ScheduleChangeRequestActor
-    from office365.teams.schedule.changestate import ScheduleChangeState
+from office365.teams.schedule.changerequestactor import ScheduleChangeRequestActor
+from office365.teams.schedule.changestate import ScheduleChangeState
 
 
 class ScheduleChangeRequest(ChangeTrackedEntity):
@@ -53,10 +51,6 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
     @property
     def assigned_to(self) -> ScheduleChangeRequestActor:
         """Gets the assignedTo property"""
-        from office365.teams.schedule.changerequestactor import (
-            ScheduleChangeRequestActor,
-        )
-
         return self.properties.get("assignedTo", ScheduleChangeRequestActor.sender)
 
     @odata(name="managerUserId", readonly=True)
@@ -87,8 +81,6 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
     @property
     def state(self) -> ScheduleChangeState:
         """Gets the state property"""
-        from office365.teams.schedule.changestate import ScheduleChangeState
-
         return self.properties.get("state", ScheduleChangeState.pending)
 
     @property

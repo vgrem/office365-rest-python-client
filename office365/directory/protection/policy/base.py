@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
+from office365.directory.protection.policystatus import ProtectionPolicyStatus
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -16,7 +17,6 @@ if TYPE_CHECKING:
         ProtectionPolicyArtifactCount,
     )
     from office365.directory.policies.retention_setting import RetentionSetting
-    from office365.directory.protection.policystatus import ProtectionPolicyStatus
 
 
 class ProtectionPolicyBase(Entity):
@@ -99,8 +99,6 @@ class ProtectionPolicyBase(Entity):
     @property
     def status(self) -> ProtectionPolicyStatus:
         """Gets the status property"""
-        from office365.directory.protection.policystatus import ProtectionPolicyStatus
-
         return self.properties.get("status", ProtectionPolicyStatus.inactive)
 
     @property

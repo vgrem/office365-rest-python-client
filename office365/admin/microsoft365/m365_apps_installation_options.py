@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.admin.microsoft365.appsupdatechanneltype import AppsUpdateChannelType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.admin.microsoft365.appsupdatechanneltype import AppsUpdateChannelType
     from office365.intune.devices.management.mobileapps.apps_installation_options_for_mac import (
         AppsInstallationOptionsForMac,
     )
@@ -40,10 +40,6 @@ class M365AppsInstallationOptions(Entity):
     @property
     def update_channel(self) -> AppsUpdateChannelType:
         """Gets the updateChannel property"""
-        from office365.admin.microsoft365.appsupdatechanneltype import (
-            AppsUpdateChannelType,
-        )
-
         return self.properties.get("updateChannel", AppsUpdateChannelType.current)
 
     @property

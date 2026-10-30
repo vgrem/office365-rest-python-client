@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identities.providers.oidc_response_type import OidcResponseType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
@@ -11,9 +12,6 @@ if TYPE_CHECKING:
     )
     from office365.directory.authentication.oidc_inbound_claim_mapping_override import (
         OidcInboundClaimMappingOverride,
-    )
-    from office365.directory.identities.providers.oidc_response_type import (
-        OidcResponseType,
     )
 
 
@@ -54,10 +52,6 @@ class OidcIdentityProvider(Entity):
     @property
     def response_type(self) -> OidcResponseType:
         """Gets the responseType property"""
-        from office365.directory.identities.providers.oidc_response_type import (
-            OidcResponseType,
-        )
-
         return self.properties.get("responseType", OidcResponseType.code)
 
     @odata(name="scope")

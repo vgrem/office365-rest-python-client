@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.policies.conditionalaccess.policystate import ConditionalAccessPolicyState
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
@@ -12,9 +13,6 @@ if TYPE_CHECKING:
     )
     from office365.directory.policies.conditionalaccess.grant_controls import (
         ConditionalAccessGrantControls,
-    )
-    from office365.directory.policies.conditionalaccess.policystate import (
-        ConditionalAccessPolicyState,
     )
     from office365.directory.policies.conditionalaccess.session_controls import (
         ConditionalAccessSessionControls,
@@ -91,10 +89,6 @@ class ConditionalAccessPolicy(Entity):
     @property
     def state(self) -> ConditionalAccessPolicyState:
         """Gets the state property"""
-        from office365.directory.policies.conditionalaccess.policystate import (
-            ConditionalAccessPolicyState,
-        )
-
         return self.properties.get("state", ConditionalAccessPolicyState.enabled)
 
     @odata(name="templateId")

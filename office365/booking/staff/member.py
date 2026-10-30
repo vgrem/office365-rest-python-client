@@ -4,12 +4,12 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.booking.staff.member_base import BookingStaffMemberBase
+from office365.booking.staffmembershipstatus import BookingStaffMembershipStatus
+from office365.booking.staffrole import BookingStaffRole
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.booking.staffmembershipstatus import BookingStaffMembershipStatus
-    from office365.booking.staffrole import BookingStaffRole
     from office365.booking.work_hours import BookingWorkHours
 
 
@@ -59,16 +59,12 @@ class BookingStaffMember(BookingStaffMemberBase):
     @property
     def membership_status(self) -> BookingStaffMembershipStatus:
         """Gets the membershipStatus property"""
-        from office365.booking.staffmembershipstatus import BookingStaffMembershipStatus
-
         return self.properties.get("membershipStatus", BookingStaffMembershipStatus.active)
 
     @odata(name="role")
     @property
     def role(self) -> BookingStaffRole:
         """Gets the role property"""
-        from office365.booking.staffrole import BookingStaffRole
-
         return self.properties.get("role", BookingStaffRole.guest)
 
     @odata(name="timeZone")

@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.status import Status
 from office365.directory.users.activities.activity import UserActivity
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.status import Status
 
 
 class ActivityHistoryItem(Entity):
@@ -73,8 +71,6 @@ class ActivityHistoryItem(Entity):
     @property
     def status(self) -> Status:
         """Gets the status property"""
-        from office365.directory.status import Status
-
         return self.properties.get("status", Status.active)
 
     @odata(name="userTimezone")

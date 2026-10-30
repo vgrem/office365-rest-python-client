@@ -5,11 +5,9 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.threatintelligence.host_reputation_classification import HostReputationClassification
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host_reputation_classification import (
-        HostReputationClassification,
-    )
     from office365.security.threatintelligence.host_reputation_rule import (
         HostReputationRule,
     )
@@ -30,10 +28,6 @@ class HostReputation(Entity):
     @property
     def classification(self) -> HostReputationClassification:
         """Gets the classification property"""
-        from office365.security.threatintelligence.host_reputation_classification import (
-            HostReputationClassification,
-        )
-
         return self.properties.get("classification", HostReputationClassification.unknown)
 
     @odata(name="rules")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
@@ -11,11 +11,7 @@ from office365.runtime.types.odata_property import odata
 from office365.security.attacksimulations.automation_run import (
     SimulationAutomationRun,
 )
-
-if TYPE_CHECKING:
-    from office365.security.attacksimulations.simulationautomationstatus import (
-        SimulationAutomationStatus,
-    )
+from office365.security.attacksimulations.simulationautomationstatus import SimulationAutomationStatus
 
 
 class SimulationAutomation(Entity):
@@ -88,10 +84,6 @@ class SimulationAutomation(Entity):
     @property
     def status(self) -> SimulationAutomationStatus:
         """Gets the status property"""
-        from office365.security.attacksimulations.simulationautomationstatus import (
-            SimulationAutomationStatus,
-        )
-
         return self.properties.get("status", SimulationAutomationStatus.unknown)
 
     @property

@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.teams.viva.learning.level import Level
 
 if TYPE_CHECKING:
     from office365.runtime.types.duration import timedelta
-    from office365.teams.viva.learning.level import Level
 
 
 class LearningContent(Entity):
@@ -97,8 +97,6 @@ class LearningContent(Entity):
     @property
     def level(self) -> Level:
         """Gets the level property"""
-        from office365.teams.viva.learning.level import Level
-
         return self.properties.get("level", Level.beginner)
 
     @odata(name="numberOfPages")

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.tenantinformation.multitenantorganizationstate import MultiTenantOrganizationState
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -14,9 +15,6 @@ if TYPE_CHECKING:
     )
     from office365.directory.multi_tenant_organization_member import (
         MultiTenantOrganizationMember,
-    )
-    from office365.directory.tenantinformation.multitenantorganizationstate import (
-        MultiTenantOrganizationState,
     )
 
 
@@ -51,10 +49,6 @@ class MultiTenantOrganization(Entity):
     @property
     def state(self) -> MultiTenantOrganizationState:
         """Gets the state property"""
-        from office365.directory.tenantinformation.multitenantorganizationstate import (
-            MultiTenantOrganizationState,
-        )
-
         return self.properties.get("state", MultiTenantOrganizationState.active)
 
     @odata(name="joinRequest", navigation=True)

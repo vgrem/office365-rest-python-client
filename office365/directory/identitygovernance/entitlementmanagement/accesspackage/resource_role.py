@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.role_type import RoleType
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -10,7 +11,6 @@ if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource import (
         AccessPackageResource,
     )
-    from office365.directory.role_type import RoleType
 
 
 class AccessPackageResourceRole(Entity):
@@ -54,6 +54,4 @@ class AccessPackageResourceRole(Entity):
     @property
     def type(self) -> RoleType:
         """Gets the type property"""
-        from office365.directory.role_type import RoleType
-
         return self.properties.get("type", RoleType.active)

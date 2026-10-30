@@ -6,32 +6,18 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.attacksimulations.payloadbrand import PayloadBrand
+from office365.security.attacksimulations.payloadcomplexity import PayloadComplexity
+from office365.security.attacksimulations.payloaddeliveryplatform import PayloadDeliveryPlatform
+from office365.security.attacksimulations.payloadindustry import PayloadIndustry
+from office365.security.attacksimulations.payloadtheme import PayloadTheme
+from office365.security.attacksimulations.simulationattacktechnique import SimulationAttackTechnique
+from office365.security.attacksimulations.simulationattacktype import SimulationAttackType
+from office365.security.attacksimulations.simulationcontentsource import SimulationContentSource
+from office365.security.attacksimulations.simulationcontentstatus import SimulationContentStatus
 
 if TYPE_CHECKING:
     from office365.directory.permissions.email_identity import EmailIdentity
-    from office365.security.attacksimulations.payloadbrand import PayloadBrand
-    from office365.security.attacksimulations.payloadcomplexity import (
-        PayloadComplexity,
-    )
-    from office365.security.attacksimulations.payloaddeliveryplatform import (
-        PayloadDeliveryPlatform,
-    )
-    from office365.security.attacksimulations.payloadindustry import (
-        PayloadIndustry,
-    )
-    from office365.security.attacksimulations.payloadtheme import PayloadTheme
-    from office365.security.attacksimulations.simulationattacktechnique import (
-        SimulationAttackTechnique,
-    )
-    from office365.security.attacksimulations.simulationattacktype import (
-        SimulationAttackType,
-    )
-    from office365.security.attacksimulations.simulationcontentsource import (
-        SimulationContentSource,
-    )
-    from office365.security.attacksimulations.simulationcontentstatus import (
-        SimulationContentStatus,
-    )
     from office365.security.payload_detail import PayloadDetail
 
 
@@ -40,20 +26,12 @@ class Payload(Entity):
     @property
     def brand(self) -> PayloadBrand:
         """Gets the brand property"""
-        from office365.security.attacksimulations.payloadbrand import (
-            PayloadBrand,
-        )
-
         return self.properties.get("brand", PayloadBrand.unknown)
 
     @odata(name="complexity")
     @property
     def complexity(self) -> PayloadComplexity:
         """Gets the complexity property"""
-        from office365.security.attacksimulations.payloadcomplexity import (
-            PayloadComplexity,
-        )
-
         return self.properties.get("complexity", PayloadComplexity.unknown)
 
     @odata(name="createdBy")
@@ -94,10 +72,6 @@ class Payload(Entity):
     @property
     def industry(self) -> PayloadIndustry:
         """Gets the industry property"""
-        from office365.security.attacksimulations.payloadindustry import (
-            PayloadIndustry,
-        )
-
         return self.properties.get("industry", PayloadIndustry.unknown)
 
     @odata(name="isAutomated")
@@ -148,10 +122,6 @@ class Payload(Entity):
     @property
     def platform(self) -> PayloadDeliveryPlatform:
         """Gets the platform property"""
-        from office365.security.attacksimulations.payloaddeliveryplatform import (
-            PayloadDeliveryPlatform,
-        )
-
         return self.properties.get("platform", PayloadDeliveryPlatform.unknown)
 
     @odata(name="predictedCompromiseRate")
@@ -164,50 +134,30 @@ class Payload(Entity):
     @property
     def simulation_attack_type(self) -> SimulationAttackType:
         """Gets the simulationAttackType property"""
-        from office365.security.attacksimulations.simulationattacktype import (
-            SimulationAttackType,
-        )
-
         return self.properties.get("simulationAttackType", SimulationAttackType.unknown)
 
     @odata(name="source")
     @property
     def source(self) -> SimulationContentSource:
         """Gets the source property"""
-        from office365.security.attacksimulations.simulationcontentsource import (
-            SimulationContentSource,
-        )
-
         return self.properties.get("source", SimulationContentSource.unknown)
 
     @odata(name="status")
     @property
     def status(self) -> SimulationContentStatus:
         """Gets the status property"""
-        from office365.security.attacksimulations.simulationcontentstatus import (
-            SimulationContentStatus,
-        )
-
         return self.properties.get("status", SimulationContentStatus.unknown)
 
     @odata(name="technique")
     @property
     def technique(self) -> SimulationAttackTechnique:
         """Gets the technique property"""
-        from office365.security.attacksimulations.simulationattacktechnique import (
-            SimulationAttackTechnique,
-        )
-
         return self.properties.get("technique", SimulationAttackTechnique.unknown)
 
     @odata(name="theme")
     @property
     def theme(self) -> PayloadTheme:
         """Gets the theme property"""
-        from office365.security.attacksimulations.payloadtheme import (
-            PayloadTheme,
-        )
-
         return self.properties.get("theme", PayloadTheme.unknown)
 
     @property

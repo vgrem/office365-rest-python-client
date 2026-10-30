@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.applications.permissiontype import PermissionType
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.applications.permissiontype import PermissionType
 
 
 class PermissionGrantConditionSet(Entity):
@@ -84,8 +82,6 @@ class PermissionGrantConditionSet(Entity):
     @property
     def permission_type(self) -> PermissionType:
         """Gets the permissionType property"""
-        from office365.directory.applications.permissiontype import PermissionType
-
         return self.properties.get("permissionType", PermissionType.application)
 
     @property

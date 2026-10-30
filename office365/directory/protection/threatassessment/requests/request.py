@@ -4,20 +4,16 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
+from office365.directory.protection.threatassessment.contenttype import ThreatAssessmentContentType
+from office365.directory.protection.threatassessment.requestsource import ThreatAssessmentRequestSource
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.protection.threatassessment.contenttype import (
-        ThreatAssessmentContentType,
-    )
     from office365.directory.protection.threatassessment.requests.threat_assessment_result import (
         ThreatAssessmentResult,
-    )
-    from office365.directory.protection.threatassessment.requestsource import (
-        ThreatAssessmentRequestSource,
     )
 
 
@@ -61,20 +57,12 @@ class ThreatAssessmentRequest(Entity):
     @property
     def content_type(self) -> ThreatAssessmentContentType:
         """Gets the contentType property"""
-        from office365.directory.protection.threatassessment.contenttype import (
-            ThreatAssessmentContentType,
-        )
-
         return self.properties.get("contentType", ThreatAssessmentContentType.mail)
 
     @odata(name="requestSource")
     @property
     def request_source(self) -> ThreatAssessmentRequestSource:
         """Gets the requestSource property"""
-        from office365.directory.protection.threatassessment.requestsource import (
-            ThreatAssessmentRequestSource,
-        )
-
         return self.properties.get("requestSource", ThreatAssessmentRequestSource.undefined)
 
     @odata(name="results", navigation=True)

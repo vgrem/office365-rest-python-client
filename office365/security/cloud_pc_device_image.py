@@ -1,21 +1,13 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimageerrorcode import CloudPcDeviceImageErrorCode
+from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimageosstatus import CloudPcDeviceImageOsStatus
+from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimagestatus import CloudPcDeviceImageStatus
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimageerrorcode import (
-        CloudPcDeviceImageErrorCode,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimageosstatus import (
-        CloudPcDeviceImageOsStatus,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimagestatus import (
-        CloudPcDeviceImageStatus,
-    )
 
 
 class CloudPcDeviceImage(Entity):
@@ -29,10 +21,6 @@ class CloudPcDeviceImage(Entity):
     @property
     def error_code(self) -> CloudPcDeviceImageErrorCode:
         """Gets the errorCode property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimageerrorcode import (
-            CloudPcDeviceImageErrorCode,
-        )
-
         return self.properties.get("errorCode", CloudPcDeviceImageErrorCode.internalServerError)
 
     @odata(name="expirationDate")
@@ -63,10 +51,6 @@ class CloudPcDeviceImage(Entity):
     @property
     def os_status(self) -> CloudPcDeviceImageOsStatus:
         """Gets the osStatus property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimageosstatus import (
-            CloudPcDeviceImageOsStatus,
-        )
-
         return self.properties.get("osStatus", CloudPcDeviceImageOsStatus.supported)
 
     @odata(name="osVersionNumber")
@@ -91,10 +75,6 @@ class CloudPcDeviceImage(Entity):
     @property
     def status(self) -> CloudPcDeviceImageStatus:
         """Gets the status property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.deviceimagestatus import (
-            CloudPcDeviceImageStatus,
-        )
-
         return self.properties.get("status", CloudPcDeviceImageStatus.pending)
 
     @odata(name="version")

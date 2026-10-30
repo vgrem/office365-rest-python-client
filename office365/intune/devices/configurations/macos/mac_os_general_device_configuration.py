@@ -3,15 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.applisttype import AppListType
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.compliance.requiredpasswordtype import (
-        RequiredPasswordType,
-    )
-    from office365.intune.devices.configurations.applisttype import AppListType
     from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 
 
@@ -20,8 +18,6 @@ class MacOSGeneralDeviceConfiguration(Entity):
     @property
     def compliant_app_list_type(self) -> AppListType:
         """Gets the compliantAppListType property"""
-        from office365.intune.devices.configurations.applisttype import AppListType
-
         return self.properties.get("compliantAppListType", AppListType.none)
 
     @odata(name="compliantAppsList")
@@ -90,10 +86,6 @@ class MacOSGeneralDeviceConfiguration(Entity):
     @property
     def password_required_type(self) -> RequiredPasswordType:
         """Gets the passwordRequiredType property"""
-        from office365.intune.devices.compliance.requiredpasswordtype import (
-            RequiredPasswordType,
-        )
-
         return self.properties.get("passwordRequiredType", RequiredPasswordType.deviceDefault)
 
     @property

@@ -4,53 +4,37 @@ from datetime import time
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.windows.general.defendercloudblockleveltype import (  # noqa: E501
+    DefenderCloudBlockLevelType,
+)
+from office365.intune.devices.configurations.windows.general.defendermonitorfileactivity import (  # noqa: E501
+    DefenderMonitorFileActivity,
+)
+from office365.intune.devices.configurations.windows.general.defenderpromptforsamplesubmission import (  # noqa: E501
+    DefenderPromptForSampleSubmission,
+)
+from office365.intune.devices.configurations.windows.general.defenderscantype import DefenderScanType
+from office365.intune.devices.configurations.windows.general.diagnosticdatasubmissionmode import (  # noqa: E501
+    DiagnosticDataSubmissionMode,
+)
+from office365.intune.devices.configurations.windows.general.edgecookiepolicy import EdgeCookiePolicy
+from office365.intune.devices.configurations.windows.safesearchfiltertype import SafeSearchFilterType
+from office365.intune.devices.configurations.windows.spotlightenablementsettings import (  # noqa: E501
+    WindowsSpotlightEnablementSettings,
+)
+from office365.intune.devices.configurations.windows.startmenuapplistvisibilitytype import (  # noqa: E501
+    WindowsStartMenuAppListVisibilityType,
+)
+from office365.intune.devices.configurations.windows.startmenumodetype import WindowsStartMenuModeType
+from office365.intune.devices.configurations.windows.statemanagementsetting import StateManagementSetting
+from office365.intune.devices.configurations.windows.visibilitysetting import VisibilitySetting
+from office365.intune.devices.configurations.windows.weeklyschedule import WeeklySchedule
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.compliance.requiredpasswordtype import (
-        RequiredPasswordType,
-    )
     from office365.intune.devices.configurations.edge_search_engine_base import EdgeSearchEngineBase
-    from office365.intune.devices.configurations.windows.general.defendercloudblockleveltype import (
-        DefenderCloudBlockLevelType,
-    )
-    from office365.intune.devices.configurations.windows.general.defendermonitorfileactivity import (
-        DefenderMonitorFileActivity,
-    )
-    from office365.intune.devices.configurations.windows.general.defenderpromptforsamplesubmission import (
-        DefenderPromptForSampleSubmission,
-    )
-    from office365.intune.devices.configurations.windows.general.defenderscantype import (
-        DefenderScanType,
-    )
-    from office365.intune.devices.configurations.windows.general.diagnosticdatasubmissionmode import (
-        DiagnosticDataSubmissionMode,
-    )
-    from office365.intune.devices.configurations.windows.general.edgecookiepolicy import (
-        EdgeCookiePolicy,
-    )
-    from office365.intune.devices.configurations.windows.safesearchfiltertype import (
-        SafeSearchFilterType,
-    )
-    from office365.intune.devices.configurations.windows.spotlightenablementsettings import (
-        WindowsSpotlightEnablementSettings,
-    )
-    from office365.intune.devices.configurations.windows.startmenuapplistvisibilitytype import (
-        WindowsStartMenuAppListVisibilityType,
-    )
-    from office365.intune.devices.configurations.windows.startmenumodetype import (
-        WindowsStartMenuModeType,
-    )
-    from office365.intune.devices.configurations.windows.statemanagementsetting import (
-        StateManagementSetting,
-    )
-    from office365.intune.devices.configurations.windows.visibilitysetting import (
-        VisibilitySetting,
-    )
-    from office365.intune.devices.configurations.windows.weeklyschedule import (
-        WeeklySchedule,
-    )
     from office365.intune.devices.configurations.windows.windows10_network_proxy_server import (
         Windows10NetworkProxyServer,
     )
@@ -76,10 +60,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def apps_allow_trusted_apps_sideloading(self) -> StateManagementSetting:
         """Gets the appsAllowTrustedAppsSideloading property"""
-        from office365.intune.devices.configurations.windows.statemanagementsetting import (
-            StateManagementSetting,
-        )
-
         return self.properties.get("appsAllowTrustedAppsSideloading", StateManagementSetting.notConfigured)
 
     @odata(name="appsBlockWindowsStoreOriginatedApps")
@@ -176,10 +156,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def defender_cloud_block_level(self) -> DefenderCloudBlockLevelType:
         """Gets the defenderCloudBlockLevel property"""
-        from office365.intune.devices.configurations.windows.general.defendercloudblockleveltype import (
-            DefenderCloudBlockLevelType,
-        )
-
         return self.properties.get("defenderCloudBlockLevel", DefenderCloudBlockLevelType.notConfigured)
 
     @odata(name="defenderDaysBeforeDeletingQuarantinedMalware")
@@ -214,10 +190,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def defender_monitor_file_activity(self) -> DefenderMonitorFileActivity:
         """Gets the defenderMonitorFileActivity property"""
-        from office365.intune.devices.configurations.windows.general.defendermonitorfileactivity import (
-            DefenderMonitorFileActivity,
-        )
-
         return self.properties.get("defenderMonitorFileActivity", DefenderMonitorFileActivity.userDefined)
 
     @odata(name="defenderProcessesToExclude")
@@ -230,10 +202,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def defender_prompt_for_sample_submission(self) -> DefenderPromptForSampleSubmission:
         """Gets the defenderPromptForSampleSubmission property"""
-        from office365.intune.devices.configurations.windows.general.defenderpromptforsamplesubmission import (
-            DefenderPromptForSampleSubmission,
-        )
-
         return self.properties.get("defenderPromptForSampleSubmission", DefenderPromptForSampleSubmission.userDefined)
 
     @odata(name="defenderRequireBehaviorMonitoring")
@@ -312,10 +280,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def defender_scan_type(self) -> DefenderScanType:
         """Gets the defenderScanType property"""
-        from office365.intune.devices.configurations.windows.general.defenderscantype import (
-            DefenderScanType,
-        )
-
         return self.properties.get("defenderScanType", DefenderScanType.userDefined)
 
     @odata(name="defenderScheduledQuickScanTime")
@@ -340,20 +304,12 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def defender_system_scan_schedule(self) -> WeeklySchedule:
         """Gets the defenderSystemScanSchedule property"""
-        from office365.intune.devices.configurations.windows.weeklyschedule import (
-            WeeklySchedule,
-        )
-
         return self.properties.get("defenderSystemScanSchedule", WeeklySchedule.userDefined)
 
     @odata(name="developerUnlockSetting")
     @property
     def developer_unlock_setting(self) -> StateManagementSetting:
         """Gets the developerUnlockSetting property"""
-        from office365.intune.devices.configurations.windows.statemanagementsetting import (
-            StateManagementSetting,
-        )
-
         return self.properties.get("developerUnlockSetting", StateManagementSetting.notConfigured)
 
     @odata(name="deviceManagementBlockFactoryResetOnMobile")
@@ -372,10 +328,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def diagnostics_data_submission_mode(self) -> DiagnosticDataSubmissionMode:
         """Gets the diagnosticsDataSubmissionMode property"""
-        from office365.intune.devices.configurations.windows.general.diagnosticdatasubmissionmode import (
-            DiagnosticDataSubmissionMode,
-        )
-
         return self.properties.get("diagnosticsDataSubmissionMode", DiagnosticDataSubmissionMode.userDefined)
 
     @odata(name="edgeAllowStartPagesModification")
@@ -484,10 +436,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def edge_cookie_policy(self) -> EdgeCookiePolicy:
         """Gets the edgeCookiePolicy property"""
-        from office365.intune.devices.configurations.windows.general.edgecookiepolicy import (
-            EdgeCookiePolicy,
-        )
-
         return self.properties.get("edgeCookiePolicy", EdgeCookiePolicy.userDefined)
 
     @odata(name="edgeDisableFirstRunPage")
@@ -742,10 +690,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def password_required_type(self) -> RequiredPasswordType:
         """Gets the passwordRequiredType property"""
-        from office365.intune.devices.compliance.requiredpasswordtype import (
-            RequiredPasswordType,
-        )
-
         return self.properties.get("passwordRequiredType", RequiredPasswordType.deviceDefault)
 
     @odata(name="passwordRequireWhenResumeFromIdleState")
@@ -776,10 +720,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def privacy_advertising_id(self) -> StateManagementSetting:
         """Gets the privacyAdvertisingId property"""
-        from office365.intune.devices.configurations.windows.statemanagementsetting import (
-            StateManagementSetting,
-        )
-
         return self.properties.get("privacyAdvertisingId", StateManagementSetting.notConfigured)
 
     @odata(name="privacyAutoAcceptPairingAndConsentPrompts")
@@ -804,10 +744,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def safe_search_filter(self) -> SafeSearchFilterType:
         """Gets the safeSearchFilter property"""
-        from office365.intune.devices.configurations.windows.safesearchfiltertype import (
-            SafeSearchFilterType,
-        )
-
         return self.properties.get("safeSearchFilter", SafeSearchFilterType.userDefined)
 
     @odata(name="screenCaptureBlocked")
@@ -1006,10 +942,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def start_menu_app_list_visibility(self) -> WindowsStartMenuAppListVisibilityType:
         """Gets the startMenuAppListVisibility property"""
-        from office365.intune.devices.configurations.windows.startmenuapplistvisibilitytype import (
-            WindowsStartMenuAppListVisibilityType,
-        )
-
         return self.properties.get("startMenuAppListVisibility", WindowsStartMenuAppListVisibilityType.userDefined)
 
     @odata(name="startMenuHideChangeAccountSettings")
@@ -1106,110 +1038,66 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def start_menu_mode(self) -> WindowsStartMenuModeType:
         """Gets the startMenuMode property"""
-        from office365.intune.devices.configurations.windows.startmenumodetype import (
-            WindowsStartMenuModeType,
-        )
-
         return self.properties.get("startMenuMode", WindowsStartMenuModeType.userDefined)
 
     @odata(name="startMenuPinnedFolderDocuments")
     @property
     def start_menu_pinned_folder_documents(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderDocuments property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderDocuments", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderDownloads")
     @property
     def start_menu_pinned_folder_downloads(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderDownloads property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderDownloads", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderFileExplorer")
     @property
     def start_menu_pinned_folder_file_explorer(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderFileExplorer property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderFileExplorer", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderHomeGroup")
     @property
     def start_menu_pinned_folder_home_group(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderHomeGroup property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderHomeGroup", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderMusic")
     @property
     def start_menu_pinned_folder_music(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderMusic property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderMusic", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderNetwork")
     @property
     def start_menu_pinned_folder_network(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderNetwork property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderNetwork", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderPersonalFolder")
     @property
     def start_menu_pinned_folder_personal_folder(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderPersonalFolder property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderPersonalFolder", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderPictures")
     @property
     def start_menu_pinned_folder_pictures(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderPictures property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderPictures", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderSettings")
     @property
     def start_menu_pinned_folder_settings(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderSettings property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderSettings", VisibilitySetting.notConfigured)
 
     @odata(name="startMenuPinnedFolderVideos")
     @property
     def start_menu_pinned_folder_videos(self) -> VisibilitySetting:
         """Gets the startMenuPinnedFolderVideos property"""
-        from office365.intune.devices.configurations.windows.visibilitysetting import (
-            VisibilitySetting,
-        )
-
         return self.properties.get("startMenuPinnedFolderVideos", VisibilitySetting.notConfigured)
 
     @odata(name="storageBlockRemovableStorage")
@@ -1330,10 +1218,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def windows_spotlight_configure_on_lock_screen(self) -> WindowsSpotlightEnablementSettings:
         """Gets the windowsSpotlightConfigureOnLockScreen property"""
-        from office365.intune.devices.configurations.windows.spotlightenablementsettings import (
-            WindowsSpotlightEnablementSettings,
-        )
-
         return self.properties.get(
             "windowsSpotlightConfigureOnLockScreen", WindowsSpotlightEnablementSettings.notConfigured
         )

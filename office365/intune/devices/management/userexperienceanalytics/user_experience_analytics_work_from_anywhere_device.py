@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.userexperienceanalytics.healthstate import UserExperienceAnalyticsHealthState
+from office365.intune.devices.management.userexperienceanalytics.operatingsystemupgradeeligibility import (  # noqa: E501
+    OperatingSystemUpgradeEligibility,
+)
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.userexperienceanalytics.healthstate import (
-        UserExperienceAnalyticsHealthState,
-    )
-    from office365.intune.devices.management.userexperienceanalytics.operatingsystemupgradeeligibility import (
-        OperatingSystemUpgradeEligibility,
-    )
 
 
 class UserExperienceAnalyticsWorkFromAnywhereDevice(Entity):
@@ -85,10 +81,6 @@ class UserExperienceAnalyticsWorkFromAnywhereDevice(Entity):
     @property
     def health_status(self) -> UserExperienceAnalyticsHealthState:
         """Gets the healthStatus property"""
-        from office365.intune.devices.management.userexperienceanalytics.healthstate import (
-            UserExperienceAnalyticsHealthState,
-        )
-
         return self.properties.get("healthStatus", UserExperienceAnalyticsHealthState.unknown)
 
     @odata(name="isCloudManagedGatewayEnabled")
@@ -209,10 +201,6 @@ class UserExperienceAnalyticsWorkFromAnywhereDevice(Entity):
     @property
     def upgrade_eligibility(self) -> OperatingSystemUpgradeEligibility:
         """Gets the upgradeEligibility property"""
-        from office365.intune.devices.management.userexperienceanalytics.operatingsystemupgradeeligibility import (
-            OperatingSystemUpgradeEligibility,
-        )
-
         return self.properties.get("upgradeEligibility", OperatingSystemUpgradeEligibility.upgraded)
 
     @odata(name="windowsScore")

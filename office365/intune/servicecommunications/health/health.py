@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.servicecommunications.health.status import ServiceHealthStatus
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.servicecommunications.health.status import ServiceHealthStatus
     from office365.intune.servicecommunications.issues.issue import ServiceHealthIssue
 
 
@@ -25,10 +25,6 @@ class ServiceHealth(Entity):
     @property
     def status(self) -> ServiceHealthStatus:
         """Gets the status property"""
-        from office365.intune.servicecommunications.health.status import (
-            ServiceHealthStatus,
-        )
-
         return self.properties.get("status", ServiceHealthStatus.serviceOperational)
 
     @odata(name="issues", navigation=True)

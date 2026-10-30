@@ -5,15 +5,11 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.security.attacksimulations.simulationcontentsource import SimulationContentSource
+from office365.security.attacksimulations.simulationcontentstatus import SimulationContentStatus
 
 if TYPE_CHECKING:
     from office365.directory.permissions.email_identity import EmailIdentity
-    from office365.security.attacksimulations.simulationcontentsource import (
-        SimulationContentSource,
-    )
-    from office365.security.attacksimulations.simulationcontentstatus import (
-        SimulationContentStatus,
-    )
 
 
 class LoginPage(Entity):
@@ -73,20 +69,12 @@ class LoginPage(Entity):
     @property
     def source(self) -> SimulationContentSource:
         """Gets the source property"""
-        from office365.security.attacksimulations.simulationcontentsource import (
-            SimulationContentSource,
-        )
-
         return self.properties.get("source", SimulationContentSource.unknown)
 
     @odata(name="status")
     @property
     def status(self) -> SimulationContentStatus:
         """Gets the status property"""
-        from office365.security.attacksimulations.simulationcontentstatus import (
-            SimulationContentStatus,
-        )
-
         return self.properties.get("status", SimulationContentStatus.unknown)
 
     @property

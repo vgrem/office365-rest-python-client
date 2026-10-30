@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.imported_windows_autopilot_device_identity_upload_status import (  # noqa: E501
+    ImportedWindowsAutopilotDeviceIdentityUploadStatus,
+)
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.imported_windows_autopilot_device_identity_upload_status import (
-        ImportedWindowsAutopilotDeviceIdentityUploadStatus,
-    )
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
         ImportedWindowsAutopilotDeviceIdentity,
     )
@@ -28,10 +28,6 @@ class ImportedWindowsAutopilotDeviceIdentityUpload(Entity):
     @property
     def status(self) -> ImportedWindowsAutopilotDeviceIdentityUploadStatus:
         """Gets the status property"""
-        from office365.intune.devices.imported_windows_autopilot_device_identity_upload_status import (
-            ImportedWindowsAutopilotDeviceIdentityUploadStatus,
-        )
-
         return self.properties.get("status", ImportedWindowsAutopilotDeviceIdentityUploadStatus.noUpload)
 
     @odata(name="deviceIdentities", navigation=True)

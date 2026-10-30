@@ -2,15 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.policies.conditionalaccess.templatescenarios import TemplateScenarios
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.policies.conditionalaccess.policy_detail import (
         ConditionalAccessPolicyDetail,
-    )
-    from office365.directory.policies.conditionalaccess.templatescenarios import (
-        TemplateScenarios,
     )
 
 
@@ -41,10 +39,6 @@ class ConditionalAccessTemplate(Entity):
     @property
     def scenarios(self) -> TemplateScenarios:
         """Gets the scenarios property"""
-        from office365.directory.policies.conditionalaccess.templatescenarios import (
-            TemplateScenarios,
-        )
-
         return self.properties.get("scenarios", TemplateScenarios.new)
 
     @property

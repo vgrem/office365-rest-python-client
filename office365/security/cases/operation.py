@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
+from office365.security.cases.action import CaseAction
+from office365.security.cases.operationstatus import CaseOperationStatus
 
 if TYPE_CHECKING:
     from office365.communications.result_info import ResultInfo
     from office365.directory.identity_set import IdentitySet
-    from office365.security.cases.action import CaseAction
-    from office365.security.cases.operationstatus import CaseOperationStatus
 
 
 class CaseOperation(PollableOperation, Entity):
@@ -26,8 +26,6 @@ class CaseOperation(PollableOperation, Entity):
     @property
     def action(self) -> CaseAction:
         """Gets the action property"""
-        from office365.security.cases.action import CaseAction
-
         return self.properties.get("action", CaseAction.contentExport)
 
     @odata(name="completedDateTime")
@@ -68,8 +66,4 @@ class CaseOperation(PollableOperation, Entity):
     @property
     def status(self) -> CaseOperationStatus:
         """Gets the status property"""
-        from office365.security.cases.operationstatus import (
-            CaseOperationStatus,
-        )
-
         return self.properties.get("status", CaseOperationStatus.notStarted)

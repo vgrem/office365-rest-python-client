@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.privacy.datasubjecttype import DataSubjectType
+from office365.directory.privacy.subjectrightsrequeststatus import SubjectRightsRequestStatus
+from office365.directory.privacy.subjectrightsrequesttype import SubjectRightsRequestType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -13,13 +16,6 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.directory.identity_set import IdentitySet
     from office365.directory.permissions.identity import Identity
-    from office365.directory.privacy.datasubjecttype import DataSubjectType
-    from office365.directory.privacy.subjectrightsrequeststatus import (
-        SubjectRightsRequestStatus,
-    )
-    from office365.directory.privacy.subjectrightsrequesttype import (
-        SubjectRightsRequestType,
-    )
     from office365.directory.users.user import User
     from office365.security.subjectrightsrequests.authored_note import (
         AuthoredNote,
@@ -97,8 +93,6 @@ class SubjectRightsRequest(Entity):
     @property
     def data_subject_type(self) -> DataSubjectType:
         """Gets the dataSubjectType property"""
-        from office365.directory.privacy.datasubjecttype import DataSubjectType
-
         return self.properties.get("dataSubjectType", DataSubjectType.customer)
 
     @odata(name="description")
@@ -221,20 +215,12 @@ class SubjectRightsRequest(Entity):
     @property
     def status(self) -> SubjectRightsRequestStatus:
         """Gets the status property"""
-        from office365.directory.privacy.subjectrightsrequeststatus import (
-            SubjectRightsRequestStatus,
-        )
-
         return self.properties.get("status", SubjectRightsRequestStatus.active)
 
     @odata(name="type")
     @property
     def type(self) -> SubjectRightsRequestType:
         """Gets the type property"""
-        from office365.directory.privacy.subjectrightsrequesttype import (
-            SubjectRightsRequestType,
-        )
-
         return self.properties.get("type", SubjectRightsRequestType.export)
 
     @odata(name="approvers", navigation=True)

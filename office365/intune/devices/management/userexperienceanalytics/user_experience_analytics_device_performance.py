@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.userexperienceanalytics.disktype import DiskType
+from office365.intune.devices.management.userexperienceanalytics.healthstate import UserExperienceAnalyticsHealthState
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.userexperienceanalytics.disktype import (
-        DiskType,
-    )
-    from office365.intune.devices.management.userexperienceanalytics.healthstate import (
-        UserExperienceAnalyticsHealthState,
-    )
 
 
 class UserExperienceAnalyticsDevicePerformance(Entity):
@@ -67,10 +61,6 @@ class UserExperienceAnalyticsDevicePerformance(Entity):
     @property
     def disk_type(self) -> DiskType:
         """Gets the diskType property"""
-        from office365.intune.devices.management.userexperienceanalytics.disktype import (
-            DiskType,
-        )
-
         return self.properties.get("diskType", DiskType.unknown)
 
     @odata(name="groupPolicyBootTimeInMs")
@@ -89,10 +79,6 @@ class UserExperienceAnalyticsDevicePerformance(Entity):
     @property
     def health_status(self) -> UserExperienceAnalyticsHealthState:
         """Gets the healthStatus property"""
-        from office365.intune.devices.management.userexperienceanalytics.healthstate import (
-            UserExperienceAnalyticsHealthState,
-        )
-
         return self.properties.get("healthStatus", UserExperienceAnalyticsHealthState.unknown)
 
     @odata(name="loginScore")

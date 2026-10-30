@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.status import ComplianceStatus
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.compliance.status import ComplianceStatus
 
 
 class DeviceConfigurationDeviceStatus(Entity):
@@ -39,8 +37,6 @@ class DeviceConfigurationDeviceStatus(Entity):
     @property
     def status(self) -> ComplianceStatus:
         """Gets the status property"""
-        from office365.intune.devices.compliance.status import ComplianceStatus
-
         return self.properties.get("status", ComplianceStatus.unknown)
 
     @odata(name="userName")

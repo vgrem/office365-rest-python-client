@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.status import ComplianceStatus
+from office365.intune.devices.configurations.ios.iosupdatesinstallstatus import IosUpdatesInstallStatus
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.compliance.status import ComplianceStatus
-    from office365.intune.devices.configurations.ios.iosupdatesinstallstatus import (
-        IosUpdatesInstallStatus,
-    )
 
 
 class IosUpdateDeviceStatus(Entity):
@@ -42,10 +38,6 @@ class IosUpdateDeviceStatus(Entity):
     @property
     def install_status(self) -> IosUpdatesInstallStatus:
         """Gets the installStatus property"""
-        from office365.intune.devices.configurations.ios.iosupdatesinstallstatus import (
-            IosUpdatesInstallStatus,
-        )
-
         return self.properties.get("installStatus", IosUpdatesInstallStatus.deviceOsHigherThanDesiredOsVersion)
 
     @odata(name="lastReportedDateTime")
@@ -64,8 +56,6 @@ class IosUpdateDeviceStatus(Entity):
     @property
     def status(self) -> ComplianceStatus:
         """Gets the status property"""
-        from office365.intune.devices.compliance.status import ComplianceStatus
-
         return self.properties.get("status", ComplianceStatus.unknown)
 
     @odata(name="userId")

@@ -1,19 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.delegatedadmin.relationshipoperationtype import DelegatedAdminRelationshipOperationType
 from office365.entity import Entity
+from office365.onedrive.operations.longrunningoperationstatus import LongRunningOperationStatus
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.delegatedadmin.relationshipoperationtype import (
-        DelegatedAdminRelationshipOperationType,
-    )
-    from office365.onedrive.operations.longrunningoperationstatus import (
-        LongRunningOperationStatus,
-    )
 
 
 class DelegatedAdminRelationshipOperation(PollableOperation, Entity):
@@ -39,10 +33,6 @@ class DelegatedAdminRelationshipOperation(PollableOperation, Entity):
     @property
     def operation_type(self) -> DelegatedAdminRelationshipOperationType:
         """Gets the operationType property"""
-        from office365.directory.delegatedadmin.relationshipoperationtype import (
-            DelegatedAdminRelationshipOperationType,
-        )
-
         return self.properties.get(
             "operationType", DelegatedAdminRelationshipOperationType.delegatedAdminAccessAssignmentUpdate
         )
@@ -51,10 +41,6 @@ class DelegatedAdminRelationshipOperation(PollableOperation, Entity):
     @property
     def status(self) -> LongRunningOperationStatus:
         """Gets the status property"""
-        from office365.onedrive.operations.longrunningoperationstatus import (
-            LongRunningOperationStatus,
-        )
-
         return self.properties.get("status", LongRunningOperationStatus.notStarted)
 
     @property

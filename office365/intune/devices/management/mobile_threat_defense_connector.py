@@ -1,15 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.mobilethreatpartnertenantstate import MobileThreatPartnerTenantState
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.mobileapps.mobilethreatpartnertenantstate import (
-        MobileThreatPartnerTenantState,
-    )
 
 
 class MobileThreatDefenseConnector(Entity):
@@ -77,10 +73,6 @@ class MobileThreatDefenseConnector(Entity):
     @property
     def partner_state(self) -> MobileThreatPartnerTenantState:
         """Gets the partnerState property"""
-        from office365.intune.devices.management.mobileapps.mobilethreatpartnertenantstate import (
-            MobileThreatPartnerTenantState,
-        )
-
         return self.properties.get("partnerState", MobileThreatPartnerTenantState.unavailable)
 
     @odata(name="partnerUnresponsivenessThresholdInDays")

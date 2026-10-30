@@ -3,14 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identities.providers.verified_id_profile_state import VerifiedIdProfileState
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identities.providers.verified_id_profile_state import (
-        VerifiedIdProfileState,
-    )
     from office365.directory.policies.face_check_configuration import (
         FaceCheckConfiguration,
     )
@@ -61,10 +59,6 @@ class VerifiedIdProfile(Entity):
     @property
     def state(self) -> VerifiedIdProfileState:
         """Gets the state property"""
-        from office365.directory.identities.providers.verified_id_profile_state import (
-            VerifiedIdProfileState,
-        )
-
         return self.properties.get("state", VerifiedIdProfileState.enabled)
 
     @odata(name="verifiedIdProfileConfiguration")

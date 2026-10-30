@@ -3,17 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.backuprestore.destinationtype import DestinationType
+from office365.backuprestore.restoreartifactsbulkrequeststatus import RestoreArtifactsBulkRequestStatus
+from office365.backuprestore.restorepoints.preference import RestorePointPreference
+from office365.backuprestore.restorepoints.tags import RestorePointTags
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.backuprestore.destinationtype import DestinationType
-    from office365.backuprestore.restoreartifactsbulkrequeststatus import (
-        RestoreArtifactsBulkRequestStatus,
-    )
-    from office365.backuprestore.restorepoints.preference import RestorePointPreference
-    from office365.backuprestore.restorepoints.tags import RestorePointTags
     from office365.backuprestore.time_period import TimePeriod
     from office365.directory.identity_set import IdentitySet
     from office365.runtime.types.public_error import PublicError
@@ -38,8 +36,6 @@ class RestoreArtifactsBulkRequestBase(Entity):
     @property
     def destination_type(self) -> DestinationType:
         """Gets the destinationType property"""
-        from office365.backuprestore.destinationtype import DestinationType
-
         return self.properties.get("destinationType", DestinationType.new)
 
     @odata(name="displayName")
@@ -88,28 +84,18 @@ class RestoreArtifactsBulkRequestBase(Entity):
     @property
     def restore_point_preference(self) -> RestorePointPreference:
         """Gets the restorePointPreference property"""
-        from office365.backuprestore.restorepoints.preference import (
-            RestorePointPreference,
-        )
-
         return self.properties.get("restorePointPreference", RestorePointPreference.latest)
 
     @odata(name="status")
     @property
     def status(self) -> RestoreArtifactsBulkRequestStatus:
         """Gets the status property"""
-        from office365.backuprestore.restoreartifactsbulkrequeststatus import (
-            RestoreArtifactsBulkRequestStatus,
-        )
-
         return self.properties.get("status", RestoreArtifactsBulkRequestStatus.unknown)
 
     @odata(name="tags")
     @property
     def tags(self) -> RestorePointTags:
         """Gets the tags property"""
-        from office365.backuprestore.restorepoints.tags import RestorePointTags
-
         return self.properties.get("tags", RestorePointTags.none)
 
     @property

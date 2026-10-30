@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
+from office365.teams.schedule.confirmedby import ConfirmedBy
+from office365.teams.schedule.time_card_state import TimeCardState
 
 if TYPE_CHECKING:
     from office365.outlook.mail.item_body import ItemBody
-    from office365.teams.schedule.confirmedby import ConfirmedBy
     from office365.teams.schedule.time_card_break import TimeCardBreak
     from office365.teams.schedule.time_card_entry import TimeCardEntry
     from office365.teams.schedule.time_card_event import TimeCardEvent
-    from office365.teams.schedule.time_card_state import TimeCardState
 
 
 class TimeCard(Entity):
@@ -44,8 +44,6 @@ class TimeCard(Entity):
     @property
     def confirmed_by(self) -> ConfirmedBy:
         """Gets the confirmedBy property"""
-        from office365.teams.schedule.confirmedby import ConfirmedBy
-
         return self.properties.get("confirmedBy", ConfirmedBy.none)
 
     @odata(name="notes")
@@ -68,8 +66,6 @@ class TimeCard(Entity):
     @property
     def state(self) -> TimeCardState:
         """Gets the state property"""
-        from office365.teams.schedule.time_card_state import TimeCardState
-
         return self.properties.get("state", TimeCardState.clockedIn)
 
     @odata(name="userId")

@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.onedrive.termstore.groups.scope import TermGroupScope
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.paths.resource_path import ResourcePath
-
-if TYPE_CHECKING:
-    from office365.onedrive.termstore.groups.scope import TermGroupScope
 
 
 class Group(Entity):
@@ -74,6 +72,4 @@ class Group(Entity):
     @property
     def scope(self) -> TermGroupScope:
         """Gets the scope property"""
-        from office365.onedrive.termstore.groups.scope import TermGroupScope
-
         return self.properties.get("scope", TermGroupScope.global_)

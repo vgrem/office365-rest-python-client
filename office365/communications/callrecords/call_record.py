@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.communications.callrecords.modality import Modality
 from office365.communications.callrecords.session import Session
 from office365.communications.callrecords.type import CallType
 from office365.communications.calls.organizer import Organizer
@@ -15,9 +16,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.callrecords.modality import Modality
 
 
 @limit(*CALL_RECORD_BUDGETS)
@@ -113,6 +111,4 @@ class CallRecord(Entity):
     @property
     def modalities(self) -> ClientValueCollection[Modality]:
         """Gets the modalities property"""
-        from office365.communications.callrecords.modality import Modality
-
         return self.properties.get("modalities", ClientValueCollection[Modality](Modality))

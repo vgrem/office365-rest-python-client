@@ -1,21 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.exportjoblocalizationtype import DeviceManagementExportJobLocalizationType
+from office365.intune.devices.management.reports.fileformat import DeviceManagementReportFileFormat
+from office365.intune.devices.management.reports.status import DeviceManagementReportStatus
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.exportjoblocalizationtype import (
-        DeviceManagementExportJobLocalizationType,
-    )
-    from office365.intune.devices.management.reports.fileformat import (
-        DeviceManagementReportFileFormat,
-    )
-    from office365.intune.devices.management.reports.status import (
-        DeviceManagementReportStatus,
-    )
 
 
 class DeviceManagementExportJob(Entity):
@@ -35,20 +27,12 @@ class DeviceManagementExportJob(Entity):
     @property
     def format(self) -> DeviceManagementReportFileFormat:
         """Gets the format property"""
-        from office365.intune.devices.management.reports.fileformat import (
-            DeviceManagementReportFileFormat,
-        )
-
         return self.properties.get("format", DeviceManagementReportFileFormat.csv)
 
     @odata(name="localizationType")
     @property
     def localization_type(self) -> DeviceManagementExportJobLocalizationType:
         """Gets the localizationType property"""
-        from office365.intune.devices.management.exportjoblocalizationtype import (
-            DeviceManagementExportJobLocalizationType,
-        )
-
         return self.properties.get(
             "localizationType", DeviceManagementExportJobLocalizationType.localizedValuesAsAdditionalColumn
         )
@@ -75,10 +59,6 @@ class DeviceManagementExportJob(Entity):
     @property
     def status(self) -> DeviceManagementReportStatus:
         """Gets the status property"""
-        from office365.intune.devices.management.reports.status import (
-            DeviceManagementReportStatus,
-        )
-
         return self.properties.get("status", DeviceManagementReportStatus.unknown)
 
     @odata(name="url")

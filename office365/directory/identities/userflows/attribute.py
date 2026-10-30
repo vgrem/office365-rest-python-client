@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identities.userflows.attributedatatype import IdentityUserFlowAttributeDataType
+from office365.directory.identities.userflows.attributetype import IdentityUserFlowAttributeType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identities.userflows.attributedatatype import (
-        IdentityUserFlowAttributeDataType,
-    )
-    from office365.directory.identities.userflows.attributetype import (
-        IdentityUserFlowAttributeType,
-    )
 
 
 class IdentityUserFlowAttribute(Entity):
@@ -29,10 +23,6 @@ class IdentityUserFlowAttribute(Entity):
     @property
     def data_type(self) -> IdentityUserFlowAttributeDataType:
         """Gets the dataType property"""
-        from office365.directory.identities.userflows.attributedatatype import (
-            IdentityUserFlowAttributeDataType,
-        )
-
         return self.properties.get("dataType", IdentityUserFlowAttributeDataType.string)
 
     @odata(name="description")
@@ -51,10 +41,6 @@ class IdentityUserFlowAttribute(Entity):
     @property
     def user_flow_attribute_type(self) -> IdentityUserFlowAttributeType:
         """Gets the userFlowAttributeType property"""
-        from office365.directory.identities.userflows.attributetype import (
-            IdentityUserFlowAttributeType,
-        )
-
         return self.properties.get("userFlowAttributeType", IdentityUserFlowAttributeType.builtIn)
 
     @property

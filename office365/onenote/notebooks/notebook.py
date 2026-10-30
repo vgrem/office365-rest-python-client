@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
 from office365.onenote.sections.collection import OnenoteSectionCollection
+from office365.onenote.userrole import OnenoteUserRole
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onenote.notebook_links import NotebookLinks
-    from office365.onenote.userrole import OnenoteUserRole
 
 
 class Notebook(OnenoteEntityHierarchyModel):
@@ -88,6 +88,4 @@ class Notebook(OnenoteEntityHierarchyModel):
     @property
     def user_role(self) -> OnenoteUserRole:
         """Gets the userRole property"""
-        from office365.onenote.userrole import OnenoteUserRole
-
         return self.properties.get("userRole", OnenoteUserRole.Unknown)

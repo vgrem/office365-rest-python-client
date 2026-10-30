@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_status import (  # noqa: E501
+    CustomDataProvidedResourceUploadStatus,
+)
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -15,9 +18,6 @@ if TYPE_CHECKING:
     from office365.directory.identitygovernance.data import Data
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_file import (  # noqa: E501
         CustomDataProvidedResourceFile,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_status import (  # noqa: E501
-        CustomDataProvidedResourceUploadStatus,
     )
 
 
@@ -62,10 +62,6 @@ class CustomDataProvidedResourceUploadSession(Entity):
     @property
     def status(self) -> CustomDataProvidedResourceUploadStatus:
         """Gets the status property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_status import (  # noqa: E501
-            CustomDataProvidedResourceUploadStatus,
-        )
-
         return self.properties.get("status", CustomDataProvidedResourceUploadStatus.active)
 
     @odata(name="files", navigation=True)

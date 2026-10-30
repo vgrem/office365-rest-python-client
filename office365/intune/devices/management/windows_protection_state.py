@@ -5,16 +5,12 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.managed.windows.defender_product_status import WindowsDefenderProductStatus
+from office365.intune.devices.management.managed.windows.healthstate import WindowsDeviceHealthState
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.managed.windows.defender_product_status import (
-        WindowsDefenderProductStatus,
-    )
-    from office365.intune.devices.management.managed.windows.healthstate import (
-        WindowsDeviceHealthState,
-    )
     from office365.intune.devices.management.windowsmalware.windows_device_malware_state import (
         WindowsDeviceMalwareState,
     )
@@ -37,10 +33,6 @@ class WindowsProtectionState(Entity):
     @property
     def device_state(self) -> WindowsDeviceHealthState:
         """Gets the deviceState property"""
-        from office365.intune.devices.management.managed.windows.healthstate import (
-            WindowsDeviceHealthState,
-        )
-
         return self.properties.get("deviceState", WindowsDeviceHealthState.clean)
 
     @odata(name="engineVersion")
@@ -113,10 +105,6 @@ class WindowsProtectionState(Entity):
     @property
     def product_status(self) -> WindowsDefenderProductStatus:
         """Gets the productStatus property"""
-        from office365.intune.devices.management.managed.windows.defender_product_status import (
-            WindowsDefenderProductStatus,
-        )
-
         return self.properties.get("productStatus", WindowsDefenderProductStatus.noStatus)
 
     @odata(name="quickScanOverdue")

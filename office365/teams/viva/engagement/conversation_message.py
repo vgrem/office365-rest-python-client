@@ -7,6 +7,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.teams.viva.engagement.creationmode import EngagementCreationMode
 
 if TYPE_CHECKING:
     from office365.communications.engagement_identity_set import EngagementIdentitySet
@@ -18,7 +19,6 @@ if TYPE_CHECKING:
     from office365.teams.viva.engagement.conversation_message_reaction import (
         EngagementConversationMessageReaction,
     )
-    from office365.teams.viva.engagement.creationmode import EngagementCreationMode
 
 
 class EngagementConversationMessage(Entity):
@@ -40,8 +40,6 @@ class EngagementConversationMessage(Entity):
     @property
     def creation_mode(self) -> EngagementCreationMode:
         """Gets the creationMode property"""
-        from office365.teams.viva.engagement.creationmode import EngagementCreationMode
-
         return self.properties.get("creationMode", EngagementCreationMode.none)
 
     @odata(name="from")

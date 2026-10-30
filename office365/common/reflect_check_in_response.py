@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.education.responseemotiontype import ResponseEmotionType
+from office365.education.responsefeedbacktype import ResponseFeedbackType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.education.responseemotiontype import ResponseEmotionType
-    from office365.education.responsefeedbacktype import ResponseFeedbackType
 
 
 class ReflectCheckInResponse(Entity):
@@ -58,16 +56,12 @@ class ReflectCheckInResponse(Entity):
     @property
     def response_emotion(self) -> ResponseEmotionType:
         """Gets the responseEmotion property"""
-        from office365.education.responseemotiontype import ResponseEmotionType
-
         return self.properties.get("responseEmotion", ResponseEmotionType.none)
 
     @odata(name="responseFeedback")
     @property
     def response_feedback(self) -> ResponseFeedbackType:
         """Gets the responseFeedback property"""
-        from office365.education.responsefeedbacktype import ResponseFeedbackType
-
         return self.properties.get("responseFeedback", ResponseFeedbackType.none)
 
     @odata(name="submitDateTime")

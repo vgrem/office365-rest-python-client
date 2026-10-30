@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import time
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.outlook.calendar.dayofweek import DayOfWeek
 
 
 class IosUpdateConfiguration(Entity):
@@ -28,8 +26,6 @@ class IosUpdateConfiguration(Entity):
     @property
     def scheduled_install_days(self) -> ClientValueCollection[DayOfWeek]:
         """Gets the scheduledInstallDays property"""
-        from office365.outlook.calendar.dayofweek import DayOfWeek
-
         return self.properties.get("scheduledInstallDays", ClientValueCollection[DayOfWeek](DayOfWeek))
 
     @odata(name="utcTimeOffsetInMinutes")

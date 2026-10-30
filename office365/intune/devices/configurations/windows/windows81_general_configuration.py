@@ -1,23 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.windows.internetsitesecuritylevel import InternetSiteSecurityLevel
+from office365.intune.devices.configurations.windows.sitesecuritylevel import SiteSecurityLevel
+from office365.intune.devices.configurations.windows.useraccountcontrolsettings import WindowsUserAccountControlSettings
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.compliance.requiredpasswordtype import (
-        RequiredPasswordType,
-    )
-    from office365.intune.devices.configurations.windows.internetsitesecuritylevel import (
-        InternetSiteSecurityLevel,
-    )
-    from office365.intune.devices.configurations.windows.sitesecuritylevel import (
-        SiteSecurityLevel,
-    )
-    from office365.intune.devices.configurations.windows.useraccountcontrolsettings import (
-        WindowsUserAccountControlSettings,
-    )
 
 
 class Windows81GeneralConfiguration(Entity):
@@ -91,20 +81,12 @@ class Windows81GeneralConfiguration(Entity):
     @property
     def browser_internet_security_level(self) -> InternetSiteSecurityLevel:
         """Gets the browserInternetSecurityLevel property"""
-        from office365.intune.devices.configurations.windows.internetsitesecuritylevel import (
-            InternetSiteSecurityLevel,
-        )
-
         return self.properties.get("browserInternetSecurityLevel", InternetSiteSecurityLevel.userDefined)
 
     @odata(name="browserIntranetSecurityLevel")
     @property
     def browser_intranet_security_level(self) -> SiteSecurityLevel:
         """Gets the browserIntranetSecurityLevel property"""
-        from office365.intune.devices.configurations.windows.sitesecuritylevel import (
-            SiteSecurityLevel,
-        )
-
         return self.properties.get("browserIntranetSecurityLevel", SiteSecurityLevel.userDefined)
 
     @odata(name="browserLoggingReportLocation")
@@ -141,10 +123,6 @@ class Windows81GeneralConfiguration(Entity):
     @property
     def browser_trusted_sites_security_level(self) -> SiteSecurityLevel:
         """Gets the browserTrustedSitesSecurityLevel property"""
-        from office365.intune.devices.configurations.windows.sitesecuritylevel import (
-            SiteSecurityLevel,
-        )
-
         return self.properties.get("browserTrustedSitesSecurityLevel", SiteSecurityLevel.userDefined)
 
     @odata(name="cellularBlockDataRoaming")
@@ -199,10 +177,6 @@ class Windows81GeneralConfiguration(Entity):
     @property
     def password_required_type(self) -> RequiredPasswordType:
         """Gets the passwordRequiredType property"""
-        from office365.intune.devices.compliance.requiredpasswordtype import (
-            RequiredPasswordType,
-        )
-
         return self.properties.get("passwordRequiredType", RequiredPasswordType.deviceDefault)
 
     @odata(name="passwordSignInFailureCountBeforeFactoryReset")
@@ -227,10 +201,6 @@ class Windows81GeneralConfiguration(Entity):
     @property
     def user_account_control_settings(self) -> WindowsUserAccountControlSettings:
         """Gets the userAccountControlSettings property"""
-        from office365.intune.devices.configurations.windows.useraccountcontrolsettings import (
-            WindowsUserAccountControlSettings,
-        )
-
         return self.properties.get("userAccountControlSettings", WindowsUserAccountControlSettings.userDefined)
 
     @odata(name="workFoldersUrl")

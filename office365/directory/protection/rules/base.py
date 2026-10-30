@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
+from office365.directory.protection.rulestatus import ProtectionRuleStatus
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identity_set import IdentitySet
-    from office365.directory.protection.rulestatus import ProtectionRuleStatus
     from office365.runtime.types.public_error import PublicError
 
 
@@ -81,8 +81,6 @@ class ProtectionRuleBase(Entity):
     @property
     def status(self) -> ProtectionRuleStatus:
         """Gets the status property"""
-        from office365.directory.protection.rulestatus import ProtectionRuleStatus
-
         return self.properties.get("status", ProtectionRuleStatus.draft)
 
     @property

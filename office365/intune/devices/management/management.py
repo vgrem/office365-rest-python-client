@@ -16,6 +16,7 @@ from office365.intune.devices.management.managed.collection import (
     ManagedDeviceCollection,
 )
 from office365.intune.devices.management.reports.reports import DeviceManagementReports
+from office365.intune.devices.management.subscriptionstate import DeviceManagementSubscriptionState
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
 from office365.intune.devices.management.virtualendpoint.virtual_endpoint import (
     VirtualEndpoint,
@@ -78,9 +79,6 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.settings import DeviceManagementSettings
     from office365.intune.devices.management.software_update_status_summary import (
         SoftwareUpdateStatusSummary,
-    )
-    from office365.intune.devices.management.subscriptionstate import (
-        DeviceManagementSubscriptionState,
     )
     from office365.intune.devices.management.user_experience_analytics_settings import (
         UserExperienceAnalyticsSettings,
@@ -301,10 +299,6 @@ class DeviceManagement(Entity):
     @property
     def subscription_state(self) -> DeviceManagementSubscriptionState:
         """Gets the subscriptionState property"""
-        from office365.intune.devices.management.subscriptionstate import (
-            DeviceManagementSubscriptionState,
-        )
-
         return self.properties.get("subscriptionState", DeviceManagementSubscriptionState.pending)
 
     @odata(name="userExperienceAnalyticsSettings")

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identities.userflows.attributeinputtype import IdentityUserFlowAttributeInputType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,9 +11,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 if TYPE_CHECKING:
     from office365.directory.identities.userflows.attribute import (
         IdentityUserFlowAttribute,
-    )
-    from office365.directory.identities.userflows.attributeinputtype import (
-        IdentityUserFlowAttributeInputType,
     )
     from office365.directory.identities.userflows.user_attribute_values_item import (
         UserAttributeValuesItem,
@@ -51,10 +49,6 @@ class IdentityUserFlowAttributeAssignment(Entity):
     @property
     def user_input_type(self) -> IdentityUserFlowAttributeInputType:
         """Gets the userInputType property"""
-        from office365.directory.identities.userflows.attributeinputtype import (
-            IdentityUserFlowAttributeInputType,
-        )
-
         return self.properties.get("userInputType", IdentityUserFlowAttributeInputType.textBox)
 
     @property

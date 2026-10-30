@@ -3,17 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.androidrequiredpasswordtype import AndroidRequiredPasswordType
+from office365.intune.devices.configurations.applisttype import AppListType
+from office365.intune.devices.configurations.webbrowsercookiesettings import WebBrowserCookieSettings
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.compliance.androidrequiredpasswordtype import (
-        AndroidRequiredPasswordType,
-    )
-    from office365.intune.devices.configurations.applisttype import AppListType
-    from office365.intune.devices.configurations.webbrowsercookiesettings import (
-        WebBrowserCookieSettings,
-    )
     from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 
 
@@ -100,8 +96,6 @@ class AndroidGeneralDeviceConfiguration(Entity):
     @property
     def compliant_app_list_type(self) -> AppListType:
         """Gets the compliantAppListType property"""
-        from office365.intune.devices.configurations.applisttype import AppListType
-
         return self.properties.get("compliantAppListType", AppListType.none)
 
     @odata(name="compliantAppsList")
@@ -220,10 +214,6 @@ class AndroidGeneralDeviceConfiguration(Entity):
     @property
     def password_required_type(self) -> AndroidRequiredPasswordType:
         """Gets the passwordRequiredType property"""
-        from office365.intune.devices.compliance.androidrequiredpasswordtype import (
-            AndroidRequiredPasswordType,
-        )
-
         return self.properties.get("passwordRequiredType", AndroidRequiredPasswordType.deviceDefault)
 
     @odata(name="passwordSignInFailureCountBeforeFactoryReset")
@@ -314,10 +304,6 @@ class AndroidGeneralDeviceConfiguration(Entity):
     @property
     def web_browser_cookie_settings(self) -> WebBrowserCookieSettings:
         """Gets the webBrowserCookieSettings property"""
-        from office365.intune.devices.configurations.webbrowsercookiesettings import (
-            WebBrowserCookieSettings,
-        )
-
         return self.properties.get("webBrowserCookieSettings", WebBrowserCookieSettings.browserDefault)
 
     @odata(name="wiFiBlocked")

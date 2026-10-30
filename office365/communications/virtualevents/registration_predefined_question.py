@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+from office365.communications.virtualevents.registrationpredefinedquestionlabel import (  # noqa: E501
+    VirtualEventRegistrationPredefinedQuestionLabel,
+)
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.virtualevents.registrationpredefinedquestionlabel import (
-        VirtualEventRegistrationPredefinedQuestionLabel,
-    )
 
 
 class VirtualEventRegistrationPredefinedQuestion(Entity):
@@ -16,10 +12,6 @@ class VirtualEventRegistrationPredefinedQuestion(Entity):
     @property
     def label(self) -> VirtualEventRegistrationPredefinedQuestionLabel:
         """Gets the label property"""
-        from office365.communications.virtualevents.registrationpredefinedquestionlabel import (
-            VirtualEventRegistrationPredefinedQuestionLabel,
-        )
-
         return self.properties.get("label", VirtualEventRegistrationPredefinedQuestionLabel.street)
 
     @property

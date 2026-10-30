@@ -3,22 +3,18 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import LifecycleWorkflowProcessingStatus
+from office365.directory.identitygovernance.subject_type import SubjectType
+from office365.directory.identitygovernance.workflow.executiontype import WorkflowExecutionType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
-        LifecycleWorkflowProcessingStatus,
-    )
     from office365.directory.identitygovernance.run import Run
-    from office365.directory.identitygovernance.subject_type import SubjectType
     from office365.directory.identitygovernance.task_processing_result import (
         TaskProcessingResult,
-    )
-    from office365.directory.identitygovernance.workflow.executiontype import (
-        WorkflowExecutionType,
     )
     from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 
@@ -40,10 +36,6 @@ class SubjectProcessingResult(Entity):
     @property
     def processing_status(self) -> LifecycleWorkflowProcessingStatus:
         """Gets the processingStatus property"""
-        from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
-            LifecycleWorkflowProcessingStatus,
-        )
-
         return self.properties.get("processingStatus", LifecycleWorkflowProcessingStatus.queued)
 
     @odata(name="scheduledDateTime")
@@ -72,8 +64,6 @@ class SubjectProcessingResult(Entity):
     @property
     def subject_type(self) -> SubjectType:
         """Gets the subjectType property"""
-        from office365.directory.identitygovernance.subject_type import SubjectType
-
         return self.properties.get("subjectType", SubjectType.user)
 
     @odata(name="totalTasksCount")
@@ -92,10 +82,6 @@ class SubjectProcessingResult(Entity):
     @property
     def workflow_execution_type(self) -> WorkflowExecutionType:
         """Gets the workflowExecutionType property"""
-        from office365.directory.identitygovernance.workflow.executiontype import (
-            WorkflowExecutionType,
-        )
-
         return self.properties.get("workflowExecutionType", WorkflowExecutionType.scheduled)
 
     @odata(name="workflowVersion")

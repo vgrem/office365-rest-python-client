@@ -4,12 +4,10 @@ from datetime import time
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.sharedpc.allowedaccounttype import SharedPCAllowedAccountType
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.configurations.sharedpc.allowedaccounttype import (
-        SharedPCAllowedAccountType,
-    )
     from office365.intune.devices.configurations.windows.shared_pc_account_manager_policy import (
         SharedPCAccountManagerPolicy,
     )
@@ -30,10 +28,6 @@ class SharedPCConfiguration(Entity):
     @property
     def allowed_accounts(self) -> SharedPCAllowedAccountType:
         """Gets the allowedAccounts property"""
-        from office365.intune.devices.configurations.sharedpc.allowedaccounttype import (
-            SharedPCAllowedAccountType,
-        )
-
         return self.properties.get("allowedAccounts", SharedPCAllowedAccountType.guest)
 
     @odata(name="allowLocalStorage")
