@@ -153,6 +153,9 @@ class GeneratorPipeline:
             entity_types=frozenset(
                 name for name, schema in model.types.items() if schema.BaseTypeFullName == "EntityType"
             ),
+            client_value_types=frozenset(
+                name for name in known_types if model.types[name].BaseTypeFullName != "EntityType"
+            ),
             pollable_types=_pollable_types(model),
             declared_properties={
                 name: frozenset(normalize_member_key(key) for key in keys)

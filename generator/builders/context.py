@@ -32,6 +32,11 @@ class BuilderContext:
     cyclic_types: frozenset[str] = frozenset()
     enum_defaults: Mapping[str, str] = field(default_factory=dict)
     entity_types: frozenset[str] = frozenset()
+    #: Types this run will write that the CSDL declares as something other than an
+    #: ``EntityType``. A type written by the run has no module to import yet, so an
+    #: operation returning one cannot be classified by inspecting its class: the
+    #: metadata already says what it is.
+    client_value_types: frozenset[str] = frozenset()
     #: In-scope types whose CSDL base chain is a long-running/async operation
     #: (they get the ``PollableOperation`` mixin so they can be awaited).
     pollable_types: frozenset[str] = frozenset()
@@ -56,6 +61,7 @@ class BuilderContext:
         enum_defaults: Mapping[str, str],
         inherited_members: Mapping[str, frozenset[str]],
         entity_types: frozenset[str] = frozenset(),
+        client_value_types: frozenset[str] = frozenset(),
         pollable_types: frozenset[str] = frozenset(),
         declared_properties: Mapping[str, frozenset[str]] = _NO_PROPERTIES,
     ) -> "BuilderContext":
@@ -67,6 +73,7 @@ class BuilderContext:
             cyclic_types=cyclic_types,
             enum_defaults=dict(enum_defaults),
             entity_types=frozenset(entity_types),
+            client_value_types=frozenset(client_value_types),
             pollable_types=frozenset(pollable_types),
             inherited_members={name: frozenset(members) for name, members in inherited_members.items()},
             declared_properties={name: frozenset(names) for name, names in declared_properties.items()},

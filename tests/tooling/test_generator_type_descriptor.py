@@ -54,6 +54,26 @@ def test_entity_and_client_value():
     assert client_value.default("self.context") == "ClientResult(self.context, LLMColumnInfo())"
 
 
+def test_a_client_value_the_run_writes_is_classified_before_it_can_be_imported():
+    """A complex type written by this run has no module to inspect yet."""
+    name = "Microsoft.Online.SharePoint.TenantAdministration.SPORestrictedAppAccessControlSitePolicy"
+    return_type = ReturnType(name, _resolver(), frozenset({name}))
+
+    assert return_type.kind is TypeKind.CLIENT_VALUE
+    assert return_type.annotation == "ClientResult[SPORestrictedAppAccessControlSitePolicy]"
+    assert return_type.default("self.context") == (
+        "ClientResult(self.context, SPORestrictedAppAccessControlSitePolicy())"
+    )
+
+
+def test_the_metadata_name_is_matched_the_way_the_model_keys_it():
+    """The CSDL spells the last segment in lower case; the model Pascal-cases it."""
+    return_type = ReturnType("SP.Comments.comment", None, frozenset({"SP.Comments.Comment"}))
+
+    assert return_type.kind is TypeKind.CLIENT_VALUE
+    assert return_type.default("context") == "ClientResult(context, Comment())"
+
+
 def test_primitive_collections():
     strings = ReturnType("Collection(Edm.String)")
     assert strings.kind is TypeKind.PRIMITIVE_COLLECTION

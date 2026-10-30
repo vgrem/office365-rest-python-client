@@ -65,10 +65,16 @@ class TypeKind(Enum):
 class ReturnType:
     """Classifies a type name once and renders its annotation and default value."""
 
-    def __init__(self, type_name: str | None, registry: Optional["TypeRegistry"] = None) -> None:
+    def __init__(
+        self,
+        type_name: str | None,
+        registry: Optional["TypeRegistry"] = None,
+        client_value_types: frozenset[str] = frozenset(),
+    ) -> None:
         self._name = type_name or ""
         self._ref = TypeRef.parse(type_name)
         self._registry = registry
+        self._client_value_types = client_value_types
         self.kind = self._classify()
 
     @property
@@ -128,6 +134,16 @@ class ReturnType:
         return TypeKind.ENTITY_COLLECTION
 
     def _is_client_value(self, type_name: str | None) -> bool:
+        """Whether the referenced type is a ``ClientValue``.
+
+        The metadata answers first: an operation returning a type this run writes is
+        generated before that type's module exists, so inspecting the class finds
+        nothing and the return value is built as an entity (``Name(context)``). The
+        CSDL already says the type is a complex type, so it is asked instead.
+        """
+        key = TypeRef.parse(type_name).normalized
+        if key is not None and key in self._client_value_types:
+            return True
         if self._registry is None:
             return False
         cls = self._registry.resolve(type_name)

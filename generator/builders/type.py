@@ -241,7 +241,13 @@ class TypeBuilder(ast.NodeTransformer):
                 continue
             if not self._method_is_resolvable(method_schema):
                 continue
-            self._methods.append(MethodBuilder(method_schema, resolver=self._resolver))
+            self._methods.append(
+                MethodBuilder(
+                    method_schema,
+                    resolver=self._resolver,
+                    client_value_types=self._context.client_value_types,
+                )
+            )
             seen_methods.add(method_key)
 
     def _is_resolvable(self, type_name: Optional[str]) -> bool:

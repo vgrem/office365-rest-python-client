@@ -28,12 +28,13 @@ class MethodBuilder:
         schema: MethodInformation,
         status: str = "detached",
         resolver: Optional["TypeRegistry"] = None,
+        client_value_types: frozenset[str] = frozenset(),
     ):
         self.schema = schema
         self.status = status
         self.docstring: Optional[str] = None
         self._resolver = resolver
-        self._return_type = ReturnType(schema.ReturnTypeFullName, resolver)
+        self._return_type = ReturnType(schema.ReturnTypeFullName, resolver, client_value_types)
 
     def build(self, context_type: str = "ClientContext") -> List[ast.stmt]:
         return list(ast.parse(self.build_source(context_type)).body)
