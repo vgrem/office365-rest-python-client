@@ -27,7 +27,7 @@ class AuthenticationMethodsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="userRegistrationDetails")
+    @odata(name="userRegistrationDetails", navigation=True)
     @property
     def user_registration_details(self) -> EntityCollection[UserRegistrationDetails]:
         """Represents the state of a user's authentication methods, including which methods are registered and which

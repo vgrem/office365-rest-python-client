@@ -3,12 +3,14 @@ from office365.directory.identitygovernance.termsofuse.agreement_acceptance impo
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class TermsOfUseContainer(Entity):
     """Container for the relationships that expose the terms of use API and its features.
     Currently exposes the agreements and agreementAcceptances relationships."""
 
+    @odata(name="agreements", navigation=True)
     @property
     def agreements(self):
         """Represents a tenant's customizable terms of use agreement that's created and managed with
@@ -17,6 +19,7 @@ class TermsOfUseContainer(Entity):
             "agreements", EntityCollection(self.context, Agreement, ResourcePath("agreements", self.resource_path))
         )
 
+    @odata(name="agreementAcceptances", navigation=True)
     @property
     def agreement_acceptances(self):
         """

@@ -14,6 +14,7 @@ from office365.directory.identitygovernance.workflow.template import WorkflowTem
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.deleted_item_container import (
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
 
 class LifecycleWorkflowsContainer(Entity):
+    @odata(name="customTaskExtensions", navigation=True)
     @property
     def custom_task_extensions(self) -> EntityCollection[CustomTaskExtension]:
         """Gets the customTaskExtensions property"""
@@ -33,11 +35,13 @@ class LifecycleWorkflowsContainer(Entity):
             ),
         )
 
+    @odata(name="insights", navigation=True)
     @property
     def insights(self) -> Insights:
         """Gets the insights property"""
         return self.properties.get("insights", Insights(self.context, ResourcePath("insights", self.resource_path)))
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> LifecycleManagementSettings:
         """Gets the settings property"""
@@ -45,6 +49,7 @@ class LifecycleWorkflowsContainer(Entity):
             "settings", LifecycleManagementSettings(self.context, ResourcePath("settings", self.resource_path))
         )
 
+    @odata(name="taskDefinitions", navigation=True)
     @property
     def task_definitions(self) -> EntityCollection[TaskDefinition]:
         """Gets the taskDefinitions property"""
@@ -55,6 +60,7 @@ class LifecycleWorkflowsContainer(Entity):
             ),
         )
 
+    @odata(name="workflowTemplates", navigation=True)
     @property
     def workflow_templates(self) -> EntityCollection[WorkflowTemplate]:
         """Gets the workflowTemplates property"""
@@ -69,6 +75,7 @@ class LifecycleWorkflowsContainer(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.identityGovernance.LifecycleWorkflowsContainer"
 
+    @odata(name="deletedItems", navigation=True)
     @property
     def deleted_items(self) -> DeletedItemContainer:
         """Gets the deletedItems property"""
@@ -80,6 +87,7 @@ class LifecycleWorkflowsContainer(Entity):
             "deletedItems", DeletedItemContainer(self.context, ResourcePath("deletedItems", self.resource_path))
         )
 
+    @odata(name="workflows", navigation=True)
     @property
     def workflows(self) -> EntityCollection[Workflow]:
         """Gets the workflows property"""

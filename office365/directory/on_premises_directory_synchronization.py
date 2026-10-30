@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.on_premises_directory_synchronization_configuration import (
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class OnPremisesDirectorySynchronization(Entity):
+    @odata(name="configuration")
     @property
     def configuration(self) -> OnPremisesDirectorySynchronizationConfiguration:
         """Gets the configuration property"""
@@ -23,6 +25,7 @@ class OnPremisesDirectorySynchronization(Entity):
 
         return self.properties.get("configuration", OnPremisesDirectorySynchronizationConfiguration())
 
+    @odata(name="features")
     @property
     def features(self) -> OnPremisesDirectorySynchronizationFeature:
         """Gets the features property"""

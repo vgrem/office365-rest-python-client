@@ -2,11 +2,13 @@ from office365.directory.certificates.auth_pki import CertificateBasedAuthPki
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PublicKeyInfrastructureRoot(Entity):
     """The collection of public key infrastructure instances over different Microsoft Entra features."""
 
+    @odata(name="certificateBasedAuthConfigurations", navigation=True)
     @property
     def certificate_based_auth_configurations(self):
         """The collection of public key infrastructure instances for the certificate-based authentication feature

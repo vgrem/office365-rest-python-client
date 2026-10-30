@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.protection.threatassessment.requests.request import (
     ThreatAssessmentRequest,
 )
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.protection.threatassessment.requests.maildestinationroutingreason import (
@@ -21,6 +22,7 @@ class MailAssessmentRequest(ThreatAssessmentRequest):
     received by the user or shared by someone else.
     """
 
+    @odata(name="destinationRoutingReason")
     @property
     def destination_routing_reason(self) -> MailDestinationRoutingReason:
         """Gets the destinationRoutingReason property"""
@@ -30,11 +32,13 @@ class MailAssessmentRequest(ThreatAssessmentRequest):
 
         return self.properties.get("destinationRoutingReason", MailDestinationRoutingReason.none)
 
+    @odata(name="messageUri")
     @property
     def message_uri(self) -> Optional[str]:
         """Gets the messageUri property"""
         return self.properties.get("messageUri", None)
 
+    @odata(name="recipientEmail")
     @property
     def recipient_email(self) -> Optional[str]:
         """Gets the recipientEmail property"""

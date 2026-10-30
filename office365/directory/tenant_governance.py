@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.governance_invitation import GovernanceInvitation
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
 
 class TenantGovernance(Entity):
+    @odata(name="governanceInvitations", navigation=True)
     @property
     def governance_invitations(self) -> EntityCollection[GovernanceInvitation]:
         """Gets the governanceInvitations property"""
@@ -30,6 +32,7 @@ class TenantGovernance(Entity):
             ),
         )
 
+    @odata(name="governancePolicyTemplates", navigation=True)
     @property
     def governance_policy_templates(self) -> EntityCollection[TenantGovernancePolicyTemplate]:
         """Gets the governancePolicyTemplates property"""
@@ -46,6 +49,7 @@ class TenantGovernance(Entity):
             ),
         )
 
+    @odata(name="governanceRelationships", navigation=True)
     @property
     def governance_relationships(self) -> EntityCollection[GovernanceRelationship]:
         """Gets the governanceRelationships property"""
@@ -58,6 +62,7 @@ class TenantGovernance(Entity):
             ),
         )
 
+    @odata(name="governanceRequests", navigation=True)
     @property
     def governance_requests(self) -> EntityCollection[GovernanceRequest]:
         """Gets the governanceRequests property"""
@@ -70,6 +75,7 @@ class TenantGovernance(Entity):
             ),
         )
 
+    @odata(name="relatedTenants", navigation=True)
     @property
     def related_tenants(self) -> EntityCollection[RelatedTenant]:
         """Gets the relatedTenants property"""
@@ -82,6 +88,7 @@ class TenantGovernance(Entity):
             ),
         )
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> TenantGovernanceSetting:
         """Gets the settings property"""

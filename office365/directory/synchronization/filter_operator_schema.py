@@ -7,19 +7,23 @@ from office365.directory.synchronization.scopeoperatormultivaluedcomparisontype 
 from office365.directory.synchronization.scopeoperatortype import ScopeOperatorType
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 
 class FilterOperatorSchema(Entity):
+    @odata(name="arity")
     @property
     def arity(self) -> ScopeOperatorType:
         """Gets the arity property"""
         return self.properties.get("arity", ScopeOperatorType.Binary)
 
+    @odata(name="multivaluedComparisonType")
     @property
     def multivalued_comparison_type(self) -> ScopeOperatorMultiValuedComparisonType:
         """Gets the multivaluedComparisonType property"""
         return self.properties.get("multivaluedComparisonType", ScopeOperatorMultiValuedComparisonType.All)
 
+    @odata(name="supportedAttributeTypes")
     @property
     def supported_attribute_types(self) -> ClientValueCollection[AttributeType]:
         """Gets the supportedAttributeTypes property"""

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.directory.policies.base import PolicyBase
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.policies.app_management_application_configuration import (
@@ -20,6 +21,7 @@ class TenantAppManagementPolicy(PolicyBase):
     appManagementPolicy is applied to the object.
     """
 
+    @odata(name="applicationRestrictions")
     @property
     def application_restrictions(self) -> AppManagementApplicationConfiguration:
         """Gets the applicationRestrictions property"""
@@ -29,11 +31,13 @@ class TenantAppManagementPolicy(PolicyBase):
 
         return self.properties.get("applicationRestrictions", AppManagementApplicationConfiguration())
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""
         return self.properties.get("isEnabled", None)
 
+    @odata(name="servicePrincipalRestrictions")
     @property
     def service_principal_restrictions(self) -> AppManagementServicePrincipalConfiguration:
         """Gets the servicePrincipalRestrictions property"""

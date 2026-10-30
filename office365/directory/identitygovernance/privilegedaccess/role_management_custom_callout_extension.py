@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.custom_callout_extension_type import (
@@ -15,11 +16,13 @@ if TYPE_CHECKING:
 
 
 class RoleManagementCustomCalloutExtension(Entity):
+    @odata(name="customAttributes")
     @property
     def custom_attributes(self) -> StringCollection:
         """Gets the customAttributes property"""
         return self.properties.get("customAttributes", StringCollection())
 
+    @odata(name="resourceType")
     @property
     def resource_type(self) -> CustomExtensionResourceType:
         """Gets the resourceType property"""
@@ -29,6 +32,7 @@ class RoleManagementCustomCalloutExtension(Entity):
 
         return self.properties.get("resourceType", CustomExtensionResourceType.entraRoles)
 
+    @odata(name="type")
     @property
     def type(self) -> CustomCalloutExtensionType:
         """Gets the type property"""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.b2b_registration_metrics import B2bRegistrationMetrics
@@ -16,16 +17,19 @@ if TYPE_CHECKING:
 
 
 class RelatedTenant(Entity):
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="isMicrosoftInfrastructure", readonly=True)
     @property
     def is_microsoft_infrastructure(self) -> Optional[bool]:
         """Gets the isMicrosoftInfrastructure property"""
         return self.properties.get("isMicrosoftInfrastructure", None)
 
+    @odata(name="appB2BSignInActivityMetrics", navigation=True)
     @property
     def app_b2_b_sign_in_activity_metrics(self) -> B2BSignInActivityMetrics:
         """Gets the appB2BSignInActivityMetrics property"""
@@ -38,6 +42,7 @@ class RelatedTenant(Entity):
             B2BSignInActivityMetrics(self.context, ResourcePath("appB2BSignInActivityMetrics", self.resource_path)),
         )
 
+    @odata(name="b2BRegistrationMetrics", navigation=True)
     @property
     def b2_b_registration_metrics(self) -> B2bRegistrationMetrics:
         """Gets the b2BRegistrationMetrics property"""
@@ -48,6 +53,7 @@ class RelatedTenant(Entity):
             B2bRegistrationMetrics(self.context, ResourcePath("b2BRegistrationMetrics", self.resource_path)),
         )
 
+    @odata(name="b2BSignInActivityMetrics", navigation=True)
     @property
     def b2_b_sign_in_activity_metrics(self) -> B2BSignInActivityMetrics:
         """Gets the b2BSignInActivityMetrics property"""
@@ -60,6 +66,7 @@ class RelatedTenant(Entity):
             B2BSignInActivityMetrics(self.context, ResourcePath("b2BSignInActivityMetrics", self.resource_path)),
         )
 
+    @odata(name="billingMetrics", navigation=True)
     @property
     def billing_metrics(self) -> BillingMetrics:
         """Gets the billingMetrics property"""
@@ -69,6 +76,7 @@ class RelatedTenant(Entity):
             "billingMetrics", BillingMetrics(self.context, ResourcePath("billingMetrics", self.resource_path))
         )
 
+    @odata(name="multiTenantApplicationMetrics", navigation=True)
     @property
     def multi_tenant_application_metrics(self) -> MultiTenantApplicationMetrics:
         """Gets the multiTenantApplicationMetrics property"""

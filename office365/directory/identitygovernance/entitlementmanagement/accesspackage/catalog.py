@@ -15,6 +15,7 @@ from office365.directory.identitygovernance.workflow.custom_callout_extension im
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import (
@@ -39,41 +40,49 @@ class AccessPackageCatalog(Entity):
      to provide access. To view or change the membership of catalog-scoped roles, use the role assignments API
      with the entitlement management RBAC provider."""
 
+    @odata(name="catalogType")
     @property
     def catalog_type(self) -> AccessPackageCatalogType:
         """Gets the catalogType property"""
         return self.properties.get("catalogType", AccessPackageCatalogType.userManaged)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="isExternallyVisible")
     @property
     def is_externally_visible(self) -> Optional[bool]:
         """Gets the isExternallyVisible property"""
         return self.properties.get("isExternallyVisible", None)
 
+    @odata(name="modifiedDateTime")
     @property
     def modified_date_time(self) -> datetime:
         """Gets the modifiedDateTime property"""
         return self.properties.get("modifiedDateTime", datetime.min)
 
+    @odata(name="state")
     @property
     def state(self) -> AccessPackageCatalogState:
         """Gets the state property"""
         return self.properties.get("state", AccessPackageCatalogState.unpublished)
 
+    @odata(name="customWorkflowExtensions", navigation=True)
     @property
     def custom_workflow_extensions(self) -> EntityCollection[CustomCalloutExtension]:
         """Gets the customWorkflowExtensions property"""
@@ -88,6 +97,7 @@ class AccessPackageCatalog(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessPackageCatalog"
 
+    @odata(name="accessPackages", navigation=True)
     @property
     def access_packages(self) -> EntityCollection[AccessPackage]:
         """Gets the accessPackages property"""
@@ -102,6 +112,7 @@ class AccessPackageCatalog(Entity):
             ),
         )
 
+    @odata(name="resourceRoles", navigation=True)
     @property
     def resource_roles(self) -> EntityCollection[AccessPackageResourceRole]:
         """Gets the resourceRoles property"""
@@ -116,6 +127,7 @@ class AccessPackageCatalog(Entity):
             ),
         )
 
+    @odata(name="resources", navigation=True)
     @property
     def resources(self) -> EntityCollection[AccessPackageResource]:
         """Gets the resources property"""
@@ -130,6 +142,7 @@ class AccessPackageCatalog(Entity):
             ),
         )
 
+    @odata(name="resourceScopes", navigation=True)
     @property
     def resource_scopes(self) -> EntityCollection[AccessPackageResourceScope]:
         """Gets the resourceScopes property"""

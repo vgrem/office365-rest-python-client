@@ -302,6 +302,7 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @odata(name="accountEnabled")
     @property
     def account_enabled(self) -> Optional[bool]:
         """
@@ -319,6 +320,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("alternativeNames", StringCollection())
 
+    @odata(name="appDescription")
     @property
     def app_description(self) -> Optional[str]:
         """
@@ -326,11 +328,13 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("appDescription", None)
 
+    @odata(name="appDisplayName")
     @property
     def app_display_name(self) -> Optional[str]:
         """The display name exposed by the associated application."""
         return self.properties.get("appDisplayName", None)
 
+    @odata(name="appId")
     @property
     def app_id(self) -> Optional[str]:
         """The unique identifier for the associated application (its appId property)."""
@@ -342,7 +346,7 @@ class ServicePrincipal(DirectoryObject):
         Not nullable."""
         return self.properties.get("appRoleAssignmentRequired", None)
 
-    @odata(name="appRoleAssignedTo")
+    @odata(name="appRoleAssignedTo", navigation=True)
     @property
     def app_role_assigned_to(self) -> AppRoleAssignmentCollection:
         """
@@ -353,7 +357,7 @@ class ServicePrincipal(DirectoryObject):
             AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignedTo", self.resource_path)),
         )
 
-    @odata(name="appRoleAssignments")
+    @odata(name="appRoleAssignments", navigation=True)
     @property
     def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get an event collection or an appRoleAssignments."""
@@ -368,11 +372,13 @@ class ServicePrincipal(DirectoryObject):
         """The roles exposed by the application which this service principal represents."""
         return self.properties.get("appRoles", AppRoleCollection())
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The display name."""
         return self.properties.get("displayName", None)
 
+    @odata(name="homepage")
     @property
     def homepage(self) -> Optional[str]:
         """Home page or landing page of the application"""
@@ -396,6 +402,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.setdefault("passwordCredentials", ClientValueCollection(PasswordCredential))
 
+    @odata(name="loginUrl")
     @property
     def login_url(self) -> Optional[str]:
         """
@@ -406,6 +413,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("loginUrl", None)
 
+    @odata(name="logoutUrl")
     @property
     def logout_url(self) -> Optional[str]:
         """
@@ -424,6 +432,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("notificationEmailAddresses", StringCollection())
 
+    @odata(name="servicePrincipalType")
     @property
     def service_principal_type(self) -> Optional[str]:
         """
@@ -447,6 +456,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("servicePrincipalType", None)
 
+    @odata(name="owners", navigation=True)
     @property
     def owners(self):
         """Directory objects that are owners of this servicePrincipal.
@@ -466,7 +476,7 @@ class ServicePrincipal(DirectoryObject):
         """
         return self.properties.get("oauth2PermissionScopes", ClientValueCollection(PermissionScope))
 
-    @odata(name="oauth2PermissionGrants")
+    @odata(name="oauth2PermissionGrants", navigation=True)
     @property
     def oauth2_permission_grants(self) -> DeltaCollection[OAuth2PermissionGrant]:
         """"""
@@ -479,7 +489,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
-    @odata(name="createdObjects")
+    @odata(name="createdObjects", navigation=True)
     @property
     def created_objects(self):
         """Directory objects created by this service principal."""
@@ -488,7 +498,7 @@ class ServicePrincipal(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("createdObjects", self.resource_path)),
         )
 
-    @odata(name="ownedObjects")
+    @odata(name="ownedObjects", navigation=True)
     @property
     def owned_objects(self):
         """Directory objects that are owned by this service principal."""
@@ -497,6 +507,7 @@ class ServicePrincipal(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("ownedObjects", self.resource_path)),
         )
 
+    @odata(name="synchronization", navigation=True)
     @property
     def synchronization(self) -> Synchronization:
         """
@@ -508,6 +519,7 @@ class ServicePrincipal(DirectoryObject):
             Synchronization(self.context, ResourcePath("synchronization", self.resource_path)),
         )
 
+    @odata(name="tokenEncryptionKeyId")
     @property
     def token_encryption_key_id(self) -> Optional[str]:
         """
@@ -528,6 +540,7 @@ class ServicePrincipal(DirectoryObject):
     def entity_type_name(self):
         return "microsoft.graph.ServicePrincipal"
 
+    @odata(name="addIns")
     @property
     def add_ins(self) -> ClientValueCollection[AddIn]:
         """Gets the addIns property"""
@@ -535,21 +548,25 @@ class ServicePrincipal(DirectoryObject):
 
         return self.properties.get("addIns", ClientValueCollection[AddIn](AddIn))
 
+    @odata(name="applicationTemplateId")
     @property
     def application_template_id(self) -> Optional[str]:
         """Gets the applicationTemplateId property"""
         return self.properties.get("applicationTemplateId", None)
 
+    @odata(name="appOwnerOrganizationId")
     @property
     def app_owner_organization_id(self) -> Optional[UUID]:
         """Gets the appOwnerOrganizationId property"""
         return self.properties.get("appOwnerOrganizationId", None)
 
+    @odata(name="createdByAppId")
     @property
     def created_by_app_id(self) -> Optional[str]:
         """Gets the createdByAppId property"""
         return self.properties.get("createdByAppId", None)
 
+    @odata(name="customSecurityAttributes")
     @property
     def custom_security_attributes(self) -> CustomSecurityAttributeValue:
         """Gets the customSecurityAttributes property"""
@@ -559,16 +576,19 @@ class ServicePrincipal(DirectoryObject):
 
         return self.properties.get("customSecurityAttributes", CustomSecurityAttributeValue())
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="disabledByMicrosoftStatus")
     @property
     def disabled_by_microsoft_status(self) -> Optional[str]:
         """Gets the disabledByMicrosoftStatus property"""
         return self.properties.get("disabledByMicrosoftStatus", None)
 
+    @odata(name="info")
     @property
     def info(self) -> InformationalUrl:
         """Gets the info property"""
@@ -576,31 +596,37 @@ class ServicePrincipal(DirectoryObject):
 
         return self.properties.get("info", InformationalUrl())
 
+    @odata(name="isDisabled")
     @property
     def is_disabled(self) -> Optional[bool]:
         """Gets the isDisabled property"""
         return self.properties.get("isDisabled", None)
 
+    @odata(name="notes")
     @property
     def notes(self) -> Optional[str]:
         """Gets the notes property"""
         return self.properties.get("notes", None)
 
+    @odata(name="preferredSingleSignOnMode")
     @property
     def preferred_single_sign_on_mode(self) -> Optional[str]:
         """Gets the preferredSingleSignOnMode property"""
         return self.properties.get("preferredSingleSignOnMode", None)
 
+    @odata(name="preferredTokenSigningKeyThumbprint")
     @property
     def preferred_token_signing_key_thumbprint(self) -> Optional[str]:
         """Gets the preferredTokenSigningKeyThumbprint property"""
         return self.properties.get("preferredTokenSigningKeyThumbprint", None)
 
+    @odata(name="replyUrls")
     @property
     def reply_urls(self) -> StringCollection:
         """Gets the replyUrls property"""
         return self.properties.get("replyUrls", StringCollection())
 
+    @odata(name="resourceSpecificApplicationPermissions")
     @property
     def resource_specific_application_permissions(self) -> ClientValueCollection[ResourceSpecificPermission]:
         """Gets the resourceSpecificApplicationPermissions property"""
@@ -613,6 +639,7 @@ class ServicePrincipal(DirectoryObject):
             ClientValueCollection[ResourceSpecificPermission](ResourceSpecificPermission),
         )
 
+    @odata(name="samlSingleSignOnSettings")
     @property
     def saml_single_sign_on_settings(self) -> SamlSingleSignOnSettings:
         """Gets the samlSingleSignOnSettings property"""
@@ -622,21 +649,25 @@ class ServicePrincipal(DirectoryObject):
 
         return self.properties.get("samlSingleSignOnSettings", SamlSingleSignOnSettings())
 
+    @odata(name="servicePrincipalNames")
     @property
     def service_principal_names(self) -> StringCollection:
         """Gets the servicePrincipalNames property"""
         return self.properties.get("servicePrincipalNames", StringCollection())
 
+    @odata(name="signInAudience")
     @property
     def sign_in_audience(self) -> Optional[str]:
         """Gets the signInAudience property"""
         return self.properties.get("signInAudience", None)
 
+    @odata(name="tags")
     @property
     def tags(self) -> StringCollection:
         """Gets the tags property"""
         return self.properties.get("tags", StringCollection())
 
+    @odata(name="verifiedPublisher")
     @property
     def verified_publisher(self) -> VerifiedPublisher:
         """Gets the verifiedPublisher property"""
@@ -644,6 +675,7 @@ class ServicePrincipal(DirectoryObject):
 
         return self.properties.get("verifiedPublisher", VerifiedPublisher())
 
+    @odata(name="appManagementPolicies", navigation=True)
     @property
     def app_management_policies(self) -> EntityCollection[AppManagementPolicy]:
         """Gets the appManagementPolicies property"""
@@ -656,6 +688,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="claimsMappingPolicies", navigation=True)
     @property
     def claims_mapping_policies(self) -> EntityCollection[ClaimsMappingPolicy]:
         """Gets the claimsMappingPolicies property"""
@@ -670,6 +703,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="delegatedPermissionClassifications", navigation=True)
     @property
     def delegated_permission_classifications(self) -> EntityCollection[DelegatedPermissionClassification]:
         """Gets the delegatedPermissionClassifications property"""
@@ -686,6 +720,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="endpoints", navigation=True)
     @property
     def endpoints(self) -> EntityCollection[Endpoint]:
         """Gets the endpoints property"""
@@ -696,6 +731,7 @@ class ServicePrincipal(DirectoryObject):
             EntityCollection[Endpoint](self.context, Endpoint, ResourcePath("endpoints", self.resource_path)),
         )
 
+    @odata(name="federatedIdentityCredentials", navigation=True)
     @property
     def federated_identity_credentials(self) -> EntityCollection[FederatedIdentityCredential]:
         """Gets the federatedIdentityCredentials property"""
@@ -712,6 +748,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="homeRealmDiscoveryPolicies", navigation=True)
     @property
     def home_realm_discovery_policies(self) -> EntityCollection[HomeRealmDiscoveryPolicy]:
         """Gets the homeRealmDiscoveryPolicies property"""
@@ -726,6 +763,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="memberOf", navigation=True)
     @property
     def member_of(self) -> EntityCollection[DirectoryObject]:
         """Gets the memberOf property"""
@@ -738,6 +776,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="remoteDesktopSecurityConfiguration", navigation=True)
     @property
     def remote_desktop_security_configuration(self) -> RemoteDesktopSecurityConfiguration:
         """Gets the remoteDesktopSecurityConfiguration property"""
@@ -752,6 +791,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="tokenIssuancePolicies", navigation=True)
     @property
     def token_issuance_policies(self) -> EntityCollection[TokenIssuancePolicy]:
         """Gets the tokenIssuancePolicies property"""
@@ -764,6 +804,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="tokenLifetimePolicies", navigation=True)
     @property
     def token_lifetime_policies(self) -> EntityCollection[TokenLifetimePolicy]:
         """Gets the tokenLifetimePolicies property"""
@@ -776,6 +817,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @odata(name="transitiveMemberOf", navigation=True)
     @property
     def transitive_member_of(self) -> EntityCollection[DirectoryObject]:
         """Gets the transitiveMemberOf property"""

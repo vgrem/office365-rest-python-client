@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_role_scope import (
@@ -13,16 +14,19 @@ if TYPE_CHECKING:
 
 
 class AvailableAccessPackage(Entity):
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="resourceRoleScopes", navigation=True)
     @property
     def resource_role_scopes(self) -> EntityCollection[AccessPackageResourceRoleScope]:
         """Gets the resourceRoleScopes property"""

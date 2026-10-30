@@ -219,14 +219,16 @@ def test_flat_round_trip():
 
 def test_to_dataframe_returns_dataframe_result():
     client = GraphClient()
-    col = pipeline__collection([{"displayName": "John Doe"}], context=client)
+    col = pipeline__collection([{"displayName": "John Doe", "contosoExtension": "x"}], context=client)
     result = col.to_dataframe()
     assert isinstance(result, DataFrameResult)
     # the after_execute callback materializes .value on the loaded collection
     write_dataframe(col, result)
     # The columns are the type's, in declaration order, then the name only this page
-    # carried: a row is a row of the model, not of the response.
-    assert list(result.value.columns) == [*User.select_all(), "displayName"]
+    # carried: a row is a row of the model, not of the response. ``displayName`` is a
+    # column of the model now, so the page-only name has to be one the model cannot
+    # spell.
+    assert list(result.value.columns) == [*User.select_all(), "contosoExtension"]
     assert result.value["displayName"].tolist() == ["John Doe"]
 
 

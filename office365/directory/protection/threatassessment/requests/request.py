@@ -39,6 +39,7 @@ class ThreatAssessmentRequest(Entity):
         """
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """The threat assessment status. Possible values are: pending, completed."""
@@ -50,11 +51,13 @@ class ThreatAssessmentRequest(Entity):
         """The expected assessment from submitter. Possible values: block, unblock."""
         return self.properties.get("expectedAssessment", None)
 
+    @odata(name="category")
     @property
     def category(self) -> Optional[str]:
         """The threat category. Possible values: spam, phishing, malware."""
         return self.properties.get("category", None)
 
+    @odata(name="contentType")
     @property
     def content_type(self) -> ThreatAssessmentContentType:
         """Gets the contentType property"""
@@ -64,6 +67,7 @@ class ThreatAssessmentRequest(Entity):
 
         return self.properties.get("contentType", ThreatAssessmentContentType.mail)
 
+    @odata(name="requestSource")
     @property
     def request_source(self) -> ThreatAssessmentRequestSource:
         """Gets the requestSource property"""
@@ -73,6 +77,7 @@ class ThreatAssessmentRequest(Entity):
 
         return self.properties.get("requestSource", ThreatAssessmentRequestSource.undefined)
 
+    @odata(name="results", navigation=True)
     @property
     def results(self) -> EntityCollection[ThreatAssessmentResult]:
         """Gets the results property"""

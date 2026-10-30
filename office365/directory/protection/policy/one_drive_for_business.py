@@ -6,6 +6,7 @@ from office365.directory.protection.policy.base import ProtectionPolicyBase
 from office365.directory.protection.rules.drive import DriveProtectionRule
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.drive_protection_unit import DriveProtectionUnit
@@ -22,6 +23,7 @@ class OneDriveForBusinessProtectionPolicy(ProtectionPolicyBase):
     for a single Microsoft 365 service.
     """
 
+    @odata(name="driveInclusionRules", navigation=True)
     @property
     def drive_inclusion_rules(self) -> EntityCollection[DriveProtectionRule]:
         """Contains the details of the Onedrive for Business protection rule."""
@@ -34,6 +36,7 @@ class OneDriveForBusinessProtectionPolicy(ProtectionPolicyBase):
             ),
         )
 
+    @odata(name="driveProtectionUnits", navigation=True)
     @property
     def drive_protection_units(self) -> EntityCollection[DriveProtectionUnit]:
         """Gets the driveProtectionUnits property"""
@@ -46,6 +49,7 @@ class OneDriveForBusinessProtectionPolicy(ProtectionPolicyBase):
             ),
         )
 
+    @odata(name="driveProtectionUnitsBulkAdditionJobs", navigation=True)
     @property
     def drive_protection_units_bulk_addition_jobs(self) -> EntityCollection[DriveProtectionUnitsBulkAdditionJob]:
         """Gets the driveProtectionUnitsBulkAdditionJobs property"""

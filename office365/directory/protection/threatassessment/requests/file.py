@@ -20,6 +20,7 @@ class FileAssessmentRequest(ThreatAssessmentRequest):
         """The name of the file to assess."""
         return self.properties.get("fileName", None)
 
+    @odata(name="contentData")
     @property
     def content_data(self) -> Optional[str]:
         """Gets the contentData property"""

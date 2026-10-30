@@ -345,11 +345,13 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @odata(name="appId")
     @property
     def app_id(self) -> Optional[str]:
         """The unique identifier for the application that is assigned to an application by Azure AD. Not nullable."""
         return self.properties.get("appId", None)
 
+    @odata(name="applicationTemplateId")
     @property
     def application_template_id(self) -> Optional[str]:
         """Unique identifier of the applicationTemplate"""
@@ -364,11 +366,13 @@ class Application(DirectoryObject):
         """
         return self.properties.get("appRoles", ClientValueCollection(AppRole))
 
+    @odata(name="api")
     @property
     def api(self) -> ApiApplication:
         """Specifies settings for an application that implements a web API."""
         return self.properties.get("api", ApiApplication())
 
+    @odata(name="certification")
     @property
     def certification(self) -> Certification:
         """Specifies the certification status of the application."""
@@ -380,11 +384,13 @@ class Application(DirectoryObject):
         """The date and time the application was registered."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="defaultRedirectUri")
     @property
     def default_redirect_uri(self) -> Optional[str]:
         """ """
         return self.properties.get("defaultRedirectUri", None)
 
+    @odata(name="spa")
     @property
     def spa(self) -> SpaApplication:
         """
@@ -398,6 +404,7 @@ class Application(DirectoryObject):
         """The collection of key credentials associated with the application. Not nullable."""
         return self.properties.setdefault("keyCredentials", ClientValueCollection(KeyCredential))
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """
@@ -406,6 +413,7 @@ class Application(DirectoryObject):
         """
         return self.properties.get("displayName", None)
 
+    @odata(name="identifierUris")
     @property
     def identifier_uris(self) -> StringCollection:
         """
@@ -435,6 +443,7 @@ class Application(DirectoryObject):
         """Specifies settings for installed clients such as desktop or mobile devices."""
         return self.properties.get("publicClient", PublicClientApplication())
 
+    @odata(name="signInAudience")
     @property
     def signin_audience(self) -> Optional[str]:
         """
@@ -444,7 +453,7 @@ class Application(DirectoryObject):
         """
         return self.properties.get("signInAudience", None)
 
-    @odata(name="createdOnBehalfOf")
+    @odata(name="createdOnBehalfOf", navigation=True)
     @property
     def created_on_behalf_of(self) -> DirectoryObject:
         """"""
@@ -452,6 +461,7 @@ class Application(DirectoryObject):
             "createdOnBehalfOf", DirectoryObject(self.context, ResourcePath("createdOnBehalfOf", self.resource_path))
         )
 
+    @odata(name="owners", navigation=True)
     @property
     def owners(self) -> DirectoryObjectCollection:
         """Directory objects that are owners of the application."""
@@ -459,7 +469,7 @@ class Application(DirectoryObject):
             "owners", DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path))
         )
 
-    @odata(name="extensionProperties")
+    @odata(name="extensionProperties", navigation=True)
     @property
     def extension_properties(self) -> EntityCollection[ExtensionProperty]:
         """List extension properties on an application object."""
@@ -477,7 +487,7 @@ class Application(DirectoryObject):
         """
         return self.properties.get("requiredResourceAccess", ClientValueCollection(RequiredResourceAccess))
 
-    @odata(name="tokenIssuancePolicies")
+    @odata(name="tokenIssuancePolicies", navigation=True)
     @property
     def token_issuance_policies(self) -> EntityCollection[TokenIssuancePolicy]:
         """Get all tokenIssuancePolicies assigned to this object."""
@@ -500,6 +510,7 @@ class Application(DirectoryObject):
         """Gets the authenticationBehaviors property"""
         return self.properties.get("authenticationBehaviors", AuthenticationBehaviors())
 
+    @odata(name="createdByAppId")
     @property
     def created_by_app_id(self) -> Optional[str]:
         """Gets the createdByAppId property"""
@@ -511,91 +522,109 @@ class Application(DirectoryObject):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="disabledByMicrosoftStatus")
     @property
     def disabled_by_microsoft_status(self) -> Optional[str]:
         """Gets the disabledByMicrosoftStatus property"""
         return self.properties.get("disabledByMicrosoftStatus", None)
 
+    @odata(name="groupMembershipClaims")
     @property
     def group_membership_claims(self) -> Optional[str]:
         """Gets the groupMembershipClaims property"""
         return self.properties.get("groupMembershipClaims", None)
 
+    @odata(name="info")
     @property
     def info(self) -> InformationalUrl:
         """Gets the info property"""
         return self.properties.get("info", InformationalUrl())
 
+    @odata(name="isDeviceOnlyAuthSupported")
     @property
     def is_device_only_auth_supported(self) -> Optional[bool]:
         """Gets the isDeviceOnlyAuthSupported property"""
         return self.properties.get("isDeviceOnlyAuthSupported", None)
 
+    @odata(name="isDisabled")
     @property
     def is_disabled(self) -> Optional[bool]:
         """Gets the isDisabled property"""
         return self.properties.get("isDisabled", None)
 
+    @odata(name="isFallbackPublicClient")
     @property
     def is_fallback_public_client(self) -> Optional[bool]:
         """Gets the isFallbackPublicClient property"""
         return self.properties.get("isFallbackPublicClient", None)
 
+    @odata(name="logo")
     @property
     def logo(self) -> bytes | None:
         """Gets the logo property"""
         return self.properties.get("logo", None)
 
+    @odata(name="managerApplications")
     @property
     def manager_applications(self) -> GuidCollection:
         """Gets the managerApplications property"""
         return self.properties.get("managerApplications", GuidCollection(None))
 
+    @odata(name="nativeAuthenticationApisEnabled")
     @property
     def native_authentication_apis_enabled(self) -> NativeAuthenticationApisEnabled:
         """Gets the nativeAuthenticationApisEnabled property"""
         return self.properties.get("nativeAuthenticationApisEnabled", NativeAuthenticationApisEnabled.none)
 
+    @odata(name="notes")
     @property
     def notes(self) -> Optional[str]:
         """Gets the notes property"""
         return self.properties.get("notes", None)
 
+    @odata(name="oauth2RequirePostResponse")
     @property
     def oauth2_require_post_response(self) -> Optional[bool]:
         """Gets the oauth2RequirePostResponse property"""
         return self.properties.get("oauth2RequirePostResponse", None)
 
+    @odata(name="parentalControlSettings")
     @property
     def parental_control_settings(self) -> ParentalControlSettings:
         """Gets the parentalControlSettings property"""
         return self.properties.get("parentalControlSettings", ParentalControlSettings())
 
+    @odata(name="publisherDomain")
     @property
     def publisher_domain(self) -> Optional[str]:
         """Gets the publisherDomain property"""
         return self.properties.get("publisherDomain", None)
 
+    @odata(name="requestSignatureVerification")
     @property
     def request_signature_verification(self) -> RequestSignatureVerification:
         """Gets the requestSignatureVerification property"""
         return self.properties.get("requestSignatureVerification", RequestSignatureVerification())
 
+    @odata(name="samlMetadataUrl")
     @property
     def saml_metadata_url(self) -> Optional[str]:
         """Gets the samlMetadataUrl property"""
         return self.properties.get("samlMetadataUrl", None)
 
+    @odata(name="serviceManagementReference")
     @property
     def service_management_reference(self) -> Optional[str]:
         """Gets the serviceManagementReference property"""
         return self.properties.get("serviceManagementReference", None)
 
+    @odata(name="servicePrincipalLockConfiguration")
     @property
     def service_principal_lock_configuration(self) -> ServicePrincipalLockConfiguration:
         """Gets the servicePrincipalLockConfiguration property"""
@@ -606,31 +635,37 @@ class Application(DirectoryObject):
         """Gets the signInAudience property"""
         return self.properties.get("signInAudience", None)
 
+    @odata(name="tags")
     @property
     def tags(self) -> StringCollection:
         """Gets the tags property"""
         return self.properties.get("tags", StringCollection(None))
 
+    @odata(name="tokenEncryptionKeyId")
     @property
     def token_encryption_key_id(self) -> Optional[UUID]:
         """Gets the tokenEncryptionKeyId property"""
         return self.properties.get("tokenEncryptionKeyId", None)
 
+    @odata(name="uniqueName")
     @property
     def unique_name(self) -> Optional[str]:
         """Gets the uniqueName property"""
         return self.properties.get("uniqueName", None)
 
+    @odata(name="verifiedPublisher")
     @property
     def verified_publisher(self) -> VerifiedPublisher:
         """Gets the verifiedPublisher property"""
         return self.properties.get("verifiedPublisher", VerifiedPublisher())
 
+    @odata(name="web")
     @property
     def web(self) -> WebApplication:
         """Gets the web property"""
         return self.properties.get("web", WebApplication())
 
+    @odata(name="synchronization", navigation=True)
     @property
     def synchronization(self) -> Synchronization:
         """Gets the synchronization property"""
@@ -642,6 +677,7 @@ class Application(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Application"
 
+    @odata(name="appManagementPolicies", navigation=True)
     @property
     def app_management_policies(self) -> EntityCollection[AppManagementPolicy]:
         """Gets the appManagementPolicies property"""
@@ -654,6 +690,7 @@ class Application(DirectoryObject):
             ),
         )
 
+    @odata(name="federatedIdentityCredentials", navigation=True)
     @property
     def federated_identity_credentials(self) -> EntityCollection[FederatedIdentityCredential]:
         """Gets the federatedIdentityCredentials property"""
@@ -670,6 +707,7 @@ class Application(DirectoryObject):
             ),
         )
 
+    @odata(name="homeRealmDiscoveryPolicies", navigation=True)
     @property
     def home_realm_discovery_policies(self) -> EntityCollection[HomeRealmDiscoveryPolicy]:
         """Gets the homeRealmDiscoveryPolicies property"""
@@ -684,6 +722,7 @@ class Application(DirectoryObject):
             ),
         )
 
+    @odata(name="tokenLifetimePolicies", navigation=True)
     @property
     def token_lifetime_policies(self) -> EntityCollection[TokenLifetimePolicy]:
         """Gets the tokenLifetimePolicies property"""

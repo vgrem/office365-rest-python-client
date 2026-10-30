@@ -16,6 +16,7 @@ from office365.directory.policies.conditionalaccess.conditional_access import (
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identities.conditional_access_template import (
@@ -27,6 +28,7 @@ class ConditionalAccessRoot(Entity):
     """The conditionalAccessRoot resource is the entry point for the Conditional Access (CA) object model.
     It doesn't contain any usable properties."""
 
+    @odata(name="authenticationStrength", navigation=True)
     @property
     def authentication_strength(self) -> AuthenticationStrengthRoot:
         """The entry point for the Conditional Access (CA) object model."""
@@ -35,6 +37,7 @@ class ConditionalAccessRoot(Entity):
             AuthenticationStrengthRoot(self.context, ResourcePath("authenticationStrength", self.resource_path)),
         )
 
+    @odata(name="policies", navigation=True)
     @property
     def policies(self) -> EntityCollection[ConditionalAccessPolicy]:
         """Returns a collection of the specified Conditional Access (CA) policies."""
@@ -43,6 +46,7 @@ class ConditionalAccessRoot(Entity):
             EntityCollection(self.context, ConditionalAccessPolicy, ResourcePath("policies", self.resource_path)),
         )
 
+    @odata(name="authenticationContextClassReferences", navigation=True)
     @property
     def authentication_context_class_references(self) -> EntityCollection[AuthenticationContextClassReference]:
         """Gets the authenticationContextClassReferences property"""
@@ -55,6 +59,7 @@ class ConditionalAccessRoot(Entity):
             ),
         )
 
+    @odata(name="deletedItems", navigation=True)
     @property
     def deleted_items(self) -> CaPoliciesDeletableRoot:
         """Gets the deletedItems property"""
@@ -62,6 +67,7 @@ class ConditionalAccessRoot(Entity):
             "deletedItems", CaPoliciesDeletableRoot(self.context, ResourcePath("deletedItems", self.resource_path))
         )
 
+    @odata(name="namedLocations", navigation=True)
     @property
     def named_locations(self) -> EntityCollection[NamedLocation]:
         """Gets the namedLocations property"""
@@ -76,6 +82,7 @@ class ConditionalAccessRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ConditionalAccessRoot"
 
+    @odata(name="templates", navigation=True)
     @property
     def templates(self) -> EntityCollection[ConditionalAccessTemplate]:
         """Gets the templates property"""

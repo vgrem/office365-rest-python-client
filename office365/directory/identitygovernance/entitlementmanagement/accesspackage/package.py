@@ -34,21 +34,25 @@ class AccessPackage(Entity):
         """Gets the createdBy property"""
         return self.properties.get("createdBy", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="isHidden")
     @property
     def is_hidden(self) -> Optional[bool]:
         """Gets the isHidden property"""
@@ -66,6 +70,7 @@ class AccessPackage(Entity):
         """Gets the modifiedBy property"""
         return self.properties.get("modifiedBy", None)
 
+    @odata(name="modifiedDateTime")
     @property
     def modified_date_time(self) -> datetime:
         """Gets the modifiedDateTime property"""
@@ -77,6 +82,7 @@ class AccessPackage(Entity):
         """Gets the uniqueName property"""
         return self.properties.get("uniqueName", None)
 
+    @odata(name="accessPackagesIncompatibleWith", navigation=True)
     @property
     def access_packages_incompatible_with(self) -> EntityCollection[AccessPackage]:
         """Gets the accessPackagesIncompatibleWith property"""
@@ -87,6 +93,7 @@ class AccessPackage(Entity):
             ),
         )
 
+    @odata(name="incompatibleAccessPackages", navigation=True)
     @property
     def incompatible_access_packages(self) -> EntityCollection[AccessPackage]:
         """Gets the incompatibleAccessPackages property"""
@@ -97,6 +104,7 @@ class AccessPackage(Entity):
             ),
         )
 
+    @odata(name="incompatibleGroups", navigation=True)
     @property
     def incompatible_groups(self) -> EntityCollection[Group]:
         """Gets the incompatibleGroups property"""

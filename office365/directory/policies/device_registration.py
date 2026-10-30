@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.policies.azure_ad_registration_policy import (
@@ -21,6 +22,7 @@ class DeviceRegistrationPolicy(Entity):
     """Represents the policy scope that controls quota restrictions, additional authentication, and authorization
     policies to register device identities to your organization."""
 
+    @odata(name="azureADJoin")
     @property
     def azure_ad_join(self) -> AzureADJoinPolicy:
         """Gets the azureADJoin property"""
@@ -28,6 +30,7 @@ class DeviceRegistrationPolicy(Entity):
 
         return self.properties.get("azureADJoin", AzureADJoinPolicy())
 
+    @odata(name="azureADRegistration")
     @property
     def azure_ad_registration(self) -> AzureADRegistrationPolicy:
         """Gets the azureADRegistration property"""
@@ -37,16 +40,19 @@ class DeviceRegistrationPolicy(Entity):
 
         return self.properties.get("azureADRegistration", AzureADRegistrationPolicy())
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="localAdminPassword")
     @property
     def local_admin_password(self) -> LocalAdminPasswordSettings:
         """Gets the localAdminPassword property"""
@@ -56,6 +62,7 @@ class DeviceRegistrationPolicy(Entity):
 
         return self.properties.get("localAdminPassword", LocalAdminPasswordSettings())
 
+    @odata(name="multiFactorAuthConfiguration")
     @property
     def multi_factor_auth_configuration(self) -> MultiFactorAuthConfiguration:
         """Gets the multiFactorAuthConfiguration property"""
@@ -65,6 +72,7 @@ class DeviceRegistrationPolicy(Entity):
 
         return self.properties.get("multiFactorAuthConfiguration", MultiFactorAuthConfiguration.notRequired)
 
+    @odata(name="userDeviceQuota")
     @property
     def user_device_quota(self) -> Optional[int]:
         """Gets the userDeviceQuota property"""

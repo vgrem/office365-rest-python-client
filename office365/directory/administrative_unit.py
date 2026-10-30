@@ -6,6 +6,7 @@ from office365.directory.extensions.extension import Extension
 from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.permissions.scoped_role_membership import (
@@ -24,11 +25,13 @@ class AdministrativeUnit(DirectoryObject):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Display name for the administrative unit"""
         return self.properties.get("displayName", None)
 
+    @odata(name="visibility")
     @property
     def visibility(self):
         """
@@ -38,6 +41,7 @@ class AdministrativeUnit(DirectoryObject):
         """
         return self.properties.get("visibility", None)
 
+    @odata(name="members", navigation=True)
     @property
     def members(self):
         """Users and groups that are members of this administrative unit"""
@@ -48,6 +52,7 @@ class AdministrativeUnit(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for this administrative unit."""
@@ -56,31 +61,37 @@ class AdministrativeUnit(DirectoryObject):
             EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="isMemberManagementRestricted")
     @property
     def is_member_management_restricted(self) -> Optional[bool]:
         """Gets the isMemberManagementRestricted property"""
         return self.properties.get("isMemberManagementRestricted", None)
 
+    @odata(name="membershipRule")
     @property
     def membership_rule(self) -> Optional[str]:
         """Gets the membershipRule property"""
         return self.properties.get("membershipRule", None)
 
+    @odata(name="membershipRuleProcessingState")
     @property
     def membership_rule_processing_state(self) -> Optional[str]:
         """Gets the membershipRuleProcessingState property"""
         return self.properties.get("membershipRuleProcessingState", None)
 
+    @odata(name="membershipType")
     @property
     def membership_type(self) -> Optional[str]:
         """Gets the membershipType property"""
         return self.properties.get("membershipType", None)
 
+    @odata(name="scopedRoleMembers", navigation=True)
     @property
     def scoped_role_members(self) -> EntityCollection[ScopedRoleMembership]:
         """Gets the scopedRoleMembers property"""

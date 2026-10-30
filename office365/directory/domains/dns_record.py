@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class DomainDnsRecord(Entity):
@@ -11,26 +12,31 @@ class DomainDnsRecord(Entity):
     the domain can be used by Microsoft Online Services. These DNS records are represented
     """
 
+    @odata(name="isOptional")
     @property
     def is_optional(self) -> Optional[bool]:
         """Gets the isOptional property"""
         return self.properties.get("isOptional", None)
 
+    @odata(name="label")
     @property
     def label(self) -> Optional[str]:
         """Gets the label property"""
         return self.properties.get("label", None)
 
+    @odata(name="recordType")
     @property
     def record_type(self) -> Optional[str]:
         """Gets the recordType property"""
         return self.properties.get("recordType", None)
 
+    @odata(name="supportedService")
     @property
     def supported_service(self) -> Optional[str]:
         """Gets the supportedService property"""
         return self.properties.get("supportedService", None)
 
+    @odata(name="ttl")
     @property
     def ttl(self) -> Optional[int]:
         """Gets the ttl property"""

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.directory.identities.providers.base import IdentityProviderBase
+from office365.runtime.types.odata_property import odata
 
 
 class SocialIdentityProvider(IdentityProviderBase):
@@ -9,6 +10,7 @@ class SocialIdentityProvider(IdentityProviderBase):
     tenant and an Azure AD B2C tenant.
     """
 
+    @odata(name="clientId")
     @property
     def client_id(self) -> Optional[str]:
         """
@@ -16,6 +18,7 @@ class SocialIdentityProvider(IdentityProviderBase):
         """
         return self.properties.get("clientId", None)
 
+    @odata(name="clientSecret")
     @property
     def client_secret(self) -> Optional[str]:
         """
@@ -24,6 +27,7 @@ class SocialIdentityProvider(IdentityProviderBase):
         """
         return self.properties.get("clientSecret", None)
 
+    @odata(name="identityProviderType")
     @property
     def identity_provider_type(self) -> Optional[str]:
         """

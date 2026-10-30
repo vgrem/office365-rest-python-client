@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.applications.permissiontype import PermissionType
@@ -18,6 +19,7 @@ class PermissionGrantConditionSet(Entity):
     set, all conditions must be met.
     """
 
+    @odata(name="clientApplicationIds")
     @property
     def client_application_ids(self) -> StringCollection:
         """
@@ -26,6 +28,7 @@ class PermissionGrantConditionSet(Entity):
         """
         return self.properties.get("clientApplicationIds", StringCollection())
 
+    @odata(name="clientApplicationPublisherIds")
     @property
     def client_application_publisher_ids(self) -> StringCollection:
         """
@@ -34,6 +37,7 @@ class PermissionGrantConditionSet(Entity):
         """
         return self.properties.get("clientApplicationPublisherIds", StringCollection())
 
+    @odata(name="clientApplicationsFromVerifiedPublisherOnly")
     @property
     def client_applications_from_verified_publisher_only(self) -> Optional[bool]:
         """
@@ -42,6 +46,7 @@ class PermissionGrantConditionSet(Entity):
         """
         return self.properties.get("clientApplicationsFromVerifiedPublisherOnly", None)
 
+    @odata(name="permissions")
     @property
     def permissions(self) -> StringCollection:
         """
@@ -54,6 +59,7 @@ class PermissionGrantConditionSet(Entity):
         """
         return self.properties.get("permissions", StringCollection())
 
+    @odata(name="resourceApplication")
     @property
     def resource_application(self) -> Optional[str]:
         """
@@ -62,16 +68,19 @@ class PermissionGrantConditionSet(Entity):
         """
         return self.properties.get("resourceApplication", None)
 
+    @odata(name="clientApplicationTenantIds")
     @property
     def client_application_tenant_ids(self) -> StringCollection:
         """Gets the clientApplicationTenantIds property"""
         return self.properties.get("clientApplicationTenantIds", StringCollection())
 
+    @odata(name="permissionClassification")
     @property
     def permission_classification(self) -> Optional[str]:
         """Gets the permissionClassification property"""
         return self.properties.get("permissionClassification", None)
 
+    @odata(name="permissionType")
     @property
     def permission_type(self) -> PermissionType:
         """Gets the permissionType property"""

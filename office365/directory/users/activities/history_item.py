@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.users.activities.activity import UserActivity
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.status import Status
@@ -20,6 +21,7 @@ class ActivityHistoryItem(Entity):
     history items are recorded for a single user activity.
     """
 
+    @odata(name="activeDurationSeconds")
     @property
     def active_duration_seconds(self) -> Optional[int]:
         """
@@ -28,11 +30,13 @@ class ActivityHistoryItem(Entity):
         """
         return self.properties.get("activeDurationSeconds", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self):
         """Set by the server. DateTime in UTC when the object was created on the server."""
         return self.properties.get("createdDateTime", datetime.datetime.min)
 
+    @odata(name="activity", navigation=True)
     @property
     def activity(self):
         """NavigationProperty/Containment; navigation property to the associated activity."""
@@ -41,26 +45,31 @@ class ActivityHistoryItem(Entity):
             UserActivity(self.context, ResourcePath("activity", self.resource_path)),
         )
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_date_time(self) -> Optional[datetime.datetime]:
         """Gets the expirationDateTime property"""
         return self.properties.get("expirationDateTime", datetime.datetime.min)
 
+    @odata(name="lastActiveDateTime")
     @property
     def last_active_date_time(self) -> Optional[datetime.datetime]:
         """Gets the lastActiveDateTime property"""
         return self.properties.get("lastActiveDateTime", datetime.datetime.min)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime.datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.datetime.min)
 
+    @odata(name="startedDateTime")
     @property
     def started_date_time(self) -> Optional[datetime.datetime]:
         """Gets the startedDateTime property"""
         return self.properties.get("startedDateTime", datetime.datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> Status:
         """Gets the status property"""
@@ -68,6 +77,7 @@ class ActivityHistoryItem(Entity):
 
         return self.properties.get("status", Status.active)
 
+    @odata(name="userTimezone")
     @property
     def user_timezone(self) -> Optional[str]:
         """Gets the userTimezone property"""

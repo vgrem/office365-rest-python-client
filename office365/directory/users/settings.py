@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 class UserSettings(Entity):
     """The current user settings for content discovery."""
 
+    @odata(name="contributionToContentDiscoveryAsOrganizationDisabled")
     @property
     def contribution_to_content_discovery_as_organization_disabled(self) -> Optional[bool]:
         """Reflects the organization level setting controlling delegate access to the trending API.
@@ -30,6 +31,7 @@ class UserSettings(Entity):
         be changed by administrators in the SharePoint admin center."""
         return self.properties.get("contributionToContentDiscoveryAsOrganizationDisabled", None)
 
+    @odata(name="contributionToContentDiscoveryDisabled")
     @property
     def contribution_to_content_discovery_disabled(self) -> Optional[bool]:
         """When set to true, the delegate access to the user's trending API is disabled.
@@ -39,7 +41,7 @@ class UserSettings(Entity):
         """
         return self.properties.get("contributionToContentDiscoveryDisabled", None)
 
-    @odata(name="itemInsights")
+    @odata(name="itemInsights", navigation=True)
     @property
     def item_insights(self) -> UserInsightsSettings:
         """The user's settings for the visibility of meeting hour insights, and insights derived between
@@ -49,7 +51,7 @@ class UserSettings(Entity):
             "itemInsights", UserInsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path))
         )
 
-    @odata(name="shiftPreferences")
+    @odata(name="shiftPreferences", navigation=True)
     @property
     def shift_preferences(self) -> ShiftPreferences:
         return self.properties.get(
@@ -60,6 +62,7 @@ class UserSettings(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserSettings"
 
+    @odata(name="exchange", navigation=True)
     @property
     def exchange(self) -> ExchangeSettings:
         """Gets the exchange property"""
@@ -69,6 +72,7 @@ class UserSettings(Entity):
             "exchange", ExchangeSettings(self.context, ResourcePath("exchange", self.resource_path))
         )
 
+    @odata(name="windows", navigation=True)
     @property
     def windows(self) -> EntityCollection[WindowsSetting]:
         """Gets the windows property"""
@@ -79,6 +83,7 @@ class UserSettings(Entity):
             EntityCollection[WindowsSetting](self.context, WindowsSetting, ResourcePath("windows", self.resource_path)),
         )
 
+    @odata(name="storage", navigation=True)
     @property
     def storage(self) -> UserStorage:
         """Gets the storage property"""
@@ -86,6 +91,7 @@ class UserSettings(Entity):
 
         return self.properties.get("storage", UserStorage(self.context, ResourcePath("storage", self.resource_path)))
 
+    @odata(name="workHoursAndLocations", navigation=True)
     @property
     def work_hours_and_locations(self) -> WorkHoursAndLocationsSetting:
         """Gets the workHoursAndLocations property"""

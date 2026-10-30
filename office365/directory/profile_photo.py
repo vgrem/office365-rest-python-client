@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ProfilePhoto(Entity):
@@ -12,11 +13,13 @@ class ProfilePhoto(Entity):
     '240x240', '360x360','432x432', '504x504', and '648x648'.
     """
 
+    @odata(name="height")
     @property
     def height(self) -> Optional[int]:
         """The height of the photo."""
         return self.properties.get("height", None)
 
+    @odata(name="width")
     @property
     def width(self) -> Optional[int]:
         """The width of the photo."""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.unified_rbac_resource_action import (
@@ -13,11 +14,13 @@ if TYPE_CHECKING:
 
 
 class UnifiedRbacResourceNamespace(Entity):
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="resourceActions", navigation=True)
     @property
     def resource_actions(self) -> EntityCollection[UnifiedRbacResourceAction]:
         """Gets the resourceActions property"""

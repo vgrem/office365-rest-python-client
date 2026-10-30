@@ -3,6 +3,7 @@ from typing import Optional
 from office365.directory.identitygovernance.privilegedaccess.approval import Approval
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class UserConsentRequest(Entity):
@@ -15,11 +16,13 @@ class UserConsentRequest(Entity):
     admin consent workflow is enabled.
     """
 
+    @odata(name="reason")
     @property
     def reason(self) -> Optional[str]:
         """Gets the reason property"""
         return self.properties.get("reason", None)
 
+    @odata(name="approval", navigation=True)
     @property
     def approval(self) -> Approval:
         """Gets the approval property"""

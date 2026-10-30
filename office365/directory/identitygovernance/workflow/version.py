@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
-from office365.runtime.types.odata_property import key
+from office365.runtime.types.odata_property import key, odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.workflow.setting import WorkflowSetting
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 @key("versionNumber")
 class WorkflowVersion(Entity):
+    @odata(name="versionNumber")
     @property
     def version_number(self) -> Optional[int]:
         """Gets the versionNumber property"""
@@ -20,6 +21,7 @@ class WorkflowVersion(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.identityGovernance.WorkflowVersion"
 
+    @odata(name="settings")
     @property
     def settings(self) -> WorkflowSetting:
         """Gets the settings property"""

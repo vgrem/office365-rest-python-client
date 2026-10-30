@@ -9,6 +9,7 @@ class RiskyUserHistoryItem(RiskyUser):
     """Represents the risk history of an Azure Active Directory (Azure AD) user as determined
     by Azure AD Identity Protection."""
 
+    @odata(name="activity")
     @property
     def activity(self) -> RiskUserActivity:
         """The activity related to user risk level change."""
@@ -20,6 +21,7 @@ class RiskyUserHistoryItem(RiskyUser):
         """The ID of actor that does the operation."""
         return self.properties.get("initiatedBy", None)
 
+    @odata(name="userId")
     @property
     def user_id(self) -> Optional[str]:
         """Gets the userId property"""

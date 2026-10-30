@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
-from office365.runtime.types.odata_property import key
+from office365.runtime.types.odata_property import key, odata
 
 if TYPE_CHECKING:
     from office365.directory.applications.inheritable_scopes import InheritableScopes
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 @key("resourceAppId")
 class InheritablePermission(Entity):
+    @odata(name="inheritableScopes")
     @property
     def inheritable_scopes(self) -> InheritableScopes:
         """Gets the inheritableScopes property"""
@@ -20,6 +21,7 @@ class InheritablePermission(Entity):
 
         return self.properties.get("inheritableScopes", InheritableScopes())
 
+    @odata(name="resourceAppId")
     @property
     def resource_app_id(self) -> Optional[str]:
         """Gets the resourceAppId property"""

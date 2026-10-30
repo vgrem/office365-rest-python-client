@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class IdentityProtectionRoot(Entity):
     """Container for the navigation properties for Microsoft Graph identity protection resources."""
 
-    @odata(name="riskDetections")
+    @odata(name="riskDetections", navigation=True)
     @property
     def risk_detections(self) -> EntityCollection[RiskDetection]:
         """Risk detection in Azure AD Identity Protection and the associated information about the detection."""
@@ -30,7 +30,7 @@ class IdentityProtectionRoot(Entity):
             EntityCollection(self.context, RiskDetection, ResourcePath("riskDetections", self.resource_path)),
         )
 
-    @odata(name="riskyUsers")
+    @odata(name="riskyUsers", navigation=True)
     @property
     def risky_users(self) -> RiskyUserCollection:
         """Get the teams in Microsoft Teams that the user is a direct member of."""
@@ -42,6 +42,7 @@ class IdentityProtectionRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.IdentityProtectionRoot"
 
+    @odata(name="riskyServicePrincipals", navigation=True)
     @property
     def risky_service_principals(self) -> EntityCollection[RiskyServicePrincipal]:
         """Gets the riskyServicePrincipals property"""
@@ -56,6 +57,7 @@ class IdentityProtectionRoot(Entity):
             ),
         )
 
+    @odata(name="servicePrincipalRiskDetections", navigation=True)
     @property
     def service_principal_risk_detections(self) -> EntityCollection[ServicePrincipalRiskDetection]:
         """Gets the servicePrincipalRiskDetections property"""

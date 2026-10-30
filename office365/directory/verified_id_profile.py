@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identities.providers.verified_id_profile_state import (
@@ -22,11 +23,13 @@ if TYPE_CHECKING:
 
 
 class VerifiedIdProfile(Entity):
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="faceCheckConfiguration")
     @property
     def face_check_configuration(self) -> FaceCheckConfiguration:
         """Gets the faceCheckConfiguration property"""
@@ -36,21 +39,25 @@ class VerifiedIdProfile(Entity):
 
         return self.properties.get("faceCheckConfiguration", FaceCheckConfiguration())
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="priority")
     @property
     def priority(self) -> Optional[int]:
         """Gets the priority property"""
         return self.properties.get("priority", None)
 
+    @odata(name="state")
     @property
     def state(self) -> VerifiedIdProfileState:
         """Gets the state property"""
@@ -60,6 +67,7 @@ class VerifiedIdProfile(Entity):
 
         return self.properties.get("state", VerifiedIdProfileState.enabled)
 
+    @odata(name="verifiedIdProfileConfiguration")
     @property
     def verified_id_profile_configuration(self) -> VerifiedIdProfileConfiguration:
         """Gets the verifiedIdProfileConfiguration property"""
@@ -69,6 +77,7 @@ class VerifiedIdProfile(Entity):
 
         return self.properties.get("verifiedIdProfileConfiguration", VerifiedIdProfileConfiguration())
 
+    @odata(name="verifiedIdUsageConfigurations")
     @property
     def verified_id_usage_configurations(self) -> ClientValueCollection[VerifiedIdUsageConfiguration]:
         """Gets the verifiedIdUsageConfigurations property"""
@@ -81,6 +90,7 @@ class VerifiedIdProfile(Entity):
             ClientValueCollection[VerifiedIdUsageConfiguration](VerifiedIdUsageConfiguration),
         )
 
+    @odata(name="verifierDid")
     @property
     def verifier_did(self) -> Optional[str]:
         """Gets the verifierDid property"""

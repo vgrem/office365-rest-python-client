@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.suggestion_reason import (
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class AccessPackageSuggestion(Entity):
+    @odata(name="reasons")
     @property
     def reasons(self) -> ClientValueCollection[AccessPackageSuggestionReason]:
         """Gets the reasons property"""
@@ -27,6 +29,7 @@ class AccessPackageSuggestion(Entity):
             "reasons", ClientValueCollection[AccessPackageSuggestionReason](AccessPackageSuggestionReason)
         )
 
+    @odata(name="accessPackage", navigation=True)
     @property
     def access_package(self) -> AvailableAccessPackage:
         """Gets the accessPackage property"""

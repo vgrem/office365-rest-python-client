@@ -25,7 +25,7 @@ class FeatureRolloutPolicy(Entity):
      - Dynamic groups and nested groups are not supported.
     """
 
-    @odata(name="appliesTo")
+    @odata(name="appliesTo", navigation=True)
     @property
     def applies_to(self) -> DirectoryObjectCollection:
         """
@@ -39,16 +39,19 @@ class FeatureRolloutPolicy(Entity):
             ),
         )
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="feature")
     @property
     def feature(self) -> StagedFeatureName:
         """Gets the feature property"""
@@ -56,11 +59,13 @@ class FeatureRolloutPolicy(Entity):
 
         return self.properties.get("feature", StagedFeatureName.passthroughAuthentication)
 
+    @odata(name="isAppliedToOrganization")
     @property
     def is_applied_to_organization(self) -> Optional[bool]:
         """Gets the isAppliedToOrganization property"""
         return self.properties.get("isAppliedToOrganization", None)
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""

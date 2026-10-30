@@ -30,11 +30,13 @@ class Invitation(Entity):
      Once completed, the invited user becomes an external user in the organization.
     """
 
+    @odata(name="invitedUserDisplayName")
     @property
     def invited_user_display_name(self) -> Optional[str]:
         """The display name of the user being invited."""
         return self.properties.get("invitedUserDisplayName", None)
 
+    @odata(name="invitedUserEmailAddress")
     @property
     def invited_user_email_address(self) -> Optional[str]:
         """The email address of the user being invited."""
@@ -46,42 +48,49 @@ class Invitation(Entity):
         """"""
         return self.properties.get("invitedUserMessageInfo", InvitedUserMessageInfo())
 
-    @odata(name="invitedUser")
+    @odata(name="invitedUser", navigation=True)
     @property
     def invited_user(self) -> User:
         """The user created as part of the invitation creation."""
         return self.properties.get("invitedUser", User(self.context, ResourcePath("invitedUser", self.resource_path)))
 
+    @odata(name="invitedUserType")
     @property
     def invited_user_type(self) -> Optional[str]:
         """Gets the invitedUserType property"""
         return self.properties.get("invitedUserType", None)
 
+    @odata(name="inviteRedeemUrl")
     @property
     def invite_redeem_url(self) -> Optional[str]:
         """Gets the inviteRedeemUrl property"""
         return self.properties.get("inviteRedeemUrl", None)
 
+    @odata(name="inviteRedirectUrl")
     @property
     def invite_redirect_url(self) -> Optional[str]:
         """Gets the inviteRedirectUrl property"""
         return self.properties.get("inviteRedirectUrl", None)
 
+    @odata(name="resetRedemption")
     @property
     def reset_redemption(self) -> Optional[bool]:
         """Gets the resetRedemption property"""
         return self.properties.get("resetRedemption", None)
 
+    @odata(name="sendInvitationMessage")
     @property
     def send_invitation_message(self) -> Optional[bool]:
         """Gets the sendInvitationMessage property"""
         return self.properties.get("sendInvitationMessage", None)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """Gets the status property"""
         return self.properties.get("status", None)
 
+    @odata(name="invitedUserSponsors", navigation=True)
     @property
     def invited_user_sponsors(self) -> EntityCollection[DirectoryObject]:
         """Gets the invitedUserSponsors property"""

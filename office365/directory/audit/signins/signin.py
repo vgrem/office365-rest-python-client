@@ -21,11 +21,13 @@ class SignIn(Entity):
     You must have an Azure AD Premium P1 or P2 license to download sign-in logs using the Microsoft Graph API.
     """
 
+    @odata(name="appDisplayName")
     @property
     def app_display_name(self) -> Optional[str]:
         """App name displayed in the Azure Portal."""
         return self.properties.get("appDisplayName", None)
 
+    @odata(name="appId")
     @property
     def app_id(self) -> Optional[str]:
         """Unique GUID representing the app ID in the Azure Active Directory."""
@@ -39,6 +41,7 @@ class SignIn(Entity):
             "appliedConditionalAccessPolicies", ClientValueCollection(AppliedConditionalAccessPolicy)
         )
 
+    @odata(name="clientAppUsed")
     @property
     def client_app_used(self) -> Optional[str]:
         """
@@ -47,6 +50,7 @@ class SignIn(Entity):
         """
         return self.properties.get("clientAppUsed", None)
 
+    @odata(name="correlationId")
     @property
     def correlation_id(self) -> Optional[str]:
         """
@@ -68,16 +72,19 @@ class SignIn(Entity):
         """
         return self.properties.get("deviceDetail", DeviceDetail())
 
+    @odata(name="ipAddress")
     @property
     def ip_address(self) -> Optional[str]:
         """IP address of the client used to sign in."""
         return self.properties.get("ipAddress", None)
 
+    @odata(name="isInteractive")
     @property
     def is_interactive(self) -> Optional[bool]:
         """Indicates if a sign-in is interactive or not."""
         return self.properties.get("isInteractive", None)
 
+    @odata(name="location")
     @property
     def location(self):
         """
@@ -86,17 +93,20 @@ class SignIn(Entity):
         """
         return self.properties.get("location", SignInLocation())
 
+    @odata(name="resourceDisplayName")
     @property
     def resource_display_name(self) -> Optional[str]:
         """Name of the resource the user signed into."""
         return self.properties.get("resourceDisplayName", None)
 
+    @odata(name="resourceId")
     @property
     def resource_id(self) -> Optional[str]:
         """
         ID of the resource that the user signed into."""
         return self.properties.get("resourceId", None)
 
+    @odata(name="riskDetail")
     @property
     def risk_detail(self) -> Optional[str]:
         """
@@ -104,6 +114,7 @@ class SignIn(Entity):
         """
         return self.properties.get("riskDetail", None)
 
+    @odata(name="userDisplayName")
     @property
     def user_display_name(self) -> Optional[str]:
         """
@@ -111,6 +122,7 @@ class SignIn(Entity):
         """
         return self.properties.get("userDisplayName", None)
 
+    @odata(name="userId")
     @property
     def user_id(self) -> Optional[str]:
         """
@@ -118,6 +130,7 @@ class SignIn(Entity):
         """
         return self.properties.get("userId", None)
 
+    @odata(name="userPrincipalName")
     @property
     def user_principal_name(self) -> Optional[str]:
         """
@@ -125,6 +138,7 @@ class SignIn(Entity):
         """
         return self.properties.get("userPrincipalName", None)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[SignInStatus]:
         """
@@ -133,11 +147,13 @@ class SignIn(Entity):
         """
         return self.properties.get("status", SignInStatus())
 
+    @odata(name="authenticationAppDeviceDetails")
     @property
     def authentication_app_device_details(self) -> AuthenticationAppDeviceDetails:
         """Gets the authenticationAppDeviceDetails property"""
         return self.properties.get("authenticationAppDeviceDetails", AuthenticationAppDeviceDetails())
 
+    @odata(name="conditionalAccessStatus")
     @property
     def conditional_access_status(self) -> ConditionalAccessStatus:
         """Gets the conditionalAccessStatus property"""
@@ -148,51 +164,61 @@ class SignIn(Entity):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="homeTenantId")
     @property
     def home_tenant_id(self) -> Optional[str]:
         """Gets the homeTenantId property"""
         return self.properties.get("homeTenantId", None)
 
+    @odata(name="resourceTenantId")
     @property
     def resource_tenant_id(self) -> Optional[str]:
         """Gets the resourceTenantId property"""
         return self.properties.get("resourceTenantId", None)
 
+    @odata(name="riskEventTypes")
     @property
     def risk_event_types(self) -> ClientValueCollection[RiskEventType]:
         """Gets the riskEventTypes property"""
         return self.properties.get("riskEventTypes", ClientValueCollection[RiskEventType](RiskEventType))
 
+    @odata(name="riskEventTypes_v2")
     @property
     def risk_event_types_v2(self) -> StringCollection:
         """Gets the riskEventTypes_v2 property"""
         return self.properties.get("riskEventTypes_v2", StringCollection(None))
 
+    @odata(name="riskLevelAggregated")
     @property
     def risk_level_aggregated(self) -> RiskLevel:
         """Gets the riskLevelAggregated property"""
         return self.properties.get("riskLevelAggregated", RiskLevel.low)
 
+    @odata(name="riskLevelDuringSignIn")
     @property
     def risk_level_during_sign_in(self) -> RiskLevel:
         """Gets the riskLevelDuringSignIn property"""
         return self.properties.get("riskLevelDuringSignIn", RiskLevel.low)
 
+    @odata(name="riskState")
     @property
     def risk_state(self) -> RiskState:
         """Gets the riskState property"""
         return self.properties.get("riskState", RiskState.none)
 
+    @odata(name="servicePrincipalId")
     @property
     def service_principal_id(self) -> Optional[str]:
         """Gets the servicePrincipalId property"""
         return self.properties.get("servicePrincipalId", None)
 
+    @odata(name="servicePrincipalName")
     @property
     def service_principal_name(self) -> Optional[str]:
         """Gets the servicePrincipalName property"""
         return self.properties.get("servicePrincipalName", None)
 
+    @odata(name="userAgent")
     @property
     def user_agent(self) -> Optional[str]:
         """Gets the userAgent property"""

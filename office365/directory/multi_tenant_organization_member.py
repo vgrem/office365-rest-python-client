@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.tenantinformation.multitenantorganizationmemberrole import (
@@ -19,26 +20,31 @@ if TYPE_CHECKING:
 
 
 class MultiTenantOrganizationMember(Entity):
+    @odata(name="addedByTenantId")
     @property
     def added_by_tenant_id(self) -> Optional[UUID]:
         """Gets the addedByTenantId property"""
         return self.properties.get("addedByTenantId", None)
 
+    @odata(name="addedDateTime")
     @property
     def added_date_time(self) -> Optional[datetime]:
         """Gets the addedDateTime property"""
         return self.properties.get("addedDateTime", datetime.min)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="joinedDateTime")
     @property
     def joined_date_time(self) -> Optional[datetime]:
         """Gets the joinedDateTime property"""
         return self.properties.get("joinedDateTime", datetime.min)
 
+    @odata(name="role")
     @property
     def role(self) -> MultiTenantOrganizationMemberRole:
         """Gets the role property"""
@@ -48,6 +54,7 @@ class MultiTenantOrganizationMember(Entity):
 
         return self.properties.get("role", MultiTenantOrganizationMemberRole.owner)
 
+    @odata(name="state")
     @property
     def state(self) -> MultiTenantOrganizationMemberState:
         """Gets the state property"""
@@ -57,11 +64,13 @@ class MultiTenantOrganizationMember(Entity):
 
         return self.properties.get("state", MultiTenantOrganizationMemberState.pending)
 
+    @odata(name="tenantId")
     @property
     def tenant_id(self) -> Optional[str]:
         """Gets the tenantId property"""
         return self.properties.get("tenantId", None)
 
+    @odata(name="transitionDetails")
     @property
     def transition_details(self) -> MultiTenantOrganizationMemberTransitionDetails:
         """Gets the transitionDetails property"""

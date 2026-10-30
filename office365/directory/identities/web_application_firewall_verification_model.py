@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identities.riskPrevention.web_application_firewall_provider_type import (
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
 
 
 class WebApplicationFirewallVerificationModel(Entity):
+    @odata(name="providerType")
     @property
     def provider_type(self) -> WebApplicationFirewallProviderType:
         """Gets the providerType property"""
@@ -30,6 +32,7 @@ class WebApplicationFirewallVerificationModel(Entity):
 
         return self.properties.get("providerType", WebApplicationFirewallProviderType.akamai)
 
+    @odata(name="verificationResult")
     @property
     def verification_result(self) -> WebApplicationFirewallVerificationResult:
         """Gets the verificationResult property"""
@@ -39,6 +42,7 @@ class WebApplicationFirewallVerificationModel(Entity):
 
         return self.properties.get("verificationResult", WebApplicationFirewallVerificationResult())
 
+    @odata(name="verifiedDetails")
     @property
     def verified_details(self) -> WebApplicationFirewallVerifiedDetails:
         """Gets the verifiedDetails property"""
@@ -48,11 +52,13 @@ class WebApplicationFirewallVerificationModel(Entity):
 
         return self.properties.get("verifiedDetails", WebApplicationFirewallVerifiedDetails())
 
+    @odata(name="verifiedHost")
     @property
     def verified_host(self) -> Optional[str]:
         """Gets the verifiedHost property"""
         return self.properties.get("verifiedHost", None)
 
+    @odata(name="provider", navigation=True)
     @property
     def provider(self) -> WebApplicationFirewallProvider:
         """Gets the provider property"""

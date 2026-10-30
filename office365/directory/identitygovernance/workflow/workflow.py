@@ -15,6 +15,7 @@ from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.subject_processing_result import (
@@ -23,36 +24,43 @@ if TYPE_CHECKING:
 
 
 class Workflow(Entity):
+    @odata(name="deletedDateTime")
     @property
     def deleted_date_time(self) -> Optional[datetime]:
         """Gets the deletedDateTime property"""
         return self.properties.get("deletedDateTime", datetime.min)
 
+    @odata(name="id")
     @property
     def id_(self) -> Optional[str]:
         """Gets the id property"""
         return self.properties.get("id", None)
 
+    @odata(name="nextScheduleRunDateTime")
     @property
     def next_schedule_run_date_time(self) -> Optional[datetime]:
         """Gets the nextScheduleRunDateTime property"""
         return self.properties.get("nextScheduleRunDateTime", datetime.min)
 
+    @odata(name="quarantineDetails")
     @property
     def quarantine_details(self) -> QuarantineDetails:
         """Gets the quarantineDetails property"""
         return self.properties.get("quarantineDetails", QuarantineDetails())
 
+    @odata(name="settings")
     @property
     def settings(self) -> WorkflowSetting:
         """Gets the settings property"""
         return self.properties.get("settings", WorkflowSetting())
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[int]:
         """Gets the version property"""
         return self.properties.get("version", None)
 
+    @odata(name="executionScope", navigation=True)
     @property
     def execution_scope(self) -> EntityCollection[UserProcessingResult]:
         """Gets the executionScope property"""
@@ -63,6 +71,7 @@ class Workflow(Entity):
             ),
         )
 
+    @odata(name="previewScope", navigation=True)
     @property
     def preview_scope(self) -> EntityCollection[DirectoryObject]:
         """Gets the previewScope property"""
@@ -73,6 +82,7 @@ class Workflow(Entity):
             ),
         )
 
+    @odata(name="runs", navigation=True)
     @property
     def runs(self) -> EntityCollection[Run]:
         """Gets the runs property"""
@@ -80,6 +90,7 @@ class Workflow(Entity):
             "runs", EntityCollection[Run](self.context, Run, ResourcePath("runs", self.resource_path))
         )
 
+    @odata(name="taskReports", navigation=True)
     @property
     def task_reports(self) -> EntityCollection[TaskReport]:
         """Gets the taskReports property"""
@@ -88,6 +99,7 @@ class Workflow(Entity):
             EntityCollection[TaskReport](self.context, TaskReport, ResourcePath("taskReports", self.resource_path)),
         )
 
+    @odata(name="userProcessingResults", navigation=True)
     @property
     def user_processing_results(self) -> EntityCollection[UserProcessingResult]:
         """Gets the userProcessingResults property"""
@@ -98,6 +110,7 @@ class Workflow(Entity):
             ),
         )
 
+    @odata(name="versions", navigation=True)
     @property
     def versions(self) -> EntityCollection[WorkflowVersion]:
         """Gets the versions property"""
@@ -112,6 +125,7 @@ class Workflow(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.identityGovernance.Workflow"
 
+    @odata(name="subjectProcessingResults", navigation=True)
     @property
     def subject_processing_results(self) -> EntityCollection[SubjectProcessingResult]:
         """Gets the subjectProcessingResults property"""

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class OAuth2PermissionGrant(Entity):
@@ -13,6 +14,7 @@ class OAuth2PermissionGrant(Entity):
     Delegated permissions are sometimes referred to as "OAuth 2.0 scopes" or "scopes".
     """
 
+    @odata(name="clientId")
     @property
     def client_id(self) -> Optional[str]:
         """
@@ -21,6 +23,7 @@ class OAuth2PermissionGrant(Entity):
         """
         return self.properties.get("clientId", None)
 
+    @odata(name="consentType")
     @property
     def consent_type(self) -> Optional[str]:
         """
@@ -32,6 +35,7 @@ class OAuth2PermissionGrant(Entity):
         """
         return self.properties.get("consentType", None)
 
+    @odata(name="principalId")
     @property
     def principal_id(self) -> Optional[str]:
         """
@@ -41,6 +45,7 @@ class OAuth2PermissionGrant(Entity):
         """
         return self.properties.get("principalId", None)
 
+    @odata(name="resourceId")
     @property
     def resource_id(self) -> Optional[str]:
         """
@@ -49,6 +54,7 @@ class OAuth2PermissionGrant(Entity):
         """
         return self.properties.get("resourceId", None)
 
+    @odata(name="scope")
     @property
     def scope(self) -> Optional[str]:
         """

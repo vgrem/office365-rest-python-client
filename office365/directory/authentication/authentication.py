@@ -36,7 +36,7 @@ class Authentication(Entity):
     for users.
     """
 
-    @odata(name="emailMethods")
+    @odata(name="emailMethods", navigation=True)
     @property
     def email_methods(self):
         """The email address registered to a user for authentication."""
@@ -49,7 +49,7 @@ class Authentication(Entity):
             EntityCollection(self.context, EmailAuthenticationMethod, ResourcePath("emailMethods", self.resource_path)),
         )
 
-    @odata(name="fido2Methods")
+    @odata(name="fido2Methods", navigation=True)
     @property
     def fido2_methods(self):
         """Represents the FIDO2 security keys registered to a user for authentication."""
@@ -62,7 +62,7 @@ class Authentication(Entity):
             EntityCollection(self.context, Fido2AuthenticationMethod, ResourcePath("fido2Methods", self.resource_path)),
         )
 
-    @odata(name="microsoftAuthenticatorMethods")
+    @odata(name="microsoftAuthenticatorMethods", navigation=True)
     @property
     def microsoft_authenticator_methods(self):
         from office365.directory.authentication.methods.microsoft_authenticator import (
@@ -78,7 +78,7 @@ class Authentication(Entity):
             ),
         )
 
-    @odata(name="phoneMethods")
+    @odata(name="phoneMethods", navigation=True)
     @property
     def phone_methods(self):
         """The phone numbers registered to a user for authentication."""
@@ -91,7 +91,7 @@ class Authentication(Entity):
             EntityCollection(self.context, PhoneAuthenticationMethod, ResourcePath("phoneMethods", self.resource_path)),
         )
 
-    @odata(name="passwordMethods")
+    @odata(name="passwordMethods", navigation=True)
     @property
     def password_methods(self):
         """Represents the password that's registered to a user for authentication. For security, the password itself
@@ -108,6 +108,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="methods", navigation=True)
     @property
     def methods(self) -> EntityCollection[AuthenticationMethod]:
         """Represents all authentication methods registered to a user."""
@@ -119,6 +120,7 @@ class Authentication(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Authentication"
 
+    @odata(name="externalAuthenticationMethods", navigation=True)
     @property
     def external_authentication_methods(self) -> EntityCollection[ExternalAuthenticationMethod]:
         """Gets the externalAuthenticationMethods property"""
@@ -135,6 +137,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[LongRunningOperation]:
         """Gets the operations property"""
@@ -147,6 +150,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="platformCredentialMethods", navigation=True)
     @property
     def platform_credential_methods(self) -> EntityCollection[PlatformCredentialAuthenticationMethod]:
         """Gets the platformCredentialMethods property"""
@@ -163,6 +167,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="softwareOathMethods", navigation=True)
     @property
     def software_oath_methods(self) -> EntityCollection[SoftwareOathAuthenticationMethod]:
         """Gets the softwareOathMethods property"""
@@ -177,6 +182,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="temporaryAccessPassMethods", navigation=True)
     @property
     def temporary_access_pass_methods(self) -> EntityCollection[TemporaryAccessPassAuthenticationMethod]:
         """Gets the temporaryAccessPassMethods property"""
@@ -193,6 +199,7 @@ class Authentication(Entity):
             ),
         )
 
+    @odata(name="windowsHelloForBusinessMethods", navigation=True)
     @property
     def windows_hello_for_business_methods(self) -> EntityCollection[WindowsHelloForBusinessAuthenticationMethod]:
         """Gets the windowsHelloForBusinessMethods property"""

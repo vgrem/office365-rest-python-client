@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.directory.authentication.methods.base import BaseAuthenticationMethod
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class AuthenticationMethodModeDetail(Entity):
@@ -10,11 +11,13 @@ class AuthenticationMethodModeDetail(Entity):
     of the authenticationstrengthpolicy.
     """
 
+    @odata(name="authenticationMethod")
     @property
     def authentication_method(self) -> BaseAuthenticationMethod:
         """Gets the authenticationMethod property"""
         return self.properties.get("authenticationMethod", BaseAuthenticationMethod.password)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""

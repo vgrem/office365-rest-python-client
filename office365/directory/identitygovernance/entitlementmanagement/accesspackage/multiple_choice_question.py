@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer_choice import (
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class AccessPackageMultipleChoiceQuestion(Entity):
+    @odata(name="isMultipleSelectionAllowed")
     @property
     def is_multiple_selection_allowed(self) -> Optional[bool]:
         """Gets the isMultipleSelectionAllowed property"""
@@ -21,6 +23,7 @@ class AccessPackageMultipleChoiceQuestion(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessPackageMultipleChoiceQuestion"
 
+    @odata(name="choices")
     @property
     def choices(self) -> ClientValueCollection[AccessPackageAnswerChoice]:
         """Gets the choices property"""

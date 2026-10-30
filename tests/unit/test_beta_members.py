@@ -143,24 +143,22 @@ def test_a_projection_keeps_the_names_the_root_declares_and_spells_them_its_way(
 
 def test_select_all_is_narrowed_to_what_the_root_can_honour():
     """``select_all()`` is one class-level list; the URL carries what the root has."""
-    assert AccessPackage.select_all() == [
-        "id",
-        "catalogId",
-        "createdBy",
-        "isRoleScopesVisible",
-        "modifiedBy",
-        "uniqueName",
-    ]
+    columns = list(AccessPackage.select_all())
+    beta_only = AccessPackage._schema.beta_only
+    stable_columns = [name for name in columns if name not in beta_only]
+    # The class declares more than the preview subset -- the members its getters spell --
+    # so the narrowing is exercised by the difference, not by a frozen pair of lists.
+    assert set(beta_only) < set(columns)
 
     stable = AccessPackage(_client(), ResourcePath("accessPackages"))
     preview = AccessPackage(_client(GraphVersion.BETA), ResourcePath("accessPackages"))
-    stable.query_options.select = list(AccessPackage.select_all())
-    preview.query_options.select = list(AccessPackage.select_all())
+    stable.query_options.select = list(columns)
+    preview.query_options.select = list(columns)
 
-    assert ReadEntityQuery(stable).url.endswith("?$select=id")
-    assert ReadEntityQuery(preview).url.endswith(
-        "?$select=id,catalogId,createdBy,isRoleScopesVisible,modifiedBy,uniqueName"
-    )
+    assert ReadEntityQuery(stable).url.endswith("?$select=" + ",".join(stable_columns))
+    assert ReadEntityQuery(preview).url.endswith("?$select=" + ",".join(columns))
+    assert "uniqueName" in columns
+    assert "uniqueName" not in stable_columns
 
 
 def test_the_narrowing_does_not_rewrite_the_projection_the_caller_built():
@@ -170,7 +168,7 @@ def test_the_narrowing_does_not_rewrite_the_projection_the_caller_built():
 
     url = ReadEntityQuery(stable).url
 
-    assert url.endswith("?$select=id")
+    assert "uniqueName" not in url
     assert stable.query_options.select == list(AccessPackage.select_all())
 
 

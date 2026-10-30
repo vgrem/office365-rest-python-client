@@ -6,14 +6,17 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
     AccessPackageExternalUserLifecycleAction,
 )
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class EntitlementManagementSettings(Entity):
+    @odata(name="durationUntilExternalUserDeletedAfterBlocked")
     @property
     def duration_until_external_user_deleted_after_blocked(self) -> timedelta:
         """Gets the durationUntilExternalUserDeletedAfterBlocked property"""
         return self.properties.get("durationUntilExternalUserDeletedAfterBlocked", timedelta.min)
 
+    @odata(name="externalUserLifecycleAction")
     @property
     def external_user_lifecycle_action(self) -> AccessPackageExternalUserLifecycleAction:
         """Gets the externalUserLifecycleAction property"""

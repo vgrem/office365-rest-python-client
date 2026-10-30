@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.recovery.job import RecoveryJob
@@ -13,16 +14,19 @@ if TYPE_CHECKING:
 
 
 class Snapshot(Entity):
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="totalChangedObjects")
     @property
     def total_changed_objects(self) -> Optional[int]:
         """Gets the totalChangedObjects property"""
         return self.properties.get("totalChangedObjects", None)
 
+    @odata(name="recoveryJobs", navigation=True)
     @property
     def recovery_jobs(self) -> EntityCollection[RecoveryJob]:
         """Gets the recoveryJobs property"""
@@ -33,6 +37,7 @@ class Snapshot(Entity):
             EntityCollection[RecoveryJob](self.context, RecoveryJob, ResourcePath("recoveryJobs", self.resource_path)),
         )
 
+    @odata(name="recoveryPreviewJobs", navigation=True)
     @property
     def recovery_preview_jobs(self) -> EntityCollection[RecoveryPreviewJob]:
         """Gets the recoveryPreviewJobs property"""

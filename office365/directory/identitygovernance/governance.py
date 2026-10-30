@@ -21,6 +21,7 @@ from office365.directory.identitygovernance.termsofuse.container import (
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.catalog import (
@@ -39,6 +40,7 @@ class IdentityGovernance(Entity):
        - Terms of use
     """
 
+    @odata(name="appConsent", navigation=True)
     @property
     def app_consent(self) -> AppConsentApprovalRoute:
         """
@@ -49,6 +51,7 @@ class IdentityGovernance(Entity):
             "appConsent", AppConsentApprovalRoute(self.context, ResourcePath("appConsent", self.resource_path))
         )
 
+    @odata(name="accessReviews", navigation=True)
     @property
     def access_reviews(self) -> AccessReviewSet:
         """Container for the base resources that expose the access reviews API and features."""
@@ -56,6 +59,7 @@ class IdentityGovernance(Entity):
             "accessReviews", AccessReviewSet(self.context, ResourcePath("accessReviews", self.resource_path))
         )
 
+    @odata(name="privilegedAccess", navigation=True)
     @property
     def privileged_access(self) -> PrivilegedAccessRoot:
         """Container for the base resources that expose the access reviews API and features."""
@@ -63,6 +67,7 @@ class IdentityGovernance(Entity):
             "privilegedAccess", PrivilegedAccessRoot(self.context, ResourcePath("privilegedAccess", self.resource_path))
         )
 
+    @odata(name="termsOfUse", navigation=True)
     @property
     def terms_of_use(self) -> TermsOfUseContainer:
         """
@@ -73,6 +78,7 @@ class IdentityGovernance(Entity):
             "termsOfUse", TermsOfUseContainer(self.context, ResourcePath("termsOfUse", self.resource_path))
         )
 
+    @odata(name="entitlementManagement", navigation=True)
     @property
     def entitlement_management(self) -> EntitlementManagement:
         """
@@ -84,6 +90,7 @@ class IdentityGovernance(Entity):
             EntitlementManagement(self.context, ResourcePath("entitlementManagement", self.resource_path)),
         )
 
+    @odata(name="lifecycleWorkflows", navigation=True)
     @property
     def lifecycle_workflows(self) -> LifecycleWorkflowsContainer:
         """Gets the lifecycleWorkflows property"""
@@ -96,6 +103,7 @@ class IdentityGovernance(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.IdentityGovernance"
 
+    @odata(name="catalogs", navigation=True)
     @property
     def catalogs(self) -> EntityCollection[AccessPackageCatalog]:
         """Gets the catalogs property"""

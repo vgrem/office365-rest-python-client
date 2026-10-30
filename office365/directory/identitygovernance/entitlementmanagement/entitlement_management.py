@@ -12,6 +12,7 @@ from office365.directory.identitygovernance.privilegedaccess.approval import App
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.access_package_suggestion import (
@@ -63,6 +64,7 @@ class EntitlementManagement(Entity):
     including accessPackageCatalog, connectedOrganization, and entitlementManagementSettings.
     """
 
+    @odata(name="resourceRequests", navigation=True)
     @property
     def resource_requests(self):
         """Represents a request to add or remove a resource to or from a catalog respectively."""
@@ -73,6 +75,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="accessPackageAssignmentApprovals", navigation=True)
     @property
     def access_package_assignment_approvals(self) -> EntityCollection[Approval]:
         """Gets the accessPackageAssignmentApprovals property"""
@@ -83,6 +86,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="catalogs", navigation=True)
     @property
     def catalogs(self) -> EntityCollection[AccessPackageCatalog]:
         """Gets the catalogs property"""
@@ -97,6 +101,7 @@ class EntitlementManagement(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.EntitlementManagement"
 
+    @odata(name="accessPackages", navigation=True)
     @property
     def access_packages(self) -> EntityCollection[AccessPackage]:
         """Gets the accessPackages property"""
@@ -111,6 +116,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="accessPackageSuggestions", navigation=True)
     @property
     def access_package_suggestions(self) -> EntityCollection[AccessPackageSuggestion]:
         """Gets the accessPackageSuggestions property"""
@@ -125,6 +131,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="assignmentPolicies", navigation=True)
     @property
     def assignment_policies(self) -> EntityCollection[AccessPackageAssignmentPolicy]:
         """Gets the assignmentPolicies property"""
@@ -139,6 +146,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="assignmentRequests", navigation=True)
     @property
     def assignment_requests(self) -> EntityCollection[AccessPackageAssignmentRequest]:
         """Gets the assignmentRequests property"""
@@ -153,6 +161,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[AccessPackageAssignment]:
         """Gets the assignments property"""
@@ -167,6 +176,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="availableAccessPackages", navigation=True)
     @property
     def available_access_packages(self) -> EntityCollection[AvailableAccessPackage]:
         """Gets the availableAccessPackages property"""
@@ -181,6 +191,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="connectedOrganizations", navigation=True)
     @property
     def connected_organizations(self) -> EntityCollection[ConnectedOrganization]:
         """Gets the connectedOrganizations property"""
@@ -195,6 +206,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="controlConfigurations", navigation=True)
     @property
     def control_configurations(self) -> EntityCollection[ControlConfiguration]:
         """Gets the controlConfigurations property"""
@@ -209,6 +221,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="externalOriginResourceConnectors", navigation=True)
     @property
     def external_origin_resource_connectors(self) -> EntityCollection[ExternalOriginResourceConnector]:
         """Gets the externalOriginResourceConnectors property"""
@@ -225,6 +238,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="resourceEnvironments", navigation=True)
     @property
     def resource_environments(self) -> EntityCollection[AccessPackageResourceEnvironment]:
         """Gets the resourceEnvironments property"""
@@ -239,6 +253,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="resourceRoleScopes", navigation=True)
     @property
     def resource_role_scopes(self) -> EntityCollection[AccessPackageResourceRoleScope]:
         """Gets the resourceRoleScopes property"""
@@ -253,6 +268,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="resources", navigation=True)
     @property
     def resources(self) -> EntityCollection[AccessPackageResource]:
         """Gets the resources property"""
@@ -267,6 +283,7 @@ class EntitlementManagement(Entity):
             ),
         )
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> EntitlementManagementSettings:
         """Gets the settings property"""
@@ -278,6 +295,7 @@ class EntitlementManagement(Entity):
             "settings", EntitlementManagementSettings(self.context, ResourcePath("settings", self.resource_path))
         )
 
+    @odata(name="subjects", navigation=True)
     @property
     def subjects(self) -> EntityCollection[AccessPackageSubject]:
         """Gets the subjects property"""

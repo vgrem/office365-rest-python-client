@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class IdentityProviderBase(Entity):
@@ -12,6 +13,7 @@ class IdentityProviderBase(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The display name for the identity provider."""

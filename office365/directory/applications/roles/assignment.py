@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.directory.objects.object import DirectoryObject
+from office365.runtime.types.odata_property import odata
 
 
 class AppRoleAssignment(DirectoryObject):
@@ -15,6 +16,7 @@ class AppRoleAssignment(DirectoryObject):
     def __str__(self):
         return f"Principal: {self.principal_display_name}, AppRole: {self.app_role_id}"
 
+    @odata(name="appRoleId")
     @property
     def app_role_id(self) -> Optional[str]:
         """
@@ -26,32 +28,38 @@ class AppRoleAssignment(DirectoryObject):
         """
         return self.properties.get("appRoleId", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """The time when the app role assignment was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="principalDisplayName")
     @property
     def principal_display_name(self) -> Optional[str]:
         """The display name of the user, group, or service principal that was granted the app role assignment."""
         return self.properties.get("principalDisplayName", None)
 
+    @odata(name="principalId")
     @property
     def principal_id(self) -> Optional[str]:
         """The unique identifier (id) for the user, security group, or service principal being granted the app role.
         Security groups with dynamic memberships are supported. Required on create."""
         return self.properties.get("principalId", None)
 
+    @odata(name="principalType")
     @property
     def principal_type(self) -> Optional[str]:
         """The type of the assigned principal. This can either be User, Group, or ServicePrincipal."""
         return self.properties.get("principalType", None)
 
+    @odata(name="resourceDisplayName")
     @property
     def resource_display_name(self) -> Optional[str]:
         """The display name of the resource app's service principal to which the assignment is made."""
         return self.properties.get("resourceDisplayName", None)
 
+    @odata(name="resourceId")
     @property
     def resource_id(self) -> Optional[str]:
         """The unique identifier (id) for the resource service principal for which the assignment is made.

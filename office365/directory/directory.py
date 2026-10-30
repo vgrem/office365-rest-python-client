@@ -33,7 +33,7 @@ class Directory(Entity):
     "container". Deleted items will remain available to restore for up to 30 days. After 30 days, the items are
     permanently deleted."""
 
-    @odata(name="deviceLocalCredentials")
+    @odata(name="deviceLocalCredentials", navigation=True)
     @property
     def device_local_credentials(self) -> EntityCollection[DeviceLocalCredentialInfo]:
         """Conceptual container for user and group directory objects."""
@@ -46,7 +46,7 @@ class Directory(Entity):
             ),
         )
 
-    @odata(name="administrativeUnits")
+    @odata(name="administrativeUnits", navigation=True)
     @property
     def administrative_units(self):
         """Conceptual container for user and group directory objects."""
@@ -59,7 +59,7 @@ class Directory(Entity):
             ),
         )
 
-    @odata(name="customSecurityAttributeDefinitions")
+    @odata(name="customSecurityAttributeDefinitions", navigation=True)
     @property
     def custom_security_attribute_definitions(self):
         """Conceptual container for customSecurityAttributeDefinition objects and their properties."""
@@ -72,7 +72,7 @@ class Directory(Entity):
             ),
         )
 
-    @odata(name="publicKeyInfrastructure")
+    @odata(name="publicKeyInfrastructure", navigation=True)
     @property
     def public_key_infrastructure(self):
         """"""
@@ -84,6 +84,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="subscriptions", navigation=True)
     @property
     def subscriptions(self) -> EntityCollection[CompanySubscription]:
         """List of commercial subscriptions that an organization acquired."""
@@ -137,6 +138,7 @@ class Directory(Entity):
         """Recently deleted service Principals"""
         return self.deleted_items("microsoft.graph.servicePrincipal")
 
+    @odata(name="attributeSets", navigation=True)
     @property
     def attribute_sets(self) -> EntityCollection[AttributeSet]:
         """Gets the attributeSets property"""
@@ -149,6 +151,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="federationConfigurations", navigation=True)
     @property
     def federation_configurations(self) -> EntityCollection[IdentityProviderBase]:
         """Gets the federationConfigurations property"""
@@ -161,6 +164,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="onPremisesSynchronization", navigation=True)
     @property
     def on_premises_synchronization(self) -> EntityCollection[OnPremisesDirectorySynchronization]:
         """Gets the onPremisesSynchronization property"""
@@ -177,6 +181,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="remoteTenantGroups", navigation=True)
     @property
     def remote_tenant_groups(self) -> EntityCollection[RemoteTenantGroup]:
         """Gets the remoteTenantGroups property"""
@@ -189,6 +194,7 @@ class Directory(Entity):
             ),
         )
 
+    @odata(name="recovery", navigation=True)
     @property
     def recovery(self) -> Recovery:
         """Gets the recovery property"""
@@ -196,6 +202,7 @@ class Directory(Entity):
 
         return self.properties.get("recovery", Recovery(self.context, ResourcePath("recovery", self.resource_path)))
 
+    @odata(name="tenantGovernance", navigation=True)
     @property
     def tenant_governance(self) -> TenantGovernance:
         """Gets the tenantGovernance property"""

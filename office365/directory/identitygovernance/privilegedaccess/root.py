@@ -8,6 +8,7 @@ from office365.directory.identitygovernance.privilegedaccess.group import (
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.privilegedaccess.role_management_custom_callout_extension import (
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 class PrivilegedAccessRoot(Entity):
     """Represents the entry point for resources related to Privileged Identity Management (PIM)."""
 
+    @odata(name="group", navigation=True)
     @property
     def group(self):
         """A list of pending user consent requests."""
@@ -29,6 +31,7 @@ class PrivilegedAccessRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessRoot"
 
+    @odata(name="customExtensions", navigation=True)
     @property
     def custom_extensions(self) -> EntityCollection[RoleManagementCustomCalloutExtension]:
         """Gets the customExtensions property"""

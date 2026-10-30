@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.security.datasecurity.sensitivity_label import (
@@ -17,6 +18,7 @@ class DataSecurityAndGovernance(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DataSecurityAndGovernance"
 
+    @odata(name="sensitivityLabels", navigation=True)
     @property
     def sensitivity_labels(self) -> EntityCollection[SensitivityLabel]:
         """Gets the sensitivityLabels property"""

@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.key_value_pair import KeyValuePair
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.schedule import SynchronizationSchedule
@@ -43,11 +44,13 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="status")
     @property
     def status(self):
         """Status of the job, which includes when the job was last run, current job state, and errors."""
         return self.properties.get("status", SynchronizationStatus())
 
+    @odata(name="schema", navigation=True)
     @property
     def schema(self):
         """The synchronization schema configured for the job."""
@@ -55,16 +58,19 @@ class SynchronizationJob(Entity):
             "schema", SynchronizationSchema(self.context, ResourcePath("schema", self.resource_path))
         )
 
+    @odata(name="synchronizationJobSettings")
     @property
     def synchronization_job_settings(self) -> ClientValueCollection[KeyValuePair]:
         """Gets the synchronizationJobSettings property"""
         return self.properties.get("synchronizationJobSettings", ClientValueCollection[KeyValuePair](KeyValuePair))
 
+    @odata(name="templateId")
     @property
     def template_id(self) -> Optional[str]:
         """Gets the templateId property"""
         return self.properties.get("templateId", None)
 
+    @odata(name="bulkUpload", navigation=True)
     @property
     def bulk_upload(self) -> BulkUpload:
         """Gets the bulkUpload property"""
@@ -76,6 +82,7 @@ class SynchronizationJob(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.SynchronizationJob"
 
+    @odata(name="schedule")
     @property
     def schedule(self) -> SynchronizationSchedule:
         """Gets the schedule property"""

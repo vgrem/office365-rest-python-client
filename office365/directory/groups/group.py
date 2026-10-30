@@ -161,6 +161,7 @@ class Group(DirectoryObject):
         """The list of sensitivity label pairs (label ID, label name) associated with a Microsoft 365 group."""
         return self.properties.get("assignedLabels", ClientValueCollection(AssignedLabel))
 
+    @odata(name="classification")
     @property
     def classification(self) -> Optional[str]:
         """Describes a classification for the group (such as low, medium or high business impact). Valid values for
@@ -168,6 +169,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("classification", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """
@@ -194,6 +196,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("groupTypes", StringCollection())
 
+    @odata(name="hasMembersWithLicenseErrors")
     @property
     def has_members_with_license_errors(self) -> Optional[bool]:
         """
@@ -205,6 +208,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("hasMembersWithLicenseErrors", None)
 
+    @odata(name="isAssignableToRole")
     @property
     def is_assignable_to_role(self) -> Optional[bool]:
         """
@@ -228,6 +232,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("licenseProcessingState", LicenseProcessingState())
 
+    @odata(name="mail")
     @property
     def mail(self) -> Optional[str]:
         """
@@ -235,6 +240,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("mail", None)
 
+    @odata(name="mailEnabled")
     @property
     def mail_enabled(self) -> Optional[bool]:
         """
@@ -242,6 +248,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("mailEnabled", None)
 
+    @odata(name="mailNickname")
     @property
     def mail_nickname(self) -> Optional[str]:
         """
@@ -250,10 +257,12 @@ class Group(DirectoryObject):
         """
         return self.properties.get("mailNickname", None)
 
+    @odata(name="onPremisesDomainName")
     @property
     def on_premises_domain_name(self) -> Optional[str]:
         return self.properties.get("onPremisesDomainName", None)
 
+    @odata(name="conversations", navigation=True)
     @property
     def conversations(self) -> EntityCollection[Conversation]:
         """The group's conversations."""
@@ -268,6 +277,7 @@ class Group(DirectoryObject):
         """Timestamp of when the group was created (``None`` when absent)."""
         return self.properties.get("createdDateTime")
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """
@@ -277,6 +287,7 @@ class Group(DirectoryObject):
             "extensions", EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path))
         )
 
+    @odata(name="members", navigation=True)
     @property
     def members(self) -> DirectoryObjectCollection:
         """Users and groups that are members of this group."""
@@ -284,7 +295,7 @@ class Group(DirectoryObject):
             "members", DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path))
         )
 
-    @odata(name="rejectedSenders")
+    @odata(name="rejectedSenders", navigation=True)
     @property
     def rejected_senders(self) -> DirectoryObjectCollection:
         """
@@ -295,7 +306,7 @@ class Group(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("rejectedSenders", self.resource_path)),
         )
 
-    @odata(name="transitiveMembers")
+    @odata(name="transitiveMembers", navigation=True)
     @property
     def transitive_members(self) -> DirectoryObjectCollection:
         """
@@ -307,7 +318,7 @@ class Group(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMembers", self.resource_path)),
         )
 
-    @odata(name="transitiveMemberOf")
+    @odata(name="transitiveMemberOf", navigation=True)
     @property
     def transitive_member_of(self) -> DirectoryObjectCollection:
         """
@@ -320,6 +331,7 @@ class Group(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
         )
 
+    @odata(name="threads", navigation=True)
     @property
     def threads(self) -> EntityCollection[ConversationThread]:
         """The group's conversation threads"""
@@ -327,6 +339,7 @@ class Group(DirectoryObject):
             "threads", EntityCollection(self.context, ConversationThread, ResourcePath("threads", self.resource_path))
         )
 
+    @odata(name="owners", navigation=True)
     @property
     def owners(self) -> DirectoryObjectCollection:
         """The owners of the group."""
@@ -334,6 +347,7 @@ class Group(DirectoryObject):
             "owners", DirectoryObjectCollection(self.context, ResourcePath("owners", self.resource_path))
         )
 
+    @odata(name="drives", navigation=True)
     @property
     def drives(self) -> EntityCollection[Drive]:
         """
@@ -343,6 +357,7 @@ class Group(DirectoryObject):
             "drives", EntityCollection(self.context, Drive, ResourcePath("drives", self.resource_path), self)
         )
 
+    @odata(name="sites", navigation=True)
     @property
     def sites(self):
         """
@@ -352,12 +367,13 @@ class Group(DirectoryObject):
 
         return self.properties.get("sites", SitesWithRoot(self.context, ResourcePath("sites", self.resource_path)))
 
+    @odata(name="events", navigation=True)
     @property
     def events(self) -> EventCollection:
         """Get an event collection or an event."""
         return self.properties.get("events", EventCollection(self.context, ResourcePath("events", self.resource_path)))
 
-    @odata(name="appRoleAssignments")
+    @odata(name="appRoleAssignments", navigation=True)
     @property
     def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get an event collection or an appRoleAssignments."""
@@ -366,17 +382,19 @@ class Group(DirectoryObject):
             AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignments", self.resource_path)),
         )
 
+    @odata(name="onenote", navigation=True)
     @property
     def onenote(self) -> Onenote:
         """Represents the Onenote services available to a group."""
         return self.properties.get("onenote", Onenote(self.context, ResourcePath("onenote", self.resource_path)))
 
+    @odata(name="planner", navigation=True)
     @property
     def planner(self) -> PlannerGroup:
         """The plannerGroup resource provide access to Planner resources for a group."""
         return self.properties.get("planner", PlannerGroup(self.context, ResourcePath("planner", self.resource_path)))
 
-    @odata(name="permissionGrants")
+    @odata(name="permissionGrants", navigation=True)
     @property
     def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """List permissions that have been granted to apps to access the group."""
@@ -385,11 +403,13 @@ class Group(DirectoryObject):
             EntityCollection(self.context, ResourceSpecificPermissionGrant, ResourcePath("permissionGrants")),
         )
 
+    @odata(name="photo", navigation=True)
     @property
     def photo(self) -> ProfilePhoto:
         """The group's profile photo"""
         return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
+    @odata(name="team", navigation=True)
     @property
     def team(self) -> Team:
         """The team associated with this group."""
@@ -409,41 +429,49 @@ class Group(DirectoryObject):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_date_time(self) -> datetime:
         """Gets the expirationDateTime property"""
         return self.properties.get("expirationDateTime", datetime.min)
 
+    @odata(name="infoCatalogs")
     @property
     def info_catalogs(self) -> StringCollection:
         """Gets the infoCatalogs property"""
         return self.properties.get("infoCatalogs", StringCollection(None))
 
+    @odata(name="isManagementRestricted")
     @property
     def is_management_restricted(self) -> Optional[bool]:
         """Gets the isManagementRestricted property"""
         return self.properties.get("isManagementRestricted", None)
 
+    @odata(name="membershipRule")
     @property
     def membership_rule(self) -> Optional[str]:
         """Gets the membershipRule property"""
         return self.properties.get("membershipRule", None)
 
+    @odata(name="membershipRuleProcessingState")
     @property
     def membership_rule_processing_state(self) -> Optional[str]:
         """Gets the membershipRuleProcessingState property"""
         return self.properties.get("membershipRuleProcessingState", None)
 
+    @odata(name="onPremisesLastSyncDateTime")
     @property
     def on_premises_last_sync_date_time(self) -> datetime:
         """Gets the onPremisesLastSyncDateTime property"""
         return self.properties.get("onPremisesLastSyncDateTime", datetime.min)
 
+    @odata(name="onPremisesNetBiosName")
     @property
     def on_premises_net_bios_name(self) -> Optional[str]:
         """Gets the onPremisesNetBiosName property"""
@@ -458,61 +486,73 @@ class Group(DirectoryObject):
             ClientValueCollection[OnPremisesProvisioningError](OnPremisesProvisioningError),
         )
 
+    @odata(name="onPremisesSamAccountName")
     @property
     def on_premises_sam_account_name(self) -> Optional[str]:
         """Gets the onPremisesSamAccountName property"""
         return self.properties.get("onPremisesSamAccountName", None)
 
+    @odata(name="onPremisesSecurityIdentifier")
     @property
     def on_premises_security_identifier(self) -> Optional[str]:
         """Gets the onPremisesSecurityIdentifier property"""
         return self.properties.get("onPremisesSecurityIdentifier", None)
 
+    @odata(name="onPremisesSyncEnabled")
     @property
     def on_premises_sync_enabled(self) -> Optional[bool]:
         """Gets the onPremisesSyncEnabled property"""
         return self.properties.get("onPremisesSyncEnabled", None)
 
+    @odata(name="preferredDataLocation")
     @property
     def preferred_data_location(self) -> Optional[str]:
         """Gets the preferredDataLocation property"""
         return self.properties.get("preferredDataLocation", None)
 
+    @odata(name="preferredLanguage")
     @property
     def preferred_language(self) -> Optional[str]:
         """Gets the preferredLanguage property"""
         return self.properties.get("preferredLanguage", None)
 
+    @odata(name="proxyAddresses")
     @property
     def proxy_addresses(self) -> StringCollection:
         """Gets the proxyAddresses property"""
         return self.properties.get("proxyAddresses", StringCollection())
 
+    @odata(name="renewedDateTime")
     @property
     def renewed_date_time(self) -> datetime:
         """Gets the renewedDateTime property"""
         return self.properties.get("renewedDateTime", datetime.min)
 
+    @odata(name="resourceBehaviorOptions")
     @property
     def resource_behavior_options(self) -> StringCollection:
         """Gets the resourceBehaviorOptions property"""
         return self.properties.get("resourceBehaviorOptions", StringCollection(None))
 
+    @odata(name="resourceProvisioningOptions")
     @property
     def resource_provisioning_options(self) -> StringCollection:
         """Gets the resourceProvisioningOptions property"""
         return self.properties.get("resourceProvisioningOptions", StringCollection(None))
 
+    @odata(name="securityEnabled")
     @property
     def security_enabled(self) -> Optional[bool]:
         """Gets the securityEnabled property"""
         return self.properties.get("securityEnabled", None)
 
+    @odata(name="securityIdentifier")
     @property
     def security_identifier(self) -> Optional[str]:
         """Gets the securityIdentifier property"""
         return self.properties.get("securityIdentifier", None)
 
+    @odata(name="serviceProvisioningErrors")
     @property
     def service_provisioning_errors(self) -> ClientValueCollection[ServiceProvisioningError]:
         """Gets the serviceProvisioningErrors property"""
@@ -520,61 +560,73 @@ class Group(DirectoryObject):
             "serviceProvisioningErrors", ClientValueCollection[ServiceProvisioningError](ServiceProvisioningError)
         )
 
+    @odata(name="theme")
     @property
     def theme(self) -> Optional[str]:
         """Gets the theme property"""
         return self.properties.get("theme", None)
 
+    @odata(name="uniqueName")
     @property
     def unique_name(self) -> Optional[str]:
         """Gets the uniqueName property"""
         return self.properties.get("uniqueName", None)
 
+    @odata(name="visibility")
     @property
     def visibility(self) -> Optional[str]:
         """Gets the visibility property"""
         return self.properties.get("visibility", None)
 
+    @odata(name="allowExternalSenders")
     @property
     def allow_external_senders(self) -> Optional[bool]:
         """Gets the allowExternalSenders property"""
         return self.properties.get("allowExternalSenders", None)
 
+    @odata(name="autoSubscribeNewMembers")
     @property
     def auto_subscribe_new_members(self) -> Optional[bool]:
         """Gets the autoSubscribeNewMembers property"""
         return self.properties.get("autoSubscribeNewMembers", None)
 
+    @odata(name="hideFromAddressLists")
     @property
     def hide_from_address_lists(self) -> Optional[bool]:
         """Gets the hideFromAddressLists property"""
         return self.properties.get("hideFromAddressLists", None)
 
+    @odata(name="hideFromOutlookClients")
     @property
     def hide_from_outlook_clients(self) -> Optional[bool]:
         """Gets the hideFromOutlookClients property"""
         return self.properties.get("hideFromOutlookClients", None)
 
+    @odata(name="isSubscribedByMail")
     @property
     def is_subscribed_by_mail(self) -> Optional[bool]:
         """Gets the isSubscribedByMail property"""
         return self.properties.get("isSubscribedByMail", None)
 
+    @odata(name="unseenCount")
     @property
     def unseen_count(self) -> Optional[int]:
         """Gets the unseenCount property"""
         return self.properties.get("unseenCount", None)
 
+    @odata(name="welcomeMessageEnabled")
     @property
     def welcome_message_enabled(self) -> Optional[bool]:
         """Gets the welcomeMessageEnabled property"""
         return self.properties.get("welcomeMessageEnabled", None)
 
+    @odata(name="isArchived")
     @property
     def is_archived(self) -> Optional[bool]:
         """Gets the isArchived property"""
         return self.properties.get("isArchived", None)
 
+    @odata(name="createdOnBehalfOf", navigation=True)
     @property
     def created_on_behalf_of(self) -> DirectoryObject:
         """Gets the createdOnBehalfOf property"""
@@ -582,6 +634,7 @@ class Group(DirectoryObject):
             "createdOnBehalfOf", DirectoryObject(self.context, ResourcePath("createdOnBehalfOf", self.resource_path))
         )
 
+    @odata(name="memberOf", navigation=True)
     @property
     def member_of(self) -> EntityCollection[DirectoryObject]:
         """Gets the memberOf property"""
@@ -592,6 +645,7 @@ class Group(DirectoryObject):
             ),
         )
 
+    @odata(name="membersWithLicenseErrors", navigation=True)
     @property
     def members_with_license_errors(self) -> EntityCollection[DirectoryObject]:
         """Gets the membersWithLicenseErrors property"""
@@ -602,6 +656,7 @@ class Group(DirectoryObject):
             ),
         )
 
+    @odata(name="onPremisesSyncBehavior", navigation=True)
     @property
     def on_premises_sync_behavior(self) -> OnPremisesSyncBehavior:
         """Gets the onPremisesSyncBehavior property"""
@@ -610,6 +665,7 @@ class Group(DirectoryObject):
             OnPremisesSyncBehavior(self.context, ResourcePath("onPremisesSyncBehavior", self.resource_path)),
         )
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> EntityCollection[GroupSetting]:
         """Gets the settings property"""
@@ -618,6 +674,7 @@ class Group(DirectoryObject):
             EntityCollection[GroupSetting](self.context, GroupSetting, ResourcePath("settings", self.resource_path)),
         )
 
+    @odata(name="acceptedSenders", navigation=True)
     @property
     def accepted_senders(self) -> EntityCollection[DirectoryObject]:
         """Gets the acceptedSenders property"""
@@ -628,11 +685,13 @@ class Group(DirectoryObject):
             ),
         )
 
+    @odata(name="calendar", navigation=True)
     @property
     def calendar(self) -> Calendar:
         """Gets the calendar property"""
         return self.properties.get("calendar", Calendar(self.context, ResourcePath("calendar", self.resource_path)))
 
+    @odata(name="calendarView", navigation=True)
     @property
     def calendar_view(self) -> EntityCollection[Event]:
         """Gets the calendarView property"""
@@ -641,11 +700,13 @@ class Group(DirectoryObject):
             EntityCollection[Event](self.context, Event, ResourcePath("calendarView", self.resource_path)),
         )
 
+    @odata(name="drive", navigation=True)
     @property
     def drive(self) -> Drive:
         """Gets the drive property"""
         return self.properties.get("drive", Drive(self.context, ResourcePath("drive", self.resource_path)))
 
+    @odata(name="groupLifecyclePolicies", navigation=True)
     @property
     def group_lifecycle_policies(self) -> EntityCollection[GroupLifecyclePolicy]:
         """Gets the groupLifecyclePolicies property"""
@@ -656,6 +717,7 @@ class Group(DirectoryObject):
             ),
         )
 
+    @odata(name="photos", navigation=True)
     @property
     def photos(self) -> EntityCollection[ProfilePhoto]:
         """Gets the photos property"""
@@ -668,6 +730,7 @@ class Group(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Group"
 
+    @odata(name="onPremisesExtensionAttributes")
     @property
     def on_premises_extension_attributes(self) -> OnPremisesExtensionAttributes:
         """Gets the onPremisesExtensionAttributes property"""
@@ -677,11 +740,13 @@ class Group(DirectoryObject):
 
         return self.properties.get("onPremisesExtensionAttributes", OnPremisesExtensionAttributes())
 
+    @odata(name="organizationId")
     @property
     def organization_id(self) -> Optional[str]:
         """Gets the organizationId property"""
         return self.properties.get("organizationId", None)
 
+    @odata(name="accessType")
     @property
     def access_type(self) -> GroupAccessType:
         """Gets the accessType property"""
@@ -689,16 +754,19 @@ class Group(DirectoryObject):
 
         return self.properties.get("accessType", GroupAccessType.none)
 
+    @odata(name="isFavorite")
     @property
     def is_favorite(self) -> Optional[bool]:
         """Gets the isFavorite property"""
         return self.properties.get("isFavorite", None)
 
+    @odata(name="unseenConversationsCount")
     @property
     def unseen_conversations_count(self) -> Optional[int]:
         """Gets the unseenConversationsCount property"""
         return self.properties.get("unseenConversationsCount", None)
 
+    @odata(name="unseenMessagesCount")
     @property
     def unseen_messages_count(self) -> Optional[int]:
         """Gets the unseenMessagesCount property"""

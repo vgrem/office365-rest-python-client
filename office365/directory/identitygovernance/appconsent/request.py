@@ -24,11 +24,13 @@ class AppConsentRequest(Entity):
     def __repr__(self):
         return self.app_id or self.entity_type_name
 
+    @odata(name="appDisplayName")
     @property
     def app_display_name(self) -> Optional[str]:
         """Display name of the application object on which this extension property is defined. Read-only"""
         return self.properties.get("appDisplayName", None)
 
+    @odata(name="appId")
     @property
     def app_id(self) -> Optional[str]:
         """The identifier of the application"""
@@ -40,7 +42,7 @@ class AppConsentRequest(Entity):
         """A list of pending scopes waiting for approval. Required."""
         return self.properties.get("pendingScopes", ClientValueCollection(AppConsentRequestScope))
 
-    @odata(name="userConsentRequests")
+    @odata(name="userConsentRequests", navigation=True)
     @property
     def user_consent_requests(self) -> UserConsentRequestCollection:
         """A list of pending user consent requests."""

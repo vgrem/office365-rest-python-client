@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.authentication.methods.target import (
@@ -29,6 +30,7 @@ if TYPE_CHECKING:
 
 
 class X509CertificateAuthenticationMethodConfiguration(Entity):
+    @odata(name="authenticationModeConfiguration")
     @property
     def authentication_mode_configuration(self) -> X509CertificateAuthenticationModeConfiguration:
         """Gets the authenticationModeConfiguration property"""
@@ -38,6 +40,7 @@ class X509CertificateAuthenticationMethodConfiguration(Entity):
 
         return self.properties.get("authenticationModeConfiguration", X509CertificateAuthenticationModeConfiguration())
 
+    @odata(name="certificateAuthorityScopes")
     @property
     def certificate_authority_scopes(self) -> ClientValueCollection[X509CertificateAuthorityScope]:
         """Gets the certificateAuthorityScopes property"""
@@ -50,6 +53,7 @@ class X509CertificateAuthenticationMethodConfiguration(Entity):
             ClientValueCollection[X509CertificateAuthorityScope](X509CertificateAuthorityScope),
         )
 
+    @odata(name="certificateUserBindings")
     @property
     def certificate_user_bindings(self) -> ClientValueCollection[X509CertificateUserBinding]:
         """Gets the certificateUserBindings property"""
@@ -61,6 +65,7 @@ class X509CertificateAuthenticationMethodConfiguration(Entity):
             "certificateUserBindings", ClientValueCollection[X509CertificateUserBinding](X509CertificateUserBinding)
         )
 
+    @odata(name="crlValidationConfiguration")
     @property
     def crl_validation_configuration(self) -> X509CertificateCRLValidationConfiguration:
         """Gets the crlValidationConfiguration property"""
@@ -70,6 +75,7 @@ class X509CertificateAuthenticationMethodConfiguration(Entity):
 
         return self.properties.get("crlValidationConfiguration", X509CertificateCRLValidationConfiguration())
 
+    @odata(name="issuerHintsConfiguration")
     @property
     def issuer_hints_configuration(self) -> X509CertificateIssuerHintsConfiguration:
         """Gets the issuerHintsConfiguration property"""
@@ -79,6 +85,7 @@ class X509CertificateAuthenticationMethodConfiguration(Entity):
 
         return self.properties.get("issuerHintsConfiguration", X509CertificateIssuerHintsConfiguration())
 
+    @odata(name="includeTargets", navigation=True)
     @property
     def include_targets(self) -> EntityCollection[AuthenticationMethodTarget]:
         """Gets the includeTargets property"""

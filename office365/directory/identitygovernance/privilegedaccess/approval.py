@@ -2,6 +2,7 @@ from office365.directory.identitygovernance.appconsent.approval_stage import App
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Approval(Entity):
@@ -10,6 +11,7 @@ class Approval(Entity):
     In PIM for groups, the approval object for decisions to approve or deny requests to activate
     group membership or ownership."""
 
+    @odata(name="stages", navigation=True)
     @property
     def stages(self) -> EntityCollection[ApprovalStage]:
         """Gets the stages property"""

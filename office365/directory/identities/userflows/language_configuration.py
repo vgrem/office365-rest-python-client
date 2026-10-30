@@ -19,12 +19,13 @@ class UserFlowLanguageConfiguration(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The language name to display."""
         return self.properties.get("displayName", None)
 
-    @odata(name="defaultPages")
+    @odata(name="defaultPages", navigation=True)
     @property
     def default_pages(self) -> EntityCollection[UserFlowLanguagePage]:
         """Collection of pages with the default content to display in a user flow for a specified language."""
@@ -37,7 +38,7 @@ class UserFlowLanguageConfiguration(Entity):
             ),
         )
 
-    @odata(name="overridesPages")
+    @odata(name="overridesPages", navigation=True)
     @property
     def overrides_pages(self) -> EntityCollection[UserFlowLanguagePage]:
         """Collection of pages with the default content to display in a user flow for a specified language."""
@@ -50,6 +51,7 @@ class UserFlowLanguageConfiguration(Entity):
             ),
         )
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""

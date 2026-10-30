@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.accessreview.instance import (
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
 
 
 class UnifiedRoot(Entity):
+    @odata(name="decisions", navigation=True)
     @property
     def decisions(self) -> EntityCollection[AccessReviewInstanceDecisionItem]:
         """Gets the decisions property"""
@@ -33,6 +35,7 @@ class UnifiedRoot(Entity):
             ),
         )
 
+    @odata(name="definitions", navigation=True)
     @property
     def definitions(self) -> EntityCollection[AccessReviewScheduleDefinition]:
         """Gets the definitions property"""
@@ -47,6 +50,7 @@ class UnifiedRoot(Entity):
             ),
         )
 
+    @odata(name="instances", navigation=True)
     @property
     def instances(self) -> EntityCollection[AccessReviewInstance]:
         """Gets the instances property"""

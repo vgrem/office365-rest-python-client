@@ -8,6 +8,7 @@ from office365.directory.identitygovernance.customextensionauthenticationconfigu
     CustomExtensionAuthenticationConfiguration,
 )
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class CustomCalloutExtension(Entity):
@@ -16,26 +17,31 @@ class CustomCalloutExtension(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Display name for the customCalloutExtension object."""
         return self.properties.get("displayName", None)
 
+    @odata(name="authenticationConfiguration")
     @property
     def authentication_configuration(self) -> CustomExtensionAuthenticationConfiguration:
         """Gets the authenticationConfiguration property"""
         return self.properties.get("authenticationConfiguration", CustomExtensionAuthenticationConfiguration())
 
+    @odata(name="clientConfiguration")
     @property
     def client_configuration(self) -> CustomExtensionClientConfiguration:
         """Gets the clientConfiguration property"""
         return self.properties.get("clientConfiguration", CustomExtensionClientConfiguration())
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="endpointConfiguration")
     @property
     def endpoint_configuration(self) -> CustomExtensionEndpointConfiguration:
         """Gets the endpointConfiguration property"""

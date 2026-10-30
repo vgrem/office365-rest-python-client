@@ -53,6 +53,7 @@ if TYPE_CHECKING:
 class PolicyRoot(Entity):
     """Resource type exposing navigation properties for the policies singleton."""
 
+    @odata(name="adminConsentRequestPolicy", navigation=True)
     @property
     def admin_consent_request_policy(self) -> AdminConsentRequestPolicy:
         """
@@ -66,6 +67,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="authenticationMethodsPolicy", navigation=True)
     @property
     def authentication_methods_policy(self) -> AuthenticationMethodsPolicy:
         """
@@ -80,6 +82,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="authenticationStrengthPolicies", navigation=True)
     @property
     def authentication_strength_policies(
         self,
@@ -96,6 +99,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="authenticationFlowsPolicy", navigation=True)
     @property
     def authentication_flows_policy(self) -> AuthenticationFlowsPolicy:
         """The policy configuration of the self-service sign-up experience of external users."""
@@ -107,6 +111,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="authorizationPolicy", navigation=True)
     @property
     def authorization_policy(self) -> AuthorizationPolicy:
         """The policy that controls Azure AD authorization settings."""
@@ -115,6 +120,7 @@ class PolicyRoot(Entity):
             AuthorizationPolicy(self.context, ResourcePath("authorizationPolicy", self.resource_path)),
         )
 
+    @odata(name="appManagementPolicies", navigation=True)
     @property
     def app_management_policies(self) -> EntityCollection[AppManagementPolicy]:
         """The policies that enforce app management restrictions for specific applications and service principals,
@@ -128,6 +134,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="conditionalAccessPolicies", navigation=True)
     @property
     def conditional_access_policies(self) -> EntityCollection[ConditionalAccessPolicy]:
         """The custom rules that define an access scenario"""
@@ -140,6 +147,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="crossTenantAccessPolicy", navigation=True)
     @property
     def cross_tenant_access_policy(self) -> CrossTenantAccessPolicy:
         """
@@ -153,6 +161,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="deviceRegistrationPolicy", navigation=True)
     @property
     def device_registration_policy(self) -> DeviceRegistrationPolicy:
         """ """
@@ -164,7 +173,7 @@ class PolicyRoot(Entity):
             ),
         )
 
-    @odata(name="identitySecurityDefaultsEnforcementPolicy")
+    @odata(name="identitySecurityDefaultsEnforcementPolicy", navigation=True)
     @property
     def identity_security_defaults_enforcement_policy(self) -> IdentitySecurityDefaultsEnforcementPolicy:
         """The tenant-wide policy that controls Microsoft Entra security defaults."""
@@ -176,7 +185,7 @@ class PolicyRoot(Entity):
             ),
         )
 
-    @odata(name="defaultAppManagementPolicy")
+    @odata(name="defaultAppManagementPolicy", navigation=True)
     @property
     def default_app_management_policy(self) -> TenantAppManagementPolicy:
         """
@@ -190,7 +199,7 @@ class PolicyRoot(Entity):
             ),
         )
 
-    @odata(name="featureRolloutPolicies")
+    @odata(name="featureRolloutPolicies", navigation=True)
     @property
     def feature_rollout_policies(self) -> EntityCollection[FeatureRolloutPolicy]:
         """The feature rollout policy associated with a directory object."""
@@ -203,7 +212,7 @@ class PolicyRoot(Entity):
             ),
         )
 
-    @odata(name="permissionGrantPolicies")
+    @odata(name="permissionGrantPolicies", navigation=True)
     @property
     def permission_grant_policies(self) -> EntityCollection[PermissionGrantPolicy]:
         """
@@ -218,7 +227,7 @@ class PolicyRoot(Entity):
             ),
         )
 
-    @odata(name="roleManagementPolicies")
+    @odata(name="roleManagementPolicies", navigation=True)
     @property
     def role_management_policies(self) -> EntityCollection[UnifiedRoleManagementPolicy]:
         """Specifies the various policies associated with scopes and roles."""
@@ -247,6 +256,7 @@ class PolicyRoot(Entity):
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
 
+    @odata(name="activityBasedTimeoutPolicies", navigation=True)
     @property
     def activity_based_timeout_policies(self) -> EntityCollection[ActivityBasedTimeoutPolicy]:
         """Gets the activityBasedTimeoutPolicies property"""
@@ -263,6 +273,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="claimsMappingPolicies", navigation=True)
     @property
     def claims_mapping_policies(self) -> EntityCollection[ClaimsMappingPolicy]:
         """Gets the claimsMappingPolicies property"""
@@ -277,6 +288,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="federatedTokenValidationPolicy", navigation=True)
     @property
     def federated_token_validation_policy(self) -> FederatedTokenValidationPolicy:
         """Gets the federatedTokenValidationPolicy property"""
@@ -291,6 +303,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="homeRealmDiscoveryPolicies", navigation=True)
     @property
     def home_realm_discovery_policies(self) -> EntityCollection[HomeRealmDiscoveryPolicy]:
         """Gets the homeRealmDiscoveryPolicies property"""
@@ -305,6 +318,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="tokenIssuancePolicies", navigation=True)
     @property
     def token_issuance_policies(self) -> EntityCollection[TokenIssuancePolicy]:
         """Gets the tokenIssuancePolicies property"""
@@ -317,6 +331,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="tokenLifetimePolicies", navigation=True)
     @property
     def token_lifetime_policies(self) -> EntityCollection[TokenLifetimePolicy]:
         """Gets the tokenLifetimePolicies property"""
@@ -329,6 +344,7 @@ class PolicyRoot(Entity):
             ),
         )
 
+    @odata(name="ownerlessGroupPolicy", navigation=True)
     @property
     def ownerless_group_policy(self) -> OwnerlessGroupPolicy:
         """Gets the ownerlessGroupPolicy property"""
@@ -341,6 +357,7 @@ class PolicyRoot(Entity):
             OwnerlessGroupPolicy(self.context, ResourcePath("ownerlessGroupPolicy", self.resource_path)),
         )
 
+    @odata(name="roleManagementPolicyAssignments", navigation=True)
     @property
     def role_management_policy_assignments(self) -> EntityCollection[UnifiedRoleManagementPolicyAssignment]:
         """Gets the roleManagementPolicyAssignments property"""

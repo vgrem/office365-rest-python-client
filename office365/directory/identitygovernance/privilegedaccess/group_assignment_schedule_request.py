@@ -10,29 +10,35 @@ from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.onedrive.termstore.groups.group import Group
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
+    @odata(name="accessId")
     @property
     def access_id(self) -> PrivilegedAccessGroupRelationships:
         """Gets the accessId property"""
         return self.properties.get("accessId", PrivilegedAccessGroupRelationships.owner)
 
+    @odata(name="groupId")
     @property
     def group_id(self) -> Optional[str]:
         """Gets the groupId property"""
         return self.properties.get("groupId", None)
 
+    @odata(name="principalId")
     @property
     def principal_id(self) -> Optional[str]:
         """Gets the principalId property"""
         return self.properties.get("principalId", None)
 
+    @odata(name="targetScheduleId")
     @property
     def target_schedule_id(self) -> Optional[str]:
         """Gets the targetScheduleId property"""
         return self.properties.get("targetScheduleId", None)
 
+    @odata(name="activatedUsing", navigation=True)
     @property
     def activated_using(self) -> PrivilegedAccessGroupEligibilitySchedule:
         """Gets the activatedUsing property"""
@@ -41,11 +47,13 @@ class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
             PrivilegedAccessGroupEligibilitySchedule(self.context, ResourcePath("activatedUsing", self.resource_path)),
         )
 
+    @odata(name="group", navigation=True)
     @property
     def group(self) -> Group:
         """Gets the group property"""
         return self.properties.get("group", Group(self.context, ResourcePath("group", self.resource_path)))
 
+    @odata(name="principal", navigation=True)
     @property
     def principal(self) -> DirectoryObject:
         """Gets the principal property"""
@@ -53,6 +61,7 @@ class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
             "principal", DirectoryObject(self.context, ResourcePath("principal", self.resource_path))
         )
 
+    @odata(name="targetSchedule", navigation=True)
     @property
     def target_schedule(self) -> PrivilegedAccessGroupEligibilitySchedule:
         """Gets the targetSchedule property"""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.allowed_value import AllowedValue
@@ -15,46 +16,55 @@ class CustomSecurityAttributeDefinition(Entity):
     For example, the custom security attribute name, description, data type, and allowed values.
     """
 
+    @odata(name="attributeSet")
     @property
     def attribute_set(self) -> Optional[str]:
         """Gets the attributeSet property"""
         return self.properties.get("attributeSet", None)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="isCollection")
     @property
     def is_collection(self) -> Optional[bool]:
         """Gets the isCollection property"""
         return self.properties.get("isCollection", None)
 
+    @odata(name="isSearchable")
     @property
     def is_searchable(self) -> Optional[bool]:
         """Gets the isSearchable property"""
         return self.properties.get("isSearchable", None)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """Gets the status property"""
         return self.properties.get("status", None)
 
+    @odata(name="type")
     @property
     def type(self) -> Optional[str]:
         """Gets the type property"""
         return self.properties.get("type", None)
 
+    @odata(name="usePreDefinedValuesOnly")
     @property
     def use_pre_defined_values_only(self) -> Optional[bool]:
         """Gets the usePreDefinedValuesOnly property"""
         return self.properties.get("usePreDefinedValuesOnly", None)
 
+    @odata(name="allowedValues", navigation=True)
     @property
     def allowed_values(self) -> EntityCollection[AllowedValue]:
         """Gets the allowedValues property"""

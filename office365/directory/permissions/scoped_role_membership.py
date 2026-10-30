@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ScopedRoleMembership(Entity):
@@ -10,16 +11,19 @@ class ScopedRoleMembership(Entity):
     administrator to delegate administrative privileges to a user, to manage users and groups in a subset
     of the organization."""
 
+    @odata(name="administrativeUnitId")
     @property
     def administrative_unit_id(self) -> Optional[str]:
         """Gets the administrativeUnitId property"""
         return self.properties.get("administrativeUnitId", None)
 
+    @odata(name="roleId")
     @property
     def role_id(self) -> Optional[str]:
         """Gets the roleId property"""
         return self.properties.get("roleId", None)
 
+    @odata(name="roleMemberInfo")
     @property
     def role_member_info(self) -> Identity:
         """Gets the roleMemberInfo property"""

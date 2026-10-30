@@ -104,6 +104,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="healthIssues", navigation=True)
     @property
     def health_issues(self) -> EntityCollection[HealthIssue]:
         """Gets the healthIssues property"""
@@ -112,6 +113,7 @@ class IdentityContainer(Entity):
             EntityCollection[HealthIssue](self.context, HealthIssue, ResourcePath("healthIssues", self.resource_path)),
         )
 
+    @odata(name="identityAccounts", navigation=True)
     @property
     def identity_accounts(self) -> EntityCollection[IdentityAccounts]:
         """Gets the identityAccounts property"""
@@ -122,6 +124,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="sensorCandidateActivationConfiguration", navigation=True)
     @property
     def sensor_candidate_activation_configuration(self) -> SensorCandidateActivationConfiguration:
         """Gets the sensorCandidateActivationConfiguration property"""
@@ -132,6 +135,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="sensorCandidates", navigation=True)
     @property
     def sensor_candidates(self) -> EntityCollection[SensorCandidate]:
         """Gets the sensorCandidates property"""
@@ -142,6 +146,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="sensors", navigation=True)
     @property
     def sensors(self) -> EntityCollection[Sensor]:
         """Gets the sensors property"""
@@ -149,6 +154,7 @@ class IdentityContainer(Entity):
             "sensors", EntityCollection[Sensor](self.context, Sensor, ResourcePath("sensors", self.resource_path))
         )
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> SettingsContainer:
         """Gets the settings property"""

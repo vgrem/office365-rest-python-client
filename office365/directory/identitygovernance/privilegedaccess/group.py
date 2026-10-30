@@ -24,6 +24,7 @@ from office365.directory.identitygovernance.privilegedaccess.schedule.group_assi
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.privilegedaccess.group_resource import (
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
 class PrivilegedAccessGroup(Entity):
     """The entry point for all resources related to Privileged Identity Management (PIM) for groups."""
 
+    @odata(name="assignmentApprovals", navigation=True)
     @property
     def assignment_approvals(self):
         """ """
@@ -42,6 +44,7 @@ class PrivilegedAccessGroup(Entity):
             EntityCollection(self.context, Approval, ResourcePath("assignmentApprovals", self.resource_path)),
         )
 
+    @odata(name="assignmentScheduleInstances", navigation=True)
     @property
     def assignment_schedule_instances(self):
         """The instances of assignment schedules to activate a just-in-time access."""
@@ -54,6 +57,7 @@ class PrivilegedAccessGroup(Entity):
             ),
         )
 
+    @odata(name="assignmentScheduleRequests", navigation=True)
     @property
     def assignment_schedule_requests(self) -> EntityCollection[PrivilegedAccessGroupAssignmentScheduleRequest]:
         """Gets the assignmentScheduleRequests property"""
@@ -66,6 +70,7 @@ class PrivilegedAccessGroup(Entity):
             ),
         )
 
+    @odata(name="assignmentSchedules", navigation=True)
     @property
     def assignment_schedules(self) -> EntityCollection[PrivilegedAccessGroupAssignmentSchedule]:
         """Gets the assignmentSchedules property"""
@@ -78,6 +83,7 @@ class PrivilegedAccessGroup(Entity):
             ),
         )
 
+    @odata(name="eligibilityScheduleInstances", navigation=True)
     @property
     def eligibility_schedule_instances(self) -> EntityCollection[PrivilegedAccessGroupEligibilityScheduleInstance]:
         """Gets the eligibilityScheduleInstances property"""
@@ -90,6 +96,7 @@ class PrivilegedAccessGroup(Entity):
             ),
         )
 
+    @odata(name="eligibilityScheduleRequests", navigation=True)
     @property
     def eligibility_schedule_requests(self) -> EntityCollection[PrivilegedAccessGroupEligibilityScheduleRequest]:
         """Gets the eligibilityScheduleRequests property"""
@@ -102,6 +109,7 @@ class PrivilegedAccessGroup(Entity):
             ),
         )
 
+    @odata(name="eligibilitySchedules", navigation=True)
     @property
     def eligibility_schedules(self) -> EntityCollection[PrivilegedAccessGroupEligibilitySchedule]:
         """Gets the eligibilitySchedules property"""
@@ -118,6 +126,7 @@ class PrivilegedAccessGroup(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessGroup"
 
+    @odata(name="resources", navigation=True)
     @property
     def resources(self) -> EntityCollection[GroupResource]:
         """Gets the resources property"""

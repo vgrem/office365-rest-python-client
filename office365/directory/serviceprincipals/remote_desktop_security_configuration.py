@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.serviceprincipals.approved_client_app import (
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class RemoteDesktopSecurityConfiguration(Entity):
+    @odata(name="isRemoteDesktopProtocolEnabled")
     @property
     def is_remote_desktop_protocol_enabled(self) -> Optional[bool]:
         """Gets the isRemoteDesktopProtocolEnabled property"""
@@ -25,6 +27,7 @@ class RemoteDesktopSecurityConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.RemoteDesktopSecurityConfiguration"
 
+    @odata(name="approvedClientApps", navigation=True)
     @property
     def approved_client_apps(self) -> EntityCollection[ApprovedClientApp]:
         """Gets the approvedClientApps property"""
@@ -39,6 +42,7 @@ class RemoteDesktopSecurityConfiguration(Entity):
             ),
         )
 
+    @odata(name="targetDeviceGroups", navigation=True)
     @property
     def target_device_groups(self) -> EntityCollection[TargetDeviceGroup]:
         """Gets the targetDeviceGroups property"""

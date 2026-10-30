@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.directory.objects.object import DirectoryObject
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class ExtensionProperty(DirectoryObject):
@@ -12,16 +13,19 @@ class ExtensionProperty(DirectoryObject):
     named skypeId on the directory’s User object, and then write a value to the new property for a specific user.
     """
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Name of the extension property"""
         return self.properties.get("name", None)
 
+    @odata(name="appDisplayName")
     @property
     def app_display_name(self) -> Optional[str]:
         """Display name of the application object on which this extension property is defined. Read-only"""
         return self.properties.get("appDisplayName", None)
 
+    @odata(name="dataType")
     @property
     def data_type(self) -> Optional[str]:
         """
@@ -35,6 +39,7 @@ class ExtensionProperty(DirectoryObject):
         """
         return self.properties.get("dataType", None)
 
+    @odata(name="targetObjects")
     @property
     def target_objects(self) -> Optional[StringCollection]:
         """
@@ -47,11 +52,13 @@ class ExtensionProperty(DirectoryObject):
         """
         return self.properties.get("targetObjects", StringCollection())
 
+    @odata(name="isMultiValued")
     @property
     def is_multi_valued(self) -> Optional[bool]:
         """Gets the isMultiValued property"""
         return self.properties.get("isMultiValued", None)
 
+    @odata(name="isSyncedFromOnPremises")
     @property
     def is_synced_from_on_premises(self) -> Optional[bool]:
         """Gets the isSyncedFromOnPremises property"""

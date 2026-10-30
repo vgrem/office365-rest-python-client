@@ -10,6 +10,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.accessreview.reviewer_scope import (
@@ -28,21 +29,25 @@ class AccessReviewStage(Entity):
     There's only one decision per identity being reviewed.
     """
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> datetime:
         """Gets the endDateTime property"""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> datetime:
         """Gets the startDateTime property"""
         return self.properties.get("startDateTime", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """Gets the status property"""
         return self.properties.get("status", None)
 
+    @odata(name="decisions", navigation=True)
     @property
     def decisions(self) -> EntityCollection[AccessReviewInstanceDecisionItem]:
         """Gets the decisions property"""
@@ -57,6 +62,7 @@ class AccessReviewStage(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessReviewStage"
 
+    @odata(name="fallbackReviewers")
     @property
     def fallback_reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the fallbackReviewers property"""
@@ -68,6 +74,7 @@ class AccessReviewStage(Entity):
             "fallbackReviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )
 
+    @odata(name="reviewers")
     @property
     def reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the reviewers property"""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
@@ -15,46 +16,55 @@ if TYPE_CHECKING:
 
 
 class UnifiedRoleScheduleBase(Entity):
+    @odata(name="appScopeId")
     @property
     def app_scope_id(self) -> Optional[str]:
         """Gets the appScopeId property"""
         return self.properties.get("appScopeId", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="createdUsing")
     @property
     def created_using(self) -> Optional[str]:
         """Gets the createdUsing property"""
         return self.properties.get("createdUsing", None)
 
+    @odata(name="directoryScopeId")
     @property
     def directory_scope_id(self) -> Optional[str]:
         """Gets the directoryScopeId property"""
         return self.properties.get("directoryScopeId", None)
 
+    @odata(name="modifiedDateTime")
     @property
     def modified_date_time(self) -> Optional[datetime]:
         """Gets the modifiedDateTime property"""
         return self.properties.get("modifiedDateTime", datetime.min)
 
+    @odata(name="principalId")
     @property
     def principal_id(self) -> Optional[str]:
         """Gets the principalId property"""
         return self.properties.get("principalId", None)
 
+    @odata(name="roleDefinitionId")
     @property
     def role_definition_id(self) -> Optional[str]:
         """Gets the roleDefinitionId property"""
         return self.properties.get("roleDefinitionId", None)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """Gets the status property"""
         return self.properties.get("status", None)
 
+    @odata(name="appScope", navigation=True)
     @property
     def app_scope(self) -> AppScope:
         """Gets the appScope property"""
@@ -62,6 +72,7 @@ class UnifiedRoleScheduleBase(Entity):
 
         return self.properties.get("appScope", AppScope(self.context, ResourcePath("appScope", self.resource_path)))
 
+    @odata(name="directoryScope", navigation=True)
     @property
     def directory_scope(self) -> DirectoryObject:
         """Gets the directoryScope property"""
@@ -71,6 +82,7 @@ class UnifiedRoleScheduleBase(Entity):
             "directoryScope", DirectoryObject(self.context, ResourcePath("directoryScope", self.resource_path))
         )
 
+    @odata(name="principal", navigation=True)
     @property
     def principal(self) -> DirectoryObject:
         """Gets the principal property"""
@@ -80,6 +92,7 @@ class UnifiedRoleScheduleBase(Entity):
             "principal", DirectoryObject(self.context, ResourcePath("principal", self.resource_path))
         )
 
+    @odata(name="roleDefinition", navigation=True)
     @property
     def role_definition(self) -> UnifiedRoleDefinition:
         """Gets the roleDefinition property"""

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.directory.objects.object import DirectoryObject
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.groups.setting_template_value import SettingTemplateValue
@@ -14,16 +15,19 @@ class GroupSettingTemplate(DirectoryObject):
     created based on the available groupSettingTemplates, and values changed from their preset defaults.
     """
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="values")
     @property
     def values(self) -> ClientValueCollection[SettingTemplateValue]:
         """Gets the values property"""

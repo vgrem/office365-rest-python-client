@@ -15,6 +15,7 @@ class PasswordAuthenticationMethod(AuthenticationMethod):
         """The date and time when this password was last updated. This property is currently not populated."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="password")
     @property
     def password(self) -> Optional[str]:
         """For security, the password is always returned as null from a LIST or GET operation."""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.recovery.job_base import RecoveryJobBase
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class Recovery(Entity):
+    @odata(name="jobs", navigation=True)
     @property
     def jobs(self) -> EntityCollection[RecoveryJobBase]:
         """Gets the jobs property"""
@@ -22,6 +24,7 @@ class Recovery(Entity):
             EntityCollection[RecoveryJobBase](self.context, RecoveryJobBase, ResourcePath("jobs", self.resource_path)),
         )
 
+    @odata(name="snapshots", navigation=True)
     @property
     def snapshots(self) -> EntityCollection[Snapshot]:
         """Gets the snapshots property"""

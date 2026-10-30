@@ -10,7 +10,7 @@ from office365.runtime.types.odata_property import odata
 class StsPolicy(PolicyBase):
     """Represents an abstract base type for policy types that control Microsoft identity platform behavior."""
 
-    @odata(name="appliesTo")
+    @odata(name="appliesTo", navigation=True)
     @property
     def applies_to(self) -> DirectoryObjectCollection:
         """"""
@@ -18,11 +18,13 @@ class StsPolicy(PolicyBase):
             "appliesTo", DirectoryObjectCollection(self.context, ResourcePath("appliesTo", self.resource_path))
         )
 
+    @odata(name="definition")
     @property
     def definition(self) -> StringCollection:
         """Gets the definition property"""
         return self.properties.get("definition", StringCollection(None))
 
+    @odata(name="isOrganizationDefault")
     @property
     def is_organization_default(self) -> Optional[bool]:
         """Gets the isOrganizationDefault property"""

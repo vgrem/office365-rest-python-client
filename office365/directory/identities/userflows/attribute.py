@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identities.userflows.attributedatatype import (
@@ -24,6 +25,7 @@ class IdentityUserFlowAttribute(Entity):
     Azure Active Directory schema extensions.
     """
 
+    @odata(name="dataType")
     @property
     def data_type(self) -> IdentityUserFlowAttributeDataType:
         """Gets the dataType property"""
@@ -33,16 +35,19 @@ class IdentityUserFlowAttribute(Entity):
 
         return self.properties.get("dataType", IdentityUserFlowAttributeDataType.string)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="userFlowAttributeType")
     @property
     def user_flow_attribute_type(self) -> IdentityUserFlowAttributeType:
         """Gets the userFlowAttributeType property"""

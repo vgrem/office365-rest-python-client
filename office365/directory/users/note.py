@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.extensions.extended_property import (
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class Note(Entity):
+    @odata(name="body")
     @property
     def body(self) -> ItemBody:
         """Gets the body property"""
@@ -24,26 +26,31 @@ class Note(Entity):
 
         return self.properties.get("body", ItemBody())
 
+    @odata(name="bodyPreview", readonly=True)
     @property
     def body_preview(self) -> Optional[str]:
         """Gets the bodyPreview property"""
         return self.properties.get("bodyPreview", None)
 
+    @odata(name="hasAttachments", readonly=True)
     @property
     def has_attachments(self) -> Optional[bool]:
         """Gets the hasAttachments property"""
         return self.properties.get("hasAttachments", None)
 
+    @odata(name="isDeleted", readonly=True)
     @property
     def is_deleted(self) -> Optional[bool]:
         """Gets the isDeleted property"""
         return self.properties.get("isDeleted", None)
 
+    @odata(name="subject")
     @property
     def subject(self) -> Optional[str]:
         """Gets the subject property"""
         return self.properties.get("subject", None)
 
+    @odata(name="attachments", navigation=True)
     @property
     def attachments(self) -> EntityCollection[Attachment]:
         """Gets the attachments property"""
@@ -54,6 +61,7 @@ class Note(Entity):
             EntityCollection[Attachment](self.context, Attachment, ResourcePath("attachments", self.resource_path)),
         )
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """Gets the extensions property"""
@@ -64,6 +72,7 @@ class Note(Entity):
             EntityCollection[Extension](self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
+    @odata(name="multiValueExtendedProperties", navigation=True)
     @property
     def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """Gets the multiValueExtendedProperties property"""
@@ -80,6 +89,7 @@ class Note(Entity):
             ),
         )
 
+    @odata(name="singleValueExtendedProperties", navigation=True)
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """Gets the singleValueExtendedProperties property"""

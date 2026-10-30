@@ -6,9 +6,11 @@ from office365.directory.identitygovernance.termsofuse.agreement_file_properties
 from office365.directory.identitygovernance.termsofuse.agreement_file_version import AgreementFileVersion
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class AgreementFileLocalization(AgreementFileProperties):
+    @odata(name="versions", navigation=True)
     @property
     def versions(self) -> EntityCollection[AgreementFileVersion]:
         """Gets the versions property"""

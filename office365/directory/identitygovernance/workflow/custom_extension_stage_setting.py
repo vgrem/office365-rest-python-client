@@ -6,14 +6,17 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.directory.identitygovernance.workflow.custom_callout_extension import CustomCalloutExtension
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class CustomExtensionStageSetting(Entity):
+    @odata(name="stage")
     @property
     def stage(self) -> AccessPackageCustomExtensionStage:
         """Gets the stage property"""
         return self.properties.get("stage", AccessPackageCustomExtensionStage.assignmentRequestCreated)
 
+    @odata(name="customExtension", navigation=True)
     @property
     def custom_extension(self) -> CustomCalloutExtension:
         """Gets the customExtension property"""

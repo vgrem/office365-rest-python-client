@@ -20,7 +20,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
     use to authenticate, along with which attributes are collected as part of the sign up process.
     """
 
-    @odata(name="identityProviders")
+    @odata(name="identityProviders", navigation=True)
     @property
     def identity_providers(self) -> EntityCollection[IdentityProvider]:
         """TThe identity providers included in the user flow."""
@@ -33,6 +33,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
             ),
         )
 
+    @odata(name="languages", navigation=True)
     @property
     def languages(self) -> EntityCollection[UserFlowLanguageConfiguration]:
         """The languages supported for customization within the user flow. Language customization is enabled by default
@@ -47,7 +48,7 @@ class B2XIdentityUserFlow(IdentityUserFlow):
             ),
         )
 
-    @odata(name="userAttributeAssignments")
+    @odata(name="userAttributeAssignments", navigation=True)
     @property
     def user_attribute_assignments(
         self,

@@ -20,11 +20,13 @@ class UnifiedRoleDefinition(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The display name for the unifiedRoleDefinition."""
         return self.properties.get("displayName", None)
 
+    @odata(name="isBuiltIn")
     @property
     def is_built_in(self) -> Optional[bool]:
         """Flag indicating whether the role definition is part of the default set included in
@@ -40,7 +42,7 @@ class UnifiedRoleDefinition(Entity):
         """
         return self.properties.get("rolePermissions", ClientValueCollection(UnifiedRolePermission))
 
-    @odata(name="inheritsPermissionsFrom")
+    @odata(name="inheritsPermissionsFrom", navigation=True)
     @property
     def inherits_permissions_from(self) -> EntityCollection[UnifiedRoleDefinition]:
         """
@@ -56,26 +58,31 @@ class UnifiedRoleDefinition(Entity):
             ),
         )
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""
         return self.properties.get("isEnabled", None)
 
+    @odata(name="resourceScopes")
     @property
     def resource_scopes(self) -> StringCollection:
         """Gets the resourceScopes property"""
         return self.properties.get("resourceScopes", StringCollection())
 
+    @odata(name="templateId")
     @property
     def template_id(self) -> Optional[str]:
         """Gets the templateId property"""
         return self.properties.get("templateId", None)
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[str]:
         """Gets the version property"""

@@ -20,7 +20,7 @@ class AppManagementPolicy(PolicyBase):
     to the settings in the tenantAppManagementPolicy object.
     """
 
-    @odata(name="appliesTo")
+    @odata(name="appliesTo", navigation=True)
     @property
     def applies_to(self) -> DirectoryObjectCollection:
         """Collection of applications and service principals to which the policy is applied."""
@@ -28,6 +28,7 @@ class AppManagementPolicy(PolicyBase):
             "appliesTo", DirectoryObjectCollection(self.context, ResourcePath("appliesTo", self.resource_path))
         )
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""
@@ -37,6 +38,7 @@ class AppManagementPolicy(PolicyBase):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AppManagementPolicy"
 
+    @odata(name="restrictions")
     @property
     def restrictions(self) -> CustomAppManagementConfiguration:
         """Gets the restrictions property"""

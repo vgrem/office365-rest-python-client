@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.authentication.fraud_protection_provider import (
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
 
 
 class RiskPreventionContainer(Entity):
+    @odata(name="fraudProtectionProviders", navigation=True)
     @property
     def fraud_protection_providers(self) -> EntityCollection[FraudProtectionProvider]:
         """Gets the fraudProtectionProviders property"""
@@ -33,6 +35,7 @@ class RiskPreventionContainer(Entity):
             ),
         )
 
+    @odata(name="webApplicationFirewallProviders", navigation=True)
     @property
     def web_application_firewall_providers(self) -> EntityCollection[WebApplicationFirewallProvider]:
         """Gets the webApplicationFirewallProviders property"""
@@ -49,6 +52,7 @@ class RiskPreventionContainer(Entity):
             ),
         )
 
+    @odata(name="webApplicationFirewallVerifications", navigation=True)
     @property
     def web_application_firewall_verifications(self) -> EntityCollection[WebApplicationFirewallVerificationModel]:
         """Gets the webApplicationFirewallVerifications property"""

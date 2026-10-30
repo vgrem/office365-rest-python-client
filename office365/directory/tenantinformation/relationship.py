@@ -51,7 +51,7 @@ class TenantRelationship(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="multiTenantOrganization")
+    @odata(name="multiTenantOrganization", navigation=True)
     @property
     def multi_tenant_organization(self) -> MultiTenantOrganization:
         """Represents a setting to control people-related admin settings in the tenant."""
@@ -63,6 +63,7 @@ class TenantRelationship(Entity):
             ),
         )
 
+    @odata(name="delegatedAdminCustomers", navigation=True)
     @property
     def delegated_admin_customers(self) -> EntityCollection[DelegatedAdminCustomer]:
         """Gets the delegatedAdminCustomers property"""
@@ -75,6 +76,7 @@ class TenantRelationship(Entity):
             ),
         )
 
+    @odata(name="delegatedAdminRelationships", navigation=True)
     @property
     def delegated_admin_relationships(self) -> EntityCollection[DelegatedAdminRelationship]:
         """Gets the delegatedAdminRelationships property"""

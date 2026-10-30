@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class IdentityProvider(Entity):
@@ -13,6 +14,7 @@ class IdentityProvider(Entity):
     supported providers.
     """
 
+    @odata(name="clientId")
     @property
     def client_id(self) -> Optional[str]:
         """
@@ -20,6 +22,7 @@ class IdentityProvider(Entity):
         with the identity provider."""
         return self.properties.get("clientId", None)
 
+    @odata(name="clientSecret")
     @property
     def client_secret(self) -> Optional[str]:
         """
@@ -28,11 +31,13 @@ class IdentityProvider(Entity):
         """
         return self.properties.get("clientSecret", None)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="type")
     @property
     def type(self) -> Optional[str]:
         """Gets the type property"""

@@ -3,19 +3,23 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class RecoveryJob(Entity):
+    @odata(name="totalFailedChanges")
     @property
     def total_failed_changes(self) -> Optional[int]:
         """Gets the totalFailedChanges property"""
         return self.properties.get("totalFailedChanges", None)
 
+    @odata(name="totalLinksModified")
     @property
     def total_links_modified(self) -> Optional[int]:
         """Gets the totalLinksModified property"""
         return self.properties.get("totalLinksModified", None)
 
+    @odata(name="totalObjectsModified")
     @property
     def total_objects_modified(self) -> Optional[int]:
         """Gets the totalObjectsModified property"""

@@ -17,6 +17,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.accessreview.error import (
@@ -38,6 +39,7 @@ class AccessReviewInstance(Entity):
     There is one decision per identity being reviewed.
     """
 
+    @odata(name="stages", navigation=True)
     @property
     def stages(self) -> AccessReviewStageCollection:
         """If the instance has multiple stages, this returns the collection of stages.
@@ -46,26 +48,31 @@ class AccessReviewInstance(Entity):
             "stages", AccessReviewStageCollection(self.context, ResourcePath("stages", self.resource_path))
         )
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> datetime:
         """Gets the endDateTime property"""
         return self.properties.get("endDateTime", datetime.min)
 
+    @odata(name="scope")
     @property
     def scope(self) -> AccessReviewScope:
         """Gets the scope property"""
         return self.properties.get("scope", AccessReviewScope())
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> datetime:
         """Gets the startDateTime property"""
         return self.properties.get("startDateTime", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """Gets the status property"""
         return self.properties.get("status", None)
 
+    @odata(name="contactedReviewers", navigation=True)
     @property
     def contacted_reviewers(self) -> EntityCollection[AccessReviewReviewer]:
         """Gets the contactedReviewers property"""
@@ -76,6 +83,7 @@ class AccessReviewInstance(Entity):
             ),
         )
 
+    @odata(name="decisions", navigation=True)
     @property
     def decisions(self) -> EntityCollection[AccessReviewInstanceDecisionItem]:
         """Gets the decisions property"""
@@ -90,6 +98,7 @@ class AccessReviewInstance(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessReviewInstance"
 
+    @odata(name="errors")
     @property
     def errors(self) -> ClientValueCollection[AccessReviewError]:
         """Gets the errors property"""
@@ -99,6 +108,7 @@ class AccessReviewInstance(Entity):
 
         return self.properties.get("errors", ClientValueCollection[AccessReviewError](AccessReviewError))
 
+    @odata(name="fallbackReviewers")
     @property
     def fallback_reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the fallbackReviewers property"""
@@ -110,6 +120,7 @@ class AccessReviewInstance(Entity):
             "fallbackReviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )
 
+    @odata(name="reviewers")
     @property
     def reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the reviewers property"""

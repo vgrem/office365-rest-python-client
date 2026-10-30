@@ -10,6 +10,7 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.protection.bitlocker import Bitlocker
@@ -112,6 +113,7 @@ class InformationProtection(Entity):
         message.ensure_properties(["id", "toRecipients"]).after_execute(lambda _: _create_and_add_query())
         return return_type
 
+    @odata(name="threatAssessmentRequests", navigation=True)
     @property
     def threat_assessment_requests(self) -> EntityCollection[ThreatAssessmentRequest]:
         """"""
@@ -124,6 +126,7 @@ class InformationProtection(Entity):
             ),
         )
 
+    @odata(name="bitlocker", navigation=True)
     @property
     def bitlocker(self) -> Bitlocker:
         """Gets the bitlocker property"""

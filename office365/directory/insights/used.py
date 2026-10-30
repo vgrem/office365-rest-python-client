@@ -32,6 +32,7 @@ class UsedInsight(Entity):
         """Reference properties of the used document, such as the url and type of the document. Read-only"""
         return self.properties.get("resourceReference", ResourceReference())
 
+    @odata(name="resource", navigation=True)
     @property
     def resource(self) -> Entity:
         """Used for navigating to the item that was used. For file attachments, the type is fileAttachment.
@@ -41,6 +42,7 @@ class UsedInsight(Entity):
             Entity(self.context, ResourcePath("resource", self.resource_path)),
         )
 
+    @odata(name="resourceVisualization", readonly=True)
     @property
     def resource_visualization(self) -> ResourceVisualization:
         """Gets the resourceVisualization property"""

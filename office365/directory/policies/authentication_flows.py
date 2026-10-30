@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.policies.self_service_sign_up_authentication_flow_configuration import (
@@ -17,16 +18,19 @@ class AuthenticationFlowsPolicy(Entity):
     description, and indicates whether self-service sign-up is enabled for the policy.
     """
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The human-readable name of the policy."""
         return self.properties.get("displayName", None)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="selfServiceSignUp")
     @property
     def self_service_sign_up(self) -> SelfServiceSignUpAuthenticationFlowConfiguration:
         """Gets the selfServiceSignUp property"""

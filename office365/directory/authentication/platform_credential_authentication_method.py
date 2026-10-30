@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.authentication.methods.keystrength import (
@@ -16,11 +17,13 @@ if TYPE_CHECKING:
 
 
 class PlatformCredentialAuthenticationMethod(Entity):
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="keyStrength")
     @property
     def key_strength(self) -> AuthenticationMethodKeyStrength:
         """Gets the keyStrength property"""
@@ -30,6 +33,7 @@ class PlatformCredentialAuthenticationMethod(Entity):
 
         return self.properties.get("keyStrength", AuthenticationMethodKeyStrength.normal)
 
+    @odata(name="platform")
     @property
     def platform(self) -> AuthenticationMethodPlatform:
         """Gets the platform property"""
@@ -39,6 +43,7 @@ class PlatformCredentialAuthenticationMethod(Entity):
 
         return self.properties.get("platform", AuthenticationMethodPlatform.unknown)
 
+    @odata(name="device", navigation=True)
     @property
     def device(self) -> Device:
         """Gets the device property"""

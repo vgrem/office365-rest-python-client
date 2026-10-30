@@ -17,6 +17,7 @@ class SubscribedSku(Entity):
     def __str__(self) -> str:
         return self.sku_part_number or self.entity_type_name
 
+    @odata(name="accountId")
     @property
     def account_id(self) -> Optional[str]:
         """The unique ID of the account this SKU belongs to."""
@@ -28,6 +29,7 @@ class SubscribedSku(Entity):
         """The name of the account this SKU belongs to."""
         return self.properties.get("accountName", None)
 
+    @odata(name="appliesTo")
     @property
     def applies_to(self) -> Optional[str]:
         """
@@ -48,11 +50,13 @@ class SubscribedSku(Entity):
         """The number of licenses that have been assigned."""
         return self.properties.get("consumedUnits", None)
 
+    @odata(name="skuId")
     @property
     def sku_id(self) -> Optional[str]:
         """The unique identifier (GUID) for the service SKU."""
         return self.properties.get("skuId", None)
 
+    @odata(name="skuPartNumber")
     @property
     def sku_part_number(self) -> Optional[str]:
         """

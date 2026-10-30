@@ -34,6 +34,7 @@ class SharedInsight(Entity):
         """Reference properties of the used document, such as the url and type of the document. Read-only"""
         return self.properties.get("resourceReference", ResourceReference())
 
+    @odata(name="resource", navigation=True)
     @property
     def resource(self) -> Entity:
         """Used for navigating to the item that was shared. For file attachments, the type is fileAttachment.
@@ -49,6 +50,7 @@ class SharedInsight(Entity):
         """Details about the sharing history. Read-only"""
         return self.properties.get("sharingHistory", ClientValueCollection(SharingDetail))
 
+    @odata(name="resourceVisualization", readonly=True)
     @property
     def resource_visualization(self) -> ResourceVisualization:
         """Gets the resourceVisualization property"""
@@ -56,6 +58,7 @@ class SharedInsight(Entity):
 
         return self.properties.get("resourceVisualization", ResourceVisualization())
 
+    @odata(name="lastSharedMethod", navigation=True)
     @property
     def last_shared_method(self) -> Entity:
         """Gets the lastSharedMethod property"""

@@ -2,6 +2,7 @@ from office365.directory.authentication.methods.excludetarget import ExcludeTarg
 from office365.directory.authentication.methods.state import AuthenticationMethodState
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 
 class AuthenticationMethodConfiguration(Entity):
@@ -11,11 +12,13 @@ class AuthenticationMethodConfiguration(Entity):
     can register and use that method.
     """
 
+    @odata(name="excludeTargets")
     @property
     def exclude_targets(self) -> ClientValueCollection[ExcludeTarget]:
         """Gets the excludeTargets property"""
         return self.properties.get("excludeTargets", ClientValueCollection[ExcludeTarget](ExcludeTarget))
 
+    @odata(name="state")
     @property
     def state(self) -> AuthenticationMethodState:
         """Gets the state property"""

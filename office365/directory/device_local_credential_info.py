@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.local_credential import DeviceLocalCredential
@@ -14,6 +15,7 @@ class DeviceLocalCredentialInfo(Entity):
     """Represents local administrator credential information for all device objects in Azure Active Directory
     that are enabled with Local Admin Password Solution (LAPS)."""
 
+    @odata(name="deviceName")
     @property
     def device_name(self) -> Optional[str]:
         """
@@ -21,16 +23,19 @@ class DeviceLocalCredentialInfo(Entity):
         """
         return self.properties.get("deviceName", None)
 
+    @odata(name="lastBackupDateTime")
     @property
     def last_backup_datetime(self):
         """When the local administrator account credential was backed up to Azure Active Directory."""
         return self.properties.get("lastBackupDateTime", datetime.min)
 
+    @odata(name="refreshDateTime")
     @property
     def refresh_datetime(self):
         """When the local administrator account credential will be refreshed and backed up to Azure Active Directory."""
         return self.properties.get("refreshDateTime", datetime.min)
 
+    @odata(name="credentials")
     @property
     def credentials(self) -> ClientValueCollection[DeviceLocalCredential]:
         """Gets the credentials property"""

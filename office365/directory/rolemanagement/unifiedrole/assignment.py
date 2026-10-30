@@ -20,6 +20,7 @@ class UnifiedRoleAssignment(Entity):
     (for example, a user or a role-assignable group) at a particular scope.
     """
 
+    @odata(name="appScopeId")
     @property
     def app_scope_id(self) -> Optional[str]:
         """
@@ -30,22 +31,26 @@ class UnifiedRoleAssignment(Entity):
         """
         return self.properties.get("appScopeId", None)
 
+    @odata(name="condition")
     @property
     def condition(self) -> Optional[str]:
         """ """
         return self.properties.get("condition", None)
 
+    @odata(name="principalId")
     @property
     def principal_id(self) -> Optional[str]:
         """Identifier of the principal to which the assignment is granted. Supported principals are users,
         role-assignable groups, and service principals. Supports $filter (eq, in)."""
         return self.properties.get("principalId", None)
 
+    @odata(name="roleDefinitionId")
     @property
     def role_definition_id(self) -> Optional[str]:
         """Identifier of the unifiedRoleDefinition the assignment is for. Read-only. Supports $filter (eq, in)."""
         return self.properties.get("roleDefinitionId", None)
 
+    @odata(name="directoryScopeId")
     @property
     def directory_scope_id(self) -> Optional[str]:
         """Identifier of the directory object representing the scope of the assignment.
@@ -55,7 +60,7 @@ class UnifiedRoleAssignment(Entity):
         """
         return self.properties.get("directoryScopeId", None)
 
-    @odata(name="roleDefinition")
+    @odata(name="roleDefinition", navigation=True)
     @property
     def role_definition(self) -> UnifiedRoleDefinition:
         """
@@ -66,7 +71,7 @@ class UnifiedRoleAssignment(Entity):
             UnifiedRoleDefinition(self.context, ResourcePath("roleDefinition", self.resource_path)),
         )
 
-    @odata(name="appScope")
+    @odata(name="appScope", navigation=True)
     @property
     def app_scope(self) -> AppScope:
         """
@@ -78,11 +83,13 @@ class UnifiedRoleAssignment(Entity):
             AppScope(self.context, ResourcePath("appScope", self.resource_path)),
         )
 
+    @odata(name="principalOrganizationId")
     @property
     def principal_organization_id(self) -> Optional[str]:
         """Gets the principalOrganizationId property"""
         return self.properties.get("principalOrganizationId", None)
 
+    @odata(name="directoryScope", navigation=True)
     @property
     def directory_scope(self) -> DirectoryObject:
         """Gets the directoryScope property"""
@@ -92,6 +99,7 @@ class UnifiedRoleAssignment(Entity):
             "directoryScope", DirectoryObject(self.context, ResourcePath("directoryScope", self.resource_path))
         )
 
+    @odata(name="principal", navigation=True)
     @property
     def principal(self) -> DirectoryObject:
         """Gets the principal property"""

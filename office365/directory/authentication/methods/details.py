@@ -3,6 +3,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class UserRegistrationDetails(Entity):
@@ -10,6 +11,7 @@ class UserRegistrationDetails(Entity):
     features the user is registered and capable of (such as multi-factor authentication, self-service password reset,
     and passwordless authentication)."""
 
+    @odata(name="isAdmin")
     @property
     def is_admin(self) -> Optional[bool]:
         """
@@ -18,6 +20,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("isAdmin", None)
 
+    @odata(name="isMfaRegistered")
     @property
     def is_mfa_registered(self) -> Optional[bool]:
         """
@@ -26,6 +29,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("isMfaRegistered", None)
 
+    @odata(name="isPasswordlessCapable")
     @property
     def is_passwordless_capable(self) -> Optional[bool]:
         """
@@ -35,6 +39,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("isPasswordlessCapable", None)
 
+    @odata(name="isSsprCapable")
     @property
     def is_sspr_capable(self) -> Optional[bool]:
         """
@@ -43,6 +48,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("isSsprCapable", None)
 
+    @odata(name="isSsprEnabled")
     @property
     def is_sspr_enabled(self) -> Optional[bool]:
         """
@@ -51,6 +57,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("isSsprEnabled", None)
 
+    @odata(name="userDisplayName")
     @property
     def user_display_name(self) -> Optional[str]:
         """
@@ -58,6 +65,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("userDisplayName", None)
 
+    @odata(name="userPreferredMethodForSecondaryAuthentication")
     @property
     def user_preferred_method_for_secondary_authentication(self) -> Optional[str]:
         """
@@ -65,6 +73,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("userPreferredMethodForSecondaryAuthentication", None)
 
+    @odata(name="userPrincipalName")
     @property
     def user_principal_name(self) -> Optional[str]:
         """
@@ -72,6 +81,7 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("userPrincipalName", None)
 
+    @odata(name="userType")
     @property
     def user_type(self) -> Optional[str]:
         """
@@ -80,31 +90,37 @@ class UserRegistrationDetails(Entity):
         """
         return self.properties.get("userType", None)
 
+    @odata(name="isMfaCapable")
     @property
     def is_mfa_capable(self) -> Optional[bool]:
         """Gets the isMfaCapable property"""
         return self.properties.get("isMfaCapable", None)
 
+    @odata(name="isSsprRegistered")
     @property
     def is_sspr_registered(self) -> Optional[bool]:
         """Gets the isSsprRegistered property"""
         return self.properties.get("isSsprRegistered", None)
 
+    @odata(name="isSystemPreferredAuthenticationMethodEnabled")
     @property
     def is_system_preferred_authentication_method_enabled(self) -> Optional[bool]:
         """Gets the isSystemPreferredAuthenticationMethodEnabled property"""
         return self.properties.get("isSystemPreferredAuthenticationMethodEnabled", None)
 
+    @odata(name="lastUpdatedDateTime")
     @property
     def last_updated_date_time(self) -> Optional[datetime]:
         """Gets the lastUpdatedDateTime property"""
         return self.properties.get("lastUpdatedDateTime", datetime.min)
 
+    @odata(name="methodsRegistered")
     @property
     def methods_registered(self) -> StringCollection:
         """Gets the methodsRegistered property"""
         return self.properties.get("methodsRegistered", StringCollection(None))
 
+    @odata(name="systemPreferredAuthenticationMethods")
     @property
     def system_preferred_authentication_methods(self) -> StringCollection:
         """Gets the systemPreferredAuthenticationMethods property"""

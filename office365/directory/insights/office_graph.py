@@ -4,6 +4,7 @@ from office365.directory.insights.used import UsedInsight
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class OfficeGraphInsights(Entity):
@@ -12,6 +13,7 @@ class OfficeGraphInsights(Entity):
     You can, for example, identify OneDrive for Business documents trending around users.
     """
 
+    @odata(name="shared", navigation=True)
     @property
     def shared(self) -> EntityCollection[SharedInsight]:
         """
@@ -23,6 +25,7 @@ class OfficeGraphInsights(Entity):
             "shared", EntityCollection(self.context, SharedInsight, ResourcePath("shared", self.resource_path))
         )
 
+    @odata(name="trending", navigation=True)
     @property
     def trending(self) -> EntityCollection[Trending]:
         """
@@ -35,6 +38,7 @@ class OfficeGraphInsights(Entity):
             "trending", EntityCollection(self.context, Trending, ResourcePath("trending", self.resource_path))
         )
 
+    @odata(name="used", navigation=True)
     @property
     def used(self) -> EntityCollection[UsedInsight]:
         """

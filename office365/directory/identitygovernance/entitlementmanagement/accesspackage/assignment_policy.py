@@ -15,6 +15,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_approval_settings import (
@@ -44,36 +45,43 @@ if TYPE_CHECKING:
 
 
 class AccessPackageAssignmentPolicy(Entity):
+    @odata(name="allowedTargetScope")
     @property
     def allowed_target_scope(self) -> AllowedTargetScope:
         """Gets the allowedTargetScope property"""
         return self.properties.get("allowedTargetScope", AllowedTargetScope.notSpecified)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="modifiedDateTime")
     @property
     def modified_date_time(self) -> datetime:
         """Gets the modifiedDateTime property"""
         return self.properties.get("modifiedDateTime", datetime.min)
 
+    @odata(name="specificAllowedTargets")
     @property
     def specific_allowed_targets(self) -> ClientValueCollection[SubjectSet]:
         """Gets the specificAllowedTargets property"""
         return self.properties.get("specificAllowedTargets", ClientValueCollection[SubjectSet](SubjectSet))
 
+    @odata(name="customExtensionStageSettings", navigation=True)
     @property
     def custom_extension_stage_settings(self) -> EntityCollection[CustomExtensionStageSetting]:
         """Gets the customExtensionStageSettings property"""
@@ -86,6 +94,7 @@ class AccessPackageAssignmentPolicy(Entity):
             ),
         )
 
+    @odata(name="questions", navigation=True)
     @property
     def questions(self) -> EntityCollection[AccessPackageQuestion]:
         """Gets the questions property"""
@@ -100,6 +109,7 @@ class AccessPackageAssignmentPolicy(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessPackageAssignmentPolicy"
 
+    @odata(name="automaticRequestSettings")
     @property
     def automatic_request_settings(self) -> AccessPackageAutomaticRequestSettings:
         """Gets the automaticRequestSettings property"""
@@ -109,6 +119,7 @@ class AccessPackageAssignmentPolicy(Entity):
 
         return self.properties.get("automaticRequestSettings", AccessPackageAutomaticRequestSettings())
 
+    @odata(name="expiration")
     @property
     def expiration(self) -> ExpirationPattern:
         """Gets the expiration property"""
@@ -118,6 +129,7 @@ class AccessPackageAssignmentPolicy(Entity):
 
         return self.properties.get("expiration", ExpirationPattern())
 
+    @odata(name="notificationSettings")
     @property
     def notification_settings(self) -> AccessPackageNotificationSettings:
         """Gets the notificationSettings property"""
@@ -127,6 +139,7 @@ class AccessPackageAssignmentPolicy(Entity):
 
         return self.properties.get("notificationSettings", AccessPackageNotificationSettings())
 
+    @odata(name="requestApprovalSettings")
     @property
     def request_approval_settings(self) -> AccessPackageAssignmentApprovalSettings:
         """Gets the requestApprovalSettings property"""
@@ -136,6 +149,7 @@ class AccessPackageAssignmentPolicy(Entity):
 
         return self.properties.get("requestApprovalSettings", AccessPackageAssignmentApprovalSettings())
 
+    @odata(name="requestorSettings")
     @property
     def requestor_settings(self) -> AccessPackageAssignmentRequestorSettings:
         """Gets the requestorSettings property"""
@@ -145,6 +159,7 @@ class AccessPackageAssignmentPolicy(Entity):
 
         return self.properties.get("requestorSettings", AccessPackageAssignmentRequestorSettings())
 
+    @odata(name="reviewSettings")
     @property
     def review_settings(self) -> AccessPackageAssignmentReviewSettings:
         """Gets the reviewSettings property"""
@@ -154,6 +169,7 @@ class AccessPackageAssignmentPolicy(Entity):
 
         return self.properties.get("reviewSettings", AccessPackageAssignmentReviewSettings())
 
+    @odata(name="accessPackage", navigation=True)
     @property
     def access_package(self) -> AccessPackage:
         """Gets the accessPackage property"""
@@ -165,6 +181,7 @@ class AccessPackageAssignmentPolicy(Entity):
             "accessPackage", AccessPackage(self.context, ResourcePath("accessPackage", self.resource_path))
         )
 
+    @odata(name="catalog", navigation=True)
     @property
     def catalog(self) -> AccessPackageCatalog:
         """Gets the catalog property"""

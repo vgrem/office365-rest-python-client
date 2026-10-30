@@ -6,6 +6,7 @@ from office365.directory.identitygovernance.workflow.executionconditions import 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class WorkflowTemplate(Entity):
@@ -16,26 +17,31 @@ class WorkflowTemplate(Entity):
     You can also create custom workflows from the workflow templates to achieve specific situations.
     """
 
+    @odata(name="category")
     @property
     def category(self) -> LifecycleWorkflowCategory:
         """Gets the category property"""
         return self.properties.get("category", LifecycleWorkflowCategory.joiner)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="executionConditions")
     @property
     def execution_conditions(self) -> WorkflowExecutionConditions:
         """Gets the executionConditions property"""
         return self.properties.get("executionConditions", WorkflowExecutionConditions())
 
+    @odata(name="tasks", navigation=True)
     @property
     def tasks(self) -> EntityCollection[Task]:
         """Gets the tasks property"""

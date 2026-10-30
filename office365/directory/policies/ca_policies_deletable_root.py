@@ -5,9 +5,11 @@ from office365.directory.policies.conditionalaccess.conditional_access import Co
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class CaPoliciesDeletableRoot(Entity):
+    @odata(name="namedLocations", navigation=True)
     @property
     def named_locations(self) -> EntityCollection[NamedLocation]:
         """Gets the namedLocations property"""
@@ -18,6 +20,7 @@ class CaPoliciesDeletableRoot(Entity):
             ),
         )
 
+    @odata(name="policies", navigation=True)
     @property
     def policies(self) -> EntityCollection[ConditionalAccessPolicy]:
         """Gets the policies property"""

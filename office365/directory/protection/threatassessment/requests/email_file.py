@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.protection.threatassessment.requests.request import (
     ThreatAssessmentRequest,
 )
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.protection.threatassessment.requests.maildestinationroutingreason import (
@@ -18,6 +19,7 @@ class EmailFileAssessmentRequest(ThreatAssessmentRequest):
     The email file can be an .eml file type.
     """
 
+    @odata(name="contentData")
     @property
     def content_data(self) -> Optional[str]:
         """
@@ -32,6 +34,7 @@ class EmailFileAssessmentRequest(ThreatAssessmentRequest):
         """
         return self.properties.get("fileName", None)
 
+    @odata(name="destinationRoutingReason")
     @property
     def destination_routing_reason(self) -> MailDestinationRoutingReason:
         """Gets the destinationRoutingReason property"""
@@ -41,6 +44,7 @@ class EmailFileAssessmentRequest(ThreatAssessmentRequest):
 
         return self.properties.get("destinationRoutingReason", MailDestinationRoutingReason.none)
 
+    @odata(name="recipientEmail")
     @property
     def recipient_email(self) -> Optional[str]:
         """Gets the recipientEmail property"""

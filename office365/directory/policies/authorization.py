@@ -5,6 +5,7 @@ from uuid import UUID
 
 from office365.directory.permissions.default_user_role import DefaultUserRolePermissions
 from office365.directory.policies.base import PolicyBase
+from office365.runtime.types.odata_property import odata
 
 
 class AuthorizationPolicy(PolicyBase):
@@ -12,21 +13,25 @@ class AuthorizationPolicy(PolicyBase):
     It's a singleton that inherits from base policy type, and always exists for the tenant.
     """
 
+    @odata(name="allowedToSignUpEmailBasedSubscriptions")
     @property
     def allowed_to_sign_up_email_based_subscriptions(self) -> Optional[bool]:
         """Indicates whether a user can join the tenant by email validation."""
         return self.properties.get("allowedToSignUpEmailBasedSubscriptions", None)
 
+    @odata(name="allowedToUseSSPR")
     @property
     def allowed_to_use_sspr(self) -> Optional[bool]:
         """Indicates whether users can use the Self-Service Password Reset feature on the tenant."""
         return self.properties.get("allowedToUseSSPR", None)
 
+    @odata(name="allowEmailVerifiedUsersToJoinOrganization")
     @property
     def allow_email_verified_users_to_join_organization(self) -> Optional[bool]:
         """Indicates whether a user can join the tenant by email validation."""
         return self.properties.get("allowEmailVerifiedUsersToJoinOrganization", None)
 
+    @odata(name="allowInvitesFrom")
     @property
     def allow_invites_from(self) -> Optional[str]:
         """Indicates who can invite external users to the organization.
@@ -35,6 +40,7 @@ class AuthorizationPolicy(PolicyBase):
         """
         return self.properties.get("allowInvitesFrom", None)
 
+    @odata(name="allowUserConsentForRiskyApps")
     @property
     def allow_user_consent_for_risky_apps(self) -> Optional[bool]:
         """Indicates whether user consent for risky apps is allowed.
@@ -42,6 +48,7 @@ class AuthorizationPolicy(PolicyBase):
         """
         return self.properties.get("allowUserConsentForRiskyApps", None)
 
+    @odata(name="blockMsolPowerShell")
     @property
     def block_msol_powershell(self) -> Optional[bool]:
         """To disable the use of MSOL PowerShell, set this property to true. This also disables user-based access to
@@ -50,11 +57,13 @@ class AuthorizationPolicy(PolicyBase):
         """
         return self.properties.get("blockMsolPowerShell", None)
 
+    @odata(name="defaultUserRolePermissions")
     @property
     def default_user_role_permissions(self) -> Optional[DefaultUserRolePermissions]:
         """Specifies certain customizable permissions for default user role."""
         return self.properties.get("defaultUserRolePermissions", DefaultUserRolePermissions())
 
+    @odata(name="guestUserRoleId")
     @property
     def guest_user_role_id(self) -> Optional[UUID]:
         """Gets the guestUserRoleId property"""

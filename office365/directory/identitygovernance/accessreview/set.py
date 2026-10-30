@@ -23,7 +23,7 @@ class AccessReviewSet(Entity):
     accessReviewScheduleDefinition relationship.
     """
 
-    @odata(name="historyDefinitions")
+    @odata(name="historyDefinitions", navigation=True)
     @property
     def history_definitions(self):
         """
@@ -40,6 +40,7 @@ class AccessReviewSet(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessReviewSet"
 
+    @odata(name="definitions", navigation=True)
     @property
     def definitions(self) -> EntityCollection[AccessReviewScheduleDefinition]:
         """Gets the definitions property"""
@@ -54,6 +55,7 @@ class AccessReviewSet(Entity):
             ),
         )
 
+    @odata(name="unified", navigation=True)
     @property
     def unified(self) -> UnifiedRoot:
         """Gets the unified property"""

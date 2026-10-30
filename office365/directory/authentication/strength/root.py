@@ -5,11 +5,13 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class AuthenticationStrengthRoot(Entity):
     """The authenticationStrengthRoot resource is the entry point for the authentication strengths object model."""
 
+    @odata(name="combinations")
     @property
     def combinations(self) -> ClientValueCollection[AuthenticationMethodModes]:
         """Gets the combinations property"""
@@ -17,6 +19,7 @@ class AuthenticationStrengthRoot(Entity):
             "combinations", ClientValueCollection[AuthenticationMethodModes](AuthenticationMethodModes)
         )
 
+    @odata(name="authenticationMethodModes", navigation=True)
     @property
     def authentication_method_modes(self) -> EntityCollection[AuthenticationMethodModeDetail]:
         """Gets the authenticationMethodModes property"""
@@ -29,6 +32,7 @@ class AuthenticationStrengthRoot(Entity):
             ),
         )
 
+    @odata(name="policies", navigation=True)
     @property
     def policies(self) -> EntityCollection[AuthenticationStrengthPolicy]:
         """Gets the policies property"""

@@ -12,7 +12,7 @@ class AuditLogRoot(Entity):
     It doesn't contain any usable properties.
     """
 
-    @odata(name="directoryAudits")
+    @odata(name="directoryAudits", navigation=True)
     @property
     def directory_audits(self) -> EntityCollection[DirectoryAudit]:
         """
@@ -26,6 +26,7 @@ class AuditLogRoot(Entity):
             EntityCollection(self.context, DirectoryAudit, ResourcePath("directoryAudits", self.resource_path)),
         )
 
+    @odata(name="signIns", navigation=True)
     @property
     def signins(self) -> EntityCollection[SignIn]:
         """
@@ -38,6 +39,7 @@ class AuditLogRoot(Entity):
             "signIns", EntityCollection(self.context, SignIn, ResourcePath("signIns", self.resource_path))
         )
 
+    @odata(name="provisioning", navigation=True)
     @property
     def provisioning(self) -> EntityCollection[ProvisioningObjectSummary]:
         """

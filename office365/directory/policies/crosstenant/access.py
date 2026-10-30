@@ -7,6 +7,7 @@ from office365.directory.policies.template import PolicyTemplate
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.cross_tenant_access_policy_configuration_default import (
@@ -20,6 +21,7 @@ if TYPE_CHECKING:
 class CrossTenantAccessPolicy(PolicyBase):
     """Represents the base policy in the directory for cross-tenant access settings."""
 
+    @odata(name="allowedCloudEndpoints")
     @property
     def allowed_cloud_endpoints(self) -> StringCollection:
         """
@@ -39,6 +41,7 @@ class CrossTenantAccessPolicy(PolicyBase):
             ),
         )
 
+    @odata(name="default", navigation=True)
     @property
     def default(self) -> CrossTenantAccessPolicyConfigurationDefault:
         """Gets the default property"""
@@ -51,6 +54,7 @@ class CrossTenantAccessPolicy(PolicyBase):
             CrossTenantAccessPolicyConfigurationDefault(self.context, ResourcePath("default", self.resource_path)),
         )
 
+    @odata(name="partners", navigation=True)
     @property
     def partners(self) -> EntityCollection[CrossTenantAccessPolicyConfigurationPartner]:
         """Gets the partners property"""

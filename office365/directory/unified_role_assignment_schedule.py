@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.request_schedule import RequestSchedule
@@ -13,16 +14,19 @@ if TYPE_CHECKING:
 
 
 class UnifiedRoleAssignmentSchedule(Entity):
+    @odata(name="assignmentType")
     @property
     def assignment_type(self) -> Optional[str]:
         """Gets the assignmentType property"""
         return self.properties.get("assignmentType", None)
 
+    @odata(name="memberType")
     @property
     def member_type(self) -> Optional[str]:
         """Gets the memberType property"""
         return self.properties.get("memberType", None)
 
+    @odata(name="scheduleInfo")
     @property
     def schedule_info(self) -> RequestSchedule:
         """Gets the scheduleInfo property"""
@@ -30,6 +34,7 @@ class UnifiedRoleAssignmentSchedule(Entity):
 
         return self.properties.get("scheduleInfo", RequestSchedule())
 
+    @odata(name="activatedUsing", navigation=True)
     @property
     def activated_using(self) -> UnifiedRoleEligibilitySchedule:
         """Gets the activatedUsing property"""

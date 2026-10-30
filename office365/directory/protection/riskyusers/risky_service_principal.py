@@ -12,54 +12,65 @@ from office365.directory.protection.riskyusers.risky_service_principal_history_i
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class RiskyServicePrincipal(Entity):
+    @odata(name="appId")
     @property
     def app_id(self) -> Optional[str]:
         """Gets the appId property"""
         return self.properties.get("appId", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""
         return self.properties.get("isEnabled", None)
 
+    @odata(name="isProcessing")
     @property
     def is_processing(self) -> Optional[bool]:
         """Gets the isProcessing property"""
         return self.properties.get("isProcessing", None)
 
+    @odata(name="riskDetail")
     @property
     def risk_detail(self) -> RiskDetail:
         """Gets the riskDetail property"""
         return self.properties.get("riskDetail", RiskDetail.none)
 
+    @odata(name="riskLastUpdatedDateTime")
     @property
     def risk_last_updated_date_time(self) -> datetime:
         """Gets the riskLastUpdatedDateTime property"""
         return self.properties.get("riskLastUpdatedDateTime", datetime.min)
 
+    @odata(name="riskLevel")
     @property
     def risk_level(self) -> RiskLevel:
         """Gets the riskLevel property"""
         return self.properties.get("riskLevel", RiskLevel.low)
 
+    @odata(name="riskState")
     @property
     def risk_state(self) -> RiskState:
         """Gets the riskState property"""
         return self.properties.get("riskState", RiskState.none)
 
+    @odata(name="servicePrincipalType")
     @property
     def service_principal_type(self) -> Optional[str]:
         """Gets the servicePrincipalType property"""
         return self.properties.get("servicePrincipalType", None)
 
+    @odata(name="history", navigation=True)
     @property
     def history(self) -> EntityCollection[RiskyServicePrincipalHistoryItem]:
         """Gets the history property"""

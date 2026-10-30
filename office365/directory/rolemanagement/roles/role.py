@@ -8,6 +8,7 @@ from office365.directory.objects.object import DirectoryObject
 from office365.directory.permissions.scoped_role_membership import ScopedRoleMembership
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.objects.collection import DirectoryObjectCollection
@@ -53,11 +54,13 @@ class DirectoryRole(DirectoryObject):
         """The description for the directory role."""
         return self.properties.get("Description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The display name for the directory role."""
         return self.properties.get("displayName", None)
 
+    @odata(name="members", navigation=True)
     @property
     def members(self) -> DirectoryObjectCollection:
         """Users that are members of this directory role."""
@@ -68,10 +71,12 @@ class DirectoryRole(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
+    @odata(name="roleTemplateId")
     @property
     def role_template_id(self) -> Optional[str]:
         return self.properties.get("roleTemplateId", None)
 
+    @odata(name="scopedMembers", navigation=True)
     @property
     def scoped_members(self) -> EntityCollection[ScopedRoleMembership]:
         """Members of this directory role that are scoped to administrative units."""

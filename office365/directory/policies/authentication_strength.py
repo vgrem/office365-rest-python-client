@@ -16,6 +16,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class AuthenticationStrengthPolicy(Entity):
@@ -56,6 +57,7 @@ class AuthenticationStrengthPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="allowedCombinations")
     @property
     def allowed_combinations(self) -> ClientValueCollection[AuthenticationMethodModes]:
         """Gets the allowedCombinations property"""
@@ -63,36 +65,43 @@ class AuthenticationStrengthPolicy(Entity):
             "allowedCombinations", ClientValueCollection[AuthenticationMethodModes](AuthenticationMethodModes)
         )
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="modifiedDateTime")
     @property
     def modified_date_time(self) -> Optional[datetime]:
         """Gets the modifiedDateTime property"""
         return self.properties.get("modifiedDateTime", datetime.min)
 
+    @odata(name="policyType")
     @property
     def policy_type(self) -> AuthenticationStrengthPolicyType:
         """Gets the policyType property"""
         return self.properties.get("policyType", AuthenticationStrengthPolicyType.builtIn)
 
+    @odata(name="requirementsSatisfied")
     @property
     def requirements_satisfied(self) -> AuthenticationStrengthRequirements:
         """Gets the requirementsSatisfied property"""
         return self.properties.get("requirementsSatisfied", AuthenticationStrengthRequirements.none)
 
+    @odata(name="combinationConfigurations", navigation=True)
     @property
     def combination_configurations(self) -> EntityCollection[AuthenticationCombinationConfiguration]:
         """Gets the combinationConfigurations property"""

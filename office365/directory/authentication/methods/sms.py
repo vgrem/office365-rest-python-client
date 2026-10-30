@@ -6,6 +6,7 @@ from office365.directory.authentication.methods.sms_target import (
 )
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class SmsAuthenticationMethodConfiguration(AuthenticationMethodConfiguration):
@@ -13,6 +14,7 @@ class SmsAuthenticationMethodConfiguration(AuthenticationMethodConfiguration):
     configuration settings and users or groups that are enabled to use the authentication method.
     """
 
+    @odata(name="includeTargets", navigation=True)
     @property
     def include_targets(self):
         """Groups of users that are excluded from the policy."""

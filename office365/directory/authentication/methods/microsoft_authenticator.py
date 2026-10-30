@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.device import Device
@@ -13,21 +14,25 @@ class MicrosoftAuthenticatorAuthenticationMethod(AuthenticationMethod):
     """A representation of the Microsoft Authenticator app registered to a user. Microsoft Authenticator
     is an authentication method."""
 
+    @odata(name="deviceTag")
     @property
     def device_tag(self) -> Optional[str]:
         """Gets the deviceTag property"""
         return self.properties.get("deviceTag", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="phoneAppVersion")
     @property
     def phone_app_version(self) -> Optional[str]:
         """Gets the phoneAppVersion property"""
         return self.properties.get("phoneAppVersion", None)
 
+    @odata(name="device", navigation=True)
     @property
     def device(self) -> Device:
         """Gets the device property"""

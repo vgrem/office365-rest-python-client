@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.authentication.methods.signinstate import (
@@ -48,6 +49,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
         self.context.add_query(qry)
         return self
 
+    @odata(name="phoneNumber")
     @property
     def phone_number(self):
         """
@@ -58,6 +60,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
         """
         return self.properties.get("phoneNumber", None)
 
+    @odata(name="phoneType")
     @property
     def phone_type(self) -> AuthenticationPhoneType:
         """Gets the phoneType property"""
@@ -65,6 +68,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
 
         return self.properties.get("phoneType", AuthenticationPhoneType.mobile)
 
+    @odata(name="smsSignInState")
     @property
     def sms_sign_in_state(self) -> AuthenticationMethodSignInState:
         """Gets the smsSignInState property"""

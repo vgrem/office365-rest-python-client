@@ -9,6 +9,7 @@ from office365.directory.authentication.configuration.base import (
 )
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class IdentityApiConnector(Entity):
@@ -37,17 +38,20 @@ class IdentityApiConnector(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="authenticationConfiguration")
     @property
     def authentication_configuration(self) -> ApiAuthenticationConfigurationBase:
         """The object which describes the authentication configuration details for calling the API.
         Basic and PKCS 12 client certificate are supported."""
         return self.properties.get("authenticationConfiguration", ApiAuthenticationConfigurationBase())
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="targetUrl")
     @property
     def target_url(self) -> Optional[str]:
         """Gets the targetUrl property"""

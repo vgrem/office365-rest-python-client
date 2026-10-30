@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.directory.extensions.extension import Extension
+from office365.runtime.types.odata_property import odata
 
 
 class OpenTypeExtension(Extension):
@@ -10,6 +11,7 @@ class OpenTypeExtension(Extension):
     in Microsoft Graph.
     """
 
+    @odata(name="extensionName")
     @property
     def extension_name(self) -> Optional[str]:
         """A unique text identifier for an open type data extension."""

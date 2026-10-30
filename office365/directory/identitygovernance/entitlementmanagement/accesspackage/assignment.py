@@ -18,6 +18,7 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_extension_callout_instance import (  # noqa: E501
@@ -29,21 +30,25 @@ if TYPE_CHECKING:
 
 
 class AccessPackageAssignment(Entity):
+    @odata(name="expiredDateTime")
     @property
     def expired_date_time(self) -> datetime:
         """Gets the expiredDateTime property"""
         return self.properties.get("expiredDateTime", datetime.min)
 
+    @odata(name="state")
     @property
     def state(self) -> AccessPackageAssignmentState:
         """Gets the state property"""
         return self.properties.get("state", AccessPackageAssignmentState.delivering)
 
+    @odata(name="status")
     @property
     def status(self) -> Optional[str]:
         """Gets the status property"""
         return self.properties.get("status", None)
 
+    @odata(name="accessPackage", navigation=True)
     @property
     def access_package(self) -> AccessPackage:
         """Gets the accessPackage property"""
@@ -51,6 +56,7 @@ class AccessPackageAssignment(Entity):
             "accessPackage", AccessPackage(self.context, ResourcePath("accessPackage", self.resource_path))
         )
 
+    @odata(name="assignmentPolicy", navigation=True)
     @property
     def assignment_policy(self) -> AccessPackageAssignmentPolicy:
         """Gets the assignmentPolicy property"""
@@ -59,6 +65,7 @@ class AccessPackageAssignment(Entity):
             AccessPackageAssignmentPolicy(self.context, ResourcePath("assignmentPolicy", self.resource_path)),
         )
 
+    @odata(name="target", navigation=True)
     @property
     def target(self) -> AccessPackageSubject:
         """Gets the target property"""
@@ -70,6 +77,7 @@ class AccessPackageAssignment(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessPackageAssignment"
 
+    @odata(name="customExtensionCalloutInstances")
     @property
     def custom_extension_callout_instances(self) -> ClientValueCollection[CustomExtensionCalloutInstance]:
         """Gets the customExtensionCalloutInstances property"""
@@ -82,6 +90,7 @@ class AccessPackageAssignment(Entity):
             ClientValueCollection[CustomExtensionCalloutInstance](CustomExtensionCalloutInstance),
         )
 
+    @odata(name="schedule")
     @property
     def schedule(self) -> EntitlementManagementSchedule:
         """Gets the schedule property"""

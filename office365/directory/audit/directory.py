@@ -20,6 +20,7 @@ class DirectoryAudit(Entity):
         """Indicates the date and time the activity was performed."""
         return self.properties.get("activityDateTime", datetime.min)
 
+    @odata(name="activityDisplayName")
     @property
     def activity_display_name(self) -> Optional[str]:
         """
@@ -28,6 +29,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("activityDisplayName", None)
 
+    @odata(name="additionalDetails")
     @property
     def additional_details(self) -> Optional[dict]:
         """
@@ -35,6 +37,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("additionalDetails", None)
 
+    @odata(name="category")
     @property
     def category(self) -> Optional[str]:
         """
@@ -43,6 +46,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("category", None)
 
+    @odata(name="correlationId")
     @property
     def correlation_id(self) -> Optional[str]:
         """
@@ -59,6 +63,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("initiatedBy", AuditActivityInitiator())
 
+    @odata(name="operationType")
     @property
     def operation_type(self) -> Optional[str]:
         """
@@ -67,6 +72,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("operationType", None)
 
+    @odata(name="loggedByService")
     @property
     def logged_by_service(self) -> Optional[str]:
         """
@@ -76,6 +82,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("loggedByService", None)
 
+    @odata(name="result")
     @property
     def result(self) -> Optional[str]:
         """
@@ -83,6 +90,7 @@ class DirectoryAudit(Entity):
         """
         return self.properties.get("result", None)
 
+    @odata(name="resultReason")
     @property
     def result_reason(self) -> Optional[str]:
         """

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.directory.policies.base import PolicyBase
+from office365.runtime.types.odata_property import odata
 
 
 class IdentitySecurityDefaultsEnforcementPolicy(PolicyBase):
@@ -10,6 +11,7 @@ class IdentitySecurityDefaultsEnforcementPolicy(PolicyBase):
     It's a singleton policy that can be either enabled or disabled.
     """
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """If set to true, security defaults are enabled for the tenant."""

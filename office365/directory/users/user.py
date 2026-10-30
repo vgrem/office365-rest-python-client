@@ -637,6 +637,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> Optional[datetime]:
         """
@@ -652,7 +653,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("lastPasswordChangeDateTime", datetime.min)
 
-    @odata(name="createdObjects")
+    @odata(name="createdObjects", navigation=True)
     @property
     def created_objects(self) -> DirectoryObjectCollection:
         """Directory objects created by this user."""
@@ -660,6 +661,7 @@ class User(DirectoryObject):
             "createdObjects", DirectoryObjectCollection(self.context, ResourcePath("createdObjects", self.resource_path))
         )
 
+    @odata(name="deviceEnrollmentLimit")
     @property
     def device_enrollment_limit(self) -> Optional[str]:
         """ """
@@ -671,16 +673,19 @@ class User(DirectoryObject):
         """Get the last signed-in date and request ID of the sign-in for a given user. Read-only."""
         return self.properties.get("signInActivity", SignInActivity())
 
+    @odata(name="accountEnabled")
     @property
     def account_enabled(self) -> bool | None:
         """True if the account is enabled; otherwise, false. This property is required when a user is created."""
         return self.properties.get("accountEnabled", None)
 
+    @odata(name="ageGroup")
     @property
     def age_group(self) -> str | None:
         """Gets the age group of the user"""
         return self.properties.get("ageGroup", None)
 
+    @odata(name="appRoleAssignments", navigation=True)
     @property
     def app_role_assignments(self) -> AppRoleAssignmentCollection:
         """Get the apps and app roles which this user has been assigned."""
@@ -689,31 +694,37 @@ class User(DirectoryObject):
             AppRoleAssignmentCollection(self.context, ResourcePath("appRoleAssignments", self.resource_path)),
         )
 
+    @odata(name="chats", navigation=True)
     @property
     def chats(self) -> ChatCollection:
         """The user's chats."""
         return self.properties.get("chats", ChatCollection(self.context, ResourcePath("chats", self.resource_path)))
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The DisplayName property specifies the users's display name."""
         return self.properties.get("displayName", None)
 
+    @odata(name="givenName")
     @property
     def given_name(self) -> Optional[str]:
         """The given name (first name) of the user. Maximum length is 64 characters"""
         return self.properties.get("givenName", None)
 
+    @odata(name="mySite")
     @property
     def my_site(self) -> Optional[str]:
         """The URL for the user's site."""
         return self.properties.get("mySite", None)
 
+    @odata(name="officeLocation")
     @property
     def office_location(self) -> Optional[str]:
         """The office location in the user's place of business."""
         return self.properties.get("officeLocation", None)
 
+    @odata(name="userPrincipalName")
     @property
     def user_principal_name(self) -> Optional[str]:
         """
@@ -728,11 +739,13 @@ class User(DirectoryObject):
         """
         return self.properties.get("userPrincipalName", None)
 
+    @odata(name="assignedPlans")
     @property
     def assigned_plans(self) -> ClientValueCollection[AssignedPlan]:
         """The plans that are assigned to the user."""
         return self.properties.get("assignedPlans", ClientValueCollection(AssignedPlan))
 
+    @odata(name="authentication", navigation=True)
     @property
     def authentication(self) -> Authentication:
         """
@@ -742,6 +755,7 @@ class User(DirectoryObject):
             "authentication", Authentication(self.context, ResourcePath("authentication", self.resource_path))
         )
 
+    @odata(name="businessPhones")
     @property
     def business_phones(self) -> StringCollection:
         """String collection	The telephone numbers for the user. NOTE: Although this is a string collection,
@@ -749,6 +763,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("businessPhones", StringCollection())
 
+    @odata(name="creationType")
     @property
     def creation_type(self) -> Optional[str]:
         """Indicates whether the user account was created as a regular school or work account (null),
@@ -757,6 +772,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("creationType", None)
 
+    @odata(name="licenseAssignmentStates")
     @property
     def license_assignment_states(self) -> ClientValueCollection[LicenseAssignmentState]:
         """
@@ -765,6 +781,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("licenseAssignmentStates", ClientValueCollection(LicenseAssignmentState))
 
+    @odata(name="mail")
     @property
     def mail(self) -> Optional[str]:
         """The SMTP address for the user, for example, "jeff@contoso.onmicrosoft.com".
@@ -772,6 +789,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("mail", None)
 
+    @odata(name="otherMails")
     @property
     def other_mails(self) -> StringCollection:
         """A list of additional email addresses for the user;
@@ -779,11 +797,13 @@ class User(DirectoryObject):
         """
         return self.properties.get("otherMails", StringCollection())
 
+    @odata(name="interests")
     @property
     def interests(self) -> StringCollection:
         """A list for the user to describe their interests."""
         return self.properties.get("interests", StringCollection())
 
+    @odata(name="identities")
     @property
     def identities(self) -> ClientValueCollection[ObjectIdentity]:
         """Represents the identities that can be used to sign in to this user account.
@@ -794,6 +814,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("identities", ClientValueCollection(ObjectIdentity))
 
+    @odata(name="activities", navigation=True)
     @property
     def activities(self) -> UserActivityCollection:
         """The user's activities across devices."""
@@ -807,7 +828,7 @@ class User(DirectoryObject):
         """The licenses that are assigned to the user, including inherited (group-based) licenses."""
         return self.properties.get("assignedLicenses", ClientValueCollection(AssignedLicense))
 
-    @odata(name="followedSites")
+    @odata(name="followedSites", navigation=True)
     @property
     def followed_sites(self) -> EntityCollection[Site]:
         """ """
@@ -815,6 +836,7 @@ class User(DirectoryObject):
             "followedSites", EntityCollection(self.context, Site, ResourcePath("followedSites", self.resource_path))
         )
 
+    @odata(name="insights", navigation=True)
     @property
     def insights(self) -> OfficeGraphInsights:
         """Insights are relationships calculated using advanced analytics and machine learning techniques."""
@@ -822,11 +844,13 @@ class User(DirectoryObject):
             "insights", OfficeGraphInsights(self.context, ResourcePath("insights", self.resource_path))
         )
 
+    @odata(name="photo", navigation=True)
     @property
     def photo(self) -> ProfilePhoto:
         """The user's profile photo. Read-only."""
         return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
+    @odata(name="photos", navigation=True)
     @property
     def photos(self) -> EntityCollection[ProfilePhoto]:
         """The collection of the user's profile photos in different sizes"""
@@ -834,11 +858,13 @@ class User(DirectoryObject):
             "photos", EntityCollection(self.context, ProfilePhoto, ResourcePath("photos", self.resource_path))
         )
 
+    @odata(name="manager", navigation=True)
     @property
     def manager(self) -> DirectoryObject:
         """The user or contact that is this user's manager"""
         return self.properties.get("manager", DirectoryObject(self.context, ResourcePath("manager", self.resource_path)))
 
+    @odata(name="preferredLanguage")
     @property
     def preferred_language(self) -> Optional[str]:
         """
@@ -856,11 +882,13 @@ class User(DirectoryObject):
     def mailbox_settings(self, value: MailboxSettings):
         self.set_property("mailboxSettings", value)
 
+    @odata(name="calendar", navigation=True)
     @property
     def calendar(self) -> Calendar:
         """The user's primary calendar. Read-only."""
         return self.properties.get("calendar", Calendar(self.context, ResourcePath("calendar", self.resource_path)))
 
+    @odata(name="calendars", navigation=True)
     @property
     def calendars(self) -> CalendarCollection:
         """The user's calendar groups. Read-only. Nullable."""
@@ -868,6 +896,7 @@ class User(DirectoryObject):
             "calendars", CalendarCollection(self.context, ResourcePath("calendars", self.resource_path))
         )
 
+    @odata(name="calendarGroups", navigation=True)
     @property
     def calendar_groups(self) -> EntityCollection[CalendarGroup]:
         """The user's calendar groups. Read-only. Nullable."""
@@ -876,6 +905,7 @@ class User(DirectoryObject):
             EntityCollection(self.context, CalendarGroup, ResourcePath("calendarGroups", self.resource_path)),
         )
 
+    @odata(name="licenseDetails", navigation=True)
     @property
     def license_details(self) -> EntityCollection[LicenseDetails]:
         """Retrieve the properties and relationships of a Drive resource."""
@@ -884,6 +914,7 @@ class User(DirectoryObject):
             EntityCollection(self.context, LicenseDetails, ResourcePath("licenseDetails", self.resource_path)),
         )
 
+    @odata(name="drive", navigation=True)
     @property
     def drive(self) -> Drive:
         """Retrieve the properties and relationships of a Drive resource."""
@@ -891,6 +922,7 @@ class User(DirectoryObject):
             "drive", Drive(self.context, EntityPath("drive", self.resource_path, ResourcePath("drives")))
         )
 
+    @odata(name="contacts", navigation=True)
     @property
     def contacts(self) -> ContactCollection:
         """Get a contact collection from the default Contacts folder of the signed-in user (.../me/contacts),
@@ -899,6 +931,7 @@ class User(DirectoryObject):
             "contacts", ContactCollection(self.context, ResourcePath("contacts", self.resource_path))
         )
 
+    @odata(name="contactFolders", navigation=True)
     @property
     def contact_folders(self) -> ContactFolderCollection:
         """Get the contact folder collection in the default Contacts folder of the signed-in user."""
@@ -907,6 +940,7 @@ class User(DirectoryObject):
             ContactFolderCollection(self.context, ResourcePath("contactFolders", self.resource_path)),
         )
 
+    @odata(name="events", navigation=True)
     @property
     def events(self) -> DeltaCollection[Event]:
         """Get an event collection or an event."""
@@ -914,6 +948,7 @@ class User(DirectoryObject):
             "events", DeltaCollection(self.context, Event, ResourcePath("events", self.resource_path))
         )
 
+    @odata(name="messages", navigation=True)
     @property
     def messages(self) -> MessageCollection:
         """Get an event collection or an event."""
@@ -921,11 +956,13 @@ class User(DirectoryObject):
             "messages", MessageCollection(self.context, ResourcePath("messages", self.resource_path))
         )
 
+    @odata(name="joinedTeams", navigation=True)
     @property
     def joined_teams(self) -> TeamCollection:
         """Get the teams in Microsoft Teams that the user is a direct member of."""
         return self.properties.get("joinedTeams", TeamCollection(self.context, JoinedTeamsPath(self.resource_path)))
 
+    @odata(name="managedDevices", navigation=True)
     @property
     def managed_devices(self) -> EntityCollection[ManagedDevice]:
         """Devices that are managed or pre-enrolled through Intune"""
@@ -934,6 +971,7 @@ class User(DirectoryObject):
             EntityCollection(self.context, ManagedDevice, ResourcePath("managedDevices", self.resource_path)),
         )
 
+    @odata(name="memberOf", navigation=True)
     @property
     def member_of(self) -> DirectoryObjectCollection:
         """Get groups and directory roles that the user is a direct member of."""
@@ -941,6 +979,7 @@ class User(DirectoryObject):
             "memberOf", DirectoryObjectCollection(self.context, ResourcePath("memberOf", self.resource_path))
         )
 
+    @odata(name="oauth2PermissionGrants", navigation=True)
     @property
     def oauth2_permission_grants(self) -> DeltaCollection[OAuth2PermissionGrant]:
         """"""
@@ -951,6 +990,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="onPremisesDistinguishedName")
     @property
     def on_premises_distinguished_name(self) -> Optional[str]:
         """
@@ -959,6 +999,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("onPremisesDistinguishedName", None)
 
+    @odata(name="onPremisesDomainName")
     @property
     def on_premises_domain_name(self) -> Optional[str]:
         """
@@ -968,6 +1009,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("onPremisesDomainName", None)
 
+    @odata(name="ownedDevices", navigation=True)
     @property
     def owned_devices(self) -> DirectoryObjectCollection:
         """Devices that are owned by the user. Read-only. Nullable.
@@ -977,6 +1019,7 @@ class User(DirectoryObject):
             "ownedDevices", DirectoryObjectCollection(self.context, ResourcePath("ownedDevices", self.resource_path))
         )
 
+    @odata(name="ownedObjects", navigation=True)
     @property
     def owned_objects(self) -> DirectoryObjectCollection:
         """Directory objects that are owned by the user. Read-only. Nullable. Supports $expand."""
@@ -984,6 +1027,7 @@ class User(DirectoryObject):
             "ownedObjects", DirectoryObjectCollection(self.context, ResourcePath("ownedObjects", self.resource_path))
         )
 
+    @odata(name="proxyAddresses")
     @property
     def proxy_addresses(self) -> StringCollection:
         """
@@ -996,6 +1040,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("proxyAddresses", StringCollection())
 
+    @odata(name="transitiveMemberOf", navigation=True)
     @property
     def transitive_member_of(self) -> DirectoryObjectCollection:
         """Get groups, directory roles that the user is a member of. This API request is transitive, and will also
@@ -1005,6 +1050,7 @@ class User(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("transitiveMemberOf", self.resource_path)),
         )
 
+    @odata(name="mailFolders", navigation=True)
     @property
     def mail_folders(self) -> MailFolderCollection:
         """Get the mail folder collection under the root folder of the signed-in user."""
@@ -1012,11 +1058,13 @@ class User(DirectoryObject):
             "mailFolders", MailFolderCollection(self.context, ResourcePath("mailFolders", self.resource_path))
         )
 
+    @odata(name="outlook", navigation=True)
     @property
     def outlook(self) -> OutlookUser:
         """Represents the Outlook services available to a user."""
         return self.properties.get("outlook", OutlookUser(self.context, ResourcePath("outlook", self.resource_path)))
 
+    @odata(name="people", navigation=True)
     @property
     def people(self) -> EntityCollection[Person]:
         """People that are relevant to the user. Read-only. Nullable."""
@@ -1024,21 +1072,25 @@ class User(DirectoryObject):
             "people", EntityCollection(self.context, Person, ResourcePath("people", self.resource_path))
         )
 
+    @odata(name="onenote", navigation=True)
     @property
     def onenote(self) -> Onenote:
         """Represents the Onenote services available to a user."""
         return self.properties.get("onenote", Onenote(self.context, ResourcePath("onenote", self.resource_path)))
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> UserSettings:
         """Represents the user and organization settings object."""
         return self.properties.get("settings", UserSettings(self.context, ResourcePath("settings", self.resource_path)))
 
+    @odata(name="planner", navigation=True)
     @property
     def planner(self) -> PlannerUser:
         """The plannerUser resource provide access to Planner resources for a user."""
         return self.properties.get("planner", PlannerUser(self.context, ResourcePath("planner", self.resource_path)))
 
+    @odata(name="agreementAcceptances", navigation=True)
     @property
     def agreement_acceptances(self) -> EntityCollection[AgreementAcceptance]:
         """
@@ -1051,6 +1103,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the user. Nullable."""
@@ -1058,6 +1111,7 @@ class User(DirectoryObject):
             "extensions", EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path))
         )
 
+    @odata(name="directReports", navigation=True)
     @property
     def direct_reports(self) -> DirectoryObjectCollection:
         """Get a user's direct reports"""
@@ -1065,6 +1119,7 @@ class User(DirectoryObject):
             "directReports", DirectoryObjectCollection(self.context, ResourcePath("directReports", self.resource_path))
         )
 
+    @odata(name="onlineMeetings", navigation=True)
     @property
     def online_meetings(self) -> OnlineMeetingCollection:
         """Get a user's online meetings."""
@@ -1072,6 +1127,7 @@ class User(DirectoryObject):
             "onlineMeetings", OnlineMeetingCollection(self.context, ResourcePath("onlineMeetings", self.resource_path))
         )
 
+    @odata(name="passwordPolicies")
     @property
     def password_policies(self) -> Optional[str]:
         """
@@ -1092,11 +1148,13 @@ class User(DirectoryObject):
         """
         return self.properties.setdefault("passwordProfile", PasswordProfile())
 
+    @odata(name="presence", navigation=True)
     @property
     def presence(self) -> Presence:
         """Get a user's presence information."""
         return self.properties.get("presence", Presence(self.context, ResourcePath("presence", self.resource_path)))
 
+    @odata(name="registeredDevices", navigation=True)
     @property
     def registered_devices(self) -> DirectoryObjectCollection:
         """Get the devices that are registered for the user from the registeredDevices navigation property."""
@@ -1105,21 +1163,25 @@ class User(DirectoryObject):
             DirectoryObjectCollection(self.context, ResourcePath("registeredDevices", self.resource_path)),
         )
 
+    @odata(name="streetAddress")
     @property
     def street_address(self) -> Optional[str]:
         """The street address of the user's place of business. Maximum length is 1024 characters."""
         return self.properties.get("streetAddress", None)
 
+    @odata(name="securityIdentifier")
     @property
     def security_identifier(self) -> Optional[str]:
         """Security identifier (SID) of the user, used in Windows scenarios."""
         return self.properties.get("securityIdentifier", None)
 
+    @odata(name="teamwork", navigation=True)
     @property
     def teamwork(self) -> UserTeamwork:
         """A container for the range of Microsoft Teams functionalities that are available per user in the tenant."""
         return self.properties.get("teamwork", UserTeamwork(self.context, ResourcePath("teamwork", self.resource_path)))
 
+    @odata(name="solutions", navigation=True)
     @property
     def solutions(self) -> UserSolutionRoot:
         """The identifier that relates the user to the working time schedule triggers. Read-Only. Nullable."""
@@ -1127,11 +1189,13 @@ class User(DirectoryObject):
             "solutions", UserSolutionRoot(self.context, ResourcePath("solutions", self.resource_path))
         )
 
+    @odata(name="todo", navigation=True)
     @property
     def todo(self) -> Todo:
         """Represents the To Do services available to a user."""
         return self.properties.get("todo", Todo(self.context, ResourcePath("todo", self.resource_path)))
 
+    @odata(name="employeeExperience", navigation=True)
     @property
     def employee_experience(self) -> EmployeeExperienceUser:
         """Represents the To Do services available to a user."""
@@ -1140,6 +1204,7 @@ class User(DirectoryObject):
             EmployeeExperienceUser(self.context, ResourcePath("employeeExperience", self.resource_path)),
         )
 
+    @odata(name="usageLocation")
     @property
     def usage_location(self) -> Optional[str]:
         """
@@ -1148,26 +1213,31 @@ class User(DirectoryObject):
         """
         return self.properties.get("usageLocation", None)
 
+    @odata(name="authorizationInfo")
     @property
     def authorization_info(self) -> AuthorizationInfo:
         """Gets the authorizationInfo property"""
         return self.properties.get("authorizationInfo", AuthorizationInfo())
 
+    @odata(name="city")
     @property
     def city(self) -> Optional[str]:
         """Gets the city property"""
         return self.properties.get("city", None)
 
+    @odata(name="companyName")
     @property
     def company_name(self) -> Optional[str]:
         """Gets the companyName property"""
         return self.properties.get("companyName", None)
 
+    @odata(name="consentProvidedForMinor")
     @property
     def consent_provided_for_minor(self) -> Optional[str]:
         """Gets the consentProvidedForMinor property"""
         return self.properties.get("consentProvidedForMinor", None)
 
+    @odata(name="country")
     @property
     def country(self) -> Optional[str]:
         """Gets the country property"""
@@ -1178,76 +1248,91 @@ class User(DirectoryObject):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="customSecurityAttributes")
     @property
     def custom_security_attributes(self) -> CustomSecurityAttributeValue:
         """Gets the customSecurityAttributes property"""
         return self.properties.get("customSecurityAttributes", CustomSecurityAttributeValue())
 
+    @odata(name="department")
     @property
     def department(self) -> Optional[str]:
         """Gets the department property"""
         return self.properties.get("department", None)
 
+    @odata(name="employeeHireDate")
     @property
     def employee_hire_date(self) -> datetime:
         """Gets the employeeHireDate property"""
         return self.properties.get("employeeHireDate", datetime.min)
 
+    @odata(name="employeeId")
     @property
     def employee_id(self) -> Optional[str]:
         """Gets the employeeId property"""
         return self.properties.get("employeeId", None)
 
+    @odata(name="employeeLeaveDateTime")
     @property
     def employee_leave_date_time(self) -> datetime:
         """Gets the employeeLeaveDateTime property"""
         return self.properties.get("employeeLeaveDateTime", datetime.min)
 
+    @odata(name="employeeOrgData")
     @property
     def employee_org_data(self) -> EmployeeOrgData:
         """Gets the employeeOrgData property"""
         return self.properties.get("employeeOrgData", EmployeeOrgData())
 
+    @odata(name="employeeType")
     @property
     def employee_type(self) -> Optional[str]:
         """Gets the employeeType property"""
         return self.properties.get("employeeType", None)
 
+    @odata(name="externalUserState")
     @property
     def external_user_state(self) -> Optional[str]:
         """Gets the externalUserState property"""
         return self.properties.get("externalUserState", None)
 
+    @odata(name="externalUserStateChangeDateTime")
     @property
     def external_user_state_change_date_time(self) -> datetime:
         """Gets the externalUserStateChangeDateTime property"""
         return self.properties.get("externalUserStateChangeDateTime", datetime.min)
 
+    @odata(name="faxNumber")
     @property
     def fax_number(self) -> Optional[str]:
         """Gets the faxNumber property"""
         return self.properties.get("faxNumber", None)
 
+    @odata(name="identityParentId")
     @property
     def identity_parent_id(self) -> Optional[str]:
         """Gets the identityParentId property"""
         return self.properties.get("identityParentId", None)
 
+    @odata(name="imAddresses")
     @property
     def im_addresses(self) -> StringCollection:
         """Gets the imAddresses property"""
         return self.properties.get("imAddresses", StringCollection(None))
 
+    @odata(name="isManagementRestricted")
     @property
     def is_management_restricted(self) -> Optional[bool]:
         """Gets the isManagementRestricted property"""
         return self.properties.get("isManagementRestricted", None)
 
+    @odata(name="isResourceAccount")
     @property
     def is_resource_account(self) -> Optional[bool]:
         """Gets the isResourceAccount property"""
         return self.properties.get("isResourceAccount", None)
 
+    @odata(name="jobTitle")
     @property
     def job_title(self) -> Optional[str]:
         """Gets the jobTitle property"""
@@ -1259,26 +1344,31 @@ class User(DirectoryObject):
         """Gets the lastPasswordChangeDateTime property"""
         return self.properties.get("lastPasswordChangeDateTime", datetime.min)
 
+    @odata(name="legalAgeGroupClassification")
     @property
     def legal_age_group_classification(self) -> Optional[str]:
         """Gets the legalAgeGroupClassification property"""
         return self.properties.get("legalAgeGroupClassification", None)
 
+    @odata(name="mailNickname")
     @property
     def mail_nickname(self) -> Optional[str]:
         """Gets the mailNickname property"""
         return self.properties.get("mailNickname", None)
 
+    @odata(name="mobilePhone")
     @property
     def mobile_phone(self) -> Optional[str]:
         """Gets the mobilePhone property"""
         return self.properties.get("mobilePhone", None)
 
+    @odata(name="onPremisesExtensionAttributes")
     @property
     def on_premises_extension_attributes(self) -> OnPremisesExtensionAttributes:
         """Gets the onPremisesExtensionAttributes property"""
         return self.properties.get("onPremisesExtensionAttributes", OnPremisesExtensionAttributes())
 
+    @odata(name="onPremisesImmutableId")
     @property
     def on_premises_immutable_id(self) -> Optional[str]:
         """Gets the onPremisesImmutableId property"""
@@ -1299,31 +1389,37 @@ class User(DirectoryObject):
             ClientValueCollection[OnPremisesProvisioningError](OnPremisesProvisioningError),
         )
 
+    @odata(name="onPremisesSamAccountName")
     @property
     def on_premises_sam_account_name(self) -> Optional[str]:
         """Gets the onPremisesSamAccountName property"""
         return self.properties.get("onPremisesSamAccountName", None)
 
+    @odata(name="onPremisesSecurityIdentifier")
     @property
     def on_premises_security_identifier(self) -> Optional[str]:
         """Gets the onPremisesSecurityIdentifier property"""
         return self.properties.get("onPremisesSecurityIdentifier", None)
 
+    @odata(name="onPremisesSyncEnabled")
     @property
     def on_premises_sync_enabled(self) -> Optional[bool]:
         """Gets the onPremisesSyncEnabled property"""
         return self.properties.get("onPremisesSyncEnabled", None)
 
+    @odata(name="onPremisesUserPrincipalName")
     @property
     def on_premises_user_principal_name(self) -> Optional[str]:
         """Gets the onPremisesUserPrincipalName property"""
         return self.properties.get("onPremisesUserPrincipalName", None)
 
+    @odata(name="postalCode")
     @property
     def postal_code(self) -> Optional[str]:
         """Gets the postalCode property"""
         return self.properties.get("postalCode", None)
 
+    @odata(name="preferredDataLocation")
     @property
     def preferred_data_location(self) -> Optional[str]:
         """Gets the preferredDataLocation property"""
@@ -1343,6 +1439,7 @@ class User(DirectoryObject):
             "serviceProvisioningErrors", ClientValueCollection[ServiceProvisioningError](ServiceProvisioningError)
         )
 
+    @odata(name="showInAddressList")
     @property
     def show_in_address_list(self) -> Optional[bool]:
         """Gets the showInAddressList property"""
@@ -1354,31 +1451,37 @@ class User(DirectoryObject):
         """Gets the signInSessionsValidFromDateTime property"""
         return self.properties.get("signInSessionsValidFromDateTime", datetime.min)
 
+    @odata(name="state")
     @property
     def state(self) -> Optional[str]:
         """Gets the state property"""
         return self.properties.get("state", None)
 
+    @odata(name="surname")
     @property
     def surname(self) -> Optional[str]:
         """Gets the surname property"""
         return self.properties.get("surname", None)
 
+    @odata(name="userType")
     @property
     def user_type(self) -> Optional[str]:
         """Gets the userType property"""
         return self.properties.get("userType", None)
 
+    @odata(name="print")
     @property
     def print_(self) -> UserPrint:
         """Gets the print property"""
         return self.properties.get("print", UserPrint())
 
+    @odata(name="aboutMe")
     @property
     def about_me(self) -> Optional[str]:
         """Gets the aboutMe property"""
         return self.properties.get("aboutMe", None)
 
+    @odata(name="birthday")
     @property
     def birthday(self) -> datetime:
         """Gets the birthday property"""
@@ -1396,27 +1499,31 @@ class User(DirectoryObject):
         """Gets the pastProjects property"""
         return self.properties.get("pastProjects", StringCollection(None))
 
+    @odata(name="preferredName")
     @property
     def preferred_name(self) -> Optional[str]:
         """Gets the preferredName property"""
         return self.properties.get("preferredName", None)
 
+    @odata(name="responsibilities")
     @property
     def responsibilities(self) -> StringCollection:
         """Gets the responsibilities property"""
         return self.properties.get("responsibilities", StringCollection(None))
 
+    @odata(name="schools")
     @property
     def schools(self) -> StringCollection:
         """Gets the schools property"""
         return self.properties.get("schools", StringCollection(None))
 
+    @odata(name="skills")
     @property
     def skills(self) -> StringCollection:
         """Gets the skills property"""
         return self.properties.get("skills", StringCollection(None))
 
-    @odata(name="onPremisesSyncBehavior")
+    @odata(name="onPremisesSyncBehavior", navigation=True)
     @property
     def on_premises_sync_behavior(self) -> OnPremisesSyncBehavior:
         """Gets the onPremisesSyncBehavior property"""
@@ -1425,7 +1532,7 @@ class User(DirectoryObject):
             OnPremisesSyncBehavior(self.context, ResourcePath("onPremisesSyncBehavior", self.resource_path)),
         )
 
-    @odata(name="scopedRoleMemberOf")
+    @odata(name="scopedRoleMemberOf", navigation=True)
     @property
     def scoped_role_member_of(self) -> EntityCollection[ScopedRoleMembership]:
         """Gets the scopedRoleMemberOf property"""
@@ -1436,6 +1543,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="sponsors", navigation=True)
     @property
     def sponsors(self) -> EntityCollection[DirectoryObject]:
         """Gets the sponsors property"""
@@ -1446,7 +1554,7 @@ class User(DirectoryObject):
             ),
         )
 
-    @odata(name="calendarView")
+    @odata(name="calendarView", navigation=True)
     @property
     def calendar_view(self) -> EntityCollection[Event]:
         """Gets the calendarView property"""
@@ -1455,6 +1563,7 @@ class User(DirectoryObject):
             EntityCollection[Event](self.context, Event, ResourcePath("calendarView", self.resource_path)),
         )
 
+    @odata(name="drives", navigation=True)
     @property
     def drives(self) -> EntityCollection[Drive]:
         """Gets the drives property"""
@@ -1462,7 +1571,7 @@ class User(DirectoryObject):
             "drives", EntityCollection[Drive](self.context, Drive, ResourcePath("drives", self.resource_path))
         )
 
-    @odata(name="managedAppRegistrations")
+    @odata(name="managedAppRegistrations", navigation=True)
     @property
     def managed_app_registrations(self) -> EntityCollection[ManagedAppRegistration]:
         """Gets the managedAppRegistrations property"""
@@ -1473,7 +1582,7 @@ class User(DirectoryObject):
             ),
         )
 
-    @odata(name="permissionGrants")
+    @odata(name="permissionGrants", navigation=True)
     @property
     def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """Gets the permissionGrants property"""
@@ -1496,6 +1605,7 @@ class User(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.User"
 
+    @odata(name="cloudPCs", navigation=True)
     @property
     def cloud_pcs(self) -> EntityCollection[CloudPC]:
         """Gets the cloudPCs property"""
@@ -1505,6 +1615,7 @@ class User(DirectoryObject):
             "cloudPCs", EntityCollection[CloudPC](self.context, CloudPC, ResourcePath("cloudPCs", self.resource_path))
         )
 
+    @odata(name="dataSecurityAndGovernance", navigation=True)
     @property
     def data_security_and_governance(self) -> UserDataSecurityAndGovernance:
         """Gets the dataSecurityAndGovernance property"""
@@ -1517,6 +1628,7 @@ class User(DirectoryObject):
             UserDataSecurityAndGovernance(self.context, ResourcePath("dataSecurityAndGovernance", self.resource_path)),
         )
 
+    @odata(name="sponsorOf", navigation=True)
     @property
     def sponsor_of(self) -> EntityCollection[DirectoryObject]:
         """Gets the sponsorOf property"""
@@ -1529,6 +1641,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="inferenceClassification", navigation=True)
     @property
     def inference_classification(self) -> InferenceClassification:
         """Gets the inferenceClassification property"""
@@ -1541,6 +1654,7 @@ class User(DirectoryObject):
             InferenceClassification(self.context, ResourcePath("inferenceClassification", self.resource_path)),
         )
 
+    @odata(name="notes", navigation=True)
     @property
     def notes(self) -> EntityCollection[Note]:
         """Gets the notes property"""
@@ -1550,6 +1664,7 @@ class User(DirectoryObject):
             "notes", EntityCollection[Note](self.context, Note, ResourcePath("notes", self.resource_path))
         )
 
+    @odata(name="deviceManagementTroubleshootingEvents", navigation=True)
     @property
     def device_management_troubleshooting_events(self) -> EntityCollection[DeviceManagementTroubleshootingEvent]:
         """Gets the deviceManagementTroubleshootingEvents property"""
@@ -1566,6 +1681,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @odata(name="cloudClipboard", navigation=True)
     @property
     def cloud_clipboard(self) -> CloudClipboardRoot:
         """Gets the cloudClipboard property"""
@@ -1575,6 +1691,7 @@ class User(DirectoryObject):
             "cloudClipboard", CloudClipboardRoot(self.context, ResourcePath("cloudClipboard", self.resource_path))
         )
 
+    @odata(name="adhocCalls", navigation=True)
     @property
     def adhoc_calls(self) -> EntityCollection[AdhocCall]:
         """Gets the adhocCalls property"""

@@ -12,6 +12,7 @@ class RoleManagement(Entity):
     are currently supported.
     """
 
+    @odata(name="directory", navigation=True)
     @property
     def directory(self) -> RbacApplication:
         """"""
@@ -20,7 +21,7 @@ class RoleManagement(Entity):
             RbacApplication(self.context, ResourcePath("directory", self.resource_path)),
         )
 
-    @odata(name="entitlementManagement")
+    @odata(name="entitlementManagement", navigation=True)
     @property
     def entitlement_management(self) -> RbacApplication:
         """Container for roles and assignments for entitlement management resources."""

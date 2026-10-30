@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identities.on_token_issuance_start_return_claim import (
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class OnTokenIssuanceStartCustomExtension(Entity):
+    @odata(name="claimsForTokenConfiguration")
     @property
     def claims_for_token_configuration(self) -> ClientValueCollection[OnTokenIssuanceStartReturnClaim]:
         """Gets the claimsForTokenConfiguration property"""

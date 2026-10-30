@@ -21,6 +21,7 @@ class RiskyUser(Entity):
     signals and machine learning. This API provides programmatic access to all at-risk users in your Azure AD.
     """
 
+    @odata(name="history", navigation=True)
     @property
     def history(self) -> EntityCollection[RiskyUserHistoryItem]:
         """The activity related to user risk level change"""
@@ -30,21 +31,25 @@ class RiskyUser(Entity):
             "history", EntityCollection(self.context, RiskyUserHistoryItem, ResourcePath("history", self.resource_path))
         )
 
+    @odata(name="userPrincipalName")
     @property
     def user_principal_name(self) -> Optional[str]:
         """Risky user principal name."""
         return self.properties.get("userPrincipalName", None)
 
+    @odata(name="isDeleted")
     @property
     def is_deleted(self) -> Optional[bool]:
         """Gets the isDeleted property"""
         return self.properties.get("isDeleted", None)
 
+    @odata(name="isProcessing")
     @property
     def is_processing(self) -> Optional[bool]:
         """Gets the isProcessing property"""
         return self.properties.get("isProcessing", None)
 
+    @odata(name="riskDetail")
     @property
     def risk_detail(self) -> RiskDetail:
         """Gets the riskDetail property"""
@@ -68,6 +73,7 @@ class RiskyUser(Entity):
         """Gets the riskState property"""
         return self.properties.get("riskState", RiskState.none)
 
+    @odata(name="userDisplayName")
     @property
     def user_display_name(self) -> Optional[str]:
         """Gets the userDisplayName property"""

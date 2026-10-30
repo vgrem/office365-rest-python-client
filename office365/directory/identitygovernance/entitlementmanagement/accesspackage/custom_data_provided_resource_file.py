@@ -4,19 +4,23 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class CustomDataProvidedResourceFile(Entity):
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="size")
     @property
     def size(self) -> Optional[int]:
         """Gets the size property"""
         return self.properties.get("size", None)
 
+    @odata(name="uploadedDateTime")
     @property
     def uploaded_date_time(self) -> Optional[datetime]:
         """Gets the uploadedDateTime property"""

@@ -1,6 +1,7 @@
 from office365.directory.certificates.authority import CertificateAuthority
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 
 class CertificateBasedAuthConfiguration(Entity):
@@ -18,6 +19,7 @@ class CertificateBasedAuthConfiguration(Entity):
     be authenticated by Azure Active Directory with a client certificate.
     """
 
+    @odata(name="certificateAuthorities")
     @property
     def certificate_authorities(self) -> ClientValueCollection[CertificateAuthority]:
         """Collection of certificate authorities which creates a trusted certificate chain."""

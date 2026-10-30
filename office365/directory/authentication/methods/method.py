@@ -9,6 +9,7 @@ from office365.directory.authentication.password_reset_response import (
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 
 class AuthenticationMethod(Entity):
@@ -44,6 +45,7 @@ class AuthenticationMethod(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""

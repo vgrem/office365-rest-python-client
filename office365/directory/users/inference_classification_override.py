@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.email_address import EmailAddress
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class InferenceClassificationOverride(Entity):
+    @odata(name="classifyAs")
     @property
     def classify_as(self) -> InferenceClassificationType:
         """Gets the classifyAs property"""
@@ -21,6 +23,7 @@ class InferenceClassificationOverride(Entity):
 
         return self.properties.get("classifyAs", InferenceClassificationType.focused)
 
+    @odata(name="senderEmailAddress")
     @property
     def sender_email_address(self) -> EmailAddress:
         """Gets the senderEmailAddress property"""

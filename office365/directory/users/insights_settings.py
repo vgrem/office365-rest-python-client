@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class UserInsightsSettings(Entity):
@@ -16,6 +17,7 @@ class UserInsightsSettings(Entity):
     meeting hours insights, and people insights at the organizational level.
     """
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """True if the user's itemInsights and meeting hours insights are enabled; false if the user's itemInsights

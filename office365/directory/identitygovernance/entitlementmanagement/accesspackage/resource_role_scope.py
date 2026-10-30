@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_role import (
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class AccessPackageResourceRoleScope(Entity):
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
@@ -25,6 +27,7 @@ class AccessPackageResourceRoleScope(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessPackageResourceRoleScope"
 
+    @odata(name="role", navigation=True)
     @property
     def role(self) -> AccessPackageResourceRole:
         """Gets the role property"""
@@ -36,6 +39,7 @@ class AccessPackageResourceRoleScope(Entity):
             "role", AccessPackageResourceRole(self.context, ResourcePath("role", self.resource_path))
         )
 
+    @odata(name="scope", navigation=True)
     @property
     def scope(self) -> AccessPackageResourceScope:
         """Gets the scope property"""

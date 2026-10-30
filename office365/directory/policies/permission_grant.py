@@ -4,6 +4,7 @@ from office365.directory.permissions.grants.condition_set import (
 from office365.directory.policies.base import PolicyBase
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PermissionGrantPolicy(PolicyBase):
@@ -15,6 +16,7 @@ class PermissionGrantPolicy(PolicyBase):
     and none of the excludes condition sets.
     """
 
+    @odata(name="excludes", navigation=True)
     @property
     def excludes(self) -> EntityCollection[PermissionGrantConditionSet]:
         """
@@ -30,6 +32,7 @@ class PermissionGrantPolicy(PolicyBase):
             ),
         )
 
+    @odata(name="includes", navigation=True)
     @property
     def includes(self) -> EntityCollection[PermissionGrantConditionSet]:
         """

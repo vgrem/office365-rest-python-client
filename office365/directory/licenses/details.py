@@ -18,6 +18,7 @@ class LicenseDetails(Entity):
         """Information about the service plans assigned with the license. Read-only, Not nullable"""
         return self.properties.get("servicePlans", ClientValueCollection(ServicePlanInfo))
 
+    @odata(name="skuId")
     @property
     def sku_id(self) -> Optional[str]:
         """
@@ -25,6 +26,7 @@ class LicenseDetails(Entity):
         """
         return self.properties.get("skuId", None)
 
+    @odata(name="skuPartNumber")
     @property
     def sku_part_number(self) -> Optional[str]:
         """
