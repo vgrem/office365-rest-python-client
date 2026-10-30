@@ -49,16 +49,40 @@ _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 #: Packages whose columns are expected to declare their value type today.
 _SERVED = ("office365/outlook",)
 
+
+def _service_roots() -> list[tuple[str, str]]:
+    """Every package the model is generated for, with the document that declares it.
+
+    Derived from the tree rather than listed, so a package added tomorrow is covered by
+    the ratchet the day it lands -- a list is a thing to forget to add to, which is the
+    failure mode a ratchet exists to prevent. ``office365/sharepoint`` is the one tree
+    the Graph document does not describe; ``__pycache__`` is a cache, not a package.
+    """
+    graph = [
+        f"office365/{entry.name}"
+        for entry in sorted((_REPO_ROOT / "office365").iterdir())
+        if entry.is_dir() and entry.name not in {"__pycache__", "sharepoint"}
+    ]
+    return [("graph", root) for root in graph] + [("sharepoint", "office365/sharepoint")]
+
+
+_SERVICE_ROOTS = _service_roots()
+
+
+def test_the_ratchet_covers_every_package_under_office365() -> None:
+    """Only the byte-code cache is outside it; the v3 tree is in it as its own service."""
+    covered = {root for _, root in _SERVICE_ROOTS}
+    packages = {f"office365/{entry.name}" for entry in (_REPO_ROOT / "office365").iterdir() if entry.is_dir()}
+    assert packages - covered == {"office365/__pycache__"}
+
+
 _spec = importlib.util.spec_from_file_location("_mark_odata", _REPO_ROOT / "scripts" / "mark_odata.py")
 assert _spec is not None and _spec.loader is not None
 _mark_odata = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mark_odata)
 
 
-@pytest.mark.parametrize(
-    ("service", "root"),
-    [("graph", "office365/outlook"), ("graph", "office365/teams"), ("sharepoint", "office365/sharepoint")],
-)
+@pytest.mark.parametrize(("service", "root"), _SERVICE_ROOTS)
 def test_every_getter_that_spells_an_odata_name_declares_it(service: str, root: str) -> None:
     # A getter reads a name the CSDL knows and leaves it undeclared, so the property is
     # unselectable and unmappable. The back-fill closed that; this holds it closed.
@@ -265,7 +289,7 @@ def _is_property(node: ast.FunctionDef) -> bool:
     return any(getattr(d, "id", "") == "property" for d in node.decorator_list if not isinstance(d, ast.Call))
 
 
-@pytest.mark.parametrize(("service", "root"), [("graph", "office365/outlook"), ("sharepoint", "office365/sharepoint")])
+@pytest.mark.parametrize(("service", "root"), _SERVICE_ROOTS)
 def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, root: str) -> None:
     """``system=True`` is where a name comes from, and the metadata decides.
 
