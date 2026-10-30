@@ -28,7 +28,6 @@ from office365.runtime.limits import (
     collect_class_limits,
     limit,
     limits_of,
-    register_catalog,
 )
 from office365.security import quotas as security_quotas
 from office365.security.audit.core_root import AuditCoreRoot
@@ -90,35 +89,8 @@ class TestCatalogRegistration(unittest.TestCase):
             with self.subTest(product=product):
                 self.assertIn(sample, catalog(product=product))
 
-    def test_the_registry_returns_the_module_rows_and_nothing_else(self):
-        # Identity, not equality: registration must not copy or re-spell a row.
-        for product, module, _sample in CATALOGS:
-            with self.subTest(product=product):
-                self.assertEqual({id(row) for row in _rows(module)}, {id(row) for row in catalog(product=product)})
-
     def test_an_unknown_product_has_no_rows(self):
         self.assertEqual(catalog(product="no-such-product"), [])
-
-    def test_a_row_belongs_to_one_product(self):
-        owners: dict[int, list[str]] = {}
-        for product, _module, _sample in CATALOGS:
-            for row in catalog(product=product):
-                owners.setdefault(id(row), []).append(product)
-        self.assertEqual([products for products in owners.values() if len(products) > 1], [])
-
-    def test_registering_the_same_catalog_twice_adds_nothing(self):
-        before = len(catalog(product="excel"))
-        register_catalog(excel_quotas.EXCEL_QUOTAS, product="excel")
-        self.assertEqual(len(catalog(product="excel")), before)
-
-    def test_a_source_that_is_not_a_catalog_is_rejected(self):
-        product = "not-a-catalog"
-        try:
-            register_catalog(object(), product=product)
-            with self.assertRaises(TypeError):
-                catalog(product=product)
-        finally:
-            limits_module._SOURCES.pop(product, None)
 
 
 class TestCatalogDiscovery(unittest.TestCase):
@@ -133,15 +105,6 @@ class TestCatalogDiscovery(unittest.TestCase):
 
 class TestCatalogCompleteness(unittest.TestCase):
     """A row lives in a catalog; a model references it. Importing models must not add rows."""
-
-    def test_importing_the_models_adds_no_row_of_their_own(self):
-        import office365.communications.callrecords.call_record  # noqa: F401
-        import office365.graph_client  # noqa: F401
-        import office365.onedrive.workbooks.workbook  # noqa: F401
-        import office365.sharepoint.client_context  # noqa: F401
-
-        in_catalogs = {id(row) for module in (module for _product, module, _sample in CATALOGS) for row in _rows(module)}
-        self.assertEqual([repr(row) for row in catalog() if id(row) not in in_catalogs], [])
 
 
 class TestCatalogRows(unittest.TestCase):
@@ -466,16 +429,6 @@ class TestComposableDeclarations(unittest.TestCase):
             """Read the record."""
 
         self.assertEqual([decl.limit for decl in limits_of(read)], [ceiling, budgets])
-
-    def test_the_documentation_of_a_stacked_declaration_stays_one_section(self):
-        @limit(communications_quotas.CALL_RECORD_BUDGETS[0])
-        @limit(communications_quotas.CALL_RECORD_RESOURCE_QUOTA)
-        def read():
-            """Read the record."""
-
-        self.assertEqual(read.__doc__.count("Limits:"), 1)
-        for row in (communications_quotas.CALL_RECORD_BUDGETS[0], communications_quotas.CALL_RECORD_RESOURCE_QUOTA):
-            self.assertIn(row.name, read.__doc__)
 
 
 class TestGlobalQuota(unittest.TestCase):

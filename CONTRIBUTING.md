@@ -87,7 +87,7 @@ The offline tests are split by what they describe:
 
 | Directory | Subject |
 | --- | --- |
-| `tests/unit` | the shipped library — one file per feature of `office365` |
+| `tests/unit` | the shipped library — one file per feature of `office365`, plus `test_regressions.py` for the pins that are one assertion long |
 | `tests/tooling` | the code generator under `generator/`, which is development tooling and is not part of the wheel |
 | `tests/test_settings.py` | the `tests/settings.py` configuration loader |
 
@@ -124,6 +124,19 @@ with a `Retry-After`, a 202 that polls through seven fractions, an awaitable
 token callback, a tolerant write, an idempotent ensure — because no run against
 a live service can provoke those on demand, and a fake is the only stimulus that
 reaches the branch.
+
+A fourth pass asked who each test is for. A pin that is one assertion long — a getter
+that read a neighbour's wire name, a body that spelled `+00:00` where the service takes
+`Z`, a private `_certificate_der` on its own — was spending twenty lines of docstring,
+imports and a helper on one `assert`. Twenty-seven such files became one
+`tests/unit/test_regressions.py`, grouped by the kind of mistake and commented one line
+each; the near-duplicates they had grown (`test_prefer.py`'s three header variants,
+`test_enum_flags.py`'s four reads of one `parse_enum` call) were merged. What went with
+them were tests that graded the harness instead of the library: the limits registry's
+identity bookkeeping, the docs generator's scanner, and the self-check that
+`make_dataclass` rejects an unhashable default on the interpreter running the suite. A
+ratchet's job is to fail on this tree; feeding it a synthetic offender tests the
+interpreter.
 
 ### End-to-end tests (maintainers / optional)
 

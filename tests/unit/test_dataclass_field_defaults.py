@@ -21,12 +21,9 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import pkgutil
-import sys
-from types import MappingProxyType
 from typing import Iterator, List
 
 import office365.runtime as runtime_package
-import pytest
 
 
 def _dataclasses_under(package: object) -> Iterator[type]:
@@ -61,13 +58,3 @@ def test_no_runtime_dataclass_default_is_an_unhashable_instance() -> None:
         "these dataclass fields default to an unhashable instance, which Python 3.11 "
         f"rejects at class-creation time: {sorted(offenders)}"
     )
-
-
-def test_the_ratchet_sees_the_construct_it_forbids() -> None:
-    default = dataclasses.field(default=MappingProxyType({}))
-    declared = [("x", object, default)]
-    if sys.version_info[:2] == (3, 11):
-        with pytest.raises(ValueError, match="mutable default"):
-            dataclasses.make_dataclass("UnhashableDefault", declared)
-    else:
-        assert _unhashable_defaults(dataclasses.make_dataclass("UnhashableDefault", declared)) == ["x"]

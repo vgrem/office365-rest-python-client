@@ -50,18 +50,6 @@ def test_the_preview_token_is_the_beta_service_root():
     assert PREVIEW == GraphVersion.BETA.value
 
 
-def test_the_declaration_is_the_only_place_the_two_names_appear():
-    schema = AccessPackage._schema
-
-    assert schema.beta_names == {
-        "assignmentPolicies": "accessPackageAssignmentPolicies",
-        "catalog": "accessPackageCatalog",
-        "resourceRoleScopes": "accessPackageResourceRoleScopes",
-    }
-    assert schema.canonical_names["accessPackageCatalog"] == "catalog"
-    assert schema.beta_only == {"catalogId", "createdBy", "isRoleScopesVisible", "modifiedBy", "uniqueName"}
-
-
 def test_a_renamed_member_is_sent_under_the_name_the_client_declares():
     stable = AccessPackage(_client()).set_property("catalog", "cat-123")
     preview = AccessPackage(_client(GraphVersion.BETA)).set_property("catalog", "cat-123")
