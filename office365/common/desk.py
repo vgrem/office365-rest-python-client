@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.booking.mailbox_details import MailboxDetails
@@ -13,11 +14,13 @@ if TYPE_CHECKING:
 
 
 class Desk(Entity):
+    @odata(name="displayDeviceName")
     @property
     def display_device_name(self) -> Optional[str]:
         """Gets the displayDeviceName property"""
         return self.properties.get("displayDeviceName", None)
 
+    @odata(name="heightAdjustableState")
     @property
     def height_adjustable_state(self) -> PlaceFeatureEnablement:
         """Gets the heightAdjustableState property"""
@@ -25,6 +28,7 @@ class Desk(Entity):
 
         return self.properties.get("heightAdjustableState", PlaceFeatureEnablement.unknown)
 
+    @odata(name="mailboxDetails")
     @property
     def mailbox_details(self) -> MailboxDetails:
         """Gets the mailboxDetails property"""
@@ -32,6 +36,7 @@ class Desk(Entity):
 
         return self.properties.get("mailboxDetails", MailboxDetails())
 
+    @odata(name="mode")
     @property
     def mode(self) -> PlaceMode:
         """Gets the mode property"""
@@ -39,6 +44,7 @@ class Desk(Entity):
 
         return self.properties.get("mode", PlaceMode())
 
+    @odata(name="servicePlans")
     @property
     def service_plans(self) -> ClientValueCollection[PlaceServicePlanInfo]:
         """Gets the servicePlans property"""

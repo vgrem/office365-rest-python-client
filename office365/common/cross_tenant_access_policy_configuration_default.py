@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.policies.crosstenant.app_service_connect_setting import (
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
 
 
 class CrossTenantAccessPolicyConfigurationDefault(Entity):
+    @odata(name="appServiceConnectInbound")
     @property
     def app_service_connect_inbound(self) -> CrossTenantAccessPolicyAppServiceConnectSetting:
         """Gets the appServiceConnectInbound property"""
@@ -44,6 +46,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("appServiceConnectInbound", CrossTenantAccessPolicyAppServiceConnectSetting())
 
+    @odata(name="automaticUserConsentSettings")
     @property
     def automatic_user_consent_settings(self) -> InboundOutboundPolicyConfiguration:
         """Gets the automaticUserConsentSettings property"""
@@ -53,6 +56,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("automaticUserConsentSettings", InboundOutboundPolicyConfiguration())
 
+    @odata(name="b2bCollaborationInbound")
     @property
     def b2b_collaboration_inbound(self) -> CrossTenantAccessPolicyB2BSetting:
         """Gets the b2bCollaborationInbound property"""
@@ -62,6 +66,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("b2bCollaborationInbound", CrossTenantAccessPolicyB2BSetting())
 
+    @odata(name="b2bCollaborationOutbound")
     @property
     def b2b_collaboration_outbound(self) -> CrossTenantAccessPolicyB2BSetting:
         """Gets the b2bCollaborationOutbound property"""
@@ -71,6 +76,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("b2bCollaborationOutbound", CrossTenantAccessPolicyB2BSetting())
 
+    @odata(name="b2bDirectConnectInbound")
     @property
     def b2b_direct_connect_inbound(self) -> CrossTenantAccessPolicyB2BSetting:
         """Gets the b2bDirectConnectInbound property"""
@@ -80,6 +86,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("b2bDirectConnectInbound", CrossTenantAccessPolicyB2BSetting())
 
+    @odata(name="b2bDirectConnectOutbound")
     @property
     def b2b_direct_connect_outbound(self) -> CrossTenantAccessPolicyB2BSetting:
         """Gets the b2bDirectConnectOutbound property"""
@@ -89,6 +96,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("b2bDirectConnectOutbound", CrossTenantAccessPolicyB2BSetting())
 
+    @odata(name="inboundTrust")
     @property
     def inbound_trust(self) -> CrossTenantAccessPolicyInboundTrust:
         """Gets the inboundTrust property"""
@@ -98,6 +106,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("inboundTrust", CrossTenantAccessPolicyInboundTrust())
 
+    @odata(name="invitationRedemptionIdentityProviderConfiguration")
     @property
     def invitation_redemption_identity_provider_configuration(
         self,
@@ -112,11 +121,13 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
             DefaultInvitationRedemptionIdentityProviderConfiguration(),
         )
 
+    @odata(name="isServiceDefault")
     @property
     def is_service_default(self) -> Optional[bool]:
         """Gets the isServiceDefault property"""
         return self.properties.get("isServiceDefault", None)
 
+    @odata(name="m365CollaborationInbound")
     @property
     def m365_collaboration_inbound(self) -> CrossTenantAccessPolicyM365CollaborationInboundSetting:
         """Gets the m365CollaborationInbound property"""
@@ -126,6 +137,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("m365CollaborationInbound", CrossTenantAccessPolicyM365CollaborationInboundSetting())
 
+    @odata(name="m365CollaborationOutbound")
     @property
     def m365_collaboration_outbound(self) -> CrossTenantAccessPolicyM365CollaborationOutboundSetting:
         """Gets the m365CollaborationOutbound property"""
@@ -137,6 +149,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
             "m365CollaborationOutbound", CrossTenantAccessPolicyM365CollaborationOutboundSetting()
         )
 
+    @odata(name="tenantRestrictions")
     @property
     def tenant_restrictions(self) -> CrossTenantAccessPolicyTenantRestrictions:
         """Gets the tenantRestrictions property"""
@@ -146,6 +159,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
 
         return self.properties.get("tenantRestrictions", CrossTenantAccessPolicyTenantRestrictions())
 
+    @odata(name="m365Capabilities", navigation=True)
     @property
     def m365_capabilities(self) -> EntityCollection[M365CapabilityBase]:
         """Gets the m365Capabilities property"""

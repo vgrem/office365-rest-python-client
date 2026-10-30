@@ -6,17 +6,20 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import GuidCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
 
 
 class AgentIdentityBlueprintPrincipal(Entity):
+    @odata(name="managerApplications", readonly=True)
     @property
     def manager_applications(self) -> GuidCollection:
         """Gets the managerApplications property"""
         return self.properties.get("managerApplications", GuidCollection())
 
+    @odata(name="sponsors", navigation=True)
     @property
     def sponsors(self) -> EntityCollection[DirectoryObject]:
         """Gets the sponsors property"""

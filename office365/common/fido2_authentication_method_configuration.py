@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.passkey_authentication_method_target import (
@@ -17,21 +18,25 @@ if TYPE_CHECKING:
 
 
 class Fido2AuthenticationMethodConfiguration(Entity):
+    @odata(name="defaultPasskeyProfile")
     @property
     def default_passkey_profile(self) -> Optional[str]:
         """Gets the defaultPasskeyProfile property"""
         return self.properties.get("defaultPasskeyProfile", None)
 
+    @odata(name="isAttestationEnforced")
     @property
     def is_attestation_enforced(self) -> Optional[bool]:
         """Gets the isAttestationEnforced property"""
         return self.properties.get("isAttestationEnforced", None)
 
+    @odata(name="isSelfServiceRegistrationAllowed")
     @property
     def is_self_service_registration_allowed(self) -> Optional[bool]:
         """Gets the isSelfServiceRegistrationAllowed property"""
         return self.properties.get("isSelfServiceRegistrationAllowed", None)
 
+    @odata(name="keyRestrictions")
     @property
     def key_restrictions(self) -> Fido2KeyRestrictions:
         """Gets the keyRestrictions property"""
@@ -41,6 +46,7 @@ class Fido2AuthenticationMethodConfiguration(Entity):
 
         return self.properties.get("keyRestrictions", Fido2KeyRestrictions())
 
+    @odata(name="includeTargets", navigation=True)
     @property
     def include_targets(self) -> EntityCollection[PasskeyAuthenticationMethodTarget]:
         """Gets the includeTargets property"""
@@ -55,6 +61,7 @@ class Fido2AuthenticationMethodConfiguration(Entity):
             ),
         )
 
+    @odata(name="passkeyProfiles", navigation=True)
     @property
     def passkey_profiles(self) -> EntityCollection[PasskeyProfile]:
         """Gets the passkeyProfiles property"""

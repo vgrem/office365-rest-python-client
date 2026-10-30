@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.role_assignment import RoleAssignment
@@ -13,21 +14,25 @@ if TYPE_CHECKING:
 
 
 class RoleDefinition(Entity):
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="isBuiltIn")
     @property
     def is_built_in(self) -> Optional[bool]:
         """Gets the isBuiltIn property"""
         return self.properties.get("isBuiltIn", None)
 
+    @odata(name="rolePermissions")
     @property
     def role_permissions(self) -> ClientValueCollection[RolePermission]:
         """Gets the rolePermissions property"""
@@ -35,6 +40,7 @@ class RoleDefinition(Entity):
 
         return self.properties.get("rolePermissions", ClientValueCollection[RolePermission](RolePermission))
 
+    @odata(name="roleAssignments", navigation=True)
     @property
     def role_assignments(self) -> EntityCollection[RoleAssignment]:
         """Gets the roleAssignments property"""

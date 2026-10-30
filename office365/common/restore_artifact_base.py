@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.backuprestore.artifactrestorestatus import ArtifactRestoreStatus
@@ -14,11 +15,13 @@ if TYPE_CHECKING:
 
 
 class RestoreArtifactBase(Entity):
+    @odata(name="completionDateTime")
     @property
     def completion_date_time(self) -> Optional[datetime]:
         """Gets the completionDateTime property"""
         return self.properties.get("completionDateTime", datetime.min)
 
+    @odata(name="destinationType")
     @property
     def destination_type(self) -> DestinationType:
         """Gets the destinationType property"""
@@ -26,6 +29,7 @@ class RestoreArtifactBase(Entity):
 
         return self.properties.get("destinationType", DestinationType.new)
 
+    @odata(name="error")
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
@@ -33,11 +37,13 @@ class RestoreArtifactBase(Entity):
 
         return self.properties.get("error", PublicError())
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> Optional[datetime]:
         """Gets the startDateTime property"""
         return self.properties.get("startDateTime", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> ArtifactRestoreStatus:
         """Gets the status property"""
@@ -45,6 +51,7 @@ class RestoreArtifactBase(Entity):
 
         return self.properties.get("status", ArtifactRestoreStatus.added)
 
+    @odata(name="restorePoint", navigation=True)
     @property
     def restore_point(self) -> RestorePoint:
         """Gets the restorePoint property"""

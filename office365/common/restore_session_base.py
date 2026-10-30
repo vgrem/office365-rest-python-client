@@ -30,11 +30,13 @@ class RestoreSessionBase(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="completedDateTime")
     @property
     def completed_date_time(self) -> Optional[datetime]:
         """Gets the completedDateTime property"""
         return self.properties.get("completedDateTime", datetime.min)
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
@@ -42,11 +44,13 @@ class RestoreSessionBase(Entity):
 
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="error")
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
@@ -54,6 +58,7 @@ class RestoreSessionBase(Entity):
 
         return self.properties.get("error", PublicError())
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
@@ -61,11 +66,13 @@ class RestoreSessionBase(Entity):
 
         return self.properties.get("lastModifiedBy", IdentitySet())
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="restoreJobType")
     @property
     def restore_job_type(self) -> RestoreJobType:
         """Gets the restoreJobType property"""
@@ -73,6 +80,7 @@ class RestoreSessionBase(Entity):
 
         return self.properties.get("restoreJobType", RestoreJobType.standard)
 
+    @odata(name="restoreSessionArtifactCount")
     @property
     def restore_session_artifact_count(self) -> RestoreSessionArtifactCount:
         """Gets the restoreSessionArtifactCount property"""
@@ -82,6 +90,7 @@ class RestoreSessionBase(Entity):
 
         return self.properties.get("restoreSessionArtifactCount", RestoreSessionArtifactCount())
 
+    @odata(name="status")
     @property
     def status(self) -> RestoreSessionStatus:
         """Gets the status property"""

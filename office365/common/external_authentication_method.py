@@ -3,14 +3,17 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ExternalAuthenticationMethod(Entity):
+    @odata(name="configurationId")
     @property
     def configuration_id(self) -> Optional[str]:
         """Gets the configurationId property"""
         return self.properties.get("configurationId", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""

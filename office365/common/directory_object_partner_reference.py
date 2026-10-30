@@ -4,24 +4,29 @@ from typing import Optional
 from uuid import UUID
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class DirectoryObjectPartnerReference(Entity):
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="externalPartnerTenantId")
     @property
     def external_partner_tenant_id(self) -> Optional[UUID]:
         """Gets the externalPartnerTenantId property"""
         return self.properties.get("externalPartnerTenantId", None)
 
+    @odata(name="objectType")
     @property
     def object_type(self) -> Optional[str]:
         """Gets the objectType property"""

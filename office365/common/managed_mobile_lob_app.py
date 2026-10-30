@@ -5,27 +5,32 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.mobileapps.content import MobileAppContent
 
 
 class ManagedMobileLobApp(Entity):
+    @odata(name="committedContentVersion")
     @property
     def committed_content_version(self) -> Optional[str]:
         """Gets the committedContentVersion property"""
         return self.properties.get("committedContentVersion", None)
 
+    @odata(name="fileName")
     @property
     def file_name(self) -> Optional[str]:
         """Gets the fileName property"""
         return self.properties.get("fileName", None)
 
+    @odata(name="size", readonly=True)
     @property
     def size(self) -> Optional[int]:
         """Gets the size property"""
         return self.properties.get("size", None)
 
+    @odata(name="contentVersions", navigation=True)
     @property
     def content_versions(self) -> EntityCollection[MobileAppContent]:
         """Gets the contentVersions property"""

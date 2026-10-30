@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identities.on_password_submit_handler import (
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class OnPasswordSubmitListener(Entity):
+    @odata(name="handler")
     @property
     def handler(self) -> OnPasswordSubmitHandler:
         """Gets the handler property"""

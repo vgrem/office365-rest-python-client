@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.extensions.extended_property import (
@@ -14,16 +15,19 @@ if TYPE_CHECKING:
 
 
 class MailboxItem(Entity):
+    @odata(name="size")
     @property
     def size(self) -> Optional[int]:
         """Gets the size property"""
         return self.properties.get("size", None)
 
+    @odata(name="type")
     @property
     def type(self) -> Optional[str]:
         """Gets the type property"""
         return self.properties.get("type", None)
 
+    @odata(name="multiValueExtendedProperties", navigation=True)
     @property
     def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """Gets the multiValueExtendedProperties property"""
@@ -40,6 +44,7 @@ class MailboxItem(Entity):
             ),
         )
 
+    @odata(name="singleValueExtendedProperties", navigation=True)
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """Gets the singleValueExtendedProperties property"""

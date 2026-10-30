@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.reading_assignment_submission import (
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
 
 class ReportsRoot(Entity):
+    @odata(name="readingAssignmentSubmissions", navigation=True)
     @property
     def reading_assignment_submissions(self) -> EntityCollection[ReadingAssignmentSubmission]:
         """Gets the readingAssignmentSubmissions property"""
@@ -34,6 +36,7 @@ class ReportsRoot(Entity):
             ),
         )
 
+    @odata(name="readingCoachPassages", navigation=True)
     @property
     def reading_coach_passages(self) -> EntityCollection[ReadingCoachPassage]:
         """Gets the readingCoachPassages property"""
@@ -46,6 +49,7 @@ class ReportsRoot(Entity):
             ),
         )
 
+    @odata(name="reflectCheckInResponses", navigation=True)
     @property
     def reflect_check_in_responses(self) -> EntityCollection[ReflectCheckInResponse]:
         """Gets the reflectCheckInResponses property"""
@@ -58,6 +62,7 @@ class ReportsRoot(Entity):
             ),
         )
 
+    @odata(name="speakerAssignmentSubmissions", navigation=True)
     @property
     def speaker_assignment_submissions(self) -> EntityCollection[SpeakerAssignmentSubmission]:
         """Gets the speakerAssignmentSubmissions property"""

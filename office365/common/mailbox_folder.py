@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.mailbox_folder import MailboxFolder
@@ -16,36 +17,43 @@ if TYPE_CHECKING:
 
 
 class MailboxFolder(Entity):
+    @odata(name="childFolderCount")
     @property
     def child_folder_count(self) -> Optional[int]:
         """Gets the childFolderCount property"""
         return self.properties.get("childFolderCount", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="parentFolderId")
     @property
     def parent_folder_id(self) -> Optional[str]:
         """Gets the parentFolderId property"""
         return self.properties.get("parentFolderId", None)
 
+    @odata(name="totalItemCount")
     @property
     def total_item_count(self) -> Optional[int]:
         """Gets the totalItemCount property"""
         return self.properties.get("totalItemCount", None)
 
+    @odata(name="type")
     @property
     def type(self) -> Optional[str]:
         """Gets the type property"""
         return self.properties.get("type", None)
 
+    @odata(name="wellKnownName")
     @property
     def well_known_name(self) -> Optional[str]:
         """Gets the wellKnownName property"""
         return self.properties.get("wellKnownName", None)
 
+    @odata(name="childFolders", navigation=True)
     @property
     def child_folders(self) -> EntityCollection[MailboxFolder]:
         """Gets the childFolders property"""
@@ -58,6 +66,7 @@ class MailboxFolder(Entity):
             ),
         )
 
+    @odata(name="items", navigation=True)
     @property
     def items(self) -> EntityCollection[MailboxItem]:
         """Gets the items property"""
@@ -67,6 +76,7 @@ class MailboxFolder(Entity):
             "items", EntityCollection[MailboxItem](self.context, MailboxItem, ResourcePath("items", self.resource_path))
         )
 
+    @odata(name="multiValueExtendedProperties", navigation=True)
     @property
     def multi_value_extended_properties(self) -> EntityCollection[MultiValueLegacyExtendedProperty]:
         """Gets the multiValueExtendedProperties property"""
@@ -83,6 +93,7 @@ class MailboxFolder(Entity):
             ),
         )
 
+    @odata(name="singleValueExtendedProperties", navigation=True)
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueLegacyExtendedProperty]:
         """Gets the singleValueExtendedProperties property"""

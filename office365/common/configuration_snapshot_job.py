@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.admin.snapshot_job_status import SnapshotJobStatus
@@ -12,11 +13,13 @@ if TYPE_CHECKING:
 
 
 class ConfigurationSnapshotJob(Entity):
+    @odata(name="completedDateTime", readonly=True)
     @property
     def completed_date_time(self) -> Optional[datetime]:
         """Gets the completedDateTime property"""
         return self.properties.get("completedDateTime", datetime.min)
 
+    @odata(name="createdBy", readonly=True)
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
@@ -24,36 +27,43 @@ class ConfigurationSnapshotJob(Entity):
 
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="createdDateTime", readonly=True)
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="errorDetails", readonly=True)
     @property
     def error_details(self) -> StringCollection:
         """Gets the errorDetails property"""
         return self.properties.get("errorDetails", StringCollection())
 
+    @odata(name="resourceLocation", readonly=True)
     @property
     def resource_location(self) -> Optional[str]:
         """Gets the resourceLocation property"""
         return self.properties.get("resourceLocation", None)
 
+    @odata(name="resources")
     @property
     def resources(self) -> StringCollection:
         """Gets the resources property"""
         return self.properties.get("resources", StringCollection())
 
+    @odata(name="status", readonly=True)
     @property
     def status(self) -> SnapshotJobStatus:
         """Gets the status property"""
@@ -61,6 +71,7 @@ class ConfigurationSnapshotJob(Entity):
 
         return self.properties.get("status", SnapshotJobStatus.notStarted)
 
+    @odata(name="tenantId", readonly=True)
     @property
     def tenant_id(self) -> Optional[str]:
         """Gets the tenantId property"""

@@ -4,29 +4,35 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ServiceAnnouncementAttachment(Entity):
+    @odata(name="content")
     @property
     def content(self) -> Optional[bytes]:
         """Gets the content property"""
         return self.properties.get("content", None)
 
+    @odata(name="contentType")
     @property
     def content_type(self) -> Optional[str]:
         """Gets the contentType property"""
         return self.properties.get("contentType", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="size")
     @property
     def size(self) -> Optional[int]:
         """Gets the size property"""

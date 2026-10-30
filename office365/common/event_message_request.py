@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.meetings.requesttype import MeetingRequestType
@@ -11,11 +12,13 @@ if TYPE_CHECKING:
 
 
 class EventMessageRequest(Entity):
+    @odata(name="allowNewTimeProposals")
     @property
     def allow_new_time_proposals(self) -> Optional[bool]:
         """Gets the allowNewTimeProposals property"""
         return self.properties.get("allowNewTimeProposals", None)
 
+    @odata(name="meetingRequestType")
     @property
     def meeting_request_type(self) -> MeetingRequestType:
         """Gets the meetingRequestType property"""
@@ -23,6 +26,7 @@ class EventMessageRequest(Entity):
 
         return self.properties.get("meetingRequestType", MeetingRequestType.none)
 
+    @odata(name="previousEndDateTime")
     @property
     def previous_end_date_time(self) -> DateTimeTimeZone:
         """Gets the previousEndDateTime property"""
@@ -30,6 +34,7 @@ class EventMessageRequest(Entity):
 
         return self.properties.get("previousEndDateTime", DateTimeTimeZone())
 
+    @odata(name="previousLocation")
     @property
     def previous_location(self) -> Location:
         """Gets the previousLocation property"""
@@ -37,6 +42,7 @@ class EventMessageRequest(Entity):
 
         return self.properties.get("previousLocation", Location())
 
+    @odata(name="previousStartDateTime")
     @property
     def previous_start_date_time(self) -> DateTimeTimeZone:
         """Gets the previousStartDateTime property"""
@@ -44,6 +50,7 @@ class EventMessageRequest(Entity):
 
         return self.properties.get("previousStartDateTime", DateTimeTimeZone())
 
+    @odata(name="responseRequested")
     @property
     def response_requested(self) -> Optional[bool]:
         """Gets the responseRequested property"""

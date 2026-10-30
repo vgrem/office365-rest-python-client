@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.common.restore_session_base import RestoreSessionBase
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.granular_mailbox_restore_artifact import (
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class ExchangeRestoreSession(RestoreSessionBase):
+    @odata(name="granularMailboxRestoreArtifacts", navigation=True)
     @property
     def granular_mailbox_restore_artifacts(self) -> EntityCollection[GranularMailboxRestoreArtifact]:
         """Gets the granularMailboxRestoreArtifacts property"""
@@ -33,6 +35,7 @@ class ExchangeRestoreSession(RestoreSessionBase):
             ),
         )
 
+    @odata(name="mailboxRestoreArtifacts", navigation=True)
     @property
     def mailbox_restore_artifacts(self) -> EntityCollection[MailboxRestoreArtifact]:
         """Gets the mailboxRestoreArtifacts property"""
@@ -45,6 +48,7 @@ class ExchangeRestoreSession(RestoreSessionBase):
             ),
         )
 
+    @odata(name="mailboxRestoreArtifactsBulkAdditionRequests", navigation=True)
     @property
     def mailbox_restore_artifacts_bulk_addition_requests(
         self,

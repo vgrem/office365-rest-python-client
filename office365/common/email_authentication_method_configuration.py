@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.authentication.externalemailotpstate import (
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class EmailAuthenticationMethodConfiguration(Entity):
+    @odata(name="allowExternalIdToUseEmailOtp")
     @property
     def allow_external_id_to_use_email_otp(self) -> ExternalEmailOtpState:
         """Gets the allowExternalIdToUseEmailOtp property"""
@@ -25,6 +27,7 @@ class EmailAuthenticationMethodConfiguration(Entity):
 
         return self.properties.get("allowExternalIdToUseEmailOtp", ExternalEmailOtpState.default)
 
+    @odata(name="includeTargets", navigation=True)
     @property
     def include_targets(self) -> EntityCollection[AuthenticationMethodTarget]:
         """Gets the includeTargets property"""

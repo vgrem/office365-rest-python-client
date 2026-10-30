@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class MicrosoftAccountUserConversationMember(Entity):
+    @odata(name="userId")
     @property
     def user_id(self) -> Optional[str]:
         """Gets the userId property"""

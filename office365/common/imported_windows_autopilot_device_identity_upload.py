@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.imported_windows_autopilot_device_identity_upload_status import (
@@ -17,11 +18,13 @@ if TYPE_CHECKING:
 
 
 class ImportedWindowsAutopilotDeviceIdentityUpload(Entity):
+    @odata(name="createdDateTimeUtc")
     @property
     def created_date_time_utc(self) -> Optional[datetime]:
         """Gets the createdDateTimeUtc property"""
         return self.properties.get("createdDateTimeUtc", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> ImportedWindowsAutopilotDeviceIdentityUploadStatus:
         """Gets the status property"""
@@ -31,6 +34,7 @@ class ImportedWindowsAutopilotDeviceIdentityUpload(Entity):
 
         return self.properties.get("status", ImportedWindowsAutopilotDeviceIdentityUploadStatus.noUpload)
 
+    @odata(name="deviceIdentities", navigation=True)
     @property
     def device_identities(self) -> EntityCollection[ImportedWindowsAutopilotDeviceIdentity]:
         """Gets the deviceIdentities property"""

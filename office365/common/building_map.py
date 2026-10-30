@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.footprint_map import FootprintMap
@@ -12,11 +13,13 @@ if TYPE_CHECKING:
 
 
 class BuildingMap(Entity):
+    @odata(name="placeId")
     @property
     def place_id(self) -> Optional[str]:
         """Gets the placeId property"""
         return self.properties.get("placeId", None)
 
+    @odata(name="footprints", navigation=True)
     @property
     def footprints(self) -> EntityCollection[FootprintMap]:
         """Gets the footprints property"""
@@ -27,6 +30,7 @@ class BuildingMap(Entity):
             EntityCollection[FootprintMap](self.context, FootprintMap, ResourcePath("footprints", self.resource_path)),
         )
 
+    @odata(name="levels", navigation=True)
     @property
     def levels(self) -> EntityCollection[LevelMap]:
         """Gets the levels property"""

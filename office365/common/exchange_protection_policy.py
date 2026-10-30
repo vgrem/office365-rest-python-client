@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.directory.protection.policy.base import ProtectionPolicyBase
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.mailbox_protection_rule import MailboxProtectionRule
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class ExchangeProtectionPolicy(ProtectionPolicyBase):
+    @odata(name="mailboxInclusionRules", navigation=True)
     @property
     def mailbox_inclusion_rules(self) -> EntityCollection[MailboxProtectionRule]:
         """Gets the mailboxInclusionRules property"""
@@ -27,6 +29,7 @@ class ExchangeProtectionPolicy(ProtectionPolicyBase):
             ),
         )
 
+    @odata(name="mailboxProtectionUnits", navigation=True)
     @property
     def mailbox_protection_units(self) -> EntityCollection[MailboxProtectionUnit]:
         """Gets the mailboxProtectionUnits property"""
@@ -39,6 +42,7 @@ class ExchangeProtectionPolicy(ProtectionPolicyBase):
             ),
         )
 
+    @odata(name="mailboxProtectionUnitsBulkAdditionJobs", navigation=True)
     @property
     def mailbox_protection_units_bulk_addition_jobs(self) -> EntityCollection[MailboxProtectionUnitsBulkAdditionJob]:
         """Gets the mailboxProtectionUnitsBulkAdditionJobs property"""

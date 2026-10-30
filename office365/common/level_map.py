@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.fixture_map import FixtureMap
@@ -13,11 +14,13 @@ if TYPE_CHECKING:
 
 
 class LevelMap(Entity):
+    @odata(name="placeId")
     @property
     def place_id(self) -> Optional[str]:
         """Gets the placeId property"""
         return self.properties.get("placeId", None)
 
+    @odata(name="fixtures", navigation=True)
     @property
     def fixtures(self) -> EntityCollection[FixtureMap]:
         """Gets the fixtures property"""
@@ -28,6 +31,7 @@ class LevelMap(Entity):
             EntityCollection[FixtureMap](self.context, FixtureMap, ResourcePath("fixtures", self.resource_path)),
         )
 
+    @odata(name="sections", navigation=True)
     @property
     def sections(self) -> EntityCollection[SectionMap]:
         """Gets the sections property"""
@@ -38,6 +42,7 @@ class LevelMap(Entity):
             EntityCollection[SectionMap](self.context, SectionMap, ResourcePath("sections", self.resource_path)),
         )
 
+    @odata(name="units", navigation=True)
     @property
     def units(self) -> EntityCollection[UnitMap]:
         """Gets the units property"""

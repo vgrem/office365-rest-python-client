@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.inheritable_permission import InheritablePermission
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class AgentIdentityBlueprint(Entity):
+    @odata(name="inheritablePermissions", navigation=True)
     @property
     def inheritable_permissions(self) -> EntityCollection[InheritablePermission]:
         """Gets the inheritablePermissions property"""
@@ -24,6 +26,7 @@ class AgentIdentityBlueprint(Entity):
             ),
         )
 
+    @odata(name="sponsors", navigation=True)
     @property
     def sponsors(self) -> EntityCollection[DirectoryObject]:
         """Gets the sponsors property"""

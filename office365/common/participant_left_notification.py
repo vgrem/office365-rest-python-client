@@ -4,17 +4,20 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.communications.calls.call import Call
 
 
 class ParticipantLeftNotification(Entity):
+    @odata(name="participantId")
     @property
     def participant_id(self) -> Optional[str]:
         """Gets the participantId property"""
         return self.properties.get("participantId", None)
 
+    @odata(name="call", navigation=True)
     @property
     def call(self) -> Call:
         """Gets the call property"""
