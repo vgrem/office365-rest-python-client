@@ -65,6 +65,7 @@ from office365.sharepoint.tenant.administration.insights.top_files_sharing impor
     TopFilesSharingInsights,
 )
 from office365.sharepoint.tenant.administration.jobs.spo_operation import SpoOperation
+from office365.sharepoint.tenant.administration.onedrives_summary_metrics import OneDrivesSummaryMetrics
 from office365.sharepoint.tenant.administration.policies.app_billing_properties import (
     SPOAppBillingProperties,
 )
@@ -217,9 +218,6 @@ if TYPE_CHECKING:
     )
     from office365.sharepoint.tenant.administration.listitemcolumnvalue import (
         TenantAdminListItemColumnValue,
-    )
-    from office365.sharepoint.tenant.administration.onedrives_summary_metrics import (
-        OneDrivesSummaryMetrics,
     )
     from office365.sharepoint.tenant.administration.policies.list_parameters import (
         SPOListParameters,

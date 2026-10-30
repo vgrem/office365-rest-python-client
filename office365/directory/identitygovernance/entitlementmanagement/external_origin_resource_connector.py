@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.connection_info import ConnectionInfo
 from office365.entity import Entity
+from office365.externalconnectors.connector_type import ConnectorType
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.externalconnectors.connector_type import ConnectorType
 
 
 class ExternalOriginResourceConnector(Entity):

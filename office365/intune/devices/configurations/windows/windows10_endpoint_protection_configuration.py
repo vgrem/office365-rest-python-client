@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.configurations.windows.applicationguardblockclipboardsharingtype import (  # noqa: E501
@@ -15,6 +15,7 @@ from office365.intune.devices.configurations.windows.applockerapplicationcontrol
 from office365.intune.devices.configurations.windows.bit_locker_removable_drive_policy import (  # noqa: E501
     BitLockerRemovableDrivePolicy,
 )
+from office365.intune.devices.configurations.windows.firewall_network_profile import WindowsFirewallNetworkProfile
 from office365.intune.devices.configurations.windows.firewallcertificaterevocationlistcheckmethodtype import (  # noqa: E501
     FirewallCertificateRevocationListCheckMethodType,
 )
@@ -26,11 +27,6 @@ from office365.intune.devices.configurations.windows.firewallpresharedkeyencodin
 )
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.firewall_network_profile import (
-        WindowsFirewallNetworkProfile,
-    )
 
 
 class Windows10EndpointProtectionConfiguration(Entity):

@@ -1,21 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.win32.lob_app_install_experience import Win32LobAppInstallExperience
+from office365.intune.devices.management.mobileapps.win32.lob_app_msi_information import Win32LobAppMsiInformation
 from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import Win32LobAppReturnCode
 from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.mobileapps.win32.lob_app_install_experience import (
-        Win32LobAppInstallExperience,
-    )
-    from office365.intune.devices.management.mobileapps.win32.lob_app_msi_information import (
-        Win32LobAppMsiInformation,
-    )
 
 
 class Win32LobApp(Entity):

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
 from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
+from office365.runtime.client_value import ClientValue
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 
@@ -13,7 +14,6 @@ if TYPE_CHECKING:
     from office365.runtime.client_request import ClientRequest
     from office365.runtime.client_result import ClientResult
     from office365.runtime.client_runtime_context import ClientRuntimeContext
-    from office365.runtime.client_value import ClientValue
     from office365.runtime.odata.query_options import QueryOptions
 
 ReturnT = TypeVar("ReturnT", bound="ClientObject | ClientResult")

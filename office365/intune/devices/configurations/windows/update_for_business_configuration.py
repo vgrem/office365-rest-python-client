@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.configurations.enablement import Enablement
@@ -11,6 +11,7 @@ from office365.intune.devices.configurations.windows.autorestartnotificationdism
 )
 from office365.intune.devices.configurations.windows.deliveryoptimizationmode import WindowsDeliveryOptimizationMode
 from office365.intune.devices.configurations.windows.prereleasefeatures import PrereleaseFeatures
+from office365.intune.devices.configurations.windows.update_install_schedule_type import WindowsUpdateInstallScheduleType
 from office365.intune.devices.configurations.windows.updateforbusinessupdateweeks import (  # noqa: E501
     WindowsUpdateForBusinessUpdateWeeks,
 )
@@ -19,11 +20,6 @@ from office365.intune.devices.configurations.windows.updatenotificationdisplayop
 )
 from office365.intune.devices.configurations.windows.updatetype import WindowsUpdateType
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.update_install_schedule_type import (
-        WindowsUpdateInstallScheduleType,
-    )
 
 
 class WindowsUpdateForBusinessConfiguration(Entity):

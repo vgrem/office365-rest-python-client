@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.windows_information_protection_pin_character_requirements import (  # noqa: E501
+    WindowsInformationProtectionPinCharacterRequirements,
+)
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.windows_information_protection_pin_character_requirements import (
-        WindowsInformationProtectionPinCharacterRequirements,
-    )
 
 
 class WindowsInformationProtectionPolicy(Entity):

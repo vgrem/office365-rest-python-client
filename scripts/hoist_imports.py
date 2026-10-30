@@ -28,6 +28,12 @@ plans ``0 updated`` for these files today, so the tree has drifted from the rule
 script closes the drift: it moves the import to the module block, drops the local copy,
 and drops the now-dead ``TYPE_CHECKING`` entry.
 
+Two sources are repaired, not one. The getter's own import is the first; the second is a
+name the annotation spells that only the module's ``if TYPE_CHECKING:`` block binds --
+``Optional`` in a SharePoint model, ``timedelta`` in a booking one. Nothing there runs,
+so the name is as unreachable as a local import and the answer is the same: put it in
+the module block (``--only stdlib`` takes just the stdlib names).
+
 Only imports that cannot close a cycle are hoisted. A cycle between generated types is
 also a module import cycle, and the generator breaks it by keeping the reference
 annotation-only (``generator/cycles.py``); the same test is applied here against the
@@ -52,11 +58,12 @@ import importlib
 import pathlib
 import re
 import sys
-from typing import Dict, Iterator, List, NamedTuple, Optional, Sequence, Set, Tuple
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Sequence, Set, Tuple
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 _LINE_LENGTH = 121
+KINDS = ("enum", "value", "stdlib")
 _ROOT = pathlib.Path(__file__).resolve().parents[1]
 _TARGET = _ROOT / "office365"
 
@@ -70,7 +77,7 @@ class Edit(NamedTuple):
 
 
 class Site(NamedTuple):
-    """One getter-local import of a name its own annotation spells."""
+    """One name a getter's annotation spells, and where the module hides it."""
 
     module: str
     target: str
@@ -79,6 +86,19 @@ class Site(NamedTuple):
     getter: str
     wire: Optional[str]
     kind: str
+    source: str = "local"
+    plain: bool = False
+
+
+def key_of(site: Site) -> Tuple[str, str]:
+    """What identifies a hoisted import: a name, or the whole module when it is one."""
+    return (site.target, "" if site.plain else site.name)
+
+
+def phrased(site: Site) -> str:
+    """How the report names a site: a getter that imports the type, or only names it."""
+    verb = "imports" if site.source == "local" else "annotates"
+    return f"{site.class_name}.{site.getter} {verb} {site.name}"
 
 
 def package_of(path: pathlib.Path) -> str:
@@ -136,24 +156,30 @@ def closes_a_cycle(graph: Dict[str, Set[str]], target: str, module: str) -> bool
 
 
 def kind_of(target: str, name: str) -> Optional[str]:
-    """``enum`` / ``value`` / ``entity`` / ``other`` for the imported name."""
+    """``enum`` / ``value`` / ``entity`` / ``stdlib`` / ``other`` for the named type.
+
+    ``stdlib`` is a type the module did not define -- ``Optional``, ``timedelta`` -- and
+    such a name can never close an ``office365`` import cycle, so it needs no cycle gate.
+    """
     from enum import Enum
 
     from office365.runtime.client_object import ClientObject
     from office365.runtime.client_value import ClientValue
 
+    if target.split(".", maxsplit=1)[0] in ("typing", "typing_extensions"):
+        return "stdlib"
     try:
         obj = getattr(importlib.import_module(target), name)
     except Exception:
         return None
     if not isinstance(obj, type):
         return "other"
-    if issubclass(obj, Enum):
-        return "enum"
-    if issubclass(obj, ClientValue):
-        return "value"
-    if issubclass(obj, ClientObject):
-        return "entity"
+    if (getattr(obj, "__module__", "") or "").split(".", maxsplit=1)[0] != "office365":
+        # ``timedelta`` reached through a module that re-exports it is still stdlib.
+        return "stdlib"
+    for base, kind in ((Enum, "enum"), (ClientValue, "value"), (ClientObject, "entity")):
+        if issubclass(obj, base):
+            return kind
     return "other"
 
 
@@ -254,28 +280,55 @@ def _target_names(target: ast.expr) -> Iterator[str]:
             yield from _target_names(item)
 
 
-def plan_module(path: pathlib.Path, only: Set[str]) -> Tuple[List[Site], List[str]]:
-    """Every local import in ``path`` whose kind is wanted, and the ones it cannot read."""
-    tree = ast.parse(path.read_text())
-    if not has_future_annotations(tree):
-        return [], []
-    module = package_of(path)
-    bound = module_bindings(tree)
-    sites: List[Site] = []
-    skipped: List[str] = []
+def mentions(annotation: str, name: str) -> bool:
+    """Whether the annotation text spells ``name`` as a word."""
+    return re.search(rf"\b{re.escape(name)}\b", annotation) is not None
+
+
+def type_checking_imports(block: Optional[ast.If]) -> Dict[str, Tuple[str, str, bool]]:
+    """``local name -> (module, name, plain)`` for what the block binds.
+
+    ``plain`` remembers ``import datetime`` against ``from datetime import datetime``:
+    the two bind different objects under the same name, and both forms are in the tree.
+    """
+    found: Dict[str, Tuple[str, str, bool]] = {}
+    if block is None:
+        return found
+    for statement in block.body:
+        if isinstance(statement, ast.ImportFrom) and statement.module:
+            for alias in statement.names:
+                found.setdefault(alias.asname or alias.name, (statement.module, alias.name, False))
+        elif isinstance(statement, ast.Import):
+            for alias in statement.names:
+                found.setdefault(alias.asname or alias.name.split(".")[0], (alias.name, alias.name, True))
+    return found
+
+
+def annotated_getters(tree: ast.Module) -> List[Tuple[ast.FunctionDef, str, Optional[str]]]:
+    """Every property getter that states a return annotation, with its class."""
+    found: List[Tuple[ast.FunctionDef, str, Optional[str]]] = []
     for node in ast.walk(tree):
         if not (isinstance(node, ast.FunctionDef) and is_property(node)):
             continue
         annotation = annotation_of(node)
-        if annotation is None:
-            continue
-        statements = local_imports(node)
-        if not statements:
-            continue
-        parent = _enclosing_class(tree, node)
-        for statement in statements:
+        if annotation is not None:
+            found.append((node, annotation, _enclosing_class(tree, node)))
+    return found
+
+
+def from_local_imports(
+    module: str,
+    bound: Dict[str, str],
+    getters: Sequence[Tuple[ast.FunctionDef, str, Optional[str]]],
+    only: Set[str],
+) -> Tuple[List[Site], List[str]]:
+    """Sites for the imports a getter states in its own body, and the ones to leave."""
+    sites: List[Site] = []
+    skipped: List[str] = []
+    for node, annotation, parent in getters:
+        for statement in local_imports(node):
             for alias in statement.names:
-                if not re.search(rf"\b{re.escape(alias.name)}\b", annotation):
+                if not mentions(annotation, alias.name):
                     continue
                 where = f"{parent or module}.{node.name} imports {alias.name}"
                 kind = kind_of(statement.module, alias.name)
@@ -299,6 +352,66 @@ def plan_module(path: pathlib.Path, only: Set[str]) -> Tuple[List[Site], List[st
     return sites, skipped
 
 
+def from_type_checking(
+    module: str,
+    bound: Dict[str, str],
+    getters: Sequence[Tuple[ast.FunctionDef, str, Optional[str]]],
+    tree: ast.Module,
+    only: Set[str],
+) -> Tuple[List[Site], List[str]]:
+    """Sites for the names only ``if TYPE_CHECKING:`` binds, and the ones to leave."""
+    sites: List[Site] = []
+    skipped: List[str] = []
+    already_imported = {
+        alias.name for node, _, _ in getters for statement in local_imports(node) for alias in statement.names
+    }
+    for local, (target, imported, plain) in sorted(type_checking_imports(type_checking_block(tree)).items()):
+        if local in bound or local in already_imported:
+            continue
+        naming = [(node, parent) for node, annotation, parent in getters if mentions(annotation, local)]
+        if not naming:
+            continue
+        kind = kind_of(target, imported)
+        for node, parent in naming:
+            where = f"{parent or module}.{node.name} annotates {local}"
+            if kind is None:
+                skipped.append(f"{where} from an unimportable module {target}")
+            elif kind in only:
+                sites.append(
+                    Site(
+                        module,
+                        target,
+                        imported,
+                        parent or "",
+                        node.name,
+                        wire_name(node),
+                        kind,
+                        "type_checking",
+                        plain,
+                    )
+                )
+    return sites, skipped
+
+
+def plan_module(path: pathlib.Path, only: Set[str] = frozenset(KINDS)) -> Tuple[List[Site], List[str]]:
+    """Every name in ``path`` its getters reach for out of sight, and the ones it cannot move.
+
+    Two places hide such a name: the getter's own body, and the module's
+    ``if TYPE_CHECKING:`` block. The first is a site per getter; the second is a site
+    per getter that *names* it, because the import is written once for the module and
+    every annotation that spells it needs the same repair.
+    """
+    tree = ast.parse(path.read_text())
+    if not has_future_annotations(tree):
+        return [], []
+    module = package_of(path)
+    bound = module_bindings(tree)
+    getters = annotated_getters(tree)
+    sites, skipped = from_local_imports(module, bound, getters, only)
+    more_sites, more_skipped = from_type_checking(module, bound, getters, tree, only)
+    return sites + more_sites, skipped + more_skipped
+
+
 def _enclosing_class(tree: ast.Module, target: ast.FunctionDef) -> Optional[str]:
     for node in tree.body:
         if isinstance(node, ast.ClassDef) and target in node.body:
@@ -310,7 +423,7 @@ def apply(path: pathlib.Path, sites: List[Site]) -> int:
     """Write the hoist for one module and return the number of imports it moved."""
     tree = ast.parse(path.read_text())
     source = path.read_text().splitlines(keepends=True)
-    hoisted = {(site.target, site.name) for site in sites}
+    hoisted = {key_of(site) for site in sites}
     edits: List[Edit] = []
 
     block = type_checking_block(tree)
@@ -337,11 +450,15 @@ def _drop_from_block(block: ast.If, hoisted: Set[Tuple[str, str]], edits: List[E
     block-wide edit would describe overlapping line ranges, and the second one would
     apply to line numbers the first had already shifted.
     """
-    plan: List[Tuple[ast.ImportFrom, List[ast.alias]]] = []
+    plan: List[Tuple[Any, List[ast.alias]]] = []
     remaining = 0
     for statement in block.body:
         if isinstance(statement, ast.ImportFrom) and statement.module:
             kept = [alias for alias in statement.names if (statement.module, alias.name) not in hoisted]
+            remaining += len(kept)
+            plan.append((statement, kept))
+        elif isinstance(statement, ast.Import):
+            kept = [alias for alias in statement.names if (alias.name, "") not in hoisted]
             remaining += len(kept)
             plan.append((statement, kept))
         else:
@@ -356,9 +473,11 @@ def _drop_from_block(block: ast.If, hoisted: Set[Tuple[str, str]], edits: List[E
             edits.append(Edit(statement.lineno, statement.end_lineno or statement.lineno, []))
             continue
         names = [alias.name if alias.asname is None else f"{alias.name} as {alias.asname}" for alias in kept]
-        edits.append(
-            Edit(statement.lineno, statement.end_lineno or statement.lineno, _import_lines(statement.module, names))
-        )
+        if isinstance(statement, ast.Import):
+            lines = [f"import {name}\n" for name in names]
+        else:
+            lines = _import_lines(statement.module, names)
+        edits.append(Edit(statement.lineno, statement.end_lineno or statement.lineno, lines))
 
 
 def _drop_from_statement(statement: ast.ImportFrom, hoisted: Set[Tuple[str, str]], edits: List[Edit]) -> int:
@@ -404,7 +523,12 @@ def _insert_imports(tree: ast.Module, hoisted: Set[Tuple[str, str]], edits: List
     by_module: Dict[str, List[str]] = {}
     for module, name in sorted(hoisted):
         by_module.setdefault(module, []).append(name)
-    lines = [line for module, names in by_module.items() for line in _import_lines(module, names)]
+    lines: List[str] = []
+    for module, names in by_module.items():
+        plain = [name for name in names if not name]
+        lines.extend(f"import {module}\n" for _ in plain)
+        if len(plain) != len(names):
+            lines.extend(_import_lines(module, [name for name in names if name]))
     last = max(
         (node.end_lineno or node.lineno for node in tree.body if isinstance(node, (ast.Import, ast.ImportFrom))),
         default=0,
@@ -443,12 +567,12 @@ def shown(path: pathlib.Path) -> str:
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("root", nargs="?", default="office365", help="package directory to update (default: office365)")
-    parser.add_argument("--only", action="append", choices=["enum", "value"], help="hoist only this kind of type")
+    parser.add_argument("--only", action="append", choices=KINDS, help="hoist only this kind of type")
     parser.add_argument("--dry-run", action="store_true", help="report the diff size without writing")
     parser.add_argument("--check", action="store_true", help="after writing, verify declared_type resolves")
     args = parser.parse_args(argv)
 
-    only = set(args.only) if args.only else {"enum", "value"}
+    only = set(args.only) if args.only else set(KINDS)
     graph = import_graph()
     paths = sorted(pathlib.Path(args.root).resolve().rglob("*.py"))
     hoisted = modules = 0
@@ -459,7 +583,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         sites: List[Site] = []
         for site in candidates:
             if closes_a_cycle(graph, site.target, site.module):
-                skipped.append(f"{site.class_name}.{site.getter} imports {site.name}: hoisting it would close a cycle")
+                skipped.append(f"{phrased(site)}: hoisting it would close a cycle")
                 continue
             sites.append(site)
             graph.setdefault(site.module, set()).add(site.target)

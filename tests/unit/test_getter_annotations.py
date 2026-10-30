@@ -17,6 +17,7 @@ rule -- a gate that re-spelled the rule would agree with itself.
 
 from __future__ import annotations
 
+import datetime
 import functools
 import importlib
 import importlib.util
@@ -31,6 +32,7 @@ from office365.onedrive.operations.long_running import LongRunningOperation
 from office365.onedrive.operations.longrunningoperationstatus import LongRunningOperationStatus
 from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.value import declared_type
+from office365.sharepoint.listitems.listitem import ListItem
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -66,7 +68,7 @@ def _hoist_plan() -> tuple[tuple[tuple[str, tuple[str, ...]], ...], frozenset[st
     planned: dict[str, list[str]] = {}
     refused: set[str] = set()
     for path in sorted((_REPO_ROOT / "office365").rglob("*.py")):
-        candidates, _ = _hoist.plan_module(path, {"enum", "value"})
+        candidates, _ = _hoist.plan_module(path, set(_hoist.KINDS))
         sites = [site for site in candidates if not _hoist.closes_a_cycle(graph, site.target, site.module)]
         refused.update(
             f"{site.class_name}.{site.getter} imports {site.name}" for site in candidates if site not in sites
@@ -140,10 +142,10 @@ def _unwrap_optional(annotation: typing.Any) -> typing.Any:
 def test_where_an_annotation_resolves_it_is_the_declared_type(root: str) -> None:
     """A column's declaration is the type its own getter names, across the whole tree.
 
-    ``12,188`` columns resolve today; the ones that do not yet are the value-type
-    imports still waiting for the same hoist, and a getter no annotation was ever
-    written for. As those are finished this test starts covering them: the count it
-    observes is not pinned, the agreement is.
+    ``13,078`` columns resolve today; the ones that do not yet are the four cyclic
+    value types, and the hand-written getters annotated ``-> None``. As those are
+    finished this test starts covering them: the count it observes is not pinned, the
+    agreement is.
     """
     mismatches: list[str] = []
     for module in _modules(root):
@@ -164,6 +166,44 @@ def test_where_an_annotation_resolves_it_is_the_declared_type(root: str) -> None
                 if declared != expected:
                     mismatches.append(f"{module.__name__}.{cls.__name__}.{name}: {expected!r} declared {declared!r}")
     assert mismatches == []
+
+
+def test_a_name_only_the_type_checking_block_binds_is_hoisted(tmp_path: pathlib.Path, monkeypatch) -> None:
+    """``Optional`` in ``if TYPE_CHECKING:`` never binds, so the annotation cannot resolve.
+
+    The getter states no import of its own to move; the repair is the block's import,
+    written once at module level and dropped where it was.
+    """
+    monkeypatch.setattr(_hoist, "_ROOT", tmp_path)
+    module = tmp_path / "model.py"
+    module.write_text(
+        "from __future__ import annotations\n"
+        "\n"
+        "from typing import TYPE_CHECKING\n"
+        "\n"
+        "if TYPE_CHECKING:\n"
+        "    from typing import Optional\n"
+        "\n"
+        "\n"
+        "class Model:\n"
+        "    @property\n"
+        "    def created(self) -> Optional[str]:\n"
+        "        return None\n"
+    )
+    sites, skipped = _hoist.plan_module(module, set(_hoist.KINDS))
+    assert [(site.name, site.source) for site in sites] == [("Optional", "type_checking")]
+    assert skipped == []
+    _hoist.apply(module, sites)
+    text = module.read_text()
+    assert "from typing import Optional\n" in text.split("class Model")[0]
+    assert "if TYPE_CHECKING" not in text
+
+
+def test_a_stdlib_name_the_annotation_spells_is_a_declared_type() -> None:
+    # ``ListItem.created`` answered ``None`` with ``NameError: name 'Optional' is not
+    # defined`` -- the name sat in the module's dead ``if TYPE_CHECKING:`` block.
+    assert declared_type(ListItem, "Created") is datetime.datetime
+    assert declared_type(ListItem, "Modified") is datetime.datetime
 
 
 def test_an_enum_column_holds_the_member_not_the_wire_string() -> None:

@@ -61,6 +61,13 @@ introduced.
   with no declared type was *skipped* by the record importer as unknown, so
   `coerce_records(BrowserSharedCookie, [{"history": …}])` dropped that column with
   `Skipping unknown column 'history'` and keeps it now.
+- The names only a dead `if TYPE_CHECKING:` block binds are reachable too: 25 imports in
+  21 modules moved out of the block (66 of the sites are `Optional` in
+  `sharepoint.listitems.listitem`), and 145 of the 149 columns that still raised
+  `NameError` now answer a type — `ListItem.created` is `datetime`, not `None`. The four
+  left are the cyclic value types (`ChatInfo`, `ConditionalAccessGrantControls`). A
+  `timedelta` column now *declares* `timedelta` while still holding `'PT30M'`: the
+  declaration is this change's job, the converter is the next one.
 - `SP.User` loses the 58 profile getters that were a second copy of
   `SP.Directory.User` (`about_me`, `skills`, `id_`, ...), plus
   `User.get_user_profile_properties` and `Web.site_id`. The service drops those

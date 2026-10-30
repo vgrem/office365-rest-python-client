@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import time
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
@@ -31,14 +31,10 @@ from office365.intune.devices.configurations.windows.startmenumodetype import Wi
 from office365.intune.devices.configurations.windows.statemanagementsetting import StateManagementSetting
 from office365.intune.devices.configurations.windows.visibilitysetting import VisibilitySetting
 from office365.intune.devices.configurations.windows.weeklyschedule import WeeklySchedule
+from office365.intune.devices.configurations.windows.windows10_network_proxy_server import Windows10NetworkProxyServer
 from office365.intune.devices.management.defender_detected_malware_actions import DefenderDetectedMalwareActions
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.windows10_network_proxy_server import (
-        Windows10NetworkProxyServer,
-    )
 
 
 class Windows10GeneralConfiguration(Entity):

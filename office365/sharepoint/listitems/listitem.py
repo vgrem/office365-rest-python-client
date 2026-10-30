@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import datetime
 import json
-from typing import TYPE_CHECKING, Any, Dict, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 from uuid import UUID
 
 from typing_extensions import Self
@@ -56,9 +57,6 @@ from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface
 )
 
 if TYPE_CHECKING:
-    import datetime
-    from typing import Optional
-
     from office365.sharepoint.approvals.mediaserviceupdateparameters import (
         MediaServiceUpdateParameters,
     )
