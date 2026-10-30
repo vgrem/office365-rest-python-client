@@ -80,7 +80,7 @@ class Team(Entity):
     @property
     def messaging_settings(self) -> TeamMessagingSettings:
         """Settings to configure messaging and mentions in the team."""
-        return self.properties.get("guestSettings", TeamMessagingSettings())
+        return self.properties.get("messagingSettings", TeamMessagingSettings())
 
     @property
     def display_name(self) -> str | None:
