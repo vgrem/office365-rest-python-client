@@ -106,6 +106,43 @@ def _plan(tmp_path: pathlib.Path, source: str, *, service: str = "graph") -> lis
     return _mark_odata.plan_module(module, catalog, _mark_odata.type_index(catalog))
 
 
+_TWO_GETTERS_ONE_NAME = """
+from office365.runtime.types.odata_property import odata
+
+
+class Team:
+    def entity_type_name(self):
+        return "microsoft.graph.Team"
+
+    @odata(name="guestSettings")
+    @property
+    def guest_settings(self):
+        return self.properties.get("guestSettings", None)
+
+    @property
+    def messaging_settings(self):
+        return self.properties.get("guestSettings", None)
+"""
+
+
+def test_a_wire_name_gets_one_owner(tmp_path: pathlib.Path) -> None:
+    """Two declarations of one name leave ``_schema.properties[name].attr`` on the last.
+
+    The class still holds both getters, but a name read by wire -- ``get_property``
+    answers through the declared attribute -- would reach the wrong one, so the
+    second getter is reported rather than declared.
+    """
+    module = tmp_path / "team.py"
+    module.write_text(_TWO_GETTERS_ONE_NAME, encoding="utf-8")
+    catalog = _mark_odata.load_catalog("graph")
+    duplicates: list = []
+
+    planned = _mark_odata.plan_module(module, catalog, _mark_odata.type_index(catalog), duplicates=duplicates)
+
+    assert planned == []
+    assert duplicates == ["Team.messaging_settings reads 'guestSettings', declared by guest_settings"]
+
+
 def test_a_type_name_the_instance_decides_names_no_csdl_type(tmp_path: pathlib.Path) -> None:
     """A list item answers with its list's type per instance -- not a name to read here."""
     assert _plan(tmp_path, _PER_LIST_TYPE_NAME, service="sharepoint") == []

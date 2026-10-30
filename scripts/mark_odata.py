@@ -342,13 +342,28 @@ def pending_markers(
     lines: List[str],
     *,
     only: Optional[Set[str]] = None,
+    duplicates: Optional[List[str]] = None,
 ) -> Edits:
     """The declarations a class still needs, and the markers that need finishing.
 
     ``only`` finishes those facts and nothing else, and adds no declaration: declaring
     a name changes what a property holds (an enum-typed one starts answering a member),
     so the back-fill is its own decision, and one fact can land without it.
+
+    ``duplicates`` collects the getters given no declaration because a getter of the
+    same class already answers for that wire name -- one fact, one owner. Two
+    declarations of one name leave the class holding both getters but
+    ``_schema.properties[name].attr`` pointing at whichever came last, so
+    ``get_property("guestSettings")`` would answer a ``TeamMessagingSettings``.
     """
+    claimed: Dict[str, str] = {}
+    for node in class_node.body:
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        existing = declaration(node)
+        owner = declared_name(existing) if existing is not None else None
+        if owner:
+            claimed.setdefault(owner, node.name)
     markers = []
     for node in class_node.body:
         if not isinstance(node, ast.FunctionDef):
@@ -387,6 +402,12 @@ def pending_markers(
         if len(names) != 1:
             continue  # a business method, or a getter that reads no single property
         name = names.pop()
+        owner = claimed.get(name)
+        if owner is not None:
+            if duplicates is not None:
+                duplicates.append(f"{class_node.name}.{node.name} reads {name!r}, declared by {owner}")
+            continue
+        claimed[name] = node.name
         declared = properties.get(name)
         if declared is None:
             # A client-side convenience, or this type's member under the spelling another
@@ -415,6 +436,7 @@ def plan_module(
     index: Dict[str, Dict[str, Declared]],
     *,
     only: Optional[Set[str]] = None,
+    duplicates: Optional[List[str]] = None,
 ) -> Edits:
     """The line insertions one module needs, without touching it."""
     source = path.read_text(encoding="utf-8")
@@ -424,7 +446,9 @@ def plan_module(
     found = subject(tree, catalog, index)
     if found is None:
         return []
-    markers = pending_markers(tree, found.node, found.properties, source.splitlines(keepends=True), only=only)
+    markers = pending_markers(
+        tree, found.node, found.properties, source.splitlines(keepends=True), only=only, duplicates=duplicates
+    )
     if not markers or _imports_odata(tree):
         return markers
     last_import = max(
@@ -452,9 +476,10 @@ def mark_module(
     index: Dict[str, Dict[str, Declared]],
     *,
     only: Optional[Set[str]] = None,
+    duplicates: Optional[List[str]] = None,
 ) -> int:
     """Apply the planned declarations to one module; return how many were applied."""
-    markers = plan_module(path, catalog, index, only=only)
+    markers = plan_module(path, catalog, index, only=only, duplicates=duplicates)
     if not markers:
         return 0
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
@@ -486,8 +511,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     files = markers = 0
     for path in sorted(pathlib.Path(args.root).rglob("*.py")):
         only = set(args.only) if args.only else None
-        planned = plan_module(path, catalog, index, only=only) if args.dry_run else None
-        added = len(planned) if planned is not None else mark_module(path, catalog, index, only=only)
+        duplicates: List[str] = []
+        planned = plan_module(path, catalog, index, only=only, duplicates=duplicates) if args.dry_run else None
+        added = (
+            len(planned) if planned is not None else mark_module(path, catalog, index, only=only, duplicates=duplicates)
+        )
+        for duplicate in duplicates:
+            print(f"{path}: {duplicate}", file=sys.stderr)
         if added:
             files += 1
             markers += added
