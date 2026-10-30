@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from office365.directory.insights.resource_reference import ResourceReference
 from office365.directory.insights.sharing_detail import SharingDetail
+from office365.directory.resource_visualization import ResourceVisualization
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.resource_visualization import ResourceVisualization
 
 
 class SharedInsight(Entity):
@@ -54,8 +50,6 @@ class SharedInsight(Entity):
     @property
     def resource_visualization(self) -> ResourceVisualization:
         """Gets the resourceVisualization property"""
-        from office365.directory.resource_visualization import ResourceVisualization
-
         return self.properties.get("resourceVisualization", ResourceVisualization())
 
     @odata(name="lastSharedMethod", navigation=True)

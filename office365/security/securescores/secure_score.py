@@ -1,21 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.security.average_comparative_score import (
-        AverageComparativeScore,
-    )
-    from office365.security.control_score import ControlScore
-    from office365.security.security_vendor_information import (
-        SecurityVendorInformation,
-    )
+from office365.security.average_comparative_score import AverageComparativeScore
+from office365.security.control_score import ControlScore
+from office365.security.security_vendor_information import SecurityVendorInformation
 
 
 class SecureScore(Entity):
@@ -29,10 +23,6 @@ class SecureScore(Entity):
     @property
     def average_comparative_scores(self) -> ClientValueCollection[AverageComparativeScore]:
         """Gets the averageComparativeScores property"""
-        from office365.security.average_comparative_score import (
-            AverageComparativeScore,
-        )
-
         return self.properties.get(
             "averageComparativeScores", ClientValueCollection[AverageComparativeScore](AverageComparativeScore)
         )
@@ -47,8 +37,6 @@ class SecureScore(Entity):
     @property
     def control_scores(self) -> ClientValueCollection[ControlScore]:
         """Gets the controlScores property"""
-        from office365.security.control_score import ControlScore
-
         return self.properties.get("controlScores", ClientValueCollection[ControlScore](ControlScore))
 
     @odata(name="createdDateTime")
@@ -85,10 +73,6 @@ class SecureScore(Entity):
     @property
     def vendor_information(self) -> SecurityVendorInformation:
         """Gets the vendorInformation property"""
-        from office365.security.security_vendor_information import (
-            SecurityVendorInformation,
-        )
-
         return self.properties.get("vendorInformation", SecurityVendorInformation())
 
     @property

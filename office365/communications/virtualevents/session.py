@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.communications.onlinemeetings.base import OnlineMeetingBase
+from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 
 
 class VirtualEventSession(OnlineMeetingBase):
@@ -22,16 +20,12 @@ class VirtualEventSession(OnlineMeetingBase):
     @property
     def end_date_time(self) -> DateTimeTimeZone:
         """Gets the endDateTime property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("endDateTime", DateTimeTimeZone())
 
     @odata(name="startDateTime")
     @property
     def start_date_time(self) -> DateTimeTimeZone:
         """Gets the startDateTime property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("startDateTime", DateTimeTimeZone())
 
     @odata(name="videoOnDemandWebUrl")

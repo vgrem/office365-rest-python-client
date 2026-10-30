@@ -52,6 +52,15 @@ introduced.
   a `BrowserSharedCookieSourceEnvironment` rather than `'2'`; compare by
   `.name`, which is what the service accepts back. A value no member names is
   kept as the service sent it instead of being coerced to `None`.
+- A complex-typed Graph column declares its type as well: 592 `ClientValue` imports
+  in 328 modules moved the same way, and 745 more columns answer the type they name
+  (1,760 in total; 269 still answer `None` — 149 name a type their module cannot
+  reach, the `if TYPE_CHECKING:`-only shape, and 120 are hand-written getters
+  annotated `-> None` such as `Call.call_routes`). Writes behave as before — a
+  getter that builds its default instance already hydrated the value — but a column
+  with no declared type was *skipped* by the record importer as unknown, so
+  `coerce_records(BrowserSharedCookie, [{"history": …}])` dropped that column with
+  `Skipping unknown column 'history'` and keeps it now.
 - `SP.User` loses the 58 profile getters that were a second copy of
   `SP.Directory.User` (`about_me`, `skills`, `id_`, ...), plus
   `User.get_user_profile_properties` and `Web.site_id`. The service drops those
@@ -343,9 +352,11 @@ introduced.
   the snapshot says `both`. The imports are now where the generator's own rule
   (`needs_runtime_import`, an enum default evaluated at class creation) always said
   they belonged, `scripts/hoist_imports.py` closes the drift and refuses an edge that
-  would close an import cycle, and `tests/unit/test_getter_annotations.py` holds both
-  halves: the codemod plans nothing left to hoist, and for every column whose
-  annotation resolves (12,188 of them) the declaration is that annotation.
+  would close an import cycle or redefine a name the module already binds (978
+  imports in 481 modules over both slices), and
+  `tests/unit/test_getter_annotations.py` holds both halves: the codemod plans
+  nothing left to hoist, and for every column whose annotation resolves (12,933 of
+  them) the declaration is that annotation.
 
 **Runtime**
 

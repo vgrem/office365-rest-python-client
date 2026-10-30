@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identitygovernance.accessreview.history.decisionfilter import (
     AccessReviewHistoryDecisionFilter,
@@ -12,6 +12,9 @@ from office365.directory.identitygovernance.accessreview.history.status import (
 from office365.directory.identitygovernance.accessreview.history_instance import (
     AccessReviewHistoryInstance,
 )
+from office365.directory.identitygovernance.accessreview.history_schedule_settings import (  # noqa: E501
+    AccessReviewHistoryScheduleSettings,
+)
 from office365.directory.identitygovernance.accessreview.scope import AccessReviewScope
 from office365.directory.users.identity import UserIdentity
 from office365.entity import Entity
@@ -19,11 +22,6 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.accessreview.history_schedule_settings import (
-        AccessReviewHistoryScheduleSettings,
-    )
 
 
 class AccessReviewHistoryDefinition(Entity):
@@ -107,8 +105,4 @@ class AccessReviewHistoryDefinition(Entity):
     @property
     def schedule_settings(self) -> AccessReviewHistoryScheduleSettings:
         """Gets the scheduleSettings property"""
-        from office365.directory.identitygovernance.accessreview.history_schedule_settings import (
-            AccessReviewHistoryScheduleSettings,
-        )
-
         return self.properties.get("scheduleSettings", AccessReviewHistoryScheduleSettings())

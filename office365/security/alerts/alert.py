@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -9,44 +9,32 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.alerts.classification import AlertClassification
 from office365.security.alerts.comment import AlertComment
+from office365.security.alerts.detection import AlertDetection
 from office365.security.alerts.detectionsource import DetectionSource
 from office365.security.alerts.determination import AlertDetermination
 from office365.security.alerts.evidence import AlertEvidence
 from office365.security.alerts.feedback import AlertFeedback
+from office365.security.alerts.file_security_state import FileSecurityState
 from office365.security.alerts.history_state import AlertHistoryState
 from office365.security.alerts.severity import AlertSeverity
 from office365.security.alerts.status import AlertStatus
+from office365.security.alerts.trigger import AlertTrigger
+from office365.security.cloud_app_security_state import CloudAppSecurityState
+from office365.security.dictionary import Dictionary
+from office365.security.host_security_state import HostSecurityState
+from office365.security.investigation_security_state import InvestigationSecurityState
 from office365.security.investigation_state import InvestigationState
+from office365.security.malware_state import MalwareState
+from office365.security.message_security_state import MessageSecurityState
+from office365.security.network_connection import NetworkConnection
+from office365.security.process import Process
+from office365.security.registry_key_state import RegistryKeyState
+from office365.security.security_resource import SecurityResource
+from office365.security.security_vendor_information import SecurityVendorInformation
 from office365.security.service_source import ServiceSource
-
-if TYPE_CHECKING:
-    from office365.security.alerts.detection import AlertDetection
-    from office365.security.alerts.file_security_state import (
-        FileSecurityState,
-    )
-    from office365.security.alerts.trigger import AlertTrigger
-    from office365.security.cloud_app_security_state import (
-        CloudAppSecurityState,
-    )
-    from office365.security.dictionary import Dictionary
-    from office365.security.host_security_state import HostSecurityState
-    from office365.security.investigation_security_state import (
-        InvestigationSecurityState,
-    )
-    from office365.security.malware_state import MalwareState
-    from office365.security.message_security_state import MessageSecurityState
-    from office365.security.network_connection import NetworkConnection
-    from office365.security.process import Process
-    from office365.security.registry_key_state import RegistryKeyState
-    from office365.security.security_resource import SecurityResource
-    from office365.security.security_vendor_information import (
-        SecurityVendorInformation,
-    )
-    from office365.security.uri_click_security_state import (
-        UriClickSecurityState,
-    )
-    from office365.security.user_security_state import UserSecurityState
-    from office365.security.vulnerability_state import VulnerabilityState
+from office365.security.uri_click_security_state import UriClickSecurityState
+from office365.security.user_security_state import UserSecurityState
+from office365.security.vulnerability_state import VulnerabilityState
 
 
 class Alert(Entity):
@@ -267,16 +255,12 @@ class Alert(Entity):
     @property
     def additional_data(self) -> Dictionary:
         """Gets the additionalData property"""
-        from office365.security.dictionary import Dictionary
-
         return self.properties.get("additionalData", Dictionary())
 
     @odata(name="customDetails")
     @property
     def custom_details(self) -> Dictionary:
         """Gets the customDetails property"""
-        from office365.security.dictionary import Dictionary
-
         return self.properties.get("customDetails", Dictionary())
 
     @odata(name="investigationState")
@@ -294,8 +278,6 @@ class Alert(Entity):
     @property
     def alert_detections(self) -> ClientValueCollection[AlertDetection]:
         """Gets the alertDetections property"""
-        from office365.security.alerts.detection import AlertDetection
-
         return self.properties.get("alertDetections", ClientValueCollection[AlertDetection](AlertDetection))
 
     @property
@@ -316,10 +298,6 @@ class Alert(Entity):
     @property
     def cloud_app_states(self) -> ClientValueCollection[CloudAppSecurityState]:
         """Gets the cloudAppStates property"""
-        from office365.security.cloud_app_security_state import (
-            CloudAppSecurityState,
-        )
-
         return self.properties.get("cloudAppStates", ClientValueCollection[CloudAppSecurityState](CloudAppSecurityState))
 
     @property
@@ -345,17 +323,11 @@ class Alert(Entity):
     @property
     def file_states(self) -> ClientValueCollection[FileSecurityState]:
         """Gets the fileStates property"""
-        from office365.security.alerts.file_security_state import (
-            FileSecurityState,
-        )
-
         return self.properties.get("fileStates", ClientValueCollection[FileSecurityState](FileSecurityState))
 
     @property
     def host_states(self) -> ClientValueCollection[HostSecurityState]:
         """Gets the hostStates property"""
-        from office365.security.host_security_state import HostSecurityState
-
         return self.properties.get("hostStates", ClientValueCollection[HostSecurityState](HostSecurityState))
 
     @property
@@ -366,10 +338,6 @@ class Alert(Entity):
     @property
     def investigation_security_states(self) -> ClientValueCollection[InvestigationSecurityState]:
         """Gets the investigationSecurityStates property"""
-        from office365.security.investigation_security_state import (
-            InvestigationSecurityState,
-        )
-
         return self.properties.get(
             "investigationSecurityStates", ClientValueCollection[InvestigationSecurityState](InvestigationSecurityState)
         )
@@ -387,17 +355,11 @@ class Alert(Entity):
     @property
     def malware_states(self) -> ClientValueCollection[MalwareState]:
         """Gets the malwareStates property"""
-        from office365.security.malware_state import MalwareState
-
         return self.properties.get("malwareStates", ClientValueCollection[MalwareState](MalwareState))
 
     @property
     def message_security_states(self) -> ClientValueCollection[MessageSecurityState]:
         """Gets the messageSecurityStates property"""
-        from office365.security.message_security_state import (
-            MessageSecurityState,
-        )
-
         return self.properties.get(
             "messageSecurityStates", ClientValueCollection[MessageSecurityState](MessageSecurityState)
         )
@@ -405,29 +367,21 @@ class Alert(Entity):
     @property
     def network_connections(self) -> ClientValueCollection[NetworkConnection]:
         """Gets the networkConnections property"""
-        from office365.security.network_connection import NetworkConnection
-
         return self.properties.get("networkConnections", ClientValueCollection[NetworkConnection](NetworkConnection))
 
     @property
     def processes(self) -> ClientValueCollection[Process]:
         """Gets the processes property"""
-        from office365.security.process import Process
-
         return self.properties.get("processes", ClientValueCollection[Process](Process))
 
     @property
     def registry_key_states(self) -> ClientValueCollection[RegistryKeyState]:
         """Gets the registryKeyStates property"""
-        from office365.security.registry_key_state import RegistryKeyState
-
         return self.properties.get("registryKeyStates", ClientValueCollection[RegistryKeyState](RegistryKeyState))
 
     @property
     def security_resources(self) -> ClientValueCollection[SecurityResource]:
         """Gets the securityResources property"""
-        from office365.security.security_resource import SecurityResource
-
         return self.properties.get("securityResources", ClientValueCollection[SecurityResource](SecurityResource))
 
     @property
@@ -443,17 +397,11 @@ class Alert(Entity):
     @property
     def triggers(self) -> ClientValueCollection[AlertTrigger]:
         """Gets the triggers property"""
-        from office365.security.alerts.trigger import AlertTrigger
-
         return self.properties.get("triggers", ClientValueCollection[AlertTrigger](AlertTrigger))
 
     @property
     def uri_click_security_states(self) -> ClientValueCollection[UriClickSecurityState]:
         """Gets the uriClickSecurityStates property"""
-        from office365.security.uri_click_security_state import (
-            UriClickSecurityState,
-        )
-
         return self.properties.get(
             "uriClickSecurityStates", ClientValueCollection[UriClickSecurityState](UriClickSecurityState)
         )
@@ -461,22 +409,14 @@ class Alert(Entity):
     @property
     def user_states(self) -> ClientValueCollection[UserSecurityState]:
         """Gets the userStates property"""
-        from office365.security.user_security_state import UserSecurityState
-
         return self.properties.get("userStates", ClientValueCollection[UserSecurityState](UserSecurityState))
 
     @property
     def vendor_information(self) -> SecurityVendorInformation:
         """Gets the vendorInformation property"""
-        from office365.security.security_vendor_information import (
-            SecurityVendorInformation,
-        )
-
         return self.properties.get("vendorInformation", SecurityVendorInformation())
 
     @property
     def vulnerability_states(self) -> ClientValueCollection[VulnerabilityState]:
         """Gets the vulnerabilityStates property"""
-        from office365.security.vulnerability_state import VulnerabilityState
-
         return self.properties.get("vulnerabilityStates", ClientValueCollection[VulnerabilityState](VulnerabilityState))

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identitygovernance.termsofuse.agreement_acceptance import (
     AgreementAcceptance,
@@ -12,15 +12,11 @@ from office365.directory.identitygovernance.termsofuse.agreement_file import (
 from office365.directory.identitygovernance.termsofuse.agreement_file_localization import (
     AgreementFileLocalization,
 )
+from office365.directory.identitygovernance.termsofuse.terms_expiration import TermsExpiration
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.termsofuse.terms_expiration import (
-        TermsExpiration,
-    )
 
 
 class Agreement(Entity):
@@ -90,8 +86,4 @@ class Agreement(Entity):
     @property
     def terms_expiration(self) -> TermsExpiration:
         """Gets the termsExpiration property"""
-        from office365.directory.identitygovernance.termsofuse.terms_expiration import (
-            TermsExpiration,
-        )
-
         return self.properties.get("termsExpiration", TermsExpiration())

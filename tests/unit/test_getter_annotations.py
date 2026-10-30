@@ -17,6 +17,7 @@ rule -- a gate that re-spelled the rule would agree with itself.
 
 from __future__ import annotations
 
+import functools
 import importlib
 import importlib.util
 import pathlib
@@ -54,19 +55,56 @@ def test_the_ratchet_covers_every_package_under_office365() -> None:
     assert packages - covered == {"__pycache__"}
 
 
-def test_no_getter_hides_the_enum_its_annotation_names() -> None:
-    """The codemod plans nothing left to hoist, so no getter spells a type out of reach.
+@functools.lru_cache(maxsize=1)
+def _hoist_plan() -> tuple[tuple[tuple[str, tuple[str, ...]], ...], frozenset[str]]:
+    """What the codemod would still move, and what it refuses to move.
 
-    Scoped to enums: a complex value already hydrates through the ``default_factory``
-    instance the getter passes in, so its lazy import is a typing gap rather than a
-    value defect and is hoisted separately.
+    Mirrors the codemod's own loop, cycle gate included, so the test measures what
+    the tool would actually write rather than what a re-spelling of its rule says.
     """
-    planned = {
-        str(path.relative_to(_REPO_ROOT)): [f"{site.class_name}.{site.getter} imports {site.name}" for site in sites]
-        for path in sorted((_REPO_ROOT / "office365").rglob("*.py"))
-        if (sites := _hoist.plan_module(path, {"enum"})[0])
-    }
-    assert planned == {}
+    graph = _hoist.import_graph()
+    planned: dict[str, list[str]] = {}
+    refused: set[str] = set()
+    for path in sorted((_REPO_ROOT / "office365").rglob("*.py")):
+        candidates, _ = _hoist.plan_module(path, {"enum", "value"})
+        sites = [site for site in candidates if not _hoist.closes_a_cycle(graph, site.target, site.module)]
+        refused.update(
+            f"{site.class_name}.{site.getter} imports {site.name}" for site in candidates if site not in sites
+        )
+        if sites:
+            planned[str(path.relative_to(_REPO_ROOT))] = [
+                f"{site.class_name}.{site.getter} imports {site.name}" for site in sites
+            ]
+        for site in sites:
+            graph.setdefault(site.module, set()).add(site.target)
+    return tuple((name, tuple(reasons)) for name, reasons in planned.items()), frozenset(refused)
+
+
+def test_no_getter_hides_the_type_its_annotation_names() -> None:
+    """The codemod plans nothing left, so no getter spells its type out of reach.
+
+    The names it *declines* to move are mostly redundant -- the module already binds
+    the same name, so the annotation resolves without the local copy -- and two are
+    pinned by the next test.
+    """
+    planned, _ = _hoist_plan()
+    assert planned == ()
+
+
+def test_the_only_hoists_left_are_the_two_that_would_close_a_cycle() -> None:
+    """A type both directions need stays lazy, and is named rather than dropped.
+
+    ``ChatInfo`` and ``ConditionalAccessGrantControls`` are ``EntityCollection``
+    types their owning entity imports; the answer is a runtime fallback for the
+    getter, not an import neither module can have.
+    """
+    _, refused = _hoist_plan()
+    assert refused == frozenset(
+        {
+            "OnlineMeetingBase.chat_info imports ChatInfo",
+            "ConditionalAccessPolicy.grant_controls imports ConditionalAccessGrantControls",
+        }
+    )
 
 
 def _modules(root: str) -> typing.Iterator[typing.Any]:

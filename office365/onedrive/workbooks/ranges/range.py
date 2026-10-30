@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.format import WorkbookRangeFormat
@@ -9,10 +9,8 @@ from office365.onedrive.workbooks.ranges.view import WorkbookRangeView
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.runtime.types.json import Json
 
 
 class WorkbookRange(Entity):
@@ -182,24 +180,18 @@ class WorkbookRange(Entity):
     @property
     def formulas(self) -> Json:
         """Gets the formulas property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("formulas", Json())
 
     @odata(name="formulasLocal")
     @property
     def formulas_local(self) -> Json:
         """Gets the formulasLocal property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("formulasLocal", Json())
 
     @odata(name="formulasR1C1")
     @property
     def formulas_r1_c1(self) -> Json:
         """Gets the formulasR1C1 property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("formulasR1C1", Json())
 
     @odata(name="hidden")
@@ -212,8 +204,6 @@ class WorkbookRange(Entity):
     @property
     def number_format(self) -> Json:
         """Gets the numberFormat property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("numberFormat", Json())
 
     @odata(name="rowCount")
@@ -232,8 +222,6 @@ class WorkbookRange(Entity):
     @property
     def text(self) -> Json:
         """Gets the text property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("text", Json())
 
     @property

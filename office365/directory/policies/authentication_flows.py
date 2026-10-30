@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.policies.self_service_sign_up_authentication_flow_configuration import (  # noqa: E501
+    SelfServiceSignUpAuthenticationFlowConfiguration,
+)
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.self_service_sign_up_authentication_flow_configuration import (
-        SelfServiceSignUpAuthenticationFlowConfiguration,
-    )
 
 
 class AuthenticationFlowsPolicy(Entity):
@@ -34,10 +32,6 @@ class AuthenticationFlowsPolicy(Entity):
     @property
     def self_service_sign_up(self) -> SelfServiceSignUpAuthenticationFlowConfiguration:
         """Gets the selfServiceSignUp property"""
-        from office365.directory.policies.self_service_sign_up_authentication_flow_configuration import (
-            SelfServiceSignUpAuthenticationFlowConfiguration,
-        )
-
         return self.properties.get("selfServiceSignUp", SelfServiceSignUpAuthenticationFlowConfiguration())
 
     @property

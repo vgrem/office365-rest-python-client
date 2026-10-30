@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.communications.meetings.requesttype import MeetingRequestType
 from office365.entity import Entity
+from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
+from office365.outlook.mail.location import Location
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-    from office365.outlook.mail.location import Location
 
 
 class EventMessageRequest(Entity):
@@ -28,24 +26,18 @@ class EventMessageRequest(Entity):
     @property
     def previous_end_date_time(self) -> DateTimeTimeZone:
         """Gets the previousEndDateTime property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("previousEndDateTime", DateTimeTimeZone())
 
     @odata(name="previousLocation")
     @property
     def previous_location(self) -> Location:
         """Gets the previousLocation property"""
-        from office365.outlook.mail.location import Location
-
         return self.properties.get("previousLocation", Location())
 
     @odata(name="previousStartDateTime")
     @property
     def previous_start_date_time(self) -> DateTimeTimeZone:
         """Gets the previousStartDateTime property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("previousStartDateTime", DateTimeTimeZone())
 
     @odata(name="responseRequested")

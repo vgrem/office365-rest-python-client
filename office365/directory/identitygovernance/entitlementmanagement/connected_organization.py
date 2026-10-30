@@ -1,22 +1,18 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identitygovernance.entitlementmanagement.connectedorganizationstate import (
     ConnectedOrganizationState,
 )
+from office365.directory.identitygovernance.entitlementmanagement.identity_source import IdentitySource
 from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.entitlementmanagement.identity_source import (
-        IdentitySource,
-    )
 
 
 class ConnectedOrganization(Entity):
@@ -80,8 +76,4 @@ class ConnectedOrganization(Entity):
     @property
     def identity_sources(self) -> ClientValueCollection[IdentitySource]:
         """Gets the identitySources property"""
-        from office365.directory.identitygovernance.entitlementmanagement.identity_source import (
-            IdentitySource,
-        )
-
         return self.properties.get("identitySources", ClientValueCollection[IdentitySource](IdentitySource))

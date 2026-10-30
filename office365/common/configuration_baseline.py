@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.admin.baseline_parameter import BaselineParameter
+from office365.admin.baseline_resource import BaselineResource
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.admin.baseline_parameter import BaselineParameter
-    from office365.admin.baseline_resource import BaselineResource
 
 
 class ConfigurationBaseline(Entity):
@@ -28,16 +26,12 @@ class ConfigurationBaseline(Entity):
     @property
     def parameters(self) -> ClientValueCollection[BaselineParameter]:
         """Gets the parameters property"""
-        from office365.admin.baseline_parameter import BaselineParameter
-
         return self.properties.get("parameters", ClientValueCollection[BaselineParameter](BaselineParameter))
 
     @odata(name="resources")
     @property
     def resources(self) -> ClientValueCollection[BaselineResource]:
         """Gets the resources property"""
-        from office365.admin.baseline_resource import BaselineResource
-
         return self.properties.get("resources", ClientValueCollection[BaselineResource](BaselineResource))
 
     @property

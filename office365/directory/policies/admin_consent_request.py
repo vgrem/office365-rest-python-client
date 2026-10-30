@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identitygovernance.accessreview.reviewer_scope import AccessReviewReviewerScope
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.accessreview.reviewer_scope import (
-        AccessReviewReviewerScope,
-    )
 
 
 class AdminConsentRequestPolicy(Entity):
@@ -48,10 +44,6 @@ class AdminConsentRequestPolicy(Entity):
     @property
     def reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the reviewers property"""
-        from office365.directory.identitygovernance.accessreview.reviewer_scope import (
-            AccessReviewReviewerScope,
-        )
-
         return self.properties.get(
             "reviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )

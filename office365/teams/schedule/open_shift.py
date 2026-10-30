@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.outlook.calendar.schedule.open_shift_item import OpenShiftItem
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.outlook.calendar.schedule.open_shift_item import OpenShiftItem
 
 
 class OpenShift(Entity):
@@ -14,8 +12,6 @@ class OpenShift(Entity):
     @property
     def draft_open_shift(self) -> OpenShiftItem:
         """Gets the draftOpenShift property"""
-        from office365.outlook.calendar.schedule.open_shift_item import OpenShiftItem
-
         return self.properties.get("draftOpenShift", OpenShiftItem())
 
     @odata(name="isStagedForDeletion")
@@ -34,8 +30,6 @@ class OpenShift(Entity):
     @property
     def shared_open_shift(self) -> OpenShiftItem:
         """Gets the sharedOpenShift property"""
-        from office365.outlook.calendar.schedule.open_shift_item import OpenShiftItem
-
         return self.properties.get("sharedOpenShift", OpenShiftItem())
 
     @property

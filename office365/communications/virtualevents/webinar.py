@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.communications.meetings.audience import MeetingAudience
+from office365.communications.user_identity import CommunicationsUserIdentity
 from office365.communications.virtualevents.virtual_event import VirtualEvent
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,7 +11,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.communications.user_identity import CommunicationsUserIdentity
     from office365.communications.virtualevents.registration import (
         VirtualEventRegistration,
     )
@@ -32,8 +32,6 @@ class VirtualEventWebinar(VirtualEvent):
     @property
     def co_organizers(self) -> ClientValueCollection[CommunicationsUserIdentity]:
         """Gets the coOrganizers property"""
-        from office365.communications.user_identity import CommunicationsUserIdentity
-
         return self.properties.get(
             "coOrganizers", ClientValueCollection[CommunicationsUserIdentity](CommunicationsUserIdentity)
         )

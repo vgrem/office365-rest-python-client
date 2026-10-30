@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_policy import (
     AccessPackageAssignmentPolicy,
@@ -9,24 +9,20 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignmentstate import (
     AccessPackageAssignmentState,
 )
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_extension_callout_instance import (  # noqa: E501
+    CustomExtensionCalloutInstance,
+)
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import (
     AccessPackage,
 )
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.subject import (
     AccessPackageSubject,
 )
+from office365.directory.identitygovernance.entitlementmanagement.schedule import EntitlementManagementSchedule
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_extension_callout_instance import (  # noqa: E501
-        CustomExtensionCalloutInstance,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.schedule import (
-        EntitlementManagementSchedule,
-    )
 
 
 class AccessPackageAssignment(Entity):
@@ -81,10 +77,6 @@ class AccessPackageAssignment(Entity):
     @property
     def custom_extension_callout_instances(self) -> ClientValueCollection[CustomExtensionCalloutInstance]:
         """Gets the customExtensionCalloutInstances property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_extension_callout_instance import (  # noqa: E501
-            CustomExtensionCalloutInstance,
-        )
-
         return self.properties.get(
             "customExtensionCalloutInstances",
             ClientValueCollection[CustomExtensionCalloutInstance](CustomExtensionCalloutInstance),
@@ -94,8 +86,4 @@ class AccessPackageAssignment(Entity):
     @property
     def schedule(self) -> EntitlementManagementSchedule:
         """Gets the schedule property"""
-        from office365.directory.identitygovernance.entitlementmanagement.schedule import (
-            EntitlementManagementSchedule,
-        )
-
         return self.properties.get("schedule", EntitlementManagementSchedule())

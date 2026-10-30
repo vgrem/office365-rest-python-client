@@ -3,16 +3,16 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.users.identity import UserIdentity
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.print.job_configuration import PrintJobConfiguration
+from office365.intune.print.job_status import PrintJobStatus
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.users.identity import UserIdentity
     from office365.intune.print.document import PrintDocument
-    from office365.intune.print.job_configuration import PrintJobConfiguration
-    from office365.intune.print.job_status import PrintJobStatus
     from office365.intune.print.task import PrintTask
 
 
@@ -27,16 +27,12 @@ class PrintJob(Entity):
     @property
     def configuration(self) -> PrintJobConfiguration:
         """Gets the configuration property"""
-        from office365.intune.print.job_configuration import PrintJobConfiguration
-
         return self.properties.get("configuration", PrintJobConfiguration())
 
     @odata(name="createdBy")
     @property
     def created_by(self) -> UserIdentity:
         """Gets the createdBy property"""
-        from office365.directory.users.identity import UserIdentity
-
         return self.properties.get("createdBy", UserIdentity())
 
     @odata(name="createdDateTime")
@@ -73,8 +69,6 @@ class PrintJob(Entity):
     @property
     def status(self) -> PrintJobStatus:
         """Gets the status property"""
-        from office365.intune.print.job_status import PrintJobStatus
-
         return self.properties.get("status", PrintJobStatus())
 
     @odata(name="documents", navigation=True)

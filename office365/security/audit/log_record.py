@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.audit.logs.recordtype import AuditLogRecordType
 from office365.directory.audit.logs.usertype import AuditLogUserType
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.security.audit.audit_data import AuditData
+from office365.security.audit.audit_data import AuditData
 
 
 class AuditLogRecord(Entity):
@@ -24,8 +22,6 @@ class AuditLogRecord(Entity):
     @property
     def audit_data(self) -> AuditData:
         """Gets the auditData property"""
-        from office365.security.audit.audit_data import AuditData
-
         return self.properties.get("auditData", AuditData())
 
     @odata(name="auditLogRecordType")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.intune.servicecommunications.announcement_base import (
     ServiceAnnouncementBase,
@@ -10,13 +10,11 @@ from office365.intune.servicecommunications.health.status import ServiceHealthSt
 from office365.intune.servicecommunications.health.types import (
     ServiceHealthClassificationType,
 )
+from office365.intune.servicecommunications.service_health_issue_post import ServiceHealthIssuePost
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.servicecommunications.service_health_issue_post import ServiceHealthIssuePost
 
 
 class ServiceHealthIssue(ServiceAnnouncementBase):
@@ -82,8 +80,6 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
     @property
     def posts(self) -> ClientValueCollection[ServiceHealthIssuePost]:
         """Gets the posts property"""
-        from office365.intune.servicecommunications.service_health_issue_post import ServiceHealthIssuePost
-
         return self.properties.get("posts", ClientValueCollection[ServiceHealthIssuePost](ServiceHealthIssuePost))
 
     @odata(name="service")

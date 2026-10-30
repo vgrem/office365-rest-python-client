@@ -6,27 +6,23 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.directory.groups.assigned_label import AssignedLabel
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.onedrive.filestorage.containers.custom_property_dictionary import (  # noqa: E501
+    FileStorageContainerCustomPropertyDictionary,
+)
+from office365.onedrive.filestorage.containers.settings import FileStorageContainerSettings
 from office365.onedrive.filestorage.containers.status import FileStorageContainerStatus
+from office365.onedrive.filestorage.containers.viewpoint import FileStorageContainerViewpoint
 from office365.onedrive.filestorage.sitelockstate import SiteLockState
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.groups.assigned_label import AssignedLabel
     from office365.onedrive.columns.definition import ColumnDefinition
     from office365.onedrive.drives.drive import Drive
-    from office365.onedrive.filestorage.containers.custom_property_dictionary import (
-        FileStorageContainerCustomPropertyDictionary,
-    )
-    from office365.onedrive.filestorage.containers.settings import (
-        FileStorageContainerSettings,
-    )
-    from office365.onedrive.filestorage.containers.viewpoint import (
-        FileStorageContainerViewpoint,
-    )
     from office365.onedrive.permissions.permission import Permission
     from office365.onedrive.recyclebin.recyclebin import RecycleBin
     from office365.onedrive.sharepoint.group import SharePointGroup
@@ -65,8 +61,6 @@ class FileStorageContainer(Entity):
     @property
     def assigned_sensitivity_label(self) -> AssignedLabel:
         """Gets the assignedSensitivityLabel property"""
-        from office365.directory.groups.assigned_label import AssignedLabel
-
         return self.properties.get("assignedSensitivityLabel", AssignedLabel())
 
     @odata(name="containerTypeId")
@@ -79,10 +73,6 @@ class FileStorageContainer(Entity):
     @property
     def custom_properties(self) -> FileStorageContainerCustomPropertyDictionary:
         """Gets the customProperties property"""
-        from office365.onedrive.filestorage.containers.custom_property_dictionary import (
-            FileStorageContainerCustomPropertyDictionary,
-        )
-
         return self.properties.get("customProperties", FileStorageContainerCustomPropertyDictionary())
 
     @odata(name="description")
@@ -107,10 +97,6 @@ class FileStorageContainer(Entity):
     @property
     def settings(self) -> FileStorageContainerSettings:
         """Gets the settings property"""
-        from office365.onedrive.filestorage.containers.settings import (
-            FileStorageContainerSettings,
-        )
-
         return self.properties.get("settings", FileStorageContainerSettings())
 
     @odata(name="status")
@@ -123,10 +109,6 @@ class FileStorageContainer(Entity):
     @property
     def viewpoint(self) -> FileStorageContainerViewpoint:
         """Gets the viewpoint property"""
-        from office365.onedrive.filestorage.containers.viewpoint import (
-            FileStorageContainerViewpoint,
-        )
-
         return self.properties.get("viewpoint", FileStorageContainerViewpoint())
 
     @odata(name="columns", navigation=True)

@@ -1,15 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+from office365.directory.identities.on_token_issuance_start_return_claim import OnTokenIssuanceStartReturnClaim
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identities.on_token_issuance_start_return_claim import (
-        OnTokenIssuanceStartReturnClaim,
-    )
 
 
 class OnTokenIssuanceStartCustomExtension(Entity):
@@ -17,10 +11,6 @@ class OnTokenIssuanceStartCustomExtension(Entity):
     @property
     def claims_for_token_configuration(self) -> ClientValueCollection[OnTokenIssuanceStartReturnClaim]:
         """Gets the claimsForTokenConfiguration property"""
-        from office365.directory.identities.on_token_issuance_start_return_claim import (
-            OnTokenIssuanceStartReturnClaim,
-        )
-
         return self.properties.get(
             "claimsForTokenConfiguration",
             ClientValueCollection[OnTokenIssuanceStartReturnClaim](OnTokenIssuanceStartReturnClaim),

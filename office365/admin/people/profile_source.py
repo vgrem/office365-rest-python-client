@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.profile_source_localization import ProfileSourceLocalization
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.profile_source_localization import (
-        ProfileSourceLocalization,
-    )
 
 
 class ProfileSource(Entity):
@@ -29,10 +25,6 @@ class ProfileSource(Entity):
     @property
     def localizations(self) -> ClientValueCollection[ProfileSourceLocalization]:
         """Gets the localizations property"""
-        from office365.directory.profile_source_localization import (
-            ProfileSourceLocalization,
-        )
-
         return self.properties.get(
             "localizations", ClientValueCollection[ProfileSourceLocalization](ProfileSourceLocalization)
         )

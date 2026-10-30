@@ -1,21 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.organizations.content_customization import ContentCustomization
+from office365.intune.organizations.login_page_layout_configuration import LoginPageLayoutConfiguration
+from office365.intune.organizations.login_page_text_visibility_settings import LoginPageTextVisibilitySettings
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.organizations.content_customization import (
-        ContentCustomization,
-    )
-    from office365.intune.organizations.login_page_layout_configuration import (
-        LoginPageLayoutConfiguration,
-    )
-    from office365.intune.organizations.login_page_text_visibility_settings import (
-        LoginPageTextVisibilitySettings,
-    )
 
 
 class OrganizationalBrandingProperties(Entity):
@@ -72,10 +64,6 @@ class OrganizationalBrandingProperties(Entity):
     @property
     def content_customization(self) -> ContentCustomization:
         """Gets the contentCustomization property"""
-        from office365.intune.organizations.content_customization import (
-            ContentCustomization,
-        )
-
         return self.properties.get("contentCustomization", ContentCustomization())
 
     @odata(name="customAccountResetCredentialsUrl")
@@ -178,20 +166,12 @@ class OrganizationalBrandingProperties(Entity):
     @property
     def login_page_layout_configuration(self) -> LoginPageLayoutConfiguration:
         """Gets the loginPageLayoutConfiguration property"""
-        from office365.intune.organizations.login_page_layout_configuration import (
-            LoginPageLayoutConfiguration,
-        )
-
         return self.properties.get("loginPageLayoutConfiguration", LoginPageLayoutConfiguration())
 
     @odata(name="loginPageTextVisibilitySettings")
     @property
     def login_page_text_visibility_settings(self) -> LoginPageTextVisibilitySettings:
         """Gets the loginPageTextVisibilitySettings property"""
-        from office365.intune.organizations.login_page_text_visibility_settings import (
-            LoginPageTextVisibilitySettings,
-        )
-
         return self.properties.get("loginPageTextVisibilitySettings", LoginPageTextVisibilitySettings())
 
     @odata(name="signInPageText")

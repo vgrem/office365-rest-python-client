@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.virtualendpoint.cloudpcs.managementassignmenttarget import (  # noqa: E501
+    CloudPcManagementAssignmentTarget,
+)
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.users.user import User
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.managementassignmenttarget import (
-        CloudPcManagementAssignmentTarget,
-    )
 
 
 class CloudPcProvisioningPolicyAssignment(Entity):
@@ -19,10 +19,6 @@ class CloudPcProvisioningPolicyAssignment(Entity):
     @property
     def target(self) -> CloudPcManagementAssignmentTarget:
         """Gets the target property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.managementassignmenttarget import (
-            CloudPcManagementAssignmentTarget,
-        )
-
         return self.properties.get("target", CloudPcManagementAssignmentTarget())
 
     @odata(name="assignedUsers", navigation=True)

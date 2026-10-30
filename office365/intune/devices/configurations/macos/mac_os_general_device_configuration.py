@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
 from office365.intune.devices.configurations.applisttype import AppListType
+from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 
 
 class MacOSGeneralDeviceConfiguration(Entity):
@@ -24,8 +22,6 @@ class MacOSGeneralDeviceConfiguration(Entity):
     @property
     def compliant_apps_list(self) -> ClientValueCollection[AppListItem]:
         """Gets the compliantAppsList property"""
-        from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
-
         return self.properties.get("compliantAppsList", ClientValueCollection[AppListItem](AppListItem))
 
     @odata(name="emailInDomainSuffixes")

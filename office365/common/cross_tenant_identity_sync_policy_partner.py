@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.policies.crosstenant.user_sync_inbound import CrossTenantUserSyncInbound
 from office365.entity import Entity
 from office365.runtime.types.odata_property import key, odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.crosstenant.user_sync_inbound import (
-        CrossTenantUserSyncInbound,
-    )
 
 
 @key("tenantId")
@@ -29,10 +25,6 @@ class CrossTenantIdentitySyncPolicyPartner(Entity):
     @property
     def user_sync_inbound(self) -> CrossTenantUserSyncInbound:
         """Gets the userSyncInbound property"""
-        from office365.directory.policies.crosstenant.user_sync_inbound import (
-            CrossTenantUserSyncInbound,
-        )
-
         return self.properties.get("userSyncInbound", CrossTenantUserSyncInbound())
 
     @property

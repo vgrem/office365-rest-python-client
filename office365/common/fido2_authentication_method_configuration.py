@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.authentication.fido2keyrestrictions import Fido2KeyRestrictions
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -12,9 +13,6 @@ if TYPE_CHECKING:
         PasskeyAuthenticationMethodTarget,
     )
     from office365.common.passkey_profile import PasskeyProfile
-    from office365.directory.authentication.fido2keyrestrictions import (
-        Fido2KeyRestrictions,
-    )
 
 
 class Fido2AuthenticationMethodConfiguration(Entity):
@@ -40,10 +38,6 @@ class Fido2AuthenticationMethodConfiguration(Entity):
     @property
     def key_restrictions(self) -> Fido2KeyRestrictions:
         """Gets the keyRestrictions property"""
-        from office365.directory.authentication.fido2keyrestrictions import (
-            Fido2KeyRestrictions,
-        )
-
         return self.properties.get("keyRestrictions", Fido2KeyRestrictions())
 
     @odata(name="includeTargets", navigation=True)

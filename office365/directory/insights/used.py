@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from office365.directory.insights.resource_reference import ResourceReference
 from office365.directory.insights.usage_details import UsageDetails
+from office365.directory.resource_visualization import ResourceVisualization
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.resource_visualization import ResourceVisualization
 
 
 class UsedInsight(Entity):
@@ -46,8 +42,6 @@ class UsedInsight(Entity):
     @property
     def resource_visualization(self) -> ResourceVisualization:
         """Gets the resourceVisualization property"""
-        from office365.directory.resource_visualization import ResourceVisualization
-
         return self.properties.get("resourceVisualization", ResourceVisualization())
 
     @property

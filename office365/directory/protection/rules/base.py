@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
+from office365.directory.identity_set import IdentitySet
 from office365.directory.protection.rulestatus import ProtectionRuleStatus
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identity_set import IdentitySet
-    from office365.runtime.types.public_error import PublicError
+from office365.runtime.types.public_error import PublicError
 
 
 class ProtectionRuleBase(Entity):
@@ -39,8 +37,6 @@ class ProtectionRuleBase(Entity):
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("createdBy", IdentitySet())
 
     @odata(name="createdDateTime")
@@ -53,8 +49,6 @@ class ProtectionRuleBase(Entity):
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
-        from office365.runtime.types.public_error import PublicError
-
         return self.properties.get("error", PublicError())
 
     @odata(name="isAutoApplyEnabled")
@@ -67,8 +61,6 @@ class ProtectionRuleBase(Entity):
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime")

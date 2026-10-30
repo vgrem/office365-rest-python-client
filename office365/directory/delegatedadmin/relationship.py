@@ -3,6 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.delegatedadmin.access_details import DelegatedAdminAccessDetails
+from office365.directory.delegatedadmin.relationship_customer_participant import (  # noqa: E501
+    DelegatedAdminRelationshipCustomerParticipant,
+)
 from office365.directory.delegatedadmin.relationshipstatus import DelegatedAdminRelationshipStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -12,12 +16,6 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.directory.delegatedadmin.access_assignment import (
         DelegatedAdminAccessAssignment,
-    )
-    from office365.directory.delegatedadmin.access_details import (
-        DelegatedAdminAccessDetails,
-    )
-    from office365.directory.delegatedadmin.relationship_customer_participant import (
-        DelegatedAdminRelationshipCustomerParticipant,
     )
     from office365.directory.delegatedadmin.relationship_operation import (
         DelegatedAdminRelationshipOperation,
@@ -35,10 +33,6 @@ class DelegatedAdminRelationship(Entity):
     @property
     def access_details(self) -> DelegatedAdminAccessDetails:
         """Gets the accessDetails property"""
-        from office365.directory.delegatedadmin.access_details import (
-            DelegatedAdminAccessDetails,
-        )
-
         return self.properties.get("accessDetails", DelegatedAdminAccessDetails())
 
     @odata(name="activatedDateTime")
@@ -63,10 +57,6 @@ class DelegatedAdminRelationship(Entity):
     @property
     def customer(self) -> DelegatedAdminRelationshipCustomerParticipant:
         """Gets the customer property"""
-        from office365.directory.delegatedadmin.relationship_customer_participant import (
-            DelegatedAdminRelationshipCustomerParticipant,
-        )
-
         return self.properties.get("customer", DelegatedAdminRelationshipCustomerParticipant())
 
     @odata(name="displayName")

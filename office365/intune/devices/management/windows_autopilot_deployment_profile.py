@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.configurations.windows.out_of_box_experience_setting import OutOfBoxExperienceSetting
 from office365.intune.devices.management.managed.windows.autopilot_device_type import WindowsAutopilotDeviceType
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.out_of_box_experience_setting import OutOfBoxExperienceSetting
     from office365.intune.devices.management.windows_autopilot_device_identity import (
         WindowsAutopilotDeviceIdentity,
     )
@@ -76,10 +76,6 @@ class WindowsAutopilotDeploymentProfile(Entity):
     @property
     def out_of_box_experience_setting(self) -> OutOfBoxExperienceSetting:
         """Gets the outOfBoxExperienceSetting property"""
-        from office365.intune.devices.configurations.windows.out_of_box_experience_setting import (
-            OutOfBoxExperienceSetting,
-        )
-
         return self.properties.get("outOfBoxExperienceSetting", OutOfBoxExperienceSetting())
 
     @odata(name="preprovisioningAllowed")

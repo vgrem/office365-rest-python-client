@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.licenses.service_plan_info import ServicePlanInfo
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.licenses.service_plan_info import ServicePlanInfo
 
 
 class CompanySubscription(Entity):
@@ -62,8 +60,6 @@ class CompanySubscription(Entity):
     @property
     def service_status(self) -> ClientValueCollection[ServicePlanInfo]:
         """Gets the serviceStatus property"""
-        from office365.directory.licenses.service_plan_info import ServicePlanInfo
-
         return self.properties.get("serviceStatus", ClientValueCollection[ServicePlanInfo](ServicePlanInfo))
 
     @odata(name="skuId")

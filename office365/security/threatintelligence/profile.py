@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -9,16 +9,14 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.formatted_content import FormattedContent
+from office365.security.intelligence_profile_country_or_region_of_origin import (  # noqa: E501
+    IntelligenceProfileCountryOrRegionOfOrigin,
+)
 from office365.security.intelligence_profile_indicator import (
     IntelligenceProfileIndicator,
 )
 from office365.security.intelligence_profile_kind import IntelligenceProfileKind
-
-if TYPE_CHECKING:
-    from office365.security.formatted_content import FormattedContent
-    from office365.security.intelligence_profile_country_or_region_of_origin import (
-        IntelligenceProfileCountryOrRegionOfOrigin,
-    )
 
 
 class IntelligenceProfile(Entity):
@@ -77,10 +75,6 @@ class IntelligenceProfile(Entity):
     @property
     def countries_or_regions_of_origin(self) -> ClientValueCollection[IntelligenceProfileCountryOrRegionOfOrigin]:
         """Gets the countriesOrRegionsOfOrigin property"""
-        from office365.security.intelligence_profile_country_or_region_of_origin import (
-            IntelligenceProfileCountryOrRegionOfOrigin,
-        )
-
         return self.properties.get(
             "countriesOrRegionsOfOrigin",
             ClientValueCollection[IntelligenceProfileCountryOrRegionOfOrigin](
@@ -92,8 +86,6 @@ class IntelligenceProfile(Entity):
     @property
     def description(self) -> FormattedContent:
         """Gets the description property"""
-        from office365.security.formatted_content import FormattedContent
-
         return self.properties.get("description", FormattedContent())
 
     @odata(name="kind")
@@ -106,14 +98,10 @@ class IntelligenceProfile(Entity):
     @property
     def summary(self) -> FormattedContent:
         """Gets the summary property"""
-        from office365.security.formatted_content import FormattedContent
-
         return self.properties.get("summary", FormattedContent())
 
     @odata(name="tradecraft")
     @property
     def tradecraft(self) -> FormattedContent:
         """Gets the tradecraft property"""
-        from office365.security.formatted_content import FormattedContent
-
         return self.properties.get("tradecraft", FormattedContent())

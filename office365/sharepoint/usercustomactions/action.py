@@ -6,9 +6,9 @@ from uuid import UUID
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 
 if TYPE_CHECKING:
-    from office365.sharepoint.permissions.base_permissions import BasePermissions
     from office365.sharepoint.translation.user_resource import UserResource
 
 
@@ -123,8 +123,6 @@ class UserCustomAction(Entity):
     @property
     def rights(self) -> BasePermissions:
         """Gets the Rights property"""
-        from office365.sharepoint.permissions.base_permissions import BasePermissions
-
         return self.properties.get("Rights", BasePermissions())
 
     @odata(name="Scope")

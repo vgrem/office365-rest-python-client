@@ -1,21 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.ios.home_screen_item import IosHomeScreenItem
+from office365.intune.devices.configurations.ios.home_screen_page import IosHomeScreenPage
+from office365.intune.devices.configurations.ios.notification_settings import IosNotificationSettings
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.ios.home_screen_item import (
-        IosHomeScreenItem,
-    )
-    from office365.intune.devices.configurations.ios.home_screen_page import (
-        IosHomeScreenPage,
-    )
-    from office365.intune.devices.configurations.ios.notification_settings import (
-        IosNotificationSettings,
-    )
 
 
 class IosDeviceFeaturesConfiguration(Entity):
@@ -29,20 +21,12 @@ class IosDeviceFeaturesConfiguration(Entity):
     @property
     def home_screen_dock_icons(self) -> ClientValueCollection[IosHomeScreenItem]:
         """Gets the homeScreenDockIcons property"""
-        from office365.intune.devices.configurations.ios.home_screen_item import (
-            IosHomeScreenItem,
-        )
-
         return self.properties.get("homeScreenDockIcons", ClientValueCollection[IosHomeScreenItem](IosHomeScreenItem))
 
     @odata(name="homeScreenPages")
     @property
     def home_screen_pages(self) -> ClientValueCollection[IosHomeScreenPage]:
         """Gets the homeScreenPages property"""
-        from office365.intune.devices.configurations.ios.home_screen_page import (
-            IosHomeScreenPage,
-        )
-
         return self.properties.get("homeScreenPages", ClientValueCollection[IosHomeScreenPage](IosHomeScreenPage))
 
     @odata(name="lockScreenFootnote")
@@ -55,10 +39,6 @@ class IosDeviceFeaturesConfiguration(Entity):
     @property
     def notification_settings(self) -> ClientValueCollection[IosNotificationSettings]:
         """Gets the notificationSettings property"""
-        from office365.intune.devices.configurations.ios.notification_settings import (
-            IosNotificationSettings,
-        )
-
         return self.properties.get(
             "notificationSettings", ClientValueCollection[IosNotificationSettings](IosNotificationSettings)
         )

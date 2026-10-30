@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.security.account import Account
+from office365.security.account import Account
 
 
 class IdentityAccounts(Entity):
@@ -49,6 +47,4 @@ class IdentityAccounts(Entity):
     @property
     def accounts(self) -> ClientValueCollection[Account]:
         """Gets the accounts property"""
-        from office365.security.account import Account
-
         return self.properties.get("accounts", ClientValueCollection[Account](Account))

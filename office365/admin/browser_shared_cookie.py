@@ -1,19 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.backuprestore.restoresessions.browser_shared_cookie_history import BrowserSharedCookieHistory
+from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.intune.browser.sharedcookiesourceenvironment import BrowserSharedCookieSourceEnvironment
 from office365.intune.browser.sharedcookiestatus import BrowserSharedCookieStatus
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.backuprestore.restoresessions.browser_shared_cookie_history import (
-        BrowserSharedCookieHistory,
-    )
-    from office365.directory.identity_set import IdentitySet
 
 
 class BrowserSharedCookie(Entity):
@@ -45,10 +41,6 @@ class BrowserSharedCookie(Entity):
     @property
     def history(self) -> ClientValueCollection[BrowserSharedCookieHistory]:
         """Gets the history property"""
-        from office365.backuprestore.restoresessions.browser_shared_cookie_history import (
-            BrowserSharedCookieHistory,
-        )
-
         return self.properties.get(
             "history", ClientValueCollection[BrowserSharedCookieHistory](BrowserSharedCookieHistory)
         )
@@ -69,8 +61,6 @@ class BrowserSharedCookie(Entity):
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime")

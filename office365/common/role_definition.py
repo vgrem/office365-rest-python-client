@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.rolemanagement.roles.permission import RolePermission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -10,7 +11,6 @@ from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.role_assignment import RoleAssignment
-    from office365.directory.rolemanagement.roles.permission import RolePermission
 
 
 class RoleDefinition(Entity):
@@ -36,8 +36,6 @@ class RoleDefinition(Entity):
     @property
     def role_permissions(self) -> ClientValueCollection[RolePermission]:
         """Gets the rolePermissions property"""
-        from office365.directory.rolemanagement.roles.permission import RolePermission
-
         return self.properties.get("rolePermissions", ClientValueCollection[RolePermission](RolePermission))
 
     @odata(name="roleAssignments", navigation=True)

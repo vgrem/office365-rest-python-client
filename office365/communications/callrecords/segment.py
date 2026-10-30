@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.communications.callrecords.endpoint import Endpoint
+from office365.communications.callrecords.failure_info import FailureInfo
+from office365.communications.callrecords.media import Media
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.callrecords.failure_info import FailureInfo
-    from office365.communications.callrecords.media import Media
 
 
 class Segment(Entity):
@@ -45,16 +43,12 @@ class Segment(Entity):
     @property
     def failure_info(self) -> FailureInfo:
         """Gets the failureInfo property"""
-        from office365.communications.callrecords.failure_info import FailureInfo
-
         return self.properties.get("failureInfo", FailureInfo())
 
     @odata(name="media")
     @property
     def media(self) -> ClientValueCollection[Media]:
         """Gets the media property"""
-        from office365.communications.callrecords.media import Media
-
         return self.properties.get("media", ClientValueCollection[Media](Media))
 
     @odata(name="startDateTime")

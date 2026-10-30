@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.print.connectors.connector import PrintConnector
+from office365.intune.print.settings import PrintSettings
 from office365.intune.print.shares.share import PrinterShare
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -13,7 +14,6 @@ if TYPE_CHECKING:
     from office365.intune.print.operation import PrintOperation
     from office365.intune.print.printers.printer import Printer
     from office365.intune.print.services.service import PrintService
-    from office365.intune.print.settings import PrintSettings
     from office365.intune.print.task_definition import PrintTaskDefinition
 
 
@@ -48,8 +48,6 @@ class Print(Entity):
     @property
     def settings(self) -> PrintSettings:
         """Gets the settings property"""
-        from office365.intune.print.settings import PrintSettings
-
         return self.properties.get("settings", PrintSettings())
 
     @odata(name="operations", navigation=True)

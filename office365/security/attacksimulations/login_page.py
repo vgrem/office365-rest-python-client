@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 from office365.security.attacksimulations.simulationcontentsource import SimulationContentSource
 from office365.security.attacksimulations.simulationcontentstatus import SimulationContentStatus
-
-if TYPE_CHECKING:
-    from office365.directory.permissions.email_identity import EmailIdentity
 
 
 class LoginPage(Entity):
@@ -23,8 +21,6 @@ class LoginPage(Entity):
     @property
     def created_by(self) -> EmailIdentity:
         """Gets the createdBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("createdBy", EmailIdentity())
 
     @odata(name="createdDateTime")
@@ -55,8 +51,6 @@ class LoginPage(Entity):
     @property
     def last_modified_by(self) -> EmailIdentity:
         """Gets the lastModifiedBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("lastModifiedBy", EmailIdentity())
 
     @odata(name="lastModifiedDateTime")

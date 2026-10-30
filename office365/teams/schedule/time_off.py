@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.teams.schedule.time_off_item import TimeOffItem
+from office365.teams.schedule.time_off_item import TimeOffItem
 
 
 class TimeOff(Entity):
@@ -14,8 +12,6 @@ class TimeOff(Entity):
     @property
     def draft_time_off(self) -> TimeOffItem:
         """Gets the draftTimeOff property"""
-        from office365.teams.schedule.time_off_item import TimeOffItem
-
         return self.properties.get("draftTimeOff", TimeOffItem())
 
     @odata(name="isStagedForDeletion")
@@ -28,8 +24,6 @@ class TimeOff(Entity):
     @property
     def shared_time_off(self) -> TimeOffItem:
         """Gets the sharedTimeOff property"""
-        from office365.teams.schedule.time_off_item import TimeOffItem
-
         return self.properties.get("sharedTimeOff", TimeOffItem())
 
     @odata(name="userId")

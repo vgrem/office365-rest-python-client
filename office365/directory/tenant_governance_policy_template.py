@@ -1,19 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.delegated_administration_role_assignment import DelegatedAdministrationRoleAssignment
+from office365.directory.multi_tenant_applications_to_provision import MultiTenantApplicationsToProvision
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.delegated_administration_role_assignment import (
-        DelegatedAdministrationRoleAssignment,
-    )
-    from office365.directory.multi_tenant_applications_to_provision import (
-        MultiTenantApplicationsToProvision,
-    )
 
 
 class TenantGovernancePolicyTemplate(Entity):
@@ -27,10 +21,6 @@ class TenantGovernancePolicyTemplate(Entity):
     @property
     def delegated_administration_role_assignments(self) -> ClientValueCollection[DelegatedAdministrationRoleAssignment]:
         """Gets the delegatedAdministrationRoleAssignments property"""
-        from office365.directory.delegated_administration_role_assignment import (
-            DelegatedAdministrationRoleAssignment,
-        )
-
         return self.properties.get(
             "delegatedAdministrationRoleAssignments",
             ClientValueCollection[DelegatedAdministrationRoleAssignment](DelegatedAdministrationRoleAssignment),
@@ -64,10 +54,6 @@ class TenantGovernancePolicyTemplate(Entity):
     @property
     def multi_tenant_applications_to_provision(self) -> ClientValueCollection[MultiTenantApplicationsToProvision]:
         """Gets the multiTenantApplicationsToProvision property"""
-        from office365.directory.multi_tenant_applications_to_provision import (
-            MultiTenantApplicationsToProvision,
-        )
-
         return self.properties.get(
             "multiTenantApplicationsToProvision",
             ClientValueCollection[MultiTenantApplicationsToProvision](MultiTenantApplicationsToProvision),

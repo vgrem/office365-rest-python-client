@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.copilot.copilot_package_request_status import CopilotPackageRequestStatus
 from office365.copilot.copilot_package_request_type import CopilotPackageRequestType
@@ -9,10 +9,8 @@ from office365.copilot.package_type import PackageType
 from office365.entity import Entity
 from office365.intune.devices.management.package_status import PackageStatus
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.runtime.types.json import Json
 
 
 class CopilotPackage(Entity):
@@ -68,8 +66,6 @@ class CopilotPackage(Entity):
     @property
     def governance_metadata(self) -> Json:
         """Gets the governanceMetadata property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("governanceMetadata", Json())
 
     @odata(name="isBlocked")

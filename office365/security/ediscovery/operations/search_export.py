@@ -12,11 +12,11 @@ from office365.security.cases.exportcriteria import ExportCriteria
 from office365.security.cases.exportformat import ExportFormat
 from office365.security.cases.exportlocation import ExportLocation
 from office365.security.cloudattachmentversion import CloudAttachmentVersion
+from office365.security.export_file_metadata import ExportFileMetadata
 from office365.security.search.documentversion import DocumentVersion
 
 if TYPE_CHECKING:
     from office365.security.ediscovery.search import EdiscoverySearch
-    from office365.security.export_file_metadata import ExportFileMetadata
 
 
 class EdiscoverySearchExportOperation(PollableOperation, Entity):
@@ -82,8 +82,6 @@ class EdiscoverySearchExportOperation(PollableOperation, Entity):
     @property
     def export_file_metadata(self) -> ClientValueCollection[ExportFileMetadata]:
         """Gets the exportFileMetadata property"""
-        from office365.security.export_file_metadata import ExportFileMetadata
-
         return self.properties.get("exportFileMetadata", ClientValueCollection[ExportFileMetadata](ExportFileMetadata))
 
     @odata(name="search", navigation=True)

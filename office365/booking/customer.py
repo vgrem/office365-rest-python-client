@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.booking.phone import Phone
 from office365.entity import Entity
+from office365.outlook.mail.physical_address import PhysicalAddress
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.booking.phone import Phone
-    from office365.outlook.mail.physical_address import PhysicalAddress
 
 
 class BookingCustomer(Entity):
@@ -17,8 +15,6 @@ class BookingCustomer(Entity):
     @property
     def addresses(self) -> ClientValueCollection[PhysicalAddress]:
         """Gets the addresses property"""
-        from office365.outlook.mail.physical_address import PhysicalAddress
-
         return self.properties.get("addresses", ClientValueCollection[PhysicalAddress](PhysicalAddress))
 
     @odata(name="createdDateTime")
@@ -49,8 +45,6 @@ class BookingCustomer(Entity):
     @property
     def phones(self) -> ClientValueCollection[Phone]:
         """Gets the phones property"""
-        from office365.booking.phone import Phone
-
         return self.properties.get("phones", ClientValueCollection[Phone](Phone))
 
     @property

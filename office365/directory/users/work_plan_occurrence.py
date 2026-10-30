@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.communications.presences.work_location_type import WorkLocationType
 from office365.entity import Entity
+from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-    from office365.teams.schedule.time_off_details import TimeOffDetails
+from office365.teams.schedule.time_off_details import TimeOffDetails
 
 
 class WorkPlanOccurrence(Entity):
@@ -16,8 +14,6 @@ class WorkPlanOccurrence(Entity):
     @property
     def end(self) -> DateTimeTimeZone:
         """Gets the end property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("end", DateTimeTimeZone())
 
     @odata(name="placeId")
@@ -36,16 +32,12 @@ class WorkPlanOccurrence(Entity):
     @property
     def start(self) -> DateTimeTimeZone:
         """Gets the start property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("start", DateTimeTimeZone())
 
     @odata(name="timeOffDetails")
     @property
     def time_off_details(self) -> TimeOffDetails:
         """Gets the timeOffDetails property"""
-        from office365.teams.schedule.time_off_details import TimeOffDetails
-
         return self.properties.get("timeOffDetails", TimeOffDetails())
 
     @odata(name="workLocationType")

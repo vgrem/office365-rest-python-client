@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.print.task_status import PrintTaskStatus
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.task_definition import PrintTaskDefinition
-    from office365.intune.print.task_status import PrintTaskStatus
     from office365.intune.print.task_trigger import PrintTaskTrigger
 
 
@@ -23,8 +23,6 @@ class PrintTask(Entity):
     @property
     def status(self) -> PrintTaskStatus:
         """Gets the status property"""
-        from office365.intune.print.task_status import PrintTaskStatus
-
         return self.properties.get("status", PrintTaskStatus())
 
     @odata(name="definition", navigation=True)

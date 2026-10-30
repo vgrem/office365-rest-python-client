@@ -36,6 +36,7 @@ from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateV
 from office365.sharepoint.listitems.update_parameters import ListItemUpdateParameters
 from office365.sharepoint.listitems.versions.collection import ListItemVersionCollection
 from office365.sharepoint.lists.templates.type import ListTemplateType
+from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.policy.dlp_policy_tip import DlpPolicyTip
 from office365.sharepoint.reputationmodel.reputation import Reputation
@@ -69,7 +70,6 @@ if TYPE_CHECKING:
     )
     from office365.sharepoint.listitems.updateresults import ListItemUpdateResults
     from office365.sharepoint.lists.list import List
-    from office365.sharepoint.permissions.base_permissions import BasePermissions
     from office365.sharepoint.webs.spimageitem import SPImageItem
     from office365.sharepoint.workflow.labelaccesscontroldata import (
         LabelAccessControlData,
@@ -641,8 +641,6 @@ class ListItem(SecurableObject):
     def effective_base_permissions(self) -> BasePermissions:
         """Gets a value that specifies the effective permissions on the list item that are assigned
         to the current user."""
-        from office365.sharepoint.permissions.base_permissions import BasePermissions
-
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
     @odata(name="EffectiveBasePermissionsForUI")
@@ -653,8 +651,6 @@ class ListItem(SecurableObject):
         MUST be the same as the value of EffectiveBasePermissions (section 3.2.5.87.1.1.2).
         If the list is in read-only UI mode, the value of EffectiveBasePermissionsForUI MUST be a subset of the
         value of EffectiveBasePermissions."""
-        from office365.sharepoint.permissions.base_permissions import BasePermissions
-
         return self.properties.get("EffectiveBasePermissionsForUI", BasePermissions())
 
     @property

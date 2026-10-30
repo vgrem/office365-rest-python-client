@@ -1,17 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import GuidCollection
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.contentcenter.machinelearning.models.columndef import ColumnDef
 from office365.sharepoint.entity import Entity
-
-if TYPE_CHECKING:
-    from office365.sharepoint.contentcenter.machinelearning.models.columndef import (
-        ColumnDef,
-    )
 
 
 class SPMachineLearningModelEntityData(Entity):
@@ -77,10 +73,6 @@ class SPMachineLearningModelEntityData(Entity):
     @property
     def columns(self) -> ClientValueCollection[ColumnDef]:
         """Gets the Columns property"""
-        from office365.sharepoint.contentcenter.machinelearning.models.columndef import (
-            ColumnDef,
-        )
-
         return self.properties.get("Columns", ClientValueCollection[ColumnDef](ColumnDef))
 
     @odata(name="ColumnType", beta=True)
@@ -159,8 +151,4 @@ class SPMachineLearningModelEntityData(Entity):
     @property
     def table_link_columns(self) -> ClientValueCollection[ColumnDef]:
         """Gets the TableLinkColumns property"""
-        from office365.sharepoint.contentcenter.machinelearning.models.columndef import (
-            ColumnDef,
-        )
-
         return self.properties.get("TableLinkColumns", ClientValueCollection[ColumnDef](ColumnDef))

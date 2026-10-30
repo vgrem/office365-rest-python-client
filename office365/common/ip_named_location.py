@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identities.ip_range import IpRange
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identities.ip_range import IpRange
 
 
 class IpNamedLocation(Entity):
@@ -15,8 +13,6 @@ class IpNamedLocation(Entity):
     @property
     def ip_ranges(self) -> ClientValueCollection[IpRange]:
         """Gets the ipRanges property"""
-        from office365.directory.identities.ip_range import IpRange
-
         return self.properties.get("ipRanges", ClientValueCollection[IpRange](IpRange))
 
     @odata(name="isTrusted")

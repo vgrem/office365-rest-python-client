@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.operations.longrunningoperationstatus import (
@@ -9,11 +9,7 @@ from office365.onedrive.operations.longrunningoperationstatus import (
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.teams.telephone_number_long_running_operation_details import (
-        TelephoneNumberLongRunningOperationDetails,
-    )
+from office365.teams.telephone_number_long_running_operation_details import TelephoneNumberLongRunningOperationDetails
 
 
 class TelephoneNumberLongRunningOperation(PollableOperation, Entity):
@@ -37,10 +33,6 @@ class TelephoneNumberLongRunningOperation(PollableOperation, Entity):
     @property
     def numbers(self) -> ClientValueCollection[TelephoneNumberLongRunningOperationDetails]:
         """Gets the numbers property"""
-        from office365.teams.telephone_number_long_running_operation_details import (
-            TelephoneNumberLongRunningOperationDetails,
-        )
-
         return self.properties.get(
             "numbers",
             ClientValueCollection[TelephoneNumberLongRunningOperationDetails](

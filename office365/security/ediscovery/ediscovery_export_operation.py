@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -13,9 +13,7 @@ from office365.security.ediscovery.review_set import EdiscoveryReviewSet
 from office365.security.ediscovery.review_set_query import (
     EdiscoveryReviewSetQuery,
 )
-
-if TYPE_CHECKING:
-    from office365.security.export_file_metadata import ExportFileMetadata
+from office365.security.export_file_metadata import ExportFileMetadata
 
 
 class EdiscoveryExportOperation(PollableOperation, Entity):
@@ -67,6 +65,4 @@ class EdiscoveryExportOperation(PollableOperation, Entity):
     @property
     def export_file_metadata(self) -> ClientValueCollection[ExportFileMetadata]:
         """Gets the exportFileMetadata property"""
-        from office365.security.export_file_metadata import ExportFileMetadata
-
         return self.properties.get("exportFileMetadata", ClientValueCollection[ExportFileMetadata](ExportFileMetadata))

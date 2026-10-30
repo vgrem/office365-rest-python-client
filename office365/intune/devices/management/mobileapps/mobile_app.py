@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.common.mime_content import MimeContent
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.mobileapps.category import MobileAppCategory
@@ -13,7 +14,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.mime_content import MimeContent
     from office365.intune.devices.management.mobileapps.assignment import (
         MobileAppAssignment,
     )
@@ -111,8 +111,6 @@ class MobileApp(Entity):
     @property
     def large_icon(self) -> MimeContent:
         """Gets the largeIcon property"""
-        from office365.common.mime_content import MimeContent
-
         return self.properties.get("largeIcon", MimeContent())
 
     @odata(name="assignments", navigation=True)

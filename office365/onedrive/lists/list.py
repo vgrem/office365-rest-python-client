@@ -6,6 +6,7 @@ from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.columns.definition_collection import ColumnDefinitionCollection
 from office365.onedrive.contenttypes.collection import ContentTypeCollection
+from office365.onedrive.driveitems.system_facet import SystemFacet
 from office365.onedrive.listitems.collection import ListItemCollection
 from office365.onedrive.lists.info import ListInfo
 from office365.onedrive.operations.rich_long_running import RichLongRunningOperation
@@ -15,7 +16,6 @@ from office365.runtime.types.odata_property import odata
 from office365.subscriptions.subscription import Subscription
 
 if TYPE_CHECKING:
-    from office365.onedrive.driveitems.system_facet import SystemFacet
     from office365.onedrive.permissions.permission import Permission
 
 
@@ -109,8 +109,6 @@ class List(BaseItem):
     @property
     def system(self) -> SystemFacet:
         """Gets the system property"""
-        from office365.onedrive.driveitems.system_facet import SystemFacet
-
         return self.properties.get("system", SystemFacet())
 
     @odata(name="permissions", navigation=True)

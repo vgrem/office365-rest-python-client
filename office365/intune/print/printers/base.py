@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.print.printers.capabilities import PrinterCapabilities
+from office365.intune.print.printers.defaults import PrinterDefaults
+from office365.intune.print.printers.location import PrinterLocation
+from office365.intune.print.printers.status import PrinterStatus
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.job import PrintJob
-    from office365.intune.print.printers.defaults import PrinterDefaults
-    from office365.intune.print.printers.location import PrinterLocation
-    from office365.intune.print.printers.status import PrinterStatus
 
 
 class PrinterBase(Entity):
@@ -27,8 +27,6 @@ class PrinterBase(Entity):
     @property
     def defaults(self) -> PrinterDefaults:
         """Gets the defaults property"""
-        from office365.intune.print.printers.defaults import PrinterDefaults
-
         return self.properties.get("defaults", PrinterDefaults())
 
     @odata(name="displayName")
@@ -47,8 +45,6 @@ class PrinterBase(Entity):
     @property
     def location(self) -> PrinterLocation:
         """Gets the location property"""
-        from office365.intune.print.printers.location import PrinterLocation
-
         return self.properties.get("location", PrinterLocation())
 
     @odata(name="manufacturer")
@@ -67,8 +63,6 @@ class PrinterBase(Entity):
     @property
     def status(self) -> PrinterStatus:
         """Gets the status property"""
-        from office365.intune.print.printers.status import PrinterStatus
-
         return self.properties.get("status", PrinterStatus())
 
     @odata(name="jobs", navigation=True)

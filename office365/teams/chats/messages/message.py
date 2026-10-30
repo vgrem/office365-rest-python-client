@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
@@ -13,15 +13,11 @@ from office365.teams.channels.iIdentity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
 from office365.teams.chats.messages.body import ChatMessageBody
+from office365.teams.chats.messages.history_item import ChatMessageHistoryItem
 from office365.teams.chats.messages.hosted_content import ChatMessageHostedContent
 from office365.teams.chats.messages.mention import ChatMessageMention
+from office365.teams.chats.messages.policy_violation import ChatMessagePolicyViolation
 from office365.teams.chats.messages.reaction import ChatMessageReaction
-
-if TYPE_CHECKING:
-    from office365.teams.chats.messages.history_item import ChatMessageHistoryItem
-    from office365.teams.chats.messages.policy_violation import (
-        ChatMessagePolicyViolation,
-    )
 
 
 class ChatMessage(Entity):
@@ -208,8 +204,6 @@ class ChatMessage(Entity):
     @property
     def message_history(self) -> ClientValueCollection[ChatMessageHistoryItem]:
         """Gets the messageHistory property"""
-        from office365.teams.chats.messages.history_item import ChatMessageHistoryItem
-
         return self.properties.get(
             "messageHistory", ClientValueCollection[ChatMessageHistoryItem](ChatMessageHistoryItem)
         )
@@ -218,10 +212,6 @@ class ChatMessage(Entity):
     @property
     def policy_violation(self) -> ChatMessagePolicyViolation:
         """Gets the policyViolation property"""
-        from office365.teams.chats.messages.policy_violation import (
-            ChatMessagePolicyViolation,
-        )
-
         return self.properties.get("policyViolation", ChatMessagePolicyViolation())
 
     @property

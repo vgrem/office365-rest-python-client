@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.windows.minimum_operating_system import WindowsMinimumOperatingSystem
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.minimum_operating_system import (
-        WindowsMinimumOperatingSystem,
-    )
 
 
 class WindowsAppX(Entity):
@@ -53,10 +49,6 @@ class WindowsAppX(Entity):
     @property
     def minimum_supported_operating_system(self) -> WindowsMinimumOperatingSystem:
         """Gets the minimumSupportedOperatingSystem property"""
-        from office365.intune.devices.configurations.windows.minimum_operating_system import (
-            WindowsMinimumOperatingSystem,
-        )
-
         return self.properties.get("minimumSupportedOperatingSystem", WindowsMinimumOperatingSystem())
 
     @property

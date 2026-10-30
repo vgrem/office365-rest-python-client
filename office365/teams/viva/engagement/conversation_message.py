@@ -3,15 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.communications.engagement_identity_set import EngagementIdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.teams.viva.engagement.creationmode import EngagementCreationMode
 
 if TYPE_CHECKING:
-    from office365.communications.engagement_identity_set import EngagementIdentitySet
-    from office365.outlook.mail.item_body import ItemBody
     from office365.teams.viva.engagement.conversation import EngagementConversation
     from office365.teams.viva.engagement.conversation_message import (
         EngagementConversationMessage,
@@ -26,8 +26,6 @@ class EngagementConversationMessage(Entity):
     @property
     def body(self) -> ItemBody:
         """Gets the body property"""
-        from office365.outlook.mail.item_body import ItemBody
-
         return self.properties.get("body", ItemBody())
 
     @odata(name="createdDateTime", readonly=True)
@@ -46,10 +44,6 @@ class EngagementConversationMessage(Entity):
     @property
     def from_(self) -> EngagementIdentitySet:
         """Gets the from property"""
-        from office365.communications.engagement_identity_set import (
-            EngagementIdentitySet,
-        )
-
         return self.properties.get("from", EngagementIdentitySet())
 
     @odata(name="lastModifiedDateTime", readonly=True)

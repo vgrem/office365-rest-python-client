@@ -1,18 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.types.odata_property import odata
+from office365.teams.chats.event_message_detail import EventMessageDetail
+from office365.teams.chats.messages.from_identity_set import ChatMessageFromIdentitySet
 from office365.teams.chats.messages.type import ChatMessageType
-
-if TYPE_CHECKING:
-    from office365.teams.chats.event_message_detail import EventMessageDetail
-    from office365.teams.chats.messages.from_identity_set import (
-        ChatMessageFromIdentitySet,
-    )
 
 
 class ChatMessageInfo(Entity):
@@ -37,18 +33,12 @@ class ChatMessageInfo(Entity):
     @property
     def event_detail(self) -> EventMessageDetail:
         """Gets the eventDetail property"""
-        from office365.teams.chats.event_message_detail import EventMessageDetail
-
         return self.properties.get("eventDetail", EventMessageDetail())
 
     @odata(name="from")
     @property
     def from_(self) -> ChatMessageFromIdentitySet:
         """Gets the from property"""
-        from office365.teams.chats.messages.from_identity_set import (
-            ChatMessageFromIdentitySet,
-        )
-
         return self.properties.get("from", ChatMessageFromIdentitySet())
 
     @odata(name="isDeleted")

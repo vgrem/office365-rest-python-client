@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.policies.app_management_application_configuration import AppManagementApplicationConfiguration
+from office365.directory.policies.app_management_service_principal_configuration import (  # noqa: E501
+    AppManagementServicePrincipalConfiguration,
+)
 from office365.directory.policies.base import PolicyBase
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.app_management_application_configuration import (
-        AppManagementApplicationConfiguration,
-    )
-    from office365.directory.policies.app_management_service_principal_configuration import (
-        AppManagementServicePrincipalConfiguration,
-    )
 
 
 class TenantAppManagementPolicy(PolicyBase):
@@ -25,10 +21,6 @@ class TenantAppManagementPolicy(PolicyBase):
     @property
     def application_restrictions(self) -> AppManagementApplicationConfiguration:
         """Gets the applicationRestrictions property"""
-        from office365.directory.policies.app_management_application_configuration import (
-            AppManagementApplicationConfiguration,
-        )
-
         return self.properties.get("applicationRestrictions", AppManagementApplicationConfiguration())
 
     @odata(name="isEnabled")
@@ -41,10 +33,6 @@ class TenantAppManagementPolicy(PolicyBase):
     @property
     def service_principal_restrictions(self) -> AppManagementServicePrincipalConfiguration:
         """Gets the servicePrincipalRestrictions property"""
-        from office365.directory.policies.app_management_service_principal_configuration import (
-            AppManagementServicePrincipalConfiguration,
-        )
-
         return self.properties.get("servicePrincipalRestrictions", AppManagementServicePrincipalConfiguration())
 
     @property

@@ -8,10 +8,10 @@ from office365.backuprestore.destinationtype import DestinationType
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.runtime.types.public_error import PublicError
 
 if TYPE_CHECKING:
     from office365.common.restore_point import RestorePoint
-    from office365.runtime.types.public_error import PublicError
 
 
 class RestoreArtifactBase(Entity):
@@ -31,8 +31,6 @@ class RestoreArtifactBase(Entity):
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
-        from office365.runtime.types.public_error import PublicError
-
         return self.properties.get("error", PublicError())
 
     @odata(name="startDateTime")

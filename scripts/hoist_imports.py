@@ -209,12 +209,58 @@ def type_checking_block(tree: ast.Module) -> Optional[ast.If]:
     return None
 
 
+def module_bindings(tree: ast.Module) -> Dict[str, str]:
+    """Names bound at module level, with the statement that binds them.
+
+    ``TYPE_CHECKING`` blocks are excluded on purpose: they bind nothing when the
+    module runs, so a name that lives only there is exactly what a hoist provides.
+    """
+
+    def walk(statements: Sequence[ast.stmt], found: Dict[str, str]) -> None:
+        for node in statements:
+            if isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    found.setdefault(alias.asname or alias.name, f"from {node.module} import {alias.name}")
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    found.setdefault(alias.asname or alias.name.split(".")[0], f"import {alias.name}")
+            elif isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                found.setdefault(node.name, f"{type(node).__name__} {node.name}")
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    for name in _target_names(target):
+                        found.setdefault(name, "an assignment")
+            elif isinstance(node, ast.AnnAssign):
+                for name in _target_names(node.target):
+                    found.setdefault(name, "an assignment")
+            elif isinstance(node, ast.If):
+                if isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
+                    continue
+                walk(node.body, found)
+                walk(node.orelse, found)
+            elif isinstance(node, (ast.Try, ast.With)):
+                walk(node.body, found)
+
+    found: Dict[str, str] = {}
+    walk(tree.body, found)
+    return found
+
+
+def _target_names(target: ast.expr) -> Iterator[str]:
+    if isinstance(target, ast.Name):
+        yield target.id
+    elif isinstance(target, (ast.Tuple, ast.List)):
+        for item in target.elts:
+            yield from _target_names(item)
+
+
 def plan_module(path: pathlib.Path, only: Set[str]) -> Tuple[List[Site], List[str]]:
     """Every local import in ``path`` whose kind is wanted, and the ones it cannot read."""
     tree = ast.parse(path.read_text())
     if not has_future_annotations(tree):
         return [], []
     module = package_of(path)
+    bound = module_bindings(tree)
     sites: List[Site] = []
     skipped: List[str] = []
     for node in ast.walk(tree):
@@ -235,6 +281,17 @@ def plan_module(path: pathlib.Path, only: Set[str]) -> Tuple[List[Site], List[st
                 kind = kind_of(statement.module, alias.name)
                 if kind is None:
                     skipped.append(f"{where} from an unimportable module {statement.module}")
+                elif alias.name in bound:
+                    # The module already binds the name, so the annotation resolves
+                    # without the local copy -- but only to *that* binding: two models
+                    # can share a simple name (``IdentitySet`` under ``directory`` and
+                    # under ``directory.permissions``), and hoisting the getter's one
+                    # would leave the annotation naming whichever import came second.
+                    same = bound[alias.name] == f"from {statement.module} import {alias.name}"
+                    skipped.append(
+                        f"{where}: the module already binds {alias.name} "
+                        f"({'the same import' if same else bound[alias.name]})"
+                    )
                 elif kind in only:
                     sites.append(
                         Site(module, statement.module, alias.name, parent or "", node.name, wire_name(node), kind)

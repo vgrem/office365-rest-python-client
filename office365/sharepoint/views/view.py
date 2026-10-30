@@ -9,6 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
+from office365.sharepoint.documents.gridinitinfotype import GridInitInfoType
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.collection import ListItemCollection
@@ -18,7 +19,6 @@ from office365.sharepoint.views.visualization.visualization import Visualization
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
-    from office365.sharepoint.documents.gridinitinfotype import GridInitInfoType
     from office365.sharepoint.lists.list import List
     from office365.sharepoint.views.collection import ViewCollection
 
@@ -289,8 +289,6 @@ class View(Entity):
     @property
     def grid_init_info(self) -> GridInitInfoType:
         """Gets the GridInitInfo property"""
-        from office365.sharepoint.documents.gridinitinfotype import GridInitInfoType
-
         return self.properties.get("GridInitInfo", GridInitInfoType())
 
     @odata(name="GridLayout")

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -9,18 +7,14 @@ from office365.security.authority_template import AuthorityTemplate
 from office365.security.category_template import CategoryTemplate
 from office365.security.citation_template import CitationTemplate
 from office365.security.department_template import DepartmentTemplate
+from office365.security.file_plan_applied_category import FilePlanAppliedCategory
+from office365.security.file_plan_authority import FilePlanAuthority
+from office365.security.file_plan_citation import FilePlanCitation
+from office365.security.file_plan_department import FilePlanDepartment
+from office365.security.file_plan_reference import FilePlanReference
 from office365.security.file_plan_reference_template import (
     FilePlanReferenceTemplate,
 )
-
-if TYPE_CHECKING:
-    from office365.security.file_plan_applied_category import (
-        FilePlanAppliedCategory,
-    )
-    from office365.security.file_plan_authority import FilePlanAuthority
-    from office365.security.file_plan_citation import FilePlanCitation
-    from office365.security.file_plan_department import FilePlanDepartment
-    from office365.security.file_plan_reference import FilePlanReference
 
 
 class FilePlanDescriptor(Entity):
@@ -76,40 +70,28 @@ class FilePlanDescriptor(Entity):
     @property
     def authority(self) -> FilePlanAuthority:
         """Gets the authority property"""
-        from office365.security.file_plan_authority import FilePlanAuthority
-
         return self.properties.get("authority", FilePlanAuthority())
 
     @odata(name="category")
     @property
     def category(self) -> FilePlanAppliedCategory:
         """Gets the category property"""
-        from office365.security.file_plan_applied_category import (
-            FilePlanAppliedCategory,
-        )
-
         return self.properties.get("category", FilePlanAppliedCategory())
 
     @odata(name="citation")
     @property
     def citation(self) -> FilePlanCitation:
         """Gets the citation property"""
-        from office365.security.file_plan_citation import FilePlanCitation
-
         return self.properties.get("citation", FilePlanCitation())
 
     @odata(name="department")
     @property
     def department(self) -> FilePlanDepartment:
         """Gets the department property"""
-        from office365.security.file_plan_department import FilePlanDepartment
-
         return self.properties.get("department", FilePlanDepartment())
 
     @odata(name="filePlanReference")
     @property
     def file_plan_reference(self) -> FilePlanReference:
         """Gets the filePlanReference property"""
-        from office365.security.file_plan_reference import FilePlanReference
-
         return self.properties.get("filePlanReference", FilePlanReference())

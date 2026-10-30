@@ -3,6 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.accessreview.instance_decision_item_permission import (  # noqa: E501
+    AccessReviewInstanceDecisionItemPermission,
+)
+from office365.directory.identitygovernance.accessreview.instance_decision_item_resource import (  # noqa: E501
+    AccessReviewInstanceDecisionItemResource,
+)
 from office365.directory.permissions.identity import Identity
 from office365.directory.users.identity import UserIdentity
 from office365.entity import Entity
@@ -12,12 +18,6 @@ from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.audit.signins.governance_insight import GovernanceInsight
-    from office365.directory.identitygovernance.accessreview.instance_decision_item_permission import (
-        AccessReviewInstanceDecisionItemPermission,
-    )
-    from office365.directory.identitygovernance.accessreview.instance_decision_item_resource import (
-        AccessReviewInstanceDecisionItemResource,
-    )
 
 
 class AccessReviewInstanceDecisionItem(Entity):
@@ -107,20 +107,12 @@ class AccessReviewInstanceDecisionItem(Entity):
     @property
     def permission(self) -> AccessReviewInstanceDecisionItemPermission:
         """Gets the permission property"""
-        from office365.directory.identitygovernance.accessreview.instance_decision_item_permission import (
-            AccessReviewInstanceDecisionItemPermission,
-        )
-
         return self.properties.get("permission", AccessReviewInstanceDecisionItemPermission())
 
     @odata(name="resource")
     @property
     def resource(self) -> AccessReviewInstanceDecisionItemResource:
         """Gets the resource property"""
-        from office365.directory.identitygovernance.accessreview.instance_decision_item_resource import (
-            AccessReviewInstanceDecisionItemResource,
-        )
-
         return self.properties.get("resource", AccessReviewInstanceDecisionItemResource())
 
     @odata(name="insights", navigation=True)

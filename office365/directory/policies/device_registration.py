@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.policies.azure_ad_registration_policy import AzureADRegistrationPolicy
 from office365.directory.policies.multifactorauthconfiguration import MultiFactorAuthConfiguration
 from office365.entity import Entity
+from office365.intune.policies.azure_ad_join_policy import AzureADJoinPolicy
+from office365.intune.policies.local_admin_password_settings import LocalAdminPasswordSettings
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.azure_ad_registration_policy import (
-        AzureADRegistrationPolicy,
-    )
-    from office365.intune.policies.azure_ad_join_policy import AzureADJoinPolicy
-    from office365.intune.policies.local_admin_password_settings import (
-        LocalAdminPasswordSettings,
-    )
 
 
 class DeviceRegistrationPolicy(Entity):
@@ -24,18 +18,12 @@ class DeviceRegistrationPolicy(Entity):
     @property
     def azure_ad_join(self) -> AzureADJoinPolicy:
         """Gets the azureADJoin property"""
-        from office365.intune.policies.azure_ad_join_policy import AzureADJoinPolicy
-
         return self.properties.get("azureADJoin", AzureADJoinPolicy())
 
     @odata(name="azureADRegistration")
     @property
     def azure_ad_registration(self) -> AzureADRegistrationPolicy:
         """Gets the azureADRegistration property"""
-        from office365.directory.policies.azure_ad_registration_policy import (
-            AzureADRegistrationPolicy,
-        )
-
         return self.properties.get("azureADRegistration", AzureADRegistrationPolicy())
 
     @odata(name="description")
@@ -54,10 +42,6 @@ class DeviceRegistrationPolicy(Entity):
     @property
     def local_admin_password(self) -> LocalAdminPasswordSettings:
         """Gets the localAdminPassword property"""
-        from office365.intune.policies.local_admin_password_settings import (
-            LocalAdminPasswordSettings,
-        )
-
         return self.properties.get("localAdminPassword", LocalAdminPasswordSettings())
 
     @odata(name="multiFactorAuthConfiguration")

@@ -3,26 +3,20 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.booking.phone import Phone
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.objects.object import DirectoryObject
+from office365.directory.objects.onpremisesprovisioningerror import OnPremisesProvisioningError
+from office365.directory.objects.serviceprovisioningerror import ServiceProvisioningError
+from office365.intune.organizations.physical_office_address import PhysicalOfficeAddress
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.booking.phone import Phone
     from office365.directory.groups.on_premises_sync_behavior import (
         OnPremisesSyncBehavior,
-    )
-    from office365.directory.objects.onpremisesprovisioningerror import (
-        OnPremisesProvisioningError,
-    )
-    from office365.directory.objects.serviceprovisioningerror import (
-        ServiceProvisioningError,
-    )
-    from office365.intune.organizations.physical_office_address import (
-        PhysicalOfficeAddress,
     )
 
 
@@ -75,10 +69,6 @@ class OrgContact(DirectoryObject):
     @property
     def addresses(self) -> ClientValueCollection[PhysicalOfficeAddress]:
         """Gets the addresses property"""
-        from office365.intune.organizations.physical_office_address import (
-            PhysicalOfficeAddress,
-        )
-
         return self.properties.get("addresses", ClientValueCollection[PhysicalOfficeAddress](PhysicalOfficeAddress))
 
     @odata(name="companyName")
@@ -133,10 +123,6 @@ class OrgContact(DirectoryObject):
     @property
     def on_premises_provisioning_errors(self) -> ClientValueCollection[OnPremisesProvisioningError]:
         """Gets the onPremisesProvisioningErrors property"""
-        from office365.directory.objects.onpremisesprovisioningerror import (
-            OnPremisesProvisioningError,
-        )
-
         return self.properties.get(
             "onPremisesProvisioningErrors",
             ClientValueCollection[OnPremisesProvisioningError](OnPremisesProvisioningError),
@@ -152,8 +138,6 @@ class OrgContact(DirectoryObject):
     @property
     def phones(self) -> ClientValueCollection[Phone]:
         """Gets the phones property"""
-        from office365.booking.phone import Phone
-
         return self.properties.get("phones", ClientValueCollection[Phone](Phone))
 
     @odata(name="proxyAddresses")
@@ -166,10 +150,6 @@ class OrgContact(DirectoryObject):
     @property
     def service_provisioning_errors(self) -> ClientValueCollection[ServiceProvisioningError]:
         """Gets the serviceProvisioningErrors property"""
-        from office365.directory.objects.serviceprovisioningerror import (
-            ServiceProvisioningError,
-        )
-
         return self.properties.get(
             "serviceProvisioningErrors", ClientValueCollection[ServiceProvisioningError](ServiceProvisioningError)
         )

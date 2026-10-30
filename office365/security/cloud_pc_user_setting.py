@@ -5,13 +5,11 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointsetting import CloudPcRestorePointSetting
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointsetting import (
-        CloudPcRestorePointSetting,
-    )
     from office365.security.cloud_pc_user_setting_assignment import (
         CloudPcUserSettingAssignment,
     )
@@ -52,10 +50,6 @@ class CloudPcUserSetting(Entity):
     @property
     def restore_point_setting(self) -> CloudPcRestorePointSetting:
         """Gets the restorePointSetting property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointsetting import (
-            CloudPcRestorePointSetting,
-        )
-
         return self.properties.get("restorePointSetting", CloudPcRestorePointSetting())
 
     @odata(name="assignments", navigation=True)

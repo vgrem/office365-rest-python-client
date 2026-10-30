@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
+from office365.onenote.notebook_links import NotebookLinks
 from office365.onenote.sections.collection import OnenoteSectionCollection
 from office365.onenote.userrole import OnenoteUserRole
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.onenote.notebook_links import NotebookLinks
 
 
 class Notebook(OnenoteEntityHierarchyModel):
@@ -68,8 +66,6 @@ class Notebook(OnenoteEntityHierarchyModel):
     @property
     def links(self) -> NotebookLinks:
         """Gets the links property"""
-        from office365.onenote.notebook_links import NotebookLinks
-
         return self.properties.get("links", NotebookLinks())
 
     @odata(name="sectionGroupsUrl")

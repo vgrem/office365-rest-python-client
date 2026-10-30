@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_attribute import (  # noqa: E501
+    AccessPackageResourceAttribute,
+)
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_environment import (
     AccessPackageResourceEnvironment,
 )
@@ -21,9 +24,6 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_session import (  # noqa: E501
         CustomDataProvidedResourceUploadSession,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_attribute import (
-        AccessPackageResourceAttribute,
     )
     from office365.directory.identitygovernance.entitlementmanagement.external_origin_resource_connector import (
         ExternalOriginResourceConnector,
@@ -106,10 +106,6 @@ class AccessPackageResource(Entity):
     @property
     def attributes(self) -> ClientValueCollection[AccessPackageResourceAttribute]:
         """Gets the attributes property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource_attribute import (
-            AccessPackageResourceAttribute,
-        )
-
         return self.properties.get(
             "attributes", ClientValueCollection[AccessPackageResourceAttribute](AccessPackageResourceAttribute)
         )

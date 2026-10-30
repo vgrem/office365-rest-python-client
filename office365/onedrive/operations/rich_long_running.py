@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.onedrive.operations.long_running import LongRunningOperation
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.runtime.types.public_error import PublicError
+from office365.runtime.types.public_error import PublicError
 
 
 class RichLongRunningOperation(LongRunningOperation):
@@ -22,8 +20,6 @@ class RichLongRunningOperation(LongRunningOperation):
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
-        from office365.runtime.types.public_error import PublicError
-
         return self.properties.get("error", PublicError())
 
     @odata(name="percentageComplete")

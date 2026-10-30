@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -14,7 +15,6 @@ if TYPE_CHECKING:
     )
     from office365.directory.extensions.extension import Extension
     from office365.outlook.mail.attachments.attachment import Attachment
-    from office365.outlook.mail.item_body import ItemBody
 
 
 class Note(Entity):
@@ -22,8 +22,6 @@ class Note(Entity):
     @property
     def body(self) -> ItemBody:
         """Gets the body property"""
-        from office365.outlook.mail.item_body import ItemBody
-
         return self.properties.get("body", ItemBody())
 
     @odata(name="bodyPreview", readonly=True)

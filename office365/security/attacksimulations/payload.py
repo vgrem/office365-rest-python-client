@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -15,10 +16,7 @@ from office365.security.attacksimulations.simulationattacktechnique import Simul
 from office365.security.attacksimulations.simulationattacktype import SimulationAttackType
 from office365.security.attacksimulations.simulationcontentsource import SimulationContentSource
 from office365.security.attacksimulations.simulationcontentstatus import SimulationContentStatus
-
-if TYPE_CHECKING:
-    from office365.directory.permissions.email_identity import EmailIdentity
-    from office365.security.payload_detail import PayloadDetail
+from office365.security.payload_detail import PayloadDetail
 
 
 class Payload(Entity):
@@ -38,8 +36,6 @@ class Payload(Entity):
     @property
     def created_by(self) -> EmailIdentity:
         """Gets the createdBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("createdBy", EmailIdentity())
 
     @odata(name="createdDateTime")
@@ -58,8 +54,6 @@ class Payload(Entity):
     @property
     def detail(self) -> PayloadDetail:
         """Gets the detail property"""
-        from office365.security.payload_detail import PayloadDetail
-
         return self.properties.get("detail", PayloadDetail())
 
     @odata(name="displayName")
@@ -102,8 +96,6 @@ class Payload(Entity):
     @property
     def last_modified_by(self) -> EmailIdentity:
         """Gets the lastModifiedBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("lastModifiedBy", EmailIdentity())
 
     @odata(name="lastModifiedDateTime")

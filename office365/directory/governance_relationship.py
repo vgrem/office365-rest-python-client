@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.relationship_creation_type import RelationshipCreationType
+from office365.directory.relationship_policy import RelationshipPolicy
 from office365.directory.relationship_status import RelationshipStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.relationship_policy import RelationshipPolicy
 
 
 class GovernanceRelationship(Entity):
@@ -53,8 +51,6 @@ class GovernanceRelationship(Entity):
     @property
     def policy_snapshot(self) -> RelationshipPolicy:
         """Gets the policySnapshot property"""
-        from office365.directory.relationship_policy import RelationshipPolicy
-
         return self.properties.get("policySnapshot", RelationshipPolicy())
 
     @odata(name="status")

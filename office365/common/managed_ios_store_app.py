@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.ios.minimum_operating_system import IosMinimumOperatingSystem
+from office365.intune.devices.management.mobileapps.ios.ios_device_type import IosDeviceType
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.ios.minimum_operating_system import IosMinimumOperatingSystem
-    from office365.intune.devices.management.mobileapps.ios.ios_device_type import (
-        IosDeviceType,
-    )
 
 
 class ManagedIOSStoreApp(Entity):
@@ -17,10 +13,6 @@ class ManagedIOSStoreApp(Entity):
     @property
     def applicable_device_type(self) -> IosDeviceType:
         """Gets the applicableDeviceType property"""
-        from office365.intune.devices.management.mobileapps.ios.ios_device_type import (
-            IosDeviceType,
-        )
-
         return self.properties.get("applicableDeviceType", IosDeviceType())
 
     @odata(name="appStoreUrl")
@@ -39,10 +31,6 @@ class ManagedIOSStoreApp(Entity):
     @property
     def minimum_supported_operating_system(self) -> IosMinimumOperatingSystem:
         """Gets the minimumSupportedOperatingSystem property"""
-        from office365.intune.devices.configurations.ios.minimum_operating_system import (
-            IosMinimumOperatingSystem,
-        )
-
         return self.properties.get("minimumSupportedOperatingSystem", IosMinimumOperatingSystem())
 
     @property

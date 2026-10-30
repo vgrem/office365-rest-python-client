@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.backuprestore.service_status import ServiceStatus
 from office365.entity import Entity
@@ -14,9 +14,7 @@ from office365.security.healthissues.sensorhealthstatus import (
     SensorHealthStatus,
 )
 from office365.security.healthissues.sensortype import SensorType
-
-if TYPE_CHECKING:
-    from office365.security.sensor_settings import SensorSettings
+from office365.security.sensor_settings import SensorSettings
 
 
 class Sensor(Entity):
@@ -91,6 +89,4 @@ class Sensor(Entity):
     @property
     def settings(self) -> SensorSettings:
         """Gets the settings property"""
-        from office365.security.sensor_settings import SensorSettings
-
         return self.properties.get("settings", SensorSettings())

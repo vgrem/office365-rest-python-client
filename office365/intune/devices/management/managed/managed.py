@@ -10,12 +10,17 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.category import DeviceCategory
 from office365.intune.devices.compliance.policy_state import DeviceCompliancePolicyState
 from office365.intune.devices.enrollment.type import DeviceEnrollmentType
+from office365.intune.devices.management.action_result import DeviceActionResult
+from office365.intune.devices.management.configuration_manager_client_enabled_features import (  # noqa: E501
+    ConfigurationManagerClientEnabledFeatures,
+)
 from office365.intune.devices.management.exchangeaccessstate import (
     DeviceManagementExchangeAccessState,
 )
 from office365.intune.devices.management.exchangeaccessstatereason import (
     DeviceManagementExchangeAccessStateReason,
 )
+from office365.intune.devices.management.health_attestation_state import DeviceHealthAttestationState
 from office365.intune.devices.management.managed.compliancestate import ComplianceState
 from office365.intune.devices.management.managed.managementagenttype import (
     ManagementAgentType,
@@ -36,13 +41,6 @@ if TYPE_CHECKING:
     from office365.intune.devices.configuration_state import DeviceConfigurationState
     from office365.intune.devices.log_collection_response import (
         DeviceLogCollectionResponse,
-    )
-    from office365.intune.devices.management.action_result import DeviceActionResult
-    from office365.intune.devices.management.configuration_manager_client_enabled_features import (
-        ConfigurationManagerClientEnabledFeatures,
-    )
-    from office365.intune.devices.management.health_attestation_state import (
-        DeviceHealthAttestationState,
     )
     from office365.intune.devices.management.windows_protection_state import WindowsProtectionState
 
@@ -489,10 +487,6 @@ class ManagedDevice(Entity):
     @property
     def configuration_manager_client_enabled_features(self) -> ConfigurationManagerClientEnabledFeatures:
         """Gets the configurationManagerClientEnabledFeatures property"""
-        from office365.intune.devices.management.configuration_manager_client_enabled_features import (
-            ConfigurationManagerClientEnabledFeatures,
-        )
-
         return self.properties.get(
             "configurationManagerClientEnabledFeatures", ConfigurationManagerClientEnabledFeatures()
         )
@@ -501,18 +495,12 @@ class ManagedDevice(Entity):
     @property
     def device_action_results(self) -> ClientValueCollection[DeviceActionResult]:
         """Gets the deviceActionResults property"""
-        from office365.intune.devices.management.action_result import DeviceActionResult
-
         return self.properties.get("deviceActionResults", ClientValueCollection[DeviceActionResult](DeviceActionResult))
 
     @odata(name="deviceHealthAttestationState", readonly=True)
     @property
     def device_health_attestation_state(self) -> DeviceHealthAttestationState:
         """Gets the deviceHealthAttestationState property"""
-        from office365.intune.devices.management.health_attestation_state import (
-            DeviceHealthAttestationState,
-        )
-
         return self.properties.get("deviceHealthAttestationState", DeviceHealthAttestationState())
 
     @odata(name="deviceConfigurationStates", navigation=True)

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
+from office365.communications.out_of_office_settings import OutOfOfficeSettings
 from office365.communications.presences.status_message import PresenceStatusMessage
 from office365.communications.quotas import PRESENCE_QUOTAS
+from office365.communications.user_work_location import UserWorkLocation
 from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.item_body import ItemBody
@@ -14,10 +16,6 @@ from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.duration import Duration
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.out_of_office_settings import OutOfOfficeSettings
-    from office365.communications.user_work_location import UserWorkLocation
 
 
 @limit(*PRESENCE_QUOTAS)
@@ -152,14 +150,10 @@ class Presence(Entity):
     @property
     def out_of_office_settings(self) -> OutOfOfficeSettings:
         """Gets the outOfOfficeSettings property"""
-        from office365.communications.out_of_office_settings import OutOfOfficeSettings
-
         return self.properties.get("outOfOfficeSettings", OutOfOfficeSettings())
 
     @odata(name="workLocation")
     @property
     def work_location(self) -> UserWorkLocation:
         """Gets the workLocation property"""
-        from office365.communications.user_work_location import UserWorkLocation
-
         return self.properties.get("workLocation", UserWorkLocation())

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
+from office365.planner.applied_categories import PlannerAppliedCategories
 from office365.planner.assignments import PlannerAssignments
 from office365.planner.entity import PlannerEntity
 from office365.planner.tasks.previewtype import PlannerPreviewType
@@ -15,7 +16,6 @@ from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.users.user import User
-    from office365.planner.applied_categories import PlannerAppliedCategories
     from office365.planner.assigned_to_task_board_task_format import (
         PlannerAssignedToTaskBoardTaskFormat,
     )
@@ -151,10 +151,6 @@ class PlannerTask(PlannerEntity):
     @property
     def applied_categories(self) -> PlannerAppliedCategories:
         """Gets the appliedCategories property"""
-        from office365.planner.applied_categories import (
-            PlannerAppliedCategories,
-        )
-
         return self.properties.get("appliedCategories", PlannerAppliedCategories())
 
     @odata(name="assigneePriority")

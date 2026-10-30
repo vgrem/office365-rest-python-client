@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.threatintelligence.host_reputation_classification import HostReputationClassification
-
-if TYPE_CHECKING:
-    from office365.security.threatintelligence.host_reputation_rule import (
-        HostReputationRule,
-    )
+from office365.security.threatintelligence.host_reputation_rule import HostReputationRule
 
 
 class HostReputation(Entity):
@@ -34,8 +30,4 @@ class HostReputation(Entity):
     @property
     def rules(self) -> ClientValueCollection[HostReputationRule]:
         """Gets the rules property"""
-        from office365.security.threatintelligence.host_reputation_rule import (
-            HostReputationRule,
-        )
-
         return self.properties.get("rules", ClientValueCollection[HostReputationRule](HostReputationRule))

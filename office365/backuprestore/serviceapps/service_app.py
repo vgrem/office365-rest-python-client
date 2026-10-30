@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
 from office365.backuprestore.serviceapps.status import ServiceAppStatus
+from office365.directory.identity_set import IdentitySet
+from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
 from office365.runtime.converters.scalars import iso_z
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identity_set import IdentitySet
-    from office365.directory.permissions.identity import Identity
 
 
 class ServiceApp(Entity):
@@ -38,8 +36,6 @@ class ServiceApp(Entity):
     @property
     def application(self) -> Identity:
         """Gets the application property"""
-        from office365.directory.permissions.identity import Identity
-
         return self.properties.get("application", Identity())
 
     @odata(name="effectiveDateTime")
@@ -52,8 +48,6 @@ class ServiceApp(Entity):
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime")

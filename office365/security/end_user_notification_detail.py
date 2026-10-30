@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.permissions.email_identity import EmailIdentity
 
 
 class EndUserNotificationDetail(Entity):
@@ -38,8 +36,6 @@ class EndUserNotificationDetail(Entity):
     @property
     def sent_from(self) -> EmailIdentity:
         """Gets the sentFrom property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("sentFrom", EmailIdentity())
 
     @odata(name="subject")

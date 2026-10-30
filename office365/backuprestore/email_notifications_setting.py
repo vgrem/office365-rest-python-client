@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.backuprestore.notification_events_type import NotificationEventsType
+from office365.directory.rolemanagement.unifiedrole.notification_recipients import NotificationRecipients
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.rolemanagement.unifiedrole.notification_recipients import (
-        NotificationRecipients,
-    )
 
 
 class EmailNotificationsSetting(Entity):
@@ -29,10 +25,6 @@ class EmailNotificationsSetting(Entity):
     @property
     def recipients(self) -> NotificationRecipients:
         """Gets the recipients property"""
-        from office365.directory.rolemanagement.unifiedrole.notification_recipients import (
-            NotificationRecipients,
-        )
-
         return self.properties.get("recipients", NotificationRecipients())
 
     @property

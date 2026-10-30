@@ -1,18 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.authentication.oidc_client_authentication import OidcClientAuthentication
+from office365.directory.authentication.oidc_inbound_claim_mapping_override import OidcInboundClaimMappingOverride
 from office365.directory.identities.providers.oidc_response_type import OidcResponseType
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.authentication.oidc_client_authentication import (
-        OidcClientAuthentication,
-    )
-    from office365.directory.authentication.oidc_inbound_claim_mapping_override import (
-        OidcInboundClaimMappingOverride,
-    )
 
 
 class OidcIdentityProvider(Entity):
@@ -20,10 +14,6 @@ class OidcIdentityProvider(Entity):
     @property
     def client_authentication(self) -> OidcClientAuthentication:
         """Gets the clientAuthentication property"""
-        from office365.directory.authentication.oidc_client_authentication import (
-            OidcClientAuthentication,
-        )
-
         return self.properties.get("clientAuthentication", OidcClientAuthentication())
 
     @odata(name="clientId")
@@ -36,10 +26,6 @@ class OidcIdentityProvider(Entity):
     @property
     def inbound_claim_mapping(self) -> OidcInboundClaimMappingOverride:
         """Gets the inboundClaimMapping property"""
-        from office365.directory.authentication.oidc_inbound_claim_mapping_override import (
-            OidcInboundClaimMappingOverride,
-        )
-
         return self.properties.get("inboundClaimMapping", OidcInboundClaimMappingOverride())
 
     @odata(name="issuer")

@@ -11,16 +11,22 @@ from office365.directory.applications.roles.assignment_collection import (
 )
 from office365.directory.applications.roles.collection import AppRoleCollection
 from office365.directory.applications.roles.role import AppRole
+from office365.directory.applications.verifiedpublisher import VerifiedPublisher
 from office365.directory.certificates.self_signed import SelfSignedCertificate
 from office365.directory.key_credential import KeyCredential
+from office365.directory.objects.addin import AddIn
 from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.objects.customsecurityattributevalue import CustomSecurityAttributeValue
+from office365.directory.objects.informationalurl import InformationalUrl
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
 from office365.directory.permissions.grants.oauth2_collection import (
     OAuth2PermissionGrantCollection,
 )
+from office365.directory.permissions.grants.resourcespecificpermission import ResourceSpecificPermission
 from office365.directory.permissions.scope import PermissionScope
+from office365.directory.serviceprincipals.samlsinglesignonsettings import SamlSingleSignOnSettings
 from office365.directory.synchronization.synchronization import Synchronization
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_result import ClientResult
@@ -33,15 +39,6 @@ from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.endpoint import Endpoint
-    from office365.directory.applications.verifiedpublisher import VerifiedPublisher
-    from office365.directory.objects.addin import AddIn
-    from office365.directory.objects.customsecurityattributevalue import (
-        CustomSecurityAttributeValue,
-    )
-    from office365.directory.objects.informationalurl import InformationalUrl
-    from office365.directory.permissions.grants.resourcespecificpermission import (
-        ResourceSpecificPermission,
-    )
     from office365.directory.policies.app_management import AppManagementPolicy
     from office365.directory.policies.claims_mapping_policy import ClaimsMappingPolicy
     from office365.directory.policies.home_realm_discovery import (
@@ -57,9 +54,6 @@ if TYPE_CHECKING:
     )
     from office365.directory.serviceprincipals.remote_desktop_security_configuration import (
         RemoteDesktopSecurityConfiguration,
-    )
-    from office365.directory.serviceprincipals.samlsinglesignonsettings import (
-        SamlSingleSignOnSettings,
     )
 
 
@@ -544,8 +538,6 @@ class ServicePrincipal(DirectoryObject):
     @property
     def add_ins(self) -> ClientValueCollection[AddIn]:
         """Gets the addIns property"""
-        from office365.directory.objects.addin import AddIn
-
         return self.properties.get("addIns", ClientValueCollection[AddIn](AddIn))
 
     @odata(name="applicationTemplateId")
@@ -570,10 +562,6 @@ class ServicePrincipal(DirectoryObject):
     @property
     def custom_security_attributes(self) -> CustomSecurityAttributeValue:
         """Gets the customSecurityAttributes property"""
-        from office365.directory.objects.customsecurityattributevalue import (
-            CustomSecurityAttributeValue,
-        )
-
         return self.properties.get("customSecurityAttributes", CustomSecurityAttributeValue())
 
     @odata(name="description")
@@ -592,8 +580,6 @@ class ServicePrincipal(DirectoryObject):
     @property
     def info(self) -> InformationalUrl:
         """Gets the info property"""
-        from office365.directory.objects.informationalurl import InformationalUrl
-
         return self.properties.get("info", InformationalUrl())
 
     @odata(name="isDisabled")
@@ -630,10 +616,6 @@ class ServicePrincipal(DirectoryObject):
     @property
     def resource_specific_application_permissions(self) -> ClientValueCollection[ResourceSpecificPermission]:
         """Gets the resourceSpecificApplicationPermissions property"""
-        from office365.directory.permissions.grants.resourcespecificpermission import (
-            ResourceSpecificPermission,
-        )
-
         return self.properties.get(
             "resourceSpecificApplicationPermissions",
             ClientValueCollection[ResourceSpecificPermission](ResourceSpecificPermission),
@@ -643,10 +625,6 @@ class ServicePrincipal(DirectoryObject):
     @property
     def saml_single_sign_on_settings(self) -> SamlSingleSignOnSettings:
         """Gets the samlSingleSignOnSettings property"""
-        from office365.directory.serviceprincipals.samlsinglesignonsettings import (
-            SamlSingleSignOnSettings,
-        )
-
         return self.properties.get("samlSingleSignOnSettings", SamlSingleSignOnSettings())
 
     @odata(name="servicePrincipalNames")
@@ -671,8 +649,6 @@ class ServicePrincipal(DirectoryObject):
     @property
     def verified_publisher(self) -> VerifiedPublisher:
         """Gets the verifiedPublisher property"""
-        from office365.directory.applications.verifiedpublisher import VerifiedPublisher
-
         return self.properties.get("verifiedPublisher", VerifiedPublisher())
 
     @odata(name="appManagementPolicies", navigation=True)

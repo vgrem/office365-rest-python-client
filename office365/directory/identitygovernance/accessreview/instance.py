@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identitygovernance.accessreview.error import AccessReviewError
 from office365.directory.identitygovernance.accessreview.instance_decision_item import (
     AccessReviewInstanceDecisionItem,
 )
 from office365.directory.identitygovernance.accessreview.reviewer import (
     AccessReviewReviewer,
 )
+from office365.directory.identitygovernance.accessreview.reviewer_scope import AccessReviewReviewerScope
 from office365.directory.identitygovernance.accessreview.scope import AccessReviewScope
 from office365.directory.identitygovernance.accessreview.stages import (
     AccessReviewStageCollection,
@@ -18,14 +20,6 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.accessreview.error import (
-        AccessReviewError,
-    )
-    from office365.directory.identitygovernance.accessreview.reviewer_scope import (
-        AccessReviewReviewerScope,
-    )
 
 
 class AccessReviewInstance(Entity):
@@ -102,20 +96,12 @@ class AccessReviewInstance(Entity):
     @property
     def errors(self) -> ClientValueCollection[AccessReviewError]:
         """Gets the errors property"""
-        from office365.directory.identitygovernance.accessreview.error import (
-            AccessReviewError,
-        )
-
         return self.properties.get("errors", ClientValueCollection[AccessReviewError](AccessReviewError))
 
     @odata(name="fallbackReviewers")
     @property
     def fallback_reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the fallbackReviewers property"""
-        from office365.directory.identitygovernance.accessreview.reviewer_scope import (
-            AccessReviewReviewerScope,
-        )
-
         return self.properties.get(
             "fallbackReviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )
@@ -124,10 +110,6 @@ class AccessReviewInstance(Entity):
     @property
     def reviewers(self) -> ClientValueCollection[AccessReviewReviewerScope]:
         """Gets the reviewers property"""
-        from office365.directory.identitygovernance.accessreview.reviewer_scope import (
-            AccessReviewReviewerScope,
-        )
-
         return self.properties.get(
             "reviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )

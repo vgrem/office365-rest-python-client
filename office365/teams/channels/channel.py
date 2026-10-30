@@ -17,6 +17,7 @@ from office365.teams.channels.layout_type import ChannelLayoutType
 from office365.teams.channels.membership_type import ChannelMembershipType
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
 from office365.teams.channels.shared_team_info import SharedWithChannelTeamInfo
+from office365.teams.channels.summary import ChannelSummary
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.members.conversation import ConversationMember
 from office365.teams.migration_mode import MigrationMode
@@ -25,7 +26,6 @@ from office365.teams.tabs.tab import TeamsTab
 
 if TYPE_CHECKING:
     from office365.teams.apps.app import TeamsApp
-    from office365.teams.channels.summary import ChannelSummary
 
 
 class Channel(Entity):
@@ -238,8 +238,6 @@ class Channel(Entity):
     @property
     def summary(self) -> ChannelSummary:
         """Gets the summary property"""
-        from office365.teams.channels.summary import ChannelSummary
-
         return self.properties.get("summary", ChannelSummary())
 
     @odata(name="allMembers", navigation=True)

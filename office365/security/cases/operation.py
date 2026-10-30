@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.communications.result_info import ResultInfo
+from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 from office365.security.cases.action import CaseAction
 from office365.security.cases.operationstatus import CaseOperationStatus
-
-if TYPE_CHECKING:
-    from office365.communications.result_info import ResultInfo
-    from office365.directory.identity_set import IdentitySet
 
 
 class CaseOperation(PollableOperation, Entity):
@@ -38,8 +36,6 @@ class CaseOperation(PollableOperation, Entity):
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("createdBy", IdentitySet())
 
     @odata(name="createdDateTime")
@@ -58,8 +54,6 @@ class CaseOperation(PollableOperation, Entity):
     @property
     def result_info(self) -> ResultInfo:
         """Gets the resultInfo property"""
-        from office365.communications.result_info import ResultInfo
-
         return self.properties.get("resultInfo", ResultInfo())
 
     @odata(name="status")

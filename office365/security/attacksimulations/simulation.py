@@ -3,9 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.o_auth_consent_app_detail import OAuthConsentAppDetail
+from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.security.account_target_content import AccountTargetContent
 from office365.security.attacksimulations.payloaddeliveryplatform import PayloadDeliveryPlatform
 from office365.security.attacksimulations.reports.report import (
     SimulationReport,
@@ -13,18 +16,13 @@ from office365.security.attacksimulations.reports.report import (
 from office365.security.attacksimulations.simulationattacktechnique import SimulationAttackTechnique
 from office365.security.attacksimulations.simulationattacktype import SimulationAttackType
 from office365.security.attacksimulations.simulationstatus import SimulationStatus
+from office365.security.end_user_notification_setting import EndUserNotificationSetting
+from office365.security.training_setting import TrainingSetting
 
 if TYPE_CHECKING:
-    from office365.directory.o_auth_consent_app_detail import OAuthConsentAppDetail
-    from office365.directory.permissions.email_identity import EmailIdentity
-    from office365.security.account_target_content import AccountTargetContent
     from office365.security.attacksimulations.landing_page import LandingPage
     from office365.security.attacksimulations.login_page import LoginPage
     from office365.security.attacksimulations.payload import Payload
-    from office365.security.end_user_notification_setting import (
-        EndUserNotificationSetting,
-    )
-    from office365.security.training_setting import TrainingSetting
 
 
 class Simulation(Entity):
@@ -76,8 +74,6 @@ class Simulation(Entity):
     @property
     def created_by(self) -> EmailIdentity:
         """Gets the createdBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("createdBy", EmailIdentity())
 
     @odata(name="createdDateTime")
@@ -108,30 +104,18 @@ class Simulation(Entity):
     @property
     def end_user_notification_setting(self) -> EndUserNotificationSetting:
         """Gets the endUserNotificationSetting property"""
-        from office365.security.end_user_notification_setting import (
-            EndUserNotificationSetting,
-        )
-
         return self.properties.get("endUserNotificationSetting", EndUserNotificationSetting())
 
     @odata(name="excludedAccountTarget")
     @property
     def excluded_account_target(self) -> AccountTargetContent:
         """Gets the excludedAccountTarget property"""
-        from office365.security.account_target_content import (
-            AccountTargetContent,
-        )
-
         return self.properties.get("excludedAccountTarget", AccountTargetContent())
 
     @odata(name="includedAccountTarget")
     @property
     def included_account_target(self) -> AccountTargetContent:
         """Gets the includedAccountTarget property"""
-        from office365.security.account_target_content import (
-            AccountTargetContent,
-        )
-
         return self.properties.get("includedAccountTarget", AccountTargetContent())
 
     @odata(name="isAutomated")
@@ -144,8 +128,6 @@ class Simulation(Entity):
     @property
     def last_modified_by(self) -> EmailIdentity:
         """Gets the lastModifiedBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("lastModifiedBy", EmailIdentity())
 
     @odata(name="lastModifiedDateTime")
@@ -164,8 +146,6 @@ class Simulation(Entity):
     @property
     def oauth_consent_app_detail(self) -> OAuthConsentAppDetail:
         """Gets the oAuthConsentAppDetail property"""
-        from office365.directory.o_auth_consent_app_detail import OAuthConsentAppDetail
-
         return self.properties.get("oAuthConsentAppDetail", OAuthConsentAppDetail())
 
     @odata(name="payloadDeliveryPlatform")
@@ -184,8 +164,6 @@ class Simulation(Entity):
     @property
     def training_setting(self) -> TrainingSetting:
         """Gets the trainingSetting property"""
-        from office365.security.training_setting import TrainingSetting
-
         return self.properties.get("trainingSetting", TrainingSetting())
 
     @odata(name="landingPage", navigation=True)

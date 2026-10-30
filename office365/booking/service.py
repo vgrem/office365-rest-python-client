@@ -3,17 +3,17 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.booking.chedulingpolicy import BookingSchedulingPolicy
 from office365.booking.pricetype import BookingPriceType
+from office365.booking.questionassignment import BookingQuestionAssignment
+from office365.booking.reminder import BookingReminder
 from office365.entity import Entity
+from office365.outlook.mail.location import Location
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.booking.chedulingpolicy import BookingSchedulingPolicy
-    from office365.booking.questionassignment import BookingQuestionAssignment
-    from office365.booking.reminder import BookingReminder
-    from office365.outlook.mail.location import Location
     from office365.runtime.types.duration import timedelta
 
 
@@ -39,8 +39,6 @@ class BookingService(Entity):
     @property
     def custom_questions(self) -> ClientValueCollection[BookingQuestionAssignment]:
         """Gets the customQuestions property"""
-        from office365.booking.questionassignment import BookingQuestionAssignment
-
         return self.properties.get(
             "customQuestions", ClientValueCollection[BookingQuestionAssignment](BookingQuestionAssignment)
         )
@@ -55,8 +53,6 @@ class BookingService(Entity):
     @property
     def default_location(self) -> Location:
         """Gets the defaultLocation property"""
-        from office365.outlook.mail.location import Location
-
         return self.properties.get("defaultLocation", Location())
 
     @odata(name="defaultPrice")
@@ -75,8 +71,6 @@ class BookingService(Entity):
     @property
     def default_reminders(self) -> ClientValueCollection[BookingReminder]:
         """Gets the defaultReminders property"""
-        from office365.booking.reminder import BookingReminder
-
         return self.properties.get("defaultReminders", ClientValueCollection[BookingReminder](BookingReminder))
 
     @odata(name="description")
@@ -155,8 +149,6 @@ class BookingService(Entity):
     @property
     def scheduling_policy(self) -> BookingSchedulingPolicy:
         """Gets the schedulingPolicy property"""
-        from office365.booking.chedulingpolicy import BookingSchedulingPolicy
-
         return self.properties.get("schedulingPolicy", BookingSchedulingPolicy())
 
     @odata(name="smsNotificationsEnabled")

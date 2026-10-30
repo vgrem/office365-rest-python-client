@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.intune.browser.browser_site_history import BrowserSiteHistory
 from office365.intune.browser.sitecompatibilitymode import BrowserSiteCompatibilityMode
 from office365.intune.browser.sitemergetype import BrowserSiteMergeType
 from office365.intune.browser.sitestatus import BrowserSiteStatus
 from office365.intune.browser.sitetargetenvironment import BrowserSiteTargetEnvironment
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identity_set import IdentitySet
-    from office365.intune.browser.browser_site_history import BrowserSiteHistory
 
 
 class BrowserSite(Entity):
@@ -51,16 +49,12 @@ class BrowserSite(Entity):
     @property
     def history(self) -> ClientValueCollection[BrowserSiteHistory]:
         """Gets the history property"""
-        from office365.intune.browser.browser_site_history import BrowserSiteHistory
-
         return self.properties.get("history", ClientValueCollection[BrowserSiteHistory](BrowserSiteHistory))
 
     @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime")

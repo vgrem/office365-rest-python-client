@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identitygovernance.accessreview.target_owners import TargetOwners
 from office365.entity import Entity
+from office365.outlook.mail.email_details import EmailDetails
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.accessreview.target_owners import (
-        TargetOwners,
-    )
-    from office365.outlook.mail.email_details import EmailDetails
 
 
 class OwnerlessGroupPolicy(Entity):
@@ -18,8 +14,6 @@ class OwnerlessGroupPolicy(Entity):
     @property
     def email_info(self) -> EmailDetails:
         """Gets the emailInfo property"""
-        from office365.outlook.mail.email_details import EmailDetails
-
         return self.properties.get("emailInfo", EmailDetails())
 
     @odata(name="enabledGroupIds")
@@ -56,10 +50,6 @@ class OwnerlessGroupPolicy(Entity):
     @property
     def target_owners(self) -> TargetOwners:
         """Gets the targetOwners property"""
-        from office365.directory.identitygovernance.accessreview.target_owners import (
-            TargetOwners,
-        )
-
         return self.properties.get("targetOwners", TargetOwners())
 
     @property

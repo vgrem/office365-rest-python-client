@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+from office365.directory.authentication.attributecollection.start_handler import OnAttributeCollectionStartHandler
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.authentication.attributecollection.start_handler import (
-        OnAttributeCollectionStartHandler,
-    )
 
 
 class OnAttributeCollectionStartListener(Entity):
@@ -16,10 +10,6 @@ class OnAttributeCollectionStartListener(Entity):
     @property
     def handler(self) -> OnAttributeCollectionStartHandler:
         """Gets the handler property"""
-        from office365.directory.authentication.attributecollection.start_handler import (
-            OnAttributeCollectionStartHandler,
-        )
-
         return self.properties.get("handler", OnAttributeCollectionStartHandler())
 
     @property

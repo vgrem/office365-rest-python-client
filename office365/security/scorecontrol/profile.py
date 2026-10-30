@@ -1,21 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.compliance.information import ComplianceInformation
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.compliance.information import ComplianceInformation
-    from office365.security.securescores.control_state_update import (
-        SecureScoreControlStateUpdate,
-    )
-    from office365.security.security_vendor_information import (
-        SecurityVendorInformation,
-    )
+from office365.security.securescores.control_state_update import SecureScoreControlStateUpdate
+from office365.security.security_vendor_information import SecurityVendorInformation
 
 
 class SecureScoreControlProfile(Entity):
@@ -44,8 +38,6 @@ class SecureScoreControlProfile(Entity):
     @property
     def compliance_information(self) -> ClientValueCollection[ComplianceInformation]:
         """Gets the complianceInformation property"""
-        from office365.intune.devices.compliance.information import ComplianceInformation
-
         return self.properties.get(
             "complianceInformation", ClientValueCollection[ComplianceInformation](ComplianceInformation)
         )
@@ -60,10 +52,6 @@ class SecureScoreControlProfile(Entity):
     @property
     def control_state_updates(self) -> ClientValueCollection[SecureScoreControlStateUpdate]:
         """Gets the controlStateUpdates property"""
-        from office365.security.securescores.control_state_update import (
-            SecureScoreControlStateUpdate,
-        )
-
         return self.properties.get(
             "controlStateUpdates", ClientValueCollection[SecureScoreControlStateUpdate](SecureScoreControlStateUpdate)
         )
@@ -144,10 +132,6 @@ class SecureScoreControlProfile(Entity):
     @property
     def vendor_information(self) -> SecurityVendorInformation:
         """Gets the vendorInformation property"""
-        from office365.security.security_vendor_information import (
-            SecurityVendorInformation,
-        )
-
         return self.properties.get("vendorInformation", SecurityVendorInformation())
 
     @property

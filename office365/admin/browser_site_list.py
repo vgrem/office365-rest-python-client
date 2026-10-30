@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.browser.siteliststatus import BrowserSiteListStatus
@@ -12,7 +13,6 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.admin.browser_shared_cookie import BrowserSharedCookie
     from office365.admin.browser_site import BrowserSite
-    from office365.directory.identity_set import IdentitySet
 
 
 class BrowserSiteList(Entity):
@@ -32,8 +32,6 @@ class BrowserSiteList(Entity):
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime")
@@ -46,8 +44,6 @@ class BrowserSiteList(Entity):
     @property
     def published_by(self) -> IdentitySet:
         """Gets the publishedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("publishedBy", IdentitySet())
 
     @odata(name="publishedDateTime")

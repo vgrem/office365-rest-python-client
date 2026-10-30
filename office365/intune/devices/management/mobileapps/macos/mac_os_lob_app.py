@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.macos.mac_os_lob_child_app import MacOSLobChildApp
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -10,9 +11,6 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.intune.devices.configurations.macos.mac_os_minimum_operating_system import (
         MacOSMinimumOperatingSystem,
-    )
-    from office365.intune.devices.management.mobileapps.macos.mac_os_lob_child_app import (
-        MacOSLobChildApp,
     )
 
 
@@ -33,10 +31,6 @@ class MacOSLobApp(Entity):
     @property
     def child_apps(self) -> ClientValueCollection[MacOSLobChildApp]:
         """Gets the childApps property"""
-        from office365.intune.devices.management.mobileapps.macos.mac_os_lob_child_app import (
-            MacOSLobChildApp,
-        )
-
         return self.properties.get("childApps", ClientValueCollection[MacOSLobChildApp](MacOSLobChildApp))
 
     @odata(name="ignoreVersionDetection")

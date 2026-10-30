@@ -42,6 +42,7 @@ from office365.sharepoint.files.move_operations import MoveOperations
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.pages.customized_page_status import CustomizedPageStatus
 from office365.sharepoint.permissions.base_permissions import BasePermissions
@@ -75,7 +76,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.files.deleteparameters import FileDeleteParameters
     from office365.sharepoint.files.download_operation import DownloadOperation
-    from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
     from office365.sharepoint.webs.web import Web
 
 
@@ -1405,10 +1405,6 @@ class File(AbstractFile):
     @property
     def compliance_info(self) -> ListItemComplianceInfo:
         """Gets the ComplianceInfo property"""
-        from office365.sharepoint.listitems.compliance_info import (
-            ListItemComplianceInfo,
-        )
-
         return self.properties.get("ComplianceInfo", ListItemComplianceInfo())
 
     @odata(name="ETag")

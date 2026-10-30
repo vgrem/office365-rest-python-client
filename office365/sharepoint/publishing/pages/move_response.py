@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
-
-if TYPE_CHECKING:
-    from office365.sharepoint.publishing.pagedeepcopywarning import PageDeepCopyWarning
+from office365.sharepoint.publishing.pagedeepcopywarning import PageDeepCopyWarning
 
 
 class PageMoveResponse(Entity):
@@ -71,10 +69,6 @@ class PageMoveResponse(Entity):
     @property
     def warnings(self) -> ClientValueCollection[PageDeepCopyWarning]:
         """Gets the Warnings property"""
-        from office365.sharepoint.publishing.pagedeepcopywarning import (
-            PageDeepCopyWarning,
-        )
-
         return self.properties.get("Warnings", ClientValueCollection[PageDeepCopyWarning](PageDeepCopyWarning))
 
     @odata(name="WorkItemId")

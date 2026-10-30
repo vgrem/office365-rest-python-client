@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.workbooks.charts.point_format import WorkbookChartPointFormat
-    from office365.runtime.types.json import Json
 
 
 class WorkbookChartPoint(Entity):
@@ -18,8 +18,6 @@ class WorkbookChartPoint(Entity):
     @property
     def value(self) -> Json:
         """Gets the value property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("value", Json())
 
     @odata(name="format", navigation=True)

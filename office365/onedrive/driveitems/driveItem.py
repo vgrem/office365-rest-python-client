@@ -6,7 +6,7 @@ from functools import partial
 from io import IOBase
 from os import PathLike
 from os.path import isfile, join
-from typing import IO, TYPE_CHECKING, AnyStr, AsyncIterator, Callable, Optional
+from typing import IO, AnyStr, AsyncIterator, Callable, Optional
 
 import requests
 from requests import Response
@@ -20,11 +20,14 @@ from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.driveitems.audio import Audio
+from office365.onedrive.driveitems.bundle import Bundle
 from office365.onedrive.driveitems.conflict_behavior import ConflictBehavior
 from office365.onedrive.driveitems.copy_result import DriveItemCopyResult
 from office365.onedrive.driveitems.geo_coordinates import GeoCoordinates
 from office365.onedrive.driveitems.image import Image
 from office365.onedrive.driveitems.item_preview_info import ItemPreviewInfo
+from office365.onedrive.driveitems.malware import Malware
+from office365.onedrive.driveitems.package import Package
 from office365.onedrive.driveitems.photo import Photo
 from office365.onedrive.driveitems.publication_facet import PublicationFacet
 from office365.onedrive.driveitems.remote_item import RemoteItem
@@ -34,6 +37,7 @@ from office365.onedrive.driveitems.thumbnail_set import ThumbnailSet
 from office365.onedrive.driveitems.uploadable_properties import (
     DriveItemUploadableProperties,
 )
+from office365.onedrive.driveitems.video import Video
 from office365.onedrive.drives.recipient import DriveRecipient
 from office365.onedrive.files.file import File
 from office365.onedrive.files.system_info import FileSystemInfo
@@ -45,6 +49,7 @@ from office365.onedrive.listitems.list_item import ListItem
 from office365.onedrive.operations.pending import PendingOperations
 from office365.onedrive.permissions.collection import PermissionCollection
 from office365.onedrive.permissions.permission import Permission
+from office365.onedrive.root import Root
 from office365.onedrive.sensitivitylabels.assignment_method import (
     SensitivityLabelAssignmentMethod,
 )
@@ -70,15 +75,8 @@ from office365.runtime.queries.upload_session import UploadSessionQuery
 from office365.runtime.transport.base import HeadersCallback
 from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 from office365.runtime.types.odata_property import odata
+from office365.search.search_result import SearchResult
 from office365.subscriptions.collection import SubscriptionCollection
-
-if TYPE_CHECKING:
-    from office365.onedrive.driveitems.bundle import Bundle
-    from office365.onedrive.driveitems.malware import Malware
-    from office365.onedrive.driveitems.package import Package
-    from office365.onedrive.driveitems.video import Video
-    from office365.onedrive.root import Root
-    from office365.search.search_result import SearchResult
 
 
 class DriveItem(BaseItem):
@@ -1493,8 +1491,6 @@ class DriveItem(BaseItem):
     @property
     def bundle(self) -> Bundle:
         """Gets the bundle property"""
-        from office365.onedrive.driveitems.bundle import Bundle
-
         return self.properties.get("bundle", Bundle())
 
     @odata(name="content")
@@ -1513,40 +1509,30 @@ class DriveItem(BaseItem):
     @property
     def malware(self) -> Malware:
         """Gets the malware property"""
-        from office365.onedrive.driveitems.malware import Malware
-
         return self.properties.get("malware", Malware())
 
     @odata(name="package")
     @property
     def package(self) -> Package:
         """Gets the package property"""
-        from office365.onedrive.driveitems.package import Package
-
         return self.properties.get("package", Package())
 
     @odata(name="root")
     @property
     def root(self) -> Root:
         """Gets the root property"""
-        from office365.onedrive.root import Root
-
         return self.properties.get("root", Root())
 
     @odata(name="searchResult")
     @property
     def search_result(self) -> SearchResult:
         """Gets the searchResult property"""
-        from office365.search.search_result import SearchResult
-
         return self.properties.get("searchResult", SearchResult())
 
     @odata(name="video")
     @property
     def video(self) -> Video:
         """Gets the video property"""
-        from office365.onedrive.driveitems.video import Video
-
         return self.properties.get("video", Video())
 
     @property

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.communications.virtualevents.external_information import VirtualEventExternalInformation
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -13,9 +14,6 @@ if TYPE_CHECKING:
     from office365.communications.onlinemeetings.attendance_record import (
         AttendanceRecord,
     )
-    from office365.communications.virtualevents.external_information import (
-        VirtualEventExternalInformation,
-    )
 
 
 class MeetingAttendanceReport(Entity):
@@ -23,10 +21,6 @@ class MeetingAttendanceReport(Entity):
     @property
     def external_event_information(self) -> ClientValueCollection[VirtualEventExternalInformation]:
         """Gets the externalEventInformation property"""
-        from office365.communications.virtualevents.external_information import (
-            VirtualEventExternalInformation,
-        )
-
         return self.properties.get(
             "externalEventInformation",
             ClientValueCollection[VirtualEventExternalInformation](VirtualEventExternalInformation),

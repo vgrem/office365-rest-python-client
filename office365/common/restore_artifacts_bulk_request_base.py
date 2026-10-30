@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.backuprestore.destinationtype import DestinationType
 from office365.backuprestore.restoreartifactsbulkrequeststatus import RestoreArtifactsBulkRequestStatus
 from office365.backuprestore.restorepoints.preference import RestorePointPreference
 from office365.backuprestore.restorepoints.tags import RestorePointTags
+from office365.backuprestore.time_period import TimePeriod
+from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.backuprestore.time_period import TimePeriod
-    from office365.directory.identity_set import IdentitySet
-    from office365.runtime.types.public_error import PublicError
+from office365.runtime.types.public_error import PublicError
 
 
 class RestoreArtifactsBulkRequestBase(Entity):
@@ -22,8 +20,6 @@ class RestoreArtifactsBulkRequestBase(Entity):
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("createdBy", IdentitySet())
 
     @odata(name="createdDateTime")
@@ -48,16 +44,12 @@ class RestoreArtifactsBulkRequestBase(Entity):
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
-        from office365.runtime.types.public_error import PublicError
-
         return self.properties.get("error", PublicError())
 
     @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime")
@@ -70,8 +62,6 @@ class RestoreArtifactsBulkRequestBase(Entity):
     @property
     def protection_time_period(self) -> TimePeriod:
         """Gets the protectionTimePeriod property"""
-        from office365.backuprestore.time_period import TimePeriod
-
         return self.properties.get("protectionTimePeriod", TimePeriod())
 
     @odata(name="protectionUnitIds")

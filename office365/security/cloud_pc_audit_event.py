@@ -1,24 +1,18 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityoperationtype import (  # noqa: E501
     CloudPcAuditActivityOperationType,
 )
 from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactivityresult import CloudPcAuditActivityResult
+from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactor import CloudPcAuditActor
 from office365.intune.devices.management.virtualendpoint.cloudpcs.auditcategory import CloudPcAuditCategory
+from office365.intune.devices.management.virtualendpoint.cloudpcs.auditresource import CloudPcAuditResource
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactor import (
-        CloudPcAuditActor,
-    )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.auditresource import (
-        CloudPcAuditResource,
-    )
 
 
 class CloudPcAuditEvent(Entity):
@@ -56,10 +50,6 @@ class CloudPcAuditEvent(Entity):
     @property
     def actor(self) -> CloudPcAuditActor:
         """Gets the actor property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.auditactor import (
-            CloudPcAuditActor,
-        )
-
         return self.properties.get("actor", CloudPcAuditActor())
 
     @odata(name="category")
@@ -90,10 +80,6 @@ class CloudPcAuditEvent(Entity):
     @property
     def resources(self) -> ClientValueCollection[CloudPcAuditResource]:
         """Gets the resources property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.auditresource import (
-            CloudPcAuditResource,
-        )
-
         return self.properties.get("resources", ClientValueCollection[CloudPcAuditResource](CloudPcAuditResource))
 
     @property

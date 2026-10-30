@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.eligibilityfilteringenabledentities import EligibilityFilteringEnabledEntities
 from office365.teams.teamwork.workforce_integration_supported_entities import WorkforceIntegrationSupportedEntities
-
-if TYPE_CHECKING:
-    from office365.teams.workforce_integration_encryption import (
-        WorkforceIntegrationEncryption,
-    )
+from office365.teams.workforce_integration_encryption import WorkforceIntegrationEncryption
 
 
 class WorkforceIntegration(Entity):
@@ -36,10 +32,6 @@ class WorkforceIntegration(Entity):
     @property
     def encryption(self) -> WorkforceIntegrationEncryption:
         """Gets the encryption property"""
-        from office365.teams.workforce_integration_encryption import (
-            WorkforceIntegrationEncryption,
-        )
-
         return self.properties.get("encryption", WorkforceIntegrationEncryption())
 
     @odata(name="isActive")

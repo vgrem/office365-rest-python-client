@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
     LifecycleWorkflowProcessingStatus,
 )
 from office365.directory.identitygovernance.task import Task
+from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 from office365.directory.users.user import User
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 
 
 class TaskProcessingResult(Entity):
@@ -73,8 +71,4 @@ class TaskProcessingResult(Entity):
     @property
     def workflow_subject(self) -> WorkflowSubject:
         """Gets the workflowSubject property"""
-        from office365.directory.identitygovernance.workflow.subject import (
-            WorkflowSubject,
-        )
-
         return self.properties.get("workflowSubject", WorkflowSubject())

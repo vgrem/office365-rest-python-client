@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.copilot.package_access_entity import PackageAccessEntity
+from office365.copilot.package_element_detail import PackageElementDetail
 from office365.copilot.package_request_metadata import CopilotPackageRequestMetadata
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.copilot.package_access_entity import PackageAccessEntity
-    from office365.copilot.package_element_detail import PackageElementDetail
 
 
 class CopilotPackageDetail(Entity):
@@ -19,8 +17,6 @@ class CopilotPackageDetail(Entity):
     @property
     def acquire_users_and_groups(self) -> ClientValueCollection[PackageAccessEntity]:
         """Gets the acquireUsersAndGroups property"""
-        from office365.copilot.package_access_entity import PackageAccessEntity
-
         return self.properties.get(
             "acquireUsersAndGroups", ClientValueCollection[PackageAccessEntity](PackageAccessEntity)
         )
@@ -35,8 +31,6 @@ class CopilotPackageDetail(Entity):
     @property
     def allowed_users_and_groups(self) -> ClientValueCollection[PackageAccessEntity]:
         """Gets the allowedUsersAndGroups property"""
-        from office365.copilot.package_access_entity import PackageAccessEntity
-
         return self.properties.get(
             "allowedUsersAndGroups", ClientValueCollection[PackageAccessEntity](PackageAccessEntity)
         )
@@ -51,8 +45,6 @@ class CopilotPackageDetail(Entity):
     @property
     def element_details(self) -> ClientValueCollection[PackageElementDetail]:
         """Gets the elementDetails property"""
-        from office365.copilot.package_element_detail import PackageElementDetail
-
         return self.properties.get("elementDetails", ClientValueCollection[PackageElementDetail](PackageElementDetail))
 
     @odata(name="exceptionRate")
@@ -83,8 +75,6 @@ class CopilotPackageDetail(Entity):
     @property
     def shared_with_users_and_groups(self) -> ClientValueCollection[PackageAccessEntity]:
         """Gets the sharedWithUsersAndGroups property"""
-        from office365.copilot.package_access_entity import PackageAccessEntity
-
         return self.properties.get(
             "sharedWithUsersAndGroups", ClientValueCollection[PackageAccessEntity](PackageAccessEntity)
         )

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.request_schedule import RequestSchedule
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.request_schedule import RequestSchedule
 
 
 class UnifiedRoleEligibilitySchedule(Entity):
@@ -20,8 +18,6 @@ class UnifiedRoleEligibilitySchedule(Entity):
     @property
     def schedule_info(self) -> RequestSchedule:
         """Gets the scheduleInfo property"""
-        from office365.directory.request_schedule import RequestSchedule
-
         return self.properties.get("scheduleInfo", RequestSchedule())
 
     @property

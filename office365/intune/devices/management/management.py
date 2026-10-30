@@ -12,15 +12,19 @@ from office365.intune.devices.category import DeviceCategory
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
 )
+from office365.intune.devices.management.device_protection_overview import DeviceProtectionOverview
 from office365.intune.devices.management.managed.collection import (
     ManagedDeviceCollection,
 )
 from office365.intune.devices.management.reports.reports import DeviceManagementReports
+from office365.intune.devices.management.settings import DeviceManagementSettings
 from office365.intune.devices.management.subscriptionstate import DeviceManagementSubscriptionState
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
+from office365.intune.devices.management.user_experience_analytics_settings import UserExperienceAnalyticsSettings
 from office365.intune.devices.management.virtualendpoint.virtual_endpoint import (
     VirtualEndpoint,
 )
+from office365.intune.devices.management.windows_malware_overview import WindowsMalwareOverview
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -52,9 +56,6 @@ if TYPE_CHECKING:
         ApplePushNotificationCertificate,
     )
     from office365.intune.devices.management.detected_app import DetectedApp
-    from office365.intune.devices.management.device_protection_overview import (
-        DeviceProtectionOverview,
-    )
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
         ImportedWindowsAutopilotDeviceIdentity,
     )
@@ -76,12 +77,8 @@ if TYPE_CHECKING:
         RemoteAssistancePartner,
     )
     from office365.intune.devices.management.resource_operation import ResourceOperation
-    from office365.intune.devices.management.settings import DeviceManagementSettings
     from office365.intune.devices.management.software_update_status_summary import (
         SoftwareUpdateStatusSummary,
-    )
-    from office365.intune.devices.management.user_experience_analytics_settings import (
-        UserExperienceAnalyticsSettings,
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_app_health_app_performance_by_app_version_details import (  # noqa: E501
         UserExperienceAnalyticsAppHealthAppPerformanceByAppVersionDetails,
@@ -157,9 +154,6 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.windows_information_protection_network_learning_summary import (
         WindowsInformationProtectionNetworkLearningSummary,
-    )
-    from office365.intune.devices.management.windows_malware_overview import (
-        WindowsMalwareOverview,
     )
     from office365.intune.devices.management.windowsmalware.windows_malware_information import WindowsMalwareInformation
     from office365.intune.devices.management_exchange_connector import (
@@ -279,20 +273,12 @@ class DeviceManagement(Entity):
     @property
     def settings(self) -> DeviceManagementSettings:
         """Gets the settings property"""
-        from office365.intune.devices.management.settings import (
-            DeviceManagementSettings,
-        )
-
         return self.properties.get("settings", DeviceManagementSettings())
 
     @odata(name="deviceProtectionOverview")
     @property
     def device_protection_overview(self) -> DeviceProtectionOverview:
         """Gets the deviceProtectionOverview property"""
-        from office365.intune.devices.management.device_protection_overview import (
-            DeviceProtectionOverview,
-        )
-
         return self.properties.get("deviceProtectionOverview", DeviceProtectionOverview())
 
     @odata(name="subscriptionState")
@@ -305,20 +291,12 @@ class DeviceManagement(Entity):
     @property
     def user_experience_analytics_settings(self) -> UserExperienceAnalyticsSettings:
         """Gets the userExperienceAnalyticsSettings property"""
-        from office365.intune.devices.management.user_experience_analytics_settings import (
-            UserExperienceAnalyticsSettings,
-        )
-
         return self.properties.get("userExperienceAnalyticsSettings", UserExperienceAnalyticsSettings())
 
     @odata(name="windowsMalwareOverview")
     @property
     def windows_malware_overview(self) -> WindowsMalwareOverview:
         """Gets the windowsMalwareOverview property"""
-        from office365.intune.devices.management.windows_malware_overview import (
-            WindowsMalwareOverview,
-        )
-
         return self.properties.get("windowsMalwareOverview", WindowsMalwareOverview())
 
     @odata(name="deviceCompliancePolicies", navigation=True)

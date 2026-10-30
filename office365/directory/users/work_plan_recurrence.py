@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.communications.presences.work_location_type import WorkLocationType
 from office365.entity import Entity
+from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
+from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-    from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 
 
 class WorkPlanRecurrence(Entity):
@@ -16,8 +14,6 @@ class WorkPlanRecurrence(Entity):
     @property
     def end(self) -> DateTimeTimeZone:
         """Gets the end property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("end", DateTimeTimeZone())
 
     @odata(name="placeId")
@@ -30,16 +26,12 @@ class WorkPlanRecurrence(Entity):
     @property
     def recurrence(self) -> PatternedRecurrence:
         """Gets the recurrence property"""
-        from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
-
         return self.properties.get("recurrence", PatternedRecurrence())
 
     @odata(name="start")
     @property
     def start(self) -> DateTimeTimeZone:
         """Gets the start property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("start", DateTimeTimeZone())
 
     @odata(name="workLocationType")

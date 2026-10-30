@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer_choice import (  # noqa: E501
+    AccessPackageAnswerChoice,
+)
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer_choice import (
-        AccessPackageAnswerChoice,
-    )
 
 
 class AccessPackageMultipleChoiceQuestion(Entity):
@@ -27,10 +25,6 @@ class AccessPackageMultipleChoiceQuestion(Entity):
     @property
     def choices(self) -> ClientValueCollection[AccessPackageAnswerChoice]:
         """Gets the choices property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer_choice import (
-            AccessPackageAnswerChoice,
-        )
-
         return self.properties.get(
             "choices", ClientValueCollection[AccessPackageAnswerChoice](AccessPackageAnswerChoice)
         )

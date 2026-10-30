@@ -1,38 +1,26 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
 from office365.intune.devices.configurations.applisttype import AppListType
 from office365.intune.devices.configurations.ios.general.ratingappstype import RatingAppsType
+from office365.intune.devices.configurations.ios.network_usage_rule import IosNetworkUsageRule
+from office365.intune.devices.configurations.media_content_rating_australia import MediaContentRatingAustralia
+from office365.intune.devices.configurations.media_content_rating_canada import MediaContentRatingCanada
+from office365.intune.devices.configurations.media_content_rating_france import MediaContentRatingFrance
+from office365.intune.devices.configurations.media_content_rating_germany import MediaContentRatingGermany
+from office365.intune.devices.configurations.media_content_rating_ireland import MediaContentRatingIreland
+from office365.intune.devices.configurations.media_content_rating_japan import MediaContentRatingJapan
+from office365.intune.devices.configurations.media_content_rating_new_zealand import MediaContentRatingNewZealand
+from office365.intune.devices.configurations.media_content_rating_united_kingdom import MediaContentRatingUnitedKingdom
+from office365.intune.devices.configurations.media_content_rating_united_states import MediaContentRatingUnitedStates
 from office365.intune.devices.configurations.webbrowsercookiesettings import WebBrowserCookieSettings
+from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.ios.network_usage_rule import (
-        IosNetworkUsageRule,
-    )
-    from office365.intune.devices.configurations.media_content_rating_australia import (
-        MediaContentRatingAustralia,
-    )
-    from office365.intune.devices.configurations.media_content_rating_canada import MediaContentRatingCanada
-    from office365.intune.devices.configurations.media_content_rating_france import MediaContentRatingFrance
-    from office365.intune.devices.configurations.media_content_rating_germany import MediaContentRatingGermany
-    from office365.intune.devices.configurations.media_content_rating_ireland import MediaContentRatingIreland
-    from office365.intune.devices.configurations.media_content_rating_japan import MediaContentRatingJapan
-    from office365.intune.devices.configurations.media_content_rating_new_zealand import (
-        MediaContentRatingNewZealand,
-    )
-    from office365.intune.devices.configurations.media_content_rating_united_kingdom import (
-        MediaContentRatingUnitedKingdom,
-    )
-    from office365.intune.devices.configurations.media_content_rating_united_states import (
-        MediaContentRatingUnitedStates,
-    )
-    from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 
 
 class IosGeneralDeviceConfiguration(Entity):
@@ -88,8 +76,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def apps_single_app_mode_list(self) -> ClientValueCollection[AppListItem]:
         """Gets the appsSingleAppModeList property"""
-        from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
-
         return self.properties.get("appsSingleAppModeList", ClientValueCollection[AppListItem](AppListItem))
 
     @odata(name="appStoreBlockAutomaticDownloads")
@@ -126,8 +112,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def apps_visibility_list(self) -> ClientValueCollection[AppListItem]:
         """Gets the appsVisibilityList property"""
-        from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
-
         return self.properties.get("appsVisibilityList", ClientValueCollection[AppListItem](AppListItem))
 
     @odata(name="appsVisibilityListType")
@@ -206,8 +190,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def compliant_apps_list(self) -> ClientValueCollection[AppListItem]:
         """Gets the compliantAppsList property"""
-        from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
-
         return self.properties.get("compliantAppsList", ClientValueCollection[AppListItem](AppListItem))
 
     @odata(name="configurationProfileBlockChanges")
@@ -574,88 +556,54 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def media_content_rating_australia(self) -> MediaContentRatingAustralia:
         """Gets the mediaContentRatingAustralia property"""
-        from office365.intune.devices.configurations.media_content_rating_australia import (
-            MediaContentRatingAustralia,
-        )
-
         return self.properties.get("mediaContentRatingAustralia", MediaContentRatingAustralia())
 
     @odata(name="mediaContentRatingCanada")
     @property
     def media_content_rating_canada(self) -> MediaContentRatingCanada:
         """Gets the mediaContentRatingCanada property"""
-        from office365.intune.devices.configurations.media_content_rating_canada import (
-            MediaContentRatingCanada,
-        )
-
         return self.properties.get("mediaContentRatingCanada", MediaContentRatingCanada())
 
     @odata(name="mediaContentRatingFrance")
     @property
     def media_content_rating_france(self) -> MediaContentRatingFrance:
         """Gets the mediaContentRatingFrance property"""
-        from office365.intune.devices.configurations.media_content_rating_france import (
-            MediaContentRatingFrance,
-        )
-
         return self.properties.get("mediaContentRatingFrance", MediaContentRatingFrance())
 
     @odata(name="mediaContentRatingGermany")
     @property
     def media_content_rating_germany(self) -> MediaContentRatingGermany:
         """Gets the mediaContentRatingGermany property"""
-        from office365.intune.devices.configurations.media_content_rating_germany import (
-            MediaContentRatingGermany,
-        )
-
         return self.properties.get("mediaContentRatingGermany", MediaContentRatingGermany())
 
     @odata(name="mediaContentRatingIreland")
     @property
     def media_content_rating_ireland(self) -> MediaContentRatingIreland:
         """Gets the mediaContentRatingIreland property"""
-        from office365.intune.devices.configurations.media_content_rating_ireland import (
-            MediaContentRatingIreland,
-        )
-
         return self.properties.get("mediaContentRatingIreland", MediaContentRatingIreland())
 
     @odata(name="mediaContentRatingJapan")
     @property
     def media_content_rating_japan(self) -> MediaContentRatingJapan:
         """Gets the mediaContentRatingJapan property"""
-        from office365.intune.devices.configurations.media_content_rating_japan import MediaContentRatingJapan
-
         return self.properties.get("mediaContentRatingJapan", MediaContentRatingJapan())
 
     @odata(name="mediaContentRatingNewZealand")
     @property
     def media_content_rating_new_zealand(self) -> MediaContentRatingNewZealand:
         """Gets the mediaContentRatingNewZealand property"""
-        from office365.intune.devices.configurations.media_content_rating_new_zealand import (
-            MediaContentRatingNewZealand,
-        )
-
         return self.properties.get("mediaContentRatingNewZealand", MediaContentRatingNewZealand())
 
     @odata(name="mediaContentRatingUnitedKingdom")
     @property
     def media_content_rating_united_kingdom(self) -> MediaContentRatingUnitedKingdom:
         """Gets the mediaContentRatingUnitedKingdom property"""
-        from office365.intune.devices.configurations.media_content_rating_united_kingdom import (
-            MediaContentRatingUnitedKingdom,
-        )
-
         return self.properties.get("mediaContentRatingUnitedKingdom", MediaContentRatingUnitedKingdom())
 
     @odata(name="mediaContentRatingUnitedStates")
     @property
     def media_content_rating_united_states(self) -> MediaContentRatingUnitedStates:
         """Gets the mediaContentRatingUnitedStates property"""
-        from office365.intune.devices.configurations.media_content_rating_united_states import (
-            MediaContentRatingUnitedStates,
-        )
-
         return self.properties.get("mediaContentRatingUnitedStates", MediaContentRatingUnitedStates())
 
     @odata(name="messagesBlocked")
@@ -668,10 +616,6 @@ class IosGeneralDeviceConfiguration(Entity):
     @property
     def network_usage_rules(self) -> ClientValueCollection[IosNetworkUsageRule]:
         """Gets the networkUsageRules property"""
-        from office365.intune.devices.configurations.ios.network_usage_rule import (
-            IosNetworkUsageRule,
-        )
-
         return self.properties.get("networkUsageRules", ClientValueCollection[IosNetworkUsageRule](IosNetworkUsageRule))
 
     @odata(name="notificationsBlockSettingsModification")

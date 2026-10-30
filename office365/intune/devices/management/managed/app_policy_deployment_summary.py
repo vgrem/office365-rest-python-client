@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.managed.app_policy_deployment_summary_per_app import (  # noqa: E501
+    ManagedAppPolicyDeploymentSummaryPerApp,
+)
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.mobileapps.managed.app_policy_deployment_summary_per_app import (
-        ManagedAppPolicyDeploymentSummaryPerApp,
-    )
 
 
 class ManagedAppPolicyDeploymentSummary(Entity):
@@ -24,10 +22,6 @@ class ManagedAppPolicyDeploymentSummary(Entity):
     @property
     def configuration_deployment_summary_per_app(self) -> ClientValueCollection[ManagedAppPolicyDeploymentSummaryPerApp]:
         """Gets the configurationDeploymentSummaryPerApp property"""
-        from office365.intune.devices.management.mobileapps.managed.app_policy_deployment_summary_per_app import (
-            ManagedAppPolicyDeploymentSummaryPerApp,
-        )
-
         return self.properties.get(
             "configurationDeploymentSummaryPerApp",
             ClientValueCollection[ManagedAppPolicyDeploymentSummaryPerApp](ManagedAppPolicyDeploymentSummaryPerApp),

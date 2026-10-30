@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional
 
+from office365.communications.callrecords.media_stream import MediaStream
 from office365.communications.calls.invitation_participant_info import (
     InvitationParticipantInfo,
 )
@@ -12,15 +13,12 @@ from office365.communications.operations.invite_participants import (
 )
 from office365.communications.operations.start_hold_music import StartHoldMusicOperation
 from office365.communications.operations.stop_hold_music import StopHoldMusicOperation
+from office365.communications.recording_info import RecordingInfo
+from office365.communications.removed_state import RemovedState
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.callrecords.media_stream import MediaStream
-    from office365.communications.recording_info import RecordingInfo
-    from office365.communications.removed_state import RemovedState
 
 
 class Participant(Entity):
@@ -103,24 +101,18 @@ class Participant(Entity):
     @property
     def media_streams(self) -> ClientValueCollection[MediaStream]:
         """Gets the mediaStreams property"""
-        from office365.communications.callrecords.media_stream import MediaStream
-
         return self.properties.get("mediaStreams", ClientValueCollection[MediaStream](MediaStream))
 
     @odata(name="recordingInfo")
     @property
     def recording_info(self) -> RecordingInfo:
         """Gets the recordingInfo property"""
-        from office365.communications.recording_info import RecordingInfo
-
         return self.properties.get("recordingInfo", RecordingInfo())
 
     @odata(name="removedState")
     @property
     def removed_state(self) -> RemovedState:
         """Gets the removedState property"""
-        from office365.communications.removed_state import RemovedState
-
         return self.properties.get("removedState", RemovedState())
 
     @odata(name="rosterSequenceNumber")

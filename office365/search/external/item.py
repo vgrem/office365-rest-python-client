@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.externalconnectors.acl import Acl
 from office365.externalconnectors.external_activity import ExternalActivity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.externalconnectors.acl import Acl
     from office365.externalconnectors.external_item_content import ExternalItemContent
     from office365.externalconnectors.external_item_information_protection_label import (
         ExternalItemInformationProtectionLabel,
@@ -39,8 +39,6 @@ class ExternalItem(Entity):
     @property
     def acl(self) -> ClientValueCollection[Acl]:
         """Gets the acl property"""
-        from office365.externalconnectors.acl import Acl
-
         return self.properties.get("acl", ClientValueCollection[Acl](Acl))
 
     @odata(name="content")

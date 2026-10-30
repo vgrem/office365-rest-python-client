@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.authentication.signing_certificate_update_status import SigningCertificateUpdateStatus
 from office365.directory.domains.federatedidpmfabehavior import FederatedIdpMfaBehavior
 from office365.directory.domains.promptloginbehavior import PromptLoginBehavior
 from office365.entity import Entity
 from office365.intune.devices.management.system_browser_enabled_on import SystemBrowserEnabledOn
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.authentication.signing_certificate_update_status import (
-        SigningCertificateUpdateStatus,
-    )
 
 
 class InternalDomainFederation(Entity):
@@ -55,10 +51,6 @@ class InternalDomainFederation(Entity):
     @property
     def signing_certificate_update_status(self) -> SigningCertificateUpdateStatus:
         """Gets the signingCertificateUpdateStatus property"""
-        from office365.directory.authentication.signing_certificate_update_status import (
-            SigningCertificateUpdateStatus,
-        )
-
         return self.properties.get("signingCertificateUpdateStatus", SigningCertificateUpdateStatus())
 
     @odata(name="signOutUri")

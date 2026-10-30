@@ -3,19 +3,17 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.booking.customers.informationbase import BookingCustomerInformationBase
 from office365.booking.pricetype import BookingPriceType
+from office365.booking.reminder import BookingReminder
 from office365.entity import Entity
+from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
+from office365.outlook.mail.location import Location
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.booking.customers.informationbase import (
-        BookingCustomerInformationBase,
-    )
-    from office365.booking.reminder import BookingReminder
-    from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-    from office365.outlook.mail.location import Location
     from office365.runtime.types.duration import timedelta
 
 
@@ -78,10 +76,6 @@ class BookingAppointment(Entity):
     @property
     def customers(self) -> ClientValueCollection[BookingCustomerInformationBase]:
         """Gets the customers property"""
-        from office365.booking.customers.informationbase import (
-            BookingCustomerInformationBase,
-        )
-
         return self.properties.get(
             "customers", ClientValueCollection[BookingCustomerInformationBase](BookingCustomerInformationBase)
         )
@@ -102,8 +96,6 @@ class BookingAppointment(Entity):
     @property
     def end_date_time(self) -> DateTimeTimeZone:
         """Gets the endDateTime property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("endDateTime", DateTimeTimeZone())
 
     @odata(name="filledAttendeesCount", readonly=True)
@@ -176,8 +168,6 @@ class BookingAppointment(Entity):
     @property
     def reminders(self) -> ClientValueCollection[BookingReminder]:
         """Gets the reminders property"""
-        from office365.booking.reminder import BookingReminder
-
         return self.properties.get("reminders", ClientValueCollection[BookingReminder](BookingReminder))
 
     @odata(name="selfServiceAppointmentId")
@@ -196,8 +186,6 @@ class BookingAppointment(Entity):
     @property
     def service_location(self) -> Location:
         """Gets the serviceLocation property"""
-        from office365.outlook.mail.location import Location
-
         return self.properties.get("serviceLocation", Location())
 
     @odata(name="serviceName")
@@ -228,8 +216,6 @@ class BookingAppointment(Entity):
     @property
     def start_date_time(self) -> DateTimeTimeZone:
         """Gets the startDateTime property"""
-        from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
-
         return self.properties.get("startDateTime", DateTimeTimeZone())
 
     @property

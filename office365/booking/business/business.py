@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional
 
 from typing_extensions import Self
 
 from office365.booking.appointment import BookingAppointment
+from office365.booking.chedulingpolicy import BookingSchedulingPolicy
 from office365.booking.custom_question import BookingCustomQuestion
 from office365.booking.customers.base import BookingCustomerBase
+from office365.booking.pagesettings import BookingPageSettings
 from office365.booking.service import BookingService
 from office365.booking.staff.availability_item import StaffAvailabilityItem
 from office365.booking.staff.member_base import BookingStaffMemberBase
@@ -20,10 +22,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.booking.chedulingpolicy import BookingSchedulingPolicy
-    from office365.booking.pagesettings import BookingPageSettings
 
 
 class BookingBusiness(Entity):
@@ -174,8 +172,6 @@ class BookingBusiness(Entity):
     @property
     def booking_page_settings(self) -> BookingPageSettings:
         """Gets the bookingPageSettings property"""
-        from office365.booking.pagesettings import BookingPageSettings
-
         return self.properties.get("bookingPageSettings", BookingPageSettings())
 
     @odata(name="businessType")
@@ -236,8 +232,6 @@ class BookingBusiness(Entity):
     @property
     def scheduling_policy(self) -> BookingSchedulingPolicy:
         """Gets the schedulingPolicy property"""
-        from office365.booking.chedulingpolicy import BookingSchedulingPolicy
-
         return self.properties.get("schedulingPolicy", BookingSchedulingPolicy())
 
     @odata(name="webSiteUrl")

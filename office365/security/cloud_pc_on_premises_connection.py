@@ -1,21 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatus import (  # noqa: E501
     CloudPcOnPremisesConnectionStatus,
+)
+from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatusdetail import (  # noqa: E501
+    CloudPcOnPremisesConnectionStatusDetail,
 )
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (  # noqa: E501
     CloudPcOnPremisesConnectionType,
 )
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatusdetail import (
-        CloudPcOnPremisesConnectionStatusDetail,
-    )
 
 
 class CloudPcOnPremisesConnection(Entity):
@@ -71,10 +69,6 @@ class CloudPcOnPremisesConnection(Entity):
     @property
     def health_check_status_detail(self) -> CloudPcOnPremisesConnectionStatusDetail:
         """Gets the healthCheckStatusDetail property"""
-        from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatusdetail import (
-            CloudPcOnPremisesConnectionStatusDetail,
-        )
-
         return self.properties.get("healthCheckStatusDetail", CloudPcOnPremisesConnectionStatusDetail())
 
     @odata(name="inUse")

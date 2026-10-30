@@ -1,18 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.admin.drift_status import DriftStatus
+from office365.directory.drifted_property import DriftedProperty
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.drifted_property import DriftedProperty
-    from office365.teams.members.open_complex_dictionary_type import (
-        OpenComplexDictionaryType,
-    )
+from office365.teams.members.open_complex_dictionary_type import OpenComplexDictionaryType
 
 
 class ConfigurationDrift(Entity):
@@ -26,8 +22,6 @@ class ConfigurationDrift(Entity):
     @property
     def drifted_properties(self) -> ClientValueCollection[DriftedProperty]:
         """Gets the driftedProperties property"""
-        from office365.directory.drifted_property import DriftedProperty
-
         return self.properties.get("driftedProperties", ClientValueCollection[DriftedProperty](DriftedProperty))
 
     @odata(name="firstReportedDateTime", readonly=True)
@@ -46,10 +40,6 @@ class ConfigurationDrift(Entity):
     @property
     def resource_instance_identifier(self) -> OpenComplexDictionaryType:
         """Gets the resourceInstanceIdentifier property"""
-        from office365.teams.members.open_complex_dictionary_type import (
-            OpenComplexDictionaryType,
-        )
-
         return self.properties.get("resourceInstanceIdentifier", OpenComplexDictionaryType())
 
     @odata(name="resourceType", readonly=True)

@@ -27,6 +27,7 @@ from office365.sharepoint.authentication.acs_service_principal_info import (
 from office365.sharepoint.businessdata.app_bdc_catalog import AppBdcCatalog
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
+from office365.sharepoint.changes.token import ChangeToken
 from office365.sharepoint.clientsidecomponent.hostedapps.manager import (
     HostedAppsManager,
 )
@@ -39,6 +40,7 @@ from office365.sharepoint.clientsidecomponent.query_result import (
 from office365.sharepoint.clientsidecomponent.storage_entity import StorageEntity
 from office365.sharepoint.contenttypes.collection import ContentTypeCollection
 from office365.sharepoint.contenttypes.content_type import ContentType
+from office365.sharepoint.documents.fontoption import FontOption
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition_collection import (
     EventReceiverDefinitionCollection,
@@ -123,17 +125,16 @@ from office365.sharepoint.webs.information_collection import WebInformationColle
 from office365.sharepoint.webs.modernize_homepage_result import ModernizeHomepageResult
 from office365.sharepoint.webs.multilingual_settings import MultilingualSettings
 from office365.sharepoint.webs.regional_settings import RegionalSettings
+from office365.sharepoint.webs.sp_focal_point import SPFocalPoint
 from office365.sharepoint.webs.subweb_query import SubwebQuery
 from office365.sharepoint.webs.templates.collection import WebTemplateCollection
 from office365.sharepoint.webs.theme_info import ThemeInfo
 
 if TYPE_CHECKING:
-    from office365.sharepoint.changes.token import ChangeToken
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.clientsidecomponent.spteamsappcomponent import (
         SPTeamsAppComponent,
     )
-    from office365.sharepoint.documents.fontoption import FontOption
     from office365.sharepoint.folders.coloring import FolderColoring
     from office365.sharepoint.marketplace.corporatecuratedgallery.addins.permission_request import (
         SPAddinPermissionRequest,
@@ -155,7 +156,6 @@ if TYPE_CHECKING:
     )
     from office365.sharepoint.publishing.pages.page import SitePage
     from office365.sharepoint.webs.apptile import AppTile
-    from office365.sharepoint.webs.sp_focal_point import SPFocalPoint
     from office365.sharepoint.webs.spimageitem import SPImageItem
     from office365.sharepoint.workflow.associations.association import (
         WorkflowAssociation,
@@ -2786,8 +2786,6 @@ class Web(SecurableObject):
     @property
     def current_change_token(self) -> ChangeToken:
         """Gets the CurrentChangeToken property"""
-        from office365.sharepoint.changes.token import ChangeToken
-
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
     @odata(name="DefaultNewPageTemplateId", beta=True)
@@ -2836,32 +2834,24 @@ class Web(SecurableObject):
     @property
     def font_option_for_site_footer_nav(self) -> FontOption:
         """Gets the FontOptionForSiteFooterNav property"""
-        from office365.sharepoint.documents.fontoption import FontOption
-
         return self.properties.get("FontOptionForSiteFooterNav", FontOption())
 
     @odata(name="FontOptionForSiteFooterTitle", beta=True)
     @property
     def font_option_for_site_footer_title(self) -> FontOption:
         """Gets the FontOptionForSiteFooterTitle property"""
-        from office365.sharepoint.documents.fontoption import FontOption
-
         return self.properties.get("FontOptionForSiteFooterTitle", FontOption())
 
     @odata(name="FontOptionForSiteNav", beta=True)
     @property
     def font_option_for_site_nav(self) -> FontOption:
         """Gets the FontOptionForSiteNav property"""
-        from office365.sharepoint.documents.fontoption import FontOption
-
         return self.properties.get("FontOptionForSiteNav", FontOption())
 
     @odata(name="FontOptionForSiteTitle", beta=True)
     @property
     def font_option_for_site_title(self) -> FontOption:
         """Gets the FontOptionForSiteTitle property"""
-        from office365.sharepoint.documents.fontoption import FontOption
-
         return self.properties.get("FontOptionForSiteTitle", FontOption())
 
     @odata(name="FooterAlignment", beta=True)
@@ -2874,8 +2864,6 @@ class Web(SecurableObject):
     @property
     def footer_background_focal_point(self) -> SPFocalPoint:
         """Gets the FooterBackgroundFocalPoint property"""
-        from office365.sharepoint.webs.sp_focal_point import SPFocalPoint
-
         return self.properties.get("FooterBackgroundFocalPoint", SPFocalPoint())
 
     @odata(name="FooterBlur", beta=True)

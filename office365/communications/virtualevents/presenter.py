@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.communications.virtualevents.presenter_details import VirtualEventPresenterDetails
+from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.communications.virtualevents.presenter_details import (
-        VirtualEventPresenterDetails,
-    )
-    from office365.directory.permissions.identity import Identity
 
 
 class VirtualEventPresenter(Entity):
@@ -25,18 +21,12 @@ class VirtualEventPresenter(Entity):
     @property
     def identity(self) -> Identity:
         """Gets the identity property"""
-        from office365.directory.permissions.identity import Identity
-
         return self.properties.get("identity", Identity())
 
     @odata(name="presenterDetails")
     @property
     def presenter_details(self) -> VirtualEventPresenterDetails:
         """Gets the presenterDetails property"""
-        from office365.communications.virtualevents.presenter_details import (
-            VirtualEventPresenterDetails,
-        )
-
         return self.properties.get("presenterDetails", VirtualEventPresenterDetails())
 
     @property

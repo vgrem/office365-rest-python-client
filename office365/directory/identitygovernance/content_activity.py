@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.security.datasecurity.process_content_request import (
-        ProcessContentRequest,
-    )
+from office365.security.datasecurity.process_content_request import ProcessContentRequest
 
 
 class ContentActivity(Entity):
@@ -16,10 +12,6 @@ class ContentActivity(Entity):
     @property
     def content_metadata(self) -> ProcessContentRequest:
         """Gets the contentMetadata property"""
-        from office365.security.datasecurity.process_content_request import (
-            ProcessContentRequest,
-        )
-
         return self.properties.get("contentMetadata", ProcessContentRequest())
 
     @odata(name="scopeIdentifier")

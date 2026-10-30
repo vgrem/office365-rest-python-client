@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.directory.identities.userflows.user_flow_api_connector_configuration import (  # noqa: E501
+    UserFlowApiConnectorConfiguration,
+)
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -16,9 +19,6 @@ if TYPE_CHECKING:
     from office365.directory.identities.userflows.user_attribute_assignment import (
         IdentityUserFlowAttributeAssignment,
     )
-    from office365.directory.identities.userflows.user_flow_api_connector_configuration import (
-        UserFlowApiConnectorConfiguration,
-    )
 
 
 class B2xIdentityUserFlow(Entity):
@@ -26,10 +26,6 @@ class B2xIdentityUserFlow(Entity):
     @property
     def api_connector_configuration(self) -> UserFlowApiConnectorConfiguration:
         """Gets the apiConnectorConfiguration property"""
-        from office365.directory.identities.userflows.user_flow_api_connector_configuration import (
-            UserFlowApiConnectorConfiguration,
-        )
-
         return self.properties.get("apiConnectorConfiguration", UserFlowApiConnectorConfiguration())
 
     @odata(name="identityProviders", navigation=True)

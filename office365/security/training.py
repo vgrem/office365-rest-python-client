@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -13,7 +14,6 @@ from office365.security.attacksimulations.trainingavailabilitystatus import Trai
 from office365.security.attacksimulations.trainingtype import TrainingType
 
 if TYPE_CHECKING:
-    from office365.directory.permissions.email_identity import EmailIdentity
     from office365.security.training_language_detail import (
         TrainingLanguageDetail,
     )
@@ -30,8 +30,6 @@ class Training(Entity):
     @property
     def created_by(self) -> EmailIdentity:
         """Gets the createdBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("createdBy", EmailIdentity())
 
     @odata(name="createdDateTime")
@@ -68,8 +66,6 @@ class Training(Entity):
     @property
     def last_modified_by(self) -> EmailIdentity:
         """Gets the lastModifiedBy property"""
-        from office365.directory.permissions.email_identity import EmailIdentity
-
         return self.properties.get("lastModifiedBy", EmailIdentity())
 
     @odata(name="lastModifiedDateTime")

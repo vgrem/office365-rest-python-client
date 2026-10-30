@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.tenantinformation.multitenantorganizationmemberrole import MultiTenantOrganizationMemberRole
 from office365.directory.tenantinformation.multitenantorganizationmemberstate import MultiTenantOrganizationMemberState
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.security.audit.multi_tenant_organization_join_request_transition_details import (
-        MultiTenantOrganizationJoinRequestTransitionDetails,
-    )
+from office365.security.audit.multi_tenant_organization_join_request_transition_details import (  # noqa: E501
+    MultiTenantOrganizationJoinRequestTransitionDetails,
+)
 
 
 class MultiTenantOrganizationJoinRequestRecord(Entity):
@@ -36,10 +34,6 @@ class MultiTenantOrganizationJoinRequestRecord(Entity):
     @property
     def transition_details(self) -> MultiTenantOrganizationJoinRequestTransitionDetails:
         """Gets the transitionDetails property"""
-        from office365.security.audit.multi_tenant_organization_join_request_transition_details import (
-            MultiTenantOrganizationJoinRequestTransitionDetails,
-        )
-
         return self.properties.get("transitionDetails", MultiTenantOrganizationJoinRequestTransitionDetails())
 
     @property

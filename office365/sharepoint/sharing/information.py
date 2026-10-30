@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from uuid import UUID
 
 from office365.runtime.paths.resource_path import ResourcePath
@@ -9,27 +9,19 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.sharing.abilities import SharingAbilities
 from office365.sharepoint.sharing.access_request_settings import AccessRequestSettings
+from office365.sharepoint.sharing.address_bar_link_settings import AddressBarLinkSettings
 from office365.sharepoint.sharing.domain_restriction_settings import (
     DomainRestrictionSettings,
 )
+from office365.sharepoint.sharing.itemsharingsettings import ItemSharingSettings
 from office365.sharepoint.sharing.links.default_templates_collection import (
     SharingLinkDefaultTemplatesCollection,
 )
 from office365.sharepoint.sharing.permission_collection import PermissionCollection
 from office365.sharepoint.sharing.picker_settings import PickerSettings
-
-if TYPE_CHECKING:
-    from office365.sharepoint.sharing.address_bar_link_settings import (
-        AddressBarLinkSettings,
-    )
-    from office365.sharepoint.sharing.itemsharingsettings import ItemSharingSettings
-    from office365.sharepoint.sharing.recipient_limits import RecipientLimits
-    from office365.sharepoint.sharing.sensitivitylabelinformation import (
-        SensitivityLabelInformation,
-    )
-    from office365.sharepoint.sharing.uniqueaccessgroupswrapper import (
-        UniqueAccessGroupsWrapper,
-    )
+from office365.sharepoint.sharing.recipient_limits import RecipientLimits
+from office365.sharepoint.sharing.sensitivitylabelinformation import SensitivityLabelInformation
+from office365.sharepoint.sharing.uniqueaccessgroupswrapper import UniqueAccessGroupsWrapper
 
 
 class SharingInformation(Entity):
@@ -110,10 +102,6 @@ class SharingInformation(Entity):
     @property
     def address_bar_link_settings(self) -> AddressBarLinkSettings:
         """Gets the addressBarLinkSettings property"""
-        from office365.sharepoint.sharing.address_bar_link_settings import (
-            AddressBarLinkSettings,
-        )
-
         return self.properties.get("addressBarLinkSettings", AddressBarLinkSettings())
 
     @odata(name="ageGroup", beta=True)
@@ -318,18 +306,12 @@ class SharingInformation(Entity):
     @property
     def recipient_limits(self) -> RecipientLimits:
         """Gets the recipientLimits property"""
-        from office365.sharepoint.sharing.recipient_limits import RecipientLimits
-
         return self.properties.get("recipientLimits", RecipientLimits())
 
     @odata(name="sensitivityLabelInformation", beta=True)
     @property
     def sensitivity_label_information(self) -> SensitivityLabelInformation:
         """Gets the sensitivityLabelInformation property"""
-        from office365.sharepoint.sharing.sensitivitylabelinformation import (
-            SensitivityLabelInformation,
-        )
-
         return self.properties.get("sensitivityLabelInformation", SensitivityLabelInformation())
 
     @odata(name="sharedObjectType")
@@ -348,8 +330,6 @@ class SharingInformation(Entity):
     @property
     def sharing_settings(self) -> ItemSharingSettings:
         """Gets the sharingSettings property"""
-        from office365.sharepoint.sharing.itemsharingsettings import ItemSharingSettings
-
         return self.properties.get("sharingSettings", ItemSharingSettings())
 
     @odata(name="sharingStatus")
@@ -410,10 +390,6 @@ class SharingInformation(Entity):
     @property
     def unique_access_groups(self) -> UniqueAccessGroupsWrapper:
         """Gets the uniqueAccessGroups property"""
-        from office365.sharepoint.sharing.uniqueaccessgroupswrapper import (
-            UniqueAccessGroupsWrapper,
-        )
-
         return self.properties.get("uniqueAccessGroups", UniqueAccessGroupsWrapper())
 
     @odata(name="userIsSharingViaMCS")

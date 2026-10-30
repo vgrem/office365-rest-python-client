@@ -3,6 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.accessreview.custom_data_provided_resource_upload_stats import (  # noqa: E501
+    CustomDataProvidedResourceUploadStats,
+)
+from office365.directory.identitygovernance.data import Data
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_status import (  # noqa: E501
     CustomDataProvidedResourceUploadStatus,
 )
@@ -12,10 +16,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identitygovernance.accessreview.custom_data_provided_resource_upload_stats import (
-        CustomDataProvidedResourceUploadStats,
-    )
-    from office365.directory.identitygovernance.data import Data
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_file import (  # noqa: E501
         CustomDataProvidedResourceFile,
     )
@@ -32,8 +32,6 @@ class CustomDataProvidedResourceUploadSession(Entity):
     @property
     def data(self) -> Data:
         """Gets the data property"""
-        from office365.directory.identitygovernance.data import Data
-
         return self.properties.get("data", Data())
 
     @odata(name="isUploadDone")
@@ -52,10 +50,6 @@ class CustomDataProvidedResourceUploadSession(Entity):
     @property
     def stats(self) -> CustomDataProvidedResourceUploadStats:
         """Gets the stats property"""
-        from office365.directory.identitygovernance.accessreview.custom_data_provided_resource_upload_stats import (
-            CustomDataProvidedResourceUploadStats,
-        )
-
         return self.properties.get("stats", CustomDataProvidedResourceUploadStats())
 
     @odata(name="status")

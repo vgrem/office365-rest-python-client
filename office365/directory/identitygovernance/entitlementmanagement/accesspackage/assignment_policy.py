@@ -3,6 +3,24 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_approval_settings import (  # noqa: E501
+    AccessPackageAssignmentApprovalSettings,
+)
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_requestor_settings import (  # noqa: E501
+    AccessPackageAssignmentRequestorSettings,
+)
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_review_settings import (  # noqa: E501
+    AccessPackageAssignmentReviewSettings,
+)
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.automatic_request_settings import (  # noqa: E501
+    AccessPackageAutomaticRequestSettings,
+)
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.expiration_pattern import (  # noqa: E501
+    ExpirationPattern,
+)
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.notification_settings import (  # noqa: E501
+    AccessPackageNotificationSettings,
+)
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.question import (
     AccessPackageQuestion,
 )
@@ -18,26 +36,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_approval_settings import (
-        AccessPackageAssignmentApprovalSettings,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_requestor_settings import (  # noqa: E501
-        AccessPackageAssignmentRequestorSettings,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_review_settings import (
-        AccessPackageAssignmentReviewSettings,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.automatic_request_settings import (
-        AccessPackageAutomaticRequestSettings,
-    )
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.catalog import (
         AccessPackageCatalog,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.expiration_pattern import (
-        ExpirationPattern,
-    )
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.notification_settings import (
-        AccessPackageNotificationSettings,
     )
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import (
         AccessPackage,
@@ -113,60 +113,36 @@ class AccessPackageAssignmentPolicy(Entity):
     @property
     def automatic_request_settings(self) -> AccessPackageAutomaticRequestSettings:
         """Gets the automaticRequestSettings property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.automatic_request_settings import (  # noqa: E501
-            AccessPackageAutomaticRequestSettings,
-        )
-
         return self.properties.get("automaticRequestSettings", AccessPackageAutomaticRequestSettings())
 
     @odata(name="expiration")
     @property
     def expiration(self) -> ExpirationPattern:
         """Gets the expiration property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.expiration_pattern import (
-            ExpirationPattern,
-        )
-
         return self.properties.get("expiration", ExpirationPattern())
 
     @odata(name="notificationSettings")
     @property
     def notification_settings(self) -> AccessPackageNotificationSettings:
         """Gets the notificationSettings property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.notification_settings import (
-            AccessPackageNotificationSettings,
-        )
-
         return self.properties.get("notificationSettings", AccessPackageNotificationSettings())
 
     @odata(name="requestApprovalSettings")
     @property
     def request_approval_settings(self) -> AccessPackageAssignmentApprovalSettings:
         """Gets the requestApprovalSettings property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_approval_settings import (  # noqa: E501
-            AccessPackageAssignmentApprovalSettings,
-        )
-
         return self.properties.get("requestApprovalSettings", AccessPackageAssignmentApprovalSettings())
 
     @odata(name="requestorSettings")
     @property
     def requestor_settings(self) -> AccessPackageAssignmentRequestorSettings:
         """Gets the requestorSettings property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_requestor_settings import (  # noqa: E501
-            AccessPackageAssignmentRequestorSettings,
-        )
-
         return self.properties.get("requestorSettings", AccessPackageAssignmentRequestorSettings())
 
     @odata(name="reviewSettings")
     @property
     def review_settings(self) -> AccessPackageAssignmentReviewSettings:
         """Gets the reviewSettings property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_review_settings import (  # noqa: E501
-            AccessPackageAssignmentReviewSettings,
-        )
-
         return self.properties.get("reviewSettings", AccessPackageAssignmentReviewSettings())
 
     @odata(name="accessPackage", navigation=True)

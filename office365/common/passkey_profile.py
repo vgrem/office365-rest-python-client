@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.applications.attestation_enforcement import AttestationEnforcement
 from office365.directory.applications.passkey_types import PasskeyTypes
+from office365.directory.authentication.fido2keyrestrictions import Fido2KeyRestrictions
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.authentication.fido2keyrestrictions import (
-        Fido2KeyRestrictions,
-    )
 
 
 class PasskeyProfile(Entity):
@@ -24,10 +20,6 @@ class PasskeyProfile(Entity):
     @property
     def key_restrictions(self) -> Fido2KeyRestrictions:
         """Gets the keyRestrictions property"""
-        from office365.directory.authentication.fido2keyrestrictions import (
-            Fido2KeyRestrictions,
-        )
-
         return self.properties.get("keyRestrictions", Fido2KeyRestrictions())
 
     @odata(name="name")

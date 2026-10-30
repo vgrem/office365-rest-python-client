@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.edge_search_engine_base import EdgeSearchEngineBase
 from office365.intune.devices.configurations.windows.general.defendercloudblockleveltype import (  # noqa: E501
     DefenderCloudBlockLevelType,
 )
@@ -30,16 +31,13 @@ from office365.intune.devices.configurations.windows.startmenumodetype import Wi
 from office365.intune.devices.configurations.windows.statemanagementsetting import StateManagementSetting
 from office365.intune.devices.configurations.windows.visibilitysetting import VisibilitySetting
 from office365.intune.devices.configurations.windows.weeklyschedule import WeeklySchedule
+from office365.intune.devices.management.defender_detected_malware_actions import DefenderDetectedMalwareActions
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.configurations.edge_search_engine_base import EdgeSearchEngineBase
     from office365.intune.devices.configurations.windows.windows10_network_proxy_server import (
         Windows10NetworkProxyServer,
-    )
-    from office365.intune.devices.management.defender_detected_malware_actions import (
-        DefenderDetectedMalwareActions,
     )
 
 
@@ -168,10 +166,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def defender_detected_malware_actions(self) -> DefenderDetectedMalwareActions:
         """Gets the defenderDetectedMalwareActions property"""
-        from office365.intune.devices.management.defender_detected_malware_actions import (
-            DefenderDetectedMalwareActions,
-        )
-
         return self.properties.get("defenderDetectedMalwareActions", DefenderDetectedMalwareActions())
 
     @odata(name="defenderFileExtensionsToExclude")
@@ -472,8 +466,6 @@ class Windows10GeneralConfiguration(Entity):
     @property
     def edge_search_engine(self) -> EdgeSearchEngineBase:
         """Gets the edgeSearchEngine property"""
-        from office365.intune.devices.configurations.edge_search_engine_base import EdgeSearchEngineBase
-
         return self.properties.get("edgeSearchEngine", EdgeSearchEngineBase())
 
     @odata(name="edgeSendIntranetTrafficToInternetExplorer")

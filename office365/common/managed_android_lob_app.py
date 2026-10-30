@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.devices.configurations.android.minimum_operating_system import AndroidMinimumOperatingSystem
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.configurations.android.minimum_operating_system import (
-        AndroidMinimumOperatingSystem,
-    )
 
 
 class ManagedAndroidLobApp(Entity):
@@ -16,10 +12,6 @@ class ManagedAndroidLobApp(Entity):
     @property
     def minimum_supported_operating_system(self) -> AndroidMinimumOperatingSystem:
         """Gets the minimumSupportedOperatingSystem property"""
-        from office365.intune.devices.configurations.android.minimum_operating_system import (
-            AndroidMinimumOperatingSystem,
-        )
-
         return self.properties.get("minimumSupportedOperatingSystem", AndroidMinimumOperatingSystem())
 
     @odata(name="packageId")

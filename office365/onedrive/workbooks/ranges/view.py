@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.runtime.types.json import Json
 
 
 class WorkbookRangeView(Entity):
@@ -43,24 +41,18 @@ class WorkbookRangeView(Entity):
     @property
     def formulas(self) -> Json:
         """Gets the formulas property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("formulas", Json())
 
     @odata(name="formulasLocal")
     @property
     def formulas_local(self) -> Json:
         """Gets the formulasLocal property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("formulasLocal", Json())
 
     @odata(name="formulasR1C1")
     @property
     def formulas_r1_c1(self) -> Json:
         """Gets the formulasR1C1 property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("formulasR1C1", Json())
 
     @odata(name="index")
@@ -73,8 +65,6 @@ class WorkbookRangeView(Entity):
     @property
     def number_format(self) -> Json:
         """Gets the numberFormat property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("numberFormat", Json())
 
     @odata(name="rowCount")
@@ -87,24 +77,18 @@ class WorkbookRangeView(Entity):
     @property
     def text(self) -> Json:
         """Gets the text property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("text", Json())
 
     @odata(name="values")
     @property
     def values(self) -> Json:
         """Gets the values property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("values", Json())
 
     @odata(name="valueTypes")
     @property
     def value_types(self) -> Json:
         """Gets the valueTypes property"""
-        from office365.runtime.types.json import Json
-
         return self.properties.get("valueTypes", Json())
 
     @property

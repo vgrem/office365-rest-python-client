@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.teams.apps.authorization import TeamsAppAuthorization
 from office365.teams.apps.publishingstate import TeamsAppPublishingState
 from office365.teams.bots.teamwork_bot import TeamworkBot
-
-if TYPE_CHECKING:
-    from office365.teams.apps.authorization import TeamsAppAuthorization
 
 
 class TeamsAppDefinition(Entity):
@@ -51,8 +49,6 @@ class TeamsAppDefinition(Entity):
     @property
     def authorization(self) -> TeamsAppAuthorization:
         """Gets the authorization property"""
-        from office365.teams.apps.authorization import TeamsAppAuthorization
-
         return self.properties.get("authorization", TeamsAppAuthorization())
 
     @odata(name="displayName")

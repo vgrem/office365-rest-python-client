@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.connection_info import ConnectionInfo
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.connection_info import ConnectionInfo
     from office365.externalconnectors.connector_type import ConnectorType
 
 
@@ -16,8 +16,6 @@ class ExternalOriginResourceConnector(Entity):
     @property
     def connection_info(self) -> ConnectionInfo:
         """Gets the connectionInfo property"""
-        from office365.directory.connection_info import ConnectionInfo
-
         return self.properties.get("connectionInfo", ConnectionInfo())
 
     @odata(name="connectorType")

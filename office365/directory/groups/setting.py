@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.runtime.types.setting_value import SettingValue
+from office365.runtime.types.setting_value import SettingValue
 
 
 class GroupSetting(Entity):
@@ -34,6 +32,4 @@ class GroupSetting(Entity):
     @property
     def values(self) -> ClientValueCollection[SettingValue]:
         """Gets the values property"""
-        from office365.runtime.types.setting_value import SettingValue
-
         return self.properties.get("values", ClientValueCollection[SettingValue](SettingValue))

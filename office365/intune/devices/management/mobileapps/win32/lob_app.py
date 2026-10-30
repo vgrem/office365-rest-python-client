@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import Win32LobAppReturnCode
+from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
@@ -13,12 +15,6 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.mobileapps.win32.lob_app_msi_information import (
         Win32LobAppMsiInformation,
-    )
-    from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import (
-        Win32LobAppReturnCode,
-    )
-    from office365.intune.devices.management.mobileapps.win32.lob_app_rule import (
-        Win32LobAppRule,
     )
 
 
@@ -87,20 +83,12 @@ class Win32LobApp(Entity):
     @property
     def return_codes(self) -> ClientValueCollection[Win32LobAppReturnCode]:
         """Gets the returnCodes property"""
-        from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import (
-            Win32LobAppReturnCode,
-        )
-
         return self.properties.get("returnCodes", ClientValueCollection[Win32LobAppReturnCode](Win32LobAppReturnCode))
 
     @odata(name="rules")
     @property
     def rules(self) -> ClientValueCollection[Win32LobAppRule]:
         """Gets the rules property"""
-        from office365.intune.devices.management.mobileapps.win32.lob_app_rule import (
-            Win32LobAppRule,
-        )
-
         return self.properties.get("rules", ClientValueCollection[Win32LobAppRule](Win32LobAppRule))
 
     @odata(name="setupFilePath")

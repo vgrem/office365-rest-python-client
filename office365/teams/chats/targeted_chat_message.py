@@ -1,12 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.permissions.identity import Identity
 
 
 class TargetedChatMessage(Entity):
@@ -14,8 +10,6 @@ class TargetedChatMessage(Entity):
     @property
     def recipient(self) -> Identity:
         """Gets the recipient property"""
-        from office365.directory.permissions.identity import Identity
-
         return self.properties.get("recipient", Identity())
 
     @property

@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.suggestion_reason import (  # noqa: E501
+    AccessPackageSuggestionReason,
+)
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.suggestion_reason import (
-        AccessPackageSuggestionReason,
-    )
     from office365.directory.identitygovernance.entitlementmanagement.available_access_package import (
         AvailableAccessPackage,
     )
@@ -21,10 +21,6 @@ class AccessPackageSuggestion(Entity):
     @property
     def reasons(self) -> ClientValueCollection[AccessPackageSuggestionReason]:
         """Gets the reasons property"""
-        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.suggestion_reason import (
-            AccessPackageSuggestionReason,
-        )
-
         return self.properties.get(
             "reasons", ClientValueCollection[AccessPackageSuggestionReason](AccessPackageSuggestionReason)
         )

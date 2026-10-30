@@ -5,18 +5,18 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (  # noqa: E501
     UnifiedRoleScheduleRequestActions,
 )
+from office365.directory.request_schedule import RequestSchedule
+from office365.directory.ticket_info import TicketInfo
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
-    from office365.directory.request_schedule import RequestSchedule
     from office365.directory.rolemanagement.app_scope import AppScope
     from office365.directory.rolemanagement.unifiedrole.definition import (
         UnifiedRoleDefinition,
     )
-    from office365.directory.ticket_info import TicketInfo
     from office365.directory.unified_role_assignment_schedule import (
         UnifiedRoleAssignmentSchedule,
     )
@@ -76,8 +76,6 @@ class UnifiedRoleAssignmentScheduleRequest(Entity):
     @property
     def schedule_info(self) -> RequestSchedule:
         """Gets the scheduleInfo property"""
-        from office365.directory.request_schedule import RequestSchedule
-
         return self.properties.get("scheduleInfo", RequestSchedule())
 
     @odata(name="targetScheduleId")
@@ -90,8 +88,6 @@ class UnifiedRoleAssignmentScheduleRequest(Entity):
     @property
     def ticket_info(self) -> TicketInfo:
         """Gets the ticketInfo property"""
-        from office365.directory.ticket_info import TicketInfo
-
         return self.properties.get("ticketInfo", TicketInfo())
 
     @odata(name="activatedUsing", navigation=True)

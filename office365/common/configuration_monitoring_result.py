@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.common.error_detail import ErrorDetail
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.monitor_run_status import MonitorRunStatus
-
-if TYPE_CHECKING:
-    from office365.common.error_detail import ErrorDetail
 
 
 class ConfigurationMonitoringResult(Entity):
@@ -23,8 +21,6 @@ class ConfigurationMonitoringResult(Entity):
     @property
     def error_details(self) -> ClientValueCollection[ErrorDetail]:
         """Gets the errorDetails property"""
-        from office365.common.error_detail import ErrorDetail
-
         return self.properties.get("errorDetails", ClientValueCollection[ErrorDetail](ErrorDetail))
 
     @odata(name="monitorId", readonly=True)

@@ -12,6 +12,9 @@ from office365.intune.devices.configurations.windows.applicationguardblockfiletr
 from office365.intune.devices.configurations.windows.applockerapplicationcontroltype import (  # noqa: E501
     AppLockerApplicationControlType,
 )
+from office365.intune.devices.configurations.windows.bit_locker_removable_drive_policy import (  # noqa: E501
+    BitLockerRemovableDrivePolicy,
+)
 from office365.intune.devices.configurations.windows.firewallcertificaterevocationlistcheckmethodtype import (  # noqa: E501
     FirewallCertificateRevocationListCheckMethodType,
 )
@@ -25,9 +28,6 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.configurations.windows.bit_locker_removable_drive_policy import (
-        BitLockerRemovableDrivePolicy,
-    )
     from office365.intune.devices.configurations.windows.firewall_network_profile import (
         WindowsFirewallNetworkProfile,
     )
@@ -126,10 +126,6 @@ class Windows10EndpointProtectionConfiguration(Entity):
     @property
     def bit_locker_removable_drive_policy(self) -> BitLockerRemovableDrivePolicy:
         """Gets the bitLockerRemovableDrivePolicy property"""
-        from office365.intune.devices.configurations.windows.bit_locker_removable_drive_policy import (
-            BitLockerRemovableDrivePolicy,
-        )
-
         return self.properties.get("bitLockerRemovableDrivePolicy", BitLockerRemovableDrivePolicy())
 
     @odata(name="defenderAdditionalGuardedFolders")

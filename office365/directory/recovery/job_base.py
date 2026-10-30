@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
+from office365.directory.recovery.job_filtering_criteria_base import RecoveryJobFilteringCriteriaBase
 from office365.directory.recovery.recovery_status import RecoveryStatus
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.recovery.job_filtering_criteria_base import (
-        RecoveryJobFilteringCriteriaBase,
-    )
 
 
 class RecoveryJobBase(Entity):
@@ -18,10 +14,6 @@ class RecoveryJobBase(Entity):
     @property
     def filtering_criteria(self) -> RecoveryJobFilteringCriteriaBase:
         """Gets the filteringCriteria property"""
-        from office365.directory.recovery.job_filtering_criteria_base import (
-            RecoveryJobFilteringCriteriaBase,
-        )
-
         return self.properties.get("filteringCriteria", RecoveryJobFilteringCriteriaBase())
 
     @odata(name="jobCompletionDateTime")

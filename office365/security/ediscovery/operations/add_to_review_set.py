@@ -13,11 +13,11 @@ from office365.security.cases.additionaldataoptions import (
 from office365.security.cases.itemstoinclude import ItemsToInclude
 from office365.security.cloudattachmentversion import CloudAttachmentVersion
 from office365.security.ediscovery.review_set import EdiscoveryReviewSet
+from office365.security.report_file_metadata import ReportFileMetadata
 from office365.security.search.documentversion import DocumentVersion
 
 if TYPE_CHECKING:
     from office365.security.ediscovery.search import EdiscoverySearch
-    from office365.security.report_file_metadata import ReportFileMetadata
 
 
 class EdiscoveryAddToReviewSetOperation(PollableOperation, Entity):
@@ -67,6 +67,4 @@ class EdiscoveryAddToReviewSetOperation(PollableOperation, Entity):
     @property
     def report_file_metadata(self) -> ClientValueCollection[ReportFileMetadata]:
         """Gets the reportFileMetadata property"""
-        from office365.security.report_file_metadata import ReportFileMetadata
-
         return self.properties.get("reportFileMetadata", ClientValueCollection[ReportFileMetadata](ReportFileMetadata))

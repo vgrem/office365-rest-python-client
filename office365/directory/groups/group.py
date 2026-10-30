@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
@@ -30,6 +30,7 @@ from office365.directory.permissions.grants.resource_specific import (
 )
 from office365.directory.permissions.require_permission import require_permission
 from office365.directory.profile_photo import ProfilePhoto
+from office365.directory.users.onpremisesextensionattributes import OnPremisesExtensionAttributes
 from office365.entity_collection import EntityCollection
 from office365.onedrive.drives.drive import Drive
 from office365.onenote.onenote import Onenote
@@ -48,11 +49,6 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.teams.team import Team
-
-if TYPE_CHECKING:
-    from office365.directory.users.onpremisesextensionattributes import (
-        OnPremisesExtensionAttributes,
-    )
 
 
 class Group(DirectoryObject):
@@ -734,10 +730,6 @@ class Group(DirectoryObject):
     @property
     def on_premises_extension_attributes(self) -> OnPremisesExtensionAttributes:
         """Gets the onPremisesExtensionAttributes property"""
-        from office365.directory.users.onpremisesextensionattributes import (
-            OnPremisesExtensionAttributes,
-        )
-
         return self.properties.get("onPremisesExtensionAttributes", OnPremisesExtensionAttributes())
 
     @odata(name="organizationId")

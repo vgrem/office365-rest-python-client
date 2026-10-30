@@ -1,22 +1,18 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
+from office365.directory.policies.protection_policy_artifact_count import ProtectionPolicyArtifactCount
+from office365.directory.policies.retention_setting import RetentionSetting
 from office365.directory.protection.policystatus import ProtectionPolicyStatus
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.protection_policy_artifact_count import (
-        ProtectionPolicyArtifactCount,
-    )
-    from office365.directory.policies.retention_setting import RetentionSetting
 
 
 class ProtectionPolicyBase(Entity):
@@ -81,18 +77,12 @@ class ProtectionPolicyBase(Entity):
     @property
     def protection_policy_artifact_count(self) -> ProtectionPolicyArtifactCount:
         """Gets the protectionPolicyArtifactCount property"""
-        from office365.directory.policies.protection_policy_artifact_count import (
-            ProtectionPolicyArtifactCount,
-        )
-
         return self.properties.get("protectionPolicyArtifactCount", ProtectionPolicyArtifactCount())
 
     @odata(name="retentionSettings")
     @property
     def retention_settings(self) -> ClientValueCollection[RetentionSetting]:
         """Gets the retentionSettings property"""
-        from office365.directory.policies.retention_setting import RetentionSetting
-
         return self.properties.get("retentionSettings", ClientValueCollection[RetentionSetting](RetentionSetting))
 
     @odata(name="status")

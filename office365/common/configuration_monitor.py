@@ -3,18 +3,16 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.monitor_mode import MonitorMode
 from office365.security.monitor_status import MonitorStatus
+from office365.teams.members.open_complex_dictionary_type import OpenComplexDictionaryType
 
 if TYPE_CHECKING:
     from office365.common.configuration_baseline import ConfigurationBaseline
-    from office365.directory.identity_set import IdentitySet
-    from office365.teams.members.open_complex_dictionary_type import (
-        OpenComplexDictionaryType,
-    )
 
 
 class ConfigurationMonitor(Entity):
@@ -22,8 +20,6 @@ class ConfigurationMonitor(Entity):
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("createdBy", IdentitySet())
 
     @odata(name="createdDateTime", readonly=True)
@@ -54,8 +50,6 @@ class ConfigurationMonitor(Entity):
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
-
         return self.properties.get("lastModifiedBy", IdentitySet())
 
     @odata(name="lastModifiedDateTime", readonly=True)
@@ -80,10 +74,6 @@ class ConfigurationMonitor(Entity):
     @property
     def parameters(self) -> OpenComplexDictionaryType:
         """Gets the parameters property"""
-        from office365.teams.members.open_complex_dictionary_type import (
-            OpenComplexDictionaryType,
-        )
-
         return self.properties.get("parameters", OpenComplexDictionaryType())
 
     @odata(name="status", readonly=True)

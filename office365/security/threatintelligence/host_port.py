@@ -8,17 +8,13 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.ssl_certificate import SslCertificate
+from office365.security.threatintelligence.host_port_banner import HostPortBanner
+from office365.security.threatintelligence.host_port_component import HostPortComponent
 from office365.security.threatintelligence.host_port_protocol import HostPortProtocol
 from office365.security.threatintelligence.host_port_status import HostPortStatus
 
 if TYPE_CHECKING:
     from office365.security.threatintelligence.host import Host
-    from office365.security.threatintelligence.host_port_banner import (
-        HostPortBanner,
-    )
-    from office365.security.threatintelligence.host_port_component import (
-        HostPortComponent,
-    )
 
 
 class HostPort(Entity):
@@ -75,10 +71,6 @@ class HostPort(Entity):
     @property
     def banners(self) -> ClientValueCollection[HostPortBanner]:
         """Gets the banners property"""
-        from office365.security.threatintelligence.host_port_banner import (
-            HostPortBanner,
-        )
-
         return self.properties.get("banners", ClientValueCollection[HostPortBanner](HostPortBanner))
 
     @odata(name="protocol")
@@ -91,10 +83,6 @@ class HostPort(Entity):
     @property
     def services(self) -> ClientValueCollection[HostPortComponent]:
         """Gets the services property"""
-        from office365.security.threatintelligence.host_port_component import (
-            HostPortComponent,
-        )
-
         return self.properties.get("services", ClientValueCollection[HostPortComponent](HostPortComponent))
 
     @odata(name="status")

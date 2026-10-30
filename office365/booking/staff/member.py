@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.booking.staff.member_base import BookingStaffMemberBase
 from office365.booking.staffmembershipstatus import BookingStaffMembershipStatus
 from office365.booking.staffrole import BookingStaffRole
+from office365.booking.work_hours import BookingWorkHours
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.booking.work_hours import BookingWorkHours
 
 
 class BookingStaffMember(BookingStaffMemberBase):
@@ -83,8 +81,6 @@ class BookingStaffMember(BookingStaffMemberBase):
     @property
     def working_hours(self) -> ClientValueCollection[BookingWorkHours]:
         """Gets the workingHours property"""
-        from office365.booking.work_hours import BookingWorkHours
-
         return self.properties.get("workingHours", ClientValueCollection[BookingWorkHours](BookingWorkHours))
 
     @property

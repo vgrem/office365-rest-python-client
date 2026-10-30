@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.security.cloud_clipboard_item_payload import (
-        CloudClipboardItemPayload,
-    )
+from office365.security.cloud_clipboard_item_payload import CloudClipboardItemPayload
 
 
 class CloudClipboardItem(Entity):
@@ -36,10 +32,6 @@ class CloudClipboardItem(Entity):
     @property
     def payloads(self) -> ClientValueCollection[CloudClipboardItemPayload]:
         """Gets the payloads property"""
-        from office365.security.cloud_clipboard_item_payload import (
-            CloudClipboardItemPayload,
-        )
-
         return self.properties.get(
             "payloads", ClientValueCollection[CloudClipboardItemPayload](CloudClipboardItemPayload)
         )

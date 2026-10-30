@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import LifecycleWorkflowProcessingStatus
 from office365.directory.identitygovernance.subject_type import SubjectType
 from office365.directory.identitygovernance.workflow.executiontype import WorkflowExecutionType
+from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -16,7 +17,6 @@ if TYPE_CHECKING:
     from office365.directory.identitygovernance.task_processing_result import (
         TaskProcessingResult,
     )
-    from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 
 
 class SubjectProcessingResult(Entity):
@@ -54,10 +54,6 @@ class SubjectProcessingResult(Entity):
     @property
     def subject(self) -> WorkflowSubject:
         """Gets the subject property"""
-        from office365.directory.identitygovernance.workflow.subject import (
-            WorkflowSubject,
-        )
-
         return self.properties.get("subject", WorkflowSubject())
 
     @odata(name="subjectType")

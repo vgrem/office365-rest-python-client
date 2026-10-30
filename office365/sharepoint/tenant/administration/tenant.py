@@ -19,6 +19,11 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.administration.archiving.file_size_metric import (
     ArchiveFileSizeMetric,
 )
+from office365.sharepoint.administration.unlicensedodbtenantmetrics import UnlicensedOdbTenantMetrics
+from office365.sharepoint.authpolicy.baseline_security_mode_third_party_app_hpa_setting import (  # noqa: E501
+    BaselineSecurityModeThirdPartyAppHPASetting,
+)
+from office365.sharepoint.authpolicy.spjitdlppolicydata import SPJitDlpPolicyData
 from office365.sharepoint.directory.tenant_service_info_value import (
     TenantServiceInfoValue,
 )
@@ -109,12 +114,16 @@ from office365.sharepoint.tenant.administration.sites.properties_collection impo
 from office365.sharepoint.tenant.administration.sites.properties_enumerable_filter import (
     SitePropertiesEnumerableFilter,
 )
+from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysettings import (  # noqa: E501
+    SPOFileVersionFileTypePolicySettings,
+)
 from office365.sharepoint.tenant.administration.syntex.billing_context import (
     SyntexBillingContext,
 )
 from office365.sharepoint.tenant.administration.syntex.power_apps import (
     SyntexPowerAppsEnvironmentsContext,
 )
+from office365.sharepoint.tenant.administration.syntex.premiumfeaturesettings import SyntexPremiumFeatureSettings
 from office365.sharepoint.tenant.administration.updategroupsitepropertiesparameters import (
     UpdateGroupSitePropertiesParameters,
 )
@@ -122,19 +131,13 @@ from office365.sharepoint.tenant.administration.webs.templates.collection import
     SPOTenantWebTemplateCollection,
 )
 from office365.sharepoint.tenant.settings import TenantSettings
+from office365.sharepoint.viva.syntexcustommodelsetting import SyntexCustomModelSetting
 
 if TYPE_CHECKING:
     from office365.sharepoint.administration.filerequestbrandingassetconfig import (
         FileRequestBrandingAssetConfig,
     )
     from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
-    from office365.sharepoint.administration.unlicensedodbtenantmetrics import (
-        UnlicensedOdbTenantMetrics,
-    )
-    from office365.sharepoint.authpolicy.baseline_security_mode_third_party_app_hpa_setting import (
-        BaselineSecurityModeThirdPartyAppHPASetting,
-    )
-    from office365.sharepoint.authpolicy.spjitdlppolicydata import SPJitDlpPolicyData
     from office365.sharepoint.brandcenter.configuration import BrandCenterConfiguration
     from office365.sharepoint.brandcenter.orgassetslibraryconfigparam import (
         OrgAssetsLibraryConfigParam,
@@ -272,9 +275,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.spofileversionexpirationreportjobprogress import (
         SPOFileVersionExpirationReportJobProgress,
     )
-    from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysettings import (
-        SPOFileVersionFileTypePolicySettings,
-    )
     from office365.sharepoint.tenant.administration.sposerviceprioritizationappregistrations import (
         SPOServicePrioritizationAppRegistrations,
     )
@@ -289,9 +289,6 @@ if TYPE_CHECKING:
     )
     from office365.sharepoint.tenant.administration.syntex.applicationproperties import (
         SPSyntexApplicationProperties,
-    )
-    from office365.sharepoint.tenant.administration.syntex.premiumfeaturesettings import (
-        SyntexPremiumFeatureSettings,
     )
     from office365.sharepoint.tenant.administration.tenant_data_loss_prevention_quarantine_settings import (
         TenantDataLossPreventionQuarantineSettings,
@@ -321,9 +318,6 @@ if TYPE_CHECKING:
         SPORestrictedAppAccessControlTenantPolicy,
     )
     from office365.sharepoint.viva.connections.license import VivaConnectionsLicense
-    from office365.sharepoint.viva.syntexcustommodelsetting import (
-        SyntexCustomModelSetting,
-    )
     from office365.sharepoint.viva.targetedsitedetails import TargetedSiteDetails
 
 
@@ -1613,10 +1607,6 @@ class Tenant(Entity):
     @property
     def autofill_columns_custom_model_settings(self) -> ClientValueCollection[SyntexCustomModelSetting]:
         """Gets the AutofillColumnsCustomModelSettings property"""
-        from office365.sharepoint.viva.syntexcustommodelsetting import (
-            SyntexCustomModelSetting,
-        )
-
         return self.properties.get(
             "AutofillColumnsCustomModelSettings",
             ClientValueCollection[SyntexCustomModelSetting](SyntexCustomModelSetting),
@@ -1656,10 +1646,6 @@ class Tenant(Entity):
     @property
     def baseline_security_mode_third_party_app_hpa(self) -> BaselineSecurityModeThirdPartyAppHPASetting:
         """Gets the BaselineSecurityModeThirdPartyAppHPA property"""
-        from office365.sharepoint.authpolicy.baseline_security_mode_third_party_app_hpa_setting import (
-            BaselineSecurityModeThirdPartyAppHPASetting,
-        )
-
         return self.properties.get("BaselineSecurityModeThirdPartyAppHPA", BaselineSecurityModeThirdPartyAppHPASetting())
 
     @odata(name="BccExternalSharingInvitations")
@@ -3340,10 +3326,6 @@ class Tenant(Entity):
     @property
     def sp_jit_dlp_policy_data(self) -> SPJitDlpPolicyData:
         """Gets the SPJitDlpPolicyData property"""
-        from office365.sharepoint.authpolicy.spjitdlppolicydata import (
-            SPJitDlpPolicyData,
-        )
-
         return self.properties.get("SPJitDlpPolicyData", SPJitDlpPolicyData())
 
     @odata(name="StartASiteFormUrl")
@@ -3410,20 +3392,12 @@ class Tenant(Entity):
     @property
     def syntex_media_analytics_settings(self) -> SyntexPremiumFeatureSettings:
         """Gets the SyntexMediaAnalyticsSettings property"""
-        from office365.sharepoint.tenant.administration.syntex.premiumfeaturesettings import (
-            SyntexPremiumFeatureSettings,
-        )
-
         return self.properties.get("SyntexMediaAnalyticsSettings", SyntexPremiumFeatureSettings())
 
     @odata(name="SyntexPlaybackTranscriptTranslationSettings")
     @property
     def syntex_playback_transcript_translation_settings(self) -> SyntexPremiumFeatureSettings:
         """Gets the SyntexPlaybackTranscriptTranslationSettings property"""
-        from office365.sharepoint.tenant.administration.syntex.premiumfeaturesettings import (
-            SyntexPremiumFeatureSettings,
-        )
-
         return self.properties.get("SyntexPlaybackTranscriptTranslationSettings", SyntexPremiumFeatureSettings())
 
     @odata(name="TaxonomyTaggingSiteInfoList")
@@ -3514,10 +3488,6 @@ class Tenant(Entity):
     @property
     def unlicensed_onedrive_for_business_tenant_metrics_data(self) -> UnlicensedOdbTenantMetrics:
         """Gets the UnlicensedOneDriveForBusinessTenantMetricsData property"""
-        from office365.sharepoint.administration.unlicensedodbtenantmetrics import (
-            UnlicensedOdbTenantMetrics,
-        )
-
         return self.properties.get("UnlicensedOneDriveForBusinessTenantMetricsData", UnlicensedOdbTenantMetrics())
 
     @odata(name="UseFindPeopleInPeoplePicker")
@@ -3536,10 +3506,6 @@ class Tenant(Entity):
     @property
     def version_policy_file_type_override(self) -> ClientValueCollection[SPOFileVersionFileTypePolicySettings]:
         """Gets the VersionPolicyFileTypeOverride property"""
-        from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysettings import (
-            SPOFileVersionFileTypePolicySettings,
-        )
-
         return self.properties.get(
             "VersionPolicyFileTypeOverride",
             ClientValueCollection[SPOFileVersionFileTypePolicySettings](SPOFileVersionFileTypePolicySettings),

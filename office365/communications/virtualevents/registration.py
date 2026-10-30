@@ -4,6 +4,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.communications.virtualevents.attendeeregistrationstatus import VirtualEventAttendeeRegistrationStatus
+from office365.communications.virtualevents.external_registration_information import (  # noqa: E501
+    VirtualEventExternalRegistrationInformation,
+)
+from office365.communications.virtualevents.registration_question_answer import VirtualEventRegistrationQuestionAnswer
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -11,12 +15,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.communications.virtualevents.external_registration_information import (
-        VirtualEventExternalRegistrationInformation,
-    )
-    from office365.communications.virtualevents.registration_question_answer import (
-        VirtualEventRegistrationQuestionAnswer,
-    )
     from office365.communications.virtualevents.session import VirtualEventSession
 
 
@@ -37,10 +35,6 @@ class VirtualEventRegistration(Entity):
     @property
     def external_registration_information(self) -> VirtualEventExternalRegistrationInformation:
         """Gets the externalRegistrationInformation property"""
-        from office365.communications.virtualevents.external_registration_information import (
-            VirtualEventExternalRegistrationInformation,
-        )
-
         return self.properties.get("externalRegistrationInformation", VirtualEventExternalRegistrationInformation())
 
     @odata(name="firstName")
@@ -77,10 +71,6 @@ class VirtualEventRegistration(Entity):
     @property
     def registration_question_answers(self) -> ClientValueCollection[VirtualEventRegistrationQuestionAnswer]:
         """Gets the registrationQuestionAnswers property"""
-        from office365.communications.virtualevents.registration_question_answer import (
-            VirtualEventRegistrationQuestionAnswer,
-        )
-
         return self.properties.get(
             "registrationQuestionAnswers",
             ClientValueCollection[VirtualEventRegistrationQuestionAnswer](VirtualEventRegistrationQuestionAnswer),

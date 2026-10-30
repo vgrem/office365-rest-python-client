@@ -12,6 +12,7 @@ from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.groups.group import SchedulingGroup
 from office365.teams.schedule.shifts.open.change_request import OpenShiftChangeRequest
 from office365.teams.schedule.shifts.shift import Shift
+from office365.teams.schedule.time_clock_settings import TimeClockSettings
 from office365.teams.schedule.time_off_reason import TimeOffReason
 
 if TYPE_CHECKING:
@@ -22,7 +23,6 @@ if TYPE_CHECKING:
         SwapShiftsChangeRequest,
     )
     from office365.teams.schedule.time_card import TimeCard
-    from office365.teams.schedule.time_clock_settings import TimeClockSettings
     from office365.teams.schedule.time_off import TimeOff
     from office365.teams.schedule.time_off_request import TimeOffRequest
 
@@ -147,8 +147,6 @@ class Schedule(Entity):
     @property
     def time_clock_settings(self) -> TimeClockSettings:
         """Gets the timeClockSettings property"""
-        from office365.teams.schedule.time_clock_settings import TimeClockSettings
-
         return self.properties.get("timeClockSettings", TimeClockSettings())
 
     @odata(name="timeOffRequestsEnabled")

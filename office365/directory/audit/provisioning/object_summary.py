@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.audit.initiator import Initiator
 from office365.directory.audit.provisioning.action import ProvisioningAction
@@ -14,12 +14,10 @@ from office365.directory.audit.provisioning.service_principal import (
 from office365.directory.audit.provisioning.statusinfo import ProvisioningStatusInfo
 from office365.directory.audit.provisioning.step import ProvisioningStep
 from office365.directory.audit.provisioning.system import ProvisioningSystem
+from office365.directory.modified_property import ModifiedProperty
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.modified_property import ModifiedProperty
 
 
 class ProvisioningObjectSummary(Entity):
@@ -128,6 +126,4 @@ class ProvisioningObjectSummary(Entity):
     @property
     def modified_properties(self) -> ClientValueCollection[ModifiedProperty]:
         """Gets the modifiedProperties property"""
-        from office365.directory.modified_property import ModifiedProperty
-
         return self.properties.get("modifiedProperties", ClientValueCollection[ModifiedProperty](ModifiedProperty))

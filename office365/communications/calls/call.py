@@ -8,11 +8,14 @@ from office365.communications.calls.incoming_context import IncomingContext
 from office365.communications.calls.invitation_participant_info import (
     InvitationParticipantInfo,
 )
+from office365.communications.calls.media_state import CallMediaState
 from office365.communications.calls.options import CallOptions
 from office365.communications.calls.participant import Participant
 from office365.communications.calls.participant_info import ParticipantInfo
 from office365.communications.calls.route import CallRoute
 from office365.communications.calls.state import CallState
+from office365.communications.calls.transcription_info import CallTranscriptionInfo
+from office365.communications.media_config import MediaConfig
 from office365.communications.meetings.info import MeetingInfo
 from office365.communications.onlinemeetings.collection import ChatInfo
 from office365.communications.operations.cancel_media_processing import (
@@ -27,6 +30,7 @@ from office365.communications.operations.update_recording_status import (
 )
 from office365.communications.quotas import CALL_QUOTAS
 from office365.communications.result_info import ResultInfo
+from office365.communications.tone_info import ToneInfo
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -40,10 +44,6 @@ if TYPE_CHECKING:
     from office365.communications.calls.content_sharing_session import (
         ContentSharingSession,
     )
-    from office365.communications.calls.media_state import CallMediaState
-    from office365.communications.calls.transcription_info import CallTranscriptionInfo
-    from office365.communications.media_config import MediaConfig
-    from office365.communications.tone_info import ToneInfo
 
 
 @limit(*CALL_QUOTAS)
@@ -253,34 +253,24 @@ class Call(Entity):
     @property
     def media_config(self) -> MediaConfig:
         """Gets the mediaConfig property"""
-        from office365.communications.media_config import MediaConfig
-
         return self.properties.get("mediaConfig", MediaConfig())
 
     @odata(name="mediaState")
     @property
     def media_state(self) -> CallMediaState:
         """Gets the mediaState property"""
-        from office365.communications.calls.media_state import CallMediaState
-
         return self.properties.get("mediaState", CallMediaState())
 
     @odata(name="toneInfo")
     @property
     def tone_info(self) -> ToneInfo:
         """Gets the toneInfo property"""
-        from office365.communications.tone_info import ToneInfo
-
         return self.properties.get("toneInfo", ToneInfo())
 
     @odata(name="transcription")
     @property
     def transcription(self) -> CallTranscriptionInfo:
         """Gets the transcription property"""
-        from office365.communications.calls.transcription_info import (
-            CallTranscriptionInfo,
-        )
-
         return self.properties.get("transcription", CallTranscriptionInfo())
 
     @odata(name="audioRoutingGroups", navigation=True)

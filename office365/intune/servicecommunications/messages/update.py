@@ -7,8 +7,10 @@ from office365.entity_collection import EntityCollection
 from office365.intune.servicecommunications.announcement_base import (
     ServiceAnnouncementBase,
 )
+from office365.intune.servicecommunications.service_update_message_viewpoint import ServiceUpdateMessageViewpoint
 from office365.intune.servicecommunications.updatecategory import ServiceUpdateCategory
 from office365.intune.servicecommunications.updateseverity import ServiceUpdateSeverity
+from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -17,10 +19,6 @@ if TYPE_CHECKING:
     from office365.common.service_announcement_attachment import (
         ServiceAnnouncementAttachment,
     )
-    from office365.intune.servicecommunications.service_update_message_viewpoint import (
-        ServiceUpdateMessageViewpoint,
-    )
-    from office365.outlook.mail.item_body import ItemBody
 
 
 class ServiceUpdateMessage(ServiceAnnouncementBase):
@@ -47,8 +45,6 @@ class ServiceUpdateMessage(ServiceAnnouncementBase):
     @property
     def body(self) -> ItemBody:
         """Gets the body property"""
-        from office365.outlook.mail.item_body import ItemBody
-
         return self.properties.get("body", ItemBody())
 
     @odata(name="category")
@@ -91,10 +87,6 @@ class ServiceUpdateMessage(ServiceAnnouncementBase):
     @property
     def view_point(self) -> ServiceUpdateMessageViewpoint:
         """Gets the viewPoint property"""
-        from office365.intune.servicecommunications.service_update_message_viewpoint import (
-            ServiceUpdateMessageViewpoint,
-        )
-
         return self.properties.get("viewPoint", ServiceUpdateMessageViewpoint())
 
     @odata(name="attachments", navigation=True)

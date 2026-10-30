@@ -1,18 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.authentication.methods.attestationlevel import AttestationLevel
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.directory.authentication.methods.passkey_type import PasskeyType
+from office365.directory.authentication.webauthn_public_key_credential import WebauthnPublicKeyCredential
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.authentication.webauthn_public_key_credential import (
-        WebauthnPublicKeyCredential,
-    )
 
 
 class Fido2AuthenticationMethod(AuthenticationMethod):
@@ -67,10 +63,6 @@ class Fido2AuthenticationMethod(AuthenticationMethod):
     @property
     def public_key_credential(self) -> WebauthnPublicKeyCredential:
         """Gets the publicKeyCredential property"""
-        from office365.directory.authentication.webauthn_public_key_credential import (
-            WebauthnPublicKeyCredential,
-        )
-
         return self.properties.get("publicKeyCredential", WebauthnPublicKeyCredential())
 
     @property

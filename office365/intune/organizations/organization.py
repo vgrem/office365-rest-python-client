@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.certificates.auth_configuration import (
     CertificateBasedAuthConfiguration,
@@ -15,13 +15,11 @@ from office365.directory.users.provisioned_plan import ProvisionedPlan
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.mdmauthority import MdmAuthority
 from office365.intune.organizations.branding import OrganizationalBranding
+from office365.intune.organizations.privacy_profile import PrivacyProfile
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.organizations.privacy_profile import PrivacyProfile
 
 
 class Organization(DirectoryObject):
@@ -164,8 +162,6 @@ class Organization(DirectoryObject):
     @property
     def privacy_profile(self) -> PrivacyProfile:
         """Gets the privacyProfile property"""
-        from office365.intune.organizations.privacy_profile import PrivacyProfile
-
         return self.properties.get("privacyProfile", PrivacyProfile())
 
     @odata(name="securityComplianceNotificationMails")

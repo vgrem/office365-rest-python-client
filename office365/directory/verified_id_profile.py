@@ -1,23 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.directory.identities.providers.verified_id_profile_state import VerifiedIdProfileState
+from office365.directory.policies.face_check_configuration import FaceCheckConfiguration
+from office365.directory.policies.verified_id_profile_configuration import VerifiedIdProfileConfiguration
+from office365.directory.policies.verified_id_usage_configuration import VerifiedIdUsageConfiguration
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.directory.policies.face_check_configuration import (
-        FaceCheckConfiguration,
-    )
-    from office365.directory.policies.verified_id_profile_configuration import (
-        VerifiedIdProfileConfiguration,
-    )
-    from office365.directory.policies.verified_id_usage_configuration import (
-        VerifiedIdUsageConfiguration,
-    )
 
 
 class VerifiedIdProfile(Entity):
@@ -31,10 +23,6 @@ class VerifiedIdProfile(Entity):
     @property
     def face_check_configuration(self) -> FaceCheckConfiguration:
         """Gets the faceCheckConfiguration property"""
-        from office365.directory.policies.face_check_configuration import (
-            FaceCheckConfiguration,
-        )
-
         return self.properties.get("faceCheckConfiguration", FaceCheckConfiguration())
 
     @odata(name="lastModifiedDateTime")
@@ -65,20 +53,12 @@ class VerifiedIdProfile(Entity):
     @property
     def verified_id_profile_configuration(self) -> VerifiedIdProfileConfiguration:
         """Gets the verifiedIdProfileConfiguration property"""
-        from office365.directory.policies.verified_id_profile_configuration import (
-            VerifiedIdProfileConfiguration,
-        )
-
         return self.properties.get("verifiedIdProfileConfiguration", VerifiedIdProfileConfiguration())
 
     @odata(name="verifiedIdUsageConfigurations")
     @property
     def verified_id_usage_configurations(self) -> ClientValueCollection[VerifiedIdUsageConfiguration]:
         """Gets the verifiedIdUsageConfigurations property"""
-        from office365.directory.policies.verified_id_usage_configuration import (
-            VerifiedIdUsageConfiguration,
-        )
-
         return self.properties.get(
             "verifiedIdUsageConfigurations",
             ClientValueCollection[VerifiedIdUsageConfiguration](VerifiedIdUsageConfiguration),

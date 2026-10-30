@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.compliance.policyplatformtype import PolicyPlatformType
 from office365.intune.devices.compliance.status import ComplianceStatus
+from office365.intune.devices.management.compliance_policy_setting_state import DeviceCompliancePolicySettingState
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.devices.management.compliance_policy_setting_state import (
-        DeviceCompliancePolicySettingState,
-    )
 
 
 class DeviceCompliancePolicyState(Entity):
@@ -39,10 +35,6 @@ class DeviceCompliancePolicyState(Entity):
     @property
     def setting_states(self) -> ClientValueCollection[DeviceCompliancePolicySettingState]:
         """Gets the settingStates property"""
-        from office365.intune.devices.management.compliance_policy_setting_state import (
-            DeviceCompliancePolicySettingState,
-        )
-
         return self.properties.get(
             "settingStates",
             ClientValueCollection[DeviceCompliancePolicySettingState](DeviceCompliancePolicySettingState),

@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.planner.entity import PlannerEntity
+from office365.planner.order_hints_by_assignee import PlannerOrderHintsByAssignee
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.planner.order_hints_by_assignee import (
-        PlannerOrderHintsByAssignee,
-    )
 
 
 class PlannerAssignedToTaskBoardTaskFormat(PlannerEntity):
@@ -16,10 +12,6 @@ class PlannerAssignedToTaskBoardTaskFormat(PlannerEntity):
     @property
     def order_hints_by_assignee(self) -> PlannerOrderHintsByAssignee:
         """Gets the orderHintsByAssignee property"""
-        from office365.planner.order_hints_by_assignee import (
-            PlannerOrderHintsByAssignee,
-        )
-
         return self.properties.get("orderHintsByAssignee", PlannerOrderHintsByAssignee())
 
     @odata(name="unassignedOrderHint")

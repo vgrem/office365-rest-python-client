@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from office365.entity import Entity
+from office365.intune.print.operation_status import PrintOperationStatus
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
-
-if TYPE_CHECKING:
-    from office365.intune.print.operation_status import PrintOperationStatus
 
 
 class PrintOperation(PollableOperation, Entity):
@@ -22,8 +20,6 @@ class PrintOperation(PollableOperation, Entity):
     @property
     def status(self) -> PrintOperationStatus:
         """Gets the status property"""
-        from office365.intune.print.operation_status import PrintOperationStatus
-
         return self.properties.get("status", PrintOperationStatus())
 
     @property

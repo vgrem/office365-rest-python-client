@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from typing_extensions import Self
 
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -9,11 +7,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
-
-if TYPE_CHECKING:
-    from office365.sharepoint.tenant.administration.spocontentsecuritypolicyentry import (
-        SPOContentSecurityPolicyEntry,
-    )
+from office365.sharepoint.tenant.administration.spocontentsecuritypolicyentry import SPOContentSecurityPolicyEntry
 
 
 class SPOContentSecurityPolicyConfiguration(Entity):
@@ -27,10 +21,6 @@ class SPOContentSecurityPolicyConfiguration(Entity):
     @property
     def items(self) -> ClientValueCollection[SPOContentSecurityPolicyEntry]:
         """Gets the Items property"""
-        from office365.sharepoint.tenant.administration.spocontentsecuritypolicyentry import (
-            SPOContentSecurityPolicyEntry,
-        )
-
         return self.properties.get(
             "Items", ClientValueCollection[SPOContentSecurityPolicyEntry](SPOContentSecurityPolicyEntry)
         )
