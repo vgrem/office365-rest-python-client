@@ -8,6 +8,7 @@ from office365.intune.devices.management.managed.app.dataencryptiontype import (
     ManagedAppDataEncryptionType,
 )
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app_policy_deployment_summary import (
@@ -17,26 +18,31 @@ if TYPE_CHECKING:
 
 
 class IosManagedAppProtection(Entity):
+    @odata(name="appDataEncryptionType")
     @property
     def app_data_encryption_type(self) -> ManagedAppDataEncryptionType:
         """Gets the appDataEncryptionType property"""
         return self.properties.get("appDataEncryptionType", ManagedAppDataEncryptionType.useDeviceSettings)
 
+    @odata(name="customBrowserProtocol")
     @property
     def custom_browser_protocol(self) -> Optional[str]:
         """Gets the customBrowserProtocol property"""
         return self.properties.get("customBrowserProtocol", None)
 
+    @odata(name="deployedAppCount")
     @property
     def deployed_app_count(self) -> Optional[int]:
         """Gets the deployedAppCount property"""
         return self.properties.get("deployedAppCount", None)
 
+    @odata(name="faceIdBlocked")
     @property
     def face_id_blocked(self) -> Optional[bool]:
         """Gets the faceIdBlocked property"""
         return self.properties.get("faceIdBlocked", None)
 
+    @odata(name="minimumRequiredSdkVersion")
     @property
     def minimum_required_sdk_version(self) -> Optional[str]:
         """Gets the minimumRequiredSdkVersion property"""
@@ -46,6 +52,7 @@ class IosManagedAppProtection(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.IosManagedAppProtection"
 
+    @odata(name="apps", navigation=True)
     @property
     def apps(self) -> EntityCollection[ManagedMobileApp]:
         """Gets the apps property"""
@@ -56,6 +63,7 @@ class IosManagedAppProtection(Entity):
             EntityCollection[ManagedMobileApp](self.context, ManagedMobileApp, ResourcePath("apps", self.resource_path)),
         )
 
+    @odata(name="deploymentSummary", navigation=True)
     @property
     def deployment_summary(self) -> ManagedAppPolicyDeploymentSummary:
         """Gets the deploymentSummary property"""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.cloud_pc import CloudPC
@@ -28,6 +29,7 @@ class VirtualEndpoint(Entity):
     or along with the Intune API to manage physical and virtual endpoints.
     """
 
+    @odata(name="auditEvents", navigation=True)
     @property
     def audit_events(self) -> EntityCollection[CloudPcAuditEvent]:
         """Gets the auditEvents property"""
@@ -40,6 +42,7 @@ class VirtualEndpoint(Entity):
             ),
         )
 
+    @odata(name="cloudPCs", navigation=True)
     @property
     def cloud_pcs(self) -> EntityCollection[CloudPC]:
         """Gets the cloudPCs property"""
@@ -49,6 +52,7 @@ class VirtualEndpoint(Entity):
             "cloudPCs", EntityCollection[CloudPC](self.context, CloudPC, ResourcePath("cloudPCs", self.resource_path))
         )
 
+    @odata(name="deviceImages", navigation=True)
     @property
     def device_images(self) -> EntityCollection[CloudPcDeviceImage]:
         """Gets the deviceImages property"""
@@ -63,6 +67,7 @@ class VirtualEndpoint(Entity):
             ),
         )
 
+    @odata(name="galleryImages", navigation=True)
     @property
     def gallery_images(self) -> EntityCollection[CloudPcGalleryImage]:
         """Gets the galleryImages property"""
@@ -77,6 +82,7 @@ class VirtualEndpoint(Entity):
             ),
         )
 
+    @odata(name="onPremisesConnections", navigation=True)
     @property
     def on_premises_connections(self) -> EntityCollection[CloudPcOnPremisesConnection]:
         """Gets the onPremisesConnections property"""
@@ -91,6 +97,7 @@ class VirtualEndpoint(Entity):
             ),
         )
 
+    @odata(name="provisioningPolicies", navigation=True)
     @property
     def provisioning_policies(self) -> EntityCollection[CloudPcProvisioningPolicy]:
         """Gets the provisioningPolicies property"""
@@ -105,6 +112,7 @@ class VirtualEndpoint(Entity):
             ),
         )
 
+    @odata(name="report", navigation=True)
     @property
     def report(self) -> CloudPcReport:
         """Gets the report property"""
@@ -112,6 +120,7 @@ class VirtualEndpoint(Entity):
 
         return self.properties.get("report", CloudPcReport(self.context, ResourcePath("report", self.resource_path)))
 
+    @odata(name="servicePlans", navigation=True)
     @property
     def service_plans(self) -> EntityCollection[CloudPcServicePlan]:
         """Gets the servicePlans property"""
@@ -126,6 +135,7 @@ class VirtualEndpoint(Entity):
             ),
         )
 
+    @odata(name="userSettings", navigation=True)
     @property
     def user_settings(self) -> EntityCollection[CloudPcUserSetting]:
         """Gets the userSettings property"""

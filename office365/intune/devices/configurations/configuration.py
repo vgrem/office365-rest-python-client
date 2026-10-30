@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.compliance.setting_state_device_summary import (
@@ -31,31 +32,37 @@ if TYPE_CHECKING:
 class DeviceConfiguration(Entity):
     """Device Configuration."""
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[int]:
         """Gets the version property"""
         return self.properties.get("version", None)
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[DeviceConfigurationAssignment]:
         """Gets the assignments property"""
@@ -70,6 +77,7 @@ class DeviceConfiguration(Entity):
             ),
         )
 
+    @odata(name="deviceSettingStateSummaries", navigation=True)
     @property
     def device_setting_state_summaries(self) -> EntityCollection[SettingStateDeviceSummary]:
         """Gets the deviceSettingStateSummaries property"""
@@ -84,6 +92,7 @@ class DeviceConfiguration(Entity):
             ),
         )
 
+    @odata(name="deviceStatuses", navigation=True)
     @property
     def device_statuses(self) -> EntityCollection[DeviceConfigurationDeviceStatus]:
         """Gets the deviceStatuses property"""
@@ -98,6 +107,7 @@ class DeviceConfiguration(Entity):
             ),
         )
 
+    @odata(name="deviceStatusOverview", navigation=True)
     @property
     def device_status_overview(self) -> DeviceConfigurationDeviceOverview:
         """Gets the deviceStatusOverview property"""
@@ -110,6 +120,7 @@ class DeviceConfiguration(Entity):
             DeviceConfigurationDeviceOverview(self.context, ResourcePath("deviceStatusOverview", self.resource_path)),
         )
 
+    @odata(name="userStatuses", navigation=True)
     @property
     def user_statuses(self) -> EntityCollection[DeviceConfigurationUserStatus]:
         """Gets the userStatuses property"""
@@ -124,6 +135,7 @@ class DeviceConfiguration(Entity):
             ),
         )
 
+    @odata(name="userStatusOverview", navigation=True)
     @property
     def user_status_overview(self) -> DeviceConfigurationUserOverview:
         """Gets the userStatusOverview property"""

@@ -11,6 +11,7 @@ from office365.intune.devices.management.managed.app.flaggedreason import (
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.operation import ManagedAppOperation
@@ -24,31 +25,37 @@ class ManagedAppRegistration(Entity):
     used by a member of the organization.
     """
 
+    @odata(name="applicationVersion")
     @property
     def application_version(self) -> Optional[str]:
         """Gets the applicationVersion property"""
         return self.properties.get("applicationVersion", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="deviceName")
     @property
     def device_name(self) -> Optional[str]:
         """Gets the deviceName property"""
         return self.properties.get("deviceName", None)
 
+    @odata(name="deviceTag")
     @property
     def device_tag(self) -> Optional[str]:
         """Gets the deviceTag property"""
         return self.properties.get("deviceTag", None)
 
+    @odata(name="deviceType")
     @property
     def device_type(self) -> Optional[str]:
         """Gets the deviceType property"""
         return self.properties.get("deviceType", None)
 
+    @odata(name="flaggedReasons")
     @property
     def flagged_reasons(self) -> ClientValueCollection[ManagedAppFlaggedReason]:
         """Gets the flaggedReasons property"""
@@ -56,31 +63,37 @@ class ManagedAppRegistration(Entity):
             "flaggedReasons", ClientValueCollection[ManagedAppFlaggedReason](ManagedAppFlaggedReason)
         )
 
+    @odata(name="lastSyncDateTime")
     @property
     def last_sync_date_time(self) -> datetime:
         """Gets the lastSyncDateTime property"""
         return self.properties.get("lastSyncDateTime", datetime.min)
 
+    @odata(name="managementSdkVersion")
     @property
     def management_sdk_version(self) -> Optional[str]:
         """Gets the managementSdkVersion property"""
         return self.properties.get("managementSdkVersion", None)
 
+    @odata(name="platformVersion")
     @property
     def platform_version(self) -> Optional[str]:
         """Gets the platformVersion property"""
         return self.properties.get("platformVersion", None)
 
+    @odata(name="userId")
     @property
     def user_id(self) -> Optional[str]:
         """Gets the userId property"""
         return self.properties.get("userId", None)
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[str]:
         """Gets the version property"""
         return self.properties.get("version", None)
 
+    @odata(name="appliedPolicies", navigation=True)
     @property
     def applied_policies(self) -> EntityCollection[ManagedAppPolicy]:
         """Gets the appliedPolicies property"""
@@ -91,6 +104,7 @@ class ManagedAppRegistration(Entity):
             ),
         )
 
+    @odata(name="intendedPolicies", navigation=True)
     @property
     def intended_policies(self) -> EntityCollection[ManagedAppPolicy]:
         """Gets the intendedPolicies property"""
@@ -105,6 +119,7 @@ class ManagedAppRegistration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ManagedAppRegistration"
 
+    @odata(name="appIdentifier")
     @property
     def app_identifier(self) -> MobileAppIdentifier:
         """Gets the appIdentifier property"""
@@ -112,6 +127,7 @@ class ManagedAppRegistration(Entity):
 
         return self.properties.get("appIdentifier", MobileAppIdentifier())
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[ManagedAppOperation]:
         """Gets the operations property"""

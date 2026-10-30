@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_insight import (
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class UserExperienceAnalyticsOverview(Entity):
+    @odata(name="insights")
     @property
     def insights(self) -> ClientValueCollection[UserExperienceAnalyticsInsight]:
         """Gets the insights property"""

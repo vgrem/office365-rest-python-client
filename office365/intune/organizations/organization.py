@@ -38,6 +38,7 @@ class Organization(DirectoryObject):
         """The plans that are assigned to the organization."""
         return self.properties.get("assignedPlans", ClientValueCollection(AssignedPlan))
 
+    @odata(name="branding", navigation=True)
     @property
     def branding(self) -> OrganizationalBranding:
         return self.properties.get(
@@ -54,6 +55,7 @@ class Organization(DirectoryObject):
         """
         return self.properties.get("businessPhones", StringCollection())
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the message. Nullable."""
@@ -62,7 +64,7 @@ class Organization(DirectoryObject):
             EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
-    @odata(name="certificateBasedAuthConfiguration")
+    @odata(name="certificateBasedAuthConfiguration", navigation=True)
     @property
     def certificate_based_auth_configuration(self) -> EntityCollection[CertificateBasedAuthConfiguration]:
         """Navigation property to manage certificate-based authentication configuration.
@@ -88,51 +90,61 @@ class Organization(DirectoryObject):
         """The collection of domains associated with this tenant."""
         return self.properties.get("verifiedDomains", ClientValueCollection(VerifiedDomain))
 
+    @odata(name="city")
     @property
     def city(self) -> Optional[str]:
         """Gets the city property"""
         return self.properties.get("city", None)
 
+    @odata(name="country")
     @property
     def country(self) -> Optional[str]:
         """Gets the country property"""
         return self.properties.get("country", None)
 
+    @odata(name="countryLetterCode")
     @property
     def country_letter_code(self) -> Optional[str]:
         """Gets the countryLetterCode property"""
         return self.properties.get("countryLetterCode", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="defaultUsageLocation")
     @property
     def default_usage_location(self) -> Optional[str]:
         """Gets the defaultUsageLocation property"""
         return self.properties.get("defaultUsageLocation", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="marketingNotificationEmails")
     @property
     def marketing_notification_emails(self) -> StringCollection:
         """Gets the marketingNotificationEmails property"""
         return self.properties.get("marketingNotificationEmails", StringCollection())
 
+    @odata(name="onPremisesLastSyncDateTime")
     @property
     def on_premises_last_sync_date_time(self) -> Optional[datetime]:
         """Gets the onPremisesLastSyncDateTime property"""
         return self.properties.get("onPremisesLastSyncDateTime", datetime.min)
 
+    @odata(name="onPremisesSyncEnabled")
     @property
     def on_premises_sync_enabled(self) -> Optional[bool]:
         """Gets the onPremisesSyncEnabled property"""
         return self.properties.get("onPremisesSyncEnabled", None)
 
+    @odata(name="partnerTenantType")
     @property
     def partner_tenant_type(self) -> PartnerTenantType:
         """Gets the partnerTenantType property"""
@@ -142,16 +154,19 @@ class Organization(DirectoryObject):
 
         return self.properties.get("partnerTenantType", PartnerTenantType.microsoftSupport)
 
+    @odata(name="postalCode")
     @property
     def postal_code(self) -> Optional[str]:
         """Gets the postalCode property"""
         return self.properties.get("postalCode", None)
 
+    @odata(name="preferredLanguage")
     @property
     def preferred_language(self) -> Optional[str]:
         """Gets the preferredLanguage property"""
         return self.properties.get("preferredLanguage", None)
 
+    @odata(name="privacyProfile")
     @property
     def privacy_profile(self) -> PrivacyProfile:
         """Gets the privacyProfile property"""
@@ -159,36 +174,43 @@ class Organization(DirectoryObject):
 
         return self.properties.get("privacyProfile", PrivacyProfile())
 
+    @odata(name="securityComplianceNotificationMails")
     @property
     def security_compliance_notification_mails(self) -> StringCollection:
         """Gets the securityComplianceNotificationMails property"""
         return self.properties.get("securityComplianceNotificationMails", StringCollection())
 
+    @odata(name="securityComplianceNotificationPhones")
     @property
     def security_compliance_notification_phones(self) -> StringCollection:
         """Gets the securityComplianceNotificationPhones property"""
         return self.properties.get("securityComplianceNotificationPhones", StringCollection())
 
+    @odata(name="state")
     @property
     def state(self) -> Optional[str]:
         """Gets the state property"""
         return self.properties.get("state", None)
 
+    @odata(name="street")
     @property
     def street(self) -> Optional[str]:
         """Gets the street property"""
         return self.properties.get("street", None)
 
+    @odata(name="technicalNotificationMails")
     @property
     def technical_notification_mails(self) -> StringCollection:
         """Gets the technicalNotificationMails property"""
         return self.properties.get("technicalNotificationMails", StringCollection())
 
+    @odata(name="tenantType")
     @property
     def tenant_type(self) -> Optional[str]:
         """Gets the tenantType property"""
         return self.properties.get("tenantType", None)
 
+    @odata(name="mobileDeviceManagementAuthority")
     @property
     def mobile_device_management_authority(self) -> MdmAuthority:
         """Gets the mobileDeviceManagementAuthority property"""

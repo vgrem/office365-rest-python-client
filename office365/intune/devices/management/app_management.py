@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 class DeviceAppManagement(Entity):
     """Singleton entity that acts as a container for all device and app management functionality."""
 
-    @odata(name="managedAppRegistrations")
+    @odata(name="managedAppRegistrations", navigation=True)
     @property
     def managed_app_registrations(self):
         """"""
@@ -58,26 +58,31 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="isEnabledForMicrosoftStoreForBusiness")
     @property
     def is_enabled_for_microsoft_store_for_business(self) -> Optional[bool]:
         """Gets the isEnabledForMicrosoftStoreForBusiness property"""
         return self.properties.get("isEnabledForMicrosoftStoreForBusiness", None)
 
+    @odata(name="microsoftStoreForBusinessLanguage")
     @property
     def microsoft_store_for_business_language(self) -> Optional[str]:
         """Gets the microsoftStoreForBusinessLanguage property"""
         return self.properties.get("microsoftStoreForBusinessLanguage", None)
 
+    @odata(name="microsoftStoreForBusinessLastCompletedApplicationSyncTime")
     @property
     def microsoft_store_for_business_last_completed_application_sync_time(self) -> datetime:
         """Gets the microsoftStoreForBusinessLastCompletedApplicationSyncTime property"""
         return self.properties.get("microsoftStoreForBusinessLastCompletedApplicationSyncTime", datetime.min)
 
+    @odata(name="microsoftStoreForBusinessLastSuccessfulSyncDateTime")
     @property
     def microsoft_store_for_business_last_successful_sync_date_time(self) -> datetime:
         """Gets the microsoftStoreForBusinessLastSuccessfulSyncDateTime property"""
         return self.properties.get("microsoftStoreForBusinessLastSuccessfulSyncDateTime", datetime.min)
 
+    @odata(name="managedEBooks", navigation=True)
     @property
     def managed_e_books(self) -> EntityCollection[ManagedEBook]:
         """Gets the managedEBooks property"""
@@ -88,6 +93,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="mobileAppCategories", navigation=True)
     @property
     def mobile_app_categories(self) -> EntityCollection[MobileAppCategory]:
         """Gets the mobileAppCategories property"""
@@ -98,6 +104,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="mobileAppRelationships", navigation=True)
     @property
     def mobile_app_relationships(self) -> EntityCollection[MobileAppRelationship]:
         """Gets the mobileAppRelationships property"""
@@ -108,6 +115,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="mobileApps", navigation=True)
     @property
     def mobile_apps(self) -> EntityCollection[MobileApp]:
         """Gets the mobileApps property"""
@@ -116,6 +124,7 @@ class DeviceAppManagement(Entity):
             EntityCollection[MobileApp](self.context, MobileApp, ResourcePath("mobileApps", self.resource_path)),
         )
 
+    @odata(name="vppTokens", navigation=True)
     @property
     def vpp_tokens(self) -> EntityCollection[VppToken]:
         """Gets the vppTokens property"""
@@ -124,6 +133,7 @@ class DeviceAppManagement(Entity):
             EntityCollection[VppToken](self.context, VppToken, ResourcePath("vppTokens", self.resource_path)),
         )
 
+    @odata(name="managedAppPolicies", navigation=True)
     @property
     def managed_app_policies(self) -> EntityCollection[ManagedAppPolicy]:
         """Gets the managedAppPolicies property"""
@@ -138,6 +148,7 @@ class DeviceAppManagement(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceAppManagement"
 
+    @odata(name="mobileAppConfigurations", navigation=True)
     @property
     def mobile_app_configurations(self) -> EntityCollection[ManagedDeviceMobileAppConfiguration]:
         """Gets the mobileAppConfigurations property"""
@@ -154,6 +165,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="androidManagedAppProtections", navigation=True)
     @property
     def android_managed_app_protections(self) -> EntityCollection[AndroidManagedAppProtection]:
         """Gets the androidManagedAppProtections property"""
@@ -170,6 +182,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="defaultManagedAppProtections", navigation=True)
     @property
     def default_managed_app_protections(self) -> EntityCollection[DefaultManagedAppProtection]:
         """Gets the defaultManagedAppProtections property"""
@@ -186,6 +199,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="iosManagedAppProtections", navigation=True)
     @property
     def ios_managed_app_protections(self) -> EntityCollection[IosManagedAppProtection]:
         """Gets the iosManagedAppProtections property"""
@@ -200,6 +214,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="managedAppStatuses", navigation=True)
     @property
     def managed_app_statuses(self) -> EntityCollection[ManagedAppStatus]:
         """Gets the managedAppStatuses property"""
@@ -214,6 +229,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="mdmWindowsInformationProtectionPolicies", navigation=True)
     @property
     def mdm_windows_information_protection_policies(self) -> EntityCollection[MdmWindowsInformationProtectionPolicy]:
         """Gets the mdmWindowsInformationProtectionPolicies property"""
@@ -230,6 +246,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="targetedManagedAppConfigurations", navigation=True)
     @property
     def targeted_managed_app_configurations(self) -> EntityCollection[TargetedManagedAppConfiguration]:
         """Gets the targetedManagedAppConfigurations property"""
@@ -246,6 +263,7 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @odata(name="windowsInformationProtectionPolicies", navigation=True)
     @property
     def windows_information_protection_policies(self) -> EntityCollection[WindowsInformationProtectionPolicy]:
         """Gets the windowsInformationProtectionPolicies property"""

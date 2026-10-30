@@ -11,6 +11,7 @@ from office365.intune.servicecommunications.health.types import (
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.servicecommunications.health.origin import ServiceHealthOrigin
@@ -28,21 +29,25 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
        - Service advisory: "Users may experience delays in emails reception".
     """
 
+    @odata(name="classification")
     @property
     def classification(self) -> ServiceHealthClassificationType:
         """The type of service health issue"""
         return self.properties.get("classification", ServiceHealthClassificationType.none)
 
+    @odata(name="feature")
     @property
     def feature(self) -> Optional[str]:
         """The feature name of the service issue."""
         return self.properties.get("feature", None)
 
+    @odata(name="featureGroup")
     @property
     def feature_group(self) -> Optional[str]:
         """The feature group name of the service issue."""
         return self.properties.get("featureGroup", None)
 
+    @odata(name="impactDescription")
     @property
     def impact_description(self) -> Optional[str]:
         """The description of the service issue impact."""
@@ -61,11 +66,13 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="isResolved")
     @property
     def is_resolved(self) -> Optional[bool]:
         """Gets the isResolved property"""
         return self.properties.get("isResolved", None)
 
+    @odata(name="origin")
     @property
     def origin(self) -> ServiceHealthOrigin:
         """Gets the origin property"""
@@ -75,6 +82,7 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
 
         return self.properties.get("origin", ServiceHealthOrigin.microsoft)
 
+    @odata(name="posts")
     @property
     def posts(self) -> ClientValueCollection[ServiceHealthIssuePost]:
         """Gets the posts property"""
@@ -82,11 +90,13 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
 
         return self.properties.get("posts", ClientValueCollection[ServiceHealthIssuePost](ServiceHealthIssuePost))
 
+    @odata(name="service")
     @property
     def service(self) -> Optional[str]:
         """Gets the service property"""
         return self.properties.get("service", None)
 
+    @odata(name="status")
     @property
     def status(self) -> ServiceHealthStatus:
         """Gets the status property"""

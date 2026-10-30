@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.userexperienceanalytics.healthstate import (
@@ -14,61 +15,73 @@ if TYPE_CHECKING:
 
 
 class UserExperienceAnalyticsWorkFromAnywhereDevice(Entity):
+    @odata(name="autoPilotProfileAssigned")
     @property
     def auto_pilot_profile_assigned(self) -> Optional[bool]:
         """Gets the autoPilotProfileAssigned property"""
         return self.properties.get("autoPilotProfileAssigned", None)
 
+    @odata(name="autoPilotRegistered")
     @property
     def auto_pilot_registered(self) -> Optional[bool]:
         """Gets the autoPilotRegistered property"""
         return self.properties.get("autoPilotRegistered", None)
 
+    @odata(name="azureAdDeviceId")
     @property
     def azure_ad_device_id(self) -> Optional[str]:
         """Gets the azureAdDeviceId property"""
         return self.properties.get("azureAdDeviceId", None)
 
+    @odata(name="azureAdJoinType")
     @property
     def azure_ad_join_type(self) -> Optional[str]:
         """Gets the azureAdJoinType property"""
         return self.properties.get("azureAdJoinType", None)
 
+    @odata(name="azureAdRegistered")
     @property
     def azure_ad_registered(self) -> Optional[bool]:
         """Gets the azureAdRegistered property"""
         return self.properties.get("azureAdRegistered", None)
 
+    @odata(name="cloudIdentityScore")
     @property
     def cloud_identity_score(self) -> Optional[float]:
         """Gets the cloudIdentityScore property"""
         return self.properties.get("cloudIdentityScore", None)
 
+    @odata(name="cloudManagementScore")
     @property
     def cloud_management_score(self) -> Optional[float]:
         """Gets the cloudManagementScore property"""
         return self.properties.get("cloudManagementScore", None)
 
+    @odata(name="cloudProvisioningScore")
     @property
     def cloud_provisioning_score(self) -> Optional[float]:
         """Gets the cloudProvisioningScore property"""
         return self.properties.get("cloudProvisioningScore", None)
 
+    @odata(name="compliancePolicySetToIntune")
     @property
     def compliance_policy_set_to_intune(self) -> Optional[bool]:
         """Gets the compliancePolicySetToIntune property"""
         return self.properties.get("compliancePolicySetToIntune", None)
 
+    @odata(name="deviceId")
     @property
     def device_id(self) -> Optional[str]:
         """Gets the deviceId property"""
         return self.properties.get("deviceId", None)
 
+    @odata(name="deviceName")
     @property
     def device_name(self) -> Optional[str]:
         """Gets the deviceName property"""
         return self.properties.get("deviceName", None)
 
+    @odata(name="healthStatus")
     @property
     def health_status(self) -> UserExperienceAnalyticsHealthState:
         """Gets the healthStatus property"""
@@ -78,101 +91,121 @@ class UserExperienceAnalyticsWorkFromAnywhereDevice(Entity):
 
         return self.properties.get("healthStatus", UserExperienceAnalyticsHealthState.unknown)
 
+    @odata(name="isCloudManagedGatewayEnabled")
     @property
     def is_cloud_managed_gateway_enabled(self) -> Optional[bool]:
         """Gets the isCloudManagedGatewayEnabled property"""
         return self.properties.get("isCloudManagedGatewayEnabled", None)
 
+    @odata(name="managedBy")
     @property
     def managed_by(self) -> Optional[str]:
         """Gets the managedBy property"""
         return self.properties.get("managedBy", None)
 
+    @odata(name="manufacturer")
     @property
     def manufacturer(self) -> Optional[str]:
         """Gets the manufacturer property"""
         return self.properties.get("manufacturer", None)
 
+    @odata(name="model")
     @property
     def model(self) -> Optional[str]:
         """Gets the model property"""
         return self.properties.get("model", None)
 
+    @odata(name="osCheckFailed")
     @property
     def os_check_failed(self) -> Optional[bool]:
         """Gets the osCheckFailed property"""
         return self.properties.get("osCheckFailed", None)
 
+    @odata(name="osDescription")
     @property
     def os_description(self) -> Optional[str]:
         """Gets the osDescription property"""
         return self.properties.get("osDescription", None)
 
+    @odata(name="osVersion")
     @property
     def os_version(self) -> Optional[str]:
         """Gets the osVersion property"""
         return self.properties.get("osVersion", None)
 
+    @odata(name="otherWorkloadsSetToIntune")
     @property
     def other_workloads_set_to_intune(self) -> Optional[bool]:
         """Gets the otherWorkloadsSetToIntune property"""
         return self.properties.get("otherWorkloadsSetToIntune", None)
 
+    @odata(name="ownership")
     @property
     def ownership(self) -> Optional[str]:
         """Gets the ownership property"""
         return self.properties.get("ownership", None)
 
+    @odata(name="processor64BitCheckFailed")
     @property
     def processor64_bit_check_failed(self) -> Optional[bool]:
         """Gets the processor64BitCheckFailed property"""
         return self.properties.get("processor64BitCheckFailed", None)
 
+    @odata(name="processorCoreCountCheckFailed")
     @property
     def processor_core_count_check_failed(self) -> Optional[bool]:
         """Gets the processorCoreCountCheckFailed property"""
         return self.properties.get("processorCoreCountCheckFailed", None)
 
+    @odata(name="processorFamilyCheckFailed")
     @property
     def processor_family_check_failed(self) -> Optional[bool]:
         """Gets the processorFamilyCheckFailed property"""
         return self.properties.get("processorFamilyCheckFailed", None)
 
+    @odata(name="processorSpeedCheckFailed")
     @property
     def processor_speed_check_failed(self) -> Optional[bool]:
         """Gets the processorSpeedCheckFailed property"""
         return self.properties.get("processorSpeedCheckFailed", None)
 
+    @odata(name="ramCheckFailed")
     @property
     def ram_check_failed(self) -> Optional[bool]:
         """Gets the ramCheckFailed property"""
         return self.properties.get("ramCheckFailed", None)
 
+    @odata(name="secureBootCheckFailed")
     @property
     def secure_boot_check_failed(self) -> Optional[bool]:
         """Gets the secureBootCheckFailed property"""
         return self.properties.get("secureBootCheckFailed", None)
 
+    @odata(name="serialNumber")
     @property
     def serial_number(self) -> Optional[str]:
         """Gets the serialNumber property"""
         return self.properties.get("serialNumber", None)
 
+    @odata(name="storageCheckFailed")
     @property
     def storage_check_failed(self) -> Optional[bool]:
         """Gets the storageCheckFailed property"""
         return self.properties.get("storageCheckFailed", None)
 
+    @odata(name="tenantAttached")
     @property
     def tenant_attached(self) -> Optional[bool]:
         """Gets the tenantAttached property"""
         return self.properties.get("tenantAttached", None)
 
+    @odata(name="tpmCheckFailed")
     @property
     def tpm_check_failed(self) -> Optional[bool]:
         """Gets the tpmCheckFailed property"""
         return self.properties.get("tpmCheckFailed", None)
 
+    @odata(name="upgradeEligibility")
     @property
     def upgrade_eligibility(self) -> OperatingSystemUpgradeEligibility:
         """Gets the upgradeEligibility property"""
@@ -182,11 +215,13 @@ class UserExperienceAnalyticsWorkFromAnywhereDevice(Entity):
 
         return self.properties.get("upgradeEligibility", OperatingSystemUpgradeEligibility.upgraded)
 
+    @odata(name="windowsScore")
     @property
     def windows_score(self) -> Optional[float]:
         """Gets the windowsScore property"""
         return self.properties.get("windowsScore", None)
 
+    @odata(name="workFromAnywhereScore")
     @property
     def work_from_anywhere_score(self) -> Optional[float]:
         """Gets the workFromAnywhereScore property"""

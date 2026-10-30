@@ -8,6 +8,7 @@ from office365.intune.devices.management.mobileapps.contained_app import (
     MobileContainedApp,
 )
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.mobileapps.content_file import (
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class MobileAppContent(Entity):
+    @odata(name="containedApps", navigation=True)
     @property
     def contained_apps(self) -> EntityCollection[MobileContainedApp]:
         """Gets the containedApps property"""
@@ -30,6 +32,7 @@ class MobileAppContent(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.MobileAppContent"
 
+    @odata(name="files", navigation=True)
     @property
     def files(self) -> EntityCollection[MobileAppContentFile]:
         """Gets the files property"""

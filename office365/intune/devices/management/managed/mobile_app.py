@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.mobileapps.mobile_app_identifier import MobileAppIdentifier
 
 
 class ManagedMobileApp(Entity):
+    @odata(name="mobileAppIdentifier")
     @property
     def mobile_app_identifier(self) -> MobileAppIdentifier:
         """Gets the mobileAppIdentifier property"""
@@ -16,6 +18,7 @@ class ManagedMobileApp(Entity):
 
         return self.properties.get("mobileAppIdentifier", MobileAppIdentifier())
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[str]:
         """Gets the version property"""

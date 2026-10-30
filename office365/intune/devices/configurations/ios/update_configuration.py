@@ -5,22 +5,26 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.dayofweek import DayOfWeek
 
 
 class IosUpdateConfiguration(Entity):
+    @odata(name="activeHoursEnd")
     @property
     def active_hours_end(self) -> Optional[time]:
         """Gets the activeHoursEnd property"""
         return self.properties.get("activeHoursEnd", None)
 
+    @odata(name="activeHoursStart")
     @property
     def active_hours_start(self) -> Optional[time]:
         """Gets the activeHoursStart property"""
         return self.properties.get("activeHoursStart", None)
 
+    @odata(name="scheduledInstallDays")
     @property
     def scheduled_install_days(self) -> ClientValueCollection[DayOfWeek]:
         """Gets the scheduledInstallDays property"""
@@ -28,6 +32,7 @@ class IosUpdateConfiguration(Entity):
 
         return self.properties.get("scheduledInstallDays", ClientValueCollection[DayOfWeek](DayOfWeek))
 
+    @odata(name="utcTimeOffsetInMinutes")
     @property
     def utc_time_offset_in_minutes(self) -> Optional[int]:
         """Gets the utcTimeOffsetInMinutes property"""

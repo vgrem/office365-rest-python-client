@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.compliance.setting_state_device_summary import (
@@ -35,31 +36,37 @@ class DeviceCompliancePolicy(Entity):
     """This is the base class for Compliance policy. Compliance policies are platform specific and individual
     per-platform compliance policies inherit from here"""
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[int]:
         """Gets the version property"""
         return self.properties.get("version", None)
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[DeviceCompliancePolicyAssignment]:
         """Gets the assignments property"""
@@ -74,6 +81,7 @@ class DeviceCompliancePolicy(Entity):
             ),
         )
 
+    @odata(name="deviceSettingStateSummaries", navigation=True)
     @property
     def device_setting_state_summaries(self) -> EntityCollection[SettingStateDeviceSummary]:
         """Gets the deviceSettingStateSummaries property"""
@@ -88,6 +96,7 @@ class DeviceCompliancePolicy(Entity):
             ),
         )
 
+    @odata(name="deviceStatuses", navigation=True)
     @property
     def device_statuses(self) -> EntityCollection[DeviceComplianceDeviceStatus]:
         """Gets the deviceStatuses property"""
@@ -102,6 +111,7 @@ class DeviceCompliancePolicy(Entity):
             ),
         )
 
+    @odata(name="deviceStatusOverview", navigation=True)
     @property
     def device_status_overview(self) -> DeviceComplianceDeviceOverview:
         """Gets the deviceStatusOverview property"""
@@ -114,6 +124,7 @@ class DeviceCompliancePolicy(Entity):
             DeviceComplianceDeviceOverview(self.context, ResourcePath("deviceStatusOverview", self.resource_path)),
         )
 
+    @odata(name="scheduledActionsForRule", navigation=True)
     @property
     def scheduled_actions_for_rule(self) -> EntityCollection[DeviceComplianceScheduledActionForRule]:
         """Gets the scheduledActionsForRule property"""
@@ -130,6 +141,7 @@ class DeviceCompliancePolicy(Entity):
             ),
         )
 
+    @odata(name="userStatuses", navigation=True)
     @property
     def user_statuses(self) -> EntityCollection[DeviceComplianceUserStatus]:
         """Gets the userStatuses property"""
@@ -144,6 +156,7 @@ class DeviceCompliancePolicy(Entity):
             ),
         )
 
+    @odata(name="userStatusOverview", navigation=True)
     @property
     def user_status_overview(self) -> DeviceComplianceUserOverview:
         """Gets the userStatusOverview property"""

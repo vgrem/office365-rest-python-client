@@ -5,17 +5,20 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.pollable import PollableOperation
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.printers.printer import Printer
 
 
 class PrinterCreateOperation(PollableOperation, Entity):
+    @odata(name="certificate")
     @property
     def certificate(self) -> Optional[str]:
         """Gets the certificate property"""
         return self.properties.get("certificate", None)
 
+    @odata(name="printer", navigation=True)
     @property
     def printer(self) -> Printer:
         """Gets the printer property"""

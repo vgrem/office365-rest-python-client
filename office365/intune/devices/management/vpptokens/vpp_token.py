@@ -5,6 +5,7 @@ from office365.entity import Entity
 from office365.intune.devices.management.vpptokens.accounttype import VppTokenAccountType
 from office365.intune.devices.management.vpptokens.state import VppTokenState
 from office365.intune.devices.management.vpptokens.syncstatus import VppTokenSyncStatus
+from office365.runtime.types.odata_property import odata
 
 
 class VppToken(Entity):
@@ -15,56 +16,67 @@ class VppToken(Entity):
     volume-purchased app use. You can upload multiple Apple VPP Business or Education tokens.
     """
 
+    @odata(name="appleId")
     @property
     def apple_id(self) -> Optional[str]:
         """Gets the appleId property"""
         return self.properties.get("appleId", None)
 
+    @odata(name="automaticallyUpdateApps")
     @property
     def automatically_update_apps(self) -> Optional[bool]:
         """Gets the automaticallyUpdateApps property"""
         return self.properties.get("automaticallyUpdateApps", None)
 
+    @odata(name="countryOrRegion")
     @property
     def country_or_region(self) -> Optional[str]:
         """Gets the countryOrRegion property"""
         return self.properties.get("countryOrRegion", None)
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_date_time(self) -> datetime:
         """Gets the expirationDateTime property"""
         return self.properties.get("expirationDateTime", datetime.min)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="lastSyncDateTime")
     @property
     def last_sync_date_time(self) -> datetime:
         """Gets the lastSyncDateTime property"""
         return self.properties.get("lastSyncDateTime", datetime.min)
 
+    @odata(name="lastSyncStatus")
     @property
     def last_sync_status(self) -> VppTokenSyncStatus:
         """Gets the lastSyncStatus property"""
         return self.properties.get("lastSyncStatus", VppTokenSyncStatus.none)
 
+    @odata(name="organizationName")
     @property
     def organization_name(self) -> Optional[str]:
         """Gets the organizationName property"""
         return self.properties.get("organizationName", None)
 
+    @odata(name="state")
     @property
     def state(self) -> VppTokenState:
         """Gets the state property"""
         return self.properties.get("state", VppTokenState.unknown)
 
+    @odata(name="token")
     @property
     def token(self) -> Optional[str]:
         """Gets the token property"""
         return self.properties.get("token", None)
 
+    @odata(name="vppTokenAccountType")
     @property
     def vpp_token_account_type(self) -> VppTokenAccountType:
         """Gets the vppTokenAccountType property"""

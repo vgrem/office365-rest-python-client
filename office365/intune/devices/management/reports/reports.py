@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management_export_job import DeviceManagementExportJob
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 class DeviceManagementReports(Entity):
     """Device management reports entity"""
 
+    @odata(name="exportJobs", navigation=True)
     @property
     def export_jobs(self) -> EntityCollection[DeviceManagementExportJob]:
         """Gets the exportJobs property"""

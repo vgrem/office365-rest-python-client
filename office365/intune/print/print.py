@@ -7,6 +7,7 @@ from office365.entity_collection import EntityCollection
 from office365.intune.print.connectors.connector import PrintConnector
 from office365.intune.print.shares.share import PrinterShare
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.operation import PrintOperation
@@ -21,6 +22,7 @@ class Print(Entity):
     discovery of printServiceEndpoints that can be used to manage printers and print jobs within Universal Print.
     """
 
+    @odata(name="connectors", navigation=True)
     @property
     def connectors(self):
         """The list of available print connectors."""
@@ -33,6 +35,7 @@ class Print(Entity):
             ),
         )
 
+    @odata(name="shares", navigation=True)
     @property
     def shares(self):
         """The list of printer shares registered in the tenant."""
@@ -41,6 +44,7 @@ class Print(Entity):
             EntityCollection(self.context, PrinterShare, ResourcePath("shares", self.resource_path)),
         )
 
+    @odata(name="settings")
     @property
     def settings(self) -> PrintSettings:
         """Gets the settings property"""
@@ -48,6 +52,7 @@ class Print(Entity):
 
         return self.properties.get("settings", PrintSettings())
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[PrintOperation]:
         """Gets the operations property"""
@@ -60,6 +65,7 @@ class Print(Entity):
             ),
         )
 
+    @odata(name="printers", navigation=True)
     @property
     def printers(self) -> EntityCollection[Printer]:
         """Gets the printers property"""
@@ -69,6 +75,7 @@ class Print(Entity):
             "printers", EntityCollection[Printer](self.context, Printer, ResourcePath("printers", self.resource_path))
         )
 
+    @odata(name="services", navigation=True)
     @property
     def services(self) -> EntityCollection[PrintService]:
         """Gets the services property"""
@@ -79,6 +86,7 @@ class Print(Entity):
             EntityCollection[PrintService](self.context, PrintService, ResourcePath("services", self.resource_path)),
         )
 
+    @odata(name="taskDefinitions", navigation=True)
     @property
     def task_definitions(self) -> EntityCollection[PrintTaskDefinition]:
         """Gets the taskDefinitions property"""

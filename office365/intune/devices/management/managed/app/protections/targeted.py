@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.protections.targeted_managed_app_policy_assignment import (
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 
 class TargetedManagedAppProtection(Entity):
+    @odata(name="isAssigned")
     @property
     def is_assigned(self) -> Optional[bool]:
         """Gets the isAssigned property"""
@@ -22,6 +24,7 @@ class TargetedManagedAppProtection(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TargetedManagedAppProtection"
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[TargetedManagedAppPolicyAssignment]:
         """Gets the assignments property"""

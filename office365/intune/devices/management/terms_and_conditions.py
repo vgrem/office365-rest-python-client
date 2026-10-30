@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.terms_and_conditions_acceptance_status import (
@@ -24,46 +25,55 @@ class TermsAndConditions(Entity):
     the provisions to which a user must agree in order to have devices enrolled into Intune.
     """
 
+    @odata(name="acceptanceStatement")
     @property
     def acceptance_statement(self) -> Optional[str]:
         """Gets the acceptanceStatement property"""
         return self.properties.get("acceptanceStatement", None)
 
+    @odata(name="bodyText")
     @property
     def body_text(self) -> Optional[str]:
         """Gets the bodyText property"""
         return self.properties.get("bodyText", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """Gets the title property"""
         return self.properties.get("title", None)
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[int]:
         """Gets the version property"""
         return self.properties.get("version", None)
 
+    @odata(name="acceptanceStatuses", navigation=True)
     @property
     def acceptance_statuses(self) -> EntityCollection[TermsAndConditionsAcceptanceStatus]:
         """Gets the acceptanceStatuses property"""
@@ -78,6 +88,7 @@ class TermsAndConditions(Entity):
             ),
         )
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[TermsAndConditionsAssignment]:
         """Gets the assignments property"""

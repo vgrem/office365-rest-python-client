@@ -10,7 +10,7 @@ from office365.runtime.types.odata_property import odata
 class ServiceAnnouncement(Entity):
     """A top-level container for service communications resources."""
 
-    @odata(name="healthOverviews")
+    @odata(name="healthOverviews", navigation=True)
     @property
     def health_overviews(self) -> EntityCollection[ServiceHealth]:
         """Get the serviceHealth resources from the healthOverviews navigation property."""
@@ -23,6 +23,7 @@ class ServiceAnnouncement(Entity):
             ),
         )
 
+    @odata(name="issues", navigation=True)
     @property
     def issues(self) -> EntityCollection[ServiceHealthIssue]:
         """Get the serviceHealthIssue resources from the issues navigation property."""
@@ -35,6 +36,7 @@ class ServiceAnnouncement(Entity):
             ),
         )
 
+    @odata(name="messages", navigation=True)
     @property
     def messages(self) -> EntityCollection[ServiceUpdateMessage]:
         """Get the serviceUpdateMessage resources from the messages navigation property."""

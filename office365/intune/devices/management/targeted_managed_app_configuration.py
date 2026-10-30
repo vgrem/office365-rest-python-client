@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.protections.targeted_managed_app_policy_assignment import (
@@ -17,16 +18,19 @@ if TYPE_CHECKING:
 
 
 class TargetedManagedAppConfiguration(Entity):
+    @odata(name="deployedAppCount")
     @property
     def deployed_app_count(self) -> Optional[int]:
         """Gets the deployedAppCount property"""
         return self.properties.get("deployedAppCount", None)
 
+    @odata(name="isAssigned")
     @property
     def is_assigned(self) -> Optional[bool]:
         """Gets the isAssigned property"""
         return self.properties.get("isAssigned", None)
 
+    @odata(name="apps", navigation=True)
     @property
     def apps(self) -> EntityCollection[ManagedMobileApp]:
         """Gets the apps property"""
@@ -37,6 +41,7 @@ class TargetedManagedAppConfiguration(Entity):
             EntityCollection[ManagedMobileApp](self.context, ManagedMobileApp, ResourcePath("apps", self.resource_path)),
         )
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[TargetedManagedAppPolicyAssignment]:
         """Gets the assignments property"""
@@ -51,6 +56,7 @@ class TargetedManagedAppConfiguration(Entity):
             ),
         )
 
+    @odata(name="deploymentSummary", navigation=True)
     @property
     def deployment_summary(self) -> ManagedAppPolicyDeploymentSummary:
         """Gets the deploymentSummary property"""

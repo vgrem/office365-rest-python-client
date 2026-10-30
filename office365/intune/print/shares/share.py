@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity_collection import EntityCollection
 from office365.intune.print.printers.base import PrinterBase
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.groups.group import Group
@@ -17,16 +18,19 @@ if TYPE_CHECKING:
 class PrinterShare(PrinterBase):
     """Represents a printer that is intended to be discoverable by users and print applications."""
 
+    @odata(name="allowAllUsers")
     @property
     def allow_all_users(self) -> Optional[bool]:
         """Gets the allowAllUsers property"""
         return self.properties.get("allowAllUsers", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="viewPoint")
     @property
     def view_point(self) -> PrinterShareViewpoint:
         """Gets the viewPoint property"""
@@ -34,6 +38,7 @@ class PrinterShare(PrinterBase):
 
         return self.properties.get("viewPoint", PrinterShareViewpoint())
 
+    @odata(name="allowedGroups", navigation=True)
     @property
     def allowed_groups(self) -> EntityCollection[Group]:
         """Gets the allowedGroups property"""
@@ -44,6 +49,7 @@ class PrinterShare(PrinterBase):
             EntityCollection[Group](self.context, Group, ResourcePath("allowedGroups", self.resource_path)),
         )
 
+    @odata(name="allowedUsers", navigation=True)
     @property
     def allowed_users(self) -> EntityCollection[User]:
         """Gets the allowedUsers property"""
@@ -53,6 +59,7 @@ class PrinterShare(PrinterBase):
             "allowedUsers", EntityCollection[User](self.context, User, ResourcePath("allowedUsers", self.resource_path))
         )
 
+    @odata(name="printer", navigation=True)
     @property
     def printer(self) -> Printer:
         """Gets the printer property"""

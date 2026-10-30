@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity_collection import EntityCollection
 from office365.intune.print.printers.base import PrinterBase
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.connectors.connector import PrintConnector
@@ -18,26 +19,31 @@ class Printer(PrinterBase):
     Printer resources can be used to manage print jobs, printer settings, printer metadata and registration status.
     """
 
+    @odata(name="hasPhysicalDevice")
     @property
     def has_physical_device(self) -> Optional[bool]:
         """Gets the hasPhysicalDevice property"""
         return self.properties.get("hasPhysicalDevice", None)
 
+    @odata(name="isShared")
     @property
     def is_shared(self) -> Optional[bool]:
         """Gets the isShared property"""
         return self.properties.get("isShared", None)
 
+    @odata(name="lastSeenDateTime")
     @property
     def last_seen_date_time(self) -> Optional[datetime]:
         """Gets the lastSeenDateTime property"""
         return self.properties.get("lastSeenDateTime", datetime.min)
 
+    @odata(name="registeredDateTime")
     @property
     def registered_date_time(self) -> Optional[datetime]:
         """Gets the registeredDateTime property"""
         return self.properties.get("registeredDateTime", datetime.min)
 
+    @odata(name="connectors", navigation=True)
     @property
     def connectors(self) -> EntityCollection[PrintConnector]:
         """Gets the connectors property"""
@@ -50,6 +56,7 @@ class Printer(PrinterBase):
             ),
         )
 
+    @odata(name="shares", navigation=True)
     @property
     def shares(self) -> EntityCollection[PrinterShare]:
         """Gets the shares property"""
@@ -60,6 +67,7 @@ class Printer(PrinterBase):
             EntityCollection[PrinterShare](self.context, PrinterShare, ResourcePath("shares", self.resource_path)),
         )
 
+    @odata(name="taskTriggers", navigation=True)
     @property
     def task_triggers(self) -> EntityCollection[PrintTaskTrigger]:
         """Gets the taskTriggers property"""

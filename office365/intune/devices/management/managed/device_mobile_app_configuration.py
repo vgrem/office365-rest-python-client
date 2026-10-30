@@ -7,6 +7,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.device_mobile_app_configuration_assignment import (
@@ -27,36 +28,43 @@ if TYPE_CHECKING:
 
 
 class ManagedDeviceMobileAppConfiguration(Entity):
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="targetedMobileApps")
     @property
     def targeted_mobile_apps(self) -> StringCollection:
         """Gets the targetedMobileApps property"""
         return self.properties.get("targetedMobileApps", StringCollection())
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[int]:
         """Gets the version property"""
         return self.properties.get("version", None)
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[ManagedDeviceMobileAppConfigurationAssignment]:
         """Gets the assignments property"""
@@ -73,6 +81,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
             ),
         )
 
+    @odata(name="deviceStatuses", navigation=True)
     @property
     def device_statuses(self) -> EntityCollection[ManagedDeviceMobileAppConfigurationDeviceStatus]:
         """Gets the deviceStatuses property"""
@@ -89,6 +98,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
             ),
         )
 
+    @odata(name="deviceStatusSummary", navigation=True)
     @property
     def device_status_summary(self) -> ManagedDeviceMobileAppConfigurationDeviceSummary:
         """Gets the deviceStatusSummary property"""
@@ -103,6 +113,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
             ),
         )
 
+    @odata(name="userStatuses", navigation=True)
     @property
     def user_statuses(self) -> EntityCollection[ManagedDeviceMobileAppConfigurationUserStatus]:
         """Gets the userStatuses property"""
@@ -119,6 +130,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
             ),
         )
 
+    @odata(name="userStatusSummary", navigation=True)
     @property
     def user_status_summary(self) -> ManagedDeviceMobileAppConfigurationUserSummary:
         """Gets the userStatusSummary property"""
