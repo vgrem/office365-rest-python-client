@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.search.answers.state import AnswerState
 from office365.search.identity_set import IdentitySet
 
 
@@ -43,3 +46,9 @@ class SearchAnswer(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.search.searchAnswer"
+
+    @odata(name="state", system=True)
+    @property
+    def state(self) -> AnswerState:
+        """Gets the state property"""
+        return self.properties.get("state", AnswerState.published)

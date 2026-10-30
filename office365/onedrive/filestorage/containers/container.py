@@ -61,7 +61,7 @@ class FileStorageContainer(Entity):
 
     @property
     def entity_type_name(self) -> str:
-        return "graph.fileStorageContainer"
+        return "microsoft.graph.FileStorageContainer"
 
     @odata(name="assignedSensitivityLabel")
     @property

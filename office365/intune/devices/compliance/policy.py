@@ -172,3 +172,15 @@ class DeviceCompliancePolicy(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceCompliancePolicy"
+
+    @odata(name="osMaximumVersion", system=True)
+    @property
+    def os_maximum_version(self) -> Optional[str]:
+        """Gets the osMaximumVersion property"""
+        return self.properties.get("osMaximumVersion", None)
+
+    @odata(name="osMinimumVersion", system=True)
+    @property
+    def os_minimum_version(self) -> Optional[str]:
+        """Gets the osMinimumVersion property"""
+        return self.properties.get("osMinimumVersion", None)
