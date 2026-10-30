@@ -21,7 +21,7 @@ class ChangeFolder(Change):
         """Identifies the site that contains the changed folder."""
         return self.properties.get("WebId", None)
 
-    @odata(name="IsRecycleBinOperation")
+    @odata(name="IsRecycleBinOperation", beta=True)
     @property
     def is_recycle_bin_operation(self) -> Optional[bool]:
         """Gets the IsRecycleBinOperation property"""

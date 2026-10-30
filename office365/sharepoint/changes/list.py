@@ -18,19 +18,19 @@ class ChangeList(Change):
     def __repr__(self):
         return f"List: {self.list_id}"
 
-    @odata(name="BaseTemplate")
+    @odata(name="BaseTemplate", beta=True)
     @property
     def base_template(self) -> Optional[int]:
         """An SP.ListTemplateType object that returns the list template type of the list."""
         return self.properties.get("BaseTemplate", None)
 
-    @odata(name="Editor")
+    @odata(name="Editor", beta=True)
     @property
     def editor(self) -> Optional[str]:
         """A string that returns the name of the user who modified the list."""
         return self.properties.get("Editor", None)
 
-    @odata(name="Hidden")
+    @odata(name="Hidden", beta=True)
     @property
     def hidden(self) -> Optional[bool]:
         """Returns a Boolean value that indicates whether a list is a hidden list."""
@@ -50,13 +50,13 @@ class ChangeList(Change):
 
         return self.properties.get("Creator", User(self.context, ResourcePath("Creator", self.resource_path)))
 
-    @odata(name="IsRecycleBinOperation")
+    @odata(name="IsRecycleBinOperation", beta=True)
     @property
     def is_recycle_bin_operation(self) -> Optional[bool]:
         """Gets the IsRecycleBinOperation property"""
         return self.properties.get("IsRecycleBinOperation", None)
 
-    @odata(name="RootFolderUrl")
+    @odata(name="RootFolderUrl", beta=True)
     @property
     def root_folder_url(self) -> Optional[str]:
         """Gets the RootFolderUrl property"""

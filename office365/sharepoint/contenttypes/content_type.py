@@ -140,7 +140,7 @@ class ContentType(Entity):
     def client_form_custom_formatter(self) -> Optional[str]:
         return self.properties.get("ClientFormCustomFormatter", None)
 
-    @odata(name="DisplayFormClientSideComponentId")
+    @odata(name="DisplayFormClientSideComponentId", beta=True)
     @property
     def display_form_client_side_component_id(self) -> Optional[str]:
         """
@@ -148,7 +148,7 @@ class ContentType(Entity):
         """
         return self.properties.get("DisplayFormClientSideComponentId", None)
 
-    @odata(name="DisplayFormClientSideComponentProperties")
+    @odata(name="DisplayFormClientSideComponentProperties", beta=True)
     @property
     def display_form_client_side_component_properties(self) -> Optional[str]:
         """
@@ -173,7 +173,7 @@ class ContentType(Entity):
         """
         return self.properties.get("DisplayFormUrl", None)
 
-    @odata(name="EditFormClientSideComponentId")
+    @odata(name="EditFormClientSideComponentId", beta=True)
     @property
     def edit_form_client_side_component_id(self) -> Optional[str]:
         """
@@ -182,7 +182,7 @@ class ContentType(Entity):
         """
         return self.properties.get("EditFormClientSideComponentId", None)
 
-    @odata(name="EditFormClientSideComponentProperties")
+    @odata(name="EditFormClientSideComponentProperties", beta=True)
     @property
     def edit_form_client_side_component_properties(self) -> Optional[str]:
         """
@@ -227,7 +227,7 @@ class ContentType(Entity):
         """Sets the name of the content type."""
         self.set_property("Name", value)
 
-    @odata(name="NewFormClientSideComponentProperties")
+    @odata(name="NewFormClientSideComponentProperties", beta=True)
     @property
     def new_form_client_side_component_properties(self) -> Optional[str]:
         """The component properties of an SPFx Form Customizer to connect to this content type for usage with new
@@ -357,13 +357,13 @@ class ContentType(Entity):
     def property_ref_name(self):
         return "StringId"
 
-    @odata(name="DisplayFormTarget")
+    @odata(name="DisplayFormTarget", beta=True)
     @property
     def display_form_target(self) -> Optional[int]:
         """Gets the DisplayFormTarget property"""
         return self.properties.get("DisplayFormTarget", None)
 
-    @odata(name="EditFormTarget")
+    @odata(name="EditFormTarget", beta=True)
     @property
     def edit_form_target(self) -> Optional[int]:
         """Gets the EditFormTarget property"""
@@ -393,13 +393,13 @@ class ContentType(Entity):
         """Gets the MobileNewFormUrl property"""
         return self.properties.get("MobileNewFormUrl", None)
 
-    @odata(name="NewFormClientSideComponentId")
+    @odata(name="NewFormClientSideComponentId", beta=True)
     @property
     def new_form_client_side_component_id(self) -> Optional[str]:
         """Gets the NewFormClientSideComponentId property"""
         return self.properties.get("NewFormClientSideComponentId", None)
 
-    @odata(name="NewFormTarget")
+    @odata(name="NewFormTarget", beta=True)
     @property
     def new_form_target(self) -> Optional[int]:
         """Gets the NewFormTarget property"""

@@ -27,7 +27,7 @@ class Form(Entity):
         """
         return self.properties.get("ServerRelativeUrl", None)
 
-    @odata(name="ResourcePath")
+    @odata(name="ResourcePath", beta=True)
     @property
     def resource_path(self) -> SPResPath:  # type: ignore[override]
         """

@@ -10,7 +10,7 @@ class FieldNumber(Field):
     """Specifies a field that contains number values. To set properties, call the Update method
     (section 3.2.5.53.2.1.5)."""
 
-    @odata(name="DisplayFormat")
+    @odata(name="DisplayFormat", beta=True)
     @property
     def display_format(self) -> Optional[int]:
         """Gets the number of decimal places to be used when displaying the field."""

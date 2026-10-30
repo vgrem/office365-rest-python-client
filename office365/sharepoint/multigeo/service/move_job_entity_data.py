@@ -21,7 +21,7 @@ class MoveJobEntityData(Entity):
         """Gets the ApiVersion property"""
         return self.properties.get("ApiVersion", None)
 
-    @odata(name="BatchId")
+    @odata(name="BatchId", beta=True)
     @property
     def batch_id(self) -> Optional[UUID]:
         """Gets the BatchId property"""

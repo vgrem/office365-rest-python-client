@@ -8,7 +8,7 @@ from office365.sharepoint.htmlpages.html_page import HtmlPage
 
 
 class HtmlPageService(Entity):
-    @odata(name="Pages", navigation=True)
+    @odata(name="Pages", navigation=True, beta=True)
     @property
     def pages(self) -> EntityCollection[HtmlPage]:
         """Gets the Pages property"""

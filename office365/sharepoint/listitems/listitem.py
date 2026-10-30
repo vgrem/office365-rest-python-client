@@ -662,7 +662,7 @@ class ListItem(SecurableObject):
         """Gets a collection of key/value pairs containing the names and values for the fields of the list item."""
         return self.properties.get("FieldValues", None)
 
-    @odata(name="CommentsDisabled")
+    @odata(name="CommentsDisabled", beta=True)
     @property
     def comments_disabled(self) -> Optional[bool]:
         """Indicates whether comments for this item are disabled or not."""
@@ -784,12 +784,12 @@ class ListItem(SecurableObject):
         """ """
         return self.properties.get("Client_Title", None)
 
-    @odata(name="ComplianceInfo")
+    @odata(name="ComplianceInfo", beta=True)
     @property
     def compliance_info(self) -> ListItemComplianceInfo:
         return self.properties.get("ComplianceInfo", ListItemComplianceInfo())
 
-    @odata(name="CommentsDisabledScope")
+    @odata(name="CommentsDisabledScope", beta=True)
     @property
     def comments_disabled_scope(self) -> Optional[str]:
         """Indicates at what scope comments are disabled."""
@@ -813,7 +813,7 @@ class ListItem(SecurableObject):
             FieldStringValues(self.context, ResourcePath("FieldValuesAsHtml", self.resource_path)),
         )
 
-    @odata(name="LikedByInformation", navigation=True)
+    @odata(name="LikedByInformation", navigation=True, beta=True)
     @property
     def liked_by_information(self) -> LikedByInformation:
         """Gets a value that specifies the list item identifier."""

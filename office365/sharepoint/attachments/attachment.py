@@ -105,7 +105,7 @@ class Attachment(Entity):
         """The server-relative-url of the attachment"""
         return self.properties.get("ServerRelativeUrl", None)
 
-    @odata(name="ServerRelativePath")
+    @odata(name="ServerRelativePath", beta=True)
     @property
     def server_relative_path(self) -> SPResPath:
         """The server-relative-path of the attachment."""

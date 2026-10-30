@@ -37,7 +37,7 @@ class FieldCalculated(Field):
         """Gets the DateFormat property"""
         return self.properties.get("DateFormat", None)
 
-    @odata(name="DisplayFormat")
+    @odata(name="DisplayFormat", beta=True)
     @property
     def display_format(self) -> Optional[int]:
         """Gets the DisplayFormat property"""

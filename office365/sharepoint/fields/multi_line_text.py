@@ -62,7 +62,7 @@ class FieldMultiLineText(Field):
         """Gets the AppendOnly property"""
         return self.properties.get("AppendOnly", None)
 
-    @odata(name="IsLongHyperlink")
+    @odata(name="IsLongHyperlink", beta=True)
     @property
     def is_long_hyperlink(self) -> Optional[bool]:
         """Gets the IsLongHyperlink property"""

@@ -209,7 +209,7 @@ class View(Entity):
         """Specifies whether the list view is read-only."""
         return self.properties.get("ReadOnlyView", None)
 
-    @odata(name="ServerRelativePath")
+    @odata(name="ServerRelativePath", beta=True)
     @property
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the View."""
@@ -221,7 +221,7 @@ class View(Entity):
         """Specifies the joins that are used in the list view"""
         return self.properties.get("ViewJoins", None)
 
-    @odata(name="VisualizationInfo")
+    @odata(name="VisualizationInfo", beta=True)
     @property
     def visualization_info(self) -> Visualization:
         """Specifies how the view is layed out."""
@@ -353,7 +353,7 @@ class View(Entity):
         """Gets the NewDocumentTemplates property"""
         return self.properties.get("NewDocumentTemplates", None)
 
-    @odata(name="PageRenderType")
+    @odata(name="PageRenderType", beta=True)
     @property
     def page_render_type(self) -> Optional[int]:
         """Gets the PageRenderType property"""

@@ -55,7 +55,7 @@ class Office365Tenant(Entity):
         static_path = StaticPath("Microsoft.Online.SharePoint.TenantManagement.Office365Tenant")
         super().__init__(context, static_path)
 
-    @odata(name="AddressbarLinkPermission")
+    @odata(name="AddressbarLinkPermission", beta=True)
     @property
     def addressbar_link_permission(self) -> Optional[int]:
         return self.properties.get("AddressbarLinkPermission", None)

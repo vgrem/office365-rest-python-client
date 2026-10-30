@@ -53,7 +53,7 @@ class Change(Entity):
         """
         return self.properties.get("Time", datetime.min)
 
-    @odata(name="RelativeTime")
+    @odata(name="RelativeTime", beta=True)
     @property
     def relative_time(self) -> Optional[str]:
         """Gets the RelativeTime property"""

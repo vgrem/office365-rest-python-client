@@ -1304,7 +1304,7 @@ class Tenant(Entity):
         """
         return self.properties.get("NotifyOwnersWhenItemsReshared", None)
 
-    @odata(name="OneDriveDefaultLinkToExistingAccess")
+    @odata(name="OneDriveDefaultLinkToExistingAccess", beta=True)
     @property
     def one_drive_default_link_to_existing_access(self) -> Optional[str]:
         """ """
@@ -1334,7 +1334,7 @@ class Tenant(Entity):
             ),
         )
 
-    @odata(name="SyntexPowerAppsEnvironmentsContext")
+    @odata(name="SyntexPowerAppsEnvironmentsContext", beta=True)
     @property
     def syntex_power_apps_environments_context(self) -> SyntexPowerAppsEnvironmentsContext:
         """ """
@@ -1362,7 +1362,7 @@ class Tenant(Entity):
 
         return TenantCrawlVersionsInfoProvider(self.context)
 
-    @odata(name="SyntexBillingSubscriptionSettings")
+    @odata(name="SyntexBillingSubscriptionSettings", beta=True)
     @property
     def syntex_billing_subscription_settings(self) -> SyntexBillingContext:
         """
@@ -1411,7 +1411,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
-    @odata(name="AddressbarLinkPermission")
+    @odata(name="AddressbarLinkPermission", beta=True)
     @property
     def addressbar_link_permission(self) -> Optional[int]:
         """Gets the AddressbarLinkPermission property"""
@@ -1447,7 +1447,7 @@ class Tenant(Entity):
         """Gets the AllOrganizationSecurityGroupId property"""
         return self.properties.get("AllOrganizationSecurityGroupId", None)
 
-    @odata(name="AllowAnonymousMeetingParticipantsToAccessWhiteboards")
+    @odata(name="AllowAnonymousMeetingParticipantsToAccessWhiteboards", beta=True)
     @property
     def allow_anonymous_meeting_participants_to_access_whiteboards(self) -> Optional[int]:
         """Gets the AllowAnonymousMeetingParticipantsToAccessWhiteboards property"""
@@ -1555,7 +1555,7 @@ class Tenant(Entity):
         """Gets the AmplifyAdminSettings property"""
         return self.properties.get("AmplifyAdminSettings", None)
 
-    @odata(name="AnyoneLinkTrackUsers")
+    @odata(name="AnyoneLinkTrackUsers", beta=True)
     @property
     def anyone_link_track_users(self) -> Optional[bool]:
         """Gets the AnyoneLinkTrackUsers property"""
@@ -1812,13 +1812,13 @@ class Tenant(Entity):
         """Gets the ConditionalAccessPolicyErrorHelpLink property"""
         return self.properties.get("ConditionalAccessPolicyErrorHelpLink", None)
 
-    @odata(name="ContentSecurityPolicyConfigSynced")
+    @odata(name="ContentSecurityPolicyConfigSynced", beta=True)
     @property
     def content_security_policy_config_synced(self) -> Optional[bool]:
         """Gets the ContentSecurityPolicyConfigSynced property"""
         return self.properties.get("ContentSecurityPolicyConfigSynced", None)
 
-    @odata(name="ContentSecurityPolicyEnforcement")
+    @odata(name="ContentSecurityPolicyEnforcement", beta=True)
     @property
     def content_security_policy_enforcement(self) -> Optional[bool]:
         """Gets the ContentSecurityPolicyEnforcement property"""
@@ -1848,43 +1848,43 @@ class Tenant(Entity):
         """Gets the CoreAnyoneSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("CoreAnyoneSharingLinkRecommendedExpirationInDays", None)
 
-    @odata(name="CoreBlockGuestsAsSiteAdmin")
+    @odata(name="CoreBlockGuestsAsSiteAdmin", beta=True)
     @property
     def core_block_guests_as_site_admin(self) -> Optional[int]:
         """Gets the CoreBlockGuestsAsSiteAdmin property"""
         return self.properties.get("CoreBlockGuestsAsSiteAdmin", None)
 
-    @odata(name="CoreDefaultLinkToExistingAccess")
+    @odata(name="CoreDefaultLinkToExistingAccess", beta=True)
     @property
     def core_default_link_to_existing_access(self) -> Optional[bool]:
         """Gets the CoreDefaultLinkToExistingAccess property"""
         return self.properties.get("CoreDefaultLinkToExistingAccess", None)
 
-    @odata(name="CoreDefaultShareLinkRole")
+    @odata(name="CoreDefaultShareLinkRole", beta=True)
     @property
     def core_default_share_link_role(self) -> Optional[int]:
         """Gets the CoreDefaultShareLinkRole property"""
         return self.properties.get("CoreDefaultShareLinkRole", None)
 
-    @odata(name="CoreDefaultShareLinkScope")
+    @odata(name="CoreDefaultShareLinkScope", beta=True)
     @property
     def core_default_share_link_scope(self) -> Optional[int]:
         """Gets the CoreDefaultShareLinkScope property"""
         return self.properties.get("CoreDefaultShareLinkScope", None)
 
-    @odata(name="CoreLoopDefaultSharingLinkRole")
+    @odata(name="CoreLoopDefaultSharingLinkRole", beta=True)
     @property
     def core_loop_default_sharing_link_role(self) -> Optional[int]:
         """Gets the CoreLoopDefaultSharingLinkRole property"""
         return self.properties.get("CoreLoopDefaultSharingLinkRole", None)
 
-    @odata(name="CoreLoopDefaultSharingLinkScope")
+    @odata(name="CoreLoopDefaultSharingLinkScope", beta=True)
     @property
     def core_loop_default_sharing_link_scope(self) -> Optional[int]:
         """Gets the CoreLoopDefaultSharingLinkScope property"""
         return self.properties.get("CoreLoopDefaultSharingLinkScope", None)
 
-    @odata(name="CoreLoopSharingCapability")
+    @odata(name="CoreLoopSharingCapability", beta=True)
     @property
     def core_loop_sharing_capability(self) -> Optional[int]:
         """Gets the CoreLoopSharingCapability property"""
@@ -1902,19 +1902,19 @@ class Tenant(Entity):
         """Gets the CoreOrganizationSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("CoreOrganizationSharingLinkRecommendedExpirationInDays", None)
 
-    @odata(name="CoreRequestFilesLinkEnabled")
+    @odata(name="CoreRequestFilesLinkEnabled", beta=True)
     @property
     def core_request_files_link_enabled(self) -> Optional[bool]:
         """Gets the CoreRequestFilesLinkEnabled property"""
         return self.properties.get("CoreRequestFilesLinkEnabled", None)
 
-    @odata(name="CoreRequestFilesLinkExpirationInDays")
+    @odata(name="CoreRequestFilesLinkExpirationInDays", beta=True)
     @property
     def core_request_files_link_expiration_in_days(self) -> Optional[int]:
         """Gets the CoreRequestFilesLinkExpirationInDays property"""
         return self.properties.get("CoreRequestFilesLinkExpirationInDays", None)
 
-    @odata(name="CoreSharingCapability")
+    @odata(name="CoreSharingCapability", beta=True)
     @property
     def core_sharing_capability(self) -> Optional[int]:
         """Gets the CoreSharingCapability property"""
@@ -1962,7 +1962,7 @@ class Tenant(Entity):
         """Gets the DefaultSharingLinkType property"""
         return self.properties.get("DefaultSharingLinkType", None)
 
-    @odata(name="DelayContentSecurityPolicyEnforcement")
+    @odata(name="DelayContentSecurityPolicyEnforcement", beta=True)
     @property
     def delay_content_security_policy_enforcement(self) -> Optional[bool]:
         """Gets the DelayContentSecurityPolicyEnforcement property"""
@@ -2430,13 +2430,13 @@ class Tenant(Entity):
         """Gets the GuestSharingGroupAllowListInTenant property"""
         return self.properties.get("GuestSharingGroupAllowListInTenant", None)
 
-    @odata(name="GuestSharingGroupAllowListInTenantByGroupId")
+    @odata(name="GuestSharingGroupAllowListInTenantByGroupId", beta=True)
     @property
     def guest_sharing_group_allow_list_in_tenant_by_group_id(self) -> StringCollection:
         """Gets the GuestSharingGroupAllowListInTenantByGroupId property"""
         return self.properties.get("GuestSharingGroupAllowListInTenantByGroupId", StringCollection())
 
-    @odata(name="GuestSharingGroupAllowListInTenantByPrincipalIdentity")
+    @odata(name="GuestSharingGroupAllowListInTenantByPrincipalIdentity", beta=True)
     @property
     def guest_sharing_group_allow_list_in_tenant_by_principal_identity(self) -> StringCollection:
         """Gets the GuestSharingGroupAllowListInTenantByPrincipalIdentity property"""
@@ -2592,13 +2592,13 @@ class Tenant(Entity):
         """Gets the IsMultiGeo property"""
         return self.properties.get("IsMultiGeo", None)
 
-    @odata(name="IsMultipleHomeSitesFlightEnabled")
+    @odata(name="IsMultipleHomeSitesFlightEnabled", beta=True)
     @property
     def is_multiple_home_sites_flight_enabled(self) -> Optional[bool]:
         """Gets the IsMultipleHomeSitesFlightEnabled property"""
         return self.properties.get("IsMultipleHomeSitesFlightEnabled", None)
 
-    @odata(name="IsMultipleVivaConnectionsFlightEnabled")
+    @odata(name="IsMultipleVivaConnectionsFlightEnabled", beta=True)
     @property
     def is_multiple_viva_connections_flight_enabled(self) -> Optional[bool]:
         """Gets the IsMultipleVivaConnectionsFlightEnabled property"""
@@ -2628,13 +2628,13 @@ class Tenant(Entity):
         """Gets the IsUnmanagedSyncClientRestrictionFlightEnabled property"""
         return self.properties.get("IsUnmanagedSyncClientRestrictionFlightEnabled", None)
 
-    @odata(name="IsVivaHomeFlightEnabled")
+    @odata(name="IsVivaHomeFlightEnabled", beta=True)
     @property
     def is_viva_home_flight_enabled(self) -> Optional[bool]:
         """Gets the IsVivaHomeFlightEnabled property"""
         return self.properties.get("IsVivaHomeFlightEnabled", None)
 
-    @odata(name="IsVivaHomeGAFlightEnabled")
+    @odata(name="IsVivaHomeGAFlightEnabled", beta=True)
     @property
     def is_viva_home_ga_flight_enabled(self) -> Optional[bool]:
         """Gets the IsVivaHomeGAFlightEnabled property"""
@@ -2946,25 +2946,25 @@ class Tenant(Entity):
         """Gets the OneDriveAnyoneSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("OneDriveAnyoneSharingLinkRecommendedExpirationInDays", None)
 
-    @odata(name="OneDriveBlockGuestsAsSiteAdmin")
+    @odata(name="OneDriveBlockGuestsAsSiteAdmin", beta=True)
     @property
     def onedrive_block_guests_as_site_admin(self) -> Optional[int]:
         """Gets the OneDriveBlockGuestsAsSiteAdmin property"""
         return self.properties.get("OneDriveBlockGuestsAsSiteAdmin", None)
 
-    @odata(name="OneDriveDefaultLinkToExistingAccess")
+    @odata(name="OneDriveDefaultLinkToExistingAccess", beta=True)
     @property
     def onedrive_default_link_to_existing_access(self) -> Optional[bool]:
         """Gets the OneDriveDefaultLinkToExistingAccess property"""
         return self.properties.get("OneDriveDefaultLinkToExistingAccess", None)
 
-    @odata(name="OneDriveDefaultShareLinkRole")
+    @odata(name="OneDriveDefaultShareLinkRole", beta=True)
     @property
     def onedrive_default_share_link_role(self) -> Optional[int]:
         """Gets the OneDriveDefaultShareLinkRole property"""
         return self.properties.get("OneDriveDefaultShareLinkRole", None)
 
-    @odata(name="OneDriveDefaultShareLinkScope")
+    @odata(name="OneDriveDefaultShareLinkScope", beta=True)
     @property
     def onedrive_default_share_link_scope(self) -> Optional[int]:
         """Gets the OneDriveDefaultShareLinkScope property"""
@@ -2976,19 +2976,19 @@ class Tenant(Entity):
         """Gets the OneDriveForGuestsEnabled property"""
         return self.properties.get("OneDriveForGuestsEnabled", None)
 
-    @odata(name="OneDriveLoopDefaultSharingLinkRole")
+    @odata(name="OneDriveLoopDefaultSharingLinkRole", beta=True)
     @property
     def onedrive_loop_default_sharing_link_role(self) -> Optional[int]:
         """Gets the OneDriveLoopDefaultSharingLinkRole property"""
         return self.properties.get("OneDriveLoopDefaultSharingLinkRole", None)
 
-    @odata(name="OneDriveLoopDefaultSharingLinkScope")
+    @odata(name="OneDriveLoopDefaultSharingLinkScope", beta=True)
     @property
     def onedrive_loop_default_sharing_link_scope(self) -> Optional[int]:
         """Gets the OneDriveLoopDefaultSharingLinkScope property"""
         return self.properties.get("OneDriveLoopDefaultSharingLinkScope", None)
 
-    @odata(name="OneDriveLoopSharingCapability")
+    @odata(name="OneDriveLoopSharingCapability", beta=True)
     @property
     def onedrive_loop_sharing_capability(self) -> Optional[int]:
         """Gets the OneDriveLoopSharingCapability property"""
@@ -3006,13 +3006,13 @@ class Tenant(Entity):
         """Gets the OneDriveOrganizationSharingLinkRecommendedExpirationInDays property"""
         return self.properties.get("OneDriveOrganizationSharingLinkRecommendedExpirationInDays", None)
 
-    @odata(name="OneDriveRequestFilesLinkEnabled")
+    @odata(name="OneDriveRequestFilesLinkEnabled", beta=True)
     @property
     def onedrive_request_files_link_enabled(self) -> Optional[bool]:
         """Gets the OneDriveRequestFilesLinkEnabled property"""
         return self.properties.get("OneDriveRequestFilesLinkEnabled", None)
 
-    @odata(name="OneDriveRequestFilesLinkExpirationInDays")
+    @odata(name="OneDriveRequestFilesLinkExpirationInDays", beta=True)
     @property
     def onedrive_request_files_link_expiration_in_days(self) -> Optional[int]:
         """Gets the OneDriveRequestFilesLinkExpirationInDays property"""
@@ -3563,13 +3563,13 @@ class Tenant(Entity):
         """Gets the WhoCanShareAllowListInTenant property"""
         return self.properties.get("WhoCanShareAllowListInTenant", None)
 
-    @odata(name="WhoCanShareAllowListInTenantByGroupId")
+    @odata(name="WhoCanShareAllowListInTenantByGroupId", beta=True)
     @property
     def who_can_share_allow_list_in_tenant_by_group_id(self) -> StringCollection:
         """Gets the WhoCanShareAllowListInTenantByGroupId property"""
         return self.properties.get("WhoCanShareAllowListInTenantByGroupId", StringCollection())
 
-    @odata(name="WhoCanShareAllowListInTenantByPrincipalIdentity")
+    @odata(name="WhoCanShareAllowListInTenantByPrincipalIdentity", beta=True)
     @property
     def who_can_share_allow_list_in_tenant_by_principal_identity(self) -> StringCollection:
         """Gets the WhoCanShareAllowListInTenantByPrincipalIdentity property"""
@@ -3587,7 +3587,7 @@ class Tenant(Entity):
         """Gets the Workflows2013State property"""
         return self.properties.get("Workflows2013State", None)
 
-    @odata(name="CatalogManagement", navigation=True)
+    @odata(name="CatalogManagement", navigation=True, beta=True)
     @property
     def catalog_management(self) -> CatalogManagementCollection:
         """Gets the CatalogManagement property"""
@@ -3600,7 +3600,7 @@ class Tenant(Entity):
             CatalogManagementCollection(self.context, ResourcePath("CatalogManagement", self.resource_path)),
         )
 
-    @odata(name="CatalogManagementCustomProperties", navigation=True)
+    @odata(name="CatalogManagementCustomProperties", navigation=True, beta=True)
     @property
     def catalog_management_custom_properties(self) -> CatalogManagementCustomPropertiesCollection:
         """Gets the CatalogManagementCustomProperties property"""
@@ -3615,7 +3615,7 @@ class Tenant(Entity):
             ),
         )
 
-    @odata(name="CatalogManagementRestrictedContentDiscovery", navigation=True)
+    @odata(name="CatalogManagementRestrictedContentDiscovery", navigation=True, beta=True)
     @property
     def catalog_management_restricted_content_discovery(self) -> CatalogManagementRestrictedContentDiscoveryCollection:
         """Gets the CatalogManagementRestrictedContentDiscovery property"""

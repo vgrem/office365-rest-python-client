@@ -12,6 +12,8 @@ Nothing here touches a network: the CSDL is a few dozen lines of XML.
 
 from __future__ import annotations
 
+import ast
+import importlib.util
 from pathlib import Path
 
 from generator.odata.csdl import CsdlDocument
@@ -68,6 +70,8 @@ _NAMESPACES = {
     "edmx": "http://schemas.microsoft.com/ado/2007/06/edmx",
 }
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def _metadata(tmp_path: Path, annotations: str = _ANNOTATIONS) -> Path:
     path = tmp_path / "metadata.xml"
@@ -106,3 +110,60 @@ def test_the_model_carries_the_fact_per_type_and_per_member(tmp_path: Path) -> N
     assert widget.Properties["PreviewOnly"].IsBeta, "one preview member does not make the type preview"
     assert not widget.Properties["Name"].IsBeta, "Bool='false' is not a mark"
     assert not widget.Properties["Id"].IsBeta, "a block carrying another term says nothing about beta"
+
+
+# --------------------------------------------------------------------------- planning
+
+
+def _codemod():
+    """``scripts/mark_odata.py``, imported by path: it is a script, not a package."""
+    spec = importlib.util.spec_from_file_location("_mark_odata", _REPO_ROOT / "scripts" / "mark_odata.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _planned(tmp_path: Path, source: str, declared: object, *, only: set[str] | None = None) -> list[str]:
+    """The lines the codemod would insert, given what the catalog says about one member."""
+    module = tmp_path / "gadget.py"
+    module.write_text(source, encoding="utf-8")
+    tree = ast.parse(source)
+    node = next(child for child in tree.body if isinstance(child, ast.ClassDef))
+    edits = _codemod().pending_markers(tree, node, {"Value": declared}, source.splitlines(keepends=True), only=only)
+    return [edit.new.strip() for edit in edits]
+
+
+_GETTER = """
+from office365.runtime.types.odata_property import odata
+
+
+class Gadget(Entity):
+    @odata(name="Value")
+    @property
+    def value(self):
+        return self.properties.get("Value", None)
+"""
+
+
+def test_a_member_the_preview_alone_declares_is_finished_with_beta(tmp_path: Path) -> None:
+    declared = _codemod().Declared(name="Value", navigation=False, enum=False, beta=True)
+
+    # One keyword on the line that is already there: the declaration is a statement about
+    # the member, and the back-fill only adds the fact the snapshot supplies.
+    assert _planned(tmp_path, _GETTER, declared) == ['@odata(name="Value", beta=True)']
+    # ``--only beta`` leaves every other missing fact alone, which is how the back-fill
+    # lands without also rewriting 8,593 unrelated Graph lines.
+    assert _planned(tmp_path, _GETTER, declared, only={"beta"}) == ['@odata(name="Value", beta=True)']
+    stable = _codemod().Declared(name="Value", navigation=False, enum=False)
+    assert _planned(tmp_path, _GETTER, stable) == []
+
+
+def test_a_preview_type_owns_the_fact_its_members_do_not_repeat_it(tmp_path: Path) -> None:
+    """962 of the document's 1,401 member marks sit inside a preview type; they add nothing."""
+    model = ODataV3Reader(str(_metadata(tmp_path))).read()
+
+    catalog = _codemod()._catalog_of(model)
+
+    assert catalog["sp.widget"]["PreviewOnly"].beta, "a stable type's preview member is marked"
+    assert not catalog["sp.gadget"]["Name"].beta, "the type carries it; the member does not repeat it"

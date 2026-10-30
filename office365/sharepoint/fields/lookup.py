@@ -65,7 +65,7 @@ class FieldLookup(Field):
         in the lookup field."""
         return self.properties.get("UnlimitedLengthInDocumentLibrary", None)
 
-    @odata(name="DependentLookupInternalNames")
+    @odata(name="DependentLookupInternalNames", beta=True)
     @property
     def dependent_lookup_internal_names(self) -> StringCollection:
         """Gets the DependentLookupInternalNames property"""

@@ -201,13 +201,13 @@ class User(Entity):
         """Gets the sharePointContentBarViewsTeachingBubble property"""
         return self.properties.get("sharePointContentBarViewsTeachingBubble", None)
 
-    @odata(name="sharePointConversationsLinkFirstRun")
+    @odata(name="sharePointConversationsLinkFirstRun", beta=True)
     @property
     def sharepoint_conversations_link_first_run(self) -> Optional[bool]:
         """Gets the sharePointConversationsLinkFirstRun property"""
         return self.properties.get("sharePointConversationsLinkFirstRun", None)
 
-    @odata(name="sharePointFiltersPaneFirstRun")
+    @odata(name="sharePointFiltersPaneFirstRun", beta=True)
     @property
     def sharepoint_filters_pane_first_run(self) -> Optional[bool]:
         """Gets the sharePointFiltersPaneFirstRun property"""

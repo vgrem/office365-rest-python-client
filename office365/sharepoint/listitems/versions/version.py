@@ -43,7 +43,7 @@ class ListItemVersion(Entity):
         """Gets a value that specifies whether the file version is the current version."""
         return self.properties.get("IsCurrentVersion", None)
 
-    @odata(name="Changes")
+    @odata(name="Changes", beta=True)
     @property
     def changes(self) -> ClientValueCollection[SPListItemVersionChange]:
         return self.properties.get("Changes", ClientValueCollection(SPListItemVersionChange))

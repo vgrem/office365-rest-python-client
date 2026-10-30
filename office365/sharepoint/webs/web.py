@@ -2012,7 +2012,7 @@ class Web(SecurableObject):
         }
         return self.set_property("AllProperties", props).update()
 
-    @odata(name="Activities", navigation=True)
+    @odata(name="Activities", navigation=True, beta=True)
     @property
     def activities(self) -> EntityCollection[SPActivityEntity]:
         return self.properties.get(
@@ -2076,7 +2076,7 @@ class Web(SecurableObject):
         """Gets the URL for a custom master page to apply to the Web site"""
         return self.properties.get("CustomMasterUrl", None)
 
-    @odata(name="CustomSiteActionsDisabled")
+    @odata(name="CustomSiteActionsDisabled", beta=True)
     @property
     def custom_site_actions_disabled(self) -> Optional[bool]:
         return self.properties.get("CustomSiteActionsDisabled", None)
@@ -2087,7 +2087,7 @@ class Web(SecurableObject):
         """"""
         return self.properties.get("DescriptionTranslations", ClientValueCollection(SPResourceEntry))
 
-    @odata(name="DesignPackageId")
+    @odata(name="DesignPackageId", beta=True)
     @property
     def design_package_id(self) -> Optional[str]:
         """Gets or sets the ID of the Design Package used in this SP.Web.
@@ -2135,7 +2135,7 @@ class Web(SecurableObject):
             List(self.context, ResourcePath("AccessRequestsList", self.resource_path)),
         )
 
-    @odata(name="AccessRequestListUrl")
+    @odata(name="AccessRequestListUrl", beta=True)
     @property
     def access_request_list_url(self) -> Optional[str]:
         """Gets the URL of the access request list to the current site"""
@@ -2203,7 +2203,7 @@ class Web(SecurableObject):
             FolderCollection(self.context, ResourcePath("folders", self.resource_path), self),
         )
 
-    @odata(name="HostedApps", navigation=True)
+    @odata(name="HostedApps", navigation=True, beta=True)
     @property
     def hosted_apps(self) -> HostedAppsManager:
         """"""
@@ -2222,7 +2222,7 @@ class Web(SecurableObject):
             ListCollection(self.context, ResourcePath("lists", self.resource_path)),
         )
 
-    @odata(name="OneDriveSharedItems", navigation=True)
+    @odata(name="OneDriveSharedItems", navigation=True, beta=True)
     @property
     def onedrive_shared_items(self) -> EntityCollection[SharedDocumentInfo]:
         """"""
@@ -2298,7 +2298,7 @@ class Web(SecurableObject):
             Group(self.context, ResourcePath("AssociatedMemberGroup", self.resource_path)),
         )
 
-    @odata(name="CanModernizeHomepage", navigation=True)
+    @odata(name="CanModernizeHomepage", navigation=True, beta=True)
     @property
     def can_modernize_homepage(self) -> ModernizeHomepageResult:
         """Specifies the site theme associated with the site"""
@@ -2394,7 +2394,7 @@ class Web(SecurableObject):
             FeatureCollection(self.context, ResourcePath("Features", self.resource_path), self),
         )
 
-    @odata(name="TenantAppCatalog", navigation=True)
+    @odata(name="TenantAppCatalog", navigation=True, beta=True)
     @property
     def tenant_app_catalog(self) -> TenantCorporateCatalogAccessor:
         """Returns the tenant app catalog for the given tenant if it exists."""
@@ -2403,7 +2403,7 @@ class Web(SecurableObject):
             TenantCorporateCatalogAccessor(self.context, ResourcePath("TenantAppCatalog", self.resource_path)),
         )
 
-    @odata(name="SiteCollectionAppCatalog", navigation=True)
+    @odata(name="SiteCollectionAppCatalog", navigation=True, beta=True)
     @property
     def site_collection_app_catalog(self) -> SiteCollectionCorporateCatalogAccessor:
         """Returns the site collection app catalog for the given web if it exists."""
@@ -2485,7 +2485,7 @@ class Web(SecurableObject):
         """
         self.set_property("IsMultilingual", val)
 
-    @odata(name="MultilingualSettings", navigation=True)
+    @odata(name="MultilingualSettings", navigation=True, beta=True)
     @property
     def multilingual_settings(self) -> MultilingualSettings:
         """Gets a value that specifies the collection of list definitions and list templates available for creating
@@ -2525,13 +2525,13 @@ class Web(SecurableObject):
         """Specifies whether the Recycle Bin is enabled."""
         return self.properties.get("RecycleBinEnabled", None)
 
-    @odata(name="RelatedHubSiteIds")
+    @odata(name="RelatedHubSiteIds", beta=True)
     @property
     def related_hub_site_ids(self) -> Optional[str]:
         """ """
         return self.properties.get("RelatedHubSiteIds", None)
 
-    @odata(name="RequestAccessEmail")
+    @odata(name="RequestAccessEmail", beta=True)
     @property
     def request_access_email(self) -> Optional[str]:
         """Gets the e-mail address to which requests for access are sent."""
@@ -2552,13 +2552,13 @@ class Web(SecurableObject):
         """
         return self.properties.get("SaveSiteAsTemplateEnabled", None)
 
-    @odata(name="SearchBoxInNavBar")
+    @odata(name="SearchBoxInNavBar", beta=True)
     @property
     def search_box_in_navbar(self) -> Optional[int]:
         """Gets the e-mail address to which requests for access are sent."""
         return self.properties.get("SearchBoxInNavBar", None)
 
-    @odata(name="SearchBoxPlaceholderText")
+    @odata(name="SearchBoxPlaceholderText", beta=True)
     @property
     def search_box_placeholder_text(self) -> Optional[str]:
         """Gets the placeholder text in SharePoint online search box for a given (sub) site."""
@@ -2671,7 +2671,7 @@ class Web(SecurableObject):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
-    @odata(name="ServerRelativePath")
+    @odata(name="ServerRelativePath", beta=True)
     @property
     def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the Web."""
@@ -2728,13 +2728,13 @@ class Web(SecurableObject):
             orig_resource_url = orig_resource_url.replace(self.context.service_root_url, self._web_url + "/_api")
         return orig_resource_url
 
-    @odata(name="AccessRequestSiteDescription")
+    @odata(name="AccessRequestSiteDescription", beta=True)
     @property
     def access_request_site_description(self) -> Optional[str]:
         """Gets the AccessRequestSiteDescription property"""
         return self.properties.get("AccessRequestSiteDescription", None)
 
-    @odata(name="Acronym")
+    @odata(name="Acronym", beta=True)
     @property
     def acronym(self) -> Optional[str]:
         """Gets the Acronym property"""
@@ -2770,7 +2770,7 @@ class Web(SecurableObject):
         """Gets the ClassicWelcomePage property"""
         return self.properties.get("ClassicWelcomePage", None)
 
-    @odata(name="CommentsOnSitePagesDisabled")
+    @odata(name="CommentsOnSitePagesDisabled", beta=True)
     @property
     def comments_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the CommentsOnSitePagesDisabled property"""
@@ -2790,7 +2790,7 @@ class Web(SecurableObject):
 
         return self.properties.get("CurrentChangeToken", ChangeToken())
 
-    @odata(name="DefaultNewPageTemplateId")
+    @odata(name="DefaultNewPageTemplateId", beta=True)
     @property
     def default_new_page_template_id(self) -> Optional[UUID]:
         """Gets the DefaultNewPageTemplateId property"""
@@ -2802,7 +2802,7 @@ class Web(SecurableObject):
         """Gets the Description property"""
         return self.properties.get("Description", None)
 
-    @odata(name="DescriptionForExistingLanguage")
+    @odata(name="DescriptionForExistingLanguage", beta=True)
     @property
     def description_for_existing_language(self) -> Optional[str]:
         """Gets the DescriptionForExistingLanguage property"""
@@ -2814,7 +2814,7 @@ class Web(SecurableObject):
         """Gets the DesignerDownloadUrlForCurrentUser property"""
         return self.properties.get("DesignerDownloadUrlForCurrentUser", None)
 
-    @odata(name="DisableRecommendedItems")
+    @odata(name="DisableRecommendedItems", beta=True)
     @property
     def disable_recommended_items(self) -> Optional[bool]:
         """Gets the DisableRecommendedItems property"""
@@ -2832,7 +2832,7 @@ class Web(SecurableObject):
         """Gets the ExcludeFromOfflineClient property"""
         return self.properties.get("ExcludeFromOfflineClient", None)
 
-    @odata(name="FontOptionForSiteFooterNav")
+    @odata(name="FontOptionForSiteFooterNav", beta=True)
     @property
     def font_option_for_site_footer_nav(self) -> FontOption:
         """Gets the FontOptionForSiteFooterNav property"""
@@ -2840,7 +2840,7 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteFooterNav", FontOption())
 
-    @odata(name="FontOptionForSiteFooterTitle")
+    @odata(name="FontOptionForSiteFooterTitle", beta=True)
     @property
     def font_option_for_site_footer_title(self) -> FontOption:
         """Gets the FontOptionForSiteFooterTitle property"""
@@ -2848,7 +2848,7 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteFooterTitle", FontOption())
 
-    @odata(name="FontOptionForSiteNav")
+    @odata(name="FontOptionForSiteNav", beta=True)
     @property
     def font_option_for_site_nav(self) -> FontOption:
         """Gets the FontOptionForSiteNav property"""
@@ -2856,7 +2856,7 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteNav", FontOption())
 
-    @odata(name="FontOptionForSiteTitle")
+    @odata(name="FontOptionForSiteTitle", beta=True)
     @property
     def font_option_for_site_title(self) -> FontOption:
         """Gets the FontOptionForSiteTitle property"""
@@ -2864,13 +2864,13 @@ class Web(SecurableObject):
 
         return self.properties.get("FontOptionForSiteTitle", FontOption())
 
-    @odata(name="FooterAlignment")
+    @odata(name="FooterAlignment", beta=True)
     @property
     def footer_alignment(self) -> Optional[int]:
         """Gets the FooterAlignment property"""
         return self.properties.get("FooterAlignment", None)
 
-    @odata(name="FooterBackgroundFocalPoint")
+    @odata(name="FooterBackgroundFocalPoint", beta=True)
     @property
     def footer_background_focal_point(self) -> SPFocalPoint:
         """Gets the FooterBackgroundFocalPoint property"""
@@ -2878,25 +2878,25 @@ class Web(SecurableObject):
 
         return self.properties.get("FooterBackgroundFocalPoint", SPFocalPoint())
 
-    @odata(name="FooterBlur")
+    @odata(name="FooterBlur", beta=True)
     @property
     def footer_blur(self) -> Optional[int]:
         """Gets the FooterBlur property"""
         return self.properties.get("FooterBlur", None)
 
-    @odata(name="FooterColorIndexInDarkMode")
+    @odata(name="FooterColorIndexInDarkMode", beta=True)
     @property
     def footer_color_index_in_dark_mode(self) -> Optional[int]:
         """Gets the FooterColorIndexInDarkMode property"""
         return self.properties.get("FooterColorIndexInDarkMode", None)
 
-    @odata(name="FooterColorIndexInLightMode")
+    @odata(name="FooterColorIndexInLightMode", beta=True)
     @property
     def footer_color_index_in_light_mode(self) -> Optional[int]:
         """Gets the FooterColorIndexInLightMode property"""
         return self.properties.get("FooterColorIndexInLightMode", None)
 
-    @odata(name="FooterEmphasis")
+    @odata(name="FooterEmphasis", beta=True)
     @property
     def footer_emphasis(self) -> Optional[int]:
         """Gets the FooterEmphasis property"""
@@ -2908,85 +2908,85 @@ class Web(SecurableObject):
         """Gets the FooterEnabled property"""
         return self.properties.get("FooterEnabled", None)
 
-    @odata(name="FooterLayout")
+    @odata(name="FooterLayout", beta=True)
     @property
     def footer_layout(self) -> Optional[int]:
         """Gets the FooterLayout property"""
         return self.properties.get("FooterLayout", None)
 
-    @odata(name="FooterOverlayColor")
+    @odata(name="FooterOverlayColor", beta=True)
     @property
     def footer_overlay_color(self) -> Optional[int]:
         """Gets the FooterOverlayColor property"""
         return self.properties.get("FooterOverlayColor", None)
 
-    @odata(name="FooterOverlayGradientDirection")
+    @odata(name="FooterOverlayGradientDirection", beta=True)
     @property
     def footer_overlay_gradient_direction(self) -> Optional[int]:
         """Gets the FooterOverlayGradientDirection property"""
         return self.properties.get("FooterOverlayGradientDirection", None)
 
-    @odata(name="FooterOverlayOpacity")
+    @odata(name="FooterOverlayOpacity", beta=True)
     @property
     def footer_overlay_opacity(self) -> Optional[int]:
         """Gets the FooterOverlayOpacity property"""
         return self.properties.get("FooterOverlayOpacity", None)
 
-    @odata(name="HasFooterBackgroundImage")
+    @odata(name="HasFooterBackgroundImage", beta=True)
     @property
     def has_footer_background_image(self) -> Optional[bool]:
         """Gets the HasFooterBackgroundImage property"""
         return self.properties.get("HasFooterBackgroundImage", None)
 
-    @odata(name="HasHeaderBackgroundImage")
+    @odata(name="HasHeaderBackgroundImage", beta=True)
     @property
     def has_header_background_image(self) -> Optional[bool]:
         """Gets the HasHeaderBackgroundImage property"""
         return self.properties.get("HasHeaderBackgroundImage", None)
 
-    @odata(name="HasWebTemplateExtension")
+    @odata(name="HasWebTemplateExtension", beta=True)
     @property
     def has_web_template_extension(self) -> Optional[bool]:
         """Gets the HasWebTemplateExtension property"""
         return self.properties.get("HasWebTemplateExtension", None)
 
-    @odata(name="HeaderColorIndexInDarkMode")
+    @odata(name="HeaderColorIndexInDarkMode", beta=True)
     @property
     def header_color_index_in_dark_mode(self) -> Optional[int]:
         """Gets the HeaderColorIndexInDarkMode property"""
         return self.properties.get("HeaderColorIndexInDarkMode", None)
 
-    @odata(name="HeaderColorIndexInLightMode")
+    @odata(name="HeaderColorIndexInLightMode", beta=True)
     @property
     def header_color_index_in_light_mode(self) -> Optional[int]:
         """Gets the HeaderColorIndexInLightMode property"""
         return self.properties.get("HeaderColorIndexInLightMode", None)
 
-    @odata(name="HeaderEmphasis")
+    @odata(name="HeaderEmphasis", beta=True)
     @property
     def header_emphasis(self) -> Optional[int]:
         """Gets the HeaderEmphasis property"""
         return self.properties.get("HeaderEmphasis", None)
 
-    @odata(name="HeaderLayout")
+    @odata(name="HeaderLayout", beta=True)
     @property
     def header_layout(self) -> Optional[int]:
         """Gets the HeaderLayout property"""
         return self.properties.get("HeaderLayout", None)
 
-    @odata(name="HeaderOverlayColor")
+    @odata(name="HeaderOverlayColor", beta=True)
     @property
     def header_overlay_color(self) -> Optional[int]:
         """Gets the HeaderOverlayColor property"""
         return self.properties.get("HeaderOverlayColor", None)
 
-    @odata(name="HeaderOverlayGradientDirection")
+    @odata(name="HeaderOverlayGradientDirection", beta=True)
     @property
     def header_overlay_gradient_direction(self) -> Optional[int]:
         """Gets the HeaderOverlayGradientDirection property"""
         return self.properties.get("HeaderOverlayGradientDirection", None)
 
-    @odata(name="HeaderOverlayOpacity")
+    @odata(name="HeaderOverlayOpacity", beta=True)
     @property
     def header_overlay_opacity(self) -> Optional[int]:
         """Gets the HeaderOverlayOpacity property"""
@@ -3004,19 +3004,19 @@ class Web(SecurableObject):
         """Gets the HorizontalQuickLaunch property"""
         return self.properties.get("HorizontalQuickLaunch", None)
 
-    @odata(name="IsEduClass")
+    @odata(name="IsEduClass", beta=True)
     @property
     def is_edu_class(self) -> Optional[bool]:
         """Gets the IsEduClass property"""
         return self.properties.get("IsEduClass", None)
 
-    @odata(name="IsEduClassProvisionChecked")
+    @odata(name="IsEduClassProvisionChecked", beta=True)
     @property
     def is_edu_class_provision_checked(self) -> Optional[bool]:
         """Gets the IsEduClassProvisionChecked property"""
         return self.properties.get("IsEduClassProvisionChecked", None)
 
-    @odata(name="IsEduClassProvisionPending")
+    @odata(name="IsEduClassProvisionPending", beta=True)
     @property
     def is_edu_class_provision_pending(self) -> Optional[bool]:
         """Gets the IsEduClassProvisionPending property"""
@@ -3046,7 +3046,7 @@ class Web(SecurableObject):
         """Gets the LastItemUserModifiedDate property"""
         return self.properties.get("LastItemUserModifiedDate", datetime.min)
 
-    @odata(name="LogoAlignment")
+    @odata(name="LogoAlignment", beta=True)
     @property
     def logo_alignment(self) -> Optional[int]:
         """Gets the LogoAlignment property"""
@@ -3070,7 +3070,7 @@ class Web(SecurableObject):
         """Gets the NavAudienceTargetingEnabled property"""
         return self.properties.get("NavAudienceTargetingEnabled", None)
 
-    @odata(name="NextStepsFirstRunEnabled")
+    @odata(name="NextStepsFirstRunEnabled", beta=True)
     @property
     def next_steps_first_run_enabled(self) -> Optional[bool]:
         """Gets the NextStepsFirstRunEnabled property"""
@@ -3106,25 +3106,25 @@ class Web(SecurableObject):
         """Gets the OverwriteTranslationsOnChange property"""
         return self.properties.get("OverwriteTranslationsOnChange", None)
 
-    @odata(name="PreviewFeaturesEnabled")
+    @odata(name="PreviewFeaturesEnabled", beta=True)
     @property
     def preview_features_enabled(self) -> Optional[bool]:
         """Gets the PreviewFeaturesEnabled property"""
         return self.properties.get("PreviewFeaturesEnabled", None)
 
-    @odata(name="PrimaryColor")
+    @odata(name="PrimaryColor", beta=True)
     @property
     def primary_color(self) -> Optional[str]:
         """Gets the PrimaryColor property"""
         return self.properties.get("PrimaryColor", None)
 
-    @odata(name="SearchBoxInNavBar")
+    @odata(name="SearchBoxInNavBar", beta=True)
     @property
     def search_box_in_nav_bar(self) -> Optional[int]:
         """Gets the SearchBoxInNavBar property"""
         return self.properties.get("SearchBoxInNavBar", None)
 
-    @odata(name="SearchScope")
+    @odata(name="SearchScope", beta=True)
     @property
     def search_scope(self) -> Optional[int]:
         """Gets the SearchScope property"""
@@ -3136,7 +3136,7 @@ class Web(SecurableObject):
         """Gets the ServerRelativeUrl property"""
         return self.properties.get("ServerRelativeUrl", None)
 
-    @odata(name="ShouldExtendHeaderBgImageToNav")
+    @odata(name="ShouldExtendHeaderBgImageToNav", beta=True)
     @property
     def should_extend_header_bg_image_to_nav(self) -> Optional[str]:
         """Gets the ShouldExtendHeaderBgImageToNav property"""
@@ -3154,7 +3154,7 @@ class Web(SecurableObject):
         """Gets the SiteLogoDescription property"""
         return self.properties.get("SiteLogoDescription", None)
 
-    @odata(name="TenantAdminMembersCanShare")
+    @odata(name="TenantAdminMembersCanShare", beta=True)
     @property
     def tenant_admin_members_can_share(self) -> Optional[int]:
         """Gets the TenantAdminMembersCanShare property"""
@@ -3166,7 +3166,7 @@ class Web(SecurableObject):
         """Gets the TenantTagPolicyEnabled property"""
         return self.properties.get("TenantTagPolicyEnabled", None)
 
-    @odata(name="ThemeApplicationActionHistory")
+    @odata(name="ThemeApplicationActionHistory", beta=True)
     @property
     def theme_application_action_history(self) -> Optional[str]:
         """Gets the ThemeApplicationActionHistory property"""
@@ -3190,7 +3190,7 @@ class Web(SecurableObject):
         """Gets the ThirdPartyMdmEnabled property"""
         return self.properties.get("ThirdPartyMdmEnabled", None)
 
-    @odata(name="TitleForExistingLanguage")
+    @odata(name="TitleForExistingLanguage", beta=True)
     @property
     def title_for_existing_language(self) -> Optional[str]:
         """Gets the TitleForExistingLanguage property"""
@@ -3216,19 +3216,19 @@ class Web(SecurableObject):
         """Gets the UIVersionConfigurationEnabled property"""
         return self.properties.get("UIVersionConfigurationEnabled", None)
 
-    @odata(name="UseAccessRequestDefault")
+    @odata(name="UseAccessRequestDefault", beta=True)
     @property
     def use_access_request_default(self) -> Optional[bool]:
         """Gets the UseAccessRequestDefault property"""
         return self.properties.get("UseAccessRequestDefault", None)
 
-    @odata(name="WebTemplateConfiguration")
+    @odata(name="WebTemplateConfiguration", beta=True)
     @property
     def web_template_configuration(self) -> Optional[str]:
         """Gets the WebTemplateConfiguration property"""
         return self.properties.get("WebTemplateConfiguration", None)
 
-    @odata(name="WebTemplatesGalleryFirstRunEnabled")
+    @odata(name="WebTemplatesGalleryFirstRunEnabled", beta=True)
     @property
     def web_templates_gallery_first_run_enabled(self) -> Optional[bool]:
         """Gets the WebTemplatesGalleryFirstRunEnabled property"""
@@ -3244,7 +3244,7 @@ class Web(SecurableObject):
             "AppTiles", EntityCollection[AppTile](self.context, AppTile, ResourcePath("AppTiles", self.resource_path))
         )
 
-    @odata(name="CardDesigns", navigation=True)
+    @odata(name="CardDesigns", navigation=True, beta=True)
     @property
     def card_designs(self) -> CardDesigns:
         """Gets the CardDesigns property"""

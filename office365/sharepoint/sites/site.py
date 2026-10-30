@@ -728,7 +728,7 @@ class Site(Entity):
         """
         return self.properties.get("AllowDesigner", None)
 
-    @odata(name="AllowedExternalDomains")
+    @odata(name="AllowedExternalDomains", beta=True)
     @property
     def allowed_external_domains(self) -> Optional[HTMLFieldSecuritySetting]:
         return self.properties.get("AllowedExternalDomains", HTMLFieldSecuritySetting())
@@ -768,13 +768,13 @@ class Site(Entity):
         """
         return self.properties.get("CanUpgrade", None)
 
-    @odata(name="ChannelGroupId")
+    @odata(name="ChannelGroupId", beta=True)
     @property
     def channel_group_id(self) -> Optional[str]:
         """ """
         return self.properties.get("ChannelGroupId", None)
 
-    @odata(name="Classification")
+    @odata(name="Classification", beta=True)
     @property
     def classification(self) -> Optional[str]:
         """Gets the classification of this site."""
@@ -789,7 +789,7 @@ class Site(Entity):
         """
         return self.properties.get("CompatibilityLevel", None)
 
-    @odata(name="CommentsOnSitePagesDisabled")
+    @odata(name="CommentsOnSitePagesDisabled", beta=True)
     @property
     def comments_on_site_pages_disabled(self) -> Optional[bool]:
         """Indicates whether comments on site pages are disabled or not."""
@@ -827,7 +827,7 @@ class Site(Entity):
         """"""
         return self.properties.get("GeoLocation", None)
 
-    @odata(name="GroupId")
+    @odata(name="GroupId", beta=True)
     @property
     def group_id(self) -> Optional[str]:
         """Group identifier"""
@@ -889,7 +889,7 @@ class Site(Entity):
         """
         return self.properties.get("ShareByEmailEnabled", None)
 
-    @odata(name="StatusBarText")
+    @odata(name="StatusBarText", beta=True)
     @property
     def status_bar_text(self) -> Optional[str]:
         """Gets or sets the status bar message text for this site."""
@@ -913,25 +913,25 @@ class Site(Entity):
         """Specifies the GUID that identifies the site collection."""
         return self.properties.get("Id", None)
 
-    @odata(name="HubSiteId")
+    @odata(name="HubSiteId", beta=True)
     @property
     def hub_site_id(self) -> Optional[str]:
         """ """
         return self.properties.get("HubSiteId", None)
 
-    @odata(name="IsHubSite")
+    @odata(name="IsHubSite", beta=True)
     @property
     def is_hub_site(self) -> Optional[bool]:
         """Returns whether the specified site is a hub site"""
         return self.properties.get("IsHubSite", None)
 
-    @odata(name="ServerRelativePath")
+    @odata(name="ServerRelativePath", beta=True)
     @property
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the Site."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
-    @odata(name="StatusBarLink")
+    @odata(name="StatusBarLink", beta=True)
     @property
     def status_bar_link(self) -> Optional[str]:
         """Gets the status bar message link target for this site."""
@@ -1059,7 +1059,7 @@ class Site(Entity):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
-    @odata(name="VersionPolicyForNewLibrariesTemplate", navigation=True)
+    @odata(name="VersionPolicyForNewLibrariesTemplate", navigation=True, beta=True)
     @property
     def version_policy_for_new_libraries_template(self) -> SiteVersionPolicyManager:
         """"""
@@ -1070,7 +1070,7 @@ class Site(Entity):
             ),
         )
 
-    @odata(name="AllowExternalEmbeddingWrapper")
+    @odata(name="AllowExternalEmbeddingWrapper", beta=True)
     @property
     def allow_external_embedding_wrapper(self) -> Optional[int]:
         """Gets the AllowExternalEmbeddingWrapper property"""
@@ -1106,7 +1106,7 @@ class Site(Entity):
         """Gets the AuditLogTrimmingRetention property"""
         return self.properties.get("AuditLogTrimmingRetention", None)
 
-    @odata(name="CanSyncHubSitePermissions")
+    @odata(name="CanSyncHubSitePermissions", beta=True)
     @property
     def can_sync_hub_site_permissions(self) -> Optional[bool]:
         """Gets the CanSyncHubSitePermissions property"""
@@ -1118,13 +1118,13 @@ class Site(Entity):
         """Gets the ChannelCapabilities property"""
         return self.properties.get("ChannelCapabilities", ChannelCapabilities())
 
-    @odata(name="ComplianceAttribute")
+    @odata(name="ComplianceAttribute", beta=True)
     @property
     def compliance_attribute(self) -> Optional[str]:
         """Gets the ComplianceAttribute property"""
         return self.properties.get("ComplianceAttribute", None)
 
-    @odata(name="CustomizedFormsPages")
+    @odata(name="CustomizedFormsPages", beta=True)
     @property
     def customized_forms_pages(self) -> CustomizedFormsPageCollection:
         """Gets the CustomizedFormsPages property"""
@@ -1148,13 +1148,13 @@ class Site(Entity):
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
-    @odata(name="SensitivityLabelId")
+    @odata(name="SensitivityLabelId", beta=True)
     @property
     def sensitivity_label_id(self) -> Optional[str]:
         """Gets the SensitivityLabelId property"""
         return self.properties.get("SensitivityLabelId", None)
 
-    @odata(name="SensitivityLabel")
+    @odata(name="SensitivityLabel", beta=True)
     @property
     def sensitivity_label(self) -> Optional[UUID]:
         """Gets the SensitivityLabel property"""
@@ -1220,7 +1220,7 @@ class Site(Entity):
         """Gets the PrimaryUri property"""
         return self.properties.get("PrimaryUri", None)
 
-    @odata(name="RelatedGroupId")
+    @odata(name="RelatedGroupId", beta=True)
     @property
     def related_group_id(self) -> Optional[UUID]:
         """Gets the RelatedGroupId property"""
@@ -1232,13 +1232,13 @@ class Site(Entity):
         """Gets the RestrictContentOrgWideSearchUpdate property"""
         return self.properties.get("RestrictContentOrgWideSearchUpdate", RestrictContentOrgWidePolicyUpdate())
 
-    @odata(name="RestrictedAccessControlGroupsDelegatedOnSite")
+    @odata(name="RestrictedAccessControlGroupsDelegatedOnSite", beta=True)
     @property
     def restricted_access_control_groups_delegated_on_site(self) -> RestrictAccessControlUpdate:
         """Gets the RestrictedAccessControlGroupsDelegatedOnSite property"""
         return self.properties.get("RestrictedAccessControlGroupsDelegatedOnSite", RestrictAccessControlUpdate())
 
-    @odata(name="RestrictedAccessControlGroupsEnforcedOnSite")
+    @odata(name="RestrictedAccessControlGroupsEnforcedOnSite", beta=True)
     @property
     def restricted_access_control_groups_enforced_on_site(self) -> StringCollection:
         """Gets the RestrictedAccessControlGroupsEnforcedOnSite property"""
@@ -1256,19 +1256,19 @@ class Site(Entity):
         """Gets the ScheduledDateForRemoval property"""
         return self.properties.get("ScheduledDateForRemoval", None)
 
-    @odata(name="SearchBoxInNavBar")
+    @odata(name="SearchBoxInNavBar", beta=True)
     @property
     def search_box_in_nav_bar(self) -> Optional[int]:
         """Gets the SearchBoxInNavBar property"""
         return self.properties.get("SearchBoxInNavBar", None)
 
-    @odata(name="SearchBoxPlaceholderText")
+    @odata(name="SearchBoxPlaceholderText", beta=True)
     @property
     def search_box_placeholder_text(self) -> Optional[str]:
         """Gets the SearchBoxPlaceholderText property"""
         return self.properties.get("SearchBoxPlaceholderText", None)
 
-    @odata(name="SensitivityLabelInfo")
+    @odata(name="SensitivityLabelInfo", beta=True)
     @property
     def sensitivity_label_info(self) -> SensitivityLabelInfo:
         """Gets the SensitivityLabelInfo property"""
@@ -1280,7 +1280,7 @@ class Site(Entity):
         """Gets the ShareByLinkEnabled property"""
         return self.properties.get("ShareByLinkEnabled", None)
 
-    @odata(name="ShowPeoplePickerSuggestionsForGuestUsers")
+    @odata(name="ShowPeoplePickerSuggestionsForGuestUsers", beta=True)
     @property
     def show_people_picker_suggestions_for_guest_users(self) -> Optional[bool]:
         """Gets the ShowPeoplePickerSuggestionsForGuestUsers property"""
@@ -1292,7 +1292,7 @@ class Site(Entity):
         """Gets the SitePolicyEnabled property"""
         return self.properties.get("SitePolicyEnabled", None)
 
-    @odata(name="SocialBarOnSitePagesDisabled")
+    @odata(name="SocialBarOnSitePagesDisabled", beta=True)
     @property
     def social_bar_on_site_pages_disabled(self) -> Optional[bool]:
         """Gets the SocialBarOnSitePagesDisabled property"""
@@ -1335,7 +1335,7 @@ class Site(Entity):
             ),
         )
 
-    @odata(name="HubSiteSynchronizableVisitorGroup", navigation=True)
+    @odata(name="HubSiteSynchronizableVisitorGroup", navigation=True, beta=True)
     @property
     def hub_site_synchronizable_visitor_group(self) -> Group:
         """Gets the HubSiteSynchronizableVisitorGroup property"""

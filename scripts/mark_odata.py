@@ -21,6 +21,12 @@ A member the service assigns rather than the client is finished the same way, wi
 schema-level ``<Annotations Target="Type/member">`` block, never on the property
 element, so it is read out of the document and carried per member here.
 
+A member the preview surface alone declares is finished with ``beta=True``, and it is
+read the same way -- ``Com.Microsoft.VisualStudio.CodeGen.IsBeta`` on the same kind of
+block. One difference: a member of a type that is itself preview needs no mark, because
+the type owns that fact and the class carries it once (962 of SharePoint's 1,401 member
+annotations sit inside a preview type, and are dropped here rather than repeated).
+
 The OData name is never derived from the attribute name: ``iCalUId`` and ``icalUid``
 both survive a snake-case round trip, and only one of them is a real column. The
 literal in the getter is the ground truth; the metadata only vouches for it and
@@ -84,6 +90,9 @@ class Declared(NamedTuple):
     #: The type's own CSDL is silent and every one of its subtypes states it, so the
     #: column exists on every instance (see :mod:`generator.intrinsic_members`).
     system: bool = False
+    #: Only the preview surface declares the member (CSDL ``...CodeGen.IsBeta``). Never
+    #: set for a member of a preview type: that type says it once, for all of them.
+    beta: bool = False
 
 
 #: CSDL type name (lowercased) -> {OData name: declaration}
@@ -168,7 +177,13 @@ def _catalog_of(model) -> Catalog:
     catalog: Catalog = {}
     for name, schema in model.types.items():
         properties = {
-            prop.Name: Declared(prop.Name, bool(prop.IsNavigation), is_enum(prop.TypeName or ""), bool(prop.ReadOnly))
+            prop.Name: Declared(
+                prop.Name,
+                bool(prop.IsNavigation),
+                is_enum(prop.TypeName or ""),
+                bool(prop.ReadOnly),
+                beta=bool(prop.IsBeta) and not schema.IsBeta,
+            )
             for prop in schema.Properties.values()
         }
         catalog[name.lower()] = properties
@@ -340,6 +355,7 @@ def pending_markers(
                         ("navigation", declared.navigation),
                         ("readonly", declared.readonly),
                         ("system", declared.system),
+                        ("beta", declared.beta),
                     )
                     if declared_by
                 ]
@@ -367,6 +383,7 @@ def pending_markers(
                 ("navigation", declared.navigation),
                 ("readonly", declared.readonly),
                 ("system", declared.system),
+                ("beta", declared.beta),
             )
             if wanted
         )
@@ -443,7 +460,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "--only",
         action="append",
         metavar="FACT",
-        help="finish only this fact (navigation, readonly, system), and add no declaration",
+        help="finish only this fact (navigation, readonly, system, beta), and add no declaration",
     )
     args = parser.parse_args(argv)
 

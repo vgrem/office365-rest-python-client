@@ -87,7 +87,7 @@ class AppTile(Entity):
         """Gets the LastModified property"""
         return self.properties.get("LastModified", None)
 
-    @odata(name="LastModifiedDate")
+    @odata(name="LastModifiedDate", beta=True)
     @property
     def last_modified_date(self) -> Optional[datetime]:
         """Gets the LastModifiedDate property"""

@@ -866,7 +866,7 @@ class SiteProperties(Entity):
         """Gets the UserCodeWarningLevel property"""
         return self.properties.get("UserCodeWarningLevel", None)
 
-    @odata(name="VersionCount")
+    @odata(name="VersionCount", beta=True)
     @property
     def version_count(self) -> Optional[int]:
         """Gets the VersionCount property"""
@@ -881,7 +881,7 @@ class SiteProperties(Entity):
             ClientValueCollection[SPOFileVersionFileTypePolicySettings](SPOFileVersionFileTypePolicySettings),
         )
 
-    @odata(name="VersionSize")
+    @odata(name="VersionSize", beta=True)
     @property
     def version_size(self) -> Optional[int]:
         """Gets the VersionSize property"""

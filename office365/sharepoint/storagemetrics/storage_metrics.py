@@ -49,13 +49,13 @@ class StorageMetrics(Entity):
         """
         return self.properties.get("TotalSize", None)
 
-    @odata(name="VersionCount")
+    @odata(name="VersionCount", beta=True)
     @property
     def version_count(self) -> Optional[int]:
         """ """
         return self.properties.get("VersionCount", None)
 
-    @odata(name="VersionSize")
+    @odata(name="VersionSize", beta=True)
     @property
     def version_size(self) -> Optional[int]:
         """ """

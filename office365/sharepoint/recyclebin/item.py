@@ -76,7 +76,7 @@ class RecycleBinItem(Entity):
         """
         return self.properties.get("DirName", None)
 
-    @odata(name="DirNamePath")
+    @odata(name="DirNamePath", beta=True)
     @property
     def dir_name_path(self) -> Optional[SPResPath]:
         """Returns the site relative path of the list or folder that originally contained the Recycle Bin item."""
@@ -106,7 +106,7 @@ class RecycleBinItem(Entity):
         """Specifies the leaf name of the Recycle Bin item."""
         return self.properties.get("LeafName", None)
 
-    @odata(name="LeafNamePath")
+    @odata(name="LeafNamePath", beta=True)
     @property
     def leaf_name_path(self) -> Optional[SPResPath]:
         """Returns the leaf name path of the Recycle Bin item."""

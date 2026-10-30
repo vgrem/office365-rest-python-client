@@ -321,12 +321,12 @@ class Field(Entity):
         """Gets a value that specifies whether the field can be deleted"""
         return self.properties.get("CanBeDeleted", None)
 
-    @odata(name="ClientSideComponentId")
+    @odata(name="ClientSideComponentId", beta=True)
     @property
     def client_side_component_id(self) -> Optional[str]:
         return self.properties.get("ClientSideComponentId", None)
 
-    @odata(name="ClientSideComponentProperties")
+    @odata(name="ClientSideComponentProperties", beta=True)
     @property
     def client_side_component_properties(self) -> Optional[str]:
         return self.properties.get("ClientSideComponentProperties", None)
@@ -472,7 +472,7 @@ class Field(Entity):
             self.__class__ = self.resolve_field_type(value)  # type: ignore[reportAttributeAccessIssue]
         return self
 
-    @odata(name="AutofillInfo")
+    @odata(name="AutofillInfo", beta=True)
     @property
     def autofill_info(self) -> Optional[str]:
         """Gets the AutofillInfo property"""
@@ -484,7 +484,7 @@ class Field(Entity):
         """Gets the ClientValidationMessage property"""
         return self.properties.get("ClientValidationMessage", None)
 
-    @odata(name="CustomFormatter")
+    @odata(name="CustomFormatter", beta=True)
     @property
     def custom_formatter(self) -> Optional[str]:
         """Gets the CustomFormatter property"""
@@ -520,7 +520,7 @@ class Field(Entity):
         """Gets the IsModern property"""
         return self.properties.get("IsModern", None)
 
-    @odata(name="PinnedToFiltersPane")
+    @odata(name="PinnedToFiltersPane", beta=True)
     @property
     def pinned_to_filters_pane(self) -> Optional[bool]:
         """Gets the PinnedToFiltersPane property"""
@@ -550,7 +550,7 @@ class Field(Entity):
         """Gets the Sealed property"""
         return self.properties.get("Sealed", None)
 
-    @odata(name="ShowInFiltersPane")
+    @odata(name="ShowInFiltersPane", beta=True)
     @property
     def show_in_filters_pane(self) -> Optional[int]:
         """Gets the ShowInFiltersPane property"""

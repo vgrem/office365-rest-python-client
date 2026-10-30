@@ -13,13 +13,13 @@ from office365.sharepoint.sharing.shared_with_user import SharedWithUser
 class ChangeItem(Change):
     """A change on an item."""
 
-    @odata(name="ActivityType")
+    @odata(name="ActivityType", beta=True)
     @property
     def activity_type(self) -> Optional[str]:
         """Returns activity type defined in ChangeActivityType"""
         return self.properties.get("ActivityType", None)
 
-    @odata(name="ContentTypeId")
+    @odata(name="ContentTypeId", beta=True)
     @property
     def content_type_id(self):
         """Specifies an identifier for the content type"""
@@ -37,13 +37,13 @@ class ChangeItem(Change):
         """Returns the email corresponding to Editor."""
         return self.properties.get("EditorEmailHint", None)
 
-    @odata(name="EditorLoginName")
+    @odata(name="EditorLoginName", beta=True)
     @property
     def editor_login_name(self):
         """Returns login name of the Editor."""
         return self.properties.get("EditorLoginName", None)
 
-    @odata(name="FileType")
+    @odata(name="FileType", beta=True)
     @property
     def file_type(self) -> Optional[str]:
         """Returns the list item’s file type."""
@@ -55,7 +55,7 @@ class ChangeItem(Change):
         """Identifies the changed item."""
         return self.properties.get("ItemId", None)
 
-    @odata(name="IsRecycleBinOperation")
+    @odata(name="IsRecycleBinOperation", beta=True)
     @property
     def is_recycle_bin_operation(self) -> Optional[bool]:
         return self.properties.get("IsRecycleBinOperation", None)
@@ -84,19 +84,19 @@ class ChangeItem(Change):
         """The Document identifier of the item."""
         return self.properties.get("UniqueId", None)
 
-    @odata(name="FileSystemObjectType")
+    @odata(name="FileSystemObjectType", beta=True)
     @property
     def file_system_object_type(self) -> Optional[int]:
         """Gets the FileSystemObjectType property"""
         return self.properties.get("FileSystemObjectType", None)
 
-    @odata(name="Hashtag")
+    @odata(name="Hashtag", beta=True)
     @property
     def hashtag(self) -> Optional[str]:
         """Gets the Hashtag property"""
         return self.properties.get("Hashtag", None)
 
-    @odata(name="Hidden")
+    @odata(name="Hidden", beta=True)
     @property
     def hidden(self) -> Optional[bool]:
         """Gets the Hidden property"""
@@ -108,31 +108,31 @@ class ChangeItem(Change):
         """Gets the ListId property"""
         return self.properties.get("ListId", None)
 
-    @odata(name="ListTemplate")
+    @odata(name="ListTemplate", beta=True)
     @property
     def list_template(self) -> Optional[int]:
         """Gets the ListTemplate property"""
         return self.properties.get("ListTemplate", None)
 
-    @odata(name="ListTitle")
+    @odata(name="ListTitle", beta=True)
     @property
     def list_title(self) -> Optional[str]:
         """Gets the ListTitle property"""
         return self.properties.get("ListTitle", None)
 
-    @odata(name="MoveWasForRecycle")
+    @odata(name="MoveWasForRecycle", beta=True)
     @property
     def move_was_for_recycle(self) -> Optional[bool]:
         """Gets the MoveWasForRecycle property"""
         return self.properties.get("MoveWasForRecycle", None)
 
-    @odata(name="MoveWasForRestore")
+    @odata(name="MoveWasForRestore", beta=True)
     @property
     def move_was_for_restore(self) -> Optional[bool]:
         """Gets the MoveWasForRestore property"""
         return self.properties.get("MoveWasForRestore", None)
 
-    @odata(name="Title")
+    @odata(name="Title", beta=True)
     @property
     def title(self) -> Optional[str]:
         """Gets the Title property"""

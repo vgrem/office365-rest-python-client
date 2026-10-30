@@ -110,7 +110,7 @@ class FileVersion(Entity):
         """Gets the CheckInComment property"""
         return self.properties.get("CheckInComment", None)
 
-    @odata(name="ExpirationDate")
+    @odata(name="ExpirationDate", beta=True)
     @property
     def expiration_date(self) -> Optional[str]:
         """Gets the ExpirationDate property"""
@@ -128,7 +128,7 @@ class FileVersion(Entity):
         """Gets the Size property"""
         return self.properties.get("Size", None)
 
-    @odata(name="SnapshotDate")
+    @odata(name="SnapshotDate", beta=True)
     @property
     def snapshot_date(self) -> Optional[str]:
         """Gets the SnapshotDate property"""

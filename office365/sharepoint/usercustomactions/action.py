@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class UserCustomAction(Entity):
     """Represents a custom action associated with a SharePoint list, Web site, or subsite."""
 
-    @odata(name="ClientSideComponentId")
+    @odata(name="ClientSideComponentId", beta=True)
     @property
     def client_side_component_id(self) -> Optional[str]:
         """"""
@@ -53,7 +53,7 @@ class UserCustomAction(Entity):
         """Gets or sets the URL, URI, or ECMAScript (JScript, JavaScript) function associated with the action."""
         return self.properties.get("Url", None)
 
-    @odata(name="ClientSideComponentProperties")
+    @odata(name="ClientSideComponentProperties", beta=True)
     @property
     def client_side_component_properties(self) -> Optional[str]:
         """Gets the ClientSideComponentProperties property"""
@@ -77,7 +77,7 @@ class UserCustomAction(Entity):
         """Gets the Group property"""
         return self.properties.get("Group", None)
 
-    @odata(name="HostProperties")
+    @odata(name="HostProperties", beta=True)
     @property
     def host_properties(self) -> Optional[str]:
         """Gets the HostProperties property"""

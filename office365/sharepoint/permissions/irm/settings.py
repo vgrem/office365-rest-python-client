@@ -102,7 +102,7 @@ class InformationRightsManagementSettings(Entity):
         """
         return self.properties.get("LicenseCacheExpireDays", None)
 
-    @odata(name="TemplateId")
+    @odata(name="TemplateId", beta=True)
     @property
     def template_id(self) -> Optional[str]:
         """Gets or sets the ID of the RMS template that will be applied to the file or library."""
