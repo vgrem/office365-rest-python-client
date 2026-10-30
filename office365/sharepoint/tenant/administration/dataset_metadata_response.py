@@ -11,6 +11,9 @@ from office365.sharepoint.tenant.administration.dataset_metadata_info import (
 
 @dataclass
 class DatasetMetadataResponse(ClientValue):
+    agentAccessInsights: ClientValueCollection[DatasetMetadataInfo] = field(
+        default_factory=lambda: ClientValueCollection(DatasetMetadataInfo)
+    )
     featureId: str | None = None
     sitePermissions: ClientValueCollection[DatasetMetadataInfo] = field(
         default_factory=lambda: ClientValueCollection(DatasetMetadataInfo)

@@ -17,6 +17,7 @@ class PublishModernTemplatePayload(ClientValue):
         default_factory=lambda: ClientValueCollection(PlaceholderV2)
     )
     Snippets: ClientValueCollection[Snippet] = field(default_factory=lambda: ClientValueCollection(Snippet))
+    TemplateCreationSource: int | None = None
     Url: Optional[str] = None
     DocumentLocation: DocumentLocation = field(default_factory=DocumentLocation)
     IsAssociatedWithDocForms: bool | None = None

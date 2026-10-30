@@ -314,6 +314,12 @@ if TYPE_CHECKING:
     from office365.sharepoint.tenantadministration.spo_file_archive_policy_site_info import (
         SPOFileArchivePolicySiteInfo,
     )
+    from office365.sharepoint.tenantadministration.spo_restricted_app_access_control_site_policy import (
+        SPORestrictedAppAccessControlSitePolicy,
+    )
+    from office365.sharepoint.tenantadministration.spo_restricted_app_access_control_tenant_policy import (
+        SPORestrictedAppAccessControlTenantPolicy,
+    )
     from office365.sharepoint.viva.connections.license import VivaConnectionsLicense
     from office365.sharepoint.viva.syntexcustommodelsetting import (
         SyntexCustomModelSetting,
@@ -7395,3 +7401,174 @@ class Tenant(Entity):
     def is_tenant_admin_read_only_advance_notice_enabled(self) -> Optional[bool]:
         """Gets the IsTenantAdminReadOnlyAdvanceNoticeEnabled property"""
         return self.properties.get("IsTenantAdminReadOnlyAdvanceNoticeEnabled", None)
+
+    def clear_restricted_app_access_control_site_policy_by_site_id(self, site_id: UUID) -> Self:
+        """ClearRestrictedAppAccessControlSitePolicyBySiteId operation.
+
+        Args:
+            site_id (UUID):
+                siteId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "ClearRestrictedAppAccessControlSitePolicyBySiteId", None, {"siteId": site_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def clear_restricted_app_access_control_site_policy_by_url(self, site_url: str) -> Self:
+        """ClearRestrictedAppAccessControlSitePolicyByUrl operation.
+
+        Args:
+            site_url (str):
+                siteUrl parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "ClearRestrictedAppAccessControlSitePolicyByUrl", None, {"siteUrl": site_url}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def clear_restricted_app_access_control_tenant_policy(self) -> Self:
+        """ClearRestrictedAppAccessControlTenantPolicy operation."""
+        qry = ServiceOperationQuery(self, "ClearRestrictedAppAccessControlTenantPolicy", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def get_restricted_app_access_control_site_policy_by_site_id(
+        self, site_id: UUID
+    ) -> ClientResult[SPORestrictedAppAccessControlSitePolicy]:
+        """GetRestrictedAppAccessControlSitePolicyBySiteId operation.
+
+        Args:
+            site_id (UUID):
+                siteId parameter
+        """
+        from office365.sharepoint.tenantadministration.spo_restricted_app_access_control_site_policy import (
+            SPORestrictedAppAccessControlSitePolicy,
+        )
+
+        return_type = ClientResult(self.context, SPORestrictedAppAccessControlSitePolicy())
+        qry = ServiceOperationQuery(
+            self, "GetRestrictedAppAccessControlSitePolicyBySiteId", None, {"siteId": site_id}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_restricted_app_access_control_site_policy_by_url(
+        self, site_url: str
+    ) -> ClientResult[SPORestrictedAppAccessControlSitePolicy]:
+        """GetRestrictedAppAccessControlSitePolicyByUrl operation.
+
+        Args:
+            site_url (str):
+                siteUrl parameter
+        """
+        from office365.sharepoint.tenantadministration.spo_restricted_app_access_control_site_policy import (
+            SPORestrictedAppAccessControlSitePolicy,
+        )
+
+        return_type = ClientResult(self.context, SPORestrictedAppAccessControlSitePolicy())
+        qry = ServiceOperationQuery(
+            self, "GetRestrictedAppAccessControlSitePolicyByUrl", None, {"siteUrl": site_url}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_restricted_app_access_control_tenant_policy(self) -> ClientResult[SPORestrictedAppAccessControlTenantPolicy]:
+        """GetRestrictedAppAccessControlTenantPolicy operation."""
+        from office365.sharepoint.tenantadministration.spo_restricted_app_access_control_tenant_policy import (
+            SPORestrictedAppAccessControlTenantPolicy,
+        )
+
+        return_type = ClientResult(self.context, SPORestrictedAppAccessControlTenantPolicy())
+        qry = ServiceOperationQuery(self, "GetRestrictedAppAccessControlTenantPolicy", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def set_restricted_app_access_control_site_policy_by_site_id(
+        self, site_id: UUID, enabled: bool, active_mode: str, allow_list: list[UUID], deny_list: list[UUID]
+    ) -> Self:
+        """SetRestrictedAppAccessControlSitePolicyBySiteId operation.
+
+        Args:
+            site_id (UUID):
+                siteId parameter
+            enabled (bool):
+                enabled parameter
+            active_mode (str):
+                activeMode parameter
+            allow_list (list[UUID]):
+                allowList parameter
+            deny_list (list[UUID]):
+                denyList parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetRestrictedAppAccessControlSitePolicyBySiteId",
+            None,
+            {
+                "siteId": site_id,
+                "enabled": enabled,
+                "activeMode": active_mode,
+                "allowList": GuidCollection(allow_list),
+                "denyList": GuidCollection(deny_list),
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_restricted_app_access_control_site_policy_by_url(
+        self, site_url: str, enabled: bool, active_mode: str, allow_list: list[UUID], deny_list: list[UUID]
+    ) -> Self:
+        """SetRestrictedAppAccessControlSitePolicyByUrl operation.
+
+        Args:
+            site_url (str):
+                siteUrl parameter
+            enabled (bool):
+                enabled parameter
+            active_mode (str):
+                activeMode parameter
+            allow_list (list[UUID]):
+                allowList parameter
+            deny_list (list[UUID]):
+                denyList parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetRestrictedAppAccessControlSitePolicyByUrl",
+            None,
+            {
+                "siteUrl": site_url,
+                "enabled": enabled,
+                "activeMode": active_mode,
+                "allowList": GuidCollection(allow_list),
+                "denyList": GuidCollection(deny_list),
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_restricted_app_access_control_tenant_policy(self, enabled: bool, restricted_app_ids: list[UUID]) -> Self:
+        """SetRestrictedAppAccessControlTenantPolicy operation.
+
+        Args:
+            enabled (bool):
+                enabled parameter
+            restricted_app_ids (list[UUID]):
+                restrictedAppIds parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "SetRestrictedAppAccessControlTenantPolicy",
+            None,
+            {"enabled": enabled, "restrictedAppIds": GuidCollection(restricted_app_ids)},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

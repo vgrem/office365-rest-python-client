@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
+from uuid import UUID
 
 from typing_extensions import Self
 
@@ -920,3 +922,93 @@ class SiteMoveService(Entity):
         qry = ServiceOperationQuery(self, "GetScpStatusJson", None, {}, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    def complete_site_move_history(self, work_item_id: UUID, completed_time_utc: datetime) -> Self:
+        """CompleteSiteMoveHistory operation.
+
+        Args:
+            work_item_id (UUID):
+                workItemId parameter
+            completed_time_utc (datetime):
+                completedTimeUtc parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "CompleteSiteMoveHistory",
+            None,
+            {"workItemId": work_item_id, "completedTimeUtc": completed_time_utc},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def create_or_update_in_progress_site_move_history_record(self, serialized_record: str) -> Self:
+        """CreateOrUpdateInProgressSiteMoveHistoryRecord operation.
+
+        Args:
+            serialized_record (str):
+                serializedRecord parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "CreateOrUpdateInProgressSiteMoveHistoryRecord",
+            None,
+            {"serializedRecord": serialized_record},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def delete_in_progress_site_move_history(self, work_item_id: UUID) -> Self:
+        """DeleteInProgressSiteMoveHistory operation.
+
+        Args:
+            work_item_id (UUID):
+                workItemId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "DeleteInProgressSiteMoveHistory", None, {"workItemId": work_item_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def get_site_move_history(self, work_item_id: UUID) -> ClientResult[str]:
+        """GetSiteMoveHistory operation.
+
+        Args:
+            work_item_id (UUID):
+                workItemId parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetSiteMoveHistory", None, {"workItemId": work_item_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def list_site_move_history(self) -> ClientResult[str]:
+        """ListSiteMoveHistory operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "ListSiteMoveHistory", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def record_site_move_history_copy_done(self, work_item_id: UUID, copy_done_time_utc: datetime) -> Self:
+        """RecordSiteMoveHistoryCopyDone operation.
+
+        Args:
+            work_item_id (UUID):
+                workItemId parameter
+            copy_done_time_utc (datetime):
+                copyDoneTimeUtc parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "RecordSiteMoveHistoryCopyDone",
+            None,
+            {"workItemId": work_item_id, "copyDoneTimeUtc": copy_done_time_utc},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

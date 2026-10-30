@@ -22,6 +22,7 @@ class SPActiveContainerProperties(ClientValue):
     CreatedOn: Optional[str] = None
     DeletedOn: Optional[str] = None
     Description: Optional[str] = None
+    IsStorageUsedAvailable: bool | None = None
     LastArchivedDateTime: Optional[str] = None
     OpticalCharacterRecognitionEnabled: Optional[bool] = None
     Owners: ClientValueCollection[SPActiveContainerMemberProperties] = field(

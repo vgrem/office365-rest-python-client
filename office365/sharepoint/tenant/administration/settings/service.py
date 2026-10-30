@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -19,6 +19,7 @@ from office365.sharepoint.tenant.administration.types import (
     DisableSelfServiceSiteCreation,
     EnableAutoNewsDigest,
 )
+from office365.sharepoint.tenantadministration.container_auto_quota_enabled import ContainerAutoQuotaEnabled
 
 if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.commentsonsitepagesdisabled import (
@@ -356,3 +357,9 @@ class TenantAdminSettingsService(Entity):
         )
         self.context.add_query(qry)
         return return_type
+
+    @odata(name="ContainerAutoQuotaEnabled")
+    @property
+    def container_auto_quota_enabled(self) -> Optional[ContainerAutoQuotaEnabled]:
+        """Gets the ContainerAutoQuotaEnabled property"""
+        return self.properties.get("ContainerAutoQuotaEnabled", None)
