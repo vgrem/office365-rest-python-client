@@ -161,7 +161,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @odata(name="ContextThemeManager", navigation=True)
+    @odata(name="ContextThemeManager", navigation=True, beta=True)
     @property
     def context_theme_manager(self) -> ThemeManager:
         """Gets the ContextThemeManager property"""

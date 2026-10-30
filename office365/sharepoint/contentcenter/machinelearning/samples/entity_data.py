@@ -16,13 +16,13 @@ class SPMachineLearningSampleEntityData(Entity):
     def entity_type_name(self):
         return "Microsoft.Office.Server.ContentCenter.SPMachineLearningSampleEntityData"
 
-    @odata(name="ExtractedText")
+    @odata(name="ExtractedText", beta=True)
     @property
     def extracted_text(self) -> Optional[str]:
         """Gets the ExtractedText property"""
         return self.properties.get("ExtractedText", None)
 
-    @odata(name="Markups")
+    @odata(name="Markups", beta=True)
     @property
     def markups(self) -> Optional[str]:
         """Gets the Markups property"""

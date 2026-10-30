@@ -59,7 +59,7 @@ class Comment(Entity):
         """Gets the author property"""
         return self.properties.get("author", Principal())
 
-    @odata(name="contentAnchor")
+    @odata(name="contentAnchor", beta=True)
     @property
     def content_anchor(self) -> ContentAnchor:
         """Gets the contentAnchor property"""
@@ -125,7 +125,7 @@ class Comment(Entity):
         """Gets the parentId property"""
         return self.properties.get("parentId", None)
 
-    @odata(name="relativeCreatedDate")
+    @odata(name="relativeCreatedDate", beta=True)
     @property
     def relative_created_date(self) -> Optional[str]:
         """Gets the relativeCreatedDate property"""

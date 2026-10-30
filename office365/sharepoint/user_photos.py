@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class UserPhotos(Entity):
-    @odata(name="Settings")
+    @odata(name="Settings", beta=True)
     @property
     def settings(self) -> Optional[str]:
         """Gets the Settings property"""

@@ -159,11 +159,22 @@ def test_a_member_the_preview_alone_declares_is_finished_with_beta(tmp_path: Pat
     assert _planned(tmp_path, _GETTER, stable) == []
 
 
-def test_a_preview_type_owns_the_fact_its_members_do_not_repeat_it(tmp_path: Path) -> None:
-    """962 of the document's 1,401 member marks sit inside a preview type; they add nothing."""
+def test_a_preview_type_owns_the_fact_only_where_a_class_can_state_it(tmp_path: Path) -> None:
+    """962 of the document's 1,401 member marks sit inside a preview type -- and who states
+    it depends on whether the service has a class marker to write.
+
+    Graph does: `@version("beta")` gates the class, so a member repeating it is one fact
+    with two owners. SharePoint does not: `@version` names a service root and SharePoint
+    has one, so a class marker there makes an offline hydration of the type refuse
+    (`offline_context()` is a `GraphClient`). The member keeps the mark instead, which is
+    where 270 more getters in 25 more modules are finished from.
+    """
     model = ODataV3Reader(str(_metadata(tmp_path))).read()
+    catalog = _codemod()
 
-    catalog = _codemod()._catalog_of(model)
+    two_roots = catalog._catalog_of(model)
+    assert two_roots["sp.widget"]["PreviewOnly"].beta, "a stable type's preview member is marked"
+    assert not two_roots["sp.gadget"]["Name"].beta, "the type gate carries it; the member does not repeat it"
 
-    assert catalog["sp.widget"]["PreviewOnly"].beta, "a stable type's preview member is marked"
-    assert not catalog["sp.gadget"]["Name"].beta, "the type carries it; the member does not repeat it"
+    one_document = catalog._catalog_of(model, two_roots=False)
+    assert one_document["sp.gadget"]["Name"].beta, "no class marker can be written, so the member says it"

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class SPMachineLearningPublicationsResult(Entity):
-    @odata(name="Details")
+    @odata(name="Details", beta=True)
     @property
     def details(self) -> ClientValueCollection[SPMachineLearningPublicationResult]:
         """Gets the Details property"""
@@ -25,13 +25,13 @@ class SPMachineLearningPublicationsResult(Entity):
             "Details", ClientValueCollection[SPMachineLearningPublicationResult](SPMachineLearningPublicationResult)
         )
 
-    @odata(name="TotalFailures")
+    @odata(name="TotalFailures", beta=True)
     @property
     def total_failures(self) -> Optional[int]:
         """Gets the TotalFailures property"""
         return self.properties.get("TotalFailures", None)
 
-    @odata(name="TotalSuccesses")
+    @odata(name="TotalSuccesses", beta=True)
     @property
     def total_successes(self) -> Optional[int]:
         """Gets the TotalSuccesses property"""

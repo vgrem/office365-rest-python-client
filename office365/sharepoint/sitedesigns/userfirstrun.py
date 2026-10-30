@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class UserFirstRun(Entity):
-    @odata(name="Experiences")
+    @odata(name="Experiences", beta=True)
     @property
     def experiences(self) -> ClientValueCollection[int]:
         """Gets the Experiences property"""

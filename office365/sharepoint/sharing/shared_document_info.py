@@ -25,7 +25,7 @@ class SharedDocumentInfo(Entity):
         """"""
         return self.properties.get("Author", Principal())
 
-    @odata(name="CallerStack")
+    @odata(name="CallerStack", beta=True)
     @property
     def caller_stack(self) -> Optional[str]:
         """"""
@@ -53,19 +53,19 @@ class SharedDocumentInfo(Entity):
     def entity_type_name(self):
         return "SP.Sharing.SharedDocumentInfo"
 
-    @odata(name="DriveAccessToken")
+    @odata(name="DriveAccessToken", beta=True)
     @property
     def drive_access_token(self) -> Optional[str]:
         """Gets the DriveAccessToken property"""
         return self.properties.get("DriveAccessToken", None)
 
-    @odata(name="DriveAccessTokenV21")
+    @odata(name="DriveAccessTokenV21", beta=True)
     @property
     def drive_access_token_v21(self) -> Optional[str]:
         """Gets the DriveAccessTokenV21 property"""
         return self.properties.get("DriveAccessTokenV21", None)
 
-    @odata(name="DriveUrl")
+    @odata(name="DriveUrl", beta=True)
     @property
     def drive_url(self) -> Optional[str]:
         """Gets the DriveUrl property"""
@@ -127,7 +127,7 @@ class SharedDocumentInfo(Entity):
         """Gets the ListItemId property"""
         return self.properties.get("ListItemId", None)
 
-    @odata(name="MediaBaseUrl")
+    @odata(name="MediaBaseUrl", beta=True)
     @property
     def media_base_url(self) -> Optional[str]:
         """Gets the MediaBaseUrl property"""
@@ -139,19 +139,19 @@ class SharedDocumentInfo(Entity):
         """Gets the Modified property"""
         return self.properties.get("Modified", datetime.min)
 
-    @odata(name="OfficeBundleGenerate")
+    @odata(name="OfficeBundleGenerate", beta=True)
     @property
     def office_bundle_generate(self) -> Optional[str]:
         """Gets the OfficeBundleGenerate property"""
         return self.properties.get("OfficeBundleGenerate", None)
 
-    @odata(name="OfficeBundleGetFragment")
+    @odata(name="OfficeBundleGetFragment", beta=True)
     @property
     def office_bundle_get_fragment(self) -> Optional[str]:
         """Gets the OfficeBundleGetFragment property"""
         return self.properties.get("OfficeBundleGetFragment", None)
 
-    @odata(name="PdfConversionUrl")
+    @odata(name="PdfConversionUrl", beta=True)
     @property
     def pdf_conversion_url(self) -> Optional[str]:
         """Gets the PdfConversionUrl property"""
@@ -193,19 +193,19 @@ class SharedDocumentInfo(Entity):
         """Gets the SiteUrl property"""
         return self.properties.get("SiteUrl", None)
 
-    @odata(name="SpItemUrl")
+    @odata(name="SpItemUrl", beta=True)
     @property
     def sp_item_url(self) -> Optional[str]:
         """Gets the SpItemUrl property"""
         return self.properties.get("SpItemUrl", None)
 
-    @odata(name="SpResourceUrl")
+    @odata(name="SpResourceUrl", beta=True)
     @property
     def sp_resource_url(self) -> Optional[str]:
         """Gets the SpResourceUrl property"""
         return self.properties.get("SpResourceUrl", None)
 
-    @odata(name="ThumbnailUrl")
+    @odata(name="ThumbnailUrl", beta=True)
     @property
     def thumbnail_url(self) -> Optional[str]:
         """Gets the ThumbnailUrl property"""
@@ -229,7 +229,7 @@ class SharedDocumentInfo(Entity):
         """Gets the UrlPath property"""
         return self.properties.get("UrlPath", None)
 
-    @odata(name="VideoManifestUrl")
+    @odata(name="VideoManifestUrl", beta=True)
     @property
     def video_manifest_url(self) -> Optional[str]:
         """Gets the VideoManifestUrl property"""

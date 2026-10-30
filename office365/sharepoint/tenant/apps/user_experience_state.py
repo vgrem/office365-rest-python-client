@@ -12,7 +12,7 @@ from office365.sharepoint.entity import Entity
 class UserExperienceState(Entity):
     """"""
 
-    @odata(name="Flags")
+    @odata(name="Flags", beta=True)
     @property
     def flags(self) -> Optional[int]:
         """Gets the Flags property"""

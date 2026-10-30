@@ -25,7 +25,7 @@ class SharingRestrictions(Entity):
         static_path = ResourcePath("Microsoft.SharePoint.Sharing.Internal.SharingRestrictions")
         super().__init__(context, static_path)
 
-    @odata(name="anonymousLinkUseLimit")
+    @odata(name="anonymousLinkUseLimit", beta=True)
     @property
     def anonymous_link_use_limit(self):
         return self.properties.get("anonymousLinkUseLimit", CAnonymousLinkUseLimit())
@@ -34,7 +34,7 @@ class SharingRestrictions(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Sharing.Internal.SharingRestrictions"
 
-    @odata(name="externalSharingEnforcement")
+    @odata(name="externalSharingEnforcement", beta=True)
     @property
     def external_sharing_enforcement(self) -> CExternalSharingEnforcement:
         """Gets the externalSharingEnforcement property"""
@@ -44,7 +44,7 @@ class SharingRestrictions(Entity):
 
         return self.properties.get("externalSharingEnforcement", CExternalSharingEnforcement())
 
-    @odata(name="externalSharingThrottling")
+    @odata(name="externalSharingThrottling", beta=True)
     @property
     def external_sharing_throttling(self) -> CExternalSharingThrottling:
         """Gets the externalSharingThrottling property"""

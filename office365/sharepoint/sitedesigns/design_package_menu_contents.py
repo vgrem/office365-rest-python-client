@@ -15,13 +15,13 @@ class DesignPackageMenuContents(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Utilities.WebTemplateExtensions.DesignPackageMenuContents"
 
-    @odata(name="HiddenDesignPackages")
+    @odata(name="HiddenDesignPackages", beta=True)
     @property
     def hidden_design_packages(self) -> Optional[int]:
         """Gets the HiddenDesignPackages property"""
         return self.properties.get("HiddenDesignPackages", None)
 
-    @odata(name="SiteDesigns")
+    @odata(name="SiteDesigns", beta=True)
     @property
     def site_designs(self) -> ClientValueCollection[SiteDesignMetadata]:
         """Gets the SiteDesigns property"""

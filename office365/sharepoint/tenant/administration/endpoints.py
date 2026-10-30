@@ -21,13 +21,13 @@ class TenantAdminEndpoints(Entity):
         """The URL for the Azure Active Directory Admin Center."""
         return self.properties.get("AADAdminCenterEndpoint", None)
 
-    @odata(name="CdnDefaultEndpoint")
+    @odata(name="CdnDefaultEndpoint", beta=True)
     @property
     def cdn_default_endpoint(self) -> Optional[str]:
         """The base address of the default Content Delivery Network (CDN) used by SharePoint Online."""
         return self.properties.get("CdnDefaultEndpoint", None)
 
-    @odata(name="O365AdminCenterEndpoint")
+    @odata(name="O365AdminCenterEndpoint", beta=True)
     @property
     def o365_admin_center_endpoint(self) -> Optional[str]:
         """The endpoint (URL) to the Office 365 Admin Center."""
@@ -39,7 +39,7 @@ class TenantAdminEndpoints(Entity):
         Management Services (RMS) settings within a tenant."""
         return self.properties.get("CFRMSGraphEndpoint", None)
 
-    @odata(name="MigrationAgentUrl")
+    @odata(name="MigrationAgentUrl", beta=True)
     @property
     def migration_agent_url(self) -> Optional[str]:
         """The endpoint where the migration agent software or services can be accessed"""
@@ -51,7 +51,7 @@ class TenantAdminEndpoints(Entity):
         or lightweight service framework for tenant or feature management."""
         return self.properties.get("MiniMavenEndpoint", None)
 
-    @odata(name="SPMigrationToolUrl")
+    @odata(name="SPMigrationToolUrl", beta=True)
     @property
     def sp_migration_tool_url(self) -> Optional[str]:
         """URL to access the SharePoint Migration Tool, enabling users to download the software
@@ -62,7 +62,7 @@ class TenantAdminEndpoints(Entity):
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.TenantAdminEndpoints"
 
-    @odata(name="MicrosoftGraphEndpoint")
+    @odata(name="MicrosoftGraphEndpoint", beta=True)
     @property
     def microsoft_graph_endpoint(self) -> Optional[str]:
         """Gets the MicrosoftGraphEndpoint property"""

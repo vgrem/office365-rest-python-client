@@ -75,7 +75,7 @@ class SharingInformation(Entity):
             PickerSettings(self.context, ResourcePath("pickerSettings", self.resource_path)),
         )
 
-    @odata(name="sharingAbilities")
+    @odata(name="sharingAbilities", beta=True)
     @property
     def sharing_abilities(self):
         """
@@ -106,7 +106,7 @@ class SharingInformation(Entity):
     def entity_type_name(self):
         return "SP.Sharing.SharingInformation"
 
-    @odata(name="addressBarLinkSettings")
+    @odata(name="addressBarLinkSettings", beta=True)
     @property
     def address_bar_link_settings(self) -> AddressBarLinkSettings:
         """Gets the addressBarLinkSettings property"""
@@ -116,13 +116,13 @@ class SharingInformation(Entity):
 
         return self.properties.get("addressBarLinkSettings", AddressBarLinkSettings())
 
-    @odata(name="ageGroup")
+    @odata(name="ageGroup", beta=True)
     @property
     def age_group(self) -> Optional[int]:
         """Gets the ageGroup property"""
         return self.properties.get("ageGroup", None)
 
-    @odata(name="allOrganizationSecurityGroupId")
+    @odata(name="allOrganizationSecurityGroupId", beta=True)
     @property
     def all_organization_security_group_id(self) -> Optional[UUID]:
         """Gets the allOrganizationSecurityGroupId property"""
@@ -224,7 +224,7 @@ class SharingInformation(Entity):
         """Gets the directUrlLegacy property"""
         return self.properties.get("directUrlLegacy", None)
 
-    @odata(name="discoverableByOrganizationEnabled")
+    @odata(name="discoverableByOrganizationEnabled", beta=True)
     @property
     def discoverable_by_organization_enabled(self) -> Optional[bool]:
         """Gets the discoverableByOrganizationEnabled property"""
@@ -236,19 +236,19 @@ class SharingInformation(Entity):
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
-    @odata(name="enforceIBSegmentFiltering")
+    @odata(name="enforceIBSegmentFiltering", beta=True)
     @property
     def enforce_ib_segment_filtering(self) -> Optional[bool]:
         """Gets the enforceIBSegmentFiltering property"""
         return self.properties.get("enforceIBSegmentFiltering", None)
 
-    @odata(name="enforceSPOSearch")
+    @odata(name="enforceSPOSearch", beta=True)
     @property
     def enforce_spo_search(self) -> Optional[bool]:
         """Gets the enforceSPOSearch property"""
         return self.properties.get("enforceSPOSearch", None)
 
-    @odata(name="fileExtension")
+    @odata(name="fileExtension", beta=True)
     @property
     def file_extension(self) -> Optional[str]:
         """Gets the fileExtension property"""
@@ -260,7 +260,7 @@ class SharingInformation(Entity):
         """Gets the hasUniquePermissions property"""
         return self.properties.get("hasUniquePermissions", None)
 
-    @odata(name="isConsumerFiles")
+    @odata(name="isConsumerFiles", beta=True)
     @property
     def is_consumer_files(self) -> Optional[bool]:
         """Gets the isConsumerFiles property"""
@@ -272,13 +272,13 @@ class SharingInformation(Entity):
         """Gets the isMultiTenantOrganization property"""
         return self.properties.get("isMultiTenantOrganization", None)
 
-    @odata(name="isPremium")
+    @odata(name="isPremium", beta=True)
     @property
     def is_premium(self) -> Optional[bool]:
         """Gets the isPremium property"""
         return self.properties.get("isPremium", None)
 
-    @odata(name="isStubFile")
+    @odata(name="isStubFile", beta=True)
     @property
     def is_stub_file(self) -> Optional[bool]:
         """Gets the isStubFile property"""
@@ -314,7 +314,7 @@ class SharingInformation(Entity):
         """Gets the outlookEndpointHostUrl property"""
         return self.properties.get("outlookEndpointHostUrl", None)
 
-    @odata(name="recipientLimits")
+    @odata(name="recipientLimits", beta=True)
     @property
     def recipient_limits(self) -> RecipientLimits:
         """Gets the recipientLimits property"""
@@ -322,7 +322,7 @@ class SharingInformation(Entity):
 
         return self.properties.get("recipientLimits", RecipientLimits())
 
-    @odata(name="sensitivityLabelInformation")
+    @odata(name="sensitivityLabelInformation", beta=True)
     @property
     def sensitivity_label_information(self) -> SensitivityLabelInformation:
         """Gets the sensitivityLabelInformation property"""
@@ -364,13 +364,13 @@ class SharingInformation(Entity):
         """Gets the showExternalSharingWarning property"""
         return self.properties.get("showExternalSharingWarning", None)
 
-    @odata(name="siteIBMode")
+    @odata(name="siteIBMode", beta=True)
     @property
     def site_ib_mode(self) -> Optional[str]:
         """Gets the siteIBMode property"""
         return self.properties.get("siteIBMode", None)
 
-    @odata(name="siteIBSegmentIDs")
+    @odata(name="siteIBSegmentIDs", beta=True)
     @property
     def site_ib_segment_ids(self) -> StringCollection:
         """Gets the siteIBSegmentIDs property"""
@@ -406,7 +406,7 @@ class SharingInformation(Entity):
         """Gets the tenantId property"""
         return self.properties.get("tenantId", None)
 
-    @odata(name="uniqueAccessGroups")
+    @odata(name="uniqueAccessGroups", beta=True)
     @property
     def unique_access_groups(self) -> UniqueAccessGroupsWrapper:
         """Gets the uniqueAccessGroups property"""
@@ -422,7 +422,7 @@ class SharingInformation(Entity):
         """Gets the userIsSharingViaMCS property"""
         return self.properties.get("userIsSharingViaMCS", None)
 
-    @odata(name="userPhotoCdnBaseUrl")
+    @odata(name="userPhotoCdnBaseUrl", beta=True)
     @property
     def user_photo_cdn_base_url(self) -> Optional[str]:
         """Gets the userPhotoCdnBaseUrl property"""

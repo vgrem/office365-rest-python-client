@@ -26,23 +26,23 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 
 
 class TopicSitePage(SitePage):
-    @odata(name="EntityId")
+    @odata(name="EntityId", beta=True)
     @property
     def entity_id(self):
         return self.properties.get("EntityId", None)
 
-    @odata(name="EntityType")
+    @odata(name="EntityType", beta=True)
     @property
     def entity_type(self):
         return self.properties.get("EntityType", None)
 
-    @odata(name="EntityRelations")
+    @odata(name="EntityRelations", beta=True)
     @property
     def entity_relations(self) -> Optional[str]:
         """Gets the EntityRelations property"""
         return self.properties.get("EntityRelations", None)
 
-    @odata(name="VerifiedTopicAllowedEditors")
+    @odata(name="VerifiedTopicAllowedEditors", beta=True)
     @property
     def verified_topic_allowed_editors(self) -> Optional[str]:
         """Gets the VerifiedTopicAllowedEditors property"""

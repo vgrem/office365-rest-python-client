@@ -27,13 +27,13 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 
 
 class FeedVideoPage(Entity):
-    @odata(name="ModernAudienceTargetUserField")
+    @odata(name="ModernAudienceTargetUserField", beta=True)
     @property
     def modern_audience_target_user_field(self) -> Optional[str]:
         """Gets the ModernAudienceTargetUserField property"""
         return self.properties.get("ModernAudienceTargetUserField", None)
 
-    @odata(name="VideoDuration")
+    @odata(name="VideoDuration", beta=True)
     @property
     def video_duration(self) -> Optional[int]:
         """Gets the VideoDuration property"""

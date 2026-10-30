@@ -7,7 +7,7 @@ from office365.sharepoint.marketplace.app_metadata_collection import CorporateCa
 class SiteCollectionCorporateCatalogAccessor(Entity):
     """Accessor for the site collection corporate catalog."""
 
-    @odata(name="AvailableApps", navigation=True)
+    @odata(name="AvailableApps", navigation=True, beta=True)
     @property
     def available_apps(self) -> CorporateCatalogAppMetadataCollection:
         """Returns the apps available in this corporate catalog."""

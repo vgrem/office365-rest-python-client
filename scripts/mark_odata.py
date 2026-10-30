@@ -23,9 +23,12 @@ element, so it is read out of the document and carried per member here.
 
 A member the preview surface alone declares is finished with ``beta=True``, and it is
 read the same way -- ``Com.Microsoft.VisualStudio.CodeGen.IsBeta`` on the same kind of
-block. One difference: a member of a type that is itself preview needs no mark, because
-the type owns that fact and the class carries it once (962 of SharePoint's 1,401 member
-annotations sit inside a preview type, and are dropped here rather than repeated).
+block. Who states it depends on how the service states its preview. Where the two
+surfaces are two snapshots (Graph), a preview *type* carries an ``@version("beta")`` gate
+and its members need no mark: the class owns that fact (962 of SharePoint's 1,401 member
+annotations sit inside a preview type). Where they are one document (SharePoint), there
+is no gate to write -- ``@version`` names a service root and SharePoint has one -- so the
+member keeps the mark and the fact survives in the tree at its declaration.
 
 The OData name is never derived from the attribute name: ``iCalUId`` and ``icalUid``
 both survive a snake-case round trip, and only one of them is a real column. The
@@ -90,8 +93,9 @@ class Declared(NamedTuple):
     #: The type's own CSDL is silent and every one of its subtypes states it, so the
     #: column exists on every instance (see :mod:`generator.intrinsic_members`).
     system: bool = False
-    #: Only the preview surface declares the member (CSDL ``...CodeGen.IsBeta``). Never
-    #: set for a member of a preview type: that type says it once, for all of them.
+    #: Only the preview surface declares the member (CSDL ``...CodeGen.IsBeta``). A member
+    #: of a preview type keeps the mark only where the *type* cannot state it: see
+    #: :func:`_catalog_of`.
     beta: bool = False
 
 
@@ -123,13 +127,17 @@ def load_catalog(service: str) -> Catalog:
     source, reader = _SERVICES[service]
     options = GeneratorOptions.load(source, _GENERATOR_DIR)
     model = reader(options.metadata_path).read()
-    catalog = _catalog_of(model)
+    # A service whose two surfaces are two snapshots gates the preview on the class, and a
+    # class that states it owns it for all its members. A service that ships one document
+    # has no such gate to write, so the member has to say it.
+    two_roots = service in _PREVIEW_SNAPSHOT
+    catalog = _catalog_of(model, two_roots=two_roots)
     bases = _bases_of(model)
     preview_name = _PREVIEW_SNAPSHOT.get(service)
     preview = pathlib.Path(options.metadata_path).parent / preview_name if preview_name else None
     if preview is not None and preview.is_file():
         model = reader(str(preview)).read()
-        for name, properties in _catalog_of(model).items():
+        for name, properties in _catalog_of(model, two_roots=True).items():
             declared = catalog.setdefault(name, {})
             for prop, declaration in properties.items():
                 known = declared.get(prop)
@@ -165,8 +173,17 @@ def _inherited(name: str, own: Catalog, bases: Dict[str, str]) -> Dict[str, Decl
     return properties
 
 
-def _catalog_of(model) -> Catalog:
-    """The declarations one snapshot carries, type name lowercased."""
+def _catalog_of(model, *, two_roots: bool = True) -> Catalog:
+    """The declarations one snapshot carries, type name lowercased.
+
+    ``two_roots`` decides who states a member's previewness. Where the surfaces are two
+    snapshots (Graph), the type carries an ``@version("beta")`` gate and repeating it on
+    1,401 members would be one fact with two owners -- measured over SharePoint's document.
+    Where they are one document (SharePoint), there is no gate to write: ``@version`` names
+    a service root, SharePoint has one, and a marker that says otherwise makes an *offline*
+    hydration of the type refuse (`offline_context()` is a `GraphClient`). So there the
+    member states it, and the fact survives in the tree at its declaration.
+    """
 
     def is_enum(type_name: str) -> bool:
         bare = type_name[len("Collection(") : -1] if type_name.startswith("Collection(") else type_name
@@ -182,7 +199,7 @@ def _catalog_of(model) -> Catalog:
                 bool(prop.IsNavigation),
                 is_enum(prop.TypeName or ""),
                 bool(prop.ReadOnly),
-                beta=bool(prop.IsBeta) and not schema.IsBeta,
+                beta=bool(prop.IsBeta) and not (two_roots and schema.IsBeta),
             )
             for prop in schema.Properties.values()
         }

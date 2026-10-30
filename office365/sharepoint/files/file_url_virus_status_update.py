@@ -10,19 +10,19 @@ from office365.sharepoint.entity import Entity
 
 
 class FileUrlVirusStatusUpdate(Entity):
-    @odata(name="fileUrl")
+    @odata(name="fileUrl", beta=True)
     @property
     def file_url(self) -> Optional[str]:
         """Gets the fileUrl property"""
         return self.properties.get("fileUrl", None)
 
-    @odata(name="virusMessage")
+    @odata(name="virusMessage", beta=True)
     @property
     def virus_message(self) -> Optional[str]:
         """Gets the virusMessage property"""
         return self.properties.get("virusMessage", None)
 
-    @odata(name="virusStatus")
+    @odata(name="virusStatus", beta=True)
     @property
     def virus_status(self) -> bytes | None:
         """Gets the virusStatus property"""

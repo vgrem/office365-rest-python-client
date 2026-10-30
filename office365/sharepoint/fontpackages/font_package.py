@@ -15,43 +15,43 @@ from office365.sharepoint.entity import Entity
 class FontPackage(Entity):
     """Represents a font package."""
 
-    @odata(name="ID")
+    @odata(name="ID", beta=True)
     @property
     def id(self) -> Optional[UUID]:
         """Gets the ID property"""
         return self.properties.get("ID", None)
 
-    @odata(name="IsHidden")
+    @odata(name="IsHidden", beta=True)
     @property
     def is_hidden(self) -> Optional[bool]:
         """Gets the IsHidden property"""
         return self.properties.get("IsHidden", None)
 
-    @odata(name="IsValid")
+    @odata(name="IsValid", beta=True)
     @property
     def is_valid(self) -> Optional[bool]:
         """Gets the IsValid property"""
         return self.properties.get("IsValid", None)
 
-    @odata(name="MissingFontFiles")
+    @odata(name="MissingFontFiles", beta=True)
     @property
     def missing_font_files(self) -> Optional[str]:
         """Gets the MissingFontFiles property"""
         return self.properties.get("MissingFontFiles", None)
 
-    @odata(name="PackageJson")
+    @odata(name="PackageJson", beta=True)
     @property
     def package_json(self) -> Optional[str]:
         """Gets the PackageJson property"""
         return self.properties.get("PackageJson", None)
 
-    @odata(name="Store")
+    @odata(name="Store", beta=True)
     @property
     def store(self) -> Optional[int]:
         """Gets the Store property"""
         return self.properties.get("Store", None)
 
-    @odata(name="Title")
+    @odata(name="Title", beta=True)
     @property
     def title(self) -> Optional[str]:
         """Gets the Title property"""

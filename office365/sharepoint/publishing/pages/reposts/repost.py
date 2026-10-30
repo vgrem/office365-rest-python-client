@@ -29,17 +29,17 @@ class RepostPage(SitePage):
     """Represents a re-posting of existing content where existing content can be a link to a resource on the
     internet or other page in your SharePoint environment"""
 
-    @odata(name="IsBannerImageUrlExternal")
+    @odata(name="IsBannerImageUrlExternal", beta=True)
     @property
     def is_banner_image_url_external(self) -> Optional[bool]:
         return self.properties.get("IsBannerImageUrlExternal", None)
 
-    @odata(name="OriginalSourceItemId")
+    @odata(name="OriginalSourceItemId", beta=True)
     @property
     def original_source_item_id(self) -> Optional[str]:
         return self.properties.get("OriginalSourceItemId", None)
 
-    @odata(name="OriginalSourceUrl")
+    @odata(name="OriginalSourceUrl", beta=True)
     @property
     def original_source_url(self) -> Optional[str]:
         return self.properties.get("OriginalSourceUrl", None)
@@ -48,25 +48,25 @@ class RepostPage(SitePage):
     def entity_type_name(self):
         return "SP.Publishing.RepostPage"
 
-    @odata(name="OriginalSourceListId")
+    @odata(name="OriginalSourceListId", beta=True)
     @property
     def original_source_list_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceListId property"""
         return self.properties.get("OriginalSourceListId", None)
 
-    @odata(name="OriginalSourceSiteId")
+    @odata(name="OriginalSourceSiteId", beta=True)
     @property
     def original_source_site_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceSiteId property"""
         return self.properties.get("OriginalSourceSiteId", None)
 
-    @odata(name="OriginalSourceWebId")
+    @odata(name="OriginalSourceWebId", beta=True)
     @property
     def original_source_web_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceWebId property"""
         return self.properties.get("OriginalSourceWebId", None)
 
-    @odata(name="ShouldSaveAsDraft")
+    @odata(name="ShouldSaveAsDraft", beta=True)
     @property
     def should_save_as_draft(self) -> Optional[bool]:
         """Gets the ShouldSaveAsDraft property"""

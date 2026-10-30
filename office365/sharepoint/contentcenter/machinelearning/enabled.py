@@ -9,7 +9,7 @@ from office365.sharepoint.entity import Entity
 class SPMachineLearningEnabled(Entity):
     """ """
 
-    @odata(name="IsSyntexPAYGEnabled")
+    @odata(name="IsSyntexPAYGEnabled", beta=True)
     @property
     def is_syntex_payg_enabled(self) -> Optional[bool]:
         """ """
@@ -19,43 +19,43 @@ class SPMachineLearningEnabled(Entity):
     def entity_type_name(self):
         return "Microsoft.Office.Server.ContentCenter.SPMachineLearningEnabled"
 
-    @odata(name="IsCopilotLicenseEnabled")
+    @odata(name="IsCopilotLicenseEnabled", beta=True)
     @property
     def is_copilot_license_enabled(self) -> Optional[bool]:
         """Gets the IsCopilotLicenseEnabled property"""
         return self.properties.get("IsCopilotLicenseEnabled", None)
 
-    @odata(name="MachineLearningCaptureEnabled")
+    @odata(name="MachineLearningCaptureEnabled", beta=True)
     @property
     def machine_learning_capture_enabled(self) -> Optional[bool]:
         """Gets the MachineLearningCaptureEnabled property"""
         return self.properties.get("MachineLearningCaptureEnabled", None)
 
-    @odata(name="MachineLearningExperienceEnabled")
+    @odata(name="MachineLearningExperienceEnabled", beta=True)
     @property
     def machine_learning_experience_enabled(self) -> Optional[bool]:
         """Gets the MachineLearningExperienceEnabled property"""
         return self.properties.get("MachineLearningExperienceEnabled", None)
 
-    @odata(name="TenantSyntexEnabled")
+    @odata(name="TenantSyntexEnabled", beta=True)
     @property
     def tenant_syntex_enabled(self) -> Optional[bool]:
         """Gets the TenantSyntexEnabled property"""
         return self.properties.get("TenantSyntexEnabled", None)
 
-    @odata(name="TenantSyntexV2Enabled")
+    @odata(name="TenantSyntexV2Enabled", beta=True)
     @property
     def tenant_syntex_v2_enabled(self) -> Optional[bool]:
         """Gets the TenantSyntexV2Enabled property"""
         return self.properties.get("TenantSyntexV2Enabled", None)
 
-    @odata(name="UserSyntexEnabled")
+    @odata(name="UserSyntexEnabled", beta=True)
     @property
     def user_syntex_enabled(self) -> Optional[bool]:
         """Gets the UserSyntexEnabled property"""
         return self.properties.get("UserSyntexEnabled", None)
 
-    @odata(name="UserSyntexV2Enabled")
+    @odata(name="UserSyntexV2Enabled", beta=True)
     @property
     def user_syntex_v2_enabled(self) -> Optional[bool]:
         """Gets the UserSyntexV2Enabled property"""

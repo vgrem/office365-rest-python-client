@@ -41,25 +41,25 @@ class SPOWebAppServicePrincipal(Entity):
         self.context.add_query(qry)
         return self
 
-    @odata(name="AccountEnabled")
+    @odata(name="AccountEnabled", beta=True)
     @property
     def account_enabled(self) -> Optional[bool]:
         """ """
         return self.properties.get("AccountEnabled", False)
 
-    @odata(name="AppId")
+    @odata(name="AppId", beta=True)
     @property
     def app_id(self) -> Optional[bool]:
         """ """
         return self.properties.get("AppId", False)
 
-    @odata(name="ReplyUrls")
+    @odata(name="ReplyUrls", beta=True)
     @property
     def reply_urls(self) -> StringCollection:
         """ """
         return self.properties.get("ReplyUrls", StringCollection())
 
-    @odata(name="GrantManager", navigation=True)
+    @odata(name="GrantManager", navigation=True, beta=True)
     @property
     def grant_manager(self) -> SPO3rdPartyAADPermissionGrantCollection:
         return self.properties.get(
@@ -70,7 +70,7 @@ class SPOWebAppServicePrincipal(Entity):
             ),
         )
 
-    @odata(name="PermissionGrants", navigation=True)
+    @odata(name="PermissionGrants", navigation=True, beta=True)
     @property
     def permission_grants(self) -> EntityCollection[SPOWebAppServicePrincipalPermissionGrant]:
         return self.properties.get(
@@ -82,7 +82,7 @@ class SPOWebAppServicePrincipal(Entity):
             ),
         )
 
-    @odata(name="PermissionRequests", navigation=True)
+    @odata(name="PermissionRequests", navigation=True, beta=True)
     @property
     def permission_requests(self) -> EntityCollection[SPOWebAppServicePrincipalPermissionRequest]:
         return self.properties.get(
@@ -109,19 +109,19 @@ class SPOWebAppServicePrincipal(Entity):
             default_value = property_mapping.get(name, None)
         return super().get_property(name, default_value)
 
-    @odata(name="AppHelperId")
+    @odata(name="AppHelperId", beta=True)
     @property
     def app_helper_id(self) -> Optional[str]:
         """Gets the AppHelperId property"""
         return self.properties.get("AppHelperId", None)
 
-    @odata(name="AppsToDelete")
+    @odata(name="AppsToDelete", beta=True)
     @property
     def apps_to_delete(self) -> StringCollection:
         """Gets the AppsToDelete property"""
         return self.properties.get("AppsToDelete", StringCollection())
 
-    @odata(name="ServicePrincipalObjectIds")
+    @odata(name="ServicePrincipalObjectIds", beta=True)
     @property
     def service_principal_object_ids(self) -> GuidCollection:
         """Gets the ServicePrincipalObjectIds property"""

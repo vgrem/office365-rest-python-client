@@ -43,7 +43,7 @@ class RemoteWeb(Entity):
         context.add_query(qry)
         return remote_web
 
-    @odata(name="Web", navigation=True)
+    @odata(name="Web", navigation=True, beta=True)
     @property
     def web(self):
         """Gets the SPWeb."""

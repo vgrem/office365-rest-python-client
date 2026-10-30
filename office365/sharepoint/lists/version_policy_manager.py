@@ -9,13 +9,13 @@ from office365.sharepoint.entity import Entity
 class VersionPolicyManager(Entity):
     """ """
 
-    @odata(name="DefaultExpireAfterDays")
+    @odata(name="DefaultExpireAfterDays", beta=True)
     @property
     def default_expire_after_days(self) -> Optional[int]:
         """Gets the DefaultExpireAfterDays property"""
         return self.properties.get("DefaultExpireAfterDays", None)
 
-    @odata(name="DefaultTrimMode")
+    @odata(name="DefaultTrimMode", beta=True)
     @property
     def default_trim_mode(self) -> Optional[int]:
         """Gets the DefaultTrimMode property"""

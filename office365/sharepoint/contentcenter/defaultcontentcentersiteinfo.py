@@ -6,25 +6,25 @@ from office365.sharepoint.entity import Entity
 
 
 class DefaultContentCenterSiteInfo(Entity):
-    @odata(name="SiteId")
+    @odata(name="SiteId", beta=True)
     @property
     def site_id(self) -> Optional[UUID]:
         """Gets the SiteId property"""
         return self.properties.get("SiteId", None)
 
-    @odata(name="SiteName")
+    @odata(name="SiteName", beta=True)
     @property
     def site_name(self) -> Optional[str]:
         """Gets the SiteName property"""
         return self.properties.get("SiteName", None)
 
-    @odata(name="Url")
+    @odata(name="Url", beta=True)
     @property
     def url(self) -> Optional[str]:
         """Gets the Url property"""
         return self.properties.get("Url", None)
 
-    @odata(name="WebId")
+    @odata(name="WebId", beta=True)
     @property
     def web_id(self) -> Optional[UUID]:
         """Gets the WebId property"""

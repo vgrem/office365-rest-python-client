@@ -14,31 +14,31 @@ class RepostPageMetadata(SitePageMetadata):
     def entity_type_name(self):  # type: ignore[override]
         return "SP.Publishing.RepostPageMetadata"
 
-    @odata(name="OriginalSourceItemId")
+    @odata(name="OriginalSourceItemId", beta=True)
     @property
     def original_source_item_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceItemId property"""
         return self.properties.get("OriginalSourceItemId", None)
 
-    @odata(name="OriginalSourceListId")
+    @odata(name="OriginalSourceListId", beta=True)
     @property
     def original_source_list_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceListId property"""
         return self.properties.get("OriginalSourceListId", None)
 
-    @odata(name="OriginalSourceSiteId")
+    @odata(name="OriginalSourceSiteId", beta=True)
     @property
     def original_source_site_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceSiteId property"""
         return self.properties.get("OriginalSourceSiteId", None)
 
-    @odata(name="OriginalSourceUrl")
+    @odata(name="OriginalSourceUrl", beta=True)
     @property
     def original_source_url(self) -> Optional[str]:
         """Gets the OriginalSourceUrl property"""
         return self.properties.get("OriginalSourceUrl", None)
 
-    @odata(name="OriginalSourceWebId")
+    @odata(name="OriginalSourceWebId", beta=True)
     @property
     def original_source_web_id(self) -> Optional[UUID]:
         """Gets the OriginalSourceWebId property"""

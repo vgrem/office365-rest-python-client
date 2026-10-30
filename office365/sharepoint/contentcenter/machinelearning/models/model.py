@@ -25,199 +25,199 @@ class SPMachineLearningModel(Entity):
     def entity_type_name(self):
         return "Microsoft.Office.Server.ContentCenter.SPMachineLearningModel"
 
-    @odata(name="AIBuilderHybridModelType")
+    @odata(name="AIBuilderHybridModelType", beta=True)
     @property
     def ai_builder_hybrid_model_type(self) -> Optional[str]:
         """Gets the AIBuilderHybridModelType property"""
         return self.properties.get("AIBuilderHybridModelType", None)
 
-    @odata(name="AzureCognitivePrebuiltModelName")
+    @odata(name="AzureCognitivePrebuiltModelName", beta=True)
     @property
     def azure_cognitive_prebuilt_model_name(self) -> Optional[str]:
         """Gets the AzureCognitivePrebuiltModelName property"""
         return self.properties.get("AzureCognitivePrebuiltModelName", None)
 
-    @odata(name="BaseContentTypeName")
+    @odata(name="BaseContentTypeName", beta=True)
     @property
     def base_content_type_name(self) -> Optional[str]:
         """Gets the BaseContentTypeName property"""
         return self.properties.get("BaseContentTypeName", None)
 
-    @odata(name="ConfidenceScore")
+    @odata(name="ConfidenceScore", beta=True)
     @property
     def confidence_score(self) -> Optional[str]:
         """Gets the ConfidenceScore property"""
         return self.properties.get("ConfidenceScore", None)
 
-    @odata(name="ContentTypeGroup")
+    @odata(name="ContentTypeGroup", beta=True)
     @property
     def content_type_group(self) -> Optional[str]:
         """Gets the ContentTypeGroup property"""
         return self.properties.get("ContentTypeGroup", None)
 
-    @odata(name="ContentTypeId")
+    @odata(name="ContentTypeId", beta=True)
     @property
     def content_type_id(self) -> Optional[str]:
         """Gets the ContentTypeId property"""
         return self.properties.get("ContentTypeId", None)
 
-    @odata(name="ContentTypeName")
+    @odata(name="ContentTypeName", beta=True)
     @property
     def content_type_name(self) -> Optional[str]:
         """Gets the ContentTypeName property"""
         return self.properties.get("ContentTypeName", None)
 
-    @odata(name="Created")
+    @odata(name="Created", beta=True)
     @property
     def created(self) -> Optional[datetime]:
         """Gets the Created property"""
         return self.properties.get("Created", datetime.min)
 
-    @odata(name="CreatedBy")
+    @odata(name="CreatedBy", beta=True)
     @property
     def created_by(self) -> Optional[str]:
         """Gets the CreatedBy property"""
         return self.properties.get("CreatedBy", None)
 
-    @odata(name="ModelDependencies")
+    @odata(name="ModelDependencies", beta=True)
     @property
     def model_dependencies(self) -> SPModelDependencies:
         """Gets the ModelDependencies property"""
         return self.properties.get("ModelDependencies", SPModelDependencies())
 
-    @odata(name="DriveId")
+    @odata(name="DriveId", beta=True)
     @property
     def drive_id(self) -> Optional[str]:
         """Gets the DriveId property"""
         return self.properties.get("DriveId", None)
 
-    @odata(name="Explanations")
+    @odata(name="Explanations", beta=True)
     @property
     def explanations(self) -> Optional[str]:
         """Gets the Explanations property"""
         return self.properties.get("Explanations", None)
 
-    @odata(name="ExtractorFieldMapping")
+    @odata(name="ExtractorFieldMapping", beta=True)
     @property
     def extractor_field_mapping(self) -> Optional[str]:
         """Gets the ExtractorFieldMapping property"""
         return self.properties.get("ExtractorFieldMapping", None)
 
-    @odata(name="ID")
+    @odata(name="ID", beta=True)
     @property
     def id_(self) -> Optional[int]:
         """Gets the ID property"""
         return self.properties.get("ID", None)
 
-    @odata(name="LastTrained")
+    @odata(name="LastTrained", beta=True)
     @property
     def last_trained(self) -> Optional[datetime]:
         """Gets the LastTrained property"""
         return self.properties.get("LastTrained", datetime.min)
 
-    @odata(name="ListID")
+    @odata(name="ListID", beta=True)
     @property
     def list_id(self) -> Optional[UUID]:
         """Gets the ListID property"""
         return self.properties.get("ListID", None)
 
-    @odata(name="ManagementAllowed")
+    @odata(name="ManagementAllowed", beta=True)
     @property
     def management_allowed(self) -> Optional[bool]:
         """Gets the ManagementAllowed property"""
         return self.properties.get("ManagementAllowed", None)
 
-    @odata(name="ModelName")
+    @odata(name="ModelName", beta=True)
     @property
     def model_name(self) -> Optional[str]:
         """Gets the ModelName property"""
         return self.properties.get("ModelName", None)
 
-    @odata(name="ModelPublishConfig")
+    @odata(name="ModelPublishConfig", beta=True)
     @property
     def model_publish_config(self) -> SPModelPublishConfig:
         """Gets the ModelPublishConfig property"""
         return self.properties.get("ModelPublishConfig", SPModelPublishConfig())
 
-    @odata(name="ModelRules")
+    @odata(name="ModelRules", beta=True)
     @property
     def model_rules(self) -> Optional[str]:
         """Gets the ModelRules property"""
         return self.properties.get("ModelRules", None)
 
-    @odata(name="ModelSettings")
+    @odata(name="ModelSettings", beta=True)
     @property
     def model_settings(self) -> Optional[str]:
         """Gets the ModelSettings property"""
         return self.properties.get("ModelSettings", None)
 
-    @odata(name="ModelType")
+    @odata(name="ModelType", beta=True)
     @property
     def model_type(self) -> Optional[int]:
         """Gets the ModelType property"""
         return self.properties.get("ModelType", None)
 
-    @odata(name="ModelTypeAsString")
+    @odata(name="ModelTypeAsString", beta=True)
     @property
     def model_type_as_string(self) -> Optional[str]:
         """Gets the ModelTypeAsString property"""
         return self.properties.get("ModelTypeAsString", None)
 
-    @odata(name="ModelTypeInternalName")
+    @odata(name="ModelTypeInternalName", beta=True)
     @property
     def model_type_internal_name(self) -> Optional[str]:
         """Gets the ModelTypeInternalName property"""
         return self.properties.get("ModelTypeInternalName", None)
 
-    @odata(name="Modified")
+    @odata(name="Modified", beta=True)
     @property
     def modified(self) -> Optional[datetime]:
         """Gets the Modified property"""
         return self.properties.get("Modified", datetime.min)
 
-    @odata(name="ModifiedBy")
+    @odata(name="ModifiedBy", beta=True)
     @property
     def modified_by(self) -> Optional[str]:
         """Gets the ModifiedBy property"""
         return self.properties.get("ModifiedBy", None)
 
-    @odata(name="ObjectId")
+    @odata(name="ObjectId", beta=True)
     @property
     def object_id(self) -> Optional[str]:
         """Gets the ObjectId property"""
         return self.properties.get("ObjectId", None)
 
-    @odata(name="PublicationType")
+    @odata(name="PublicationType", beta=True)
     @property
     def publication_type(self) -> Optional[int]:
         """Gets the PublicationType property"""
         return self.properties.get("PublicationType", None)
 
-    @odata(name="Schemas")
+    @odata(name="Schemas", beta=True)
     @property
     def schemas(self) -> Optional[str]:
         """Gets the Schemas property"""
         return self.properties.get("Schemas", None)
 
-    @odata(name="SourceSiteUrl")
+    @odata(name="SourceSiteUrl", beta=True)
     @property
     def source_site_url(self) -> Optional[str]:
         """Gets the SourceSiteUrl property"""
         return self.properties.get("SourceSiteUrl", None)
 
-    @odata(name="SourceUrl")
+    @odata(name="SourceUrl", beta=True)
     @property
     def source_url(self) -> Optional[str]:
         """Gets the SourceUrl property"""
         return self.properties.get("SourceUrl", None)
 
-    @odata(name="SourceWebServerRelativeUrl")
+    @odata(name="SourceWebServerRelativeUrl", beta=True)
     @property
     def source_web_server_relative_url(self) -> Optional[str]:
         """Gets the SourceWebServerRelativeUrl property"""
         return self.properties.get("SourceWebServerRelativeUrl", None)
 
-    @odata(name="UniqueId")
+    @odata(name="UniqueId", beta=True)
     @property
     def unique_id(self) -> Optional[UUID]:
         """Gets the UniqueId property"""
@@ -279,7 +279,7 @@ class SPMachineLearningModel(Entity):
         self.context.add_query(qry)
         return self
 
-    @odata(name="ID")
+    @odata(name="ID", beta=True)
     @property
     def id(self) -> Optional[int]:
         """Gets the ID property"""
