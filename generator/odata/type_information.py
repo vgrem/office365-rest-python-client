@@ -34,6 +34,11 @@ class TypeInformation:
     #: which is a derived type inheriting its base's key -- 1,226 of Graph's 1,239.
     Key: Tuple[str, ...] = ()
 
+    #: The document marks the type as preview (``...CodeGen.IsBeta``). SharePoint ships one
+    #: v3 document for both surfaces, so this is the only statement of it; Graph states the
+    #: same fact by declaring the type in ``GraphBeta.xml`` and not in ``Graph.xml``.
+    IsBeta: bool = False
+
     @property
     def alternate_key_names(self) -> List[str]:
         """Flat list of every property name that participates in an alternate key."""

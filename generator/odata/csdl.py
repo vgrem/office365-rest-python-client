@@ -19,6 +19,11 @@ _ALTERNATE_KEYS_TERM = "Org.OData.Core.V1.AlternateKeys"
 #: CSDL annotation term for a member the service assigns, not the client.
 _COMPUTED_TERM = "Org.OData.Core.V1.Computed"
 
+#: CSDL annotation term SharePoint's codegen writes on a preview type or member. Graph
+#: describes its preview surface in a separate document instead (``GraphBeta.xml``), so
+#: this term is how one v3 document states that a type or a member is preview-only.
+_BETA_TERM = "Com.Microsoft.VisualStudio.CodeGen.IsBeta"
+
 
 class CsdlDocument:
     """Namespaces, schema aliases and traversal for one CSDL document."""
@@ -149,6 +154,60 @@ class CsdlDocument:
                 if qualified:
                     declared.add((qualified, member))
         return declared
+
+    def parse_beta_types(self) -> set[str]:
+        """Types the document marks as preview (``...CodeGen.IsBeta``).
+
+        A target with no member part names the type outright -- 735 of SharePoint's do,
+        and the annotation never appears on the ``<EntityType>`` element itself, so
+        reading the type node alone can never tell that its surface is preview.
+        """
+        return {
+            qualified
+            for target in self._beta_targets()
+            if "/" not in target
+            for qualified in (self.qualified_type_name(target),)
+            if qualified
+        }
+
+    def parse_beta_members(self) -> set[tuple[str, str]]:
+        """Members the document marks as preview, as ``(type, member)``.
+
+        A target of the form ``Type/Member`` -- 1,401 of SharePoint's -- names a member
+        of a type that is itself stable: a preview type's own members are annotated too,
+        so the two sets overlap rather than nest. A target naming a *call* is not a
+        member (1,222 of the document's targets name a function import), so the argument
+        list is what tells the two apart.
+        """
+        declared: set[tuple[str, str]] = set()
+        for target in self._beta_targets():
+            type_name, sep, member = target.rpartition("/")
+            if not sep or not member or member == "$Kind" or "(" in member:
+                continue
+            qualified = self.qualified_type_name(type_name)
+            if qualified:
+                declared.add((qualified, member))
+        return declared
+
+    def _beta_targets(self) -> list[str]:
+        """The ``Target`` of every annotation block that states the beta term.
+
+        The term rides in a ``<ValueAnnotation>`` in the 2009/11 dialect SharePoint
+        speaks and in an ``<Annotation>`` in the v4 one, so both are read: the flag is
+        the same fact however the document carries it.
+        """
+        targets: list[str] = []
+        for schema in self.schemas():
+            for block in schema.findall("xmlns:Annotations", self._namespaces):
+                stated = block.findall("xmlns:Annotation", self._namespaces) + block.findall(
+                    "xmlns:ValueAnnotation", self._namespaces
+                )
+                if not any(node.get("Term") == _BETA_TERM and node.get("Bool") == "true" for node in stated):
+                    continue
+                target = block.get("Target") or ""
+                if target:
+                    targets.append(target)
+        return targets
 
     def parse_parameters(self, node: Element) -> list:
         """Extract ``<Parameter>`` children into plain dicts (types qualified)."""

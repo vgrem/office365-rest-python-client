@@ -31,6 +31,10 @@ class ODataReader(ABC):
         #: Members the service assigns (``Core.Computed``), as ``(type, member)``.
         #: Empty until :meth:`read` has indexed the document's annotations.
         self._computed: Set[Tuple[str, str]] = set()
+        #: Types the document marks preview-only (``...CodeGen.IsBeta``), and members of
+        #: a type that is itself stable. Empty until :meth:`read` has read the document.
+        self._beta_types: Set[str] = set()
+        self._beta_members: Set[Tuple[str, str]] = set()
 
     @property
     @abstractmethod
@@ -42,6 +46,8 @@ class ODataReader(ABC):
         model = ODataModel()
         self._document = CsdlDocument.load(self._metadata_path, self.xml_namespaces)
         self._computed = self._document.parse_computed_members()
+        self._beta_types = self._document.parse_beta_types()
+        self._beta_members = self._document.parse_beta_members()
         self._parse_types(model)
         self.process_operations(model)
         model.anchors = self._document.entity_anchors()
@@ -120,6 +126,7 @@ class ODataReader(ABC):
             type_schema.Key = self._document.parse_entity_key(type_node)
 
         self._mark_computed(type_schema)
+        self._mark_beta(type_schema)
 
         return type_schema
 
@@ -136,6 +143,23 @@ class ODataReader(ABC):
         for name, schema in type_schema.Properties.items():
             if (type_schema.FullName, name) in self._computed:
                 schema.ReadOnly = True
+
+    def _mark_beta(self, type_schema: TypeInformation) -> None:
+        """Records the preview surface the document states (``...CodeGen.IsBeta``).
+
+        Both halves are read, neither is inferred: the document marks a preview type and
+        each of its members (962 of SharePoint's 1,401 member annotations sit inside a
+        type that is marked as well), so a member is preview because its own target says
+        so, not because its type happens to be. Both are needed -- a preview type's
+        getters are gated by the type, a stable type's preview getters by the member.
+        """
+        if type_schema.FullName in self._beta_types:
+            type_schema.IsBeta = True
+        if not self._beta_members:
+            return
+        for name, schema in type_schema.Properties.items():
+            if (type_schema.FullName, name) in self._beta_members:
+                schema.IsBeta = True
 
     @abstractmethod
     def process_navigation_property_node(self, node: Element) -> Optional[PropertyInformation]:
