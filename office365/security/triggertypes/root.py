@@ -1,5 +1,6 @@
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.triggertypes.collection import (
     RetentionEventTypeCollection,
 )
@@ -8,6 +9,7 @@ from office365.security.triggertypes.collection import (
 class TriggerTypesRoot(Entity):
     """"""
 
+    @odata(name="retentionEventTypes", navigation=True)
     @property
     def retention_event_types(self) -> RetentionEventTypeCollection:
         """Represents the retentionEventType objects and their properties."""

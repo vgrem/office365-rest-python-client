@@ -3,15 +3,18 @@ from __future__ import annotations
 from office365.directory.groups.group import Group
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.healthissues.sourcetype import SourceType
 
 
 class UnifiedGroupSource(Entity):
+    @odata(name="includedSources")
     @property
     def included_sources(self) -> SourceType:
         """Gets the includedSources property"""
         return self.properties.get("includedSources", SourceType.mailbox)
 
+    @odata(name="group", navigation=True)
     @property
     def group(self) -> Group:
         """Gets the group property"""

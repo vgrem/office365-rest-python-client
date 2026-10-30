@@ -5,6 +5,7 @@ from datetime import datetime
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.audit.whois_record import WhoisRecord
 from office365.security.passive_dns_record import PassiveDnsRecord
 from office365.security.subdomain import Subdomain
@@ -18,16 +19,19 @@ from office365.security.threatintelligence.host_tracker import HostTracker
 
 
 class Host(Entity):
+    @odata(name="firstSeenDateTime")
     @property
     def first_seen_date_time(self) -> datetime:
         """Gets the firstSeenDateTime property"""
         return self.properties.get("firstSeenDateTime", datetime.min)
 
+    @odata(name="lastSeenDateTime")
     @property
     def last_seen_date_time(self) -> datetime:
         """Gets the lastSeenDateTime property"""
         return self.properties.get("lastSeenDateTime", datetime.min)
 
+    @odata(name="childHostPairs", navigation=True)
     @property
     def child_host_pairs(self) -> EntityCollection[HostPair]:
         """Gets the childHostPairs property"""
@@ -36,6 +40,7 @@ class Host(Entity):
             EntityCollection[HostPair](self.context, HostPair, ResourcePath("childHostPairs", self.resource_path)),
         )
 
+    @odata(name="components", navigation=True)
     @property
     def components(self) -> EntityCollection[HostComponent]:
         """Gets the components property"""
@@ -44,6 +49,7 @@ class Host(Entity):
             EntityCollection[HostComponent](self.context, HostComponent, ResourcePath("components", self.resource_path)),
         )
 
+    @odata(name="cookies", navigation=True)
     @property
     def cookies(self) -> EntityCollection[HostCookie]:
         """Gets the cookies property"""
@@ -52,6 +58,7 @@ class Host(Entity):
             EntityCollection[HostCookie](self.context, HostCookie, ResourcePath("cookies", self.resource_path)),
         )
 
+    @odata(name="hostPairs", navigation=True)
     @property
     def host_pairs(self) -> EntityCollection[HostPair]:
         """Gets the hostPairs property"""
@@ -60,6 +67,7 @@ class Host(Entity):
             EntityCollection[HostPair](self.context, HostPair, ResourcePath("hostPairs", self.resource_path)),
         )
 
+    @odata(name="parentHostPairs", navigation=True)
     @property
     def parent_host_pairs(self) -> EntityCollection[HostPair]:
         """Gets the parentHostPairs property"""
@@ -68,6 +76,7 @@ class Host(Entity):
             EntityCollection[HostPair](self.context, HostPair, ResourcePath("parentHostPairs", self.resource_path)),
         )
 
+    @odata(name="passiveDns", navigation=True)
     @property
     def passive_dns(self) -> EntityCollection[PassiveDnsRecord]:
         """Gets the passiveDns property"""
@@ -78,6 +87,7 @@ class Host(Entity):
             ),
         )
 
+    @odata(name="passiveDnsReverse", navigation=True)
     @property
     def passive_dns_reverse(self) -> EntityCollection[PassiveDnsRecord]:
         """Gets the passiveDnsReverse property"""
@@ -88,6 +98,7 @@ class Host(Entity):
             ),
         )
 
+    @odata(name="ports", navigation=True)
     @property
     def ports(self) -> EntityCollection[HostPort]:
         """Gets the ports property"""
@@ -95,6 +106,7 @@ class Host(Entity):
             "ports", EntityCollection[HostPort](self.context, HostPort, ResourcePath("ports", self.resource_path))
         )
 
+    @odata(name="reputation", navigation=True)
     @property
     def reputation(self) -> HostReputation:
         """Gets the reputation property"""
@@ -102,6 +114,7 @@ class Host(Entity):
             "reputation", HostReputation(self.context, ResourcePath("reputation", self.resource_path))
         )
 
+    @odata(name="sslCertificates", navigation=True)
     @property
     def ssl_certificates(self) -> EntityCollection[HostSslCertificate]:
         """Gets the sslCertificates property"""
@@ -112,6 +125,7 @@ class Host(Entity):
             ),
         )
 
+    @odata(name="subdomains", navigation=True)
     @property
     def subdomains(self) -> EntityCollection[Subdomain]:
         """Gets the subdomains property"""
@@ -120,6 +134,7 @@ class Host(Entity):
             EntityCollection[Subdomain](self.context, Subdomain, ResourcePath("subdomains", self.resource_path)),
         )
 
+    @odata(name="trackers", navigation=True)
     @property
     def trackers(self) -> EntityCollection[HostTracker]:
         """Gets the trackers property"""
@@ -128,6 +143,7 @@ class Host(Entity):
             EntityCollection[HostTracker](self.context, HostTracker, ResourcePath("trackers", self.resource_path)),
         )
 
+    @odata(name="whois", navigation=True)
     @property
     def whois(self) -> WhoisRecord:
         """Gets the whois property"""

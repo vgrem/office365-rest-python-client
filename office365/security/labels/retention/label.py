@@ -80,21 +80,25 @@ class RetentionLabel(Entity):
         """Provides the label information for the admin. Optional."""
         return self.properties.get("descriptionForAdmins", None)
 
+    @odata(name="descriptionForUsers")
     @property
     def description_for_users(self) -> Optional[str]:
         """Provides the label information for the user. Optional."""
         return self.properties.get("descriptionForUsers", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Display name of the retention label."""
         return self.properties.get("displayName", None)
 
+    @odata(name="isInUse")
     @property
     def is_in_use(self) -> Optional[bool]:
         """Indicates whether the label is currently in use."""
         return self.properties.get("isInUse", None)
 
+    @odata(name="labelToBeApplied")
     @property
     def label_to_be_applied(self) -> Optional[str]:
         """Specifies the replacement label to apply when the original label is removed."""
@@ -125,6 +129,7 @@ class RetentionLabel(Entity):
         or last modification date."""
         return self.properties.get("retentionTrigger", RetentionTrigger.none)
 
+    @odata(name="descriptors", navigation=True)
     @property
     def descriptors(self) -> FilePlanDescriptor:
         """Represents a file plan descriptor for the retention label."""
@@ -133,7 +138,7 @@ class RetentionLabel(Entity):
             FilePlanDescriptor(self.context, ResourcePath("descriptors", self.resource_path)),
         )
 
-    @odata(name="dispositionReviewStages")
+    @odata(name="dispositionReviewStages", navigation=True)
     @property
     def disposition_review_stages(self) -> EntityCollection[DispositionReviewStage]:
         """Represents disposition review stages for the retention label."""
@@ -144,7 +149,7 @@ class RetentionLabel(Entity):
             ),
         )
 
-    @odata(name="retentionEventType")
+    @odata(name="retentionEventType", navigation=True)
     @property
     def retention_event_type(self) -> RetentionEventType:
         """Specifies the retention event type for the label."""

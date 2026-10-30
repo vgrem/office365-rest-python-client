@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.auto_auditing_configuration import AutoAuditingConfiguration
 
 
 class SettingsContainer(Entity):
+    @odata(name="autoAuditingConfiguration", navigation=True)
     @property
     def auto_auditing_configuration(self) -> AutoAuditingConfiguration:
         """Gets the autoAuditingConfiguration property"""

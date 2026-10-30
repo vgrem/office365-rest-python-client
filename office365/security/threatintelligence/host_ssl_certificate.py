@@ -29,12 +29,13 @@ class HostSslCertificate(Entity):
         """Gets the lastSeenDateTime property"""
         return self.properties.get("lastSeenDateTime", datetime.min)
 
+    @odata(name="host", navigation=True)
     @property
     def host(self) -> Host:
         """Gets the host property"""
         return self.properties.get("host", Host(self.context, ResourcePath("host", self.resource_path)))
 
-    @odata(name="sslCertificate")
+    @odata(name="sslCertificate", navigation=True)
     @property
     def ssl_certificate(self) -> SslCertificate:
         """Gets the sslCertificate property"""
@@ -46,6 +47,7 @@ class HostSslCertificate(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.HostSslCertificate"
 
+    @odata(name="ports")
     @property
     def ports(self) -> ClientValueCollection[HostSslCertificatePort]:
         """Gets the ports property"""

@@ -21,18 +21,22 @@ if TYPE_CHECKING:
 class SensitivityLabel(Entity):
     """Represents a sensitivity label that defines how to protect and handle content."""
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         return self.properties.get("name", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         return self.properties.get("displayName", None)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         return self.properties.get("description", None)
 
+    @odata(name="priority")
     @property
     def priority(self) -> Optional[int]:
         return self.properties.get("priority", None)
@@ -45,6 +49,7 @@ class SensitivityLabel(Entity):
     def enabled(self) -> Optional[bool]:
         return self.properties.get("enabled", None)
 
+    @odata(name="actionSource")
     @property
     def action_source(self) -> LabelActionSource:
         """Gets the actionSource property"""
@@ -54,41 +59,49 @@ class SensitivityLabel(Entity):
 
         return self.properties.get("actionSource", LabelActionSource.manual)
 
+    @odata(name="autoTooltip")
     @property
     def auto_tooltip(self) -> Optional[str]:
         """Gets the autoTooltip property"""
         return self.properties.get("autoTooltip", None)
 
+    @odata(name="hasProtection")
     @property
     def has_protection(self) -> Optional[bool]:
         """Gets the hasProtection property"""
         return self.properties.get("hasProtection", None)
 
+    @odata(name="isDefault")
     @property
     def is_default(self) -> Optional[bool]:
         """Gets the isDefault property"""
         return self.properties.get("isDefault", None)
 
+    @odata(name="isEndpointProtectionEnabled")
     @property
     def is_endpoint_protection_enabled(self) -> Optional[bool]:
         """Gets the isEndpointProtectionEnabled property"""
         return self.properties.get("isEndpointProtectionEnabled", None)
 
+    @odata(name="isScopedToUser")
     @property
     def is_scoped_to_user(self) -> Optional[bool]:
         """Gets the isScopedToUser property"""
         return self.properties.get("isScopedToUser", None)
 
+    @odata(name="locale")
     @property
     def locale(self) -> Optional[str]:
         """Gets the locale property"""
         return self.properties.get("locale", None)
 
+    @odata(name="toolTip")
     @property
     def tool_tip(self) -> Optional[str]:
         """Gets the toolTip property"""
         return self.properties.get("toolTip", None)
 
+    @odata(name="rights", navigation=True)
     @property
     def rights(self) -> UsageRightsIncluded:
         """Gets the rights property"""
@@ -100,6 +113,7 @@ class SensitivityLabel(Entity):
             "rights", UsageRightsIncluded(self.context, ResourcePath("rights", self.resource_path))
         )
 
+    @odata(name="sublabels", navigation=True)
     @property
     def sublabels(self) -> EntityCollection[SensitivityLabel]:
         """Gets the sublabels property"""

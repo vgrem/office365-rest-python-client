@@ -68,15 +68,18 @@ class Alert(Entity):
         """"""
         return self.properties.get("activityGroupName", None)
 
+    @odata(name="actorDisplayName")
     @property
     def actor_display_name(self) -> Optional[str]:
         """The adversary or activity group that is associated with this alert."""
         return self.properties.get("actorDisplayName", None)
 
+    @odata(name="alertPolicyId")
     @property
     def alert_policy_id(self) -> Optional[str]:
         return self.properties.get("alertPolicyId", None)
 
+    @odata(name="evidence")
     @property
     def evidence(self):
         """Collection of evidence related to the alert."""
@@ -88,31 +91,37 @@ class Alert(Entity):
         """Collection of changes for the alert."""
         return self.properties.get("historyStates", ClientValueCollection(AlertHistoryState))
 
+    @odata(name="alertWebUrl")
     @property
     def alert_web_url(self) -> Optional[str]:
         """Gets the alertWebUrl property"""
         return self.properties.get("alertWebUrl", None)
 
+    @odata(name="assignedTo")
     @property
     def assigned_to(self) -> Optional[str]:
         """Gets the assignedTo property"""
         return self.properties.get("assignedTo", None)
 
+    @odata(name="categories")
     @property
     def categories(self) -> StringCollection:
         """Gets the categories property"""
         return self.properties.get("categories", StringCollection(None))
 
+    @odata(name="category")
     @property
     def category(self) -> Optional[str]:
         """Gets the category property"""
         return self.properties.get("category", None)
 
+    @odata(name="classification")
     @property
     def classification(self) -> AlertClassification:
         """Gets the classification property"""
         return self.properties.get("classification", AlertClassification.unknown)
 
+    @odata(name="comments")
     @property
     def comments(self) -> ClientValueCollection[AlertComment]:
         """Gets the comments property"""
@@ -124,6 +133,7 @@ class Alert(Entity):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
@@ -135,11 +145,13 @@ class Alert(Entity):
         """Gets the detectionSource property"""
         return self.properties.get("detectionSource", DetectionSource.unknown)
 
+    @odata(name="detectorId")
     @property
     def detector_id(self) -> Optional[str]:
         """Gets the detectorId property"""
         return self.properties.get("detectorId", None)
 
+    @odata(name="determination")
     @property
     def determination(self) -> AlertDetermination:
         """Gets the determination property"""
@@ -151,11 +163,13 @@ class Alert(Entity):
         """Gets the firstActivityDateTime property"""
         return self.properties.get("firstActivityDateTime", datetime.min)
 
+    @odata(name="incidentId")
     @property
     def incident_id(self) -> Optional[str]:
         """Gets the incidentId property"""
         return self.properties.get("incidentId", None)
 
+    @odata(name="incidentWebUrl")
     @property
     def incident_web_url(self) -> Optional[str]:
         """Gets the incidentWebUrl property"""
@@ -167,6 +181,7 @@ class Alert(Entity):
         """Gets the lastActivityDateTime property"""
         return self.properties.get("lastActivityDateTime", datetime.min)
 
+    @odata(name="lastUpdateDateTime")
     @property
     def last_update_date_time(self) -> Optional[datetime]:
         """Gets the lastUpdateDateTime property"""
@@ -178,16 +193,19 @@ class Alert(Entity):
         """Gets the mitreTechniques property"""
         return self.properties.get("mitreTechniques", StringCollection(None))
 
+    @odata(name="productName")
     @property
     def product_name(self) -> Optional[str]:
         """Gets the productName property"""
         return self.properties.get("productName", None)
 
+    @odata(name="providerAlertId")
     @property
     def provider_alert_id(self) -> Optional[str]:
         """Gets the providerAlertId property"""
         return self.properties.get("providerAlertId", None)
 
+    @odata(name="recommendedActions")
     @property
     def recommended_actions(self) -> Optional[str]:
         """Gets the recommendedActions property"""
@@ -199,36 +217,43 @@ class Alert(Entity):
         """Gets the resolvedDateTime property"""
         return self.properties.get("resolvedDateTime", datetime.min)
 
+    @odata(name="severity")
     @property
     def severity(self) -> AlertSeverity:
         """Gets the severity property"""
         return self.properties.get("severity", AlertSeverity.unknown)
 
+    @odata(name="status")
     @property
     def status(self) -> AlertStatus:
         """Gets the status property"""
         return self.properties.get("status", AlertStatus.unknown)
 
+    @odata(name="systemTags")
     @property
     def system_tags(self) -> StringCollection:
         """Gets the systemTags property"""
         return self.properties.get("systemTags", StringCollection())
 
+    @odata(name="tenantId")
     @property
     def tenant_id(self) -> Optional[str]:
         """Gets the tenantId property"""
         return self.properties.get("tenantId", None)
 
+    @odata(name="threatDisplayName")
     @property
     def threat_display_name(self) -> Optional[str]:
         """Gets the threatDisplayName property"""
         return self.properties.get("threatDisplayName", None)
 
+    @odata(name="threatFamilyName")
     @property
     def threat_family_name(self) -> Optional[str]:
         """Gets the threatFamilyName property"""
         return self.properties.get("threatFamilyName", None)
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """Gets the title property"""
@@ -238,6 +263,7 @@ class Alert(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.Alert"
 
+    @odata(name="additionalData")
     @property
     def additional_data(self) -> Dictionary:
         """Gets the additionalData property"""
@@ -245,6 +271,7 @@ class Alert(Entity):
 
         return self.properties.get("additionalData", Dictionary())
 
+    @odata(name="customDetails")
     @property
     def custom_details(self) -> Dictionary:
         """Gets the customDetails property"""
@@ -252,6 +279,7 @@ class Alert(Entity):
 
         return self.properties.get("customDetails", Dictionary())
 
+    @odata(name="investigationState")
     @property
     def investigation_state(self) -> InvestigationState:
         """Gets the investigationState property"""
@@ -259,6 +287,7 @@ class Alert(Entity):
 
         return self.properties.get("investigationState", InvestigationState.unknown)
 
+    @odata(name="serviceSource")
     @property
     def service_source(self) -> ServiceSource:
         """Gets the serviceSource property"""

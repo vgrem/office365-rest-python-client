@@ -31,11 +31,13 @@ class Incident(Entity):
     alerts and their associated information into an incident.
     """
 
+    @odata(name="assignedTo")
     @property
     def assigned_to(self) -> Optional[str]:
         """Owner of the incident, or null if no owner is assigned. Free editable text."""
         return self.properties.get("assignedTo", None)
 
+    @odata(name="classification")
     @property
     def classification(self) -> Optional[str]:
         """The specification for the incident.
@@ -43,6 +45,7 @@ class Incident(Entity):
         """
         return self.properties.get("classification", None)
 
+    @odata(name="comments")
     @property
     def comments(self):
         """Array of comments created by the Security Operations (SecOps) team when the incident is managed."""
@@ -54,6 +57,7 @@ class Incident(Entity):
         """Time when the incident was first created."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="alerts", navigation=True)
     @property
     def alerts(self) -> EntityCollection[Alert]:
         """The list of related alerts. Supports $expand."""
@@ -66,16 +70,19 @@ class Incident(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.incident"
 
+    @odata(name="customTags")
     @property
     def custom_tags(self) -> StringCollection:
         """Gets the customTags property"""
         return self.properties.get("customTags", StringCollection())
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="determination")
     @property
     def determination(self) -> AlertDetermination:
         """Gets the determination property"""
@@ -83,41 +90,49 @@ class Incident(Entity):
 
         return self.properties.get("determination", AlertDetermination.unknown)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="incidentWebUrl")
     @property
     def incident_web_url(self) -> Optional[str]:
         """Gets the incidentWebUrl property"""
         return self.properties.get("incidentWebUrl", None)
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> Optional[str]:
         """Gets the lastModifiedBy property"""
         return self.properties.get("lastModifiedBy", None)
 
+    @odata(name="lastUpdateDateTime")
     @property
     def last_update_date_time(self) -> Optional[datetime]:
         """Gets the lastUpdateDateTime property"""
         return self.properties.get("lastUpdateDateTime", datetime.min)
 
+    @odata(name="priorityScore")
     @property
     def priority_score(self) -> Optional[int]:
         """Gets the priorityScore property"""
         return self.properties.get("priorityScore", None)
 
+    @odata(name="redirectIncidentId")
     @property
     def redirect_incident_id(self) -> Optional[str]:
         """Gets the redirectIncidentId property"""
         return self.properties.get("redirectIncidentId", None)
 
+    @odata(name="resolvingComment")
     @property
     def resolving_comment(self) -> Optional[str]:
         """Gets the resolvingComment property"""
         return self.properties.get("resolvingComment", None)
 
+    @odata(name="severity")
     @property
     def severity(self) -> AlertSeverity:
         """Gets the severity property"""
@@ -125,6 +140,7 @@ class Incident(Entity):
 
         return self.properties.get("severity", AlertSeverity.unknown)
 
+    @odata(name="status")
     @property
     def status(self) -> IncidentStatus:
         """Gets the status property"""
@@ -132,16 +148,19 @@ class Incident(Entity):
 
         return self.properties.get("status", IncidentStatus.active)
 
+    @odata(name="summary")
     @property
     def summary(self) -> Optional[str]:
         """Gets the summary property"""
         return self.properties.get("summary", None)
 
+    @odata(name="systemTags")
     @property
     def system_tags(self) -> StringCollection:
         """Gets the systemTags property"""
         return self.properties.get("systemTags", StringCollection())
 
+    @odata(name="tenantId")
     @property
     def tenant_id(self) -> Optional[str]:
         """Gets the tenantId property"""

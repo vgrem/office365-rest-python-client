@@ -18,7 +18,7 @@ class LabelsRoot(Entity):
     the retention label and provide additional options to better manage and organize the content.
     """
 
-    @odata(name="retentionLabels")
+    @odata(name="retentionLabels", navigation=True)
     @property
     def retention_labels(self) -> RetentionLabelCollection:
         """Represents how customers can manage their data, whether and for how long to retain or delete it."""
@@ -27,6 +27,7 @@ class LabelsRoot(Entity):
             RetentionLabelCollection(self.context, ResourcePath("retentionLabels", self.resource_path)),
         )
 
+    @odata(name="authorities", navigation=True)
     @property
     def authorities(self) -> EntityCollection[AuthorityTemplate]:
         """Gets the authorities property"""
@@ -37,6 +38,7 @@ class LabelsRoot(Entity):
             ),
         )
 
+    @odata(name="categories", navigation=True)
     @property
     def categories(self) -> EntityCollection[CategoryTemplate]:
         """Gets the categories property"""
@@ -47,6 +49,7 @@ class LabelsRoot(Entity):
             ),
         )
 
+    @odata(name="citations", navigation=True)
     @property
     def citations(self) -> EntityCollection[CitationTemplate]:
         """Gets the citations property"""
@@ -57,6 +60,7 @@ class LabelsRoot(Entity):
             ),
         )
 
+    @odata(name="departments", navigation=True)
     @property
     def departments(self) -> EntityCollection[DepartmentTemplate]:
         """Gets the departments property"""
@@ -67,7 +71,7 @@ class LabelsRoot(Entity):
             ),
         )
 
-    @odata(name="filePlanReferences")
+    @odata(name="filePlanReferences", navigation=True)
     @property
     def file_plan_references(self) -> EntityCollection[FilePlanReferenceTemplate]:
         """Gets the filePlanReferences property"""

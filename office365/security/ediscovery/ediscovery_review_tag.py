@@ -3,15 +3,18 @@ from __future__ import annotations
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.childselectability import ChildSelectability
 
 
 class EdiscoveryReviewTag(Entity):
+    @odata(name="childSelectability")
     @property
     def child_selectability(self) -> ChildSelectability:
         """Gets the childSelectability property"""
         return self.properties.get("childSelectability", ChildSelectability.One)
 
+    @odata(name="childTags", navigation=True)
     @property
     def child_tags(self) -> EntityCollection[EdiscoveryReviewTag]:
         """Gets the childTags property"""
@@ -22,6 +25,7 @@ class EdiscoveryReviewTag(Entity):
             ),
         )
 
+    @odata(name="parent", navigation=True)
     @property
     def parent(self) -> EdiscoveryReviewTag:
         """Gets the parent property"""

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.search.data_source import DataSource
 
 if TYPE_CHECKING:
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 
 class EdiscoveryNoncustodialDataSource(Entity):
+    @odata(name="dataSource", navigation=True)
     @property
     def data_source(self) -> DataSource:
         """Gets the dataSource property"""
@@ -24,6 +26,7 @@ class EdiscoveryNoncustodialDataSource(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoveryNoncustodialDataSource"
 
+    @odata(name="lastIndexOperation", navigation=True)
     @property
     def last_index_operation(self) -> EdiscoveryIndexOperation:
         """Gets the lastIndexOperation property"""

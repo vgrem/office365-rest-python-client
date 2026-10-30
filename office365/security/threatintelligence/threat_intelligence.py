@@ -1,6 +1,7 @@
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.article import Article
 from office365.security.audit.whois_history_record import WhoisHistoryRecord
 from office365.security.audit.whois_record import WhoisRecord
@@ -34,6 +35,7 @@ class ThreatIntelligence(Entity):
     cookies, components, and trackers.
     """
 
+    @odata(name="articleIndicators", navigation=True)
     @property
     def article_indicators(self) -> EntityCollection[ArticleIndicator]:
         """Gets the articleIndicators property"""
@@ -44,6 +46,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="articles", navigation=True)
     @property
     def articles(self) -> EntityCollection[Article]:
         """Gets the articles property"""
@@ -51,6 +54,7 @@ class ThreatIntelligence(Entity):
             "articles", EntityCollection[Article](self.context, Article, ResourcePath("articles", self.resource_path))
         )
 
+    @odata(name="hostComponents", navigation=True)
     @property
     def host_components(self) -> EntityCollection[HostComponent]:
         """Gets the hostComponents property"""
@@ -61,6 +65,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="hostCookies", navigation=True)
     @property
     def host_cookies(self) -> EntityCollection[HostCookie]:
         """Gets the hostCookies property"""
@@ -69,6 +74,7 @@ class ThreatIntelligence(Entity):
             EntityCollection[HostCookie](self.context, HostCookie, ResourcePath("hostCookies", self.resource_path)),
         )
 
+    @odata(name="hostPairs", navigation=True)
     @property
     def host_pairs(self) -> EntityCollection[HostPair]:
         """Gets the hostPairs property"""
@@ -77,6 +83,7 @@ class ThreatIntelligence(Entity):
             EntityCollection[HostPair](self.context, HostPair, ResourcePath("hostPairs", self.resource_path)),
         )
 
+    @odata(name="hostPorts", navigation=True)
     @property
     def host_ports(self) -> EntityCollection[HostPort]:
         """Gets the hostPorts property"""
@@ -85,6 +92,7 @@ class ThreatIntelligence(Entity):
             EntityCollection[HostPort](self.context, HostPort, ResourcePath("hostPorts", self.resource_path)),
         )
 
+    @odata(name="hosts", navigation=True)
     @property
     def hosts(self) -> EntityCollection[Host]:
         """Gets the hosts property"""
@@ -92,6 +100,7 @@ class ThreatIntelligence(Entity):
             "hosts", EntityCollection[Host](self.context, Host, ResourcePath("hosts", self.resource_path))
         )
 
+    @odata(name="hostSslCertificates", navigation=True)
     @property
     def host_ssl_certificates(self) -> EntityCollection[HostSslCertificate]:
         """Gets the hostSslCertificates property"""
@@ -102,6 +111,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="hostTrackers", navigation=True)
     @property
     def host_trackers(self) -> EntityCollection[HostTracker]:
         """Gets the hostTrackers property"""
@@ -110,6 +120,7 @@ class ThreatIntelligence(Entity):
             EntityCollection[HostTracker](self.context, HostTracker, ResourcePath("hostTrackers", self.resource_path)),
         )
 
+    @odata(name="intelligenceProfileIndicators", navigation=True)
     @property
     def intelligence_profile_indicators(self) -> EntityCollection[IntelligenceProfileIndicator]:
         """Gets the intelligenceProfileIndicators property"""
@@ -122,6 +133,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="intelProfiles", navigation=True)
     @property
     def intel_profiles(self) -> EntityCollection[IntelligenceProfile]:
         """Gets the intelProfiles property"""
@@ -132,6 +144,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="passiveDnsRecords", navigation=True)
     @property
     def passive_dns_records(self) -> EntityCollection[PassiveDnsRecord]:
         """Gets the passiveDnsRecords property"""
@@ -142,6 +155,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="sslCertificates", navigation=True)
     @property
     def ssl_certificates(self) -> EntityCollection[SslCertificate]:
         """Gets the sslCertificates property"""
@@ -152,6 +166,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="subdomains", navigation=True)
     @property
     def subdomains(self) -> EntityCollection[Subdomain]:
         """Gets the subdomains property"""
@@ -160,6 +175,7 @@ class ThreatIntelligence(Entity):
             EntityCollection[Subdomain](self.context, Subdomain, ResourcePath("subdomains", self.resource_path)),
         )
 
+    @odata(name="vulnerabilities", navigation=True)
     @property
     def vulnerabilities(self) -> EntityCollection[Vulnerability]:
         """Gets the vulnerabilities property"""
@@ -170,6 +186,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="whoisHistoryRecords", navigation=True)
     @property
     def whois_history_records(self) -> EntityCollection[WhoisHistoryRecord]:
         """Gets the whoisHistoryRecords property"""
@@ -180,6 +197,7 @@ class ThreatIntelligence(Entity):
             ),
         )
 
+    @odata(name="whoisRecords", navigation=True)
     @property
     def whois_records(self) -> EntityCollection[WhoisRecord]:
         """Gets the whoisRecords property"""

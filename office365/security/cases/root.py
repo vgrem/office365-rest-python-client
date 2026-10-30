@@ -11,7 +11,7 @@ from office365.security.quotas import EDISCOVERY_BUDGET
 class CasesRoot(Entity):
     """"""
 
-    @odata(name="ediscoveryCases")
+    @odata(name="ediscoveryCases", navigation=True)
     @property
     def ediscovery_cases(self) -> EntityCollection[EdiscoveryCase]:
         return self.properties.get(

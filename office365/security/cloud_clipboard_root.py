@@ -5,12 +5,14 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.security.cloud_clipboard_item import CloudClipboardItem
 
 
 class CloudClipboardRoot(Entity):
+    @odata(name="items", navigation=True)
     @property
     def items(self) -> EntityCollection[CloudClipboardItem]:
         """Gets the items property"""

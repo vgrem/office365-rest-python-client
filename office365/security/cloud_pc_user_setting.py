@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointsetting import (
@@ -17,31 +18,37 @@ if TYPE_CHECKING:
 
 
 class CloudPcUserSetting(Entity):
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="localAdminEnabled")
     @property
     def local_admin_enabled(self) -> Optional[bool]:
         """Gets the localAdminEnabled property"""
         return self.properties.get("localAdminEnabled", None)
 
+    @odata(name="resetEnabled")
     @property
     def reset_enabled(self) -> Optional[bool]:
         """Gets the resetEnabled property"""
         return self.properties.get("resetEnabled", None)
 
+    @odata(name="restorePointSetting")
     @property
     def restore_point_setting(self) -> CloudPcRestorePointSetting:
         """Gets the restorePointSetting property"""
@@ -51,6 +58,7 @@ class CloudPcUserSetting(Entity):
 
         return self.properties.get("restorePointSetting", CloudPcRestorePointSetting())
 
+    @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[CloudPcUserSettingAssignment]:
         """Gets the assignments property"""

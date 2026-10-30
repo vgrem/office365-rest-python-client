@@ -30,6 +30,7 @@ class EdiscoveryCase(Entity):
     """In the context of eDiscovery, contains custodians, searches, review sets. For details, see Overview of
     Microsoft Purview eDiscovery (Premium)."""
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[CaseOperation]:
         """Returns a list of case caseOperation objects for this case."""
@@ -37,21 +38,25 @@ class EdiscoveryCase(Entity):
             "operations", EntityCollection(self.context, CaseOperation, ResourcePath("operations", self.resource_path))
         )
 
+    @odata(name="closedBy")
     @property
     def closed_by(self) -> IdentitySet:
         """Gets the closedBy property"""
         return self.properties.get("closedBy", IdentitySet())
 
+    @odata(name="closedDateTime")
     @property
     def closed_date_time(self) -> Optional[datetime]:
         """Gets the closedDateTime property"""
         return self.properties.get("closedDateTime", datetime.min)
 
+    @odata(name="externalId")
     @property
     def external_id(self) -> Optional[str]:
         """Gets the externalId property"""
         return self.properties.get("externalId", None)
 
+    @odata(name="caseMembers", navigation=True)
     @property
     def case_members(self) -> EntityCollection[EdiscoveryCaseMember]:
         """Gets the caseMembers property"""
@@ -62,6 +67,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
+    @odata(name="custodians", navigation=True)
     @property
     def custodians(self) -> EntityCollection[EdiscoveryCustodian]:
         """Gets the custodians property"""
@@ -72,7 +78,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
-    @odata(name="noncustodialDataSources")
+    @odata(name="noncustodialDataSources", navigation=True)
     @property
     def noncustodial_data_sources(self) -> EntityCollection[EdiscoveryNoncustodialDataSource]:
         """Gets the noncustodialDataSources property"""
@@ -85,7 +91,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
-    @odata(name="reviewSets")
+    @odata(name="reviewSets", navigation=True)
     @property
     def review_sets(self) -> EntityCollection[EdiscoveryReviewSet]:
         """Gets the reviewSets property"""
@@ -96,6 +102,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
+    @odata(name="searches", navigation=True)
     @property
     def searches(self) -> EntityCollection[EdiscoverySearch]:
         """Gets the searches property"""
@@ -110,6 +117,7 @@ class EdiscoveryCase(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoveryCase"
 
+    @odata(name="settings", navigation=True)
     @property
     def settings(self) -> EdiscoveryCaseSettings:
         """Gets the settings property"""
@@ -121,6 +129,7 @@ class EdiscoveryCase(Entity):
             "settings", EdiscoveryCaseSettings(self.context, ResourcePath("settings", self.resource_path))
         )
 
+    @odata(name="tags", navigation=True)
     @property
     def tags(self) -> EntityCollection[EdiscoveryReviewTag]:
         """Gets the tags property"""

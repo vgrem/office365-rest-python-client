@@ -3,14 +3,17 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class CloudFlareWebApplicationFirewallProvider(Entity):
+    @odata(name="apiToken")
     @property
     def api_token(self) -> Optional[str]:
         """Gets the apiToken property"""
         return self.properties.get("apiToken", None)
 
+    @odata(name="zoneId")
     @property
     def zone_id(self) -> Optional[str]:
         """Gets the zoneId property"""

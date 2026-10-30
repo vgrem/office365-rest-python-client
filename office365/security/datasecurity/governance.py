@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class TenantDataSecurityAndGovernance(Entity):
     """Tenant-level container for data security and governance settings."""
 
-    @odata(name="sensitivityLabels")
+    @odata(name="sensitivityLabels", navigation=True)
     @property
     def sensitivity_labels(self) -> EntityCollection[SensitivityLabel]:
         return self.properties.get(
@@ -25,6 +25,7 @@ class TenantDataSecurityAndGovernance(Entity):
             EntityCollection(self.context, SensitivityLabel, ResourcePath("sensitivityLabels", self.resource_path)),
         )
 
+    @odata(name="protectionScopes", navigation=True)
     @property
     def protection_scopes(self) -> TenantProtectionScopeContainer:
         """Gets the protectionScopes property"""

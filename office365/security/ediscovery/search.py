@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.ediscovery.noncustodial_data_source import (
     EdiscoveryNoncustodialDataSource,
 )
@@ -21,11 +22,13 @@ if TYPE_CHECKING:
 
 
 class EdiscoverySearch(Entity):
+    @odata(name="dataSourceScopes")
     @property
     def data_source_scopes(self) -> DataSourceScopes:
         """Gets the dataSourceScopes property"""
         return self.properties.get("dataSourceScopes", DataSourceScopes.none)
 
+    @odata(name="additionalSources", navigation=True)
     @property
     def additional_sources(self) -> EntityCollection[DataSource]:
         """Gets the additionalSources property"""
@@ -36,6 +39,7 @@ class EdiscoverySearch(Entity):
             ),
         )
 
+    @odata(name="addToReviewSetOperation", navigation=True)
     @property
     def add_to_review_set_operation(self) -> EdiscoveryAddToReviewSetOperation:
         """Gets the addToReviewSetOperation property"""
@@ -44,6 +48,7 @@ class EdiscoverySearch(Entity):
             EdiscoveryAddToReviewSetOperation(self.context, ResourcePath("addToReviewSetOperation", self.resource_path)),
         )
 
+    @odata(name="custodianSources", navigation=True)
     @property
     def custodian_sources(self) -> EntityCollection[DataSource]:
         """Gets the custodianSources property"""
@@ -52,6 +57,7 @@ class EdiscoverySearch(Entity):
             EntityCollection[DataSource](self.context, DataSource, ResourcePath("custodianSources", self.resource_path)),
         )
 
+    @odata(name="noncustodialSources", navigation=True)
     @property
     def noncustodial_sources(self) -> EntityCollection[EdiscoveryNoncustodialDataSource]:
         """Gets the noncustodialSources property"""
@@ -66,6 +72,7 @@ class EdiscoverySearch(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoverySearch"
 
+    @odata(name="lastEstimateStatisticsOperation", navigation=True)
     @property
     def last_estimate_statistics_operation(self) -> EdiscoveryEstimateOperation:
         """Gets the lastEstimateStatisticsOperation property"""

@@ -27,6 +27,7 @@ class SimulationAutomation(Entity):
         """Identity of the user who created the attack simulation automation."""
         return self.properties.get("createdBy", EmailIdentity())
 
+    @odata(name="runs", navigation=True)
     @property
     def runs(self) -> EntityCollection[SimulationAutomationRun]:
         """A collection of simulation automation runs."""
@@ -39,21 +40,25 @@ class SimulationAutomation(Entity):
             ),
         )
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> EmailIdentity:
         """Gets the lastModifiedBy property"""
@@ -61,21 +66,25 @@ class SimulationAutomation(Entity):
 
         return self.properties.get("lastModifiedBy", EmailIdentity())
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="lastRunDateTime")
     @property
     def last_run_date_time(self) -> Optional[datetime]:
         """Gets the lastRunDateTime property"""
         return self.properties.get("lastRunDateTime", datetime.min)
 
+    @odata(name="nextRunDateTime")
     @property
     def next_run_date_time(self) -> Optional[datetime]:
         """Gets the nextRunDateTime property"""
         return self.properties.get("nextRunDateTime", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> SimulationAutomationStatus:
         """Gets the status property"""

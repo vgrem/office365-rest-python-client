@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.security.antispam_directionality import (
@@ -43,121 +44,145 @@ if TYPE_CHECKING:
 
 
 class AnalyzedEmail(Entity):
+    @odata(name="alertIds")
     @property
     def alert_ids(self) -> StringCollection:
         """Gets the alertIds property"""
         return self.properties.get("alertIds", StringCollection(None))
 
+    @odata(name="bulkComplaintLevel")
     @property
     def bulk_complaint_level(self) -> Optional[str]:
         """Gets the bulkComplaintLevel property"""
         return self.properties.get("bulkComplaintLevel", None)
 
+    @odata(name="clientType")
     @property
     def client_type(self) -> Optional[str]:
         """Gets the clientType property"""
         return self.properties.get("clientType", None)
 
+    @odata(name="contexts")
     @property
     def contexts(self) -> StringCollection:
         """Gets the contexts property"""
         return self.properties.get("contexts", StringCollection(None))
 
+    @odata(name="detectionMethods")
     @property
     def detection_methods(self) -> StringCollection:
         """Gets the detectionMethods property"""
         return self.properties.get("detectionMethods", StringCollection(None))
 
+    @odata(name="distributionList")
     @property
     def distribution_list(self) -> Optional[str]:
         """Gets the distributionList property"""
         return self.properties.get("distributionList", None)
 
+    @odata(name="emailClusterId")
     @property
     def email_cluster_id(self) -> Optional[str]:
         """Gets the emailClusterId property"""
         return self.properties.get("emailClusterId", None)
 
+    @odata(name="forwardingDetail")
     @property
     def forwarding_detail(self) -> Optional[str]:
         """Gets the forwardingDetail property"""
         return self.properties.get("forwardingDetail", None)
 
+    @odata(name="inboundConnectorFormattedName")
     @property
     def inbound_connector_formatted_name(self) -> Optional[str]:
         """Gets the inboundConnectorFormattedName property"""
         return self.properties.get("inboundConnectorFormattedName", None)
 
+    @odata(name="internetMessageId")
     @property
     def internet_message_id(self) -> Optional[str]:
         """Gets the internetMessageId property"""
         return self.properties.get("internetMessageId", None)
 
+    @odata(name="language")
     @property
     def language(self) -> Optional[str]:
         """Gets the language property"""
         return self.properties.get("language", None)
 
+    @odata(name="loggedDateTime")
     @property
     def logged_date_time(self) -> Optional[datetime]:
         """Gets the loggedDateTime property"""
         return self.properties.get("loggedDateTime", datetime.min)
 
+    @odata(name="networkMessageId")
     @property
     def network_message_id(self) -> Optional[str]:
         """Gets the networkMessageId property"""
         return self.properties.get("networkMessageId", None)
 
+    @odata(name="overrideSources")
     @property
     def override_sources(self) -> StringCollection:
         """Gets the overrideSources property"""
         return self.properties.get("overrideSources", StringCollection(None))
 
+    @odata(name="phishConfidenceLevel")
     @property
     def phish_confidence_level(self) -> Optional[str]:
         """Gets the phishConfidenceLevel property"""
         return self.properties.get("phishConfidenceLevel", None)
 
+    @odata(name="policy")
     @property
     def policy(self) -> Optional[str]:
         """Gets the policy property"""
         return self.properties.get("policy", None)
 
+    @odata(name="policyAction")
     @property
     def policy_action(self) -> Optional[str]:
         """Gets the policyAction property"""
         return self.properties.get("policyAction", None)
 
+    @odata(name="policyType")
     @property
     def policy_type(self) -> Optional[str]:
         """Gets the policyType property"""
         return self.properties.get("policyType", None)
 
+    @odata(name="primaryOverrideSource")
     @property
     def primary_override_source(self) -> Optional[str]:
         """Gets the primaryOverrideSource property"""
         return self.properties.get("primaryOverrideSource", None)
 
+    @odata(name="recipientEmailAddress")
     @property
     def recipient_email_address(self) -> Optional[str]:
         """Gets the recipientEmailAddress property"""
         return self.properties.get("recipientEmailAddress", None)
 
+    @odata(name="returnPath")
     @property
     def return_path(self) -> Optional[str]:
         """Gets the returnPath property"""
         return self.properties.get("returnPath", None)
 
+    @odata(name="sizeInBytes")
     @property
     def size_in_bytes(self) -> Optional[int]:
         """Gets the sizeInBytes property"""
         return self.properties.get("sizeInBytes", None)
 
+    @odata(name="spamConfidenceLevel")
     @property
     def spam_confidence_level(self) -> Optional[str]:
         """Gets the spamConfidenceLevel property"""
         return self.properties.get("spamConfidenceLevel", None)
 
+    @odata(name="subject")
     @property
     def subject(self) -> Optional[str]:
         """Gets the subject property"""
@@ -167,6 +192,7 @@ class AnalyzedEmail(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.AnalyzedEmail"
 
+    @odata(name="attachments")
     @property
     def attachments(self) -> ClientValueCollection[AnalyzedEmailAttachment]:
         """Gets the attachments property"""
@@ -178,6 +204,7 @@ class AnalyzedEmail(Entity):
             "attachments", ClientValueCollection[AnalyzedEmailAttachment](AnalyzedEmailAttachment)
         )
 
+    @odata(name="authenticationDetails")
     @property
     def authentication_details(self) -> AnalyzedEmailAuthenticationDetail:
         """Gets the authenticationDetails property"""
@@ -187,6 +214,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("authenticationDetails", AnalyzedEmailAuthenticationDetail())
 
+    @odata(name="directionality")
     @property
     def directionality(self) -> AntispamDirectionality:
         """Gets the directionality property"""
@@ -196,6 +224,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("directionality", AntispamDirectionality.unknown)
 
+    @odata(name="dlpRules")
     @property
     def dlp_rules(self) -> ClientValueCollection[AnalyzedEmailDlpRuleInfo]:
         """Gets the dlpRules property"""
@@ -205,6 +234,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("dlpRules", ClientValueCollection[AnalyzedEmailDlpRuleInfo](AnalyzedEmailDlpRuleInfo))
 
+    @odata(name="exchangeTransportRules")
     @property
     def exchange_transport_rules(self) -> ClientValueCollection[AnalyzedEmailExchangeTransportRuleInfo]:
         """Gets the exchangeTransportRules property"""
@@ -217,6 +247,7 @@ class AnalyzedEmail(Entity):
             ClientValueCollection[AnalyzedEmailExchangeTransportRuleInfo](AnalyzedEmailExchangeTransportRuleInfo),
         )
 
+    @odata(name="latestDelivery")
     @property
     def latest_delivery(self) -> AnalyzedEmailDeliveryDetail:
         """Gets the latestDelivery property"""
@@ -226,6 +257,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("latestDelivery", AnalyzedEmailDeliveryDetail())
 
+    @odata(name="originalDelivery")
     @property
     def original_delivery(self) -> AnalyzedEmailDeliveryDetail:
         """Gets the originalDelivery property"""
@@ -235,6 +267,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("originalDelivery", AnalyzedEmailDeliveryDetail())
 
+    @odata(name="recipientDetail")
     @property
     def recipient_detail(self) -> AnalyzedEmailRecipientDetail:
         """Gets the recipientDetail property"""
@@ -244,6 +277,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("recipientDetail", AnalyzedEmailRecipientDetail())
 
+    @odata(name="senderDetail")
     @property
     def sender_detail(self) -> AnalyzedEmailSenderDetail:
         """Gets the senderDetail property"""
@@ -253,6 +287,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("senderDetail", AnalyzedEmailSenderDetail())
 
+    @odata(name="threatDetectionDetails")
     @property
     def threat_detection_details(self) -> ClientValueCollection[ThreatDetectionDetail]:
         """Gets the threatDetectionDetails property"""
@@ -264,6 +299,7 @@ class AnalyzedEmail(Entity):
             "threatDetectionDetails", ClientValueCollection[ThreatDetectionDetail](ThreatDetectionDetail)
         )
 
+    @odata(name="threatTypes")
     @property
     def threat_types(self) -> ClientValueCollection[ThreatType]:
         """Gets the threatTypes property"""
@@ -271,6 +307,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("threatTypes", ClientValueCollection[ThreatType](ThreatType))
 
+    @odata(name="timelineEvents")
     @property
     def timeline_events(self) -> ClientValueCollection[TimelineEvent]:
         """Gets the timelineEvents property"""
@@ -278,6 +315,7 @@ class AnalyzedEmail(Entity):
 
         return self.properties.get("timelineEvents", ClientValueCollection[TimelineEvent](TimelineEvent))
 
+    @odata(name="urls")
     @property
     def urls(self) -> ClientValueCollection[AnalyzedEmailUrl]:
         """Gets the urls property"""

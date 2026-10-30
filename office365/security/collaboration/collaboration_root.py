@@ -3,10 +3,12 @@ from __future__ import annotations
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.collaboration.analyzed_email import AnalyzedEmail
 
 
 class CollaborationRoot(Entity):
+    @odata(name="analyzedEmails", navigation=True)
     @property
     def analyzed_emails(self) -> EntityCollection[AnalyzedEmail]:
         """Gets the analyzedEmails property"""

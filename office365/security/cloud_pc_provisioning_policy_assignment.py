@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.users.user import User
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class CloudPcProvisioningPolicyAssignment(Entity):
+    @odata(name="target")
     @property
     def target(self) -> CloudPcManagementAssignmentTarget:
         """Gets the target property"""
@@ -23,6 +25,7 @@ class CloudPcProvisioningPolicyAssignment(Entity):
 
         return self.properties.get("target", CloudPcManagementAssignmentTarget())
 
+    @odata(name="assignedUsers", navigation=True)
     @property
     def assigned_users(self) -> EntityCollection[User]:
         """Gets the assignedUsers property"""

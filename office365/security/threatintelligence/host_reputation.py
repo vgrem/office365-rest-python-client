@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.security.threatintelligence.host_reputation_classification import (
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class HostReputation(Entity):
+    @odata(name="score")
     @property
     def score(self) -> Optional[int]:
         """Gets the score property"""
@@ -24,6 +26,7 @@ class HostReputation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.HostReputation"
 
+    @odata(name="classification")
     @property
     def classification(self) -> HostReputationClassification:
         """Gets the classification property"""
@@ -33,6 +36,7 @@ class HostReputation(Entity):
 
         return self.properties.get("classification", HostReputationClassification.unknown)
 
+    @odata(name="rules")
     @property
     def rules(self) -> ClientValueCollection[HostReputationRule]:
         """Gets the rules property"""

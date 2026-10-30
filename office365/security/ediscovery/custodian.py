@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.security.ediscovery.ediscovery_index_operation import (
@@ -17,11 +18,13 @@ if TYPE_CHECKING:
 
 
 class EdiscoveryCustodian(Entity):
+    @odata(name="acknowledgedDateTime")
     @property
     def acknowledged_date_time(self) -> Optional[datetime]:
         """Gets the acknowledgedDateTime property"""
         return self.properties.get("acknowledgedDateTime", datetime.min)
 
+    @odata(name="email")
     @property
     def email(self) -> Optional[str]:
         """Gets the email property"""
@@ -31,6 +34,7 @@ class EdiscoveryCustodian(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoveryCustodian"
 
+    @odata(name="lastIndexOperation", navigation=True)
     @property
     def last_index_operation(self) -> EdiscoveryIndexOperation:
         """Gets the lastIndexOperation property"""
@@ -43,6 +47,7 @@ class EdiscoveryCustodian(Entity):
             EdiscoveryIndexOperation(self.context, ResourcePath("lastIndexOperation", self.resource_path)),
         )
 
+    @odata(name="siteSources", navigation=True)
     @property
     def site_sources(self) -> EntityCollection[SiteSource]:
         """Gets the siteSources property"""
@@ -53,6 +58,7 @@ class EdiscoveryCustodian(Entity):
             EntityCollection[SiteSource](self.context, SiteSource, ResourcePath("siteSources", self.resource_path)),
         )
 
+    @odata(name="unifiedGroupSources", navigation=True)
     @property
     def unified_group_sources(self) -> EntityCollection[UnifiedGroupSource]:
         """Gets the unifiedGroupSources property"""
@@ -65,6 +71,7 @@ class EdiscoveryCustodian(Entity):
             ),
         )
 
+    @odata(name="userSources", navigation=True)
     @property
     def user_sources(self) -> EntityCollection[UserSource]:
         """Gets the userSources property"""

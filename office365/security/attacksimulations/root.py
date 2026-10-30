@@ -26,7 +26,7 @@ class AttackSimulationRoot(Entity):
     """Represents an abstract type that provides the ability to launch a realistic phishing attack that organizations
     can learn from."""
 
-    @odata(name="landingPages")
+    @odata(name="landingPages", navigation=True)
     @property
     def landing_pages(self) -> EntityCollection[LandingPage]:
         """Represents an attack simulation training landing page."""
@@ -39,6 +39,7 @@ class AttackSimulationRoot(Entity):
             ),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[AttackSimulationOperation]:
         """Represents an attack simulation training operation."""
@@ -51,6 +52,7 @@ class AttackSimulationRoot(Entity):
             ),
         )
 
+    @odata(name="simulations", navigation=True)
     @property
     def simulations(self) -> EntityCollection[Simulation]:
         """Represents an attack simulation training campaign in a tenant."""
@@ -63,7 +65,7 @@ class AttackSimulationRoot(Entity):
             ),
         )
 
-    @odata(name="simulationAutomations")
+    @odata(name="simulationAutomations", navigation=True)
     @property
     def simulation_automations(self) -> EntityCollection[SimulationAutomation]:
         """Represents simulation automation created to run on a tenant."""
@@ -76,6 +78,7 @@ class AttackSimulationRoot(Entity):
             ),
         )
 
+    @odata(name="endUserNotifications", navigation=True)
     @property
     def end_user_notifications(self) -> EntityCollection[EndUserNotification]:
         """Gets the endUserNotifications property"""
@@ -90,6 +93,7 @@ class AttackSimulationRoot(Entity):
             ),
         )
 
+    @odata(name="loginPages", navigation=True)
     @property
     def login_pages(self) -> EntityCollection[LoginPage]:
         """Gets the loginPages property"""
@@ -100,6 +104,7 @@ class AttackSimulationRoot(Entity):
             EntityCollection[LoginPage](self.context, LoginPage, ResourcePath("loginPages", self.resource_path)),
         )
 
+    @odata(name="payloads", navigation=True)
     @property
     def payloads(self) -> EntityCollection[Payload]:
         """Gets the payloads property"""
@@ -109,6 +114,7 @@ class AttackSimulationRoot(Entity):
             "payloads", EntityCollection[Payload](self.context, Payload, ResourcePath("payloads", self.resource_path))
         )
 
+    @odata(name="trainings", navigation=True)
     @property
     def trainings(self) -> EntityCollection[Training]:
         """Gets the trainings property"""

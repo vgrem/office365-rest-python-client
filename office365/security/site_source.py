@@ -3,9 +3,11 @@ from __future__ import annotations
 from office365.entity import Entity
 from office365.onedrive.sites.site import Site
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class SiteSource(Entity):
+    @odata(name="site", navigation=True)
     @property
     def site(self) -> Site:
         """Gets the site property"""

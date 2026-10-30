@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.security.authority_template import AuthorityTemplate
 from office365.security.category_template import CategoryTemplate
 from office365.security.citation_template import CitationTemplate
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
 class FilePlanDescriptor(Entity):
     """Represents a file plan descriptor for a retention label."""
 
+    @odata(name="authorityTemplate", navigation=True)
     @property
     def authority_template(self) -> AuthorityTemplate:
         """Gets the authorityTemplate property"""
@@ -32,6 +34,7 @@ class FilePlanDescriptor(Entity):
             "authorityTemplate", AuthorityTemplate(self.context, ResourcePath("authorityTemplate", self.resource_path))
         )
 
+    @odata(name="categoryTemplate", navigation=True)
     @property
     def category_template(self) -> CategoryTemplate:
         """Gets the categoryTemplate property"""
@@ -39,6 +42,7 @@ class FilePlanDescriptor(Entity):
             "categoryTemplate", CategoryTemplate(self.context, ResourcePath("categoryTemplate", self.resource_path))
         )
 
+    @odata(name="citationTemplate", navigation=True)
     @property
     def citation_template(self) -> CitationTemplate:
         """Gets the citationTemplate property"""
@@ -46,6 +50,7 @@ class FilePlanDescriptor(Entity):
             "citationTemplate", CitationTemplate(self.context, ResourcePath("citationTemplate", self.resource_path))
         )
 
+    @odata(name="departmentTemplate", navigation=True)
     @property
     def department_template(self) -> DepartmentTemplate:
         """Gets the departmentTemplate property"""
@@ -54,6 +59,7 @@ class FilePlanDescriptor(Entity):
             DepartmentTemplate(self.context, ResourcePath("departmentTemplate", self.resource_path)),
         )
 
+    @odata(name="filePlanReferenceTemplate", navigation=True)
     @property
     def file_plan_reference_template(self) -> FilePlanReferenceTemplate:
         """Gets the filePlanReferenceTemplate property"""
@@ -66,6 +72,7 @@ class FilePlanDescriptor(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.FilePlanDescriptor"
 
+    @odata(name="authority")
     @property
     def authority(self) -> FilePlanAuthority:
         """Gets the authority property"""
@@ -73,6 +80,7 @@ class FilePlanDescriptor(Entity):
 
         return self.properties.get("authority", FilePlanAuthority())
 
+    @odata(name="category")
     @property
     def category(self) -> FilePlanAppliedCategory:
         """Gets the category property"""
@@ -82,6 +90,7 @@ class FilePlanDescriptor(Entity):
 
         return self.properties.get("category", FilePlanAppliedCategory())
 
+    @odata(name="citation")
     @property
     def citation(self) -> FilePlanCitation:
         """Gets the citation property"""
@@ -89,6 +98,7 @@ class FilePlanDescriptor(Entity):
 
         return self.properties.get("citation", FilePlanCitation())
 
+    @odata(name="department")
     @property
     def department(self) -> FilePlanDepartment:
         """Gets the department property"""
@@ -96,6 +106,7 @@ class FilePlanDescriptor(Entity):
 
         return self.properties.get("department", FilePlanDepartment())
 
+    @odata(name="filePlanReference")
     @property
     def file_plan_reference(self) -> FilePlanReference:
         """Gets the filePlanReference property"""

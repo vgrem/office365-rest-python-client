@@ -9,6 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.security.quotas import AUDIT_LOG_QUERY_RECORDS
 
 if TYPE_CHECKING:
@@ -21,61 +22,73 @@ if TYPE_CHECKING:
 
 @limit(AUDIT_LOG_QUERY_RECORDS)
 class AuditLogQuery(Entity):
+    @odata(name="administrativeUnitIdFilters")
     @property
     def administrative_unit_id_filters(self) -> StringCollection:
         """Gets the administrativeUnitIdFilters property"""
         return self.properties.get("administrativeUnitIdFilters", StringCollection())
 
+    @odata(name="approximateReturnedRecordCount", readonly=True)
     @property
     def approximate_returned_record_count(self) -> Optional[int]:
         """Gets the approximateReturnedRecordCount property"""
         return self.properties.get("approximateReturnedRecordCount", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="filterEndDateTime")
     @property
     def filter_end_date_time(self) -> Optional[datetime]:
         """Gets the filterEndDateTime property"""
         return self.properties.get("filterEndDateTime", datetime.min)
 
+    @odata(name="filterStartDateTime")
     @property
     def filter_start_date_time(self) -> Optional[datetime]:
         """Gets the filterStartDateTime property"""
         return self.properties.get("filterStartDateTime", datetime.min)
 
+    @odata(name="ipAddressFilters")
     @property
     def ip_address_filters(self) -> StringCollection:
         """Gets the ipAddressFilters property"""
         return self.properties.get("ipAddressFilters", StringCollection())
 
+    @odata(name="isRecordCountLimitExceeded", readonly=True)
     @property
     def is_record_count_limit_exceeded(self) -> Optional[bool]:
         """Gets the isRecordCountLimitExceeded property"""
         return self.properties.get("isRecordCountLimitExceeded", None)
 
+    @odata(name="keywordFilter")
     @property
     def keyword_filter(self) -> Optional[str]:
         """Gets the keywordFilter property"""
         return self.properties.get("keywordFilter", None)
 
+    @odata(name="objectIdFilters")
     @property
     def object_id_filters(self) -> StringCollection:
         """Gets the objectIdFilters property"""
         return self.properties.get("objectIdFilters", StringCollection())
 
+    @odata(name="operationFilters")
     @property
     def operation_filters(self) -> StringCollection:
         """Gets the operationFilters property"""
         return self.properties.get("operationFilters", StringCollection())
 
+    @odata(name="recordCountLimit", readonly=True)
     @property
     def record_count_limit(self) -> Optional[int]:
         """Gets the recordCountLimit property"""
         return self.properties.get("recordCountLimit", None)
 
+    @odata(name="recordTypeFilters")
     @property
     def record_type_filters(self) -> ClientValueCollection[AuditLogRecordType]:
         """Gets the recordTypeFilters property"""
@@ -83,11 +96,13 @@ class AuditLogQuery(Entity):
 
         return self.properties.get("recordTypeFilters", ClientValueCollection[AuditLogRecordType](AuditLogRecordType))
 
+    @odata(name="serviceFilters")
     @property
     def service_filters(self) -> StringCollection:
         """Gets the serviceFilters property"""
         return self.properties.get("serviceFilters", StringCollection())
 
+    @odata(name="status")
     @property
     def status(self) -> AuditLogQueryStatus:
         """Gets the status property"""
@@ -97,11 +112,13 @@ class AuditLogQuery(Entity):
 
         return self.properties.get("status", AuditLogQueryStatus.notStarted)
 
+    @odata(name="userPrincipalNameFilters")
     @property
     def user_principal_name_filters(self) -> StringCollection:
         """Gets the userPrincipalNameFilters property"""
         return self.properties.get("userPrincipalNameFilters", StringCollection())
 
+    @odata(name="records", navigation=True)
     @property
     def records(self) -> EntityCollection[AuditLogRecord]:
         """Gets the records property"""
