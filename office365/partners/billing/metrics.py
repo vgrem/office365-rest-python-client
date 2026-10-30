@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.partners.billing.metrics_initial import BillingMetricsInitial
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class BillingMetrics(Entity):
+    @odata(name="initial", navigation=True)
     @property
     def initial(self) -> BillingMetricsInitial:
         """Gets the initial property"""
@@ -20,6 +22,7 @@ class BillingMetrics(Entity):
             "initial", BillingMetricsInitial(self.context, ResourcePath("initial", self.resource_path))
         )
 
+    @odata(name="recent", navigation=True)
     @property
     def recent(self) -> BillingMetricsRecent:
         """Gets the recent property"""

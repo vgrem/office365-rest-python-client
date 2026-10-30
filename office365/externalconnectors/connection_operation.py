@@ -7,12 +7,14 @@ from office365.externalconnectors.connectionoperationstatus import (
     ConnectionOperationStatus,
 )
 from office365.runtime.pollable import PollableOperation
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.runtime.types.public_error import PublicError
 
 
 class ConnectionOperation(PollableOperation, Entity):
+    @odata(name="status")
     @property
     def status(self) -> ConnectionOperationStatus:
         """Gets the status property"""
@@ -22,6 +24,7 @@ class ConnectionOperation(PollableOperation, Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.externalConnectors.ConnectionOperation"
 
+    @odata(name="error")
     @property
     def error(self) -> PublicError:
         """Gets the error property"""

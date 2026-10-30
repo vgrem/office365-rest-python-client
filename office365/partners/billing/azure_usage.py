@@ -4,14 +4,17 @@ from office365.entity import Entity
 from office365.partners.billing.billed_usage import BilledUsage
 from office365.partners.billing.unbilled_usage import UnbilledUsage
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class AzureUsage(Entity):
+    @odata(name="billed", navigation=True)
     @property
     def billed(self) -> BilledUsage:
         """Gets the billed property"""
         return self.properties.get("billed", BilledUsage(self.context, ResourcePath("billed", self.resource_path)))
 
+    @odata(name="unbilled", navigation=True)
     @property
     def unbilled(self) -> UnbilledUsage:
         """Gets the unbilled property"""

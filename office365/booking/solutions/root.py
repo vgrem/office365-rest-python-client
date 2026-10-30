@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class SolutionsRoot(Entity):
     """The entry point for Microsoft Bookings, virtual event, and business scenario APIs."""
 
-    @odata(name="bookingBusinesses")
+    @odata(name="bookingBusinesses", navigation=True)
     @property
     def booking_businesses(self) -> BookingBusinessCollection:
         """Get a collection of bookingBusiness objects that has been created for the tenant."""
@@ -27,7 +27,7 @@ class SolutionsRoot(Entity):
             BookingBusinessCollection(self.context, ResourcePath("bookingBusinesses", self.resource_path)),
         )
 
-    @odata(name="bookingCurrencies")
+    @odata(name="bookingCurrencies", navigation=True)
     @property
     def booking_currencies(self):
         """Get a list of bookingCurrency objects available to a Microsoft Bookings business"""
@@ -40,7 +40,7 @@ class SolutionsRoot(Entity):
             ),
         )
 
-    @odata(name="backupRestore")
+    @odata(name="backupRestore", navigation=True)
     @property
     def backup_restore(self) -> BackupRestoreRoot:
         """Get a Microsoft 365 Backup Storage service in a tenant"""
@@ -49,7 +49,7 @@ class SolutionsRoot(Entity):
             BackupRestoreRoot(self.context, ResourcePath("backupRestore", self.resource_path)),
         )
 
-    @odata(name="virtualEvents")
+    @odata(name="virtualEvents", navigation=True)
     @property
     def virtual_events(self) -> VirtualEventsRoot:
         """A collection of virtual events."""

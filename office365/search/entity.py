@@ -8,6 +8,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.search.acronyms.acronym import Acronym
 from office365.search.bookmarks.bookmark import Bookmark
 from office365.search.entity_type import EntityType
@@ -256,6 +257,7 @@ class SearchEntity(Entity):
             region=region,
         )
 
+    @odata(name="acronyms", navigation=True)
     @property
     @require_permission(
         delegated=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
@@ -272,6 +274,7 @@ class SearchEntity(Entity):
             ),
         )
 
+    @odata(name="bookmarks", navigation=True)
     @property
     @require_permission(
         delegated=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],
@@ -288,6 +291,7 @@ class SearchEntity(Entity):
             ),
         )
 
+    @odata(name="qnas", navigation=True)
     @property
     @require_permission(
         delegated=["SearchConfiguration.Read.All", "SearchConfiguration.ReadWrite.All"],

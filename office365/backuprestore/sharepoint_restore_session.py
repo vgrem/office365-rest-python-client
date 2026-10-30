@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.common.restore_session_base import RestoreSessionBase
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.granular_site_restore_artifact import (
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class SharePointRestoreSession(RestoreSessionBase):
+    @odata(name="granularSiteRestoreArtifacts", navigation=True)
     @property
     def granular_site_restore_artifacts(self) -> EntityCollection[GranularSiteRestoreArtifact]:
         """Gets the granularSiteRestoreArtifacts property"""
@@ -33,6 +35,7 @@ class SharePointRestoreSession(RestoreSessionBase):
             ),
         )
 
+    @odata(name="siteRestoreArtifacts", navigation=True)
     @property
     def site_restore_artifacts(self) -> EntityCollection[SiteRestoreArtifact]:
         """Gets the siteRestoreArtifacts property"""
@@ -45,6 +48,7 @@ class SharePointRestoreSession(RestoreSessionBase):
             ),
         )
 
+    @odata(name="siteRestoreArtifactsBulkAdditionRequests", navigation=True)
     @property
     def site_restore_artifacts_bulk_addition_requests(self) -> EntityCollection[SiteRestoreArtifactsBulkAdditionRequest]:
         """Gets the siteRestoreArtifactsBulkAdditionRequests property"""

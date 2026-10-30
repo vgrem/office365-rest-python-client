@@ -13,6 +13,7 @@ from office365.runtime.types.odata_property import odata
 class Onenote(Entity):
     """The entry point for OneNote resources."""
 
+    @odata(name="notebooks", navigation=True)
     @property
     def notebooks(self) -> NotebookCollection:
         """Retrieve a list of notebook objects."""
@@ -20,6 +21,7 @@ class Onenote(Entity):
             "notebooks", NotebookCollection(self.context, ResourcePath("notebooks", self.resource_path))
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[OnenoteOperation]:
         """Retrieve a list of OneNote operations."""
@@ -28,6 +30,7 @@ class Onenote(Entity):
             EntityCollection(self.context, OnenoteOperation, ResourcePath("operations", self.resource_path)),
         )
 
+    @odata(name="pages", navigation=True)
     @property
     def pages(self) -> OnenotePageCollection:
         """Retrieve a list of page objects."""
@@ -35,6 +38,7 @@ class Onenote(Entity):
             "pages", OnenotePageCollection(self.context, ResourcePath("pages", self.resource_path))
         )
 
+    @odata(name="resources", navigation=True)
     @property
     def resources(self) -> EntityCollection[OnenoteResource]:
         """Retrieve a list of Resources objects from the specified notebook."""
@@ -42,6 +46,7 @@ class Onenote(Entity):
             "resources", EntityCollection(self.context, OnenoteResource, ResourcePath("resources", self.resource_path))
         )
 
+    @odata(name="sections", navigation=True)
     @property
     def sections(self) -> OnenoteSectionCollection:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
@@ -49,7 +54,7 @@ class Onenote(Entity):
             "sections", OnenoteSectionCollection(self.context, ResourcePath("sections", self.resource_path))
         )
 
-    @odata(name="sectionGroups")
+    @odata(name="sectionGroups", navigation=True)
     @property
     def section_groups(self) -> EntityCollection[SectionGroup]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""

@@ -19,6 +19,7 @@ class Subscription(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="applicationId")
     @property
     def application_id(self) -> Optional[str]:
         """
@@ -26,6 +27,7 @@ class Subscription(Entity):
         """
         return self.properties.get("applicationId", None)
 
+    @odata(name="changeType")
     @property
     def change_type(self) -> Optional[str]:
         """
@@ -41,6 +43,7 @@ class Subscription(Entity):
         """
         return self.properties.get("changeType", None)
 
+    @odata(name="clientState")
     @property
     def client_state(self) -> Optional[str]:
         """
@@ -51,6 +54,7 @@ class Subscription(Entity):
         """
         return self.properties.get("clientState", None)
 
+    @odata(name="creatorId")
     @property
     def creator_id(self) -> Optional[str]:
         """
@@ -61,6 +65,7 @@ class Subscription(Entity):
         """
         return self.properties.get("creatorId", None)
 
+    @odata(name="encryptionCertificate")
     @property
     def encryption_certificate(self) -> Optional[str]:
         """
@@ -69,6 +74,7 @@ class Subscription(Entity):
         """
         return self.properties.get("encryptionCertificate", None)
 
+    @odata(name="encryptionCertificateId")
     @property
     def encryption_certificate_id(self) -> Optional[str]:
         """
@@ -108,6 +114,7 @@ class Subscription(Entity):
                     payload["expirationDateTime"] = iso_z(parsed)
         return payload
 
+    @odata(name="includeResourceData")
     @property
     def include_resource_data(self) -> Optional[bool]:
         """
@@ -115,6 +122,7 @@ class Subscription(Entity):
         """
         return self.properties.get("includeResourceData", None)
 
+    @odata(name="latestSupportedTlsVersion")
     @property
     def latest_supported_tls_version(self) -> Optional[str]:
         """
@@ -131,6 +139,7 @@ class Subscription(Entity):
         """
         return self.properties.get("latestSupportedTlsVersion", None)
 
+    @odata(name="lifecycleNotificationUrl")
     @property
     def lifecycle_notification_url(self) -> Optional[str]:
         """
@@ -141,6 +150,7 @@ class Subscription(Entity):
         """
         return self.properties.get("lifecycleNotificationUrl", None)
 
+    @odata(name="notificationUrl")
     @property
     def notification_url(self) -> Optional[str]:
         """
@@ -150,6 +160,7 @@ class Subscription(Entity):
         """
         return self.properties.get("notificationUrl", None)
 
+    @odata(name="resource")
     @property
     def resource(self) -> Optional[str]:
         """
@@ -159,26 +170,31 @@ class Subscription(Entity):
         """
         return self.properties.get("resource", None)
 
+    @odata(name="notificationQueryOptions")
     @property
     def notification_query_options(self) -> Optional[str]:
         """Gets the notificationQueryOptions property"""
         return self.properties.get("notificationQueryOptions", None)
 
+    @odata(name="notificationUrlAppId")
     @property
     def notification_url_app_id(self) -> Optional[str]:
         """Gets the notificationUrlAppId property"""
         return self.properties.get("notificationUrlAppId", None)
 
+    @odata(name="vapidPublicKey")
     @property
     def vapid_public_key(self) -> Optional[str]:
         """Gets the vapidPublicKey property"""
         return self.properties.get("vapidPublicKey", None)
 
+    @odata(name="webPushEncryptionP256dhPublicKey")
     @property
     def web_push_encryption_p256dh_public_key(self) -> Optional[str]:
         """Gets the webPushEncryptionP256dhPublicKey property"""
         return self.properties.get("webPushEncryptionP256dhPublicKey", None)
 
+    @odata(name="webPushEncryptionSecret")
     @property
     def web_push_encryption_secret(self) -> Optional[str]:
         """Gets the webPushEncryptionSecret property"""

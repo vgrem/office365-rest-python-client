@@ -25,6 +25,7 @@ class AttachmentSession(Entity):
         """The URL that allows uploading ranges of bytes to the attachment."""
         return self.properties.get("uploadUrl", None)
 
+    @odata(name="content")
     @property
     def content(self):
         """The content streams that are uploaded."""

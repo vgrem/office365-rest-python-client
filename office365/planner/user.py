@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.planner.internal.paths.collections import PlannerCollectionPath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.planner.plans.collection import PlannerPlanCollection
@@ -14,6 +15,7 @@ class PlannerUser(Entity):
     """The plannerUser resource provide access to Planner resources for a user.
     It doesn't contain any usable properties."""
 
+    @odata(name="plans", navigation=True)
     @property
     def plans(self) -> PlannerPlanCollection:
         """Returns the plannerTasks assigned to the user."""
@@ -23,6 +25,7 @@ class PlannerUser(Entity):
             "plans", PlannerPlanCollection(self.context, PlannerCollectionPath("plans", self.resource_path))
         )
 
+    @odata(name="tasks", navigation=True)
     @property
     def tasks(self) -> PlannerTaskCollection:
         """Returns the plannerTasks assigned to the user."""

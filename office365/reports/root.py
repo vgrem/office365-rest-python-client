@@ -390,7 +390,7 @@ class ReportRoot(Entity):
         """
         return create_report_query(self, "getTeamsUserActivityCounts", period)
 
-    @odata(name="authenticationMethods")
+    @odata(name="authenticationMethods", navigation=True)
     @property
     def authentication_methods(self) -> AuthenticationMethodsRoot:
         """Container for navigation properties for Azure AD authentication methods resources."""
@@ -399,11 +399,13 @@ class ReportRoot(Entity):
             AuthenticationMethodsRoot(self.context, ResourcePath("authenticationMethods", self.resource_path)),
         )
 
+    @odata(name="partners", navigation=True)
     @property
     def partners(self) -> Partners:
         """Represents billing details for a Microsoft direct partner."""
         return self.properties.get("partners", Partners(self.context, ResourcePath("partners", self.resource_path)))
 
+    @odata(name="security", navigation=True)
     @property
     def security(self) -> SecurityReportsRoot:
         """Container for navigation properties for Azure AD authentication methods resources."""
@@ -411,6 +413,7 @@ class ReportRoot(Entity):
             "security", SecurityReportsRoot(self.context, ResourcePath("security", self.resource_path))
         )
 
+    @odata(name="dailyPrintUsageByPrinter", navigation=True)
     @property
     def daily_print_usage_by_printer(self) -> EntityCollection[PrintUsageByPrinter]:
         """Gets the dailyPrintUsageByPrinter property"""
@@ -421,6 +424,7 @@ class ReportRoot(Entity):
             ),
         )
 
+    @odata(name="dailyPrintUsageByUser", navigation=True)
     @property
     def daily_print_usage_by_user(self) -> EntityCollection[PrintUsageByUser]:
         """Gets the dailyPrintUsageByUser property"""
@@ -431,6 +435,7 @@ class ReportRoot(Entity):
             ),
         )
 
+    @odata(name="monthlyPrintUsageByPrinter", navigation=True)
     @property
     def monthly_print_usage_by_printer(self) -> EntityCollection[PrintUsageByPrinter]:
         """Gets the monthlyPrintUsageByPrinter property"""
@@ -441,6 +446,7 @@ class ReportRoot(Entity):
             ),
         )
 
+    @odata(name="monthlyPrintUsageByUser", navigation=True)
     @property
     def monthly_print_usage_by_user(self) -> EntityCollection[PrintUsageByUser]:
         """Gets the monthlyPrintUsageByUser property"""

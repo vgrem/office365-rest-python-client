@@ -59,6 +59,7 @@ class PlannerTaskDetails(PlannerEntity):
         self.set_property("checklist", checklist)
         return self
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Description of the task."""
@@ -68,6 +69,7 @@ class PlannerTaskDetails(PlannerEntity):
     def description(self, value: str) -> None:
         self.set_property("description", value)
 
+    @odata(name="previewType")
     @property
     def preview_type(self) -> Optional[str]:
         """This sets the type of preview that shows up on the task.
@@ -80,6 +82,7 @@ class PlannerTaskDetails(PlannerEntity):
     def preview_type(self, value: str) -> None:
         self.set_property("previewType", value)
 
+    @odata(name="references")
     @property
     def references(self) -> PlannerExternalReferences:
         """

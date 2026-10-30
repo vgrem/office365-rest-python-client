@@ -4,6 +4,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.paths.builder import ODataPathBuilder
+from office365.runtime.types.odata_property import odata
 
 
 class OnenoteEntityBaseModel(Entity):
@@ -17,6 +18,7 @@ class OnenoteEntityBaseModel(Entity):
             self._resource_path = ODataPathBuilder.parse_url(path_str)
         return self
 
+    @odata(name="self")
     @property
     def self(self) -> Optional[str]:
         """Gets the self property"""

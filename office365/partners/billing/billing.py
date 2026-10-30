@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class Billing(Entity):
+    @odata(name="manifests", navigation=True)
     @property
     def manifests(self) -> EntityCollection[Manifest]:
         """Gets the manifests property"""
@@ -24,6 +25,7 @@ class Billing(Entity):
             EntityCollection[Manifest](self.context, Manifest, ResourcePath("manifests", self.resource_path)),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[Operation]:
         """Gets the operations property"""
@@ -32,6 +34,7 @@ class Billing(Entity):
             EntityCollection[Operation](self.context, Operation, ResourcePath("operations", self.resource_path)),
         )
 
+    @odata(name="reconciliation", navigation=True)
     @property
     def reconciliation(self) -> BillingReconciliation:
         """Gets the reconciliation property"""
@@ -39,6 +42,7 @@ class Billing(Entity):
             "reconciliation", BillingReconciliation(self.context, ResourcePath("reconciliation", self.resource_path))
         )
 
+    @odata(name="usage", navigation=True)
     @property
     def usage(self) -> AzureUsage:
         """Gets the usage property"""

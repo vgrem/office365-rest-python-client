@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.planner.entity import PlannerEntity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.planner.tasks.collection import PlannerTaskCollection
@@ -13,6 +14,7 @@ class PlannerBucket(PlannerEntity):
     It is contained in a plannerPlan and can have a collection of plannerTasks.
     """
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Required. Name of the bucket."""
@@ -22,6 +24,7 @@ class PlannerBucket(PlannerEntity):
     def name(self, value: str):
         self.set_property("name", value)
 
+    @odata(name="planId")
     @property
     def plan_id(self) -> Optional[str]:
         """Required. Name of the bucket."""
@@ -31,6 +34,7 @@ class PlannerBucket(PlannerEntity):
     def plan_id(self, value: str):
         self.set_property("planId", value)
 
+    @odata(name="tasks", navigation=True)
     @property
     def tasks(self) -> PlannerTaskCollection:
         """Read-only. Nullable. Collection of tasks in the bucket."""
@@ -41,6 +45,7 @@ class PlannerBucket(PlannerEntity):
             PlannerTaskCollection(self.context, parent=self),
         )
 
+    @odata(name="orderHint")
     @property
     def order_hint(self) -> Optional[str]:
         """Gets the orderHint property"""

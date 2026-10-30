@@ -67,6 +67,7 @@ class BookingBusiness(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="address")
     @property
     def address(self) -> PhysicalAddress:
         """
@@ -82,6 +83,7 @@ class BookingBusiness(Entity):
         """The hours of operation for the business."""
         return self.properties.get("businessHours", ClientValueCollection(BookingWorkHours))
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """
@@ -90,6 +92,7 @@ class BookingBusiness(Entity):
         """
         return self.properties.get("displayName", None)
 
+    @odata(name="appointments", navigation=True)
     @property
     def appointments(self) -> EntityCollection[BookingAppointment]:
         """All the appointments of this business. Read-only. Nullable."""
@@ -102,7 +105,7 @@ class BookingBusiness(Entity):
             ),
         )
 
-    @odata(name="calendarView")
+    @odata(name="calendarView", navigation=True)
     @property
     def calendar_view(self) -> EntityCollection[BookingAppointment]:
         """The set of appointments of this business in a specified date range. Read-only. Nullable."""
@@ -115,6 +118,7 @@ class BookingBusiness(Entity):
             ),
         )
 
+    @odata(name="customers", navigation=True)
     @property
     def customers(self) -> EntityCollection[BookingCustomerBase]:
         """All the customers of this business. Read-only. Nullable."""
@@ -127,7 +131,7 @@ class BookingBusiness(Entity):
             ),
         )
 
-    @odata(name="customQuestions")
+    @odata(name="customQuestions", navigation=True)
     @property
     def custom_questions(self) -> EntityCollection[BookingCustomQuestion]:
         """All the services offered by this business. Read-only. Nullable."""
@@ -140,6 +144,7 @@ class BookingBusiness(Entity):
             ),
         )
 
+    @odata(name="services", navigation=True)
     @property
     def services(self) -> EntityCollection[BookingService]:
         """All the services offered by this business. Read-only. Nullable."""
@@ -152,7 +157,7 @@ class BookingBusiness(Entity):
             ),
         )
 
-    @odata(name="staffMembers")
+    @odata(name="staffMembers", navigation=True)
     @property
     def staff_members(self) -> EntityCollection[BookingStaffMemberBase]:
         """The collection of open extensions defined for the message. Nullable."""
@@ -165,6 +170,7 @@ class BookingBusiness(Entity):
             ),
         )
 
+    @odata(name="bookingPageSettings")
     @property
     def booking_page_settings(self) -> BookingPageSettings:
         """Gets the bookingPageSettings property"""
@@ -172,51 +178,61 @@ class BookingBusiness(Entity):
 
         return self.properties.get("bookingPageSettings", BookingPageSettings())
 
+    @odata(name="businessType")
     @property
     def business_type(self) -> Optional[str]:
         """Gets the businessType property"""
         return self.properties.get("businessType", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="defaultCurrencyIso")
     @property
     def default_currency_iso(self) -> Optional[str]:
         """Gets the defaultCurrencyIso property"""
         return self.properties.get("defaultCurrencyIso", None)
 
+    @odata(name="email")
     @property
     def email(self) -> Optional[str]:
         """Gets the email property"""
         return self.properties.get("email", None)
 
+    @odata(name="isPublished", readonly=True)
     @property
     def is_published(self) -> Optional[bool]:
         """Gets the isPublished property"""
         return self.properties.get("isPublished", None)
 
+    @odata(name="languageTag")
     @property
     def language_tag(self) -> Optional[str]:
         """Gets the languageTag property"""
         return self.properties.get("languageTag", None)
 
+    @odata(name="lastUpdatedDateTime")
     @property
     def last_updated_date_time(self) -> Optional[datetime]:
         """Gets the lastUpdatedDateTime property"""
         return self.properties.get("lastUpdatedDateTime", datetime.min)
 
+    @odata(name="phone")
     @property
     def phone(self) -> Optional[str]:
         """Gets the phone property"""
         return self.properties.get("phone", None)
 
+    @odata(name="publicUrl", readonly=True)
     @property
     def public_url(self) -> Optional[str]:
         """Gets the publicUrl property"""
         return self.properties.get("publicUrl", None)
 
+    @odata(name="schedulingPolicy")
     @property
     def scheduling_policy(self) -> BookingSchedulingPolicy:
         """Gets the schedulingPolicy property"""
@@ -224,6 +240,7 @@ class BookingBusiness(Entity):
 
         return self.properties.get("schedulingPolicy", BookingSchedulingPolicy())
 
+    @odata(name="webSiteUrl")
     @property
     def web_site_url(self) -> Optional[str]:
         """Gets the webSiteUrl property"""

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.booking.customers.answerinputtype import AnswerInputType
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 class BookingCustomQuestion(Entity):
     """Represents a custom question for a bookingBusiness."""
 
+    @odata(name="answerInputType")
     @property
     def answer_input_type(self) -> AnswerInputType:
         """Gets the answerInputType property"""
@@ -20,21 +22,25 @@ class BookingCustomQuestion(Entity):
 
         return self.properties.get("answerInputType", AnswerInputType.text)
 
+    @odata(name="answerOptions")
     @property
     def answer_options(self) -> StringCollection:
         """Gets the answerOptions property"""
         return self.properties.get("answerOptions", StringCollection())
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastUpdatedDateTime")
     @property
     def last_updated_date_time(self) -> Optional[datetime]:
         """Gets the lastUpdatedDateTime property"""

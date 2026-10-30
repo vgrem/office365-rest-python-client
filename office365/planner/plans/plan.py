@@ -28,11 +28,13 @@ class PlannerPlan(PlannerEntity):
     def __repr__(self):
         return self.id or self.entity_type_name
 
+    @odata(name="container")
     @property
     def container(self) -> PlannerPlanContainer:
         """Identity of the user, device, or application which created the plan."""
         return self.properties.get("container", PlannerPlanContainer())
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """Required. Title of the plan."""
@@ -42,6 +44,7 @@ class PlannerPlan(PlannerEntity):
     def title(self, value: str):
         self.set_property("title", value)
 
+    @odata(name="buckets", navigation=True)
     @property
     def buckets(self) -> PlannerBucketCollection:
         """Collection of buckets in the plan."""
@@ -52,6 +55,7 @@ class PlannerPlan(PlannerEntity):
             PlannerBucketCollection(self.context, parent_plan=self),
         )
 
+    @odata(name="details", navigation=True)
     @property
     def details(self):
         """Additional details about the plan."""
@@ -63,6 +67,7 @@ class PlannerPlan(PlannerEntity):
             ),
         )
 
+    @odata(name="tasks", navigation=True)
     @property
     def tasks(self) -> PlannerTaskCollection:
         """Collection of tasks in the plan."""
@@ -79,11 +84,13 @@ class PlannerPlan(PlannerEntity):
         """Identity of the user, device, or application which created the plan."""
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="owner")
     @property
     def owner(self) -> Optional[str]:
         """Gets the owner property"""

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.admin.microsoft365.m365_apps_installation_options import (
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 class AdminMicrosoft365Apps(Entity):
     """Represents an entity that acts as a container for administrator functionality for Microsoft 365 applications."""
 
+    @odata(name="installationOptions", navigation=True)
     @property
     def installation_options(self) -> M365AppsInstallationOptions:
         """Gets the installationOptions property"""

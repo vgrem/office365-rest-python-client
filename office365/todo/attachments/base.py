@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class AttachmentBase(Entity):
@@ -15,11 +16,13 @@ class AttachmentBase(Entity):
         """The base64-encoded contents of a file attachment (``None`` for other kinds)."""
         return self.properties.get("contentBytes", None)
 
+    @odata(name="contentType")
     @property
     def content_type(self) -> Optional[str]:
         """The MIME type."""
         return self.properties.get("contentType", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_datetime(self) -> Optional[datetime]:
         """
@@ -27,6 +30,7 @@ class AttachmentBase(Entity):
         """
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """
@@ -34,6 +38,7 @@ class AttachmentBase(Entity):
         """
         return self.properties.get("name", None)
 
+    @odata(name="size")
     @property
     def size(self) -> Optional[int]:
         """The length of the attachment in bytes."""

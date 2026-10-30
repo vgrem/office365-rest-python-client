@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.admin.microsoft365.appsupdatechanneltype import AppsUpdateChannelType
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class M365AppsInstallationOptions(Entity):
+    @odata(name="appsForMac")
     @property
     def apps_for_mac(self) -> AppsInstallationOptionsForMac:
         """Gets the appsForMac property"""
@@ -24,6 +26,7 @@ class M365AppsInstallationOptions(Entity):
 
         return self.properties.get("appsForMac", AppsInstallationOptionsForMac())
 
+    @odata(name="appsForWindows")
     @property
     def apps_for_windows(self) -> AppsInstallationOptionsForWindows:
         """Gets the appsForWindows property"""
@@ -33,6 +36,7 @@ class M365AppsInstallationOptions(Entity):
 
         return self.properties.get("appsForWindows", AppsInstallationOptionsForWindows())
 
+    @odata(name="updateChannel")
     @property
     def update_channel(self) -> AppsUpdateChannelType:
         """Gets the updateChannel property"""

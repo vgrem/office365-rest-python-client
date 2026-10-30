@@ -1,12 +1,14 @@
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.search.external.connection import ExternalConnection
 
 
 class External(Entity):
     """A logical container  for external sources."""
 
+    @odata(name="connections", navigation=True)
     @property
     def connections(self) -> EntityCollection[ExternalConnection]:
         """Get a list of the externalConnection objects and their properties."""

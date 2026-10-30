@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.backuprestore.restoresessions.browsable_resource_type import (
@@ -55,16 +56,19 @@ class BrowseSessionBase(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="backupSizeInBytes")
     @property
     def backup_size_in_bytes(self) -> Optional[str]:
         """Gets the backupSizeInBytes property"""
         return self.properties.get("backupSizeInBytes", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="error")
     @property
     def error(self) -> PublicError:
         """Gets the error property"""
@@ -72,21 +76,25 @@ class BrowseSessionBase(Entity):
 
         return self.properties.get("error", PublicError())
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_date_time(self) -> Optional[datetime]:
         """Gets the expirationDateTime property"""
         return self.properties.get("expirationDateTime", datetime.min)
 
+    @odata(name="restorePointDateTime")
     @property
     def restore_point_date_time(self) -> Optional[datetime]:
         """Gets the restorePointDateTime property"""
         return self.properties.get("restorePointDateTime", datetime.min)
 
+    @odata(name="restorePointId")
     @property
     def restore_point_id(self) -> Optional[str]:
         """Gets the restorePointId property"""
         return self.properties.get("restorePointId", None)
 
+    @odata(name="status")
     @property
     def status(self) -> BrowseSessionStatus:
         """Gets the status property"""

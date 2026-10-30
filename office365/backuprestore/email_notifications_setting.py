@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.backuprestore.notification_events_type import NotificationEventsType
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class EmailNotificationsSetting(Entity):
+    @odata(name="additionalEvents")
     @property
     def additional_events(self) -> NotificationEventsType:
         """Gets the additionalEvents property"""
@@ -21,11 +23,13 @@ class EmailNotificationsSetting(Entity):
 
         return self.properties.get("additionalEvents", NotificationEventsType.none)
 
+    @odata(name="isEnabled")
     @property
     def is_enabled(self) -> Optional[bool]:
         """Gets the isEnabled property"""
         return self.properties.get("isEnabled", None)
 
+    @odata(name="recipients")
     @property
     def recipients(self) -> NotificationRecipients:
         """Gets the recipients property"""

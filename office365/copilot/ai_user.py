@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.copilot.ai_interaction_history import AiInteractionHistory
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class AiUser(Entity):
+    @odata(name="interactionHistory", navigation=True)
     @property
     def interaction_history(self) -> AiInteractionHistory:
         """Gets the interactionHistory property"""
@@ -22,6 +24,7 @@ class AiUser(Entity):
             AiInteractionHistory(self.context, ResourcePath("interactionHistory", self.resource_path)),
         )
 
+    @odata(name="onlineMeetings", navigation=True)
     @property
     def online_meetings(self) -> EntityCollection[AiOnlineMeeting]:
         """Gets the onlineMeetings property"""

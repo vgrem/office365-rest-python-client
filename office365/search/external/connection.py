@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.search.external.configuration import Configuration
 from office365.search.external.search_settings import SearchSettings
 
@@ -21,6 +22,7 @@ if TYPE_CHECKING:
 class ExternalConnection(Entity):
     """A logical container to add content from an external source into Microsoft Graph."""
 
+    @odata(name="configuration")
     @property
     def configuration(self):
         """
@@ -29,6 +31,7 @@ class ExternalConnection(Entity):
         """
         return self.properties.get("configuration", Configuration())
 
+    @odata(name="searchSettings")
     @property
     def search_settings(self):
         """
@@ -41,16 +44,19 @@ class ExternalConnection(Entity):
     def entity_type_name(self):
         return "microsoft.graph.externalConnectors.externalConnection"
 
+    @odata(name="activitySettings")
     @property
     def activity_settings(self) -> Optional[ActivitySettings]:
         """Gets the activitySettings property"""
         return self.properties.get("activitySettings", None)
 
+    @odata(name="connectorId")
     @property
     def connector_id(self) -> Optional[str]:
         """Gets the connectorId property"""
         return self.properties.get("connectorId", None)
 
+    @odata(name="contentCategory")
     @property
     def content_category(self) -> ContentCategory:
         """Gets the contentCategory property"""
@@ -58,21 +64,25 @@ class ExternalConnection(Entity):
 
         return self.properties.get("contentCategory", ContentCategory.uncategorized)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Gets the name property"""
         return self.properties.get("name", None)
 
+    @odata(name="state", readonly=True)
     @property
     def state(self) -> Optional[ConnectionState]:
         """Gets the state property"""
         return self.properties.get("state", None)
 
+    @odata(name="groups", navigation=True)
     @property
     def groups(self) -> EntityCollection[ExternalGroup]:
         """Gets the groups property"""
@@ -83,6 +93,7 @@ class ExternalConnection(Entity):
             EntityCollection[ExternalGroup](self.context, ExternalGroup, ResourcePath("groups", self.resource_path)),
         )
 
+    @odata(name="items", navigation=True)
     @property
     def items(self) -> EntityCollection[ExternalItem]:
         """Gets the items property"""
@@ -93,6 +104,7 @@ class ExternalConnection(Entity):
             EntityCollection[ExternalItem](self.context, ExternalItem, ResourcePath("items", self.resource_path)),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[ConnectionOperation]:
         """Gets the operations property"""
@@ -107,6 +119,7 @@ class ExternalConnection(Entity):
             ),
         )
 
+    @odata(name="schema", navigation=True)
     @property
     def schema(self) -> Schema:
         """Gets the schema property"""

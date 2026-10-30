@@ -1,5 +1,6 @@
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class PlannerGroup(Entity):
@@ -8,6 +9,7 @@ class PlannerGroup(Entity):
     It doesn't contain any usable properties.
     """
 
+    @odata(name="plans", navigation=True)
     @property
     def plans(self):
         """

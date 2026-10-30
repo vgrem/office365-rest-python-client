@@ -6,6 +6,7 @@ from office365.directory.permissions.require_permission import require_permissio
 from office365.onenote.entity_base_model import OnenoteEntityBaseModel
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class OnenoteResource(OnenoteEntityBaseModel):
@@ -22,11 +23,13 @@ class OnenoteResource(OnenoteEntityBaseModel):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="contentUrl")
     @property
     def content_url(self) -> Optional[str]:
         """The URL for downloading the content"""
         return self.properties.get("contentUrl", None)
 
+    @odata(name="content")
     @property
     def content(self) -> Optional[bytes]:
         """Gets the content property"""

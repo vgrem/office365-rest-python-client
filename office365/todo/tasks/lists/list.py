@@ -23,26 +23,31 @@ class TodoTaskList(Entity):
     def __str__(self) -> str:
         return self.display_name or self.entity_type_name or ""
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The name of the task list."""
         return self.properties.get("displayName", None)
 
+    @odata(name="isOwner")
     @property
     def is_owner(self) -> Optional[bool]:
         """Indicates whether the user is the owner of the task list."""
         return self.properties.get("isOwner", None)
 
+    @odata(name="isShared")
     @property
     def is_shared(self) -> Optional[bool]:
         """Indicates whether the task list is shared with other users."""
         return self.properties.get("isShared", None)
 
+    @odata(name="wellknownListName")
     @property
     def wellknown_list_name(self) -> WellknownListName:
         """The name of the well-known list (``defaultList``/``flaggedEmails``/...)."""
         return self.properties.get("wellknownListName", WellknownListName.none)
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the task list."""
@@ -68,6 +73,7 @@ class TodoTaskList(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="tasks", navigation=True)
     @property
     def tasks(self) -> TodoTaskCollection:
         """The tasks in this task list."""

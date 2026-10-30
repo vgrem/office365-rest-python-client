@@ -3,6 +3,7 @@ from office365.planner.buckets.collection import PlannerBucketCollection
 from office365.planner.plans.collection import PlannerPlanCollection
 from office365.planner.tasks.collection import PlannerTaskCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Planner(Entity):
@@ -11,6 +12,7 @@ class Planner(Entity):
     It returns a singleton planner resource. It doesn't contain any usable properties.
     """
 
+    @odata(name="buckets", navigation=True)
     @property
     def buckets(self) -> PlannerBucketCollection:
         """Returns the plannerBuckets assigned to the user."""
@@ -19,6 +21,7 @@ class Planner(Entity):
             PlannerBucketCollection(self.context),
         )
 
+    @odata(name="tasks", navigation=True)
     @property
     def tasks(self) -> PlannerTaskCollection:
         """Returns the plannerTasks assigned to the user."""
@@ -27,6 +30,7 @@ class Planner(Entity):
             PlannerTaskCollection(self.context),
         )
 
+    @odata(name="plans", navigation=True)
     @property
     def plans(self) -> PlannerPlanCollection:
         """Returns the plannerTasks assigned to the user."""

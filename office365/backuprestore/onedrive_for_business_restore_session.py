@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.common.restore_session_base import RestoreSessionBase
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.drive_restore_artifact import DriveRestoreArtifact
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class OneDriveForBusinessRestoreSession(RestoreSessionBase):
+    @odata(name="driveRestoreArtifacts", navigation=True)
     @property
     def drive_restore_artifacts(self) -> EntityCollection[DriveRestoreArtifact]:
         """Gets the driveRestoreArtifacts property"""
@@ -29,6 +31,7 @@ class OneDriveForBusinessRestoreSession(RestoreSessionBase):
             ),
         )
 
+    @odata(name="driveRestoreArtifactsBulkAdditionRequests", navigation=True)
     @property
     def drive_restore_artifacts_bulk_addition_requests(
         self,
@@ -47,6 +50,7 @@ class OneDriveForBusinessRestoreSession(RestoreSessionBase):
             ),
         )
 
+    @odata(name="granularDriveRestoreArtifacts", navigation=True)
     @property
     def granular_drive_restore_artifacts(self) -> EntityCollection[GranularDriveRestoreArtifact]:
         """Gets the granularDriveRestoreArtifacts property"""

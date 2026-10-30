@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 class SectionGroup(OnenoteEntityHierarchyModel):
     """A section group in a OneNote notebook. Section groups can contain sections and section groups."""
 
+    @odata(name="sectionGroupsUrl")
     @property
     def section_groups_url(self) -> Optional[str]:
         """
@@ -23,12 +24,13 @@ class SectionGroup(OnenoteEntityHierarchyModel):
         """
         return self.properties.get("sectionGroupsUrl", None)
 
+    @odata(name="sectionsUrl")
     @property
     def sections_url(self) -> Optional[str]:
         """The URL for the sections navigation property, which returns all the sections in the section group."""
         return self.properties.get("sectionsUrl", None)
 
-    @odata(name="parentNotebook")
+    @odata(name="parentNotebook", navigation=True)
     @property
     def parent_notebook(self) -> Notebook:
         """The notebook that contains the section group. Read-only."""
@@ -37,6 +39,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
             Notebook(self.context, ResourcePath("parentNotebook", self.resource_path)),
         )
 
+    @odata(name="sections", navigation=True)
     @property
     def sections(self) -> OnenoteSectionCollection:
         """The sections in the section group. Read-only. Nullable."""
@@ -48,7 +51,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
             ),
         )
 
-    @odata(name="sectionGroups")
+    @odata(name="sectionGroups", navigation=True)
     @property
     def section_groups(self) -> EntityCollection[SectionGroup]:
         """Retrieve a list of onenoteSection objects from the specified notebook."""
@@ -61,6 +64,7 @@ class SectionGroup(OnenoteEntityHierarchyModel):
             ),
         )
 
+    @odata(name="parentSectionGroup", navigation=True)
     @property
     def parent_section_group(self) -> SectionGroup:
         """Gets the parentSectionGroup property"""

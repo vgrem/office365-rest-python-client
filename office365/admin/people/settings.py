@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class PeopleAdminSettings(Entity):
     """Represents a setting to control people-related admin settings in the tenant."""
 
-    @odata(name="profileCardProperties")
+    @odata(name="profileCardProperties", navigation=True)
     @property
     def profile_card_properties(self) -> EntityCollection[ProfileCardProperty]:
         """Contains a collection of the properties an administrator has defined as visible on the
@@ -32,6 +32,7 @@ class PeopleAdminSettings(Entity):
             ),
         )
 
+    @odata(name="itemInsights", navigation=True)
     @property
     def item_insights(self) -> InsightsSettings:
         """Gets the itemInsights property"""
@@ -41,6 +42,7 @@ class PeopleAdminSettings(Entity):
             "itemInsights", InsightsSettings(self.context, ResourcePath("itemInsights", self.resource_path))
         )
 
+    @odata(name="profilePropertySettings", navigation=True)
     @property
     def profile_property_settings(self) -> EntityCollection[ProfilePropertySetting]:
         """Gets the profilePropertySettings property"""
@@ -55,6 +57,7 @@ class PeopleAdminSettings(Entity):
             ),
         )
 
+    @odata(name="profileSources", navigation=True)
     @property
     def profile_sources(self) -> EntityCollection[ProfileSource]:
         """Gets the profileSources property"""
@@ -67,6 +70,7 @@ class PeopleAdminSettings(Entity):
             ),
         )
 
+    @odata(name="pronouns", navigation=True)
     @property
     def pronouns(self) -> PronounsSettings:
         """Gets the pronouns property"""

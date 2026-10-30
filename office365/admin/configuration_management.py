@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.configuration_baseline import ConfigurationBaseline
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class ConfigurationManagement(Entity):
+    @odata(name="configurationDrifts", navigation=True)
     @property
     def configuration_drifts(self) -> EntityCollection[ConfigurationDrift]:
         """Gets the configurationDrifts property"""
@@ -29,6 +31,7 @@ class ConfigurationManagement(Entity):
             ),
         )
 
+    @odata(name="configurationMonitoringResults", navigation=True)
     @property
     def configuration_monitoring_results(self) -> EntityCollection[ConfigurationMonitoringResult]:
         """Gets the configurationMonitoringResults property"""
@@ -45,6 +48,7 @@ class ConfigurationManagement(Entity):
             ),
         )
 
+    @odata(name="configurationMonitors", navigation=True)
     @property
     def configuration_monitors(self) -> EntityCollection[ConfigurationMonitor]:
         """Gets the configurationMonitors property"""
@@ -57,6 +61,7 @@ class ConfigurationManagement(Entity):
             ),
         )
 
+    @odata(name="configurationSnapshotJobs", navigation=True)
     @property
     def configuration_snapshot_jobs(self) -> EntityCollection[ConfigurationSnapshotJob]:
         """Gets the configurationSnapshotJobs property"""
@@ -69,6 +74,7 @@ class ConfigurationManagement(Entity):
             ),
         )
 
+    @odata(name="configurationSnapshots", navigation=True)
     @property
     def configuration_snapshots(self) -> EntityCollection[ConfigurationBaseline]:
         """Gets the configurationSnapshots property"""

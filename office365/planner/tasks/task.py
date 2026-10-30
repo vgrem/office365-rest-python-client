@@ -49,6 +49,7 @@ class PlannerTask(PlannerEntity):
         """
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """Required. Title of the task."""
@@ -58,6 +59,7 @@ class PlannerTask(PlannerEntity):
     def title(self, value):
         self.set_property("title", value)
 
+    @odata(name="planId")
     @property
     def plan_id(self) -> Optional[str]:
         """Required. Name of the bucket."""
@@ -67,6 +69,7 @@ class PlannerTask(PlannerEntity):
     def plan_id(self, value: str):
         self.set_property("planId", value)
 
+    @odata(name="bucketId")
     @property
     def bucket_id(self) -> Optional[str]:
         """Required. Name of the bucket."""
@@ -76,6 +79,7 @@ class PlannerTask(PlannerEntity):
     def bucket_id(self, value: str):
         self.set_property("bucketId", value)
 
+    @odata(name="details", navigation=True)
     @property
     def details(self) -> PlannerTaskDetails:
         """Additional details about the task."""
@@ -84,6 +88,7 @@ class PlannerTask(PlannerEntity):
             PlannerTaskDetails(self.context, ResourcePath("details", self.resource_path)),
         )
 
+    @odata(name="percentComplete")
     @property
     def percent_complete(self) -> int:
         """Percentage of task completion. 0 = not started, 100 = complete."""
@@ -93,6 +98,7 @@ class PlannerTask(PlannerEntity):
     def percent_complete(self, value: int) -> None:
         self.set_property("percentComplete", value)
 
+    @odata(name="priority")
     @property
     def priority(self) -> int:
         """Priority of the task. 0 = urgent, ..., 5 = medium, 10 = low."""
@@ -135,11 +141,13 @@ class PlannerTask(PlannerEntity):
         self.assignments.remove(getattr(user, "id", None) or str(user))
         return self
 
+    @odata(name="activeChecklistItemCount")
     @property
     def active_checklist_item_count(self) -> Optional[int]:
         """Gets the activeChecklistItemCount property"""
         return self.properties.get("activeChecklistItemCount", None)
 
+    @odata(name="appliedCategories")
     @property
     def applied_categories(self) -> PlannerAppliedCategories:
         """Gets the appliedCategories property"""
@@ -149,16 +157,19 @@ class PlannerTask(PlannerEntity):
 
         return self.properties.get("appliedCategories", PlannerAppliedCategories())
 
+    @odata(name="assigneePriority")
     @property
     def assignee_priority(self) -> Optional[str]:
         """Gets the assigneePriority property"""
         return self.properties.get("assigneePriority", None)
 
+    @odata(name="checklistItemCount")
     @property
     def checklist_item_count(self) -> Optional[int]:
         """Gets the checklistItemCount property"""
         return self.properties.get("checklistItemCount", None)
 
+    @odata(name="completedBy")
     @property
     def completed_by(self) -> IdentitySet:
         """Gets the completedBy property"""
@@ -166,16 +177,19 @@ class PlannerTask(PlannerEntity):
 
         return self.properties.get("completedBy", IdentitySet())
 
+    @odata(name="completedDateTime")
     @property
     def completed_date_time(self) -> Optional[datetime]:
         """Gets the completedDateTime property"""
         return self.properties.get("completedDateTime", datetime.min)
 
+    @odata(name="conversationThreadId")
     @property
     def conversation_thread_id(self) -> Optional[str]:
         """Gets the conversationThreadId property"""
         return self.properties.get("conversationThreadId", None)
 
+    @odata(name="dueDateTime")
     @property
     def due_date_time(self) -> Optional[datetime]:
         """Gets the dueDateTime property"""
@@ -185,16 +199,19 @@ class PlannerTask(PlannerEntity):
     def due_date_time(self, value: datetime) -> None:
         self.set_property("dueDateTime", value)
 
+    @odata(name="hasDescription")
     @property
     def has_description(self) -> Optional[bool]:
         """Gets the hasDescription property"""
         return self.properties.get("hasDescription", None)
 
+    @odata(name="orderHint")
     @property
     def order_hint(self) -> Optional[str]:
         """Gets the orderHint property"""
         return self.properties.get("orderHint", None)
 
+    @odata(name="previewType")
     @property
     def preview_type(self) -> PlannerPreviewType:
         """Gets the previewType property"""
@@ -202,16 +219,19 @@ class PlannerTask(PlannerEntity):
 
         return self.properties.get("previewType", PlannerPreviewType.automatic)
 
+    @odata(name="referenceCount")
     @property
     def reference_count(self) -> Optional[int]:
         """Gets the referenceCount property"""
         return self.properties.get("referenceCount", None)
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> Optional[datetime]:
         """Gets the startDateTime property"""
         return self.properties.get("startDateTime", datetime.min)
 
+    @odata(name="assignedToTaskBoardFormat", navigation=True)
     @property
     def assigned_to_task_board_format(self) -> PlannerAssignedToTaskBoardTaskFormat:
         """Gets the assignedToTaskBoardFormat property"""
@@ -226,6 +246,7 @@ class PlannerTask(PlannerEntity):
             ),
         )
 
+    @odata(name="bucketTaskBoardFormat", navigation=True)
     @property
     def bucket_task_board_format(self) -> PlannerBucketTaskBoardTaskFormat:
         """Gets the bucketTaskBoardFormat property"""
@@ -238,6 +259,7 @@ class PlannerTask(PlannerEntity):
             PlannerBucketTaskBoardTaskFormat(self.context, ResourcePath("bucketTaskBoardFormat", self.resource_path)),
         )
 
+    @odata(name="progressTaskBoardFormat", navigation=True)
     @property
     def progress_task_board_format(self) -> PlannerProgressTaskBoardTaskFormat:
         """Gets the progressTaskBoardFormat property"""

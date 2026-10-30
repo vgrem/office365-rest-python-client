@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.directory.protection.policy.base import ProtectionPolicyBase
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.common.site_protection_rule import SiteProtectionRule
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class SharePointProtectionPolicy(ProtectionPolicyBase):
+    @odata(name="siteInclusionRules", navigation=True)
     @property
     def site_inclusion_rules(self) -> EntityCollection[SiteProtectionRule]:
         """Gets the siteInclusionRules property"""
@@ -27,6 +29,7 @@ class SharePointProtectionPolicy(ProtectionPolicyBase):
             ),
         )
 
+    @odata(name="siteProtectionUnits", navigation=True)
     @property
     def site_protection_units(self) -> EntityCollection[SiteProtectionUnit]:
         """Gets the siteProtectionUnits property"""
@@ -39,6 +42,7 @@ class SharePointProtectionPolicy(ProtectionPolicyBase):
             ),
         )
 
+    @odata(name="siteProtectionUnitsBulkAdditionJobs", navigation=True)
     @property
     def site_protection_units_bulk_addition_jobs(self) -> EntityCollection[SiteProtectionUnitsBulkAdditionJob]:
         """Gets the siteProtectionUnitsBulkAdditionJobs property"""

@@ -29,11 +29,13 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="contentUrl")
     @property
     def content_url(self) -> Optional[str]:
         """The URL for the page's HTML content. Read-only."""
         return self.properties.get("contentUrl", None)
 
+    @odata(name="links")
     @property
     def links(self) -> PageLinks:
         """Links for opening the page. The oneNoteClientURL link opens the page in the OneNote native client
@@ -42,6 +44,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         """
         return self.properties.get("links", PageLinks())
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """The title of the page."""
@@ -56,7 +59,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
         """
         return self.properties.get("userTags", StringCollection())
 
-    @odata(name="parentNotebook")
+    @odata(name="parentNotebook", navigation=True)
     @property
     def parent_notebook(self) -> Notebook:
         """The notebook that contains the page. Read-only."""
@@ -65,7 +68,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
             Notebook(self.context, ResourcePath("parentNotebook", self.resource_path)),
         )
 
-    @odata(name="parentSection")
+    @odata(name="parentSection", navigation=True)
     @property
     def parent_section(self) -> OnenoteSection:
         """The section that contains the page."""
@@ -74,26 +77,31 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
             OnenoteSection(self.context, ResourcePath("parentSection", self.resource_path)),
         )
 
+    @odata(name="content")
     @property
     def content(self) -> Optional[bytes]:
         """Gets the content property"""
         return self.properties.get("content", None)
 
+    @odata(name="createdByAppId")
     @property
     def created_by_app_id(self) -> Optional[str]:
         """Gets the createdByAppId property"""
         return self.properties.get("createdByAppId", None)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="level")
     @property
     def level(self) -> Optional[int]:
         """Gets the level property"""
         return self.properties.get("level", None)
 
+    @odata(name="order")
     @property
     def order(self) -> Optional[int]:
         """Gets the order property"""

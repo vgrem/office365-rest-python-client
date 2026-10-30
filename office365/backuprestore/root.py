@@ -80,7 +80,7 @@ class BackupRestoreRoot(Entity):
         """Represents the tenant-level status of the Backup Storage service."""
         return self.properties.get("serviceStatus", ServiceStatus())
 
-    @odata(name="oneDriveForBusinessProtectionPolicies")
+    @odata(name="oneDriveForBusinessProtectionPolicies", navigation=True)
     @property
     def one_drive_for_business_protection_policies(
         self,
@@ -95,6 +95,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="browseSessions", navigation=True)
     @property
     def browse_sessions(self) -> EntityCollection[BrowseSessionBase]:
         """Gets the browseSessions property"""
@@ -107,6 +108,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="driveInclusionRules", navigation=True)
     @property
     def drive_inclusion_rules(self) -> EntityCollection[DriveProtectionRule]:
         """Gets the driveInclusionRules property"""
@@ -119,6 +121,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="driveProtectionUnits", navigation=True)
     @property
     def drive_protection_units(self) -> EntityCollection[DriveProtectionUnit]:
         """Gets the driveProtectionUnits property"""
@@ -131,6 +134,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="driveProtectionUnitsBulkAdditionJobs", navigation=True)
     @property
     def drive_protection_units_bulk_addition_jobs(self) -> EntityCollection[DriveProtectionUnitsBulkAdditionJob]:
         """Gets the driveProtectionUnitsBulkAdditionJobs property"""
@@ -147,6 +151,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="emailNotificationsSetting", navigation=True)
     @property
     def email_notifications_setting(self) -> EmailNotificationsSetting:
         """Gets the emailNotificationsSetting property"""
@@ -159,6 +164,7 @@ class BackupRestoreRoot(Entity):
             EmailNotificationsSetting(self.context, ResourcePath("emailNotificationsSetting", self.resource_path)),
         )
 
+    @odata(name="exchangeProtectionPolicies", navigation=True)
     @property
     def exchange_protection_policies(self) -> EntityCollection[ExchangeProtectionPolicy]:
         """Gets the exchangeProtectionPolicies property"""
@@ -171,6 +177,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="exchangeRestoreSessions", navigation=True)
     @property
     def exchange_restore_sessions(self) -> EntityCollection[ExchangeRestoreSession]:
         """Gets the exchangeRestoreSessions property"""
@@ -183,6 +190,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="mailboxInclusionRules", navigation=True)
     @property
     def mailbox_inclusion_rules(self) -> EntityCollection[MailboxProtectionRule]:
         """Gets the mailboxInclusionRules property"""
@@ -195,6 +203,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="mailboxProtectionUnits", navigation=True)
     @property
     def mailbox_protection_units(self) -> EntityCollection[MailboxProtectionUnit]:
         """Gets the mailboxProtectionUnits property"""
@@ -207,6 +216,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="mailboxProtectionUnitsBulkAdditionJobs", navigation=True)
     @property
     def mailbox_protection_units_bulk_addition_jobs(self) -> EntityCollection[MailboxProtectionUnitsBulkAdditionJob]:
         """Gets the mailboxProtectionUnitsBulkAdditionJobs property"""
@@ -223,6 +233,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="oneDriveForBusinessBrowseSessions", navigation=True)
     @property
     def onedrive_for_business_browse_sessions(self) -> EntityCollection[OneDriveForBusinessBrowseSession]:
         """Gets the oneDriveForBusinessBrowseSessions property"""
@@ -239,6 +250,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="oneDriveForBusinessRestoreSessions", navigation=True)
     @property
     def onedrive_for_business_restore_sessions(self) -> EntityCollection[OneDriveForBusinessRestoreSession]:
         """Gets the oneDriveForBusinessRestoreSessions property"""
@@ -255,6 +267,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="protectionPolicies", navigation=True)
     @property
     def protection_policies(self) -> EntityCollection[ProtectionPolicyBase]:
         """Gets the protectionPolicies property"""
@@ -267,6 +280,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="protectionUnits", navigation=True)
     @property
     def protection_units(self) -> EntityCollection[ProtectionUnitBase]:
         """Gets the protectionUnits property"""
@@ -279,6 +293,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="restorePoints", navigation=True)
     @property
     def restore_points(self) -> RestorePointCollection:
         """Gets the restorePoints property"""
@@ -292,6 +307,7 @@ class BackupRestoreRoot(Entity):
             RestorePointCollection(self.context, RestorePoint, ResourcePath("restorePoints", self.resource_path)),
         )
 
+    @odata(name="restoreSessions", navigation=True)
     @property
     def restore_sessions(self) -> EntityCollection[RestoreSessionBase]:
         """Gets the restoreSessions property"""
@@ -304,6 +320,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="serviceApps", navigation=True)
     @property
     def service_apps(self) -> EntityCollection[ServiceApp]:
         """Gets the serviceApps property"""
@@ -314,6 +331,7 @@ class BackupRestoreRoot(Entity):
             EntityCollection[ServiceApp](self.context, ServiceApp, ResourcePath("serviceApps", self.resource_path)),
         )
 
+    @odata(name="sharePointBrowseSessions", navigation=True)
     @property
     def sharepoint_browse_sessions(self) -> EntityCollection[SharePointBrowseSession]:
         """Gets the sharePointBrowseSessions property"""
@@ -328,6 +346,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="sharePointProtectionPolicies", navigation=True)
     @property
     def sharepoint_protection_policies(self) -> EntityCollection[SharePointProtectionPolicy]:
         """Gets the sharePointProtectionPolicies property"""
@@ -344,6 +363,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="sharePointRestoreSessions", navigation=True)
     @property
     def sharepoint_restore_sessions(self) -> EntityCollection[SharePointRestoreSession]:
         """Gets the sharePointRestoreSessions property"""
@@ -358,6 +378,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="siteInclusionRules", navigation=True)
     @property
     def site_inclusion_rules(self) -> EntityCollection[SiteProtectionRule]:
         """Gets the siteInclusionRules property"""
@@ -370,6 +391,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="siteProtectionUnits", navigation=True)
     @property
     def site_protection_units(self) -> EntityCollection[SiteProtectionUnit]:
         """Gets the siteProtectionUnits property"""
@@ -382,6 +404,7 @@ class BackupRestoreRoot(Entity):
             ),
         )
 
+    @odata(name="siteProtectionUnitsBulkAdditionJobs", navigation=True)
     @property
     def site_protection_units_bulk_addition_jobs(self) -> EntityCollection[SiteProtectionUnitsBulkAdditionJob]:
         """Gets the siteProtectionUnitsBulkAdditionJobs property"""

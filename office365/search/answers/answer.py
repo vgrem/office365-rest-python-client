@@ -2,32 +2,38 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 from office365.search.identity_set import IdentitySet
 
 
 class SearchAnswer(Entity):
     """Represents the base type for other search answers."""
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """The search answer description that is shown on the search results page."""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The search answer name that is displayed in search results."""
         return self.properties.get("displayName", None)
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Details of the user who created or last modified the search answer."""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_datetime(self) -> Optional[datetime]:
         """Date and time when the search answer was created or last edited."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> Optional[str]:
         """The URL link for the search answer. When users select this search answer from the search results,

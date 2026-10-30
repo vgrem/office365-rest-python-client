@@ -49,11 +49,13 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         self.context.add_query(qry)
         return return_type
 
+    @odata(name="isDefault")
     @property
     def is_default(self) -> Optional[bool]:
         """Indicates whether this is the user's default section. Read-only."""
         return self.properties.get("isDefault", None)
 
+    @odata(name="links")
     @property
     def links(self) -> PageLinks:
         """Links for opening the section. The oneNoteClientURL link opens the section in the OneNote native client
@@ -61,6 +63,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         """
         return self.properties.get("links", PageLinks())
 
+    @odata(name="pages", navigation=True)
     @property
     def pages(self) -> OnenotePageCollection:
         """
@@ -73,7 +76,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             OnenotePageCollection(self.context, ResourcePath("pages", self.resource_path)),
         )
 
-    @odata(name="parentNotebook")
+    @odata(name="parentNotebook", navigation=True)
     @property
     def parent_notebook(self):
         """
@@ -86,7 +89,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
             Notebook(self.context, ResourcePath("parentNotebook", self.resource_path)),
         )
 
-    @odata(name="parentSectionGroup")
+    @odata(name="parentSectionGroup", navigation=True)
     @property
     def parent_section_group(self) -> SectionGroup:
         """
@@ -103,6 +106,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
     def entity_type_name(self) -> str:
         return None  # type: ignore
 
+    @odata(name="pagesUrl")
     @property
     def pages_url(self) -> Optional[str]:
         """Gets the pagesUrl property"""

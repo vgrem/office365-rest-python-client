@@ -12,6 +12,7 @@ class ChecklistItem(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Indicates the title of the checklistItem."""

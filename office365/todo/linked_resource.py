@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class LinkedResource(Entity):
@@ -11,21 +12,25 @@ class LinkedResource(Entity):
     the related item. You can see the linkedResource in the task details view, as shown.
     """
 
+    @odata(name="applicationName")
     @property
     def application_name(self) -> Optional[str]:
         """Field indicating the app name of the source that is sending the linkedResource."""
         return self.properties.get("applicationName", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The title of the linkedResource."""
         return self.properties.get("displayName", None)
 
+    @odata(name="externalId")
     @property
     def external_id(self) -> Optional[str]:
         """The identifier of the object in the source application."""
         return self.properties.get("externalId", None)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> Optional[str]:
         """The deep link to the related item in the source application."""

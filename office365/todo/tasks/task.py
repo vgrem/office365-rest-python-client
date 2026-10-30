@@ -50,6 +50,7 @@ class TodoTask(Entity):
     def __str__(self) -> str:
         return self.title or self.entity_type_name or ""
 
+    @odata(name="body")
     @property
     def body(self) -> ItemBody:
         """The task body that typically contains information about the task."""
@@ -137,6 +138,7 @@ class TodoTask(Entity):
     def status(self, value: TaskStatus):
         self.set_property("status", value)
 
+    @odata(name="title")
     @property
     def title(self) -> Optional[str]:
         """A brief description of the task."""
@@ -146,6 +148,7 @@ class TodoTask(Entity):
     def title(self, value):
         self.set_property("title", value)
 
+    @odata(name="attachmentSessions", navigation=True)
     @property
     def attachment_sessions(self) -> EntityCollection[AttachmentSession]:
         """A collection of attachment sessions for the task."""
@@ -158,6 +161,7 @@ class TodoTask(Entity):
             ),
         )
 
+    @odata(name="attachments", navigation=True)
     @property
     def attachments(self) -> AttachmentBaseCollection:
         """A collection of file attachments for the task."""
@@ -166,6 +170,7 @@ class TodoTask(Entity):
             AttachmentBaseCollection(self.context, ResourcePath("attachments", self.resource_path)),
         )
 
+    @odata(name="extensions", navigation=True)
     @property
     def extensions(self) -> EntityCollection[Extension]:
         """The collection of open extensions defined for the task."""
@@ -174,7 +179,7 @@ class TodoTask(Entity):
             EntityCollection(self.context, Extension, ResourcePath("extensions", self.resource_path)),
         )
 
-    @odata(name="checklistItems")
+    @odata(name="checklistItems", navigation=True)
     @property
     def checklist_items(self) -> EntityCollection[ChecklistItem]:
         """A collection of checklistItems linked to a task."""
@@ -187,7 +192,7 @@ class TodoTask(Entity):
             ),
         )
 
-    @odata(name="linkedResources")
+    @odata(name="linkedResources", navigation=True)
     @property
     def linked_resources(self) -> EntityCollection[LinkedResource]:
         """A collection of resources linked to the task."""

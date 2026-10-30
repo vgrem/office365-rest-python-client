@@ -38,11 +38,13 @@ class SharepointSettings(Entity):
         """Specifies the idle session sign-out policies for the tenant."""
         return self.properties.get("idleSessionSignOut", IdleSessionSignOut())
 
+    @odata(name="isCommentingOnSitePagesEnabled")
     @property
     def is_commenting_on_site_pages_enabled(self) -> Optional[bool]:
         """Indicates whether comments are allowed on modern site pages in SharePoint."""
         return self.properties.get("isCommentingOnSitePagesEnabled", None)
 
+    @odata(name="isLegacyAuthProtocolsEnabled")
     @property
     def is_legacy_auth_protocols_enabled(self) -> Optional[bool]:
         """Indicates whether legacy authentication protocols are enabled for the tenant."""
@@ -69,6 +71,7 @@ class SharepointSettings(Entity):
         """Sets the collection of email domains that are blocked for sharing outside the organization."""
         self.set_property("sharingBlockedDomainList", value)
 
+    @odata(name="sharingCapability")
     @property
     def sharing_capability(self) -> Optional[str]:
         """
@@ -81,6 +84,7 @@ class SharepointSettings(Entity):
         """
         return self.properties.get("sharingCapability", None)
 
+    @odata(name="sharingDomainRestrictionMode")
     @property
     def sharing_domain_restriction_mode(self) -> Optional[str]:
         """
@@ -88,6 +92,7 @@ class SharepointSettings(Entity):
         """
         return self.properties.get("sharingDomainRestrictionMode", None)
 
+    @odata(name="siteCreationDefaultManagedPath")
     @property
     def site_creation_default_managed_path(self) -> Optional[str]:
         """
@@ -95,11 +100,13 @@ class SharepointSettings(Entity):
         """
         return self.properties.get("siteCreationDefaultManagedPath", None)
 
+    @odata(name="siteCreationDefaultStorageLimitInMB")
     @property
     def site_creation_default_storage_limit_in_mb(self) -> Optional[int]:
         """The default storage quota for a new site upon creation. Measured in megabytes (MB)."""
         return self.properties.get("siteCreationDefaultStorageLimitInMB", None)
 
+    @odata(name="tenantDefaultTimezone")
     @property
     def tenant_default_timezone(self) -> Optional[str]:
         """
@@ -112,11 +119,13 @@ class SharepointSettings(Entity):
     def entity_type_name(self) -> str:
         return None  # type: ignore
 
+    @odata(name="deletedUserPersonalSiteRetentionPeriodInDays")
     @property
     def deleted_user_personal_site_retention_period_in_days(self) -> Optional[int]:
         """Gets the deletedUserPersonalSiteRetentionPeriodInDays property"""
         return self.properties.get("deletedUserPersonalSiteRetentionPeriodInDays", None)
 
+    @odata(name="imageTaggingOption")
     @property
     def image_tagging_option(self) -> ImageTaggingChoice:
         """Gets the imageTaggingOption property"""
@@ -124,71 +133,85 @@ class SharepointSettings(Entity):
 
         return self.properties.get("imageTaggingOption", ImageTaggingChoice.disabled)
 
+    @odata(name="isFileActivityNotificationEnabled")
     @property
     def is_file_activity_notification_enabled(self) -> Optional[bool]:
         """Gets the isFileActivityNotificationEnabled property"""
         return self.properties.get("isFileActivityNotificationEnabled", None)
 
+    @odata(name="isLoopEnabled")
     @property
     def is_loop_enabled(self) -> Optional[bool]:
         """Gets the isLoopEnabled property"""
         return self.properties.get("isLoopEnabled", None)
 
+    @odata(name="isMacSyncAppEnabled")
     @property
     def is_mac_sync_app_enabled(self) -> Optional[bool]:
         """Gets the isMacSyncAppEnabled property"""
         return self.properties.get("isMacSyncAppEnabled", None)
 
+    @odata(name="isRequireAcceptingUserToMatchInvitedUserEnabled")
     @property
     def is_require_accepting_user_to_match_invited_user_enabled(self) -> Optional[bool]:
         """Gets the isRequireAcceptingUserToMatchInvitedUserEnabled property"""
         return self.properties.get("isRequireAcceptingUserToMatchInvitedUserEnabled", None)
 
+    @odata(name="isResharingByExternalUsersEnabled")
     @property
     def is_resharing_by_external_users_enabled(self) -> Optional[bool]:
         """Gets the isResharingByExternalUsersEnabled property"""
         return self.properties.get("isResharingByExternalUsersEnabled", None)
 
+    @odata(name="isSharePointMobileNotificationEnabled")
     @property
     def is_sharepoint_mobile_notification_enabled(self) -> Optional[bool]:
         """Gets the isSharePointMobileNotificationEnabled property"""
         return self.properties.get("isSharePointMobileNotificationEnabled", None)
 
+    @odata(name="isSharePointNewsfeedEnabled")
     @property
     def is_sharepoint_newsfeed_enabled(self) -> Optional[bool]:
         """Gets the isSharePointNewsfeedEnabled property"""
         return self.properties.get("isSharePointNewsfeedEnabled", None)
 
+    @odata(name="isSiteCreationEnabled")
     @property
     def is_site_creation_enabled(self) -> Optional[bool]:
         """Gets the isSiteCreationEnabled property"""
         return self.properties.get("isSiteCreationEnabled", None)
 
+    @odata(name="isSiteCreationUIEnabled")
     @property
     def is_site_creation_ui_enabled(self) -> Optional[bool]:
         """Gets the isSiteCreationUIEnabled property"""
         return self.properties.get("isSiteCreationUIEnabled", None)
 
+    @odata(name="isSitePagesCreationEnabled")
     @property
     def is_site_pages_creation_enabled(self) -> Optional[bool]:
         """Gets the isSitePagesCreationEnabled property"""
         return self.properties.get("isSitePagesCreationEnabled", None)
 
+    @odata(name="isSitesStorageLimitAutomatic")
     @property
     def is_sites_storage_limit_automatic(self) -> Optional[bool]:
         """Gets the isSitesStorageLimitAutomatic property"""
         return self.properties.get("isSitesStorageLimitAutomatic", None)
 
+    @odata(name="isSyncButtonHiddenOnPersonalSite")
     @property
     def is_sync_button_hidden_on_personal_site(self) -> Optional[bool]:
         """Gets the isSyncButtonHiddenOnPersonalSite property"""
         return self.properties.get("isSyncButtonHiddenOnPersonalSite", None)
 
+    @odata(name="isUnmanagedSyncAppForTenantRestricted")
     @property
     def is_unmanaged_sync_app_for_tenant_restricted(self) -> Optional[bool]:
         """Gets the isUnmanagedSyncAppForTenantRestricted property"""
         return self.properties.get("isUnmanagedSyncAppForTenantRestricted", None)
 
+    @odata(name="personalSiteDefaultStorageLimitInMB")
     @property
     def personal_site_default_storage_limit_in_mb(self) -> Optional[int]:
         """Gets the personalSiteDefaultStorageLimitInMB property"""

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class Admin(Entity):
     """Entity that acts as a container for administrator functionality."""
 
-    @odata(name="microsoft365Apps")
+    @odata(name="microsoft365Apps", navigation=True)
     @property
     def microsoft365_apps(self) -> AdminMicrosoft365Apps:
         """A container for the Microsoft 365 apps admin functionality."""
@@ -30,6 +30,7 @@ class Admin(Entity):
             AdminMicrosoft365Apps(self.context, ResourcePath("microsoft365Apps", self.resource_path)),
         )
 
+    @odata(name="sharepoint", navigation=True)
     @property
     def sharepoint(self) -> Sharepoint:
         """A container for administrative resources to manage tenant-level settings for SharePoint and OneDrive."""
@@ -38,7 +39,7 @@ class Admin(Entity):
             Sharepoint(self.context, ResourcePath("sharepoint", self.resource_path)),
         )
 
-    @odata(name="serviceAnnouncement")
+    @odata(name="serviceAnnouncement", navigation=True)
     @property
     def service_announcement(self) -> ServiceAnnouncement:
         """A container for service communications resources. Read-only."""
@@ -47,7 +48,7 @@ class Admin(Entity):
             ServiceAnnouncement(self.context, ResourcePath("serviceAnnouncement", self.resource_path)),
         )
 
-    @odata(name="reportSettings")
+    @odata(name="reportSettings", navigation=True)
     @property
     def report_settings(self) -> AdminReportSettings:
         """A container for administrative resources to manage reports."""
@@ -56,6 +57,7 @@ class Admin(Entity):
             AdminReportSettings(self.context, ResourcePath("reportSettings", self.resource_path)),
         )
 
+    @odata(name="people", navigation=True)
     @property
     def people(self) -> PeopleAdminSettings:
         """Represents a setting to control people-related admin settings in the tenant."""
@@ -64,6 +66,7 @@ class Admin(Entity):
             PeopleAdminSettings(self.context, ResourcePath("people", self.resource_path)),
         )
 
+    @odata(name="edge", navigation=True)
     @property
     def edge(self) -> Edge:
         """Gets the edge property"""
@@ -71,6 +74,7 @@ class Admin(Entity):
 
         return self.properties.get("edge", Edge(self.context, ResourcePath("edge", self.resource_path)))
 
+    @odata(name="exchange", navigation=True)
     @property
     def exchange(self) -> ExchangeAdmin:
         """Gets the exchange property"""
@@ -78,6 +82,7 @@ class Admin(Entity):
 
         return self.properties.get("exchange", ExchangeAdmin(self.context, ResourcePath("exchange", self.resource_path)))
 
+    @odata(name="teams", navigation=True)
     @property
     def teams(self) -> TeamsAdminRoot:
         """Gets the teams property"""
@@ -85,6 +90,7 @@ class Admin(Entity):
 
         return self.properties.get("teams", TeamsAdminRoot(self.context, ResourcePath("teams", self.resource_path)))
 
+    @odata(name="configurationManagement", navigation=True)
     @property
     def configuration_management(self) -> ConfigurationManagement:
         """Gets the configurationManagement property"""

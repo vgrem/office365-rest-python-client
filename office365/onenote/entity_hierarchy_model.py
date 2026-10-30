@@ -9,6 +9,7 @@ from office365.runtime.types.odata_property import odata
 class OnenoteEntityHierarchyModel(OnenoteEntitySchemaObjectModel):
     """ """
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The name of the section."""

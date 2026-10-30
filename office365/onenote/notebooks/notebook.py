@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 class Notebook(OnenoteEntityHierarchyModel):
     """A OneNote notebook."""
 
+    @odata(name="sections", navigation=True)
     @property
     def sections(self) -> OnenoteSectionCollection:
         """
@@ -29,7 +30,7 @@ class Notebook(OnenoteEntityHierarchyModel):
             ),
         )
 
-    @odata(name="sectionGroups")
+    @odata(name="sectionGroups", navigation=True)
     @property
     def section_groups(self):
         """
@@ -51,16 +52,19 @@ class Notebook(OnenoteEntityHierarchyModel):
     def entity_type_name(self) -> str:
         return None  # type: ignore
 
+    @odata(name="isDefault")
     @property
     def is_default(self) -> Optional[bool]:
         """Gets the isDefault property"""
         return self.properties.get("isDefault", None)
 
+    @odata(name="isShared")
     @property
     def is_shared(self) -> Optional[bool]:
         """Gets the isShared property"""
         return self.properties.get("isShared", None)
 
+    @odata(name="links")
     @property
     def links(self) -> NotebookLinks:
         """Gets the links property"""
@@ -68,16 +72,19 @@ class Notebook(OnenoteEntityHierarchyModel):
 
         return self.properties.get("links", NotebookLinks())
 
+    @odata(name="sectionGroupsUrl")
     @property
     def section_groups_url(self) -> Optional[str]:
         """Gets the sectionGroupsUrl property"""
         return self.properties.get("sectionGroupsUrl", None)
 
+    @odata(name="sectionsUrl")
     @property
     def sections_url(self) -> Optional[str]:
         """Gets the sectionsUrl property"""
         return self.properties.get("sectionsUrl", None)
 
+    @odata(name="userRole")
     @property
     def user_role(self) -> OnenoteUserRole:
         """Gets the userRole property"""

@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.runtime.converters.scalars import iso_z
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.backuprestore.serviceapps.status import ServiceAppStatus
@@ -33,6 +34,7 @@ class ServiceApp(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="application")
     @property
     def application(self) -> Identity:
         """Gets the application property"""
@@ -40,11 +42,13 @@ class ServiceApp(Entity):
 
         return self.properties.get("application", Identity())
 
+    @odata(name="effectiveDateTime")
     @property
     def effective_date_time(self) -> Optional[datetime]:
         """Gets the effectiveDateTime property"""
         return self.properties.get("effectiveDateTime", datetime.min)
 
+    @odata(name="lastModifiedBy")
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
@@ -52,16 +56,19 @@ class ServiceApp(Entity):
 
         return self.properties.get("lastModifiedBy", IdentitySet())
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="registrationDateTime")
     @property
     def registration_date_time(self) -> Optional[datetime]:
         """Gets the registrationDateTime property"""
         return self.properties.get("registrationDateTime", datetime.min)
 
+    @odata(name="status")
     @property
     def status(self) -> ServiceAppStatus:
         """Gets the status property"""
