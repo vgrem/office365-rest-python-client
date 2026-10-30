@@ -10,6 +10,12 @@ from typing import cast
 from office365.booking.appointment import BookingAppointment
 from office365.communications.callrecords.call_record import CallRecord
 from office365.communications.callrecords.type import CallType
+from office365.communications.calls.call import Call
+from office365.communications.onlinemeetings.base import OnlineMeetingBase
+from office365.communications.onlinemeetings.collection import ChatInfo
+from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
+from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
+from office365.directory.policies.conditionalaccess.grant_controls import ConditionalAccessGrantControls
 from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
@@ -27,13 +33,39 @@ from office365.runtime.converters.scalars import (
     wall_clock,
     wall_clock_text,
 )
-from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
+from office365.runtime.converters.value import _declared_cache, coerce_value, declared_type, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.duration import Duration
 from office365.search.hits.container import SearchHitsContainer
 from office365.search.response import SearchResponse
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
+
+
+class TestCyclicDeclaredType(unittest.TestCase):
+    """A type too cyclic for a module-level import is still the getter's declared type."""
+
+    def setUp(self):
+        _declared_cache.clear()
+
+    def test_a_type_the_getter_imports_for_itself_declares(self):
+        # ``ChatInfo``/``ConditionalAccessGrantControls`` can only be imported inside the
+        # getter: at module level the edge would close a cycle. ``get_type_hints`` saw a
+        # bare ``NameError`` and the declaration was lost, so a chatInfo arrived as the
+        # dict the service sent.
+        self.assertIs(declared_type(OnlineMeetingBase, "chatInfo"), ChatInfo)
+        self.assertIs(declared_type(ConditionalAccessPolicy, "grantControls"), ConditionalAccessGrantControls)
+
+    def test_the_value_is_built_from_the_declaration(self):
+        meeting = OnlineMeeting(None)
+        meeting.set_property("chatInfo", {"threadId": "19:abc"})
+        self.assertIsInstance(meeting.chat_info, ChatInfo)
+        self.assertEqual(meeting.chat_info.threadId, "19:abc")
+
+    def test_a_getter_that_annotates_nothing_still_declares_nothing(self):
+        # ``Call.call_routes`` names its type only in the default it passes to
+        # ``properties.get``; an annotation is what states it, and there is none.
+        self.assertIsNone(declared_type(Call, "callRoutes"))
 
 
 class TestDuration(unittest.TestCase):

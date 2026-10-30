@@ -372,6 +372,16 @@ introduced.
   which no longer drops the seconds: 90 seconds was `PT1M` and is `PT1M30S`. A form with
   no `timedelta` equivalent — `P1M` names a month, not thirty days — is kept as the
   service sent it, like an unrecognized boolean.
+- **A cyclic type's declaration was lost.** `ChatInfo` and
+  `ConditionalAccessGrantControls` cannot be imported at module level — the edge would
+  close an import cycle — so the getter imports them for itself, and `get_type_hints`
+  saw a bare `NameError` where the module binds nothing. `declared_type` now re-reads
+  the annotation with the getter's own imports: the source is parsed, not run, so
+  learning what a getter declares never calls it. `OnlineMeeting.chatInfo` arrives as a
+  `ChatInfo` instead of the dict the service sent, and `coerce_records` keeps the column
+  instead of warning `Skipping unknown column 'chatInfo'`. The 120 columns that still
+  declare nothing are getters written without a return annotation (`Call.callRoutes`),
+  where the fix is an annotation rather than an import.
 
 **Runtime**
 

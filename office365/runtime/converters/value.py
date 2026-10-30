@@ -9,7 +9,11 @@ layer's business: a profile attaches it (``JsonProfile.wrap``).
 
 from __future__ import annotations
 
+import ast
+import importlib
+import inspect
 import re
+import textwrap
 import types
 import uuid
 from datetime import date, datetime, timedelta
@@ -128,6 +132,38 @@ def declared_type(cls: type, name: str) -> Any:
     return declared
 
 
+def _imported_names(func: Any) -> Dict[str, Any]:
+    """The names ``func`` imports for itself, resolved the way its body would.
+
+    A cyclic type cannot be imported at module level -- the edge would close a cycle --
+    so the generator writes the import inside the getter, where the annotation still
+    names a type ``get_type_hints`` cannot see. The imports are read, not run: the
+    getter must not be called to learn what it declares.
+    """
+    try:
+        tree = ast.parse(textwrap.dedent(inspect.getsource(func)))
+    except (OSError, TypeError, SyntaxError):
+        return {}
+    names: Dict[str, Any] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            try:
+                module = importlib.import_module(node.module)
+            except ImportError:
+                continue
+            for alias in node.names:
+                value = getattr(module, alias.name, None)
+                if value is not None:
+                    names[alias.asname or alias.name] = value
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                try:
+                    names[alias.asname or alias.name.split(".")[0]] = importlib.import_module(alias.name)
+                except ImportError:
+                    continue
+    return names
+
+
 def _resolve_declared_type(cls: type, name: str) -> Any:
     meta = getattr(cls, "_schema", EMPTY).properties.get(name)
     if meta is not None:
@@ -144,9 +180,13 @@ def _resolve_declared_type(cls: type, name: str) -> Any:
         try:
             declared = get_type_hints(target).get("return")
         except NameError:
-            # A TYPE_CHECKING-only annotation: the getter constructs the type at
-            # runtime, but the name is not resolvable here.
-            declared = None
+            # A name the module does not bind: either a getter that imports it for
+            # itself (a cycle, so it cannot be module level) or a dead
+            # ``if TYPE_CHECKING:`` entry, which no annotation can resolve.
+            try:
+                declared = get_type_hints(target, localns=_imported_names(target)).get("return")
+            except (NameError, TypeError):
+                declared = None
         except TypeError:
             # ``attr`` is not a function (a class constant sharing the OData name).
             declared = None
