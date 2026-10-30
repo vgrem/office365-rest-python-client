@@ -15,17 +15,19 @@ class TeamsApp(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> str | None:
         """The title of the TeamsApp."""
         return self.properties.get("displayName")
 
+    @odata(name="distributionMethod")
     @property
     def distribution_method(self) -> str | None:
         """The title of the TeamsApp."""
         return self.properties.get("distributionMethod")
 
-    @odata(name="appDefinitions")
+    @odata(name="appDefinitions", navigation=True)
     @property
     def app_definitions(self) -> EntityCollection[TeamsAppDefinition]:
         """The details for each version of the app."""
@@ -38,6 +40,7 @@ class TeamsApp(Entity):
             ),
         )
 
+    @odata(name="externalId")
     @property
     def external_id(self) -> Optional[str]:
         """Gets the externalId property"""

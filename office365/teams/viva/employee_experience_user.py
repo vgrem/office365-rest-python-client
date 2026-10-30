@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.viva.learning.courses.activity import LearningCourseActivity
 
 if TYPE_CHECKING:
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 class EmployeeExperienceUser(Entity):
     """"""
 
+    @odata(name="learningCourseActivities", navigation=True)
     @property
     def learning_course_activities(self) -> EntityCollection[LearningCourseActivity]:
         """Get a list of the learningCourseActivity objects (assigned or self-initiated) for a user."""
@@ -28,6 +30,7 @@ class EmployeeExperienceUser(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.EmployeeExperienceUser"
 
+    @odata(name="assignedRoles", navigation=True)
     @property
     def assigned_roles(self) -> EntityCollection[EngagementRole]:
         """Gets the assignedRoles property"""

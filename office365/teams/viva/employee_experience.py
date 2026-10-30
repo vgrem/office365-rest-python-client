@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 class EmployeeExperience(Entity):
     """Represents a container that exposes navigation properties for employee experience resources."""
 
+    @odata(name="communities", navigation=True)
     @property
     def communities(self) -> EntityCollection[Community]:
         """A collection of communities in Viva Engage."""
@@ -30,7 +31,7 @@ class EmployeeExperience(Entity):
             ),
         )
 
-    @odata(name="learningCourseActivities")
+    @odata(name="learningCourseActivities", navigation=True)
     @property
     def learning_course_activities(self) -> EntityCollection[LearningCourseActivity]:
         """A collection of learning course activities."""
@@ -43,7 +44,7 @@ class EmployeeExperience(Entity):
             ),
         )
 
-    @odata(name="learningProviders")
+    @odata(name="learningProviders", navigation=True)
     @property
     def learning_providers(self) -> EntityCollection[LearningProvider]:
         """A collection of learning providers."""
@@ -56,6 +57,7 @@ class EmployeeExperience(Entity):
             ),
         )
 
+    @odata(name="engagementAsyncOperations", navigation=True)
     @property
     def engagement_async_operations(self) -> EntityCollection[EngagementAsyncOperation]:
         """Gets the engagementAsyncOperations property"""
@@ -68,6 +70,7 @@ class EmployeeExperience(Entity):
             ),
         )
 
+    @odata(name="roles", navigation=True)
     @property
     def roles(self) -> EntityCollection[EngagementRole]:
         """Gets the roles property"""

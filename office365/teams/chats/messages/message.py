@@ -30,11 +30,13 @@ class ChatMessage(Entity):
     The message can be a root message or part of a thread that is defined by the replyToId property in the message.
     """
 
+    @odata(name="attachments")
     @property
     def attachments(self) -> ClientValueCollection[ChatMessageAttachment]:
         """The collection of replies."""
         return self.properties.get("attachments", ClientValueCollection(ChatMessageAttachment))
 
+    @odata(name="body")
     @property
     def body(self) -> ChatMessageBody:
         """
@@ -51,6 +53,7 @@ class ChatMessage(Entity):
         """
         return self.properties.get("channelIdentity", ChannelIdentity())
 
+    @odata(name="chatId")
     @property
     def chat_id(self) -> Optional[str]:
         """
@@ -70,6 +73,7 @@ class ChatMessage(Entity):
         """Timestamp of when the chat message was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="etag")
     @property
     def etag(self) -> Optional[str]:
         """Version marker for the chat message."""
@@ -81,26 +85,31 @@ class ChatMessage(Entity):
         """Details of the sender of the chat message."""
         return self.properties.get("from", IdentitySet())
 
+    @odata(name="replyToId")
     @property
     def reply_to_id(self) -> Optional[str]:
         """Id of the parent/root message when this message is a reply."""
         return self.properties.get("replyToId", None)
 
+    @odata(name="messageType")
     @property
     def message_type(self) -> Optional[str]:
         """The type of the chat message (``message``, ``systemEventMessage``, ...)."""
         return self.properties.get("messageType", None)
 
+    @odata(name="mentions")
     @property
     def mentions(self) -> ClientValueCollection[ChatMessageMention]:
         """The mentions for the chat message."""
         return self.properties.get("mentions", ClientValueCollection(ChatMessageMention))
 
+    @odata(name="reactions")
     @property
     def reactions(self) -> ClientValueCollection[ChatMessageReaction]:
         """The reactions for the chat message."""
         return self.properties.get("reactions", ClientValueCollection(ChatMessageReaction))
 
+    @odata(name="hostedContents", navigation=True)
     @property
     def hosted_contents(self) -> EntityCollection[ChatMessageHostedContent]:
         """Content hosted by Teams as part of the message (e.g. inline images).
@@ -139,6 +148,7 @@ class ChatMessage(Entity):
         """
         return self.properties.get("eventDetail", EventMessageDetail())
 
+    @odata(name="replies", navigation=True)
     @property
     def replies(self) -> EntityCollection[ChatMessage]:
         """
@@ -149,6 +159,7 @@ class ChatMessage(Entity):
             EntityCollection(self.context, ChatMessage, ResourcePath("replies", self.resource_path)),
         )
 
+    @odata(name="subject")
     @property
     def subject(self) -> Optional[str]:
         """
@@ -156,6 +167,7 @@ class ChatMessage(Entity):
         """
         return self.properties.get("subject", None)
 
+    @odata(name="summary")
     @property
     def summary(self) -> Optional[str]:
         """
@@ -164,6 +176,7 @@ class ChatMessage(Entity):
         """
         return self.properties.get("summary", None)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> Optional[str]:
         """
@@ -171,6 +184,7 @@ class ChatMessage(Entity):
         """
         return self.properties.get("webUrl", None)
 
+    @odata(name="importance")
     @property
     def importance(self) -> Optional[str]:
         """
@@ -178,16 +192,19 @@ class ChatMessage(Entity):
         """
         return self.properties.get("importance", None)
 
+    @odata(name="lastEditedDateTime")
     @property
     def last_edited_date_time(self) -> Optional[datetime]:
         """Gets the lastEditedDateTime property"""
         return self.properties.get("lastEditedDateTime", datetime.min)
 
+    @odata(name="locale")
     @property
     def locale(self) -> Optional[str]:
         """Gets the locale property"""
         return self.properties.get("locale", None)
 
+    @odata(name="messageHistory")
     @property
     def message_history(self) -> ClientValueCollection[ChatMessageHistoryItem]:
         """Gets the messageHistory property"""
@@ -197,6 +214,7 @@ class ChatMessage(Entity):
             "messageHistory", ClientValueCollection[ChatMessageHistoryItem](ChatMessageHistoryItem)
         )
 
+    @odata(name="policyViolation")
     @property
     def policy_violation(self) -> ChatMessagePolicyViolation:
         """Gets the policyViolation property"""

@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 class TeamsAppDefinition(Entity):
     """Represents the details of a version of a teamsApp."""
 
+    @odata(name="bot", navigation=True)
     @property
     def bot(self) -> TeamworkBot:
         """The details of the bot specified in the Teams app manifest."""
@@ -28,6 +29,7 @@ class TeamsAppDefinition(Entity):
         """Identity of the user, device, or application which created the item."""
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="description")
     @property
     def description(self) -> str | None:
         """Verbose description of the application."""
@@ -39,11 +41,13 @@ class TeamsAppDefinition(Entity):
         """Gets date and time the teamsApp was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="teamsAppId")
     @property
     def teams_app_id(self) -> str | None:
         """The ID from the Teams app manifest."""
         return self.properties.get("teamsAppId", None)
 
+    @odata(name="authorization")
     @property
     def authorization(self) -> TeamsAppAuthorization:
         """Gets the authorization property"""
@@ -51,11 +55,13 @@ class TeamsAppDefinition(Entity):
 
         return self.properties.get("authorization", TeamsAppAuthorization())
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="publishingState")
     @property
     def publishing_state(self) -> TeamsAppPublishingState:
         """Gets the publishingState property"""
@@ -63,11 +69,13 @@ class TeamsAppDefinition(Entity):
 
         return self.properties.get("publishingState", TeamsAppPublishingState.submitted)
 
+    @odata(name="shortDescription")
     @property
     def short_description(self) -> Optional[str]:
         """Gets the shortDescription property"""
         return self.properties.get("shortDescription", None)
 
+    @odata(name="version")
     @property
     def version(self) -> Optional[str]:
         """Gets the version property"""

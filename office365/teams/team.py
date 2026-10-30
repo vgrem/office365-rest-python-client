@@ -72,26 +72,31 @@ class Team(Entity):
         create channels and add bots, in the team."""
         return self.properties.get("memberSettings", TeamMemberSettings())
 
+    @odata(name="guestSettings")
     @property
     def guest_settings(self) -> TeamGuestSettings:
         """Settings to configure whether guests can create, update, or delete channels in the team."""
         return self.properties.get("guestSettings", TeamGuestSettings())
 
+    @odata(name="messagingSettings")
     @property
     def messaging_settings(self) -> TeamMessagingSettings:
         """Settings to configure messaging and mentions in the team."""
         return self.properties.get("messagingSettings", TeamMessagingSettings())
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> str | None:
         """The name of the team."""
         return self.properties.get("displayName")
 
+    @odata(name="description")
     @property
     def description(self) -> str | None:
         """An optional description for the team."""
         return self.properties.get("description")
 
+    @odata(name="classification")
     @property
     def classification(self) -> str | None:
         """An optional label. Typically describes the data or business sensitivity of the team.
@@ -99,16 +104,19 @@ class Team(Entity):
         """
         return self.properties.get("classification")
 
+    @odata(name="isArchived")
     @property
     def is_archived(self) -> bool | None:
         """Whether this team is in read-only mode."""
         return self.properties.get("isArchived")
 
+    @odata(name="visibility")
     @property
     def visibility(self) -> TeamVisibilityType:
         """The visibility of the group and team. Defaults to Public."""
         return self.properties.get("visibility", TeamVisibilityType.unknown)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> str | None:
         """A hyperlink that will go to the team in the Microsoft Teams client. This is the URL that you get when
@@ -122,7 +130,7 @@ class Team(Entity):
         """Timestamp at which the team was created."""
         return self.properties.get("createdDateTime")
 
-    @odata(name="allChannels")
+    @odata(name="allChannels", navigation=True)
     @property
     def all_channels(self) -> ChannelCollection:
         """
@@ -132,7 +140,7 @@ class Team(Entity):
             "allChannels", ChannelCollection(self.context, ResourcePath("allChannels", self.resource_path))
         )
 
-    @odata(name="incomingChannels")
+    @odata(name="incomingChannels", navigation=True)
     @property
     def incoming_channels(self) -> ChannelCollection:
         """List of channels shared with the team."""
@@ -140,6 +148,7 @@ class Team(Entity):
             "incomingChannels", ChannelCollection(self.context, ResourcePath("incomingChannels", self.resource_path))
         )
 
+    @odata(name="channels", navigation=True)
     @property
     @limit(*TEAM_CHANNELS)
     def channels(self) -> ChannelCollection:
@@ -148,6 +157,7 @@ class Team(Entity):
             "channels", ChannelCollection(self.context, ResourcePath("channels", self.resource_path))
         )
 
+    @odata(name="group", navigation=True)
     @property
     def group(self):
         """"""
@@ -155,7 +165,7 @@ class Team(Entity):
 
         return self.properties.get("group", Group(self.context, ResourcePath("group", self.resource_path)))
 
-    @odata(name="primaryChannel")
+    @odata(name="primaryChannel", navigation=True)
     @property
     def primary_channel(self) -> Channel:
         """The general channel for the team."""
@@ -163,12 +173,13 @@ class Team(Entity):
             "primaryChannel", Channel(self.context, ResourcePath("primaryChannel", self.resource_path))
         )
 
+    @odata(name="schedule", navigation=True)
     @property
     def schedule(self) -> Schedule:
         """The schedule of shifts for this team."""
         return self.properties.get("schedule", Schedule(self.context, ResourcePath("schedule", self.resource_path)))
 
-    @odata(name="installedApps")
+    @odata(name="installedApps", navigation=True)
     @property
     def installed_apps(self) -> EntityCollection[TeamsAppInstallation]:
         """The apps installed in this team."""
@@ -177,6 +188,7 @@ class Team(Entity):
             EntityCollection(self.context, TeamsAppInstallation, ResourcePath("installedApps", self.resource_path)),
         )
 
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[TeamsAsyncOperation]:
         """The async operations that ran or are running on this team."""
@@ -185,7 +197,7 @@ class Team(Entity):
             EntityCollection(self.context, TeamsAsyncOperation, ResourcePath("operations", self.resource_path)),
         )
 
-    @odata(name="permissionGrants")
+    @odata(name="permissionGrants", navigation=True)
     @property
     def permission_grants(self) -> EntityCollection[ResourceSpecificPermissionGrant]:
         """
@@ -196,16 +208,19 @@ class Team(Entity):
             EntityCollection(self.context, ResourceSpecificPermissionGrant, ResourcePath("permissionGrants")),
         )
 
+    @odata(name="summary")
     @property
     def summary(self) -> TeamSummary:
         """Contains summary information about the team, including number of owners, members, and guests."""
         return self.properties.get("summary", TeamSummary())
 
+    @odata(name="tenantId")
     @property
     def tenant_id(self) -> str | None:
         """The ID of the Azure Active Directory tenant."""
         return self.properties.get("tenantId")
 
+    @odata(name="tags", navigation=True)
     @property
     def tags(self) -> EntityCollection[TeamworkTag]:
         """The tags associated with the team."""
@@ -213,6 +228,7 @@ class Team(Entity):
             "tags", EntityCollection(self.context, TeamworkTag, ResourcePath("tags", self.resource_path))
         )
 
+    @odata(name="template", navigation=True)
     @property
     def template(self) -> TeamsTemplate:
         """The template this team was created from"""
@@ -224,21 +240,25 @@ class Team(Entity):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="firstChannelName")
     @property
     def first_channel_name(self) -> str | None:
         """Gets the firstChannelName property"""
         return self.properties.get("firstChannelName")
 
+    @odata(name="internalId")
     @property
     def internal_id(self) -> str | None:
         """Gets the internalId property"""
         return self.properties.get("internalId")
 
+    @odata(name="specialization")
     @property
     def specialization(self) -> TeamSpecialization:
         """Gets the specialization property"""
         return self.properties.get("specialization", TeamSpecialization.none)
 
+    @odata(name="members", navigation=True)
     @property
     def members(self) -> ConversationMemberCollection:
         """Gets the members property"""
@@ -247,6 +267,7 @@ class Team(Entity):
             ConversationMemberCollection(self.context, ResourcePath("members", self.resource_path)),
         )
 
+    @odata(name="photo", navigation=True)
     @property
     def photo(self) -> ProfilePhoto:
         """Gets the photo property"""

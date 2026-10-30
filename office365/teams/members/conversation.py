@@ -5,6 +5,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 
 
 class ConversationMember(Entity):
@@ -13,16 +14,19 @@ class ConversationMember(Entity):
     def __str__(self) -> str:
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> str | None:
         """The display name of the user."""
         return self.properties.get("displayName")
 
+    @odata(name="roles")
     @property
     def roles(self) -> StringCollection:
         """The roles for that user."""
         return self.properties.setdefault("roles", StringCollection())
 
+    @odata(name="visibleHistoryStartDateTime")
     @property
     def visible_history_start_date_time(self) -> Optional[datetime]:
         """Gets the visibleHistoryStartDateTime property"""

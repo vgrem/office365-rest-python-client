@@ -14,7 +14,7 @@ class TeamsTab(Entity):
     A teamsTab is a tab that's pinned (attached) to a channel within a team.
     """
 
-    @odata(name="teamsApp")
+    @odata(name="teamsApp", navigation=True)
     @property
     def teams_app(self) -> TeamsApp:
         """The application that is linked to the tab. This cannot be changed after tab creation."""
@@ -23,6 +23,7 @@ class TeamsTab(Entity):
             TeamsApp(self.context, ResourcePath("teamsApp", self.resource_path)),
         )
 
+    @odata(name="configuration")
     @property
     def configuration(self) -> TeamsTabConfiguration:
         """
@@ -30,11 +31,13 @@ class TeamsTab(Entity):
         """
         return self.properties.get("configuration", TeamsTabConfiguration())
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """Gets the displayName property"""
         return self.properties.get("displayName", None)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> Optional[str]:
         """Gets the webUrl property"""

@@ -28,16 +28,19 @@ class Shift(ChangeTrackedEntity):
         """
         return self.properties.get("sharedShift", ShiftItem())
 
+    @odata(name="isStagedForDeletion")
     @property
     def is_staged_for_deletion(self) -> Optional[bool]:
         """Gets the isStagedForDeletion property"""
         return self.properties.get("isStagedForDeletion", None)
 
+    @odata(name="schedulingGroupId")
     @property
     def scheduling_group_id(self) -> Optional[str]:
         """Gets the schedulingGroupId property"""
         return self.properties.get("schedulingGroupId", None)
 
+    @odata(name="userId")
     @property
     def user_id(self) -> Optional[str]:
         """Gets the userId property"""

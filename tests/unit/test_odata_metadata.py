@@ -55,7 +55,10 @@ _mark_odata = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mark_odata)
 
 
-@pytest.mark.parametrize(("service", "root"), [("graph", "office365/outlook"), ("sharepoint", "office365/sharepoint")])
+@pytest.mark.parametrize(
+    ("service", "root"),
+    [("graph", "office365/outlook"), ("graph", "office365/teams"), ("sharepoint", "office365/sharepoint")],
+)
 def test_every_getter_that_spells_an_odata_name_declares_it(service: str, root: str) -> None:
     # A getter reads a name the CSDL knows and leaves it undeclared, so the property is
     # unselectable and unmappable. The back-fill closed that; this holds it closed.

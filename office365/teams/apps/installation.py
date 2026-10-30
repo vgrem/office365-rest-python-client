@@ -18,7 +18,7 @@ class TeamsAppInstallation(Entity):
     become part of any team or user's personal scope that the app is added to.
     """
 
-    @odata(name="teamsApp")
+    @odata(name="teamsApp", navigation=True)
     @property
     def teams_app(self) -> TeamsApp:
         """The app that is installed."""
@@ -27,7 +27,7 @@ class TeamsAppInstallation(Entity):
             TeamsApp(self.context, ResourcePath("teamsApp", self.resource_path)),
         )
 
-    @odata(name="teamsAppDefinition")
+    @odata(name="teamsAppDefinition", navigation=True)
     @property
     def teams_app_definition(self) -> TeamsAppDefinition:
         """The details of this version of the app."""
@@ -36,6 +36,7 @@ class TeamsAppInstallation(Entity):
             TeamsAppDefinition(self.context, ResourcePath("teamsAppDefinition", self.resource_path)),
         )
 
+    @odata(name="consentedPermissionSet")
     @property
     def consented_permission_set(self) -> TeamsAppPermissionSet:
         """Gets the consentedPermissionSet property"""

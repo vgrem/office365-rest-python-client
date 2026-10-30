@@ -1,5 +1,6 @@
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.channels.collection import ChannelCollection
 
 
@@ -12,6 +13,7 @@ class DeletedTeam(Entity):
     and members in teams, see Use the Microsoft Graph REST API to work with Microsoft Teams.
     """
 
+    @odata(name="channels", navigation=True)
     @property
     def channels(self) -> ChannelCollection:
         """The collection of channels & messages associated with the team."""

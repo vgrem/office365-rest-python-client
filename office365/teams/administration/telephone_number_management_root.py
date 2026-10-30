@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.administration.telephone_number_long_running_operation import (
     TelephoneNumberLongRunningOperation,
 )
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 
 class TelephoneNumberManagementRoot(Entity):
+    @odata(name="operations", navigation=True)
     @property
     def operations(self) -> EntityCollection[TelephoneNumberLongRunningOperation]:
         """Gets the operations property"""
@@ -28,6 +30,7 @@ class TelephoneNumberManagementRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.teamsAdministration.TelephoneNumberManagementRoot"
 
+    @odata(name="numberAssignments", navigation=True)
     @property
     def number_assignments(self) -> EntityCollection[NumberAssignment]:
         """Gets the numberAssignments property"""

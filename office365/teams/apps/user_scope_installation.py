@@ -1,4 +1,5 @@
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.chats.chat import Chat
 
@@ -9,6 +10,7 @@ class UserScopeTeamsAppInstallation(TeamsAppInstallation):
     part of a user's personal scope that the app is added to. This type inherits from teamsAppInstallation.
     """
 
+    @odata(name="chat", navigation=True)
     @property
     def chat(self) -> Chat:
         """

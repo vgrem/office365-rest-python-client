@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.outlook.mail.item_body import ItemBody
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class TimeCard(Entity):
+    @odata(name="breaks")
     @property
     def breaks(self) -> ClientValueCollection[TimeCardBreak]:
         """Gets the breaks property"""
@@ -22,6 +24,7 @@ class TimeCard(Entity):
 
         return self.properties.get("breaks", ClientValueCollection[TimeCardBreak](TimeCardBreak))
 
+    @odata(name="clockInEvent")
     @property
     def clock_in_event(self) -> TimeCardEvent:
         """Gets the clockInEvent property"""
@@ -29,6 +32,7 @@ class TimeCard(Entity):
 
         return self.properties.get("clockInEvent", TimeCardEvent())
 
+    @odata(name="clockOutEvent")
     @property
     def clock_out_event(self) -> TimeCardEvent:
         """Gets the clockOutEvent property"""
@@ -36,6 +40,7 @@ class TimeCard(Entity):
 
         return self.properties.get("clockOutEvent", TimeCardEvent())
 
+    @odata(name="confirmedBy")
     @property
     def confirmed_by(self) -> ConfirmedBy:
         """Gets the confirmedBy property"""
@@ -43,6 +48,7 @@ class TimeCard(Entity):
 
         return self.properties.get("confirmedBy", ConfirmedBy.none)
 
+    @odata(name="notes")
     @property
     def notes(self) -> ItemBody:
         """Gets the notes property"""
@@ -50,6 +56,7 @@ class TimeCard(Entity):
 
         return self.properties.get("notes", ItemBody())
 
+    @odata(name="originalEntry")
     @property
     def original_entry(self) -> TimeCardEntry:
         """Gets the originalEntry property"""
@@ -57,6 +64,7 @@ class TimeCard(Entity):
 
         return self.properties.get("originalEntry", TimeCardEntry())
 
+    @odata(name="state")
     @property
     def state(self) -> TimeCardState:
         """Gets the state property"""
@@ -64,6 +72,7 @@ class TimeCard(Entity):
 
         return self.properties.get("state", TimeCardState.clockedIn)
 
+    @odata(name="userId")
     @property
     def user_id(self) -> Optional[str]:
         """Gets the userId property"""

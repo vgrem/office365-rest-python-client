@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.policy_assignment import TeamsPolicyAssignment
 
 if TYPE_CHECKING:
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 
 class TeamsAdminRoot(Entity):
+    @odata(name="policy", navigation=True)
     @property
     def policy(self) -> TeamsPolicyAssignment:
         """Gets the policy property"""
@@ -26,6 +28,7 @@ class TeamsAdminRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.teamsAdministration.TeamsAdminRoot"
 
+    @odata(name="userConfigurations", navigation=True)
     @property
     def user_configurations(self) -> EntityCollection[TeamsUserConfiguration]:
         """Gets the userConfigurations property"""
@@ -40,6 +43,7 @@ class TeamsAdminRoot(Entity):
             ),
         )
 
+    @odata(name="telephoneNumberManagement", navigation=True)
     @property
     def telephone_number_management(self) -> TelephoneNumberManagementRoot:
         """Gets the telephoneNumberManagement property"""

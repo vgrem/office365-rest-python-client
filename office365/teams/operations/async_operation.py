@@ -197,6 +197,7 @@ class TeamsAsyncOperation(PollableOperation, Entity):
         """Date and time when the operation was created."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="error")
     @property
     def error(self) -> OperationError:
         """Error information if the operation failed."""
@@ -214,16 +215,19 @@ class TeamsAsyncOperation(PollableOperation, Entity):
         """The type of the operation."""
         return self.properties.get("operationType", TeamsAsyncOperationType.unknown)
 
+    @odata(name="status")
     @property
     def status(self) -> TeamsAsyncOperationStatus:
         """Operation status."""
         return self.properties.get("status", TeamsAsyncOperationStatus.invalid)
 
+    @odata(name="targetResourceId")
     @property
     def target_resource_id(self) -> str | None:
         """The ID of the object that's created or modified as result of this async operation, typically a team."""
         return self.properties.get("targetResourceId", None)
 
+    @odata(name="targetResourceLocation")
     @property
     def target_resource_location(self) -> str | None:
         """The location of the object that's created or modified as result of this async operation.

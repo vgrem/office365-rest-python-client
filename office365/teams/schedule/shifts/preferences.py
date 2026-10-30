@@ -1,4 +1,5 @@
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 from office365.teams.schedule.shifts.availability import ShiftAvailability
 
@@ -6,6 +7,7 @@ from office365.teams.schedule.shifts.availability import ShiftAvailability
 class ShiftPreferences(ChangeTrackedEntity):
     """Represents a user's availability to be assigned shifts in the schedule."""
 
+    @odata(name="availability")
     @property
     def availability(self) -> ClientValueCollection[ShiftAvailability]:
         """

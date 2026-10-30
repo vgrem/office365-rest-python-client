@@ -99,21 +99,25 @@ class Channel(Entity):
         """Optional textual description for the channel."""
         return self.properties.get("Description")
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> str | None:
         """Channel name as it will appear to the user in Microsoft Teams. The maximum length is 50 characters"""
         return self.properties.get("displayName")
 
+    @odata(name="email")
     @property
     def email(self) -> str | None:
         """The email address for sending messages to the channel. Read-only."""
         return self.properties.get("email")
 
+    @odata(name="isArchived")
     @property
     def is_archived(self) -> bool | None:
         """Indicates whether the channel is archived. Read-only."""
         return self.properties.get("isArchived")
 
+    @odata(name="isFavoriteByDefault")
     @property
     def is_favorite_by_default(self) -> bool | None:
         """Indicates whether the channel should be marked as recommended for all members of the team to show in
@@ -122,6 +126,7 @@ class Channel(Entity):
         The default value is false"""
         return self.properties.get("isFavoriteByDefault")
 
+    @odata(name="tenantId")
     @property
     def tenant_id(self) -> str | None:
         """The ID of the Microsoft Entra tenant."""
@@ -138,6 +143,7 @@ class Channel(Entity):
         """
         return self.properties.get("membershipType", ChannelMembershipType.invalid)
 
+    @odata(name="webUrl")
     @property
     def web_url(self) -> str | None:
         """A hyperlink that will navigate to the channel in Microsoft Teams. This is the URL that you get when you
@@ -145,7 +151,7 @@ class Channel(Entity):
         opaque blob, and not parsed. Read-only."""
         return self.properties.get("webUrl")
 
-    @odata(name="filesFolder")
+    @odata(name="filesFolder", navigation=True)
     @property
     def files_folder(self) -> DriveItem:
         """Get the metadata for the location where the files of a channel are stored."""
@@ -154,6 +160,7 @@ class Channel(Entity):
             DriveItem(self.context, ResourcePath("filesFolder", self.resource_path)),
         )
 
+    @odata(name="tabs", navigation=True)
     @property
     def tabs(self) -> EntityCollection[TeamsTab]:
         """A collection of all the tabs in the channel. A navigation property."""
@@ -165,6 +172,7 @@ class Channel(Entity):
     # Both budgets live on the member that names the endpoint, not on the collection type:
     # ``ChatMessageCollection`` serves a channel and a chat alike, and their write budgets
     # differ (500 against 200 requests a second), so only the parent knows which applies.
+    @odata(name="messages", navigation=True)
     @property
     @limit(*CHANNEL_MESSAGES_READ, *CHANNEL_MESSAGES_WRITE)
     def messages(self) -> ChatMessageCollection:
@@ -174,6 +182,7 @@ class Channel(Entity):
             ChatMessageCollection(self.context, ResourcePath("messages", self.resource_path)),
         )
 
+    @odata(name="members", navigation=True)
     @property
     def members(self) -> EntityCollection[ConversationMember]:
         """A collection of membership records associated with the channel."""
@@ -186,7 +195,7 @@ class Channel(Entity):
             ),
         )
 
-    @odata(name="sharedWithTeams")
+    @odata(name="sharedWithTeams", navigation=True)
     @property
     def shared_with_teams(self) -> EntityCollection[SharedWithChannelTeamInfo]:
         """A collection of teams with which a channel is shared."""
@@ -207,6 +216,7 @@ class Channel(Entity):
             self._resource_path = ResourcePath(quote(value), self.resource_path.parent)
         return self
 
+    @odata(name="layoutType")
     @property
     def layout_type(self) -> ChannelLayoutType:
         """Gets the layoutType property"""
@@ -214,6 +224,7 @@ class Channel(Entity):
 
         return self.properties.get("layoutType", ChannelLayoutType.post)
 
+    @odata(name="migrationMode")
     @property
     def migration_mode(self) -> MigrationMode:
         """Gets the migrationMode property"""
@@ -221,11 +232,13 @@ class Channel(Entity):
 
         return self.properties.get("migrationMode", MigrationMode.inProgress)
 
+    @odata(name="originalCreatedDateTime")
     @property
     def original_created_date_time(self) -> Optional[datetime]:
         """Gets the originalCreatedDateTime property"""
         return self.properties.get("originalCreatedDateTime", datetime.min)
 
+    @odata(name="summary")
     @property
     def summary(self) -> ChannelSummary:
         """Gets the summary property"""
@@ -233,6 +246,7 @@ class Channel(Entity):
 
         return self.properties.get("summary", ChannelSummary())
 
+    @odata(name="allMembers", navigation=True)
     @property
     def all_members(self) -> EntityCollection[ConversationMember]:
         """Gets the allMembers property"""
@@ -245,6 +259,7 @@ class Channel(Entity):
             ),
         )
 
+    @odata(name="enabledApps", navigation=True)
     @property
     def enabled_apps(self) -> EntityCollection[TeamsApp]:
         """Gets the enabledApps property"""

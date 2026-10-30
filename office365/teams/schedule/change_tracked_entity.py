@@ -2,11 +2,13 @@ from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.runtime.types.odata_property import odata
 
 
 class ChangeTrackedEntity(Entity):
     """Represents an entity to track changes made to any supported schedule and associated resource."""
 
+    @odata(name="createdDateTime", readonly=True)
     @property
     def created_datetime(self) -> datetime:
         """
@@ -15,6 +17,7 @@ class ChangeTrackedEntity(Entity):
         """
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="lastModifiedDateTime", readonly=True)
     @property
     def last_modified_datetime(self) -> datetime:
         """
@@ -23,11 +26,13 @@ class ChangeTrackedEntity(Entity):
         """
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="lastModifiedBy", readonly=True)
     @property
     def last_modified_by(self) -> IdentitySet:
         """Identity of the person who last modified the entity."""
         return self.properties.get("lastModifiedBy", IdentitySet())
 
+    @odata(name="createdBy")
     @property
     def created_by(self) -> IdentitySet:
         """Gets the createdBy property"""

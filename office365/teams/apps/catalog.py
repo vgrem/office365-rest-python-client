@@ -8,7 +8,7 @@ from office365.teams.apps.app import TeamsApp
 class AppCatalogs(Entity):
     """A container for apps from the Microsoft Teams app catalog"""
 
-    @odata(name="teamsApps")
+    @odata(name="teamsApps", navigation=True)
     @property
     def teams_apps(self) -> EntityCollection[TeamsApp]:
         """List apps from the Microsoft Teams app catalog."""

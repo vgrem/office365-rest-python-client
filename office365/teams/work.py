@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.deleted import DeletedTeam
 
 if TYPE_CHECKING:
@@ -16,17 +17,20 @@ if TYPE_CHECKING:
 class Teamwork(Entity):
     """A container for the range of Microsoft Teams functionalities that are available for the organization."""
 
+    @odata(name="isTeamsEnabled")
     @property
     def is_teams_enabled(self) -> Optional[bool]:
         """Indicates whether Microsoft Teams is enabled for the organization."""
         return self.properties.get("isTeamsEnabled", None)
 
+    @odata(name="region")
     @property
     def region(self) -> Optional[str]:
         """Represents the region of the organization or the tenant.
         The region value can be any region supported by the Teams payload"""
         return self.properties.get("region", None)
 
+    @odata(name="deletedTeams", navigation=True)
     @property
     def deleted_teams(self) -> EntityCollection[DeletedTeam]:
         """The tags associated with the team."""
@@ -39,6 +43,7 @@ class Teamwork(Entity):
             ),
         )
 
+    @odata(name="workforceIntegrations", navigation=True)
     @property
     def workforce_integrations(self) -> EntityCollection[WorkforceIntegration]:
         """Gets the workforceIntegrations property"""
@@ -51,6 +56,7 @@ class Teamwork(Entity):
             ),
         )
 
+    @odata(name="deletedChats", navigation=True)
     @property
     def deleted_chats(self) -> EntityCollection[DeletedChat]:
         """Gets the deletedChats property"""
@@ -61,6 +67,7 @@ class Teamwork(Entity):
             EntityCollection[DeletedChat](self.context, DeletedChat, ResourcePath("deletedChats", self.resource_path)),
         )
 
+    @odata(name="teamsAppSettings", navigation=True)
     @property
     def teams_app_settings(self) -> TeamsAppSettings:
         """Gets the teamsAppSettings property"""

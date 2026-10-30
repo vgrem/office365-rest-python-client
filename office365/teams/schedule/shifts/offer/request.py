@@ -16,6 +16,7 @@ class OfferShiftRequest(ScheduleChangeRequest):
         """
         return self.properties.get("recipientActionDateTime", datetime.min)
 
+    @odata(name="recipientActionMessage")
     @property
     def recipient_action_message(self) -> Optional[str]:
         """
@@ -23,6 +24,7 @@ class OfferShiftRequest(ScheduleChangeRequest):
         """
         return self.properties.get("recipientActionMessage", None)
 
+    @odata(name="recipientUserId")
     @property
     def recipient_user_id(self) -> Optional[str]:
         """
@@ -30,6 +32,7 @@ class OfferShiftRequest(ScheduleChangeRequest):
         """
         return self.properties.get("recipientUserId", None)
 
+    @odata(name="senderShiftId")
     @property
     def sender_shift_id(self) -> Optional[str]:
         """

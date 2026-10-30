@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.groups.group import Group
@@ -26,21 +27,25 @@ class Community(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The name of the community. The maximum length is 255 characters."""
         return self.properties.get("displayName", None)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """The description of the community. The maximum length is 1,024 characters."""
         return self.properties.get("description", None)
 
+    @odata(name="groupId")
     @property
     def group_id(self) -> Optional[str]:
         """Gets the groupId property"""
         return self.properties.get("groupId", None)
 
+    @odata(name="privacy")
     @property
     def privacy(self) -> CommunityPrivacy:
         """Gets the privacy property"""
@@ -48,6 +53,7 @@ class Community(Entity):
 
         return self.properties.get("privacy", CommunityPrivacy.public)
 
+    @odata(name="group", navigation=True)
     @property
     def group(self) -> Group:
         """Gets the group property"""
@@ -55,6 +61,7 @@ class Community(Entity):
 
         return self.properties.get("group", Group(self.context, ResourcePath("group", self.resource_path)))
 
+    @odata(name="owners", navigation=True)
     @property
     def owners(self) -> EntityCollection[User]:
         """Gets the owners property"""

@@ -27,6 +27,7 @@ class TeamworkTag(Entity):
         """The description of the tag as it appears to users in Teams."""
         return self.properties.get("description", None)
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:
         """The name of the tag as it appears to users in Teams."""
@@ -50,6 +51,7 @@ class TeamworkTag(Entity):
         """The ID of the team to which the tag belongs."""
         return self.properties.get("teamId", None)
 
+    @odata(name="members", navigation=True)
     @property
     def members(self) -> EntityCollection[TeamworkTagMember]:
         """The members assigned to the tag."""

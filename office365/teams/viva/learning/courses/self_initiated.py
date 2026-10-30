@@ -3,12 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from office365.runtime.types.odata_property import odata
 from office365.teams.viva.learning.courses.activity import LearningCourseActivity
 
 
 class LearningSelfInitiatedCourse(LearningCourseActivity):
     """Represents the details of a learning course activity that is self-initiated by a user."""
 
+    @odata(name="startedDateTime")
     @property
     def started_date_time(self) -> Optional[datetime]:
         """Gets the startedDateTime property"""

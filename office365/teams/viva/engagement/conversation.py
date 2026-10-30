@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 from office365.teams.viva.engagement.creationmode import EngagementCreationMode
 
 if TYPE_CHECKING:
@@ -14,11 +15,13 @@ if TYPE_CHECKING:
 
 
 class EngagementConversation(Entity):
+    @odata(name="creationMode")
     @property
     def creation_mode(self) -> EngagementCreationMode:
         """Gets the creationMode property"""
         return self.properties.get("creationMode", EngagementCreationMode.none)
 
+    @odata(name="starterId")
     @property
     def starter_id(self) -> Optional[str]:
         """Gets the starterId property"""
@@ -28,6 +31,7 @@ class EngagementConversation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.EngagementConversation"
 
+    @odata(name="messages", navigation=True)
     @property
     def messages(self) -> EntityCollection[EngagementConversationMessage]:
         """Gets the messages property"""
@@ -42,6 +46,7 @@ class EngagementConversation(Entity):
             ),
         )
 
+    @odata(name="starter", navigation=True)
     @property
     def starter(self) -> EngagementConversationMessage:
         """Gets the starter property"""

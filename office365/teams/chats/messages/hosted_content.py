@@ -5,11 +5,13 @@ from typing import AnyStr
 from office365.entity import Entity
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.types.odata_property import odata
 
 
 class ChatMessageHostedContent(Entity):
     """Content in a chat or channel message hosted by Teams (e.g. an inline image)."""
 
+    @odata(name="contentType")
     @property
     def content_type(self) -> str | None:
         """The media type of the hosted content (e.g. ``image/png``)."""
