@@ -845,25 +845,9 @@ class ListItem(SecurableObject):
     @property
     def doc_id_url(self) -> Optional[FieldUrlValue]:
         """Document ID fora document"""
-        return self.properties.get("OData__dlc_DocIdUrl", FieldUrlValue())
+        return self.properties.get("OData__dlc_DocIdUrl", None)
 
     def get_property(self, name, default_value=None) -> Any:
-        if default_value is None:
-            property_mapping = {
-                "AttachmentFiles": self.attachment_files,
-                "ContentType": self.content_type,
-                "ComplianceInfo": self.compliance_info,
-                "OData__dlc_DocIdUrl": self.doc_id_url,
-                "EffectiveBasePermissions": self.effective_base_permissions,
-                "EffectiveBasePermissionsForUI": self.effective_base_permissions_for_ui,
-                "GetDlpPolicyTip": self.get_dlp_policy_tip,
-                "FieldValuesAsHtml": self.field_values_as_html,
-                "FileSystemObjectType": self.file_system_object_type,
-                "LikedByInformation": self.liked_by_information,
-                "ParentList": self.parent_list,
-            }
-            default_value = property_mapping.get(name, None)
-
         value = super().get_property(name, default_value)
         if self.is_property_available(name[:-2]):
             lookup_value = super().get_property(name[:-2], default_value)
