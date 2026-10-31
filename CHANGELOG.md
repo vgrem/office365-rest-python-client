@@ -30,20 +30,24 @@ introduced.
   provenance keys a model cannot know. A tree written by a pre-release build is
   refused by name (`refuse_legacy_sidecar`) instead of importing as empty fields.
 - SharePoint getters declare the OData names they read (4,013 declarations,
-  back-filled from the CSDL). `Web.select_all()` goes 39 → 118 columns and 2 → 50
-  navigations, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41; a projection built
-  from the old lists asked for navigation properties, which `$select` drops
-  silently. Request bodies are unchanged — a declaration says what a *response*
-  may carry, never what a request must.
+  back-filled from the CSDL). `Web.select_all()` goes 39 → 118 columns and
+  2 → 50 navigations, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41; a
+  projection built from the old lists asked for navigation properties, which
+  `$select` drops silently. Request bodies are unchanged — a declaration says what
+  a *response* may carry, never what a request must.
 - Graph getters declare the OData names they read: 6,911 declarations in 1,057
-  modules, back-filled from `Graph.xml` and its preview snapshot, and the
-  codemod's graph queue is empty (`mark_odata.py --service graph --dry-run`: 0
-  lines pending, per package and tree-wide). `select_all()` is derived from the
-  declarations, so projections grow: `User` 21 → 81 columns, `Group` 13 → 53,
-  `DriveItem` 10 → 32, `Team` 9 → 17, `Channel` 5 → 13, `AccessPackage` 6 → 11.
-  175 members that were declared as columns are now declared as the navigations
-  they are, so `$select` no longer asks for them — Graph drops those silently,
-  the same failure the SharePoint half had. Request bodies are unchanged.
+  modules, back-filled from `Graph.xml` and its preview snapshot. `select_all()` is
+  derived from the declarations, so projections grow: `User` 21 → 81 columns,
+  `Group` 13 → 53, `DriveItem` 10 → 32, `Team` 9 → 17, `Channel` 5 → 13,
+  `AccessPackage` 6 → 11. 175 members that were declared as columns are now declared
+  as the navigations they are, so `$select` no longer asks for them — Graph drops
+  those silently, the same failure the SharePoint half had. Request bodies are
+  unchanged.
+- The back-fill that wrote those declarations has been retired, not kept beside the
+  tree it no longer changes: a dry run over every package under both services planned
+  nothing, and what guards them now is a test that reads each declaration against the
+  getter it sits above — one `created_by` in the SharePoint half carried its
+  neighbour's name, so `CreatedBy` was unmapped and `expand_all()` never asked for it.
 - An enum-typed Graph column returns the member, not the wire string: 386 type
   imports in 241 modules moved from the getter's own body (and the dead
   `if TYPE_CHECKING:` entry beside it) to the module block — 403 columns, because

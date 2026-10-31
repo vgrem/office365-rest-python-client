@@ -59,7 +59,7 @@ class ListItemVersion(Entity):
         """Gets the modified date and time for the item version."""
         return self.properties.get("Modified", datetime.min)
 
-    @odata(name="FileVersion", navigation=True)
+    @odata(name="CreatedBy", navigation=True)
     @property
     def created_by(self):
         """Gets the user that created the item version."""

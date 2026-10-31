@@ -7,7 +7,8 @@ The file then defines one class, and ``entity_type_name`` answers with whichever
 the class was first written for -- which is not necessarily the one its members came
 from. Answering with the wrong name tells every metadata reader that the service has
 never heard of the members the class declares, which is exactly what ``system=True``
-claims (``mark_odata.py``), so the name is decided here, from the class's own members.
+claims in that member's ``@odata`` declaration, so the name is decided here, from the
+class's own members.
 
 The decision is deliberately one-sided: a *witness* member name the candidate declares
 and the current name does not, and no member the other way round. A class that also

@@ -95,17 +95,22 @@ The name is always taken from the metadata, never derived from the attribute:
 is a real column.
 
 The generator renders only members that are *missing*, so a template change does
-not reach files that already exist. For those there is a one-time codemod, which
-reads the name each getter already queries and marks it (validating the literal
-against the metadata, and skipping anything it cannot confirm):
+not reach files that already exist. Those files were back-filled once, by a codemod
+that read the name each getter already queried and validated the literal against the
+metadata; it converged (a dry run over every package, under both services, planned
+nothing) and has been deleted rather than kept beside a tree it no longer changes.
+
+What that leaves for a human is one rule: **if you hand-write a getter, declare it**,
+taking the name from the metadata and never from the attribute -- `iCalUId` and
+`icalUid` both survive a snake-case round trip and only one of them is a real column.
+`tests/unit/test_odata_metadata.py` holds the other direction: a declaration must
+name a wire name its getter actually reads, so a copy-pasted `@odata` cannot silently
+take a column out of `select_all()`.
+
+For preview-only members and preview types the generator can still rewrite existing
+files, because those facts come from a metadata diff and not from a template:
 
 ```bash
-uv run python scripts/mark_odata.py office365/outlook --dry-run  # what would change
-uv run python scripts/mark_odata.py office365/outlook
-uv run ruff check --fix office365/outlook   # sort the new import
+uv run python -m generator.cli graph --diff-metadata generator/metadata/GraphBeta.xml \
+    --apply-markers --dry-run    # @odata(beta=...) and @version("beta") gates
 ```
-
-It is idempotent, and `tests/unit/test_odata_metadata.py` pins it that way for the
-package it has been run over. A second pass over the same tree finds nothing: a
-declaration that exists but says less than the metadata (a navigation property
-without `navigation=True`) is rewritten in place rather than duplicated.

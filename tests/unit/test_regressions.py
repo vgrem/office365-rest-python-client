@@ -54,6 +54,7 @@ from office365.sharepoint.fields.field import Field
 from office365.sharepoint.listitems.caml.guard import threshold_warnings, warn_if_unpaged
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.listitems.versions.version import ListItemVersion
 from office365.sharepoint.publishing.pages.canvas import WEB_PART_CONTROL_TYPE, parse_canvas_controls
 from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.sharing.links.kind import SharingLinkKind
@@ -97,6 +98,12 @@ def test_the_team_messaging_settings_read_their_own_member():
     messaging = TeamMessagingSettings()
     team.set_property("messagingSettings", messaging)
     assert team.messaging_settings is messaging
+
+
+def test_the_list_item_version_creator_is_its_own_member():
+    # ``ListItemVersion.created_by`` was declared ``FileVersion``, so nothing mapped
+    # ``CreatedBy`` and an ``$expand`` never asked for the user who created the version.
+    assert "CreatedBy" in ListItemVersion.expand_all()
 
 
 def test_a_field_link_wears_the_internal_name_it_is_given():

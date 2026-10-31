@@ -1,14 +1,14 @@
 """Generated getters declare their own OData metadata (name, navigation).
 
 The OData name is a fact about the CSDL, not something derivable from the attribute
-name: ``iCalUId`` and ``icalUid`` both round-trip through a snake-case guess, and
-only one of them is a real column. These tests pin the declaration and the codemod
-that back-filled it onto files the generator will not re-render.
+name: ``iCalUId`` and ``icalUid`` both round-trip through a snake-case guess, and only
+one of them is a real column. The generator writes the declaration from the metadata
+when it renders a member, so completeness is its job -- ``tests/tooling/test_generator_e2e.py``
+pins that a generated getter carries one, and a test here could only re-spell that rule.
 
-Completeness is claimed for the two services whose metadata the codemod reads --
-``office365/outlook`` against ``Graph.xml`` and ``office365/sharepoint`` against
-``SharePoint.xml`` -- and it is claimed by running the codemod: a gate that re-spelled
-the back-fill's rule would agree with itself.
+What is left for this module is the other half: a declaration that already exists must
+name a wire name its getter actually reads, and the facts it feeds -- ``select_all()``,
+``_schema``, navigations, nested fields -- must behave the way the declarations say.
 """
 
 from __future__ import annotations
@@ -76,284 +76,70 @@ def test_the_ratchet_covers_every_package_under_office365() -> None:
     assert packages - covered == {"office365/__pycache__"}
 
 
-_spec = importlib.util.spec_from_file_location("_mark_odata", _REPO_ROOT / "scripts" / "mark_odata.py")
-assert _spec is not None and _spec.loader is not None
-_mark_odata = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_mark_odata)
+def _getters(cls: ast.ClassDef) -> list[ast.FunctionDef]:
+    """The class's own property getters; a method's declaration names a function import."""
+    return [
+        node
+        for node in cls.body
+        if isinstance(node, ast.FunctionDef)
+        and any(
+            getattr(marker, "id", "") == "property" for marker in node.decorator_list if not isinstance(marker, ast.Call)
+        )
+    ]
 
 
-@pytest.mark.parametrize(("service", "root"), _SERVICE_ROOTS)
-def test_every_getter_that_spells_an_odata_name_declares_it(service: str, root: str) -> None:
-    # A getter reads a name the CSDL knows and leaves it undeclared, so the property is
-    # unselectable and unmappable. The back-fill closed that; this holds it closed.
-    catalog = _mark_odata.load_catalog(service)
-    index = _mark_odata.type_index(catalog)
-    planned = {
-        str(path.relative_to(_REPO_ROOT)): len(markers)
-        for path in sorted((_REPO_ROOT / root).rglob("*.py"))
-        if (markers := _mark_odata.plan_module(path, catalog, index))
-    }
-    assert planned == {}
+def _declared_name(getter: ast.FunctionDef) -> str | None:
+    for decorator in getter.decorator_list:
+        if isinstance(decorator, ast.Call) and getattr(decorator.func, "id", "") == "odata":
+            for keyword in decorator.keywords:
+                if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
+                    return str(keyword.value.value)
+    return None
 
 
-_PREVIEW_GETTER = """
-from office365.runtime.types.odata_property import odata
+def _spelled_names(getter: ast.FunctionDef) -> set[str]:
+    """Every wire name the body reads off ``self.properties``."""
+    names: set[str] = set()
+    for node in ast.walk(getter):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "get":
+            owner = node.func.value
+            literal = node.args[0] if node.args else None
+            if isinstance(owner, ast.Attribute) and owner.attr == "properties" and isinstance(literal, ast.Constant):
+                if isinstance(literal.value, str):
+                    names.add(literal.value)
+        elif (
+            isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute) and node.value.attr == "properties"
+        ):
+            if isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, str):
+                names.add(node.slice.value)
+    return names
 
 
-class Event:
-    def entity_type_name(self):
-        return "microsoft.graph.Event"
+@pytest.mark.parametrize(("_service", "root"), _SERVICE_ROOTS)
+def test_a_declaration_names_a_wire_name_its_getter_reads(_service: str, root: str) -> None:
+    """A declaration is a claim about one getter, and the getter's body is the witness.
 
-    @odata(name="uid")
-    @property
-    def uid(self):
-        return self.properties.get("uid", None)
-"""
-
-
-_PER_LIST_TYPE_NAME = """
-from office365.runtime.types.odata_property import odata
-
-
-class TicketRow:
-    def entity_type_name(self):
-        return self._ticket.entity_type_name()
-
-    @odata(name="AuthorId")
-    @property
-    def author_id(self):
-        return self.properties.get("AuthorId", None)
-"""
-
-
-def _plan(tmp_path: pathlib.Path, source: str, *, service: str = "graph") -> list:
-    module = tmp_path / "event.py"
-    module.write_text(source, encoding="utf-8")
-    catalog = _mark_odata.load_catalog(service)
-    return _mark_odata.plan_module(module, catalog, _mark_odata.type_index(catalog))
-
-
-_TWO_GETTERS_ONE_NAME = """
-from office365.runtime.types.odata_property import odata
-
-
-class Team:
-    def entity_type_name(self):
-        return "microsoft.graph.Team"
-
-    @odata(name="guestSettings")
-    @property
-    def guest_settings(self):
-        return self.properties.get("guestSettings", None)
-
-    @property
-    def messaging_settings(self):
-        return self.properties.get("guestSettings", None)
-"""
-
-
-def test_a_wire_name_gets_one_owner(tmp_path: pathlib.Path) -> None:
-    """Two declarations of one name leave ``_schema.properties[name].attr`` on the last.
-
-    The class still holds both getters, but a name read by wire -- ``get_property``
-    answers through the declared attribute -- would reach the wrong one, so the
-    second getter is reported rather than declared.
+    The back-fill that put these declarations on files the generator will not re-render
+    has been retired -- it converged, and it could not see this: ``ListItemVersion.created_by``
+    carried ``FileVersion``, copied from the getter below it, so nothing mapped
+    ``CreatedBy`` while the body kept answering and every other gate stayed green. A
+    tree-wide test can still check that much without a copy of the CSDL and without
+    re-spelling the back-fill's rule, because the witness is the line the declaration sits on.
     """
-    module = tmp_path / "team.py"
-    module.write_text(_TWO_GETTERS_ONE_NAME, encoding="utf-8")
-    catalog = _mark_odata.load_catalog("graph")
-    duplicates: list = []
-
-    planned = _mark_odata.plan_module(module, catalog, _mark_odata.type_index(catalog), duplicates=duplicates)
-
-    assert planned == []
-    assert duplicates == ["Team.messaging_settings reads 'guestSettings', declared by guest_settings"]
-
-
-def test_a_type_name_the_instance_decides_names_no_csdl_type(tmp_path: pathlib.Path) -> None:
-    """A list item answers with its list's type per instance -- not a name to read here."""
-    assert _plan(tmp_path, _PER_LIST_TYPE_NAME, service="sharepoint") == []
-
-
-def test_a_member_only_the_preview_declares_is_not_a_system_column(tmp_path: pathlib.Path) -> None:
-    """``system=True`` says the metadata has never heard of the name; beta has."""
-    assert _plan(tmp_path, _PREVIEW_GETTER) == []
-
-
-def test_the_preview_snapshot_is_in_the_checkout_and_merged() -> None:
-    """The declarations this file pins are read out of the preview snapshot, so it ships.
-
-    ``Event.uid`` is declared only by ``/beta``: the test above passes because the codemod
-    merged ``GraphBeta.xml``, not because the stable root happens to name it. Keeping that
-    file untracked made the guarantee local-only -- CI answered 4,019 types instead of
-    8,074 and four neighbours here failed with diffs that never named the cause.
-    """
-    snapshot = _REPO_ROOT / "generator" / "metadata" / "GraphBeta.xml"
-    assert snapshot.is_file(), f"{snapshot} is a build input, not a scratch download"
-    assert _mark_odata.declared_of(_mark_odata.load_catalog("graph")["microsoft.graph.event"], "uid") is not None
-
-
-def test_only_the_root_that_has_a_preview_snapshot_reads_one() -> None:
-    """Graph has a ``/beta`` root; the v3 service has one document and no second spelling."""
-    assert _mark_odata._PREVIEW_SNAPSHOT == {"graph": "GraphBeta.xml"}
-
-
-_INHERITED_GETTER = """
-from office365.runtime.types.odata_property import odata
-
-
-class OnlineMeeting:
-    def entity_type_name(self):
-        return "microsoft.graph.OnlineMeeting"
-
-    @odata(name="joinInformation")
-    @property
-    def join_information(self):
-        return self.properties.get("joinInformation", None)
-"""
-
-
-def test_a_member_a_base_type_declares_is_not_one_the_metadata_is_silent_about(tmp_path: pathlib.Path) -> None:
-    """``joinInformation`` is ``onlineMeetingBase``'s; ``system=True`` would deny it."""
-    assert _plan(tmp_path, _INHERITED_GETTER) == []
-
-
-_OTHER_SPELLING_GETTER = """
-from office365.runtime.types.odata_property import odata
-
-
-class Drive:
-    def entity_type_name(self):
-        return "microsoft.graph.Drive"
-
-    @odata(name="sharepointIds")
-    @property
-    def sharepoint_ids(self):
-        return self.properties.get("sharepointIds", None)
-"""
-
-
-def test_a_member_the_type_spells_otherwise_is_not_a_system_column(tmp_path: pathlib.Path) -> None:
-    """``drive`` declares ``sharePointIds``; ``driveItem`` declares ``sharepointIds``.
-
-    The getter reads the other type's spelling, so an exact lookup misses it and would
-    call the member one the metadata has never heard of -- it has, and the flag is about
-    the member, not about the bytes we typed. The declaration is left alone either way:
-    ``navigation``/``readonly`` belong to ``sharePointIds``, not to this spelling.
-    """
-    assert _plan(tmp_path, _OTHER_SPELLING_GETTER) == []
-
-
-def test_a_getter_that_reads_an_inherited_member_declares_it(tmp_path: pathlib.Path) -> None:
-    """The same fold decides the back-fill: an inherited column is a column of this type."""
-    source = _INHERITED_GETTER.replace('    @odata(name="joinInformation")\n', "")
-
-    edits = _plan(tmp_path, source)
-
-    assert [edit.new for edit in edits] == ['    @odata(name="joinInformation")\n']
-
-
-def test_a_type_keeps_its_own_answer_for_a_member_it_inherits() -> None:
-    """A redeclaration narrows: the nearest declaration wins, and a looped chain is cut."""
-    own = {
-        "a": {"x": _mark_odata.Declared("x", False, False, True)},
-        "b": {"x": _mark_odata.Declared("x", False, False, False), "y": _mark_odata.Declared("y", False, False, True)},
-        "c": {},
-    }
-    bases = {"a": "b", "b": "c", "c": "b"}  # c <-> b: data, not a promise
-
-    inherited = _mark_odata._inherited("a", own, bases)
-
-    assert inherited["x"].readonly is True  # a's own declaration, not b's
-    assert inherited["y"].readonly is True
-
-
-def test_a_getter_is_marked_without_re_importing_odata_beside_another_name(tmp_path: pathlib.Path) -> None:
-    """``from ... import Compare, odata`` is an import of ``odata``; do not add a second."""
-    source = _PREVIEW_GETTER.replace("import odata", "import Compare, odata").replace('    @odata(name="uid")\n', "")
-
-    edits = _plan(tmp_path, source)
-
-    assert [edit.new for edit in edits] == ['    @odata(name="uid")\n']
-
-
-def _says_system(call: ast.Call) -> bool:
-    """Whether the ``@odata`` call carries ``system=True``."""
-    for keyword in call.keywords:
-        if keyword.arg == "system":
-            return bool(getattr(keyword.value, "value", True))
-    return False
-
-
-def _is_property(node: ast.FunctionDef) -> bool:
-    return any(getattr(d, "id", "") == "property" for d in node.decorator_list if not isinstance(d, ast.Call))
-
-
-@pytest.mark.parametrize(("service", "root"), _SERVICE_ROOTS)
-def test_a_declaration_the_metadata_does_not_carry_says_system(service: str, root: str) -> None:
-    """``system=True`` is where a name comes from, and the metadata decides.
-
-    The CSDL describes an object graph, not a list-item row: ``SP.ListItem`` declares 24
-    names and answers ``AuthorId``, ``EditorId``, ``Created``, ``Modified``, none of them
-    among the 24. A declaration cannot invent that difference from memory, so the flag is
-    read back against the same catalog the names came from -- in both directions, because
-    a ``system`` marker on a name the metadata does declare would be as wrong.
-
-    The catalog answers for both kinds of declaration: an absent name means the metadata
-    only ever states it on some other type, and a name every subtype of this type states
-    is present with ``Declared.system`` set (``generator.intrinsic_members``). Either way
-    the flag is the catalog's fact, not the module's.
-    """
-    catalog = _mark_odata.load_catalog(service)
-    index = _mark_odata.type_index(catalog)
     wrong = []
     for path in sorted((_REPO_ROOT / root).rglob("*.py")):
         source = path.read_text(encoding="utf-8")
         if "@odata(" not in source:
             continue
-        found = _mark_odata.subject(ast.parse(source), catalog, index)
-        if found is None:
-            continue
-        for node in found.node.body:
-            if not isinstance(node, ast.FunctionDef) or not _is_property(node):
-                continue  # a method's ``@odata`` names a function import, not a column
-            call = _mark_odata.declaration(node)
-            name = _mark_odata.declared_name(call) if call is not None else None
-            declared = _mark_odata.declared_of(found.properties, name or "")
-            if name is not None and _says_system(call) != (declared is None or declared.system):
-                wrong.append(f"{path.relative_to(_REPO_ROOT)}:{call.lineno} {found.node.name}.{name}")
+        for cls in [node for node in ast.walk(ast.parse(source)) if isinstance(node, ast.ClassDef)]:
+            for getter in _getters(cls):
+                declared, spelled = _declared_name(getter), _spelled_names(getter)
+                if declared is not None and spelled and declared not in spelled:
+                    wrong.append(
+                        f"{path.relative_to(_REPO_ROOT)} {cls.name}.{getter.name} declares {declared!r},"
+                        f" reads {sorted(spelled)}"
+                    )
     assert wrong == []
-
-
-_INTRINSIC_GETTER = """
-from office365.runtime.types.odata_property import odata
-
-
-class ListItem:
-    def entity_type_name(self):
-        return "SP.ListItem"
-
-    @property
-    def file_ref(self):
-        return self.properties.get("FileRef", None)
-"""
-
-
-def test_a_member_every_subtype_declares_is_backfilled_as_system(tmp_path: pathlib.Path) -> None:
-    """``SP.ListItem`` declares 24 names; its 147 per-list subtypes each add ``FileRef``.
-
-    The catalog answers for that kind too -- ``Declared.system``, read from
-    ``generator.intrinsic_members`` -- so the back-fill declares the column instead of
-    leaving it as the one bare getter in the row, and finishes a marker that is already
-    there without the flag.
-    """
-    edits = _plan(tmp_path, _INTRINSIC_GETTER, service="sharepoint")
-    assert [edit.new for edit in edits] == ['    @odata(name="FileRef", system=True)\n']
-
-    marked = _INTRINSIC_GETTER.replace("    @property\n", '    @odata(name="FileRef")\n    @property\n')
-    assert [edit.new for edit in _plan(tmp_path, marked, service="sharepoint")] == [
-        '    @odata(name="FileRef", system=True)\n'
-    ]
 
 
 def test_an_item_row_column_declares_that_the_metadata_is_silent():
