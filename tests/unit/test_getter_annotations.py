@@ -35,6 +35,7 @@ from office365.onedrive.operations.longrunningoperationstatus import LongRunning
 from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.value import declared_type
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.webs.web import Web
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -74,6 +75,19 @@ def _getter(cls: type, name: str) -> typing.Optional[typing.Any]:
     return member.fget if isinstance(member, property) else None
 
 
+def _columns(cls: type) -> typing.Iterator[str]:
+    """Every column the schema declares, whether or not the service will project it.
+
+    Not ``select_all()``: a column the service refuses in ``$select`` is still a column
+    that is read back, and one of those was the single unannotated getter this ratchet
+    could not see (``Web.description_translations``, 2026-10-31).
+    """
+    schema = getattr(cls, "_schema", None)
+    for name, meta in schema.properties.items() if schema is not None else ():
+        if not meta.navigation:
+            yield name
+
+
 def _unwrap_optional(annotation: typing.Any) -> typing.Any:
     """``Optional[X]`` is ``X`` for a declared type: ``None`` is a nullability fact.
 
@@ -101,7 +115,7 @@ def test_where_an_annotation_resolves_it_is_the_declared_type(root: str) -> None
     mismatches: list[str] = []
     for module in _modules(root):
         for cls in _client_objects(module):
-            for name in cls.select_all():
+            for name in _columns(cls):
                 getter = _getter(cls, name)
                 if getter is None:
                     continue
@@ -135,10 +149,18 @@ def test_every_column_states_the_type_it_holds(root: str) -> None:
     silent: list[str] = []
     for module in _modules(root):
         for cls in _client_objects(module):
-            for name in cls.select_all():
+            for name in _columns(cls):
                 if declared_type(cls, name) is None:
                     silent.append(f"{module.__name__}: {cls.__name__} reads '{name}' and states no type")
     assert silent == []
+
+
+def test_the_ratchet_population_is_not_the_projection() -> None:
+    # ``Web.description_translations`` is declared but unselectable -- the service
+    # refuses it in ``$select`` -- so a ratchet that counted ``select_all()`` could not
+    # see it, and it was the one column left without a type.
+    assert "DescriptionTranslations" not in Web.select_all()
+    assert "DescriptionTranslations" in set(_columns(Web))
 
 
 def test_a_stdlib_name_the_annotation_spells_is_a_declared_type() -> None:

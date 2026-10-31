@@ -2083,9 +2083,9 @@ class Web(SecurableObject):
 
     @odata(name="DescriptionTranslations")
     @property
-    def description_translations(self):
-        """"""
-        return self.properties.get("DescriptionTranslations", ClientValueCollection(SPResourceEntry))
+    def description_translations(self) -> ClientValueCollection[SPResourceEntry]:
+        """Gets the DescriptionTranslations property"""
+        return self.properties.get("DescriptionTranslations", ClientValueCollection[SPResourceEntry](SPResourceEntry))
 
     @odata(name="DesignPackageId", beta=True)
     @property
