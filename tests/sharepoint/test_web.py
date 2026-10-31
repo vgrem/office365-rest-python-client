@@ -9,12 +9,14 @@ from typing import ClassVar, Optional
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.kind import PermissionKind
+from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.webs.creation_information import WebCreationInformation
 from office365.sharepoint.webs.subweb_query import SubwebQuery
 from office365.sharepoint.webs.web import Web
 
 from tests import test_site_url
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -36,12 +38,14 @@ class TestSharePointWeb(SPTestCase):
         result = Web.get_web_url_from_page_url(self.client, page_url).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Web.get_list_item, flow="application")
     def test_03_get_list_item_by_abs_url(self):
         """Get list item by absolute URL."""
         page_url = f"{test_site_url}/SitePages/Home.aspx"
         result = self.client.web.get_list_item(page_url).execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(Web.does_user_have_permissions, flow="application")
     def test_04_does_user_has_perms(self):
         """Check if the current user has specific permissions."""
         perms = BasePermissions()
@@ -50,6 +54,7 @@ class TestSharePointWeb(SPTestCase):
         result = self.client.web.does_user_have_permissions(perms).execute_query()
         self.assertIsInstance(result.value, bool)
 
+    @requires_call(SecurableObject.get_user_effective_permissions, flow="application")
     def test_05_get_user_permissions(self):
         """Get effective permissions for the target user."""
         target_user = TestSharePointWeb.target_user
@@ -71,6 +76,7 @@ class TestSharePointWeb(SPTestCase):
         self.assertEqual(len(results), 1)
         self.assertIsNotNone(results[0].resource_path)
 
+    @requires_call(Web.get_sub_webs_filtered_for_current_user, flow="application")
     def test_07_get_sub_web(self):
         """Get sub-webs filtered for the current user."""
         sub_webs = self.client.web.get_sub_webs_filtered_for_current_user(SubwebQuery()).execute_query()
@@ -99,16 +105,19 @@ class TestSharePointWeb(SPTestCase):
         results = self.client.web.webs.filter(f"Title eq '{title}'").get().execute_query()
         self.assertEqual(len(results), 0)
 
+    @requires_call(Web.get_all_webs, flow="application")
     def test_10_enum_all_webs(self):
         """Enumerate all webs within the site."""
         webs = self.client.web.get_all_webs().execute_query()
         self.assertGreater(len(webs), 0)
 
+    @requires_call(Web.get_list, flow="application")
     def test_11_read_list(self):
         """Read a list by its name."""
         site_pages = self.client.web.get_list("SitePages").get().execute_query()
         self.assertIsNotNone(site_pages.title)
 
+    @requires_call(SecurableObject.get_user_effective_permissions, flow="application")
     def test_12_get_user_perms(self):
         """Get user effective permissions with levels."""
         target_user = TestSharePointWeb.target_user
@@ -119,6 +128,7 @@ class TestSharePointWeb(SPTestCase):
         self.assertIsInstance(result.value, BasePermissions)
         self.assertGreater(len(result.value.permission_levels), 0)
 
+    @requires_call(Web.get_user_by_id, flow="application")
     def test_13_get_user_by_id(self):
         """Get user by ID."""
         target_user = TestSharePointWeb.target_user
@@ -129,6 +139,7 @@ class TestSharePointWeb(SPTestCase):
         result_user = self.client.web.get_user_by_id(target_user.id).get().execute_query()
         self.assertEqual(result_user.login_name, target_user.login_name)
 
+    @requires_call(Web.get_catalog, flow="application")
     def test_14_get_catalog(self):
         """Get the master page catalog."""
         catalog = self.client.web.get_catalog(ListTemplateType.MasterPageCatalog).get().execute_query()
@@ -149,11 +160,13 @@ class TestSharePointWeb(SPTestCase):
         templates = self.client.web.list_templates.get().execute_query()
         self.assertGreater(len(templates), 0)
 
+    @requires_call(Web.get_custom_list_templates, flow="application")
     def test_18_get_custom_list_templates(self):
         """Get custom list templates."""
         templates = self.client.web.get_custom_list_templates().execute_query()
         self.assertGreaterEqual(len(templates), 0)
 
+    @requires_call(Web.ensure_folder_path, flow="application")
     def test_19_ensure_folder_path(self):
         """Ensure a nested folder path exists."""
         folder_path = "Shared Documents/Archive/2020/12"
@@ -166,6 +179,7 @@ class TestSharePointWeb(SPTestCase):
         result = Web.get_context_web_theme_data(self.client).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Web.get_regional_datetime_schema, flow="application")
     def test_21_get_regional_datetime_schema(self):
         """Get regional datetime schema."""
         result = self.client.web.get_regional_datetime_schema().execute_query()
@@ -176,6 +190,7 @@ class TestSharePointWeb(SPTestCase):
     #    result = self.client.web.get_push_notification_subscribers_by_user(current_user).execute_query()
     #    self.assertIsNotNone(result.resource_path)
 
+    @requires_call(Web.get_list_item_using_path, flow="application")
     def test_22_get_list_item_by_path(self):
         """Get list item by path."""
         page_url = "SitePages/Home.aspx"
@@ -196,6 +211,7 @@ class TestSharePointWeb(SPTestCase):
     #    result = admin_client.web.get_acs_service_principals().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Web.ensure_tenant_app_catalog, flow="application")
     def test_24_ensure_tenant_app_catalog(self):
         """Ensure the tenant app catalog exists."""
         result = self.client.web.ensure_tenant_app_catalog("app").execute_query()
@@ -213,6 +229,7 @@ class TestSharePointWeb(SPTestCase):
     #    result = self.client.web.get_acs_service_principals().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Web.get_access_request_list, flow="application")
     def test_25_get_access_request_list(self):
         """Get the access request list.
 

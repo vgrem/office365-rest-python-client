@@ -299,6 +299,19 @@ introduced.
   with the one credential it has: measured, the Graph app-only token carries 43 `roles` and
   the SharePoint app-only token `Sites.FullControl.All`, `Sites.ReadWrite.All` and
   `TermStore.Read.All`.
+- The convenience methods on `GraphClient` — `has_`/`grant_`/`get_`/`revoke_`, delegated and
+  application — take `resource`, defaulting to Microsoft Graph, and `--grant` passes the one
+  its plan names. `Sites.FullControl.All` is a Graph permission and a SharePoint one, so a
+  helper that assumed Graph could report a SharePoint gap and then grant it to the wrong API.
+- **SharePoint declarations start, and the resource switch is proved end to end.** 20 methods
+  of `Web` and `SecurableObject` now name what they need on `ResourceName.SharePoint` — a read
+  ladder (`Sites.Read.All`, `Sites.ReadWrite.All`, `Sites.Manage.All`, `Sites.FullControl.All`)
+  and a management one — and `tests/sharepoint/test_web.py` derives its preconditions from
+  them: 24 tests pass under an app-only certificate, 1 skips for a reason that has nothing to
+  do with permissions. The package's debt moves 2,238 → 2,228. A method that only builds a
+  path (`Web.get_list` hands back a `List` the caller sends) is still the place to declare:
+  it is the operation with a name, and the general read verb underneath (`Entity.get`)
+  cannot know its type.
 - A live test's skip decision reads that token first and the tenant's grants only where the
   token cannot speak. A grant read is scoped to one API, so it cannot see a delegated name
   granted on another: `Mail.Send` lives on Exchange Online and `TermStore.Read.All` on
@@ -587,6 +600,13 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
 
 **Permissions**
 
+- **The preflight report dropped a whole flow instead of resolving it.** A requirement was
+  looked up with a client built for the auth flow the suite uses, and `--verify` could build
+  one only for the password and secret flows: every SharePoint suite signs in with the
+  certificate, so its requirements came out "unverified" and a report of what a tenant grants
+  said nothing about the package that owes 2,238 declarations. The same certificate is a
+  Graph credential, so the report now signs in with it and asks the app that will run the
+  tests. Measured on the tenant: 3 unverified rows became 3 met.
 - **`ServicePrincipal.get_application_permissions` reported a subset of the client's
   grants.** It read the resource's `appRoleAssignedTo` navigation property, which was
   expanded into the request; Graph answers an expanded collection with one truncated

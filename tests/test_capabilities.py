@@ -7,8 +7,11 @@ decorators and the preflight report share.
 
 from __future__ import annotations
 
+import shutil
+import tempfile
 import types
 import unittest
+from pathlib import Path
 from unittest import TestCase, mock
 
 from office365.permissions import ResourceName
@@ -166,6 +169,37 @@ class TestShortfall(TestCase):
         requirement = Requirement(delegated=("Mail.Read",), bypass_roles=("Global Administrator",))
         self.assertEqual(requirement.shortfall(TenantState(roles=frozenset({"Global Administrator"}))), [])
         self.assertEqual(requirement.shortfall(TenantState(unverifiable="no scope to ask with")), [])
+
+
+class TestTheReportSignsInAsTheTestThatWillRun(TestCase):
+    """`--verify` resolves a requirement with the identity the suite uses, not the first one handy.
+
+    The SharePoint suites sign in with a certificate, so their requirements used to come out
+    "unverified" - the report could not build a Graph client for that flow and quietly gave up.
+    The same certificate is a Graph credential too, so the answer was available all along.
+    """
+
+    def test_the_certificate_flow_gets_a_graph_client_of_its_own(self):
+        pem = Path(tempfile.mkdtemp()) / "selfsigncert.pem"
+        pem.write_text("-----BEGIN PRIVATE KEY-----\nnot a real key\n")
+        self.addCleanup(shutil.rmtree, pem.parent, True)
+        cfg = Settings(
+            tenant="contoso.onmicrosoft.com",
+            client_id="app-id",
+            client_secret="secret",
+            cert_thumbprint="ABCD",
+            cert_path=str(pem),
+        )
+
+        with mock.patch.object(preflight.GraphClient, "with_certificate") as with_certificate:
+            preflight._client("app-only-cert", cfg)
+
+        with_certificate.assert_called_once()
+        self.assertEqual(with_certificate.call_args.args[:2], ("app-id", "ABCD"))
+        self.assertIn("BEGIN PRIVATE KEY", with_certificate.call_args.args[2])
+
+    def test_a_flow_that_is_not_configured_has_no_client(self):
+        self.assertIsNone(preflight._client("app-only-cert", Settings(tenant="contoso.onmicrosoft.com")))
 
 
 class TestGrantPlan(TestCase):

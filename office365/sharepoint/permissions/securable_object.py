@@ -4,6 +4,7 @@ from typing import Optional, Union
 
 from typing_extensions import Self
 
+from office365.permissions import ResourceName, require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -38,6 +39,11 @@ class SecurableObject(Entity):
         principal.ensure_property("Id").after_execute(lambda _: _principal_loaded())
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def add_role_assignment(self, principal: Union[Principal, str], role: Union[RoleDefinition, RoleType]) -> Self:
         """Adds a role assignment to securable resource.
 
@@ -62,6 +68,11 @@ class SecurableObject(Entity):
         principal.ensure_property("Id").after_execute(lambda _: _ensure_role_def())
         return self
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def remove_role_assignment(self, principal: Principal | str, role_def: RoleDefinition | RoleType) -> Self:
         """Removes a role assignment from a securable resource.
 
@@ -122,6 +133,11 @@ class SecurableObject(Entity):
         """
         return self.remove_role_assignment(principal, role)
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def break_role_inheritance(self, copy_role_assignments=True, clear_sub_scopes=True):
         """Creates unique role assignments for the securable object. If the securable object already has
         unique role assignments, the protocol server MUST NOT alter any role assignments.
@@ -154,6 +170,11 @@ class SecurableObject(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def reset_role_inheritance(self) -> Self:
         """Resets the role inheritance for the securable object and inherits role assignments from
         the parent securable object."""
@@ -161,6 +182,11 @@ class SecurableObject(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_user_effective_permissions(self, user: str | User) -> ClientResult[BasePermissions]:
         """Returns the user permissions for secured object.
 

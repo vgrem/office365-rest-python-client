@@ -7,6 +7,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions import ResourceName, require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
@@ -209,6 +210,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_access_request_list(self) -> List:
         """ """
         return_type = List(self.context)
@@ -613,6 +619,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_lists(self, row_limit: int = 100) -> ListCollection:
         """Args:
         row_limit (int): Specifies a limit for the number of lists in the query that are returned per page
@@ -623,6 +634,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_sub_webs_filtered_for_current_user(self, query: SubwebQuery) -> WebInformationCollection:
         """Returns a collection of objects that contain metadata about subsites of the current site (2) in which the
         current user is a member.
@@ -708,6 +724,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_all_webs(self, progress: Optional[Callable[[Progress[Web]], None]] = None) -> WebCollection:
         """Returns a collection containing a flat list of all Web objects in the Web.
 
@@ -788,6 +809,11 @@ class Web(SecurableObject):
             ServiceOperationPath("GetViewFromPath", [decoded_url], self.resource_path),
         )
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_regional_datetime_schema(self) -> ClientResult[str]:
         """Get DateTime Schema based on regional settings"""
         return_type = ClientResult(self.context, str())
@@ -1057,6 +1083,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def ensure_folder_path(self, path) -> Folder:
         """Ensures a nested folder hierarchy exist
 
@@ -1105,6 +1136,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def ensure_user(self, login_name: str) -> User:
         """Checks whether the specified logon name belongs to a valid user of the website, and if the logon name does
         not already exist, adds it to the website.
@@ -1118,6 +1154,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def ensure_tenant_app_catalog(self, caller_id):
         """Args:
         caller_id (str):
@@ -1139,6 +1180,11 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListByTitle", [title], self.resource_path),
         )
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def does_user_have_permissions(self, permission_mask: BasePermissions) -> ClientResult[bool]:
         """Returns whether the current user has the given set of permissions.
 
@@ -1174,6 +1220,11 @@ class Web(SecurableObject):
             ServiceOperationPath("GetFolderById", [unique_id], self.resource_path),
         )
 
+    @require_permission(
+        delegated=["AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_user_by_id(self, user_id: int) -> User:
         """Returns the user corresponding to the specified member identifier for the current site.
 
@@ -1192,6 +1243,11 @@ class Web(SecurableObject):
             ServiceOperationPath("defaultDocumentLibrary", None, self.resource_path),
         )
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_list(self, path: str) -> List:
         """Get list by path
 
@@ -1266,6 +1322,11 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_custom_list_templates(self) -> ListTemplateCollection:
         """Specifies the collection of custom list templates for a given site."""
         return_type = ListTemplateCollection(self.context)
@@ -1772,6 +1833,11 @@ class Web(SecurableObject):
             ServiceOperationPath("GetFileById", [unique_id], self.resource_path),
         )
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_list_item(self, str_url: str) -> ListItem:
         """Returns the list item that is associated with the specified server-relative URL.
 
@@ -1784,6 +1850,11 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListItem", [str_url], self.resource_path),
         )
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_list_item_using_path(self, decoded_url: str) -> ListItem:
         """Returns the list item that is associated with the specified server-relative path.
 
@@ -1853,6 +1924,11 @@ class Web(SecurableObject):
             return self.get_file_by_server_relative_path(url).listItemAllFields
         raise ValueError(f"Unsupported scope: {scope!r}")
 
+    @require_permission(
+        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        resource=ResourceName.SharePoint,
+    )
     def get_catalog(self, type_catalog: Union[int, ListTemplateType]) -> List:
         """Gets the list template gallery, site template gallery, or Web Part gallery for the Web site.
 

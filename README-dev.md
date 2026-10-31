@@ -184,7 +184,8 @@ test exercises instead of restating it:
 
 Add `flow="application"` to `@requires_call` for an app-only suite. The declared
 requirements are read off the test tree, so what a tenant must grant is known before a
-run and never kept in a second list:
+run and never kept in a second list. A requirement names the API it is granted on, so a
+SharePoint test and a Graph test never compare one API's grants against the other's:
 
 ```bash
 uv run python -m tests.preflight                      # what is blocking the most tests
@@ -192,6 +193,9 @@ uv run python -m tests.preflight --verify             # ... and what this tenant
 uv run python -m tests.preflight --all                # every requirement, not just the blockers
 uv run python -m tests.preflight --verify --report tests-report
 ```
+
+`--verify` signs in once per configured flow — including the certificate — and asks each
+app about its own grants, so the answer is about the identity that will run the tests.
 
 The default view is the screen, not the matrix: the counts, only the flows that are not
 ready, and the unmet requirements deduplicated and ranked by the tests they unblock —

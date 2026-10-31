@@ -114,7 +114,11 @@ def _client(flow: str, cfg: Settings = settings) -> GraphClient | None:
         return client.with_username_and_password(cfg.client_id, cfg.username, cfg.password)
     if flow == "app-only":
         return client.with_client_secret(cfg.client_id, cfg.client_secret)
-    return None  # app-only-cert signs in through SharePoint, not Graph
+    if flow == "app-only-cert":
+        # The certificate is an app credential like any other: Graph accepts it, and the grants
+        # to check belong to the app that presents it, so the report must sign in as that app.
+        return client.with_certificate(cfg.client_id, cfg.cert_thumbprint, Path(cfg.cert_path).read_text())
+    return None
 
 
 def verify(found: list[Needs], client_id: str, cfg: Settings = settings) -> dict[Requirement, TenantState]:
