@@ -102,7 +102,12 @@ and the legacy `tests.site_url` / `tests.test_site_url` spellings are a `__getat
 over its fields, not a list to keep in step.
 
 A test belongs in `tests/unit` when it pins behaviour a user of the library can
-observe; it belongs in `tests/tooling` when it pins how the library is generated.
+observe; it belongs in `tests/tooling` when it pins how the library is generated. A
+generator file is named after the module it drives, and holds both halves of that module's
+subject: the keys plan and the write it feeds (`@key(...)`), the beta gate and the write it
+feeds (`@version(beta=...)`), the import block and the helpers that insert into it. A
+17-line test of `BuilderContext` is not a file; it is the last section of the config file
+that builds one.
 
 ### A live test declares what it needs from the tenant
 
