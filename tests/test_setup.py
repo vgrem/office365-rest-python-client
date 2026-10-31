@@ -17,12 +17,26 @@ from pathlib import Path
 from typing import cast
 from unittest import mock
 
+import pytest
 from office365.graph_client import GraphClient
 
 from tests import preflight, setup
 from tests._scripted_transport import RecordingTransport
 from tests.capabilities import Requirement, TenantState
-from tests.settings import EnvFile, Settings, settings
+from tests.settings import EnvFile, Settings
+
+
+@pytest.fixture(autouse=True)
+def _no_env_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The module promises a run with no `.env` on disk; this is what makes it true.
+
+    Two tests used to pass only because the developer's `.env` supplied a tenant and a
+    client id. In CI, where there is no `.env`, `--client-id is required with --yes`
+    exited 2 -- a test that reads the machine it runs on is a test that lies about the
+    code. Nothing here may see the real file or the `Settings` read from it.
+    """
+    monkeypatch.setattr(setup, "settings", Settings())
+    monkeypatch.setattr(setup, "ENV", EnvFile(tmp_path / ".env", tmp_path / ".env.example"))
 
 
 def _resolve(argv: list[str], existing: dict[str, str] | None = None) -> setup._Options:
@@ -43,7 +57,12 @@ def _client(*payloads) -> tuple[GraphClient, RecordingTransport]:
 
 class TestResolveOptions(unittest.TestCase):
     def test_a_non_interactive_run_takes_its_defaults_from_the_environment(self) -> None:
-        opts = _resolve(["--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"])
+        # The comparison used to be against the module-level `settings`, so it read the
+        # developer's `.env` on both sides and agreed with itself. The environment is
+        # stated here instead: what the wizard does with an unflagged option is the fact.
+        configured = Settings(username="bob@contoso.com", password="pw")
+        with mock.patch.object(setup, "settings", configured):
+            opts = _resolve(["--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"])
         self.assertEqual(opts.tenant, "contoso.onmicrosoft.com")
         self.assertEqual(opts.client_id, "app-id")
         self.assertEqual(opts.sites_scope, "all")
@@ -51,8 +70,8 @@ class TestResolveOptions(unittest.TestCase):
         self.assertFalse(opts.extras)
         self.assertFalse(opts.want_secret)
         self.assertEqual(opts.app_name, setup.DEFAULT_APP_NAME)
-        self.assertEqual(opts.username, settings.username)
-        self.assertEqual(opts.password, settings.password)
+        self.assertEqual(opts.username, "bob@contoso.com")
+        self.assertEqual(opts.password, "pw")
 
     def test_a_site_url_implies_the_selected_scope(self) -> None:
         opts = _resolve(["--tenant", "t", "--client-id", "c", "--site", "https://a", "--site", "https://b"])
@@ -162,7 +181,8 @@ class TestGrant(unittest.TestCase):
         with mock.patch.object(setup.preflight, "suites", return_value=found):
             with mock.patch.object(setup.preflight, "verify", return_value={requirement: TenantState()}):
                 with mock.patch.object(setup, "_sign_in") as sign_in:
-                    self.assertEqual(setup.main(["--grant", "--dry-run", "-y"]), 0)
+                    args = ["--grant", "--dry-run", "-y", "--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"]
+                    self.assertEqual(setup.main(args), 0)
         sign_in.assert_not_called()
 
 
@@ -177,7 +197,7 @@ class TestWritesEnv(unittest.TestCase):
             (root / ".env.example").write_text("OFFICE365_TENANT=\n", encoding="utf-8")
             (root / ".env").write_text("OFFICE365_TENANT=old.onmicrosoft.com\n", encoding="utf-8")
             (root / ".env").chmod(0o644)
-            opts = _resolve(["--tenant", "contoso.onmicrosoft.com"])
+            opts = _resolve(["--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"])
             with mock.patch.object(setup, "ENV", env):
                 with mock.patch.object(setup, "ENV_BAK", root / ".env.bak"):
                     with mock.patch.object(setup, "PROJECT_ROOT", root):
