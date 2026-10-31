@@ -172,10 +172,19 @@ uv run python examples/auth/with_client_secret.py
 
 ## Check what the live suites need
 
-A live test states its precondition beside itself — `@requires_delegated("Mail.Read")`,
-`@requires_application("Sites.Read.All")` — and skips when the tenant does not grant it.
-The declared requirements are read off the test tree, so what a tenant must grant is
-known before a run and never kept in a second list:
+A live test states its precondition beside itself and skips when the tenant does not
+grant it. Prefer the derived form, which reads the permission from the model method the
+test exercises instead of restating it:
+
+```python
+@requires_call(Message.send, bypass_roles=["Exchange Administrator"])
+@requires_delegated("Mail.Read")          # a scope, by name
+@requires_application("Sites.Read.All")   # an app role, by name
+```
+
+Add `flow="application"` to `@requires_call` for an app-only suite. The declared
+requirements are read off the test tree, so what a tenant must grant is known before a
+run and never kept in a second list:
 
 ```bash
 uv run python -m tests.preflight                      # what is blocking the most tests
@@ -229,102 +238,26 @@ on your app: a **directory role** is assigned to the test user (and needs Entra 
 and a **license** has to be bought before it can be assigned. The plan names them and
 says so.
 
-Both the runtime check and the report go through `tests/capabilities.py`, which asks the
-tenant one question per declared fact using the library's own
-`office365.directory.permissions.guard` helpers. Nothing calls a test to learn what it
-declares.
+### Adding a model method
 
-A model method carries the same kind of statement. `@require_permission(delegated=...,
-application=...)` marks 184 request builders in 52 modules, and both sides now produce
-the one `Requirement` type: `PermissionRequirement.requirements()` turns a method's
-declaration into one requirement per flow it can run under, with `directory_roles`
-becoming the bypass a test spells as `bypass_roles`. Nothing calls a method to learn what
-it declares either — the stamp is `method.__required_permissions__`, and
-`office365.permissions.declared(method, flow=...)` reads it, raising rather than returning
-an empty requirement when the method names nothing under the flow asked for.
+A method that queues a request (`add_query`, `execute_query`, `execute_batch`) says which
+permission it needs, or `tests/unit/test_permission_declarations.py` fails: `PENDING` there
+counts the undeclared builders per service package, and both directions are ratcheted — a
+new undeclared builder raises the count, and so does a declaration that disappears. Declaring
+is one line beside the request:
 
-All of it lives in one package, three modules, so the vocabulary is the API:
-`office365.permissions.declaration` (the marker and `declared()`),
-`office365.permissions.requirement` (`Requirement`, `Requirement.join`, the flow list) and
-`office365.permissions.index` (the whole-package walk). A live test imports
-`Requirement` and `declared` from `office365.permissions`; nothing under `tests/` owns a
-copy of the rules.
+```python
+@require_permission(
+    delegated=("Mail.Read",),
+    application=("Mail.Read",),
+    resource=ResourceName.Graph,
+)
+def get(self) -> Message: ...
+```
 
-A declaration names the **API resource** the names belong to, and the fourth module
-`office365.permissions.resource` is that vocabulary (`ResourceName.Graph`,
-`ResourceName.SharePoint`, `ResourceName.Exchange`, ...). The resource is not decoration:
-`Sites.ReadWrite.All` is granted on Microsoft Graph *and* on SharePoint, `Mail.Send` is an
-application permission on Graph but a delegated one on Exchange Online, and a name is only a
-grant on the API that defines it. So `@require_permission(resource=ResourceName.SharePoint,
-...)` is how a model under `office365/sharepoint` says which grants it needs, `Requirement`
-carries the resource into the check, and `Requirement.join` refuses to merge two APIs' names
-into one group — the group would compare names that mean different things. The default is
-Microsoft Graph, which is what all 184 declarations written so far mean, so adding the
-dimension changed no rendered requirement: preflight output is byte-identical.
-
-That is step 1 of `design/0002-declared-permissions.md`: a permission matrix assembled
-from declarations instead of typed, which preflight can join with the test declarations so
-a scope is priced by the endpoints it unlocks as well as by the tests it unblocks.
-
-The declarations are ratcheted per service package, not banned: `PENDING` in
-`tests/unit/test_permission_declarations.py` records how many public operations still name
-no permission, and the map only shrinks. Both directions fail — a new undeclared request
-builder raises a count, and a declaration that disappears raises one too. Outlook is absent
-from the map because it is closed: 21 request builders, every one declared, which makes it
-the pilot for reading markers instead of re-stating them in a test. What stays out of scope
-is stated in the test: `runtime` and `migration` orchestrate requests that model methods
-already declare, and the root-level base classes cannot know the type they create.
-
-What the ratchet asks — which methods queue a request, and which of them name nothing — is
-answered by the library, not by the test: `office365.permissions.index(office365)` returns an
-`Index` whose `declared()`, `undeclared()` and `debt()` answer over one walk of the tree, so
-the ledger is a number and not a rumour. Before this, three consumers each parsed the source:
-the ratchet with `ast`, and any tool that wanted a type's scopes with a walker of its own.
-The index reads bytecode names instead, so an annotation such as `-> EdiscoveryReviewSetQuery`
-is no longer mistaken for an operation, and it does not use `pkgutil.walk_packages` — that walk
-skips a directory without an `__init__.py`, which is every namespace-package subtree in this
-library, so a ledger built on it would under-report.
-
-Nothing registers itself. An earlier version had `ClientObject.__init_subclass__` and the
-decorator push into two module-level registries that `runtime` then had to keep in sync; the
-index instead imports the tree once and reads it, so `runtime` does not depend on the
-permissions package, an answer cannot depend on what a process happened to import first, and
-`index()` is a memoized pure function of the package.
-
-Discovery is one rule, deliberately: a method that submits a query (`add_query`,
-`execute_query`, `execute_batch`) issues a request. An earlier version also counted anything
-whose name ended in `Query`, which found 16 more builders but also `ImageInfo.__eq__`,
-`BatchQuery.get_queries` and `AuditLogQuery` — a name suffix is a guess, and one rule that
-nobody has to interpret is worth a floor that is 16 methods lower. The count is therefore a
-floor in two senses: a method that delegates its request to a declared sibling is invisible
-(`Entity.get` queues nothing), and a method that only builds a query and returns it is not
-counted. Both directions of the ratchet still bite, because a *new* undeclared builder is
-caught by the same rule that the map was measured with.
-
-A live test can read that declaration instead of restating it: `@requires_call(Message.send,
-bypass_roles=[...])` joins the declared requirements of every method the test exercises and
-stamps one `Requirement`, so the skip, the preflight row and the model's own answer cannot
-drift apart. The join itself is `Requirement.join(*declarations, flow=...)` in the library: a
-test, a migration job and a user's script ask the same question and get the same answer, and a
-call that names nothing under the requested flow raises instead of producing an empty
-requirement that would always pass. `tests/outlook/test_outlook_user.py` is the first suite converted — five of its
-seven tests now name no scope — and converting it removed two over-declarations rather than
-adding any: a test claimed four `User.*` alternatives where the model declares `User.Read`,
-and `Mail.Read.Shared` where the call declares `Mail.Read`/`Mail.ReadWrite`. The two tests
-that still restate their scopes say why in a comment: they call the generic `Entity.get`,
-which declares nothing because it cannot know the type it reads.
-
-### Compared with other SDKs
-
-Mature SDKs separate the two tiers the same way: `azure-sdk-for-python` records
-fixtures and runs live only under `AZURE_TEST_RUN_LIVE`, listing each package's env
-vars and role assignments in its `tests/README.md`; Terraform providers and Google
-Cloud's `nox -s integration` gate live suites behind an opt-in environment variable;
-AWS SDK integration suites live outside the default collection and fail with
-`AccessDenied` at run time. The prerequisites in those projects are documented by hand,
-next to the tests, and drift. Here they are declared by the test and read back, and
-the answer is resolved through the same guard the library gives users — so a permission
-gap is reported the way the library itself would report it.
+`resource` is the API the names are granted on, defaulting to Microsoft Graph; a model under
+`office365/sharepoint` names `ResourceName.SharePoint`, because the same name is a different
+grant on each API.
 
 ## Publish a release
 
