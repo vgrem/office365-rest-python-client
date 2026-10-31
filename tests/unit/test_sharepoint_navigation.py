@@ -8,19 +8,27 @@ missing nodes are created with rewritten links, existing nodes are reconciled
 rather than duplicated, URL-less (dynamic) nodes are skipped with a warning, and a
 web that inherits its navigation only flips the target's ``use_shared`` flag.
 
-The create body itself is pinned in ``tests/unit/test_navigation_node_create.py``;
-the library read that fills the tree, in ``tests/unit/test_navigation_tree.py``.
+
+It also covers the read that fills the tree (``Navigation.get_tree()``) and the
+create body of a node, which the live service spells in two fields.
 """
 
 from __future__ import annotations
+
+import json
 
 from office365.migration.sharepoint.navigation import (
     apply_navigation,
     capture_navigation,
     verify_navigation,
 )
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.navigation.navigation import Navigation
+from office365.sharepoint.navigation.nodes.creationinformation import (
+    NavigationNodeCreationInformation,
+)
 from office365.sharepoint.navigation.nodes.node import NavigationNode
+from tests._scripted_transport import MethodRoutingTransport
 
 _SOURCE = "https://mediadev8.sharepoint.com/sites/team_in"
 _TARGET = "https://mediadev8.sharepoint.com/sites/team_out"
@@ -177,3 +185,92 @@ def test_a_web_that_inherits_only_flips_the_targets_flag():
     assert target.use_shared is True
     assert [n.title for n in target.navigation.get().execute_query().quick_launch] == ["Home", "Recent"]
     assert verify_navigation(source, target) == []
+
+
+# --- test_navigation_tree ------------------------------------------------------
+
+
+def _rest_node(node_id: int, title: str, url: str) -> dict:
+    return {"__metadata": {"type": "SP.NavigationNode"}, "Id": node_id, "Title": title, "Url": url}
+
+
+_NAVIGATION = {
+    "d": {
+        "__metadata": {"type": "SP.Navigation"},
+        "UseShared": False,
+        "QuickLaunch": {"results": [_rest_node(1, "Home", "/")]},
+        "TopNavigationBar": {"results": [_rest_node(2, "About", "/about")]},
+    }
+}
+
+_ROUTES = [
+    # a leaf answers with no children; most specific first, because a child's URL
+    # contains its parent's (``/QuickLaunch(1)/Children(3)/Children``)
+    ("GET", "Children(3)/Children", {"d": {"results": []}}),
+    ("GET", "QuickLaunch(1)/Children", {"d": {"results": [_rest_node(3, "Team", "/team")]}}),
+    ("GET", "TopNavigationBar(2)/Children", {"d": {"results": []}}),
+    ("GET", "/Navigation", _NAVIGATION),
+]
+
+
+def test_get_tree_expands_both_bars_and_walks_every_level_in_one_execution():
+    transport = MethodRoutingTransport(_ROUTES)
+    ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+    ctx.pending_request().beforeExecute.clear()  # no auth handler when nothing leaves the process
+    ctx.pending_request().transport = transport
+
+    navigation = ctx.web.navigation.get_tree().execute_query()
+
+    assert isinstance(navigation, Navigation)  # the model, not a flat copy of it
+    assert navigation.use_shared is False
+    assert [n.title for n in navigation.quick_launch] == ["Home"]
+    assert [n.title for n in navigation.quick_launch[0].children] == ["Team"]  # a level below the bar
+    assert [n.title for n in navigation.top_navigation_bar] == ["About"]
+    # one navigation read (both bars expanded) + one child read per node that has any
+    expected_requests = 4
+    assert len(transport.requests) == expected_requests
+
+
+# --- test_navigation_node_create -----------------------------------------------
+
+#: The id the scripted create answers with.
+_NODE_ID = 7
+
+#: A create needs a form digest, and the digest comes from its own request.
+_DIGEST = {"d": {"GetContextWebInformation": {"FormDigestValue": "offline-digest", "FormDigestTimeoutSeconds": 1800}}}
+
+
+def _create(info):
+    posted = []
+
+    def capture(request):
+        posted.append(request)
+        return {"Id": _NODE_ID, "Title": info.Title, "Url": info.Url}
+
+    transport = MethodRoutingTransport(
+        [
+            ("POST", "contextInfo", _DIGEST),
+            ("POST", "/Navigation/QuickLaunch", capture),
+        ]
+    )
+    ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+    ctx.pending_request().transport = transport
+    ctx.authentication_context.authenticate_request = lambda request: None
+    node = ctx.web.navigation.quick_launch.add(info)
+    ctx.execute_query()
+    body = posted[0].data
+    return (json.loads(body) if isinstance(body, str) else body), node
+
+
+def test_a_node_is_created_from_the_two_fields_the_service_accepts():
+    info = NavigationNodeCreationInformation(
+        Title="Docs", Url="https://www.contoso.com/x", IsExternal=True, AsLastNode=True
+    )
+    body, node = _create(info)
+
+    assert body == {
+        "Title": "Docs",
+        "Url": "https://www.contoso.com/x",
+        "__metadata": {"type": "SP.NavigationNode"},
+    }
+    assert node.id == _NODE_ID

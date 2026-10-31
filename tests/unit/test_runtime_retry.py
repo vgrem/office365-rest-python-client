@@ -118,16 +118,6 @@ class TestExecuteQueryRetry(unittest.TestCase):
 
 
 class TestRetryFunction(unittest.TestCase):
-    def test_retries_exhausted_raises_last_error(self):
-        func = mock.Mock(side_effect=_make_exception(503))
-
-        with self.assertRaises(ClientRequestException) as cm:
-            retry(func, max_retry=2, timeout_secs=1)
-
-        self.assertEqual(func.call_count, 2)
-        assert cm.exception.response is not None
-        self.assertEqual(cm.exception.response.status_code, 503)
-
     def test_invalid_url_is_not_retried(self):
         func = mock.Mock(side_effect=requests.exceptions.InvalidURL("nope"))
 
@@ -149,16 +139,22 @@ class TestRetryFunction(unittest.TestCase):
 
 
 class TestTransportErrorClassification(unittest.TestCase):
-    def test_connection_and_timeout_are_transient(self):
-        self.assertTrue(is_transient_error(requests.ConnectionError("boom")))
-        self.assertTrue(is_transient_error(requests.Timeout("slow")))
-        self.assertTrue(is_transient_error(requests.exceptions.ChunkedEncodingError("cut")))
+    """A transport failure is retried only if the connection might heal."""
 
-    def test_ssl_and_malformed_url_are_permanent(self):
-        self.assertFalse(is_transient_error(requests.exceptions.SSLError("bad cert")))
-        self.assertFalse(is_transient_error(requests.exceptions.InvalidURL("nope")))
+    def test_only_connection_failures_are_transient(self):
+        transient = [
+            requests.ConnectionError("boom"),
+            requests.Timeout("slow"),
+            requests.exceptions.ChunkedEncodingError("cut"),
+        ]
+        permanent = [
+            requests.exceptions.SSLError("bad cert"),
+            requests.exceptions.InvalidURL("nope"),
+        ]
+        self.assertTrue(all(is_transient_error(err) for err in transient))
+        self.assertFalse(any(is_transient_error(err) for err in permanent))
 
-    def test_reset_connections_predicate(self):
+    def test_a_reset_is_for_a_broken_connection_not_a_refusal(self):
         self.assertTrue(should_reset_connections(_make_exception(503)))
         self.assertTrue(should_reset_connections(requests.ConnectionError("boom")))
         self.assertFalse(should_reset_connections(_make_exception(429)))

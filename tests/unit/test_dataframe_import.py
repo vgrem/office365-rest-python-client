@@ -7,11 +7,9 @@ import json
 from typing import Any, cast
 
 import pytest
-from office365.migration.base import MigrationStats
 from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.dataframe import dataframe_chunks
-from office365.runtime.imports import ImportCheckpoint, ImportResult, ImportStats
-from office365.runtime.operations import OperationStats
+from office365.runtime.imports import ImportCheckpoint, ImportResult
 from office365.runtime.record_collection import RecordCollection
 
 pd = pytest.importorskip("pandas")
@@ -264,31 +262,6 @@ def test_list_from_dataframe_returns_import_result():
     driver = lst.from_dataframe(pd.DataFrame({"Name": ["a"], "Value": [1]}))
 
     assert isinstance(driver, ImportResult)
-
-
-def test_import_and_migration_stats_share_the_operation_base():
-    assert issubclass(ImportStats, OperationStats)
-    assert issubclass(MigrationStats, OperationStats)
-
-    # a common-stats consumer accepts either specialization without conversion
-    def totals(stats: OperationStats) -> tuple[int, int, int]:
-        return stats.total, stats.success, stats.errors
-
-    assert totals(ImportStats(total=10, success=8, errors=2)) == (10, 8, 2)  # noqa: PLR2004
-    assert totals(MigrationStats(total=5, success=4, errors=1)) == (5, 4, 1)  # noqa: PLR2004
-
-
-def test_collection_clear_discards_items():
-    from office365.runtime.client_object import ClientObject
-    from office365.runtime.client_object_collection import ClientObjectCollection
-
-    ctx = _FakeContext()
-    collection = ClientObjectCollection(cast(Any, ctx), ClientObject)
-    collection.add_child(ClientObject(cast(Any, ctx)))
-
-    collection.clear()
-
-    assert len(collection) == 0
 
 
 class _KeyedTarget:

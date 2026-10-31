@@ -639,6 +639,19 @@ class TestRunnerExistingTargets(unittest.TestCase):
         )
         return stats, target.written
 
+    def test_an_existing_file_is_left_alone_but_a_folder_is_restamped(self):
+        items = [
+            MigrationItem("/s/Area", "Area/", item_type="folder"),
+            MigrationItem("/s/Area/doc.txt", "Area/doc.txt"),
+        ]
+
+        stats, written = self._run(items)
+
+        self.assertEqual((stats.total, stats.errors), (2, 0))
+        # the file is skipped whole; the folder holds no content to duplicate, so it
+        # is written and restamped — otherwise a resumed run reports it as drifted
+        self.assertEqual(written, ["Area/", "timestamps:Area/"])
+
 
 class TestApplyFidelity(unittest.TestCase):
     """Order of the post-write fidelity steps, and which optional hooks drive them."""
