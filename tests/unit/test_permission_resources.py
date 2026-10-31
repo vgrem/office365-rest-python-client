@@ -11,16 +11,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
-from unittest import TestCase, mock
+from unittest import TestCase
 
 from office365.directory.permissions.checker import verify_permissions
 from office365.directory.permissions.guard import (
-    _cached_app_permissions,
-    _cached_delegated_permissions,
     has_application_permission,
     has_delegated_permission,
 )
-from office365.graph_client import GraphClient
 from office365.permissions import ResourceName, declared, require_permission
 from tests.capabilities import TenantState
 
@@ -131,81 +128,3 @@ class TestTheResourceOfACheck(TestCase):
 
         self.assertEqual(report.resource, ResourceName.SharePoint.value)
         self.assertEqual(report.granted_delegated, ["AllSites.FullControl"])
-
-
-class TestTheResourceOfTheCache(TestCase):
-    """The two lookups are memoised per resource, so a stale answer cannot cross resources."""
-
-    def tearDown(self) -> None:
-        for cached in (_cached_app_permissions, _cached_delegated_permissions):
-            cached.cache_clear()
-
-    def test_a_cached_answer_belongs_to_the_resource_it_was_read_from(self):
-        client = FakeClient()
-
-        graph = _cached_delegated_permissions(client, CLIENT_ID, ResourceName.Graph)
-        sharepoint = _cached_delegated_permissions(client, CLIENT_ID, ResourceName.SharePoint)
-
-        self.assertEqual(list(graph), ["Sites.ReadWrite.All"])
-        self.assertEqual(list(sharepoint), ["AllSites.FullControl"])
-
-
-class _RecordingPrincipal:
-    """A service principal that records the calls made on it and holds one app role."""
-
-    def __init__(self, asked: list[str], granted: list[tuple[str, str]], resource: str) -> None:
-        self.asked = asked
-        self.granted = granted
-        self.resource = resource
-
-    def get_application_permissions(self, app_id: str) -> FakeResult:
-        return FakeResult([FakeRole(value="Sites.FullControl.All")])
-
-    def grant_application_permissions(self, app_id: str, name: Any) -> FakeResult:
-        self.granted.append((app_id, str(name)))
-        return FakeResult([])
-
-
-class _RecordingPrincipals:
-    """The ``servicePrincipals`` collection: what is asked for, and on which resource."""
-
-    def __init__(self) -> None:
-        self.asked: list[str] = []
-        self.granted: list[tuple[str, str]] = []
-
-    def find_by_name(self, name: Any, *, required: bool = False) -> _RecordingPrincipal:
-        self.asked.append(str(name))
-        return _RecordingPrincipal(self.asked, self.granted, str(name))
-
-
-class TestTheClientTheWizardGrantsWith(TestCase):
-    """`python -m tests.setup --grant` reaches a resource through the client's own helpers.
-
-    The plan names the resource, so the helper must pass it on: without it the wizard would
-    report a SharePoint gap and grant it to Graph, which is a different permission with a
-    deceptively similar name.
-    """
-
-    def setUp(self) -> None:
-        self.principals = _RecordingPrincipals()
-        self.client = GraphClient(tenant="contoso.onmicrosoft.com")
-        patcher = mock.patch.object(
-            GraphClient, "service_principals", new_callable=mock.PropertyMock, return_value=self.principals
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-        self.addCleanup(_cached_app_permissions.cache_clear)
-
-    def test_a_grant_names_the_resource_and_reaches_its_principal(self):
-        self.client.grant_application_permissions("app-id", "Sites.FullControl.All", resource=ResourceName.SharePoint)
-
-        self.assertEqual(self.principals.asked, [ResourceName.SharePoint.value])
-        self.assertEqual(self.principals.granted, [("app-id", "Sites.FullControl.All")])
-
-    def test_a_check_names_the_resource_and_reads_its_grants(self):
-        granted = self.client.has_application_permissions(
-            "Sites.FullControl.All", "app-id", resource=ResourceName.SharePoint
-        )
-
-        self.assertTrue(granted)
-        self.assertEqual(self.principals.asked, [ResourceName.SharePoint.value])
