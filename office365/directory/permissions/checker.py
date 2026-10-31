@@ -8,9 +8,8 @@ from office365.directory.permissions.guard import (
     _cached_app_permissions,
     _cached_delegated_permissions,
 )
-from office365.directory.permissions.require_permission import PermissionRequirement
-from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
+from office365.permissions import PermissionRequirement, declared
 
 
 @dataclass
@@ -37,6 +36,11 @@ class PermissionReport:
     granted_roles: list[str] = field(default_factory=list)
 
     @property
+    def resource(self) -> str:
+        """The API the checked permissions belong to, as the declaration named it."""
+        return self.perms.resource
+
+    @property
     def granted_delegated(self) -> list[str]:
         return [s for s in self.required.delegated if s in self.perms.delegated]
 
@@ -48,6 +52,7 @@ class PermissionReport:
         return json.dumps(
             {
                 "method": self.method,
+                "resource": self.resource,
                 "delegated": ", ".join(self.granted_delegated),
                 "application": ", ".join(self.granted_application),
             }
@@ -62,17 +67,21 @@ def verify_permissions(
     """Check whether the permissions declared on a method are actually granted.
 
     Reads the ``@require_permission`` metadata from the method and compares
-    each declared scope against the application's Entra ID service principal
-    via the Microsoft Graph ``servicePrincipals`` API.
+    each declared scope against the grants held by the service principal of
+    the resource the declaration names - Microsoft Graph by default, or e.g.
+    ``Office 365 SharePoint Online`` for a declaration on
+    :mod:`office365.sharepoint`. The names are only comparable within that
+    resource, which is why the declaration carries it.
 
-    This is a **diagnostic-only** function — it never raises, never blocks,
-    and never makes any changes.  Use it after encountering a 401 to identify
-    which scopes are missing.
+    This is a **diagnostic-only** function: it never raises on a missing grant
+    and never makes any changes. Use it after encountering a 401 to identify
+    which scopes are missing. A method that declares nothing is a different
+    mistake - it raises, through :func:`~office365.permissions.declared`.
 
     Args:
-        client: An authenticated ``GraphClient`` — only Microsoft Graph
+        client: An authenticated ``GraphClient`` - only Microsoft Graph
             exposes the ``servicePrincipals`` endpoint needed to query
-            granted permissions.
+            granted permissions, whatever resource they were granted on.
         method: The annotated function, method, or property getter to check.
         client_id: Application client ID.  If omitted, the value stored by
             ``with_client_secret`` / ``with_certificate`` is used.
@@ -90,14 +99,15 @@ def verify_permissions(
                 "with_client_secret / with_certificate on the GraphClient first."
             )
 
-    app_roles = _cached_app_permissions(client, client_id, ResourceName.Graph)
-    delegated_scopes = _cached_delegated_permissions(client, client_id, ResourceName.Graph)
+    req: PermissionRequirement = declared(method)
+    resource = req.resource
+    app_roles = _cached_app_permissions(client, client_id, resource)
+    delegated_scopes = _cached_delegated_permissions(client, client_id, resource)
     perms = ResourcePermissions(
-        resource=ResourceName.Graph,
+        resource=resource,
         application=[r.value for r in app_roles if r.value is not None],
         delegated=list(delegated_scopes),
     )
-    req = getattr(method, "__required_permissions__", None) or PermissionRequirement()
 
     granted_roles: list[str] = []
     if req.directory_roles:

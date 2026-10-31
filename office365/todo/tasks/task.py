@@ -7,13 +7,13 @@ from typing import IO, TYPE_CHECKING, Optional, Union
 
 from office365.directory.extensions.extension import Extension
 from office365.directory.extensions.open_type import OpenTypeExtension
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.types.collections import StringCollection

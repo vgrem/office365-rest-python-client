@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Callable, Optional
 
 import requests
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.attachments.attachment import Attachment
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
 from office365.outlook.quotas import OUTLOOK_UPLOAD
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.url import parse_query_param

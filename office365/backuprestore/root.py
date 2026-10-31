@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.backuprestore.service_status import ServiceStatus
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.protection.policy.one_drive_for_business import (
     OneDriveForBusinessProtectionPolicy,
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery

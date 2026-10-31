@@ -3,9 +3,9 @@ from __future__ import annotations
 from email.message import Message
 from typing import IO, Mapping, Union
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onenote.pages.page import OnenotePage
+from office365.permissions import require_permission
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.mime import get_mime_type
 from office365.runtime.http.request_options import RequestOptions

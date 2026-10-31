@@ -4,12 +4,12 @@ from datetime import datetime
 from typing import Any, List, Optional
 
 from office365.delta_collection import DeltaCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.calendar.attendees.attendee import Attendee
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.mail.item_body import ItemBody
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 
 

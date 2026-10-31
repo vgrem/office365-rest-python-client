@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.domains.dns_record import DomainDnsRecord
 from office365.directory.domains.state import DomainState
 from office365.directory.objects.collection import DirectoryObjectCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.quotas import IDENTITY_QUOTAS
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery

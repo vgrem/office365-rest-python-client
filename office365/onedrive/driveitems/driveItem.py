@@ -14,7 +14,6 @@ from typing_extensions import Self
 
 from office365.delta_collection import DeltaCollection
 from office365.delta_path import DeltaPath
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
@@ -59,6 +58,7 @@ from office365.onedrive.sensitivitylabels.extract_result import (
 from office365.onedrive.shares.shared import Shared
 from office365.onedrive.versions.drive_item import DriveItemVersion
 from office365.onedrive.workbooks.workbook import Workbook
+from office365.permissions import require_permission
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection

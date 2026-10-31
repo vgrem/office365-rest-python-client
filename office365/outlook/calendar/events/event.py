@@ -16,7 +16,6 @@ from office365.directory.extensions.extended_property import (
     SingleValueLegacyExtendedProperty,
 )
 from office365.directory.extensions.extension import Extension
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.attendees.attendee import Attendee
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
@@ -35,6 +34,7 @@ from office365.outlook.mail.recurrence_pattern import RecurrencePattern
 from office365.outlook.mail.recurrence_range import RecurrenceRange
 from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery

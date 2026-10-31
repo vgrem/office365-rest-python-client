@@ -1,9 +1,9 @@
 from typing import Any
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.messages.rules.actions import MessageRuleActions
 from office365.outlook.mail.messages.rules.rule import MessageRule
+from office365.permissions import require_permission
 
 
 class MessageRuleCollection(EntityCollection[MessageRule]):

@@ -8,8 +8,8 @@ the resource service principal and delegate to it.
 
 from __future__ import annotations
 
-from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
+from office365.permissions import ResourceName
 from office365.runtime.http.http_method import HttpMethod
 from tests._scripted_transport import RecordingTransport
 

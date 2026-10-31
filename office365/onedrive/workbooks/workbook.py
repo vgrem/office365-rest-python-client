@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.applications.application import WorkbookApplication
@@ -16,6 +15,7 @@ from office365.onedrive.workbooks.tables.collection import WorkbookTableCollecti
 from office365.onedrive.workbooks.worksheets.collection import (
     WorkbookWorksheetCollection,
 )
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import limit

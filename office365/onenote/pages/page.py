@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.onenote.entity_schema_object_model import OnenoteEntitySchemaObjectModel
 from office365.onenote.notebooks.notebook import Notebook
 from office365.onenote.pages.links import PageLinks
 from office365.onenote.sections.section import OnenoteSection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery

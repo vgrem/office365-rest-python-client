@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from typing_extensions import Self
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.columns.column_link import ColumnLink
@@ -13,6 +12,7 @@ from office365.onedrive.contenttypes.order import ContentTypeOrder
 from office365.onedrive.documentsets.content import DocumentSetContent
 from office365.onedrive.documentsets.document_set import DocumentSet
 from office365.onedrive.listitems.item_reference import ItemReference
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery

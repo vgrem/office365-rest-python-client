@@ -1,10 +1,10 @@
 from typing import Union
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.permissions.permission import CalendarPermission
 from office365.outlook.calendar.role_type import CalendarRoleType
+from office365.permissions import require_permission
 
 
 class CalendarPermissionCollection(EntityCollection[CalendarPermission]):

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.termstore.sets.name import LocalizedName
 from office365.onedrive.termstore.sets.set import Set
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.deprecated import deprecated
 from office365.runtime.paths.v4.entity import EntityPath

@@ -91,6 +91,25 @@ introduced.
   rather than a record type plus free functions: `CalendarEventRecord` and its
   `event_*` helpers are `EventRecord`, the `contact_*` helpers are
   `ContactRecord`, and `STANDALONE_EVENT_TYPES`/`event_kind` are gone.
+- The permission-declaration machinery moved out of the Graph namespace into its own
+  package: `office365.permissions` exports `require_permission`, `declared`,
+  `PermissionRequirement`, `Requirement`, `Requirement.join`, `ResourceName` and `index`. The
+  old `office365.directory.permissions.require_permission` / `.requirement` / `.registry`
+  modules are gone, as is `.resource_name` (it is `office365.permissions.ResourceName` now); a
+  model method announces what its request needs, and `declared(method, flow=...)` reads it,
+  raising instead of answering an empty requirement when the method names nothing under that
+  flow. `office365.directory.permissions` keeps Graph's permission entities (`Identity`,
+  `IdentitySet`, ...), which are model types, not vocabulary.
+- A declaration and a requirement now name the **API resource** its permissions belong to
+  (`@require_permission(resource=ResourceName.SharePoint, delegated=["AllSites.FullControl"])`).
+  A permission name is only a grant on the API that defines it - `Sites.ReadWrite.All` is
+  granted separately on Microsoft Graph and on SharePoint, and `Mail.Send` is an application
+  permission on Graph but a delegated one on Exchange Online - so names from two resources are
+  never merged into one requirement (`Requirement.join` refuses). The default is
+  `ResourceName.Graph`, which is what every existing declaration means, so rendered
+  requirements are unchanged. Two readers that had assumed Graph are fixed: `guard`'s cached
+  lookups used `resource` only as a cache key while querying Microsoft Graph, and
+  `verify_permissions` hardcoded it.
 
 ### Added
 

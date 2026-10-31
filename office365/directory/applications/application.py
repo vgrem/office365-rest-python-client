@@ -36,14 +36,13 @@ from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.objects.informationalurl import InformationalUrl
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.password_credential import PasswordCredential
-from office365.directory.permissions.require_permission import require_permission
-from office365.directory.permissions.resource_name import ResourceName
 from office365.directory.policies.token_issuance import TokenIssuancePolicy
 from office365.directory.serviceprincipals.lockconfiguration import (
     ServicePrincipalLockConfiguration,
 )
 from office365.directory.synchronization.synchronization import Synchronization
 from office365.entity_collection import EntityCollection
+from office365.permissions import ResourceName, require_permission
 from office365.runtime.auth.certificate import certificate_der as _certificate_der
 from office365.runtime.auth.certificate import (
     certificate_thumbprint as _certificate_thumbprint,

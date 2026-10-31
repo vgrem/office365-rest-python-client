@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.drives.drive import Drive
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 
 if TYPE_CHECKING:

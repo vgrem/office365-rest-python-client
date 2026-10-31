@@ -28,7 +28,6 @@ from office365.directory.objects.serviceprovisioningerror import (
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
 )
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.profile_photo import ProfilePhoto
 from office365.directory.users.onpremisesextensionattributes import OnPremisesExtensionAttributes
 from office365.entity_collection import EntityCollection
@@ -39,6 +38,7 @@ from office365.outlook.calendar.events.collection import EventCollection
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.mail.conversation import Conversation
 from office365.outlook.mail.conversation_thread import ConversationThread
+from office365.permissions import require_permission
 from office365.planner.group import PlannerGroup
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod

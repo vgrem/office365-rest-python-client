@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
 from office365.onedrive.driveitems.collection import DriveItemCollection
@@ -15,6 +14,7 @@ from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.lists.list import List
 from office365.onedrive.recyclebin.recyclebin import RecycleBin
 from office365.onedrive.sharepoint.ids import SharePointIds
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery

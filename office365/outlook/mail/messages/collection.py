@@ -4,9 +4,9 @@ import base64
 from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 from office365.delta_collection import DeltaCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.recipient import Recipient
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath

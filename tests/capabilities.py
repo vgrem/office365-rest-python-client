@@ -27,8 +27,8 @@ from office365.directory.permissions.guard import (
     _cached_delegated_permissions,
     _cached_directory_roles,
 )
-from office365.directory.permissions.requirement import Requirement
 from office365.graph_client import GraphClient
+from office365.permissions import Requirement
 from office365.runtime.client_request_exception import ClientRequestException
 
 
@@ -54,7 +54,7 @@ def forget_cached_tenant_facts() -> None:
 class TenantState:
     """The tenant facts a requirement reads; empty sets mean "not asked for".
 
-    Structurally satisfies :class:`~office365.directory.permissions.requirement.TenantFacts`,
+    Structurally satisfies :class:`~office365.permissions.requirement.TenantFacts`,
     so ``Requirement`` can check it without importing the harness.
     """
 
@@ -72,11 +72,12 @@ class TenantState:
         application: frozenset[str] = frozenset()
         roles: frozenset[str] = frozenset()
         licenses: frozenset[str] = frozenset()
+        resource = requirement.resource
         try:
             if requirement.delegated:
-                delegated = frozenset(_cached_delegated_permissions(client, client_id))
+                delegated = frozenset(_cached_delegated_permissions(client, client_id, resource))
             if requirement.application:
-                application = frozenset(role.value for role in _cached_app_permissions(client, client_id))
+                application = frozenset(role.value for role in _cached_app_permissions(client, client_id, resource))
             if requirement.roles or requirement.bypass_roles:
                 roles = frozenset(role.display_name for role in _cached_directory_roles(client))
             if requirement.licenses:

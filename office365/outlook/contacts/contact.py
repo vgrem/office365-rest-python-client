@@ -8,12 +8,12 @@ from office365.directory.extensions.extended_property import (
     SingleValueLegacyExtendedProperty,
 )
 from office365.directory.extensions.extension import Extension
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.profile_photo import ProfilePhoto
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.physical_address import PhysicalAddress
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery

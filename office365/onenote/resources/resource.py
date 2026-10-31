@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.onenote.entity_base_model import OnenoteEntityBaseModel
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata

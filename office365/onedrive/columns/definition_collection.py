@@ -4,9 +4,9 @@ from typing import Optional, Union
 
 from typing_extensions import TYPE_CHECKING
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.columns.definition import ColumnDefinition
+from office365.permissions import require_permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 if TYPE_CHECKING:

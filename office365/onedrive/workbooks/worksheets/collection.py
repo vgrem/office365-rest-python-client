@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 

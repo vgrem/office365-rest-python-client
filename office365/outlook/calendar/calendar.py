@@ -7,7 +7,6 @@ from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
 )
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
@@ -15,6 +14,7 @@ from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.collection import EventCollection
 from office365.outlook.calendar.permissions.collection import CalendarPermissionCollection
 from office365.outlook.calendar.schedule.information import ScheduleInformation
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

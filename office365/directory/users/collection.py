@@ -1,9 +1,9 @@
 from typing_extensions import Self
 
 from office365.count_collection import CountCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
+from office365.permissions import require_permission
 from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery

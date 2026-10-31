@@ -1,6 +1,6 @@
 from office365.delta_collection import DeltaCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.mail.folders.folder import MailFolder
+from office365.permissions import require_permission
 from office365.runtime.odata.literals import escape_odata_string
 
 

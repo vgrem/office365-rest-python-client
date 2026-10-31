@@ -41,7 +41,6 @@ from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
 )
-from office365.directory.permissions.require_permission import require_permission
 from office365.directory.permissions.scoped_role_membership import ScopedRoleMembership
 from office365.directory.profile_photo import ProfilePhoto
 from office365.directory.rolemanagement.roles.role import DirectoryRole
@@ -95,6 +94,7 @@ from office365.outlook.mail.recipient import Recipient
 from office365.outlook.mail.tips.tips import MailTips
 from office365.outlook.person import Person
 from office365.outlook.user import OutlookUser
+from office365.permissions import require_permission
 from office365.planner.user import PlannerUser
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -139,6 +139,7 @@ class User(DirectoryObject):
     def __repr__(self):
         return self.user_principal_name or self.id or self.entity_type_name
 
+    @require_permission(delegated=["MailboxSettings.ReadWrite"], application=["MailboxSettings.ReadWrite"])
     def enable_automatic_replies_setting(
         self,
         status: str,
@@ -171,6 +172,7 @@ class User(DirectoryObject):
         self.update().before_execute(_construct_request)
         return self
 
+    @require_permission(delegated=["MailboxSettings.ReadWrite"], application=["MailboxSettings.ReadWrite"])
     def disable_automatic_replies_setting(self, clear_all=False) -> Self:
         """Disable automatic replies (notify people automatically upon receipt of their email)
 

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.charts.chart import WorkbookChart
@@ -15,6 +14,7 @@ from office365.onedrive.workbooks.tables.pivot_table_collection import (
 from office365.onedrive.workbooks.worksheets.protection import (
     WorkbookWorksheetProtection,
 )
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery

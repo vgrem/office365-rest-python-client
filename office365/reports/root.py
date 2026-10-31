@@ -2,10 +2,10 @@ from datetime import date
 from typing import Optional, Union
 
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.partners.partners import Partners
+from office365.permissions import require_permission
 from office365.reports.internal.queries.create_report_query import create_report_query
 from office365.reports.print_usage_by_printer import PrintUsageByPrinter
 from office365.reports.print_usage_by_user import PrintUsageByUser

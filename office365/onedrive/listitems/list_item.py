@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
 from office365.onedrive.analytics.item_analytics import ItemAnalytics
@@ -15,6 +14,7 @@ from office365.onedrive.internal.queries.get_activities_by_interval import (
 )
 from office365.onedrive.listitems.field_value_set import FieldValueSet
 from office365.onedrive.versions.list_item import ListItemVersion
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 

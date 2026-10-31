@@ -1,17 +1,23 @@
 """Reusable permission and role check functions for Microsoft Graph and other Entra ID resources.
 
+Every check names the *resource* it asks about, because a permission name is only a grant on the
+API that defines it: ``Sites.ReadWrite.All`` on Graph and ``Sites.ReadWrite.All`` on SharePoint
+are two grants, and ``Mail.Send`` is an application permission on Graph but a delegated one on
+Exchange Online. The default is Microsoft Graph, and the name is resolved to that resource's
+service principal rather than assumed.
+
 Usage:
-    from office365.directory.permissions.guard import has_delegated_permission, has_app_permission, has_role
-    from office365.directory.permissions.resource_name import ResourceName
+    from office365.directory.permissions.guard import has_delegated_permission, has_role
+    from office365.permissions import ResourceName
 
     if has_delegated_permission(client, "Mail.Read", client_id):
-        send_mail()
+        read_mail()
 
-    if has_app_permission(client, "Application.Read.All", client_id):
-        list_apps()
-
-    if has_app_permission(client, "Sites.Read.All", client_id, ResourceName.SharePoint):
+    if has_delegated_permission(client, "Sites.Read.All", client_id, ResourceName.SharePoint):
         download_file()
+
+    if has_application_permission(client, "Application.Read.All", client_id):
+        list_apps()
 
     if has_role(client, "Global Administrator"):
         do_admin_stuff()
@@ -23,10 +29,11 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 
 from office365.directory.applications.roles.collection import AppRoleCollection
-from office365.directory.permissions.resource_name import ResourceName
 from office365.directory.rolemanagement.roles.role import DirectoryRole
+from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
+from office365.permissions import ResourceName
 from office365.runtime.types.collections import StringCollection
 
 
@@ -39,20 +46,25 @@ class ResourcePermissions:
     delegated: list[str] = field(default_factory=list)
 
 
+def _resource_principal(client: GraphClient, resource: str) -> ServicePrincipal:
+    """The service principal that owns ``resource``'s permission definitions and grants."""
+    return client.service_principals.find_by_name(resource, required=True)
+
+
 @lru_cache(maxsize=None)
 def _cached_app_permissions(
     client: GraphClient, client_id: str, resource: str = ResourceName.Graph
 ) -> AppRoleCollection:
-    """Get and cache application permissions for a client on a given resource."""
-    return client.get_application_permissions(client_id).execute_query().value
+    """Get and cache the application permissions granted to ``client_id`` on ``resource``."""
+    return _resource_principal(client, resource).get_application_permissions(client_id).execute_query().value
 
 
 @lru_cache(maxsize=None)
 def _cached_delegated_permissions(
     client: GraphClient, client_id: str, resource: str = ResourceName.Graph
 ) -> StringCollection:
-    """Get and cache delegated permissions for a client on a given resource."""
-    return client.get_delegated_permissions(client_id).execute_query().value
+    """Get and cache the delegated permissions granted to ``client_id`` on ``resource``."""
+    return _resource_principal(client, resource).get_delegated_permissions(client_id).execute_query().value
 
 
 @lru_cache(maxsize=1)
@@ -67,6 +79,13 @@ def has_delegated_permission(
 ) -> bool:
     """True if the app has the delegated permission (OAuth scope) assigned on the resource."""
     return scope in _cached_delegated_permissions(client, client_id, resource)
+
+
+def has_application_permission(
+    client: GraphClient, app_role: str, client_id: str, resource: str = ResourceName.Graph
+) -> bool:
+    """True if the app has the application permission (app role) assigned on the resource."""
+    return app_role in {role.value for role in _cached_app_permissions(client, client_id, resource)}
 
 
 def has_role(client: GraphClient, *role_names: str) -> bool:

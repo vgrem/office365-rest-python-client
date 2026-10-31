@@ -1,7 +1,7 @@
 from office365.delta_collection import DeltaCollection
-from office365.directory.permissions.require_permission import require_permission
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.contacts.contact import Contact
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 

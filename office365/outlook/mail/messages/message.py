@@ -13,7 +13,6 @@ from office365.directory.extensions.extended_property import (
     SingleValueLegacyExtendedProperty,
 )
 from office365.directory.extensions.extension import Extension
-from office365.directory.permissions.require_permission import require_permission
 from office365.entity_collection import EntityCollection
 from office365.outlook.item import OutlookItem
 from office365.outlook.mail.attachments.collection import AttachmentCollection
@@ -23,6 +22,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
 from office365.outlook.mail.messages.internet_header import InternetMessageHeader
 from office365.outlook.mail.recipient import Recipient
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
