@@ -27,19 +27,19 @@ class ChangeItem(Change):
 
     @odata(name="Editor")
     @property
-    def editor(self) -> str:
+    def editor(self) -> Optional[str]:
         """Specifies the editor of the changed item."""
         return self.properties.get("Editor", None)
 
     @odata(name="EditorEmailHint")
     @property
-    def editor_email_hint(self) -> str:
+    def editor_email_hint(self) -> Optional[str]:
         """Returns the email corresponding to Editor."""
         return self.properties.get("EditorEmailHint", None)
 
     @odata(name="EditorLoginName", beta=True)
     @property
-    def editor_login_name(self) -> str:
+    def editor_login_name(self) -> Optional[str]:
         """Returns login name of the Editor."""
         return self.properties.get("EditorLoginName", None)
 

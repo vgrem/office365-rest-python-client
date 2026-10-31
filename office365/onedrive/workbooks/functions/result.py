@@ -12,7 +12,7 @@ class WorkbookFunctionResult(Entity):
 
     @odata(name="value")
     @property
-    def value(self) -> Json:
+    def value(self) -> Optional[Json]:
         return self.properties.get("value", None)
 
     @odata(name="error")

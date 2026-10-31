@@ -34,7 +34,7 @@ class WorkbookTableColumn(Entity):
 
     @odata(name="values")
     @property
-    def values(self) -> Json:
+    def values(self) -> Optional[Json]:
         """
         Represents the raw values of the specified range. The data returned could be of type string, number,
         or a boolean. Cell that contain an error will return the error string.

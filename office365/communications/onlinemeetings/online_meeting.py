@@ -11,7 +11,6 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
-from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
@@ -43,12 +42,6 @@ class OnlineMeeting(OnlineMeetingBase):
     def allow_attendee_to_enable_mic(self) -> Optional[bool]:
         """Indicates whether attendees can turn on their microphone."""
         return self.properties.get("allowAttendeeToEnableMic", None)
-
-    @odata(name="allowedPresenters")
-    @property
-    def allowed_presenters(self) -> StringCollection:
-        """Specifies who can be a presenter in a meeting. Possible values are listed in the following table."""
-        return self.properties.get("allowedPresenters", StringCollection())
 
     @odata(name="allowParticipantsToChangeName")
     @property

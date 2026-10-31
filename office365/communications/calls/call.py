@@ -129,7 +129,7 @@ class Call(Entity):
 
     @odata(name="callbackUri")
     @property
-    def callback_uri(self) -> str:
+    def callback_uri(self) -> Optional[str]:
         """The callback URL on which callbacks will be delivered. Must be https."""
         return self.properties.get("callbackUri", None)
 

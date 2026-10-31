@@ -17,7 +17,7 @@ class PickerSettings(Entity):
 
     @odata(name="AllowEmailAddresses")
     @property
-    def allow_email_addresses(self) -> bool:
+    def allow_email_addresses(self) -> Optional[bool]:
         """
         Boolean value indicating whether the picker control will allow the resolution of arbitrary email addresses.
         """
@@ -25,7 +25,7 @@ class PickerSettings(Entity):
 
     @odata(name="AllowOnlyEmailAddresses")
     @property
-    def allow_only_email_addresses(self) -> bool:
+    def allow_only_email_addresses(self) -> Optional[bool]:
         """
         Boolean value indicating whether the picker control will only allow the resolution of email addresses.
         """

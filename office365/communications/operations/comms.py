@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from office365.communications.result_info import ResultInfo
 from office365.directory.identitygovernance.operationstatus import OperationStatus
 from office365.entity import Entity
@@ -23,7 +25,7 @@ class CommsOperation(PollableOperation, Entity):
 
     @odata(name="clientContext")
     @property
-    def client_context(self) -> str:
+    def client_context(self) -> Optional[str]:
         """
         Unique Client Context string. Max limit is 256 chars.
         """

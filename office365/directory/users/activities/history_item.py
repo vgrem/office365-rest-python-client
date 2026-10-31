@@ -30,7 +30,7 @@ class ActivityHistoryItem(Entity):
 
     @odata(name="createdDateTime")
     @property
-    def created_datetime(self) -> datetime:
+    def created_datetime(self) -> datetime.datetime:
         """Set by the server. DateTime in UTC when the object was created on the server."""
         return self.properties.get("createdDateTime", datetime.datetime.min)
 

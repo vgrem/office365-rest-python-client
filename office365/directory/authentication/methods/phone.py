@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.directory.authentication.methods.signinstate import AuthenticationMethodSignInState
 from office365.directory.authentication.phonetype import AuthenticationPhoneType
@@ -45,7 +47,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
 
     @odata(name="phoneNumber")
     @property
-    def phone_number(self) -> str:
+    def phone_number(self) -> Optional[str]:
         """
         The phone number to text or call for authentication.
         Phone numbers use the format +{country code} {number}x{extension}, with extension optional.

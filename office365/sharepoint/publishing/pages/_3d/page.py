@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Optional
 from uuid import UUID
 
 from typing_extensions import Self
@@ -27,7 +28,7 @@ from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAu
 class SitePage3D(SitePage):
     @odata(name="SpaceContent", beta=True)
     @property
-    def space_content(self) -> str:
+    def space_content(self) -> Optional[str]:
         return self.properties.get("SpaceContent", None)
 
     @property

@@ -416,7 +416,7 @@ class Field(Entity):
 
     @odata(name="Indexed")
     @property
-    def indexed(self) -> bool:
+    def indexed(self) -> Optional[bool]:
         return self.properties.get("Indexed", None)
 
     def ensure_indexed(self) -> Self:
