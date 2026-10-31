@@ -203,6 +203,11 @@ def _env_updates(opts: _Options, target_id: str, thumbprint: str, secret_value: 
     return overrides, defaults
 
 
+def _protect(path: Path) -> None:
+    """Keep ``.env`` to its owner: it holds an app secret and the admin account."""
+    path.chmod(0o600)
+
+
 def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: str, *, dry_run: bool) -> None:
     overrides, defaults = _env_updates(opts, target_id, thumbprint, secret_value)
     text = ENV.merge(overrides, defaults)
@@ -212,7 +217,9 @@ def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: st
         return
     if ENV.path.is_file():
         shutil.copy2(ENV.path, ENV_BAK)
+        _protect(ENV_BAK)
     ENV.path.write_text(text, encoding="utf-8")
+    _protect(ENV.path)
     print(f"Wrote {ENV.path.relative_to(PROJECT_ROOT)} (backup: {ENV_BAK.name})")
     if not secret_value:
         print(

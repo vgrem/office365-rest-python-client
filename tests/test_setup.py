@@ -8,8 +8,12 @@ terminal, no `.env` on disk.
 
 from __future__ import annotations
 
+import os
+import stat
+import tempfile
 import unittest
 from argparse import ArgumentParser, Namespace
+from pathlib import Path
 from typing import cast
 from unittest import mock
 
@@ -18,7 +22,7 @@ from office365.graph_client import GraphClient
 from tests import preflight, setup
 from tests._scripted_transport import RecordingTransport
 from tests.capabilities import Requirement, TenantState
-from tests.settings import Settings, settings
+from tests.settings import EnvFile, Settings, settings
 
 
 def _resolve(argv: list[str], existing: dict[str, str] | None = None) -> setup._Options:
@@ -160,6 +164,26 @@ class TestGrant(unittest.TestCase):
                 with mock.patch.object(setup, "_sign_in") as sign_in:
                     self.assertEqual(setup.main(["--grant", "--dry-run", "-y"]), 0)
         sign_in.assert_not_called()
+
+
+class TestWritesEnv(unittest.TestCase):
+    """`python -m tests.setup` is the one writer of `.env`, and `.env` holds secrets."""
+
+    @unittest.skipIf(os.name == "nt", "POSIX mode bits do not exist on Windows")
+    def test_the_written_env_and_its_backup_are_readable_only_by_their_owner(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env = EnvFile(root / ".env", root / ".env.example")
+            (root / ".env.example").write_text("OFFICE365_TENANT=\n", encoding="utf-8")
+            (root / ".env").write_text("OFFICE365_TENANT=old.onmicrosoft.com\n", encoding="utf-8")
+            (root / ".env").chmod(0o644)
+            opts = _resolve(["--tenant", "contoso.onmicrosoft.com"])
+            with mock.patch.object(setup, "ENV", env):
+                with mock.patch.object(setup, "ENV_BAK", root / ".env.bak"):
+                    with mock.patch.object(setup, "PROJECT_ROOT", root):
+                        setup._write_env(opts, "app", "", "s3cret", dry_run=False)
+            self.assertEqual(stat.S_IMODE((root / ".env").stat().st_mode), 0o600)
+            self.assertEqual(stat.S_IMODE((root / ".env.bak").stat().st_mode), 0o600)
 
 
 class TestDiscovery(unittest.TestCase):

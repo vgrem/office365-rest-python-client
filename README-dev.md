@@ -133,7 +133,8 @@ uv run python -m tests.setup
 Everything else — the admin/primary usernames, the optional secondary user and
 shared mailbox, and the `*_SITE_URL` defaults — is discovered or derived.
 Re-running reuses what is already there; `--dry-run` previews the `.env` merge
-without signing in or writing:
+without signing in or writing. The file holds an app secret and the admin account,
+so it is written with mode `600` (and so is the `.env.bak` it leaves behind):
 
 ```bash
 uv run python -m tests.setup --dry-run
