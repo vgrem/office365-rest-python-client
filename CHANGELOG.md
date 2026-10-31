@@ -55,7 +55,9 @@ introduced.
   the annotation says. `BrowserSharedCookie.source_environment` is
   a `BrowserSharedCookieSourceEnvironment` rather than `'2'`; compare by
   `.name`, which is what the service accepts back. A value no member names is
-  kept as the service sent it instead of being coerced to `None`.
+  kept as the service sent it instead of being coerced to `None`; a value that differs
+  from a member only in case is that member, because one service spells one value set
+  two ways (`GET /teams/{id}` says `public`, the group it was listed from says `Public`).
 - A complex-typed Graph column declares its type as well: 592 `ClientValue` imports
   in 328 modules moved the same way, and 745 more columns answer the type they name
   (1,760 value-typed columns in total). Writes behave as before — a getter that builds
@@ -353,6 +355,16 @@ introduced.
   `graph.fileStorageContainer`, the only entity type name in the tree that does not
   start with `microsoft.graph.`, so a payload it serialised carried a type name the
   service has never heard of.
+- **A team listed from the group collection answered a string for `visibility`.**
+  `TeamCollection.get_all()` lists `GET /groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')`
+  and copies each group into a `Team`, and the two endpoints spell one value set two
+  ways: `GET /teams/{id}` sends `public`, `GET /groups/{id}` sends `Public`. `parse_enum`
+  matched by value and by exact member name only, so `'Public'` named no
+  `TeamVisibilityType` member and — an unfamiliar value being kept as sent — the getter
+  answered the string, where `team.visibility.value` raised `AttributeError`. A name that
+  differs from a member only in case is now that member, once the exact value and exact
+  name lookups have failed; the Teams examples read `.name`, the spelling the service
+  accepts back, instead of `.value`.
 - **An enum column kept the wire string.** The generator writes a getter's type as a
   function-local import plus an `if TYPE_CHECKING:` entry, and both are invisible to
   `typing.get_type_hints`, which `declared_type` uses: the annotation raised

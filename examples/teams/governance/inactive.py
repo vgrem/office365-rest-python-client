@@ -62,7 +62,7 @@ def main():
     print(f"{len(candidates)} inactive team(s) (no activity in {args.days} days)")
     for team, days in sorted(candidates, key=lambda item: item[1] or -1, reverse=True):
         inactive = "no messages" if days is None else f"{days}d"
-        visibility = team.visibility.value if team.visibility else "?"
+        visibility = team.visibility.name if team.visibility else "?"
         print(f"  {team.display_name}  ({visibility})  inactive: {inactive}")
 
     if args.action == "report":

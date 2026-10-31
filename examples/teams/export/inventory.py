@@ -45,7 +45,7 @@ def main():
             {
                 "id": team.id,
                 "displayName": team.display_name,
-                "visibility": team.visibility.value if team.visibility else None,
+                "visibility": team.visibility.name if team.visibility else None,
                 "mailNickname": team.properties.get("mailNickname"),
                 "description": team.description,
                 "isArchived": team.is_archived,

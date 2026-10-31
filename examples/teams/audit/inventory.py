@@ -45,7 +45,7 @@ def main():
         total_guests += guests
         archived += 1 if team.is_archived else 0
         state = "archived" if team.is_archived else "active"
-        visibility = team.visibility.value if team.visibility else "?"
+        visibility = team.visibility.name if team.visibility else "?"
         print(
             f"  {team.display_name or '':<40} {visibility:<9} {state:<9}"
             f" {members:>4} members ({owners} owners, {guests} guests)"

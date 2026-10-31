@@ -40,7 +40,7 @@ def main():
     print(f"{len(teams)} team(s):")
     for team in teams[: args.limit]:
         state = "archived" if team.is_archived else "active"
-        visibility = team.visibility.value if team.visibility else "?"
+        visibility = team.visibility.name if team.visibility else "?"
         print(f"  {team.display_name or '':<45} {visibility:<10} {state}  {team.id}")
 
     if not args.create:

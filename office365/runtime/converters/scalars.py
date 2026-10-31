@@ -33,6 +33,13 @@ _ISO_DURATION = re.compile(
 def parse_enum(enum_type: type[Enum], value: str | int) -> Any:
     """Safely converts a value to the specified enum type.
 
+    Three spellings reach a member: the wire *value* (``"1"``, ``"valid"``), the member
+    *name* (``"public"``), and a name that differs from a member only in case. The last
+    one is not pedantry: a team's ``visibility`` is a ``TeamVisibilityType``
+    (``public``), while the group a team is listed from spells the same setting
+    ``Public`` -- one service, one value set, two casings. Reading the case is what lets
+    the enum keep the value the service sent (``_coerce_enum``) and still answer a member.
+
     Args:
         enum_type: The Enum class to convert to
         value: The raw value to convert
@@ -44,10 +51,28 @@ def parse_enum(enum_type: type[Enum], value: str | int) -> Any:
     try:
         return enum_type(value)
     except ValueError:
+        name = str(value)
         try:
-            return enum_type[str(value)]  # fallback: lookup by name
+            return enum_type[name]  # fallback: lookup by name
         except KeyError:
+            member = _member_spelled_like(enum_type, name)
+            if member is not None:
+                return member
             return _parse_flags(enum_type, value)
+
+
+def _member_spelled_like(enum_type: type[Enum], name: str) -> Optional[Enum]:
+    """The member whose name differs from ``name`` only in case, when one does.
+
+    An exact match has already been tried and wins, so the two enums that spell one
+    value set twice (``Valid = "valid"`` beside ``valid = "1"``) keep answering
+    exactly; this only resolves a spelling that named nothing at all.
+    """
+    folded = name.casefold()
+    for member_name, member in enum_type.__members__.items():
+        if member_name.casefold() == folded:
+            return member
+    return None
 
 
 def _parse_flags(enum_type: type[Enum], value: Any) -> Optional[str]:

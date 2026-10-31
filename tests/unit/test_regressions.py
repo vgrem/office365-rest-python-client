@@ -20,6 +20,7 @@ from office365.directory.audit.signins.location import SignInLocation
 from office365.directory.audit.signins.signin import SignIn
 from office365.directory.authentication.methods.modes import AuthenticationMethodModes
 from office365.directory.credential import CredentialExpiryStatus
+from office365.directory.groups.group import Group
 from office365.directory.key_credential import KeyCredential
 from office365.directory.password_credential import PasswordCredential
 from office365.directory.protection.threatassessment.requests.url import UrlAssessmentRequest
@@ -63,6 +64,7 @@ from office365.teams.chats.collection import ChatCollection
 from office365.teams.chats.type import ChatType
 from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.team import Team
+from office365.teams.visibility_type import TeamVisibilityType
 from tests import test_site_url
 from tests._scripted_transport import RecordingTransport, RoutingTransport, ScriptedTransport
 
@@ -533,6 +535,18 @@ def test_flags_that_no_single_member_spells_are_kept_as_sent():
     # The stored value reaches a payload as the service spelled it.
     stored = coerce_value(AuthenticationMethodModes, "password,voice", AuthenticationMethodModes.password, False)
     assert stored == "password,voice"
+
+
+def test_a_listed_team_answers_the_visibility_member():
+    # ``client.teams.get_all()`` lists *groups* and copies each into a ``Team``, so
+    # ``visibility`` arrives spelled ``Public`` -- the service's casing for a setting whose
+    # member is ``public``. No member named it, the string survived as sent, and
+    # ``team.visibility.value`` raised on it.
+    group = Group(offline_context())
+    group.set_property("visibility", "Public", False)
+    team = Team(offline_context())
+    team.copy_from(group)
+    assert team.visibility is TeamVisibilityType.public
 
 
 def test_planner_assignments_and_checklists_keep_their_wire_shape():
