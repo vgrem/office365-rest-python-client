@@ -263,6 +263,21 @@ def get(self) -> Message: ...
 `office365/sharepoint` names `ResourceName.SharePoint`, because the same name is a different
 grant on each API.
 
+A SharePoint method says one word instead, because its eight names are a ladder — `AllSites.Read`,
+`.Write`, `.Manage`, `.FullControl` and the app-only `Sites.*.All` beside them — where each rung
+does what the ones below it do:
+
+```python
+from office365.sharepoint.permissions import SiteLevel, site_access
+
+
+@site_access(SiteLevel.WRITE)
+def add_item(self, creation_information: ListItemCreationInformation) -> ListItem: ...
+```
+
+Name the **weakest** rung that works: a read-only endpoint that claims `MANAGE` makes a live test
+skip on a tenant that could have run it.
+
 A name has to be one the API actually publishes, and that is checked offline against
 `office365/permissions/snapshots/` — one generated module per API, holding the names its own
 service principal offers. When a name is wrong, or an API ships a new permission you want to

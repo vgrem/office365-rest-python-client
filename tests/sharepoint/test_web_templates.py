@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 from office365.sharepoint.webs.templates.type import WebTemplateType
+from office365.sharepoint.webs.web import Web
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestSharePointWebTemplates(SPTestCase):
     """Test SharePoint web template features."""
 
+    @requires_call(Web.get_available_web_templates, flow="application")
     def test_01_get_available_web_templates(self):
         """Get all available web templates."""
         templates = self.client.web.get_available_web_templates().execute_query()

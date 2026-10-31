@@ -3,18 +3,22 @@
 from __future__ import annotations
 
 from office365.sharepoint.publishing.pages.service import SitePageService
+from office365.sharepoint.webs.web import Web
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestClientSideComponent(SPTestCase):
     """Tests for SharePoint client-side component operations."""
 
+    @requires_call(Web.get_all_client_side_components, flow="application")
     def test_01_get_all_client_side_components(self):
         """Get all client-side components for the web."""
         result = self.client.web.get_all_client_side_components().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Web.get_client_side_web_parts, flow="application")
     def test_02_get_client_side_web_parts(self):
         """Get client-side web parts for the web."""
         result = self.client.web.get_client_side_web_parts().execute_query()

@@ -13,6 +13,7 @@ from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
 
 from tests import answered_null, create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -118,6 +119,7 @@ class TestCompliance(SPTestCase):
         except ClientRequestException as e:
             self.skipTest(f"Tag with hold is not supported for the current site: {e}")
 
+    @requires_call(List.add_item, flow="application")
     def test_08_lock_record_item(self):
         """Lock a record item to prevent modifications."""
         if TestCompliance.list_item is None:

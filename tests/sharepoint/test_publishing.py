@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from urllib.parse import urlparse
 
+from office365.sharepoint.lists.list import List
 from office365.sharepoint.publishing.pages.service import SitePageService
 from office365.sharepoint.publishing.video.service_discoverer import (
     VideoServiceDiscoverer,
 )
 
 from tests import answered_null
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -85,6 +87,7 @@ class TestPublishing(SPTestCase):
         self.assertIsNotNone(page.resource_path)
         self.assertTrue(page.is_page_checked_out_to_current_user)
 
+    @requires_call(List.get_checked_out_files, flow="application")
     def test_11_list_checkout_pages(self):
         """List checked-out files from the Site Pages library."""
         pages_list = self.client.web.lists.get_by_title("Site Pages")

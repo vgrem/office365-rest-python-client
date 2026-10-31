@@ -55,7 +55,7 @@ PENDING: dict[str, int] = {
     "planner": 3,
     "reports": 4,
     "security": 2,
-    "sharepoint": 2228,
+    "sharepoint": 2043,
     "subscriptions": 2,
     "teams": 21,
     "todo": 4,
@@ -184,7 +184,7 @@ class TestUndeclaredOperations(TestCase):
         """Every public method that submits a request says what the tenant must grant.
 
         The debt is recorded rather than banned, because banning it today would mean either
-        inventing 2,437 declarations or deleting the ratchet. Recording it makes both
+        inventing every declaration by hand or deleting the ratchet. Recording it makes both
         directions fail: a new undeclared operation raises a count, and a declaration that
         disappears raises a count too, so nothing can be dropped without the number moving.
         """

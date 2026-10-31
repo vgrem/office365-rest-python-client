@@ -11,8 +11,10 @@ from office365.sharepoint.contenttypes.content_type import ContentType
 from office365.sharepoint.contenttypes.creation_information import (
     ContentTypeCreationInformation,
 )
+from office365.sharepoint.webs.web import Web
 
 from tests import answered_null
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -86,6 +88,7 @@ class TestContentType(SPTestCase):
         web_cts = self.client.site.root_web.content_types.get().execute_query()
         self.assertEqual(before_count, len(web_cts) + 1)
 
+    @requires_call(Web.get_changes, flow="application")
     def test_08_get_content_types_changes(self):
         """Get change log for content types."""
         result = self.client.web.get_changes(ChangeQuery(ContentType=True)).execute_query()

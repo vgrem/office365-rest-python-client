@@ -9,6 +9,7 @@ from office365.sharepoint.lists.list import List
 from office365.sharepoint.types.wopi_action import SPWOPIAction
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -32,6 +33,7 @@ class TestSharePointListItem(SPTestCase):
         assert cls.target_list is not None
         cls.target_list.delete_object().execute_query()
 
+    @requires_call(List.add_item, flow="application")
     def test_01_create_list_item(self):
         """Create a list item"""
         item_properties = {"Title": self.default_title}
@@ -68,6 +70,7 @@ class TestSharePointListItem(SPTestCase):
         result = TestSharePointListItem.target_list.get_item_by_id(item_id).get().execute_query()
         self.assertIsNotNone(result.id)
 
+    @requires_call(List.get_items, flow="application")
     def test_05_get_list_item_via_caml(self):
         """Get list item via CAML query"""
         self.assertIsNotNone(TestSharePointListItem.target_item)

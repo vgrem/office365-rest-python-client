@@ -13,6 +13,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -46,6 +47,7 @@ class TestFieldValue(SPTestCase):
         result = self.client.web.available_fields.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(List.add_item, flow="application")
     def test_02_set_field_text_value(self):
         """Set a text field value on a new list item."""
         items = self.target_list.items
@@ -129,6 +131,7 @@ class TestFieldValue(SPTestCase):
         target.set_choice_field_value(self.choice_field_name, choice_value).execute_query()
         self.assertIsNotNone(target.properties.get(self.choice_field_name))
 
+    @requires_call(List.get_lookup_field_choices, flow="application")
     def test_11_get_lookup_field_choices(self):
         """Get lookup field choices from the target list."""
         result = self.target_list.get_lookup_field_choices(self.multi_choice_field_name).execute_query()
@@ -190,6 +193,7 @@ class TestFieldValue(SPTestCase):
         ).execute_query()
         self.assertEqual(lookup_field.type_as_string, "Lookup")
 
+    @requires_call(List.get_items, flow="application")
     def test_19_set_lookup_field_value(self):
         """Set a lookup field value on the target item."""
         lookup_items = self.client.web.default_document_library().get_items().execute_query()

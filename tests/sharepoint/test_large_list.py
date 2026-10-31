@@ -8,6 +8,7 @@ from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.views.scope import ViewScope
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -30,6 +31,7 @@ class TestLargeListPaging(SPTestCase):
         self.assertEqual(result.title, self.list_title)
         TestLargeListPaging.target_list = result
 
+    @requires_call(List.from_records, flow="application")
     def test_02_seed_four_items(self):
         self.assertIsNotNone(TestLargeListPaging.target_list)
         records = [{"Title": f"item{i}"} for i in range(4)]
@@ -45,6 +47,7 @@ class TestLargeListPaging(SPTestCase):
         items = TestLargeListPaging.target_list.items.order_by("ID").get_all(page_size=2).execute_query()
         self.assertEqual(sum(1 for _ in items), 4)
 
+    @requires_call(List.get_items, flow="application")
     def test_04_caml_paging_continues_from_position(self):
         """CAML paging continues from the last item via ListItemCollectionPosition."""
         self.assertIsNotNone(TestLargeListPaging.target_list)

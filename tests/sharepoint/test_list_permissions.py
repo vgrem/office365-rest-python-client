@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.sharing.role_type import RoleType
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -19,6 +21,7 @@ class TestSPListPermissions(SPTestCase):
     def tearDownClass(cls):
         cls.target_list.delete_object().execute_query()
 
+    @requires_call(SecurableObject.break_role_inheritance, flow="application")
     def test_01_break_role_inheritance(self):
         """Break role inheritance on the list"""
         self.target_list.break_role_inheritance(False).execute_query()
@@ -55,6 +58,7 @@ class TestSPListPermissions(SPTestCase):
         assignments = self.target_list.role_assignments.get().execute_query()
         self.assertEqual(len(assignments), 0)
 
+    @requires_call(SecurableObject.reset_role_inheritance, flow="application")
     def test_06_reset_role_inheritance(self):
         """Reset role inheritance on the list"""
         self.target_list.reset_role_inheritance().execute_query()

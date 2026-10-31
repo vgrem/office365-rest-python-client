@@ -334,6 +334,22 @@ mislead. Application code can append its own context with `exc.add_hint("...")`
 and read the collected text back via `exc.hints`. The most recently queued query
 is available as `client.last_query`.
 
+SharePoint declares a *level* rather than a list, because its permission names form a
+ladder — `AllSites.Read`, `.Write`, `.Manage`, `.FullControl`, and the app-only
+`Sites.Read.All` … `Sites.FullControl.All` beside them — where each rung already does
+what the ones below it do:
+
+```python
+from office365.sharepoint.permissions import SiteLevel, site_access
+
+
+@site_access(SiteLevel.WRITE)
+def add_item(self, creation_information): ...
+```
+
+Use `@require_permission(..., resource=ResourceName.SharePoint)` directly when a call
+needs a name outside that ladder, such as `TermStore.Read.All` or `Sites.Selected`.
+
 A name is worth checking before it reaches a tenant. `office365.permissions.catalog()`
 answers what an API publishes — `publishes(name, kind)`,
 `requires_admin_consent(name, kind)`, and the names themselves — from a committed

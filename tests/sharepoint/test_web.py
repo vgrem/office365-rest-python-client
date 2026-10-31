@@ -32,6 +32,7 @@ class TestSharePointWeb(SPTestCase):
         self.assertIsNotNone(result.login_name)
         TestSharePointWeb.target_user = result
 
+    @requires_call(Web.get_web_url_from_page_url, flow="application")
     def test_02_get_web_from_page_url(self):
         """Get web URL from a page URL."""
         page_url = f"{test_site_url}/SitePages/Home.aspx"
@@ -145,11 +146,13 @@ class TestSharePointWeb(SPTestCase):
         catalog = self.client.web.get_catalog(ListTemplateType.MasterPageCatalog).get().execute_query()
         self.assertIsNotNone(catalog.title)
 
+    @requires_call(Web.get_document_libraries, flow="application")
     def test_15_get_document_libraries(self):
         """Get document libraries for the site."""
         result = Web.get_document_libraries(self.client, test_site_url).execute_query()
         self.assertGreater(len(result.value), 0)
 
+    @requires_call(Web.get_document_and_media_libraries, flow="application")
     def test_16_get_document_and_media_libraries(self):
         """Get document and media libraries."""
         result = Web.get_document_and_media_libraries(self.client, test_site_url, True).execute_query()
@@ -174,6 +177,7 @@ class TestSharePointWeb(SPTestCase):
         folder_new_nested = self.client.web.get_folder_by_server_relative_url(folder_path).get().execute_query()
         self.assertTrue(folder_new_nested.exists)
 
+    @requires_call(Web.get_context_web_theme_data, flow="application")
     def test_20_get_context_web_theme_data(self):
         """Get context web theme data."""
         result = Web.get_context_web_theme_data(self.client).execute_query()
@@ -197,6 +201,7 @@ class TestSharePointWeb(SPTestCase):
         target_item = self.client.web.get_list_item_using_path(page_url).get().execute_query()
         self.assertIsNotNone(target_item.resource_path)
 
+    @requires_call(Web.parse_datetime, flow="application")
     def test_23_parse_datetime(self):
         """Parse a datetime string."""
         today = str(datetime.today())

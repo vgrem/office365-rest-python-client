@@ -70,6 +70,7 @@ from office365.sharepoint.navigation.configured_metadata_item_col import (
 from office365.sharepoint.pages.wiki_page_creation_information import (
     WikiPageCreationInformation,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
@@ -235,6 +236,7 @@ class List(SecurableObject):
         self.ensure_property("Title").after_execute(lambda _: _can_customize_forms())
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def clear(self) -> Self:
         """Clears the list (deletes all items).
 
@@ -255,6 +257,7 @@ class List(SecurableObject):
         result = DocumentSet.create(self.context, self.root_folder, name)
         return result
 
+    @site_access(SiteLevel.WRITE)
     def create_document_and_get_edit_link(
         self,
         file_name: Optional[str] = None,
@@ -282,6 +285,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def delete_rule(self, rule_id: str) -> Self:
         """Args:
         rule_id (str):
@@ -291,6 +295,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_async_action_config(self) -> ClientResult[Dict]:
         """ """
         return_type = ClientResult[dict](self.context)
@@ -298,6 +303,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_bloom_filter(self, start_item_id: Optional[int] = None) -> ListBloomFilter:
         """Generates a Bloom filter (probabilistic structure for checking the existence of list items) for the current
             list
@@ -425,6 +431,7 @@ class List(SecurableObject):
         self.ensure_property("RootFolder").after_execute(lambda _: _list_loaded())
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_signoff_status_field(self) -> Field:
         """"""
         return_type = Field(self.context)
@@ -433,6 +440,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_all_rules(self) -> ClientResult[ClientValueCollection[SPListRule]]:
         """Retrieves rules of a List"""
         return_type = ClientResult(self.context, ClientValueCollection(SPListRule))
@@ -440,6 +448,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_business_app_operation_status(self) -> FlowSynchronizationResult:
         """ """
         return_type = FlowSynchronizationResult(self.context)
@@ -447,6 +456,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def search_lookup_field_choices(
         self, target_field_name: str, begins_with_search_string: str, paging_info: str
     ) -> FlowSynchronizationResult:
@@ -465,6 +475,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_flow_callback_url(self, flow_id: str) -> FlowSynchronizationResult:
         """Args:
         flow_id (str):
@@ -474,6 +485,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_flow_instance(self, flow_id: str) -> FlowSynchronizationResult:
         """Args:
         flow_id (str):
@@ -483,6 +495,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_flow_instances(self, retrieve_group_flows: bool) -> FlowSynchronizationResult:
         """Args:
         retrieve_group_flows (bool):
@@ -493,6 +506,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
         """Args:
         category (str):
@@ -503,6 +517,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_document_with_default_name(self, folder_path: str, extension: str):
         """Creates a empty document with default filename with the given extension at the path given by folderPath.
         Returns the name of the newly created document.
@@ -517,6 +532,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
         """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item.
 
@@ -530,6 +546,7 @@ class List(SecurableObject):
         self._tolerate_missing(ignore_missing)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def start_recycle(self) -> ClientResult[str]:
         """Moves the list to the Recycle Bin and returns the identifier of the new Recycle Bin item."""
         return_type = ClientResult(self.context, str())
@@ -537,6 +554,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_data(self, view_xml: str) -> ClientResult[bytes]:
         """Returns the data for the specified query view. The result is implementation-specific, used for
         providing data to a user interface.
@@ -552,6 +570,7 @@ class List(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_list_data_as_stream(
         context: ClientContext,
         list_full_url: str,
@@ -592,6 +611,7 @@ class List(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_onedrive_list_data_as_stream(
         context: ClientContext,
         parameters: Optional[RenderListDataParameters] = None,
@@ -621,6 +641,7 @@ class List(SecurableObject):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def bulk_validate_update_list_items(
         self,
         item_ids,
@@ -653,6 +674,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_lookup_field_choices(self, target_field_name: str, paging_info: Optional[str] = None) -> ClientResult[str]:
         """Retrieves the possible choices or values for a lookup field in a SharePoint list
 
@@ -666,6 +688,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_list_item_changes_since_token(self, query: ChangeLogItemQuery) -> ClientResult[AnyStr]:
         """
         Returns the changes made to the list since the date and time specified in the change token defined
@@ -677,6 +700,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type  # type: ignore[return-type]
 
+    @site_access(SiteLevel.MANAGE)
     def save_as_new_view(self, old_name: str, new_name: str, private_view: bool, uri: str) -> ClientResult[str]:
         """Overwrites a view if it already exists, creates a new view if it does not; and then extracts the
         implementation-specific filter and sort information from the URL and builds and updates the view's XML.
@@ -699,6 +723,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def save_as_template(self, file_name: str, name: str, description: str, save_data: bool) -> Self:
         """Saves the list as a template in the list template gallery and includes the option of saving with or
         without the data that is contained in the current list.
@@ -730,6 +755,7 @@ class List(SecurableObject):
             ServiceOperationPath("getItemByUniqueId", [unique_id], self.resource_path),
         )
 
+    @site_access(SiteLevel.READ)
     def get_web_dav_url(self, source_url: str) -> ClientResult[str]:
         """Gets the trusted URL for opening the folder in Explorer view.
 
@@ -763,6 +789,7 @@ class List(SecurableObject):
         """
         return caml_query.index_candidates
 
+    @site_access(SiteLevel.READ)
     def check_query(self, caml_query: CamlQuery, *, item_count: Optional[int] = None) -> None:
         """Pre-flight a CAML query against the SharePoint list view threshold.
 
@@ -804,6 +831,7 @@ class List(SecurableObject):
             )
 
     @limit(Limits.LIST_VIEW, arg="page_size")
+    @site_access(SiteLevel.READ)
     def get_items(
         self,
         caml_query: Optional[CamlQuery] = None,
@@ -933,6 +961,7 @@ class List(SecurableObject):
         """
         return self.fields.get_by_internal_name_or_title(name).ensure_indexed()
 
+    @site_access(SiteLevel.WRITE)
     def from_records(
         self,
         source,
@@ -1213,6 +1242,7 @@ class List(SecurableObject):
         """Export this list's items to Feather (deferred; requires the ``[parquet]`` extra)."""
         return self.export_to(target, format="feather")
 
+    @site_access(SiteLevel.WRITE)
     def add_item(self, creation_information: Union[ListItemCreationInformation, Dict]) -> ListItem:
         """The recommended way to add a list item is to send a POST request to the ListItemCollection resource endpoint,
         as shown in ListItemCollection request examples."""
@@ -1257,6 +1287,7 @@ class List(SecurableObject):
         )
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def add_item_using_path(self, leaf_name: str, object_type: int, folder_url: str) -> ListItem:
         """Adds a ListItem to an existing List.
 
@@ -1277,6 +1308,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def add_validate_update_item(
         self, create_info: ListItemCreationInformation, form_values: Optional[Dict] = None
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
@@ -1335,6 +1367,7 @@ class List(SecurableObject):
             self,
         )
 
+    @site_access(SiteLevel.READ)
     def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the list,
         based on the specified query.
@@ -1350,6 +1383,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_checked_out_files(self) -> CheckedOutFileCollection:
         """Returns a collection of checked-out files as specified in section 3.2.5.381."""
         return_type = CheckedOutFileCollection(
@@ -1360,6 +1394,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_data_as_stream(
         self,
         view_xml: Optional[str] = None,
@@ -1387,6 +1422,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def reserve_list_item_id(self) -> ClientResult[int]:
         """Reserves the returned list item identifier for the idempotent creation of a list item."""
         return_type = ClientResult(self.context, int())
@@ -1404,6 +1440,7 @@ class List(SecurableObject):
             ServiceOperationPath("getRelatedFields", [], self.resource_path),
         )
 
+    @site_access(SiteLevel.READ)
     def get_special_folder_url(
         self, folder_type: int, force_create: bool, existing_folder_guid: str
     ) -> ClientResult[str]:
@@ -1440,6 +1477,7 @@ class List(SecurableObject):
         self.ensure_property("RootFolder").after_execute(lambda _: _reset_doc_ids(self.root_folder.server_relative_url))
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_exempt_from_block_download_of_non_viewable_files(self, value: bool) -> Self:
         """
         Method to set the ExemptFromBlockDownloadOfNonViewableFiles property.
@@ -2346,6 +2384,7 @@ class List(SecurableObject):
             ),
         )
 
+    @site_access(SiteLevel.WRITE)
     def add_validate_update_item_using_path(
         self,
         list_item_create_info: ListItemCreationInformationUsingPath,
@@ -2394,6 +2433,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def caae_create_temp_folder(self) -> ClientResult[str]:
         """CAAECreateTempFolder operation."""
         return_type = ClientResult(self.context, str())
@@ -2401,6 +2441,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def caae_rename_file_in_temporary_folder(self, path: str, updated_name: str) -> ClientResult[str]:
         """CAAERenameFileInTemporaryFolder operation.
 
@@ -2417,18 +2458,21 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def cancel_delete_file_versions(self) -> Self:
         """CancelDeleteFileVersions operation."""
         qry = ServiceOperationQuery(self, "CancelDeleteFileVersions", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def clear_business_app_migration_interactive_data(self) -> Self:
         """ClearBusinessAppMigrationInteractiveData operation."""
         qry = ServiceOperationQuery(self, "ClearBusinessAppMigrationInteractiveData", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def copy_template_and_get_metadata(self, id_: str) -> ClientResult[TemplatizationMetaData]:
         """CopyTemplateAndGetMetadata operation.
 
@@ -2445,6 +2489,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_document_from_caae_template(
         self, content_type_name: str, document_generation_info: DocumentGenerationInfo
     ) -> ClientResult[ContentAssemblyFileInfo]:
@@ -2472,6 +2517,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_document_from_caae_template_v2(
         self, id_: str, document_generation_info: DocumentGenerationInfo
     ) -> ClientResult[ContentAssemblyFileInfo]:
@@ -2499,6 +2545,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_document_from_content_assembly_template(
         self, template_url: str, document_generation_info: DocumentGenerationInfo
     ) -> ClientResult[ContentAssemblyFileInfo]:
@@ -2526,6 +2573,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_hvcs_item_approval_request(
         self, create_item_request_payload: CreateHVCSItemApprovalRequestParameters
     ) -> ClientResult[str]:
@@ -2547,6 +2595,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create_list_form(self, parameters: ListForm) -> ClientResult[ListForm]:
         """CreateListForm operation.
 
@@ -2561,6 +2610,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create_rule_ex(
         self, condition: str, title: str, trigger_type: int, action: SPRuleAction, rule_template_id: str
     ) -> ClientResult[UUID]:
@@ -2596,12 +2646,14 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def enable_queryable_columns(self) -> Self:
         """EnableQueryableColumns operation."""
         qry = ServiceOperationQuery(self, "EnableQueryableColumns", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_async_action_task_ids(self) -> ClientResult[GuidCollection]:
         """GetAsyncActionTaskIds operation."""
         return_type = ClientResult(self.context, GuidCollection())
@@ -2609,6 +2661,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_business_app_migration_interactive_data(self) -> ClientResult[str]:
         """GetBusinessAppMigrationInteractiveData operation."""
         return_type = ClientResult(self.context, str())
@@ -2616,6 +2669,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_caae_template_metadata(self, name: str, published: bool) -> ClientResult[TemplateMetaData]:
         """GetCAAETemplateMetadata operation.
 
@@ -2632,6 +2686,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_caae_template_metadata_v2(self, id_: str) -> ClientResult[ClientValueCollection[PlaceholderV2]]:
         """GetCAAETemplateMetadataV2 operation.
 
@@ -2646,6 +2701,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_content_assembly_document_field_values(self, document_url: str) -> ClientResult[FieldValuesWithUrl]:
         """GetContentAssemblyDocumentFieldValues operation.
 
@@ -2660,6 +2716,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_content_assembly_template_fields(
         self, template_url: str
     ) -> ClientResult[ClientValueCollection[PlaceholderV2]]:
@@ -2676,6 +2733,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_list_forms(self, bsanitize: bool) -> ClientResult[ClientValueCollection[ListForm]]:
         """GetListForms operation.
 
@@ -2690,6 +2748,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_progress_for_delete_file_versions(self) -> ClientResult[str]:
         """GetProgressForDeleteFileVersions operation."""
         return_type = ClientResult(self.context, str())
@@ -2697,6 +2756,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_progress_for_file_version_expiration_report(self, report_file_url: str) -> ClientResult[str]:
         """GetProgressForFileVersionExpirationReport operation.
 
@@ -2716,6 +2776,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def is_syntex_ai_features_flight_enabled(self) -> ClientResult[bool]:
         """IsSyntexAIFeaturesFlightEnabled operation."""
         return_type = ClientResult(self.context, bool())
@@ -2723,6 +2784,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def lock_smart_template(self, id_: str) -> ClientResult[LockFileData]:
         """LockSmartTemplate operation.
 
@@ -2737,6 +2799,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def map_fields_to_columns_for_modern_temlate(
         self, payload: PublishModernTemplatePayload
     ) -> ClientResult[ContentAssemblyModernTemplateColumnsMappingInfo]:
@@ -2757,6 +2820,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def map_fields_to_columns_for_modern_template(
         self, template_payload: PublishModernTemplatePayload
     ) -> ClientResult[ContentAssemblyModernTemplateColumnsMappingInfo]:
@@ -2777,6 +2841,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def parse_document_template(self, name: str) -> ClientResult[str]:
         """ParseDocumentTemplate operation.
 
@@ -2789,6 +2854,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def publish_snippet(self, publish_snippet_payload: PublishSnippetPayload) -> Self:
         """PublishSnippet operation.
 
@@ -2802,6 +2868,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def publish_template_v2(self, payload: PublishTemplateV2Payload) -> Self:
         """PublishTemplateV2 operation.
 
@@ -2813,6 +2880,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def refresh_lock_smart_template(self, id_: str, lock_id: str) -> ClientResult[LockFileData]:
         """RefreshLockSmartTemplate operation.
 
@@ -2831,6 +2899,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_extended_list_form_data(
         self, item_id: int, form_id: str, mode: int, options: int, cutoff_version: int
     ) -> ClientResult[str]:
@@ -2860,6 +2929,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_context_menu_data(
         self,
         casc_del_warn_message: str,
@@ -2936,6 +3006,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_filter_data(
         self,
         exclude_field_filtering_html: bool,
@@ -2980,6 +3051,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_form_data(self, item_id: int, form_id: str, mode: int) -> ClientResult[str]:
         """RenderListFormData operation.
 
@@ -2998,6 +3070,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_column_mapping(self, column_mapping: str) -> Self:
         """SetColumnMapping operation.
 
@@ -3009,6 +3082,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_content_assembly_template_read_only(self, id_: str) -> Self:
         """SetContentAssemblyTemplateReadOnly operation.
 
@@ -3020,6 +3094,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_items_order(
         self, item_ids: list[int], lower_order_item_id: int, higher_order_item_id: int, use_provided_order_item_id: bool
     ) -> ClientResult[ClientValueCollection[ItemOrderUpdateValue]]:
@@ -3056,6 +3131,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_list_custom_order_flag(self, value: bool) -> Self:
         """SetListCustomOrderFlag operation.
 
@@ -3067,6 +3143,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_quickstep_ordering(self, quickstep_ids: str) -> Self:
         """SetQuickstepOrdering operation.
 
@@ -3078,6 +3155,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_delete_file_versions(self, delete_older_than_days: int) -> Self:
         """StartDeleteFileVersions operation.
 
@@ -3091,6 +3169,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_delete_file_versions_by_mode(self, batch_delete_parameters: FileVersionBatchDeleteParameters) -> Self:
         """StartDeleteFileVersionsByMode operation.
 
@@ -3104,6 +3183,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_file_version_expiration_report(self, report_file_url: str) -> Self:
         """StartFileVersionExpirationReport operation.
 
@@ -3117,6 +3197,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def unlock_smart_template(self, id_: str, lock_id: str) -> Self:
         """UnlockSmartTemplate operation.
 
@@ -3130,6 +3211,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def unset_content_assembly_template_read_only(self, id_: str) -> Self:
         """UnsetContentAssemblyTemplateReadOnly operation.
 
@@ -3141,6 +3223,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_caae_template(self, name: str, update_template_info: UpdateTemplateInfo) -> Self:
         """UpdateCAAETemplate operation.
 
@@ -3156,6 +3239,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_caae_template_v2(self, id_: str, update_template_info: UpdateTemplateInfoV2) -> Self:
         """UpdateCAAETemplateV2 operation.
 
@@ -3171,6 +3255,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_content_assembly_document(
         self, template_url: str, content_assembly_form_answers: ClientValueCollection[ContentAssemblyFormAnswer]
     ) -> ClientResult[ContentAssemblyFileInfo]:
@@ -3198,6 +3283,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def update_form_processing_model_retention_label(self, retention_label: str) -> Self:
         """UpdateFormProcessingModelRetentionLabel operation.
 
@@ -3211,6 +3297,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def update_form_processing_model_settings(self, retention_label: str, linked_list: str) -> Self:
         """UpdateFormProcessingModelSettings operation.
 
@@ -3231,6 +3318,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def update_list_form(self, parameters: ListForm) -> ClientResult[ListForm]:
         """UpdateListForm operation.
 
@@ -3245,6 +3333,7 @@ class List(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def update_rule_ex(
         self, rule_id: str, condition: str, title: str, status: int, action: SPRuleAction, trigger_type: int
     ) -> Self:

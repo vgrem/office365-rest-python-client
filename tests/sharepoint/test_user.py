@@ -6,9 +6,11 @@ from typing import ClassVar, Optional
 
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.permissions.base_permissions import BasePermissions
+from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 
 from tests import test_tenant
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -51,6 +53,7 @@ class TestSharePointUser(SPTestCase):
         user_to_update = target_user
         user_to_update.set_property("Email", f"support@{test_tenant}").update().execute_query()
 
+    @requires_call(SecurableObject.get_user_effective_permissions, flow="application")
     def test_05_get_user_permissions(self):
         """Get effective permissions for the target user."""
         target_user = TestSharePointUser.target_user

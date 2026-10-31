@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from office365.sharepoint.lists.list import List
+
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -31,6 +34,7 @@ class TestSPLibrary(SPTestCase):
     #    lib.reset_doc_id().execute_query()
     #    #self.assertIsNotNone(default_lib.id)
 
+    @requires_call(List.create_document_and_get_edit_link, flow="application")
     def test_03_create_word_document(self):
         """Create a Word document and get edit link"""
         lib = self.client.web.default_document_library()

@@ -28,6 +28,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -52,6 +53,7 @@ class TestSharePointSharing(SPTestCase):
         role_def = DocumentSharingManager.get_role_definition(self.client, RoleType.Contributor).execute_query()
         self.assertTrue(role_def.name, "Full Control")
 
+    @requires_call(Web.get_object_sharing_settings, flow="delegated")
     def test_02_get_object_sharing_settings(self):
         """Get object sharing settings for a target file."""
         result = Web.get_object_sharing_settings(self.client, self.target_file_url, None, True).execute_query()

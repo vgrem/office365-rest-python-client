@@ -6,8 +6,11 @@ from office365.sharepoint.lists.currency import CurrencyList
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions.base_permissions import BasePermissions
+from office365.sharepoint.permissions.securable_object import SecurableObject
+from office365.sharepoint.webs.web import Web
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -55,6 +58,7 @@ class TestSPList(SPTestCase):
         result = self.client.web.lists.filter(f"Title eq '{self.target_list_title}'").get().execute_query()
         self.assertEqual(len(result), 1)
 
+    @requires_call(SecurableObject.get_user_effective_permissions, flow="application")
     def test_06_get_list_permissions(self):
         """Get effective permissions for current user on the list"""
         self.assertIsNotNone(TestSPList.target_list)
@@ -62,6 +66,7 @@ class TestSPList(SPTestCase):
         result = TestSPList.target_list.get_user_effective_permissions(user).execute_query()
         self.assertIsInstance(result.value, BasePermissions)
 
+    @requires_call(List.get_changes, flow="application")
     def test_07_get_list_changes(self):
         """Get list change log"""
         self.assertIsNotNone(TestSPList.target_list)
@@ -80,6 +85,7 @@ class TestSPList(SPTestCase):
         result = self.client.web.lists.filter(f"Title eq '{list_title}'").get().execute_query()
         self.assertEqual(len(result), 0)
 
+    @requires_call(Web.get_list_using_path, flow="application")
     def test_09_get_list_using_path(self):
         """Get list using server-relative path"""
         result = self.client.web.get_list_using_path("SitePages").execute_query()
@@ -111,6 +117,7 @@ class TestSPList(SPTestCase):
         result = site_pages.get_metadata_navigation_settings().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(List.render_list_data_as_stream, flow="application")
     def test_15_render_list_data_as_stream(self):
         """Render list data as stream"""
         result = self.client.web.get_list_by_title("Site Pages").render_list_data_as_stream().execute_query()

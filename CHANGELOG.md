@@ -329,6 +329,17 @@ introduced.
   live test re-reads the tenant so a snapshot that has drifted is a red test rather than a
   stale answer. This is what makes the remaining harvest reviewable: a wrong name used to be
   indistinguishable from a grant the tenant never gave.
+- **SharePoint's ladder is one word per method.** Its eight names are four rungs —
+  `AllSites.Read` → `.Write` → `.Manage` → `.FullControl`, with `Sites.Read.All` →
+  `Sites.ReadWrite.All` → `.Manage.All` → `.FullControl.All` beside them for app-only — where
+  each rung already does what the ones below it do. So `office365.sharepoint.permissions`
+  exports `SiteLevel` and a decorator that fills in both flows and the resource:
+  `@site_access(SiteLevel.WRITE)`. The rung is the *weakest* grant that works, because
+  over-claiming would skip a live test on a tenant that could have run it. `List` declares 88
+  methods this way and `Web` 97 more, and the 20 hand-written declarations were rewritten as
+  the same one-liner — six lines each, still naming the same names by hand. Debt 2,228 →
+  2,043, and 30 live tests across 16 SharePoint suites now derive their precondition from the
+  declaration of the method they call.
 
 ### Changed
 

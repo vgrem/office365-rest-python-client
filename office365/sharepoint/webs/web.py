@@ -7,7 +7,6 @@ from uuid import UUID
 
 from typing_extensions import Self
 
-from office365.permissions import ResourceName, require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
@@ -79,6 +78,7 @@ from office365.sharepoint.marketplace.tenant.appcatalog.accessor import (
     TenantCorporateCatalogAccessor,
 )
 from office365.sharepoint.navigation.navigation import Navigation
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.roles.definitions.collection import (
     RoleDefinitionCollection,
@@ -190,6 +190,7 @@ class Web(SecurableObject):
     def __str__(self):
         return self.title or self.entity_type_name
 
+    @site_access(SiteLevel.READ)
     def available_addins(self, server_relative_urls: Optional[list[str]] = None):
         """Args:
         server_relative_urls (list[str]):
@@ -200,6 +201,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_cross_farm_message(self, message: str) -> ClientResult[bool]:
         """Args:
         message (str):
@@ -210,11 +212,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_access_request_list(self) -> List:
         """ """
         return_type = List(self.context)
@@ -226,6 +224,7 @@ class Web(SecurableObject):
         self.ensure_properties(["AccessRequestListUrl"]).after_execute(lambda _: _get_access_request_list())
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_adaptive_card_extensions(self, include_errors: Optional[bool] = None, project=None):
         payload = {
             "includeErrors": include_errors,
@@ -236,6 +235,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_document_by_doc_id(self, doc_id: str) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
@@ -278,6 +278,7 @@ class Web(SecurableObject):
         self.ensure_property("Url").after_execute(lambda _: _get_site_script(self.url))
         return result
 
+    @site_access(SiteLevel.MANAGE)
     def consent_to_power_platform(self) -> FlowSynchronizationResult:
         """"""
         return_type = FlowSynchronizationResult(self.context)
@@ -318,6 +319,7 @@ class Web(SecurableObject):
             view_xml.ViewXml = "<View><Query></Query></View>"
         return List.get_onedrive_list_data_as_stream(self.context, view_xml)  # type: ignore[arg-type]
 
+    @site_access(SiteLevel.READ)
     def get_list_operation(self, list_id: str, operation_id: str) -> SPLargeOperation:
         """ """
         return_type = SPLargeOperation(self.context)
@@ -332,6 +334,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_push_notification_subscriber(self, device_app_instance_id: str) -> PushNotificationSubscriber:
         """Specifies the push notification subscriber over the site for the specified device app instance identifier.
 
@@ -350,6 +353,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_client_side_components(
         self, components: ClientValueCollection[SPClientSideComponentIdentifier]
     ) -> ClientResult[ClientValueCollection[SPClientSideComponentIdentifier]]:
@@ -365,6 +369,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_client_side_components_by_component_type(self, component_types):
         """Args:
         component_types (str):
@@ -382,6 +387,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_push_notification_subscribers_by_user(self, user: Union[str, User]) -> PushNotificationSubscriberCollection:
         """Queries for the push notification subscribers for the site  for the specified user.
 
@@ -409,6 +415,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def create_organization_sharing_link(
         context: ClientContext, url: str, is_edit_link: bool = False
     ) -> ClientResult[str]:
@@ -436,6 +443,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def destroy_organization_sharing_link(
         context: ClientContext,
         url: str,
@@ -463,6 +471,7 @@ class Web(SecurableObject):
         return context.web
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_context_web_information(
         context: ClientContext,
     ) -> ClientResult[ContextWebInformation]:
@@ -477,6 +486,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_web_url_from_page_url(context, page_full_url) -> ClientResult[str]:
         """Returns the URL of the root folder for the site containing the specified URL
 
@@ -491,6 +501,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create_default_associated_groups(self, user_login: str, user_login2: str, group_name_seed: str):
         """Creates the default Owners, Members and Visitors SPGroups on the web.
 
@@ -512,18 +523,21 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def create_group_based_environment(self) -> FlowSynchronizationResult:
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(self, "CreateGroupBasedEnvironment", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_group_based_environment(self) -> FlowSynchronizationResult:
         return_type = FlowSynchronizationResult(self.context)
         qry = ServiceOperationQuery(self, "GetGroupBasedEnvironment", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_acs_service_principals(self, app_ids=None):
         """List service principals
 
@@ -536,6 +550,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_flow_instances(self, target_web_url: str) -> FlowSynchronizationResult:
         """Args:
         target_web_url (str):
@@ -546,6 +561,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_flow_templates(self, category: str) -> FlowSynchronizationResult:
         """Args:
         category (str):
@@ -556,6 +572,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_all_client_side_components(self) -> ClientResult[str]:
         """"""
         return_type = ClientResult(self.context, str())
@@ -563,6 +580,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_addin_principals_having_permissions_in_sites(
         self, server_relative_urls: Optional[list[str]] = None, urls: Optional[list[str]] = None
     ) -> ClientResult[SPGetAddinPrincipalsResponse]:
@@ -583,6 +601,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_app_bdc_catalog(self) -> AppBdcCatalog:
         """
         Returns the Business Data Connectivity (BDC) MetadataCatalog for an application that gives access to the
@@ -595,6 +614,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_client_side_web_parts(self, project=None, include_errors=False):
         """It MUST return an array of 3rd party webpart components installed on this site
 
@@ -609,6 +629,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_supported_ui_language(self, lcid: int) -> Self:
         """Adds a supported UI language by its language identifier.
 
@@ -619,11 +640,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_lists(self, row_limit: int = 100) -> ListCollection:
         """Args:
         row_limit (int): Specifies a limit for the number of lists in the query that are returned per page
@@ -634,11 +651,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_sub_webs_filtered_for_current_user(self, query: SubwebQuery) -> WebInformationCollection:
         """Returns a collection of objects that contain metadata about subsites of the current site (2) in which the
         current user is a member.
@@ -661,6 +674,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_recycle_bin_items(
         self,
         paging_info: Optional[str] = None,
@@ -691,6 +705,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_recycle_bin_items_by_query_info(
         self,
         is_ascending: bool = True,
@@ -724,11 +739,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_all_webs(self, progress: Optional[Callable[[Progress[Web]], None]] = None) -> WebCollection:
         """Returns a collection containing a flat list of all Web objects in the Web.
 
@@ -760,6 +771,7 @@ class Web(SecurableObject):
 
             cur_web.ensure_property("Webs").after_execute(lambda _, w=cur_web: _webs_loaded(w))
 
+    @site_access(SiteLevel.READ)
     def get_list_using_path(self, decoded_url: str):
         """Returns the list that is associated with the specified server-relative path.
 
@@ -773,6 +785,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_news_list(self, allow_create: bool = False) -> List:
         """Returns the News List on this web, if it exists. If the list does not exist, the list will be created and
         then returned if allowCreate is set to true. The News List is a hidden SP.List in which News Posts are stored.
@@ -809,11 +822,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetViewFromPath", [decoded_url], self.resource_path),
         )
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_regional_datetime_schema(self) -> ClientResult[str]:
         """Get DateTime Schema based on regional settings"""
         return_type = ClientResult(self.context, str())
@@ -821,6 +830,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_sharing_link_data(self, link_url: str) -> ClientResult[SharingLinkData]:
         """This method determines basic information about the supplied link URL, including limited data about the object
         the link URL refers to and any additional sharing link data if the link URL is a tokenized sharing link
@@ -835,6 +845,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_context_web_theme_data(context: ClientContext) -> ClientResult[str]:
         """
         Get ThemeData for the context web.
@@ -845,6 +856,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_site_page(self, page_metadata: str) -> ClientResult[str]:
         """Create a site page
 
@@ -889,6 +901,7 @@ class Web(SecurableObject):
         return SitePage(self.context, ResourcePath(f"sitepages/pages({page_id})"))
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def create_anonymous_link(
         context: ClientContext,
         url: str,
@@ -915,6 +928,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def create_anonymous_link_with_expiration(
         context: ClientContext,
         url: str,
@@ -956,6 +970,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_object_sharing_settings(
         context: ClientContext,
         object_url: str,
@@ -991,6 +1006,7 @@ class Web(SecurableObject):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_client_side_components_by_id(self, component_ids: Optional[list[str]] = None):
         """Returns the client side components for the requested component identifiers.
         Client components include data necessary to render Client Side Web Parts and Client Side Applications.
@@ -1063,6 +1079,7 @@ class Web(SecurableObject):
             self.folders,
         )
 
+    @site_access(SiteLevel.READ)
     def get_site_page_copy_to_status(self, work_item_id):
         """Args:
         work_item_id (str):
@@ -1073,6 +1090,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_site_page_move_status(self, work_item_id):
         """Args:
         work_item_id (str):
@@ -1083,11 +1101,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(
-        delegated=["AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.WRITE)
     def ensure_folder_path(self, path) -> Folder:
         """Ensures a nested folder hierarchy exist
 
@@ -1126,6 +1140,7 @@ class Web(SecurableObject):
         """
         return self.lists.ensure_list(title, description, template_type)
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_edu_class_setup(self, bypass_for_automation):
         """Args:
         bypass_for_automation (bool):
@@ -1136,11 +1151,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(
-        delegated=["AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.MANAGE)
     def ensure_user(self, login_name: str) -> User:
         """Checks whether the specified logon name belongs to a valid user of the website, and if the logon name does
         not already exist, adds it to the website.
@@ -1154,11 +1165,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(
-        delegated=["AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.MANAGE)
     def ensure_tenant_app_catalog(self, caller_id):
         """Args:
         caller_id (str):
@@ -1180,11 +1187,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListByTitle", [title], self.resource_path),
         )
 
-    @require_permission(
-        delegated=["AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.MANAGE)
     def does_user_have_permissions(self, permission_mask: BasePermissions) -> ClientResult[bool]:
         """Returns whether the current user has the given set of permissions.
 
@@ -1196,6 +1199,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def does_push_notification_subscriber_exist(self, device_app_instance_id: str):
         """Specifies whether the push notification subscriber exists for the current user
         with the given device  app instance identifier.
@@ -1220,11 +1224,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetFolderById", [unique_id], self.resource_path),
         )
 
-    @require_permission(
-        delegated=["AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.MANAGE)
     def get_user_by_id(self, user_id: int) -> User:
         """Returns the user corresponding to the specified member identifier for the current site.
 
@@ -1243,11 +1243,7 @@ class Web(SecurableObject):
             ServiceOperationPath("defaultDocumentLibrary", None, self.resource_path),
         )
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_list(self, path: str) -> List:
         """Get list by path
 
@@ -1260,6 +1256,7 @@ class Web(SecurableObject):
             ServiceOperationPath("getList", [str(safe_path)], self.resource_path),
         )
 
+    @site_access(SiteLevel.READ)
     def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of all changes from the change log that have occurred within the scope of the web,
         based on the specified query.
@@ -1275,6 +1272,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_available_web_templates(self, lcid=1033, do_include_cross_language=False):
         """Returns a collection of site templates available for the site.
 
@@ -1292,6 +1290,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def hub_site_data(self, force_refresh: bool = False) -> ClientResult[str]:
         """Retrieves data describing a SharePoint hub site.
 
@@ -1306,12 +1305,14 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def increment_site_client_tag(self) -> Self:
         """Increments the client cache control number for this site collection."""
         qry = ServiceOperationQuery(self, "IncrementSiteClientTag")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def apply_web_template(self, web_template: str) -> Self:
         """Applies the specified site definition or site template to the website that has no template applied to it.
 
@@ -1322,11 +1323,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_custom_list_templates(self) -> ListTemplateCollection:
         """Specifies the collection of custom list templates for a given site."""
         return_type = ListTemplateCollection(self.context)
@@ -1334,6 +1331,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_by_guest_url(self, guest_url: str) -> File:
         """Returns the file object from the guest access URL.
 
@@ -1346,6 +1344,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_by_guest_url_extended(
         self, guest_url: str, ensure_access: bool | None = None, password: str | None = None
     ) -> File:
@@ -1372,6 +1371,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_by_guest_url_ensure_access(self, guest_url, ensure_access):
         """Returns the file object from the tokenized sharing link URL.
 
@@ -1387,6 +1387,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_by_linking_url(self, linking_url):
         """Returns the file object from the linking URL.
 
@@ -1400,6 +1401,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_by_url(self, file_url):
         """Returns the file object from the given URL.
 
@@ -1412,6 +1414,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_by_wopi_frame_url(self, wopi_frame_url: str) -> File:
         """Returns the file object from the WOPI frame URL.
 
@@ -1423,6 +1426,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_folder_by_guest_url(self, guest_url: str) -> Folder:
         """Returns the folder object from the tokenized sharing link URL.
 
@@ -1435,6 +1439,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_folder_by_guest_url_extended(self, guest_url, ensure_access=None, password=None):
         """Returns the folder object from the tokenized sharing link URL.
 
@@ -1459,6 +1464,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def parse_datetime(
         self,
         value: str,
@@ -1554,6 +1560,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_document_libraries(
         context: "ClientContext",
         web_full_url: str,
@@ -1608,6 +1615,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def default_document_library_url(context, web_url, return_type=None):
         """Returns the default document library URL.
 
@@ -1634,6 +1642,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def delete_all_anonymous_links_for_object(context: ClientContext, url: str):
         """Removes all existing anonymous links for an object.
 
@@ -1649,6 +1658,7 @@ class Web(SecurableObject):
         return context.web
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def delete_anonymous_link_for_object(context, url, is_edit_link, remove_associated_sharing_link_group):
         """Removes an existing anonymous link for an object..
 
@@ -1672,6 +1682,7 @@ class Web(SecurableObject):
         return context.web
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_document_and_media_libraries(context, web_full_url, include_page_libraries):
         """Returns the document libraries of a SharePoint site, including picture, asset, and site assets libraries.
         Document libraries that are private, catalog library, application list, form template, or libraries that user
@@ -1700,6 +1711,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_sharing_link_kind(
         context: ClientContext,
         file_url: str,
@@ -1727,6 +1739,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def forward_object_link(context, url, people_picker_input, email_subject=None, email_body=None):
         """Shares an object in SharePoint, such as a list item or a site with no Acl changes, by sending the link.
         This is used when the user has no permission to share and cannot send access request.
@@ -1754,6 +1767,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def share_object(
         context: ClientContext,
         url: str,
@@ -1807,6 +1821,7 @@ class Web(SecurableObject):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def unshare_object(context, url, return_type=None):
         """Removes Sharing permissions on an object.
 
@@ -1833,11 +1848,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetFileById", [unique_id], self.resource_path),
         )
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_list_item(self, str_url: str) -> ListItem:
         """Returns the list item that is associated with the specified server-relative URL.
 
@@ -1850,11 +1861,7 @@ class Web(SecurableObject):
             ServiceOperationPath("GetListItem", [str_url], self.resource_path),
         )
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_list_item_using_path(self, decoded_url: str) -> ListItem:
         """Returns the list item that is associated with the specified server-relative path.
 
@@ -1924,11 +1931,7 @@ class Web(SecurableObject):
             return self.get_file_by_server_relative_path(url).listItemAllFields
         raise ValueError(f"Unsupported scope: {scope!r}")
 
-    @require_permission(
-        delegated=["AllSites.Read", "AllSites.Write", "AllSites.Manage", "AllSites.FullControl"],
-        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
-        resource=ResourceName.SharePoint,
-    )
+    @site_access(SiteLevel.READ)
     def get_catalog(self, type_catalog: Union[int, ListTemplateType]) -> List:
         """Gets the list template gallery, site template gallery, or Web Part gallery for the Web site.
 
@@ -1940,6 +1943,7 @@ class Web(SecurableObject):
             ServiceOperationPath("getCatalog", [int(type_catalog)], self.resource_path),
         )
 
+    @site_access(SiteLevel.READ)
     def page_context_info(self, include_odb_settings: bool, emit_navigation_info: bool) -> ClientResult[bytes]:
         """Return Page context info for the current list being rendered.
 
@@ -1956,6 +1960,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_storage_entity(self, key: str) -> StorageEntity:
         """This will return the storage entity identified by the given key
 
@@ -1970,6 +1975,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_storage_entity(
         self, key: str, value: str, description: Optional[str] = None, comments: Optional[str] = None
     ):
@@ -1991,6 +1997,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_storage_entity(self, key: str) -> Self:
         """This will remove the storage entity identified by the given key
 
@@ -2004,6 +2011,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def register_push_notification_subscriber(self, device_app_instance_id: str, service_token: str):
         """Registers the push notification subscriber for the site. If the registration already exists,
         the service token is updated with the new value.
@@ -2021,6 +2029,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def unregister_push_notification_subscriber(self, device_app_instance_id: str) -> Self:
         """Unregisters the push notification subscriber from the site
 
@@ -2034,6 +2043,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_supported_ui_language(self, lcid: str) -> Self:
         """Removes a supported UI language by its language identifier.
 
@@ -2045,6 +2055,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_access_request_site_description_and_update(self, description: Optional[str] = None) -> Self:
         """Args:
         description (str):
@@ -2054,6 +2065,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_global_nav_settings(self, title: str, source: str) -> Self:
         """Args:
         title (str):
@@ -2064,6 +2076,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def sync_hub_site_theme(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "SyncHubSiteTheme")
@@ -3358,6 +3371,7 @@ class Web(SecurableObject):
             ),
         )
 
+    @site_access(SiteLevel.MANAGE)
     def addin_permissions(
         self, addins: ClientValueCollection[SPAddinPermissionRequest]
     ) -> ClientResult[SPAddinPermissionResponse]:
@@ -3376,6 +3390,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_placeholder_user(self, list_id: str, placeholder_text: str) -> ClientResult[UUID]:
         """AddPlaceholderUser operation.
 
@@ -3392,6 +3407,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def apply_theme(
         self, color_palette_url: str, font_scheme_url: str, background_image_url: str, share_generated: bool
     ) -> Self:
@@ -3423,6 +3439,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def content_by_query_replay(
         self, webs: str, lists: str, caml_query: str, view_fields: str, row_limit: int
     ) -> ClientResult[str]:
@@ -3445,6 +3462,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def convert_html_to_email_safe_html(
         self, html_body: str, remove_embedded_images: bool, feedback_source_url: str
     ) -> ClientResult[str]:
@@ -3474,6 +3492,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def execute_remote_lob(self, input_stream: bytes) -> ClientResult[bytes]:
         """ExecuteRemoteLOB operation.
 
@@ -3486,6 +3505,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_addin_uninstall_job_detail(
         self, job_id: UUID, server_relative_url: str, url: str
     ) -> ClientResult[SPUninstallAddinJobDetail]:
@@ -3515,6 +3535,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_sp_app_context_as_stream(self) -> ClientResult[bytes]:
         """GetSPAppContextAsStream operation."""
         return_type = ClientResult(self.context, bytes())
@@ -3522,6 +3543,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def hub_site_data_as_stream(self, force_refresh: bool) -> ClientResult[bytes]:
         """HubSiteDataAsStream operation.
 
@@ -3534,6 +3556,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def map_to_icon(self, file_name: str, prog_id: str, size: int) -> ClientResult[str]:
         """MapToIcon operation.
 
@@ -3550,12 +3573,14 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def mark_reply_uris_updated(self) -> Self:
         """MarkReplyUrisUpdated operation."""
         qry = ServiceOperationQuery(self, "MarkReplyUrisUpdated", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def page_context_core(self) -> ClientResult[bytes]:
         """PageContextCore operation."""
         return_type = ClientResult(self.context, bytes())
@@ -3563,6 +3588,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def process_external_notification(self, stream: bytes) -> ClientResult[str]:
         """ProcessExternalNotification operation.
 
@@ -3575,12 +3601,14 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def recycle(self) -> Self:
         """Recycle operation."""
         qry = ServiceOperationQuery(self, "Recycle", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def send_notification_tool(
         self,
         recipients: list[str],
@@ -3629,6 +3657,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_chrome_options(
         self,
         header_layout: int,
@@ -3753,6 +3782,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_default_new_page_template_id(self, default_new_page_template_id: UUID) -> Self:
         """SetDefaultNewPageTemplateId operation.
 
@@ -3771,6 +3801,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_theme_application_action_history(self, theme_application_action_history: str) -> Self:
         """SetThemeApplicationActionHistory operation.
 
@@ -3789,6 +3820,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_use_access_request_default_and_update(self, use_access_request_default: bool) -> Self:
         """SetUseAccessRequestDefaultAndUpdate operation.
 
@@ -3807,6 +3839,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def sync_teams_component(
         self, teams_component: SPTeamsAppComponent
     ) -> ClientResult[SPClientSideComponentQueryResult]:
@@ -3827,6 +3860,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def uninstall_addins(
         self, uninstall_addins: ClientValueCollection[SPUninstallAddinRequest]
     ) -> ClientResult[SPUninstallAddinResponse]:
@@ -3847,12 +3881,14 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def unset_is_edu_class_provision_pending(self) -> Self:
         """UnsetIsEduClassProvisionPending operation."""
         qry = ServiceOperationQuery(self, "UnsetIsEduClassProvisionPending", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def upgrade_prefab_app_instance(
         self, prefab_item_id: int, has_custom_upgrade_configuration: bool
     ) -> ClientResult[bool]:
@@ -3876,6 +3912,7 @@ class Web(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def upload_image(
         self,
         list_title: str,
