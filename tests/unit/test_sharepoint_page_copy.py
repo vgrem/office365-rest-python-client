@@ -306,6 +306,17 @@ class TestCaptureSitePages(unittest.TestCase):
         self.assertEqual(pages[1].body_field, SitePage.odata_name("wiki"))
 
 
+class TestPageHandoff(unittest.TestCase):
+    """What a whole-site migration says about the pages it does not carry."""
+
+    def test_the_note_names_the_first_five_pages_and_counts_the_rest(self):
+        source = _source_web(*[_page_props(f"P{index}.aspx") for index in range(7)])
+
+        note = page_handoff_note(detect_page_handoff(source._lists))
+
+        self.assertIn("Site Pages (7 page(s): P0.aspx, P1.aspx, P2.aspx, P3.aspx, P4.aspx, +2 more)", note)
+
+
 class TestCopySitePages(unittest.TestCase):
     def test_copies_a_modern_page_and_publishes_it(self):
         source = _source_web(_page_props("Home.aspx", canvas="<div>home</div>"))
