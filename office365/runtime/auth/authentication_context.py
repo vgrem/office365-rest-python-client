@@ -298,6 +298,23 @@ class AuthenticationContext:
         """Whether the currently configured auth hook is an async token callback."""
         return bool(getattr(self._authenticate, "_is_async_token", False))
 
+    @property
+    def access_token(self) -> str | None:
+        """The access token this context holds, or ``None`` when it can hold none.
+
+        Acquired on first read and cached, so the answer does not depend on whether a request
+        happened to run first; an expired token is returned as it is, because a caller reads it
+        for what it *proves* - the audience it was issued for, the permissions it carries - and
+        an expiry changes none of that. It is never validated. A cookie-authenticated context
+        has no bearer token to show, and answers ``None``.
+        """
+        if self._cached_token is None and self._token_func is not None and not self._token_func_is_async:
+            with self._lock:
+                if self._cached_token is None:
+                    self._apply_token_response(self._token_func(), datetime.now(timezone.utc))
+        token = self._cached_token
+        return None if token is None else getattr(token, "accessToken", None)
+
     def _get_async_lock(self) -> asyncio.Lock:
         """Return a lock for the running loop, recreating it when the loop changes.
 

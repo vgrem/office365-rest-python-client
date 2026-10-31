@@ -284,6 +284,27 @@ introduced.
   is generated from both registries, so a published number cannot drift from its
   declaration.
 
+**Permissions**
+
+- **A permission check can read the token itself.** `office365.permissions.TokenClaims`
+  parses a JWT's payload and answers one requirement: the audience says which API the token
+  was issued for, `scp` names the delegated permissions, `roles` the application ones. The
+  signature is never checked - the token this process obtained came over TLS, and one handed
+  in was accepted or refused by whoever took it - so it is a *parse*, and a token it cannot
+  read (opaque, not a JWT, another audience's, the other flow) answers `None` rather than an
+  empty set, because a silence must not be read as "not granted".
+- Both authentication contexts expose `access_token`, acquiring it once if they hold none
+  yet, so a caller can ask what a token proves before sending a request and the answer does
+  not depend on whether a request already ran. That makes a SharePoint-only suite decidable
+  with the one credential it has: measured, the Graph app-only token carries 43 `roles` and
+  the SharePoint app-only token `Sites.FullControl.All`, `Sites.ReadWrite.All` and
+  `TermStore.Read.All`.
+- A live test's skip decision reads that token first and the tenant's grants only where the
+  token cannot speak. A grant read is scoped to one API, so it cannot see a delegated name
+  granted on another: `Mail.Send` lives on Exchange Online and `TermStore.Read.All` on
+  SharePoint, and the grant read reported 7 of 355 requirements as missing that the token
+  says are granted. Measured after the switch: 0 false skips, 0 false passes.
+
 ### Changed
 
 - **A declaration carries no fact nobody reads.** `ODataPropertyMeta` and

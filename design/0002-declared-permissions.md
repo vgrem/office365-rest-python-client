@@ -203,6 +203,18 @@ so it yields two. The flow is the key of the join, not a property of a permissio
   union over resources, cannot be produced for a scope that was never granted and so can
   never price a grant. Two lenses, two questions: the token says whether the wire will
   accept this call, the graph says what the tenant has granted and what a grant would cost.
+- So the probe asks them in that order and says which one answered. `TenantState` reads the
+  token the client will send - both authentication contexts expose `access_token` - and falls
+  back to the grant read exactly where the token is silent: no token, another API's audience,
+  the other flow. Over the same 355 requirements that moves the 7 cross-resource skips to 0 and
+  adds none: the token skips nothing the grants would allow, and the only requirements it
+  unblocks are those 7. It is also the only way a SharePoint-only suite can decide anything -
+  one certificate, no Graph client, `Sites.ReadWrite.All` proved from the token's 3 roles and
+  the grant register reported as *unverifiable* rather than as missing, because a credential
+  that cannot answer must not look like a "no". The token is acquired on first read rather than
+  inside `beforeExecute`, so the answer cannot depend on what ran before it: a token filled in by
+  whichever request happened to precede a test would give it a different oracle than the test
+  after it, for a reason no reader could see.
 
 ## Open questions
 

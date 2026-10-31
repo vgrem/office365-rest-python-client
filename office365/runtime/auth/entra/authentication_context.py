@@ -78,6 +78,7 @@ class AuthenticationContext:
         with self._lock:
             token_resp = self._token_callback()
         token = TokenResponse.from_json(token_resp)
+        self._store_cached_token(token)
         return token
 
     async def acquire_token_async(self) -> TokenResponse:
@@ -118,6 +119,23 @@ class AuthenticationContext:
         expires_in = getattr(token, "expiresIn", None)
         ttl = int(expires_in) if expires_in is not None else _DEFAULT_TOKEN_TTL
         self._token_expires = datetime.now(timezone.utc) + timedelta(seconds=ttl)
+
+    @property
+    def access_token(self) -> str | None:
+        """The access token this context holds, or ``None`` when it can hold none.
+
+        Acquired on first read and cached, so the answer does not depend on whether a request
+        happened to run first; an expired token is returned as it is, because a caller reads it
+        for what it *proves* - the audience it was issued for, the permissions it carries - and
+        an expiry changes none of that. It is never validated.
+        """
+        if self._cached_token is None and self._token_callback is not None:
+            try:
+                self.acquire_token()
+            except RuntimeError:  # an async callback is only usable from the async API
+                return None
+        token = self._cached_token
+        return None if token is None else getattr(token, "accessToken", None)
 
     def _get_async_lock(self) -> asyncio.Lock:
         """Return a lock for the running loop, recreating it when the loop changes.

@@ -11,7 +11,8 @@ a fact the flow cannot see would turn a skipped test into a failing one.
 Because one object both *describes* a requirement and *checks* it, the runtime guard,
 the skip message and the preflight report cannot disagree.
 
-Nothing here sends a request except :meth:`TenantState.of`; everything else is pure.
+Nothing here sends a request unless a fact has to be read from the tenant: a fact the client's
+own token already proves is read from the token, which costs nothing.
 
 :class:`Requirement` itself lives in the library, next to the declarations a model
 method makes, so a test and a method state the same fact with the same type.
@@ -21,6 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from functools import lru_cache
+from typing import Any
 
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
@@ -28,7 +30,7 @@ from office365.directory.permissions.guard import (
     _cached_directory_roles,
 )
 from office365.graph_client import GraphClient
-from office365.permissions import Requirement
+from office365.permissions import Requirement, TokenClaims
 from office365.runtime.client_request_exception import ClientRequestException
 
 
@@ -67,24 +69,71 @@ class TenantState:
 
     @classmethod
     def of(cls, client: GraphClient, client_id: str, requirement: Requirement) -> TenantState:
-        """Read exactly the facts ``requirement`` names, or say why they could not be read."""
-        delegated: frozenset[str] = frozenset()
-        application: frozenset[str] = frozenset()
+        """Read exactly the facts ``requirement`` names, or say why they could not be read.
+
+        The client's own token is read first, because it answers the question a skip decision
+        asks - will the wire accept this call - and it answers it for the identity that will send
+        the request. The tenant's grants are read when the token cannot speak: no token yet, an
+        audience for another API, or the other flow.
+
+        A token is not a cheaper spelling of the same question. It is the union over every API
+        the identity was consented for, so a scope granted on Exchange reaches a Graph
+        requirement through it, where a Graph grant read answers "not granted here" - correctly,
+        for the API it was asked about. And it cannot price a grant, because a scope that was
+        never granted appears in no token.
+        """
+        proven = _proven_by_token(client, requirement)
+        delegated: frozenset[str] = proven if proven and requirement.delegated else frozenset()
+        application: frozenset[str] = proven if proven and requirement.application else frozenset()
         roles: frozenset[str] = frozenset()
         licenses: frozenset[str] = frozenset()
-        resource = requirement.resource
         try:
-            if requirement.delegated:
-                delegated = frozenset(_cached_delegated_permissions(client, client_id, resource))
-            if requirement.application:
-                application = frozenset(role.value for role in _cached_app_permissions(client, client_id, resource))
+            if proven is None:
+                delegated, application = _read_grants(client, client_id, requirement)
             if requirement.roles or requirement.bypass_roles:
                 roles = frozenset(role.display_name for role in _cached_directory_roles(client))
             if requirement.licenses:
                 licenses = frozenset(_cached_licenses(client))
+        except AttributeError:  # a SharePoint-only client has no Graph surface to read grants from
+            return cls(unverifiable="reading the tenant's grants needs a Microsoft Graph client")
         except ClientRequestException:
             return cls(unverifiable="the permission lookup needs a scope this token does not have")
         return cls(delegated=delegated, application=application, roles=roles, licenses=licenses)
+
+
+def _read_grants(client: GraphClient, client_id: str, requirement: Requirement) -> tuple[frozenset[str], frozenset[str]]:
+    """The tenant's grants on the requirement's resource, as (delegated names, app roles)."""
+    resource = requirement.resource
+    delegated = (
+        frozenset(_cached_delegated_permissions(client, client_id, resource)) if requirement.delegated else frozenset()
+    )
+    application = (
+        frozenset(role.value for role in _cached_app_permissions(client, client_id, resource))
+        if requirement.application
+        else frozenset()
+    )
+    return delegated, application
+
+
+def held_token(holder: Any) -> str | None:
+    """The access token the object's own request context holds, if it has one yet.
+
+    Both a ``GraphClient`` and a SharePoint ``ClientContext`` answer this: the token is kept by
+    the request context, and the SharePoint one is the only credential a SharePoint-only suite
+    has - which is why a permission check must not require a Graph client to work.
+    """
+    pending_request = getattr(holder, "pending_request", None)
+    if pending_request is None:
+        return None
+    context = getattr(pending_request(), "authentication_context", None)
+    token: str | None = getattr(context, "access_token", None)
+    return token
+
+
+def _proven_by_token(client: GraphClient, requirement: Requirement) -> frozenset[str] | None:
+    """The names the client's own token proves for ``requirement``, ``None`` if it cannot say."""
+    claims = TokenClaims.parse(held_token(client))
+    return None if claims is None else claims.proves(requirement)
 
 
 @dataclass
