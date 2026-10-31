@@ -19,10 +19,12 @@ from unittest import mock
 
 import pytest
 from office365.graph_client import GraphClient
+from office365.permissions import ResourceName
 
 from tests import preflight, setup
 from tests._scripted_transport import RecordingTransport
 from tests.capabilities import Requirement, TenantState
+from tests.preflight import Grant
 from tests.settings import EnvFile, Settings
 
 
@@ -129,21 +131,23 @@ class _GrantClient:
         self.granted = set(granted)
         self.refuse = set(refuse)
         self.calls: list[str] = []
+        self.resources: list[str] = []
 
-    def has_delegated_permission(self, scope: str, app_id: str) -> bool:
+    def has_delegated_permission(self, scope: str, app_id: str, resource: str = "") -> bool:
         return scope in self.granted
 
-    def has_application_permissions(self, name: str, app_id: str) -> bool:
+    def has_application_permissions(self, name: str, app_id: str, resource: str = "") -> bool:
         return name in self.granted
 
-    def grant_delegated_permissions(self, app_id: str, scope: str) -> _StubQuery:
-        return self._grant(f"delegated {scope}", scope)
+    def grant_delegated_permissions(self, app_id: str, scope: str, resource: str = "") -> _StubQuery:
+        return self._grant(f"delegated {scope}", scope, resource)
 
-    def grant_application_permissions(self, app_id: str, name: str) -> _StubQuery:
-        return self._grant(f"application {name}", name)
+    def grant_application_permissions(self, app_id: str, name: str, resource: str = "") -> _StubQuery:
+        return self._grant(f"application {name}", name, resource)
 
-    def _grant(self, entry: str, name: str) -> _StubQuery:
+    def _grant(self, entry: str, name: str, resource: str = "") -> _StubQuery:
         self.calls.append(entry)
+        self.resources.append(resource)
         if name in self.refuse:
             raise setup.ClientRequestException("Forbidden")
         return _StubQuery()
@@ -154,25 +158,54 @@ class TestGrant(unittest.TestCase):
 
     def test_each_missing_permission_is_granted_once(self) -> None:
         client = _GrantClient()
-        plan = {"delegated": ["Mail.Read"], "application": ["Domain.Read.All"]}
+        plan = [
+            Grant(flow="delegated", resource=ResourceName.Graph, names=("Mail.Read",)),
+            Grant(flow="application", resource=ResourceName.Graph, names=("Domain.Read.All",)),
+        ]
         done, failed = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
         self.assertEqual(done, ["delegated Mail.Read", "application Domain.Read.All"])
         self.assertEqual(failed, [])
         self.assertEqual(client.calls, ["delegated Mail.Read", "application Domain.Read.All"])
 
+    def test_a_sharepoint_grant_is_applied_on_the_sharepoint_principal(self) -> None:
+        """The same name on two APIs is two grants: the plan says which one, and it is honoured."""
+        client = _GrantClient()
+        plan = [
+            Grant(
+                flow="application",
+                resource=ResourceName.SharePoint,
+                names=("Sites.FullControl.All",),
+            )
+        ]
+
+        done, _ = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
+
+        self.assertEqual(done, ["application on Office 365 SharePoint Online Sites.FullControl.All"])
+        self.assertEqual(client.resources, [ResourceName.SharePoint.value])
+
     def test_a_permission_that_is_already_granted_is_not_granted_again(self) -> None:
         client = _GrantClient(granted=("Mail.Read",))
-        done, _ = setup._apply_grants(cast(GraphClient, client), "app-id", {"delegated": ["Mail.Read"]})
+        plan = [Grant(flow="delegated", resource=ResourceName.Graph, names=("Mail.Read",))]
+        done, _ = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
         self.assertEqual(done, ["delegated Mail.Read (already granted)"])
         self.assertEqual(client.calls, [])
 
     def test_a_refused_grant_is_reported_and_the_next_one_is_still_attempted(self) -> None:
         client = _GrantClient(refuse=("Mail.Read",))
-        plan = {"delegated": ["Mail.Read", "Files.Read"]}
+        plan = [Grant(flow="delegated", resource=ResourceName.Graph, names=("Mail.Read", "Files.Read"))]
         done, failed = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
         self.assertEqual(done, ["delegated Files.Read"])
         self.assertEqual(len(failed), 1)
         self.assertTrue(failed[0].startswith("delegated Mail.Read: Forbidden"))
+
+    def test_a_group_the_wizard_cannot_grant_is_skipped_but_still_shown(self) -> None:
+        client = _GrantClient()
+        plan = [Grant(flow="license", resource=ResourceName.Graph, names=("SPE_E5",))]
+
+        done, failed = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
+
+        self.assertEqual((done, failed, client.calls), ([], [], []))
+        self.assertEqual(plan[0].grantable, False)
 
     def test_a_dry_run_prints_the_plan_and_grants_nothing(self) -> None:
         requirement = Requirement(delegated=("Mail.Read",))

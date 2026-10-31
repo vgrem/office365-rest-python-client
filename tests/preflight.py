@@ -31,6 +31,8 @@ from typing import Any
 from unittest import TestCase
 
 from office365.graph_client import GraphClient
+from office365.permissions import FLOWS as PERMISSION_FLOWS
+from office365.permissions import ResourceName
 
 from tests.capabilities import Needs, Requirement, TenantState, declared_requirement
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
@@ -136,21 +138,45 @@ def verify(found: list[Needs], client_id: str, cfg: Settings = settings) -> dict
     return states
 
 
-def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> dict[str, list[str]]:
+@dataclass(frozen=True)
+class Grant:
+    """What a person is asked to approve: one flow's names on the API that defines them.
+
+    The resource is part of the grant and not a detail of applying it: ``Sites.FullControl.All``
+    on the SharePoint service principal is a different grant from Graph's, and a wizard that
+    dropped the resource would grant - or report - one under the other's name.
+    """
+
+    flow: str
+    resource: str
+    names: tuple[str, ...]
+
+    @property
+    def grantable(self) -> bool:
+        """Whether this is a permission on the app at all - a directory role or a SKU is not."""
+        return self.flow in PERMISSION_FLOWS
+
+    def label(self) -> str:
+        """The group's label, naming the resource when it is not the default one."""
+        return self.flow if str(self.resource) == str(ResourceName.Graph) else f"{self.flow} on {self.resource}"
+
+
+def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> list[Grant]:
     """The smallest set of permissions that would unblock the suites, group by group.
 
     Every group is an any-of, so granting *one* of its names is enough — granting all of
     them would ask for more than any test needs. A name that appears in several unmet
-    groups is asked for once. Groups this wizard cannot grant are still returned: the
-    caller decides what to do with them, and silence would be a lie.
+    groups is asked for once, and names on different APIs are never merged, because they are
+    not the same grant. Groups this wizard cannot grant are still returned: the caller decides
+    what to do with them, and silence would be a lie.
     """
-    by_label: dict[str, list[tuple[str, ...]]] = {}
+    by_group: dict[tuple[str, str], list[tuple[str, ...]]] = {}
     for needs in found:
         for requirement, _ in needs.unmet_for(states):
             for label, names in requirement.shortfall(states[requirement]):
-                by_label.setdefault(label, []).append(names)
-    plan: dict[str, list[str]] = {}
-    for label, groups in by_label.items():
+                by_group.setdefault((label, str(requirement.resource)), []).append(names)
+    plan: list[Grant] = []
+    for (label, resource), groups in by_group.items():
         remaining = list(groups)
         chosen: list[str] = []
         while remaining:
@@ -161,17 +187,14 @@ def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> di
             best = max(sorted(counts), key=counts.__getitem__)
             chosen.append(best)
             remaining = [group for group in remaining if best not in group]
-        plan[label] = chosen
+        plan.append(Grant(flow=label, resource=resource, names=tuple(chosen)))
     return plan
 
 
-def render_plan(plan: dict[str, list[str]]) -> str:
+def render_plan(plan: list[Grant]) -> str:
     """The plan as a short list a person can approve, one line per group."""
-    lines = []
-    for label in sorted(plan):
-        names = plan[label]
-        lines.append(f"  {label:<15} {', '.join(names)}")
-    return "\n".join(lines)
+    width = max([15, *(len(grant.label()) for grant in plan)])
+    return "\n".join(f"  {grant.label():<{width}} {', '.join(grant.names)}" for grant in plan)
 
 
 def _tests(count: int) -> str:

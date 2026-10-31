@@ -43,6 +43,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 
 from tests import preflight
 from tests.capabilities import forget_cached_tenant_facts
+from tests.preflight import Grant
 from tests.settings import ENV, Settings, derived_urls, settings
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -446,15 +447,13 @@ def _configure_credentials(client: GraphClient, opts: _Options, existing_values:
 # --------------------------------------------------------------------------- #
 #: The groups this wizard can grant. The others are names of things, not grants: a
 #: directory role is assigned to a user, a license has to be bought before it can be given.
-GRANTABLE = ("delegated", "application")
-
 _MANUAL_HINT = {
     "directory role": "assign it to the test user in the Entra portal (needs Entra ID P1/P2)",
     "license": "buy seats, then assign the SKU to the test user",
 }
 
 
-def _apply_grants(client: GraphClient, app_id: str, plan: dict[str, list[str]]) -> tuple[list[str], list[str]]:
+def _apply_grants(client: GraphClient, app_id: str, plan: list[Grant]) -> tuple[list[str], list[str]]:
     """Grant what ``plan`` asks for; return (done, failed) as human-readable lines."""
     checks = {
         "delegated": client.has_delegated_permission,
@@ -466,18 +465,20 @@ def _apply_grants(client: GraphClient, app_id: str, plan: dict[str, list[str]]) 
     }
     done: list[str] = []
     failed: list[str] = []
-    for label in GRANTABLE:
-        for name in plan.get(label, []):
-            entry = f"{label} {name}"
+    for grant in plan:
+        if not grant.grantable:
+            continue
+        for name in grant.names:
+            entry = f"{grant.label()} {name}"
             try:
-                already = checks[label](name, app_id)
+                already = checks[grant.flow](name, app_id, resource=grant.resource)
             except ClientRequestException:
                 already = False  # cannot read the grants; try the grant, which is idempotent
             if already:
                 done.append(f"{entry} (already granted)")
                 continue
             try:
-                grants[label](app_id, name).execute_query()
+                grants[grant.flow](app_id, name, resource=grant.resource).execute_query()
             except ClientRequestException as exc:
                 reason = str(exc).splitlines()[0] or exc.__class__.__name__
                 failed.append(f"{entry}: {reason}")
@@ -502,9 +503,9 @@ def _grant_missing(opts: _Options, args: argparse.Namespace) -> int:
 
     print(f"\nPermissions the live suites declare and {opts.client_id} lacks:")
     print(preflight.render_plan(plan))
-    manual = [label for label in plan if label not in GRANTABLE]
-    for label in manual:
-        print(f"  ({label}: {_MANUAL_HINT.get(label, 'configure it by hand')})")
+    for grant in plan:
+        if not grant.grantable:
+            print(f"  ({grant.label()}: {_MANUAL_HINT.get(grant.flow, 'configure it by hand')})")
     if args.dry_run:
         print("\n(dry run: nothing granted)")
         return 0

@@ -11,13 +11,14 @@ import types
 import unittest
 from unittest import TestCase, mock
 
+from office365.permissions import ResourceName
 from office365.runtime.client_request_exception import ClientRequestException
 
 from tests import capabilities, preflight
 from tests.capabilities import Needs, Requirement, TenantState, declared_requirement
 from tests.decorators import requires_application, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
-from tests.preflight import ROOT, grant_plan, needs_of
+from tests.preflight import ROOT, Grant, grant_plan, needs_of
 from tests.settings import Settings
 from tests.sharepoint.sharepoint_case import SPTestCase
 
@@ -180,23 +181,34 @@ class TestGrantPlan(TestCase):
     def test_one_name_per_unmet_group_is_enough(self):
         requirement = Requirement(delegated=("Mail.Read", "Mail.ReadWrite"))
         states = {requirement: TenantState()}
-        self.assertEqual(grant_plan([self._needs(requirement)], states), {"delegated": ["Mail.Read"]})
+        plan = grant_plan([self._needs(requirement)], states)
+        self.assertEqual(plan, [Grant(flow="delegated", resource=ResourceName.Graph, names=("Mail.Read",))])
 
     def test_a_name_shared_by_two_groups_is_only_asked_for_once(self):
         first = Requirement(delegated=("A.Read", "B.Read"))
         second = Requirement(delegated=("B.Read", "C.Read"))
         states = {first: TenantState(), second: TenantState()}
-        self.assertEqual(grant_plan([self._needs(first, second)], states), {"delegated": ["B.Read"]})
+        plan = grant_plan([self._needs(first, second)], states)
+        self.assertEqual(plan, [Grant(flow="delegated", resource=ResourceName.Graph, names=("B.Read",))])
 
     def test_groups_an_administrator_cannot_grant_are_still_reported(self):
         requirement = Requirement(licenses=("SPE_E5",))
-        self.assertEqual(grant_plan([self._needs(requirement)], {requirement: TenantState()}), {"license": ["SPE_E5"]})
+        plan = grant_plan([self._needs(requirement)], {requirement: TenantState()})
+        self.assertEqual(plan, [Grant(flow="license", resource=ResourceName.Graph, names=("SPE_E5",))])
+        self.assertEqual([grant.grantable for grant in plan], [False])
+
+    def test_a_sharepoint_name_is_planned_on_the_sharepoint_principal(self):
+        requirement = Requirement(application=("Sites.FullControl.All",), resource=ResourceName.SharePoint)
+        plan = grant_plan([self._needs(requirement)], {requirement: TenantState()})
+        self.assertEqual(len(plan), 1)
+        self.assertEqual((plan[0].resource, plan[0].names), (ResourceName.SharePoint, ("Sites.FullControl.All",)))
+        self.assertEqual(plan[0].label(), "application on Office 365 SharePoint Online")
 
     def test_a_granted_or_unverified_requirement_asks_for_nothing(self):
         met = Requirement(delegated=("Mail.Read",))
         unknown = Requirement(delegated=("Files.Read",))
         states = {met: TenantState(delegated=frozenset({"Mail.Read"}))}
-        self.assertEqual(grant_plan([self._needs(met, unknown)], states), {})
+        self.assertEqual(grant_plan([self._needs(met, unknown)], states), [])
 
 
 class TestSuiteMatrix(TestCase):
