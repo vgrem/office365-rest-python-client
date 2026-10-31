@@ -4,7 +4,7 @@
 Each API's service principal publishes what it can grant: ``appRoles`` are the application
 permissions, ``oauth2PermissionScopes`` the delegated ones. This reads them and writes one
 module per API under ``office365/permissions/snapshots/``, so the library can say "that name
-does not exist" without a tenant - and does, in ``tests/unit/test_permission_catalogs.py``.
+does not exist" without a tenant - and does, in ``tests/unit/test_permission_declarations.py``.
 
 Re-run it against a tenant and commit the diff:
 

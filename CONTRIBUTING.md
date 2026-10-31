@@ -88,7 +88,7 @@ The offline tests are split by what they describe:
 
 | Directory | Subject |
 | --- | --- |
-| `tests/unit` | the shipped library — one file per feature of `office365`, plus `test_regressions.py` for the pins that are one assertion long |
+| `tests/unit` | the shipped library — one file per feature of `office365`, plus the declaration ratchet |
 | `tests/tooling` | the code generator under `generator/` — two files: an end-to-end run, and the in-place editing that rewrites shipped source |
 | `tests/test_settings.py` | the `tests/settings.py` configuration loader and its `.env` grammar |
 | `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts) |
@@ -186,12 +186,15 @@ that read a neighbour's wire name, a body that spelled `+00:00` where the servic
 imports and a helper on one `assert`. Twenty-seven such files became one
 `tests/unit/test_regressions.py`, grouped by the kind of mistake and commented one line
 each; the near-duplicates they had grown (`test_prefer.py`'s three header variants,
-`test_enum_flags.py`'s four reads of one `parse_enum` call) were merged. What went with
-them were tests that graded the harness instead of the library: the limits registry's
-identity bookkeeping, the docs generator's scanner, and the self-check that
-`make_dataclass` rejects an unhashable default on the interpreter running the suite. A
-ratchet's job is to fail on this tree; feeding it a synthetic offender tests the
-interpreter.
+`test_enum_flags.py`'s four reads of one `parse_enum` call) were merged. A later pass
+deleted that file as well: a pin under a comment naming a closed defect is a changelog in
+code, and it is the one kind of test that never fails for a reason a reader can act on —
+the defect is fixed in the library, and the suite that exercises the fix live was where it
+was found. What went with the pins were tests that graded the harness instead of the
+library: the limits registry's identity bookkeeping, the docs generator's scanner, and the
+self-check that `make_dataclass` rejects an unhashable default on the interpreter running
+the suite. A ratchet's job is to fail on this tree; feeding it a synthetic offender tests
+the interpreter.
 
 A fifth pass asked whether a fake payload for a real endpoint earns its keep.
 `test_comparable_profile.py` spelled out one comparison rule at a time — 25 tests whose
