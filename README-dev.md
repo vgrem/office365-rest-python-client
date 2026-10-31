@@ -80,7 +80,16 @@ The admin needs **Global Administrator**, **Privileged Role Administrator** or
 
 ### 3. Grant permissions
 
-Both scripts sign in as `OFFICE365_ADMIN_USERNAME` and apply admin consent:
+Once `.env` exists, the wizard can grant everything the live suites declare and the
+tenant lacks — it reads the requirement matrix, prints the plan, asks, grants, and
+re-reads the tenant (see [Grant what the suites need](#grant-what-the-suites-need)):
+
+```bash
+uv run python -m tests.setup --grant --dry-run   # see the plan first
+uv run python -m tests.setup --grant             # grant it
+```
+
+For a single permission, the two scripts below take a name and apply admin consent:
 
 ```bash
 uv run python examples/entraid/applications/grant_application_perms.py   # app-only roles
@@ -135,8 +144,8 @@ create one (`--yes` runs default to no). If `OFFICE365_CLIENT_SECRET` is left
 empty, setup prints how to add it later.
 
 Prerequisite: the app allows public client flows and has the delegated
-`Application.ReadWrite.All` permission with admin consent (steps 2–3). Permissions
-are still granted separately (step 3). Prefer the individual scripts?
+`Application.ReadWrite.All` permission with admin consent (steps 2–3). Other
+permissions are granted by `--grant` (step 3). Prefer the individual scripts?
 
 ```bash
 # Certificate (Graph)
@@ -170,13 +179,42 @@ uv run python -m tests.preflight --verify             # ... and what this tenant
 uv run python -m tests.preflight --verify --report tests-report
 ```
 
-The last command writes `tests-report/preflight.md` (a table per suite: flow, tests,
-declared permission, `met` / `missing …`) and `preflight.json` for CI. `--strict`
-exits non-zero when a flow is not configured or a declared requirement is not met.
+`--report` writes `tests-report/preflight.md`: a table per suite (flow, tests, declared
+permission, `met` / `missing …`). `--json tests-report` writes the same matrix as
+`preflight.json` for a tool to read; nothing in the repo consumes it yet, so it is
+opt-in rather than something every run pays for. Both files describe *a tenant*, not the
+library, so `tests-report/` is gitignored. `--strict` exits non-zero when a flow is not
+configured or a declared requirement is not met.
 
 A skipped test run says the same thing in its summary — `2 tests skipped: application:
 any of Domain.Read.All` — so a green-but-skipped run names what it did not exercise
 rather than just counting.
+
+### Grant what the suites need
+
+`tests.preflight` answers "what is missing"; the setup wizard can close the gap, because
+it is the one program that already signs in as an administrator:
+
+```bash
+uv run python -m tests.setup --grant --dry-run        # the plan, nothing granted
+uv run python -m tests.setup --grant                  # asks, grants, re-reads the tenant
+uv run python -m tests.setup --grant -y               # same, no prompt (CI / scripted)
+```
+
+The plan is the *smallest* set that would unblock the tree — one name per any-of group,
+shared names asked for once — so the wizard does not request `Mail.ReadWrite` when
+`Mail.Read` is enough. It prints the plan and waits for confirmation; `--dry-run` stops
+there. Sign in with `--admin <upn>` (or `--interactive` for the browser flow) as an
+account holding **Global Administrator** or **Privileged Role Administrator**: delegated
+consent and application-role assignment are tenant-wide changes. Grants are idempotent —
+an already-granted permission is skipped, a refused one is reported and the rest are
+still attempted — and the wizard re-reads the tenant afterwards, so "done" means the
+answer changed, not that the call returned.
+
+Two kinds of requirement are reported but not granted, because they are not permissions
+on your app: a **directory role** is assigned to the test user (and needs Entra ID P1/P2),
+and a **license** has to be bought before it can be assigned. The plan names them and
+says so.
 
 Both the runtime check and the report go through `tests/capabilities.py`, which asks the
 tenant one question per declared fact using the library's own

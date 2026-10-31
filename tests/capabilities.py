@@ -35,6 +35,17 @@ def _cached_licenses(client: GraphClient) -> tuple[str, ...]:
     return tuple(detail.get_property("skuPartNumber") for detail in details)
 
 
+def forget_cached_tenant_facts() -> None:
+    """Drop the memoised permission and license lookups.
+
+    The lookups are ``lru_cache``d for the life of the process, which is right for a test
+    run and wrong for a program that has just changed the answer: after granting a
+    permission, the same question must be asked again rather than answered from memory.
+    """
+    for cached in (_cached_delegated_permissions, _cached_app_permissions, _cached_directory_roles, _cached_licenses):
+        cached.cache_clear()
+
+
 @dataclass(frozen=True)
 class TenantState:
     """The tenant facts a requirement reads; empty sets mean "not asked for"."""
@@ -101,17 +112,19 @@ class Requirement:
             declared = f"{declared} or {alternative}" if declared else alternative
         return declared or "no declared permission"
 
+    def shortfall(self, state: TenantState) -> list[tuple[str, tuple[str, ...]]]:
+        """The declared groups ``state`` leaves unmet, as (label, names) — empty when it may run."""
+        if state.unverifiable or (self.bypass_roles and set(self.bypass_roles) & state.roles):
+            return []
+        return [
+            (label, names) for label, names, attribute in self.groups() if not set(names) & getattr(state, attribute)
+        ]
+
     def unmet(self, state: TenantState) -> list[str]:
         """The declared groups ``state`` does not satisfy — empty when the test may run."""
         if state.unverifiable:
             return [state.unverifiable]
-        if self.bypass_roles and set(self.bypass_roles) & state.roles:
-            return []
-        return [
-            f"{label}: any of {', '.join(names)}"
-            for label, names, attribute in self.groups()
-            if not set(names) & getattr(state, attribute)
-        ]
+        return [f"{label}: any of {', '.join(names)}" for label, names in self.shortfall(state)]
 
     def satisfied_by(self, state: TenantState) -> bool:
         """Whether ``state`` meets this requirement."""

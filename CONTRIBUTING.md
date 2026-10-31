@@ -118,10 +118,17 @@ def test_01_list_messages(self): ...
 `tests/preflight.py` can read the whole matrix off the test tree without running
 anything — `python -m tests.preflight` needs no credentials, `--verify` resolves each
 requirement against the signed-in app and user, and `--report tests-report` writes
-`preflight.md` + `preflight.json`. Both the guard and the report call the same
-`tests/capabilities.py`, where a `Requirement` answers `unmet(state)` and
-`TenantState` fetches *only* the facts the requirement names — an app-only token has no
-`/me` to ask for licenses, so asking would turn a skip into a failure.
+`preflight.md` (add `--json tests-report` for `preflight.json`). Both the guard and the
+report call the same `tests/capabilities.py`, where a `Requirement` answers
+`unmet(state)` and `TenantState` fetches *only* the facts the requirement names — an
+app-only token has no `/me` to ask for licenses, so asking would turn a skip into a
+failure.
+
+`python -m tests.setup --grant` turns that matrix into the *smallest* set of grants that
+would unblock the tree: one name per any-of group, shared names asked for once, a
+confirmation before anything changes, and a re-read of the tenant afterwards. A
+requirement this wizard cannot satisfy — a directory role for the test user, a license
+that has to be bought — is named rather than dropped.
 
 A permission the tenant does not grant must be visible in three places, and all three
 read from the same object: the skip reason (`missing delegated: any of Mail.Read`), the

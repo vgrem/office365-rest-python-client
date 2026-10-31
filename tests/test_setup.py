@@ -10,12 +10,14 @@ from __future__ import annotations
 
 import unittest
 from argparse import ArgumentParser, Namespace
+from typing import cast
 from unittest import mock
 
 from office365.graph_client import GraphClient
 
-from tests import setup
+from tests import preflight, setup
 from tests._scripted_transport import RecordingTransport
+from tests.capabilities import Requirement, TenantState
 from tests.settings import Settings, settings
 
 
@@ -90,6 +92,74 @@ class TestResolveOptions(unittest.TestCase):
         with self.assertRaises(SystemExit):
             _resolve(["--tenant", "t", "--client-id", "c", "--sites", "some"])
         self.assertIsInstance(setup._build_parser(), ArgumentParser)
+
+
+class _StubQuery:
+    def execute_query(self) -> None:
+        return None
+
+
+class _GrantClient:
+    """The four calls `--grant` makes, scripted: nothing is sent, the decisions are pinned."""
+
+    def __init__(self, granted: tuple[str, ...] = (), refuse: tuple[str, ...] = ()) -> None:
+        self.granted = set(granted)
+        self.refuse = set(refuse)
+        self.calls: list[str] = []
+
+    def has_delegated_permission(self, scope: str, app_id: str) -> bool:
+        return scope in self.granted
+
+    def has_application_permissions(self, name: str, app_id: str) -> bool:
+        return name in self.granted
+
+    def grant_delegated_permissions(self, app_id: str, scope: str) -> _StubQuery:
+        return self._grant(f"delegated {scope}", scope)
+
+    def grant_application_permissions(self, app_id: str, name: str) -> _StubQuery:
+        return self._grant(f"application {name}", name)
+
+    def _grant(self, entry: str, name: str) -> _StubQuery:
+        self.calls.append(entry)
+        if name in self.refuse:
+            raise setup.ClientRequestException("Forbidden")
+        return _StubQuery()
+
+
+class TestGrant(unittest.TestCase):
+    """Granting what the suites declare: only what is missing, and a refusal does not stop the rest."""
+
+    def test_each_missing_permission_is_granted_once(self) -> None:
+        client = _GrantClient()
+        plan = {"delegated": ["Mail.Read"], "application": ["Domain.Read.All"]}
+        done, failed = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
+        self.assertEqual(done, ["delegated Mail.Read", "application Domain.Read.All"])
+        self.assertEqual(failed, [])
+        self.assertEqual(client.calls, ["delegated Mail.Read", "application Domain.Read.All"])
+
+    def test_a_permission_that_is_already_granted_is_not_granted_again(self) -> None:
+        client = _GrantClient(granted=("Mail.Read",))
+        done, _ = setup._apply_grants(cast(GraphClient, client), "app-id", {"delegated": ["Mail.Read"]})
+        self.assertEqual(done, ["delegated Mail.Read (already granted)"])
+        self.assertEqual(client.calls, [])
+
+    def test_a_refused_grant_is_reported_and_the_next_one_is_still_attempted(self) -> None:
+        client = _GrantClient(refuse=("Mail.Read",))
+        plan = {"delegated": ["Mail.Read", "Files.Read"]}
+        done, failed = setup._apply_grants(cast(GraphClient, client), "app-id", plan)
+        self.assertEqual(done, ["delegated Files.Read"])
+        self.assertEqual(len(failed), 1)
+        self.assertTrue(failed[0].startswith("delegated Mail.Read: Forbidden"))
+
+    def test_a_dry_run_prints_the_plan_and_grants_nothing(self) -> None:
+        requirement = Requirement(delegated=("Mail.Read",))
+        found = [preflight.Needs(suite="tests/x/test_y.py", flow="delegated-ropc", tests=1)]
+        found[0].add(requirement, "Suite.test_scoped")
+        with mock.patch.object(setup.preflight, "suites", return_value=found):
+            with mock.patch.object(setup.preflight, "verify", return_value={requirement: TenantState()}):
+                with mock.patch.object(setup, "_sign_in") as sign_in:
+                    self.assertEqual(setup.main(["--grant", "--dry-run", "-y"]), 0)
+        sign_in.assert_not_called()
 
 
 class TestDiscovery(unittest.TestCase):

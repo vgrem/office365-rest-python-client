@@ -30,7 +30,7 @@ from office365.graph_client import GraphClient
 
 from tests.capabilities import Needs, Requirement, TenantState, declared_requirement
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
-from tests.settings import FLOWS, settings
+from tests.settings import FLOWS, Settings, settings
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 TESTS = Path(__file__).resolve().parent
@@ -96,25 +96,29 @@ def suites(root: Path = TESTS) -> list[Needs]:
     return found
 
 
-def _client(flow: str) -> GraphClient | None:
+def _client(flow: str, cfg: Settings = settings) -> GraphClient | None:
     """A signed-in Graph client for ``flow``, or ``None`` when it cannot be built here."""
-    if not settings.is_ready(flow):
+    if not cfg.is_ready(flow):
         return None
-    client = GraphClient(tenant=settings.tenant)
+    client = GraphClient(tenant=cfg.tenant)
     if flow == "delegated-ropc":
-        return client.with_username_and_password(settings.client_id, settings.username, settings.password)
+        return client.with_username_and_password(cfg.client_id, cfg.username, cfg.password)
     if flow == "app-only":
-        return client.with_client_secret(settings.client_id, settings.client_secret)
+        return client.with_client_secret(cfg.client_id, cfg.client_secret)
     return None  # app-only-cert signs in through SharePoint, not Graph
 
 
-def verify(found: list[Needs], client_id: str) -> dict[Requirement, TenantState]:
-    """Resolve every declared requirement against the tenant, once per requirement."""
+def verify(found: list[Needs], client_id: str, cfg: Settings = settings) -> dict[Requirement, TenantState]:
+    """Resolve every declared requirement against the tenant, once per requirement.
+
+    ``cfg`` is passed by the setup wizard, which has just written ``.env``: the module
+    level :data:`settings` was read before that file existed.
+    """
     states: dict[Requirement, TenantState] = {}
     for flow in sorted({needs.flow for needs in found}):
         required = {requirement for needs in found if needs.flow == flow for requirement in needs.requirements}
         try:
-            client = _client(flow)
+            client = _client(flow, cfg)
             if client is None:
                 continue
             for requirement in required:
@@ -123,6 +127,44 @@ def verify(found: list[Needs], client_id: str) -> dict[Requirement, TenantState]
             failure = TenantState(unverifiable=f"signing in failed: {error}")
             states.update(dict.fromkeys(required, failure))
     return states
+
+
+def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> dict[str, list[str]]:
+    """The smallest set of permissions that would unblock the suites, group by group.
+
+    Every group is an any-of, so granting *one* of its names is enough — granting all of
+    them would ask for more than any test needs. A name that appears in several unmet
+    groups is asked for once. Groups this wizard cannot grant are still returned: the
+    caller decides what to do with them, and silence would be a lie.
+    """
+    by_label: dict[str, list[tuple[str, ...]]] = {}
+    for needs in found:
+        for requirement, _ in needs.unmet_for(states):
+            for label, names in requirement.shortfall(states[requirement]):
+                by_label.setdefault(label, []).append(names)
+    plan: dict[str, list[str]] = {}
+    for label, groups in by_label.items():
+        remaining = list(groups)
+        chosen: list[str] = []
+        while remaining:
+            counts: dict[str, int] = {}
+            for group in remaining:
+                for name in group:
+                    counts[name] = counts.get(name, 0) + 1
+            best = max(sorted(counts), key=counts.__getitem__)
+            chosen.append(best)
+            remaining = [group for group in remaining if best not in group]
+        plan[label] = chosen
+    return plan
+
+
+def render_plan(plan: dict[str, list[str]]) -> str:
+    """The plan as a short list a person can approve, one line per group."""
+    lines = []
+    for label in sorted(plan):
+        names = plan[label]
+        lines.append(f"  {label:<15} {', '.join(names)}")
+    return "\n".join(lines)
 
 
 def _flow_status(flow: str) -> str:
@@ -227,7 +269,8 @@ def _write(report_dir: Path, text: str, name: str) -> Path:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Report what the live test suites need from a tenant.")
     parser.add_argument("--verify", action="store_true", help="resolve the requirements against the signed-in tenant")
-    parser.add_argument("--report", metavar="DIR", help="write preflight.md and preflight.json into DIR")
+    parser.add_argument("--report", metavar="DIR", help="write preflight.md into DIR (a report for people)")
+    parser.add_argument("--json", metavar="DIR", help="write preflight.json into DIR (a report for tools)")
     parser.add_argument("--strict", action="store_true", help="exit 1 when a flow or requirement is not satisfied")
     args = parser.parse_args(argv)
 
@@ -235,12 +278,12 @@ def main(argv: list[str] | None = None) -> int:
     # --strict cannot mean anything without an answer to compare against, so it verifies too.
     states = verify(found, settings.client_id) if (args.verify or args.strict) else {}
     markdown = render_markdown(found, states)
-    if args.report:
-        directory = Path(args.report)
-        print(f"Wrote {_write(directory, markdown, 'preflight.md')}")
-        print(f"Wrote {_write(directory, render_json(found, states), 'preflight.json')}")
-    else:
+    if not (args.report or args.json):
         sys.stdout.write(markdown)
+    if args.report:
+        print(f"Wrote {_write(Path(args.report), markdown, 'preflight.md')}")
+    if args.json:
+        print(f"Wrote {_write(Path(args.json), render_json(found, states), 'preflight.json')}")
 
     if not args.strict:
         return 0

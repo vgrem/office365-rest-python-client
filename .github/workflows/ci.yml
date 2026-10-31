@@ -74,7 +74,7 @@ jobs:
       - name: Run offline tests
         run: uv run pytest --offline -q
       - name: Report live-suite prerequisites
-        run: uv run python -m tests.preflight --report tests-report
+        run: uv run python -m tests.preflight --report tests-report --json tests-report
 
   docs:
     runs-on: ubuntu-latest

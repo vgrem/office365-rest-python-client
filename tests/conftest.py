@@ -70,7 +70,14 @@ def pytest_report_header(config: pytest.Config) -> str:
     if config.getoption("--offline"):
         return "auth: live tests disabled (--offline)"
     parts = [f"{flow}: {'off' if missing else 'on'}" for flow, missing in _READINESS.items()]
-    return "auth: " + " | ".join(parts)
+    header = "auth: " + " | ".join(parts)
+    if all(_READINESS.values()):
+        # Nothing is configured: say what to do, not just what is absent.
+        header += (
+            "\n  no auth flow is configured, so every live test will be skipped."
+            "\n  next: `python -m tests.setup`, then `python -m tests.preflight --verify`."
+        )
+    return header
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: Iterable[pytest.Item]) -> None:
@@ -124,4 +131,4 @@ def _report_permission_skips(terminalreporter: pytest.TerminalReporter, config: 
         terminalreporter.write_sep("=", "permissions this tenant did not grant")
         for declared, count in sorted(reasons.items(), key=lambda item: (-item[1], item[0])):
             terminalreporter.write_line(f"{count:4d}  {declared}")
-    terminalreporter.write_line(f"Full matrix and remediation: `{_PREFLIGHT}`")
+        terminalreporter.write_line(f"Full matrix and remediation: `{_PREFLIGHT}`")

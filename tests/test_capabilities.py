@@ -17,7 +17,7 @@ from tests import capabilities
 from tests.capabilities import Needs, Requirement, TenantState, declared_requirement
 from tests.decorators import requires_application, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
-from tests.preflight import ROOT, needs_of
+from tests.preflight import ROOT, grant_plan, needs_of
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 _MAIL = Requirement(delegated=("Mail.Read",))
@@ -150,6 +150,52 @@ def _fake_module() -> types.ModuleType:
     Suite.__module__ = module.__name__
     module.Suite = Suite
     return module
+
+
+class TestShortfall(TestCase):
+    """The unmet groups as data, which is what a grant plan is built from."""
+
+    def test_an_unmet_group_is_returned_with_the_names_it_accepts(self):
+        requirement = Requirement(delegated=("Mail.Read", "Mail.ReadWrite"), licenses=("SPE_E5",))
+        state = TenantState(delegated=frozenset({"Mail.ReadWrite"}))
+        self.assertEqual(requirement.shortfall(state), [("license", ("SPE_E5",))])
+
+    def test_a_bypass_role_or_a_refused_lookup_has_no_shortfall(self):
+        requirement = Requirement(delegated=("Mail.Read",), bypass_roles=("Global Administrator",))
+        self.assertEqual(requirement.shortfall(TenantState(roles=frozenset({"Global Administrator"}))), [])
+        self.assertEqual(requirement.shortfall(TenantState(unverifiable="no scope to ask with")), [])
+
+
+class TestGrantPlan(TestCase):
+    """The plan an administrator is asked to approve: minimal, deduplicated, honest."""
+
+    @staticmethod
+    def _needs(*requirements: Requirement) -> Needs:
+        needs = Needs(suite="tests/x/test_y.py", flow="delegated-ropc", tests=len(requirements))
+        for index, requirement in enumerate(requirements):
+            needs.add(requirement, f"Suite.test_{index}")
+        return needs
+
+    def test_one_name_per_unmet_group_is_enough(self):
+        requirement = Requirement(delegated=("Mail.Read", "Mail.ReadWrite"))
+        states = {requirement: TenantState()}
+        self.assertEqual(grant_plan([self._needs(requirement)], states), {"delegated": ["Mail.Read"]})
+
+    def test_a_name_shared_by_two_groups_is_only_asked_for_once(self):
+        first = Requirement(delegated=("A.Read", "B.Read"))
+        second = Requirement(delegated=("B.Read", "C.Read"))
+        states = {first: TenantState(), second: TenantState()}
+        self.assertEqual(grant_plan([self._needs(first, second)], states), {"delegated": ["B.Read"]})
+
+    def test_groups_an_administrator_cannot_grant_are_still_reported(self):
+        requirement = Requirement(licenses=("SPE_E5",))
+        self.assertEqual(grant_plan([self._needs(requirement)], {requirement: TenantState()}), {"license": ["SPE_E5"]})
+
+    def test_a_granted_or_unverified_requirement_asks_for_nothing(self):
+        met = Requirement(delegated=("Mail.Read",))
+        unknown = Requirement(delegated=("Files.Read",))
+        states = {met: TenantState(delegated=frozenset({"Mail.Read"}))}
+        self.assertEqual(grant_plan([self._needs(met, unknown)], states), {})
 
 
 class TestSuiteMatrix(TestCase):
