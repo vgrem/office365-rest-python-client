@@ -11,7 +11,7 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url
-from tests._scripted_transport import RoutingTransport, ScriptedTransport
+from tests._scripted_transport import RecordingTransport, RoutingTransport, ScriptedTransport
 
 
 class TestGraphPathBuilding(unittest.TestCase):
@@ -96,16 +96,6 @@ def test_entity_method_path_is_not_clobbered_by_id():
     assert "GetByTitle" in str(lst.resource_path)
 
 
-class _PathCaptureTransport(ScriptedTransport):
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 def test_odata_literal_keeps_slashes():
     """Slashes stay literal in OData string literals (no %2F URL inflation)."""
     ctx = ClientContext(test_site_url)
@@ -140,7 +130,7 @@ def test_move_file_by_path_sends_paths_in_body():
 
     src = "/sites/x/Shared Documents/deep/nested/folder/a.xlsx"
     dest = "/sites/x/Shared Documents/deep/nested/archive/a.xlsx"
-    transport = _PathCaptureTransport([{}])
+    transport = RecordingTransport([{}])
     ctx = ClientContext(test_site_url)
     ctx.pending_request().beforeExecute.clear()
     ctx.pending_request().transport = transport

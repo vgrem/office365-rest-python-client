@@ -20,7 +20,7 @@ from office365.runtime.query_capabilities import (
     query_capabilities,
     query_capabilities_of,
 )
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 
 def test_call_records_declares_top_unsupported():
@@ -99,18 +99,6 @@ def test_drive_item_capability():
     col.order_by("size desc")  # allowed
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the requests it received."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 def _client(transport) -> GraphClient:
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
@@ -119,7 +107,7 @@ def _client(transport) -> GraphClient:
 
 
 def test_prefer_header_injected_for_last_modified_filter():
-    transport = _RecordingTransport([{"value": []}])
+    transport = RecordingTransport([{"value": []}])
     client = _client(transport)
 
     client.me.drive.root.children.filter("lastModifiedDateTime gt 2020-01-01T00:00:00Z").get().execute_query()

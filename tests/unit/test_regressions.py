@@ -63,7 +63,7 @@ from office365.teams.chats.type import ChatType
 from office365.teams.messaging_settings import TeamMessagingSettings
 from office365.teams.team import Team
 from tests import test_site_url
-from tests._scripted_transport import RoutingTransport, ScriptedTransport
+from tests._scripted_transport import RecordingTransport, RoutingTransport, ScriptedTransport
 
 
 def _context(payloads) -> ClientContext:
@@ -371,6 +371,34 @@ def test_the_prefer_header_merges_what_each_helper_asks_for():
     assert fresh.headers["Prefer"] == (
         f'{CREATE_IF_MISSING}, {RETURN_REPRESENTATION}, outlook.timezone="W. Europe Standard Time"'
     )
+
+
+def test_a_team_created_for_an_application_names_its_owners():
+    # Application-context team creation requires an owner, and Graph accepts one only as
+    # a conversation member: the payload *is* the contract. Nothing credentialed exercises
+    # the ``owners`` argument, so this is where the rendering stays pinned.
+    transport = RecordingTransport(
+        [
+            {
+                "http_status": 202,
+                "headers": {"Location": "https://graph.microsoft.com/v1.0/teams/abc/operations/op1"},
+                "body": {},
+            }
+        ]
+    )
+    client = GraphClient()
+    client.pending_request().beforeExecute.clear()
+    client.pending_request().transport = transport
+
+    client.teams.create("Team A", "desc", "standard", owners=["ada@contoso.com"]).execute_query()
+
+    assert transport.requests[-1].data["members"] == [
+        {
+            "@odata.type": "#microsoft.graph.aadUserConversationMember",
+            "roles": ["owner"],
+            "user@odata.bind": "https://graph.microsoft.com/v1.0/users('ada@contoso.com')",
+        }
+    ]
 
 
 def test_a_permanent_failure_is_not_retried():

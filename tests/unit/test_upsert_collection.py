@@ -11,26 +11,14 @@ from __future__ import annotations
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.odata.literals import odata_literal
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 _EXISTING = {"id": "g1", "displayName": "Group157", "description": "Old"}
 _CREATED = {"id": "g1", "displayName": "Group157", "description": "Team site"}
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the outgoing request objects."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 def _client(payloads):
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport
@@ -132,7 +120,7 @@ def _sp(payloads):
 
     ctx = ClientContext(test_site_url)
     ctx.pending_request().beforeExecute.clear()
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     ctx.pending_request().transport = transport
     return ctx, transport
 

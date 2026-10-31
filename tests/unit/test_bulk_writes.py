@@ -12,7 +12,7 @@ import pytest
 from office365.runtime.exceptions import ObjectNotFoundException
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 _NOT_FOUND = {
     "http_status": 404,
@@ -20,22 +20,10 @@ _NOT_FOUND = {
 }
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the requests it received."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 def _sp(payloads):
     ctx = ClientContext(test_site_url)
     ctx.pending_request().beforeExecute.clear()
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     ctx.pending_request().transport = transport
     return ctx, transport
 

@@ -11,7 +11,7 @@ from __future__ import annotations
 from office365.directory.permissions.resource_name import ResourceName
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 CLIENT_APP_ID = "11111111-1111-1111-1111-111111111111"
 CLIENT_OBJECT_ID = "dddddddd-dddd-dddd-dddd-dddddddddddd"
@@ -32,27 +32,15 @@ SHAREPOINT_SP = {
 }
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the requests it received."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 def _client(payloads):
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport
     return client, transport
 
 
-def _methods(transport: _RecordingTransport) -> list[str]:
+def _methods(transport: RecordingTransport) -> list[str]:
     return [request.method for request in transport.requests]
 
 

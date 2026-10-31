@@ -32,25 +32,13 @@ from office365.common.restore_point import RestorePoint
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.paths.resource_path import ResourcePath
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 EMPTY_ITEMS = {"value": []}
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the requests it received."""
-
-    def __init__(self):
-        super().__init__([EMPTY_ITEMS] * 20)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 def _client():
-    transport = _RecordingTransport()
+    transport = RecordingTransport([EMPTY_ITEMS] * 20)
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport

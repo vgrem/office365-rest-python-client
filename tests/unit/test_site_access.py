@@ -20,7 +20,7 @@ from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 from office365.sharepoint.principal.users.user import User
 from tests import test_site_url
-from tests._scripted_transport import RoutingTransport, ScriptedTransport
+from tests._scripted_transport import RecordingTransport, RoutingTransport
 
 SITE_ID = "contoso.sharepoint.com,site-guid,web-guid"
 APP_ID = "11111111-1111-1111-1111-111111111111"
@@ -79,16 +79,6 @@ def test_revoke_app_access_resolves_service_principal_and_deletes():
 # --- The SharePoint REST side: get_securable_object and its wrappers ----------
 
 
-class _CaptureTransport(ScriptedTransport):
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
-
-
 PRINCIPAL_ID = 6
 ROLE_DEF_ID = 1073741827
 
@@ -125,7 +115,7 @@ def _loaded_role(ctx) -> RoleDefinition:
 def test_grant_access_is_deferred():
     ctx = _ctx()
     ctx.pending_request().beforeExecute.clear()
-    transport = _CaptureTransport([])
+    transport = RecordingTransport([])
     ctx.pending_request().transport = transport
     target = ctx.web.get_securable_object("web")
 

@@ -12,23 +12,11 @@ import pytest
 from office365.graph_client import GraphClient
 from office365.runtime.exceptions import AccessDeniedException, UpsertNotSupported
 from office365.runtime.http.http_method import HttpMethod
-from tests._scripted_transport import ScriptedTransport
-
-
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the outgoing request objects."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.requests = []
-
-    def execute(self, request):
-        self.requests.append(request)
-        return super().execute(request)
+from tests._scripted_transport import RecordingTransport
 
 
 def _client(payloads):
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport

@@ -151,6 +151,29 @@ answers `null` for every feature at site scope — the end-to-end activation tes
 idempotent, so on a tenant where the feature is already active it passes even when the
 client suppresses the write.
 
+A sixth pass went after the fakes rather than the assertions. The cost of a
+double-heavy file is the double, not the test: `test_sharepoint_library_target.py` spent
+369 of its 640 lines on stand-ins for `File`, `Folder`, `ListItem` and the web, so the
+tests were asserting against a model of the library instead of the library. It now builds
+a real `ClientContext` over a `RoutingTransport` and scripts only the service's answers —
+404 lines, and one test more than before, because the request path the doubles had
+screened is now visible (`Files/add(overwrite=true,url='a.txt')`, no folder ensure). The
+rule: **a fixture may be a wire envelope; it must never hand-copy a model's shape.** A
+202 with a `Location` header, a `{"d": {"results": []}}` page, a `#microsoft.graph.driveItem`
+body — those are the service speaking, and they belong in `tests/_scripted_transport.py` as
+a payload. A stand-in for `File` that answers `get_property()` is the library speaking to
+itself, and it pins whatever the stand-in does, not what the library does. Mocking a
+`TeamsOperation` to assert the operation's own parse is the limiting case: the payload
+would be asserting itself. Doubles that survive all read client-side state a payload
+cannot carry — a thread's name, two requests in flight at once, a digest handshake.
+
+That file also ended 17 copies of the same transport. `tests/_scripted_transport.py` now
+exports `RecordingTransport` (payloads in call order, plus the requests received) beside
+`ScriptedTransport` and `RoutingTransport`; the clones in the product test files were
+byte-for-byte the same eleven lines, 13 of them replaced. If a test needs a transport that
+does something new, the something new belongs in the shared module, where the next test
+finds it instead of writing their own.
+
 ### End-to-end tests (maintainers / optional)
 
 The product suites (`tests/sharepoint/`, `tests/onedrive/`, …) are end-to-end and

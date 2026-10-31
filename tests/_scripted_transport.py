@@ -14,6 +14,7 @@ Payload forms handled by both transports:
   ``Location``/``Operation-Location``/``Retry-After``)
 
 :class:`ScriptedTransport` returns payloads in call order;
+:class:`RecordingTransport` is the same while also recording what it received;
 :class:`RoutingTransport` picks the first route whose URL substring matches;
 :class:`AsyncScriptedTransport` is the native-async twin that only implements
 ``execute_async``.
@@ -94,6 +95,23 @@ class ScriptedTransport(BaseTransport):
         payload = self._payloads[self.calls]
         self.calls += 1
         return build_response(request, payload)
+
+
+class RecordingTransport(ScriptedTransport):
+    """Returns payloads in call order and records the requests it received."""
+
+    def __init__(self, payloads: list[Any]) -> None:
+        super().__init__(payloads)
+        self.requests: list[Any] = []
+
+    @property
+    def urls(self) -> list[str]:
+        """The urls of the requests received, in call order."""
+        return [request.url for request in self.requests]
+
+    def execute(self, request):
+        self.requests.append(request)
+        return super().execute(request)
 
 
 class RoutingTransport(BaseTransport):

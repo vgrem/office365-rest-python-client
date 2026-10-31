@@ -8,25 +8,13 @@ from __future__ import annotations
 
 import pytest
 from office365.graph_client import GraphClient
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 GROUP = {"id": "g1", "displayName": "Group One"}
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the request URLs it received."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.urls: list[str] = []
-
-    def execute(self, request):
-        self.urls.append(request.url)
-        return super().execute(request)
-
-
 def _client(payloads):
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport

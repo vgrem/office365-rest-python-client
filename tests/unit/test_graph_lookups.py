@@ -13,7 +13,7 @@ from urllib.parse import unquote_plus
 import pytest
 from office365.graph_client import GraphClient
 from office365.runtime.types.exceptions import NotFoundException
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport
 
 TODO_TASK = {"id": "tt1", "title": "Ship the release"}
 MAIL_FOLDER = {"id": "mf1", "displayName": "Archive"}
@@ -22,20 +22,8 @@ SECTION = {"id": "sec1", "displayName": "SDK Examples"}
 SKU = {"id": "s1", "skuId": "sku-guid", "skuPartNumber": "ENTERPRISEPACK"}
 
 
-class _RecordingTransport(ScriptedTransport):
-    """Scripted transport that also records the request URLs it received."""
-
-    def __init__(self, payloads):
-        super().__init__(payloads)
-        self.urls: list[str] = []
-
-    def execute(self, request):
-        self.urls.append(request.url)
-        return super().execute(request)
-
-
 def _client(payloads):
-    transport = _RecordingTransport(payloads)
+    transport = RecordingTransport(payloads)
     client = GraphClient()
     client.pending_request().beforeExecute.clear()
     client.pending_request().transport = transport
