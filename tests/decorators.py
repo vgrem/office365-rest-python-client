@@ -14,11 +14,22 @@ from tests.capabilities import TenantState
 T = TypeVar("T", bound=Callable[..., Any])
 
 
-def _requires(requirement: Requirement) -> Callable[[T], T]:
+def _fqn(func: Callable[..., Any]) -> str:
+    """How a call is named in a report: ``module:qualname``, the identity the index uses.
+
+    :class:`~office365.permissions.index.Operation` is keyed the same way, so a requirement's
+    provenance names the operation a reader can go and look up.
+    """
+    return f"{func.__module__}:{getattr(func, '__qualname__', func)}"
+
+
+def _requires(requirement: Requirement, calls: tuple[str, ...] = ()) -> Callable[[T], T]:
     """Build the decorator that stamps ``requirement`` and enforces it.
 
     The stamp is the point: :mod:`tests.preflight` reads it off the test tree to
-    report what a tenant must grant before the test can run, without running it.
+    report what a tenant must grant before the test can run, without running it. ``calls``
+    rides along so the same report can say *which* model methods made the test need it - a
+    scope declared by hand has no call to point at, and stamps nothing.
     """
 
     def decorator(test_method: T) -> T:
@@ -33,6 +44,7 @@ def _requires(requirement: Requirement) -> Callable[[T], T]:
             return test_method(self, *args, **kwargs)
 
         wrapper.__requires__ = requirement
+        wrapper.__calls__ = calls
         return cast(T, wrapper)
 
     return decorator
@@ -60,7 +72,9 @@ def requires_call(
 
     Args:
         *calls: The model methods the test exercises, e.g. ``Message.send`` — the
-            unbound class attribute, so the declaration is *read*, never called.
+            unbound class attribute, so the declaration is *read*, never called. Their names
+            are stamped on the test as well, so the preflight report can say which calls a
+            requirement came from instead of only how many tests it unblocks.
         flow: Which declaration column the test runs under: ``"delegated"`` for a signed-in
             user, ``"application"`` for an app-only client. A method that declares nothing
             under this flow raises here rather than skipping for ever.
@@ -78,7 +92,8 @@ def requires_call(
             roles=require_roles or (),
             licenses=require_licenses or (),
             bypass_roles=bypass_roles or (),
-        )
+        ),
+        calls=tuple(_fqn(call) for call in calls),
     )
 
 

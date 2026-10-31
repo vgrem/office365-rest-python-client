@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Any
+from typing import Any, Iterable
 
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
@@ -152,16 +152,26 @@ def _proven_by_token(client: GraphClient, requirement: Requirement) -> frozenset
 
 @dataclass
 class Needs:
-    """Every requirement one suite declares, with the tests that declare it."""
+    """Every requirement one suite declares, with the tests that declare it.
+
+    ``calls`` is the requirement's provenance: the model methods the declaring tests derived
+    it from, as ``module:qualname``. It is keyed *beside* the requirements rather than stored
+    on them, because two tests that need the same grant are one line in a report however many
+    methods each of them exercised - the requirement is the fact, the calls are where it came
+    from.
+    """
 
     suite: str
     flow: str
     tests: int = 0
     requirements: dict[Requirement, list[str]] = field(default_factory=dict)
+    calls: dict[Requirement, list[str]] = field(default_factory=dict)
 
-    def add(self, requirement: Requirement, test_name: str) -> None:
-        """Record that ``test_name`` declares ``requirement``."""
+    def add(self, requirement: Requirement, test_name: str, calls: Iterable[str] = ()) -> None:
+        """Record that ``test_name`` declares ``requirement``, via the model methods it names."""
         self.requirements.setdefault(requirement, []).append(test_name)
+        known = self.calls.setdefault(requirement, [])
+        known.extend(call for call in calls if call not in known)
 
     def unmet_for(self, states: dict[Requirement, TenantState]) -> list[tuple[Requirement, list[str]]]:
         """The requirements these resolved states do not satisfy, with the tests they block.
@@ -184,3 +194,13 @@ def declared_requirement(test_method: object) -> Requirement | None:
     """
     requirement = getattr(test_method, "__requires__", None)
     return requirement if isinstance(requirement, Requirement) else None
+
+
+def declared_calls(test_method: object) -> tuple[str, ...]:
+    """The model methods a decorated test derived its requirement from, as ``module:qualname``.
+
+    Empty for a test that names its scopes by hand: the requirement did not come from the
+    library, so there is no call to point at and none is invented.
+    """
+    calls = getattr(test_method, "__calls__", ())
+    return tuple(calls) if isinstance(calls, tuple) else ()

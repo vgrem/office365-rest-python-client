@@ -128,15 +128,15 @@ declaration is the only place the requirement is written:
 def test_01_list_messages(self): ...
 ```
 
-`tests/decorators.py` stamps the requirement on the test it returns, so
-`tests/preflight.py` can read the whole matrix off the test tree without running
-anything — `python -m tests.preflight` needs no credentials, `--verify` resolves each
-requirement against the signed-in app and user, and `--report tests-report` writes
-`preflight.md` (add `--json tests-report` for `preflight.json`). Both the guard and the
-report call the same `tests/capabilities.py`, where a `Requirement` answers
-`unmet(state)` and `TenantState` fetches *only* the facts the requirement names — an
-app-only token has no `/me` to ask for licenses, so asking would turn a skip into a
-failure.
+`tests/decorators.py` stamps the requirement on the test it returns — and, for
+`@requires_call`, the model methods it was derived from — so `tests/preflight.py` reads the
+whole matrix off the test tree without running anything. `python -m tests.preflight` needs no
+credentials, `--verify` resolves each requirement against the signed-in app and user, and
+`--report tests-report` writes `preflight.md` (add `--json tests-report` for
+`preflight.json`). Both the guard and the report call the same `tests/capabilities.py`,
+where a `Requirement` answers `unmet(state)` and `TenantState` fetches *only* the facts the
+requirement names — an app-only token has no `/me` to ask for licenses, so asking would turn
+a skip into a failure.
 
 `python -m tests.setup --grant` turns that matrix into the *smallest* set of grants that
 would unblock the tree: one name per any-of group, shared names asked for once, a

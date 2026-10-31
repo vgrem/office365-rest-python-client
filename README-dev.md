@@ -199,16 +199,22 @@ app about its own grants, so the answer is about the identity that will run the 
 
 The default view is the screen, not the matrix: the counts, only the flows that are not
 ready, and the unmet requirements deduplicated and ranked by the tests they unblock —
-`35 tests  delegated: Sites.Read.All (+1) or an administrator role`. The alternatives
-collapse to `(+1)` because a blocker line only has to say what to grant; `--all` spells
-them all out, and requirements already met collapse to a count.
+`35 tests  delegated: Sites.Read.All (+1)  (or an administrator role; via 35 declared calls)`.
+The alternatives collapse to `(+1)` because a blocker line only has to say what to grant;
+`--all` spells them all out, and requirements already met collapse to a count.
+
+The trailing `via` is the row's provenance: `@requires_call` stamps the model methods a test
+derived its requirement from, so the report says not just how many tests a grant unblocks but
+which calls ask for it — a grant twelve tests need and a grant one endpoint brings are
+different decisions. `--all` spells those calls instead of counting them, and a requirement
+stated by hand with `@requires_delegated` names no call and shows none.
 
 `--report` writes `tests-report/preflight.md`: the table per suite (flow, tests,
-declared permission, `met` / `missing …`), which is what you want when the question is
-about one suite rather than "what next". `--markdown` prints that table instead of the
-summary. `--json tests-report` writes the same matrix as `preflight.json` for a tool to
-read; nothing in the repo consumes it yet, so it is opt-in rather than something every
-run pays for. Both files describe *a tenant*, not the library, so `tests-report/` is
+declared permission, `via` calls, `met` / `missing …`), which is what you want when the
+question is about one suite rather than "what next". `--markdown` prints that table instead
+of the summary. `--json tests-report` writes the same matrix as `preflight.json` for a tool
+to read; nothing in the repo consumes it yet, so it is opt-in rather than something every run
+pays for. Both files describe *a tenant*, not the library, so `tests-report/` is
 gitignored. `--strict` exits non-zero when a flow is not configured or a declared
 requirement is not met.
 

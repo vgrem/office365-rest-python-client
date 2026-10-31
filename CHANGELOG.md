@@ -324,11 +324,13 @@ introduced.
   application permissions, `oauth2PermissionScopes` for delegated ones) and committed under
   `office365/permissions/snapshots/`. Only the facts that decide whether a grant is possible
   are kept (published, enabled, user-consentable), because a description is edited freely and
-  would make the ratchet noisy. The tree's 89 distinct (API, flow, name) pairs are checked
-  against the 777 + 867 names Microsoft Graph publishes and the 20 + 29 SharePoint does, and a
-  live test re-reads the tenant so a snapshot that has drifted is a red test rather than a
-  stale answer. This is what makes the remaining harvest reviewable: a wrong name used to be
-  indistinguishable from a grant the tenant never gave.
+  would be churn in every regeneration. The tree's 89 distinct (API, flow, name) pairs are
+  checked against the 777 + 867 names Microsoft Graph publishes and the 20 + 29 SharePoint
+  does, so a name its API does not publish fails offline. A snapshot is refreshed by re-running
+  the script, which is also the only way to notice a name Microsoft retired: the tenant refuses
+  it and the harness reads the refusal as "not granted", so live nothing distinguishes a typo,
+  a retired name and a real gap. This is what makes the remaining harvest reviewable — a wrong
+  name used to be indistinguishable from a grant that was never given.
 - **SharePoint's ladder is one word per method.** Its eight names are four rungs —
   `AllSites.Read` → `.Write` → `.Manage` → `.FullControl`, with `Sites.Read.All` →
   `Sites.ReadWrite.All` → `.Manage.All` → `.FullControl.All` beside them for app-only — where
@@ -368,6 +370,17 @@ introduced.
   with the tenant. An alternative that cannot be checked is not a permission that is missing,
   and the names still decide; a role or SKU the requirement *holds* is part of the answer, so
   failing to read that is still unverifiable rather than unmet.
+- **A blocker now says which calls asked for it.** The preflight row for a requirement carries
+  the model methods behind it — the 40 SharePoint tests blocked on `Sites.Read.All (+3)` read
+  `(via 35 declared calls)` — because a grant twelve tests need and a grant *one endpoint*
+  brings are different decisions: the first is an administrator's problem, the second is a
+  call we could stop making. `@requires_call` stamps the calls as `module:qualname`, the
+  identity `Operation` is keyed by, so a row names an operation the declaration index can be
+  asked about; `--all` spells them (`Web.get_catalog`, `Site.exists`, `File.copyto`) instead
+  of counting them, `--markdown` puts them in a column of the suite table, and `--json` adds
+  them as a list. The provenance is kept *beside* the requirement rather than on it: two tests
+  that need the same grant are one row however many methods each of them exercised, and a
+  requirement stated by hand with `@requires_delegated` names no call and shows none.
 
 ### Changed
 

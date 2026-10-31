@@ -14,12 +14,13 @@ import unittest
 from pathlib import Path
 from unittest import TestCase, mock
 
+from office365.outlook.mail.messages.message import Message
 from office365.permissions import ResourceName
 from office365.runtime.client_request_exception import ClientRequestException
 
 from tests import capabilities, preflight
-from tests.capabilities import Needs, Requirement, TenantState, declared_requirement
-from tests.decorators import requires_application, requires_delegated
+from tests.capabilities import Needs, Requirement, TenantState, declared_calls, declared_requirement
+from tests.decorators import requires_application, requires_call, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
 from tests.preflight import ROOT, Grant, grant_plan, needs_of
 from tests.settings import Settings
@@ -100,6 +101,10 @@ class _Suite:
     def test_needs_a_site_scope(self):
         self.ran = True
 
+    @requires_call(Message.send)
+    def test_derives_its_scope_from_a_call(self):
+        self.ran = True
+
 
 class TestDecorators(TestCase):
     def test_the_decorator_stamps_what_it_will_check(self):
@@ -110,6 +115,12 @@ class TestDecorators(TestCase):
 
     def test_an_undecorated_test_declares_nothing(self):
         self.assertIsNone(declared_requirement(_Suite.setUp))
+
+    def test_a_derived_requirement_remembers_the_call_it_came_from(self):
+        """The preflight row says which model methods asked for a grant; this is where it reads it."""
+        calls = declared_calls(_Suite.test_derives_its_scope_from_a_call)
+        self.assertEqual([call.rpartition(":")[2] for call in calls], ["Message.send"])
+        self.assertEqual(declared_calls(_Suite.test_needs_mail_read), ())
 
     def test_a_missing_permission_is_named_in_the_skip_reason(self):
         case = _Suite()

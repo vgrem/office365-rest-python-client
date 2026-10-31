@@ -35,7 +35,7 @@ from office365.graph_client import GraphClient
 from office365.permissions import FLOWS as PERMISSION_FLOWS
 from office365.permissions import ResourceName
 
-from tests.capabilities import Needs, Requirement, TenantState, declared_requirement
+from tests.capabilities import Needs, Requirement, TenantState, declared_calls, declared_requirement
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
 from tests.settings import FLOWS, Settings, settings
 from tests.sharepoint.sharepoint_case import SPTestCase
@@ -92,7 +92,7 @@ def needs_of(path: Path, module: ModuleType) -> Needs | None:
         for test_name in test_names:
             requirement = declared_requirement(getattr(obj, test_name))
             if requirement is not None:
-                needs.add(requirement, f"{name}.{test_name}")
+                needs.add(requirement, f"{name}.{test_name}", declared_calls(getattr(obj, test_name)))
     return needs
 
 
@@ -236,14 +236,35 @@ def _tests(count: int) -> str:
     return f"{count} test" if count == 1 else f"{count} tests"
 
 
+def _calls(count: int) -> str:
+    """The same, for the model methods a requirement was derived from."""
+    return f"{count} declared call" if count == 1 else f"{count} declared calls"
+
+
+def _short(fqn: str) -> str:
+    """``office365.outlook.user:Message.send`` -> ``Message.send``: the method, not where it lives."""
+    return fqn.rpartition(":")[2]
+
+
 @dataclass(frozen=True)
 class _Row:
-    """One requirement, the tests that declared it, and what this tenant answers."""
+    """One requirement, the tests that declared it, and what this tenant answers.
+
+    ``sources`` is the provenance: the declared model methods those tests exercise, so the row
+    says not only how many tests a grant unblocks but what in the library asks for it - the
+    difference between "a scope nobody can avoid" and "one endpoint we could stop calling".
+    """
 
     requirement: Requirement
     tests: tuple[str, ...]
     state: str
     facts: TenantState | None
+    sources: tuple[str, ...] = ()
+
+    @property
+    def via(self) -> str:
+        """The provenance collapsed to a count, for a line that only has to say what to grant."""
+        return f"via {_calls(len(self.sources))}"
 
 
 class Report:
@@ -272,11 +293,20 @@ class Report:
         self.tests = sum(needs.tests for needs in found)
         self.declared = sum(len(needs.requirements) for needs in found)
         totals: dict[Requirement, list[str]] = {}
+        sources: dict[Requirement, list[str]] = {}
         for needs in found:
             for requirement, tests in needs.requirements.items():
                 totals.setdefault(requirement, []).extend(tests)
+                calls = sources.setdefault(requirement, [])
+                calls.extend(call for call in needs.calls.get(requirement, ()) if call not in calls)
         self.rows = [
-            _Row(requirement, tuple(totals[requirement]), self.state(requirement), self.states.get(requirement))
+            _Row(
+                requirement,
+                tuple(totals[requirement]),
+                self.state(requirement),
+                self.states.get(requirement),
+                tuple(sorted(sources[requirement])),
+            )
             for requirement in sorted(totals, key=lambda item: (-len(totals[item]), item.describe()))
         ]
 
@@ -327,6 +357,21 @@ class Report:
             groups = requirement.shortfall(row.facts)
         return [_group(label, names, show_all) for label, names in groups] or [requirement.describe()]
 
+    def _suffix(self, row: _Row, show_all: bool) -> str:
+        """What rides at the end of a row: the alternative to granting, and where it came from.
+
+        The bypass role is an alternative to *everything* listed above it, so it comes first;
+        the calls are what the affected tests exercise, so it comes last. ``--all`` spells the
+        calls on a line of their own instead of counting them.
+        """
+        parts: list[str] = []
+        roles = row.requirement.bypass_roles
+        if roles and row.state != "met":
+            parts.append(f"or {_article(roles[0])} {' / '.join(roles)} role")
+        if row.sources and not show_all:
+            parts.append(row.via)
+        return f"({'; '.join(parts)})" if parts else ""
+
     def _table(self, rows: list[_Row], show_all: bool, heading: str = "to add") -> list[str]:
         """The rows as a table: tests, the flow, and what is missing under a ``+``.
 
@@ -341,18 +386,20 @@ class Report:
         for row in rows:
             marker = {"missing": "+ ", "unverified": "? "}.get(row.state, "")
             indent = hanging + "   " * bool(marker)
-            roles = row.requirement.bypass_roles
-            bypass = f"(or {_article(roles[0])} {' / '.join(roles)} role)" if roles and row.state != "met" else ""
             wrapped: list[list[str]] = []
             for index, cell in enumerate(self._needs(row, show_all)):
                 lead = hanging if index else f"  {len(row.tests):>7}  {_flow(row):<{width}}  "
                 wrapped.append(textwrap.wrap(f"{lead}{marker}{cell}", width=self.WIDTH, subsequent_indent=indent))
-            if bypass:
+            suffix = self._suffix(row, show_all)
+            if suffix:
                 last = wrapped[0][-1]
-                if len(last) + len(bypass) + 2 <= self.WIDTH:
-                    wrapped[0][-1] = f"{last}  {bypass}"
+                if len(last) + len(suffix) + 2 <= self.WIDTH:
+                    wrapped[0][-1] = f"{last}  {suffix}"
                 else:
-                    wrapped[0].append(f"{indent}{bypass}")
+                    wrapped[0].append(f"{indent}{suffix}")
+            if show_all and row.sources:
+                spelled = ", ".join(_short(source) for source in row.sources)
+                wrapped.append(textwrap.wrap(f"{indent}via {spelled}", width=self.WIDTH, subsequent_indent=indent))
             lines.extend(line for group in wrapped for line in group)
         return lines
 
@@ -407,18 +454,24 @@ class Report:
             "",
             "## Suites",
             "",
-            "| suite | flow | tests | declared | status |",
-            "| --- | --- | ---: | --- | --- |",
+            "`via` names the model methods each test derived its requirement from; a requirement",
+            "stated by hand with `@requires_delegated`/`@requires_application` is a `-`.",
+            "",
+            "| suite | flow | tests | declared | via | status |",
+            "| --- | --- | ---: | --- | --- | --- |",
         ]
         for needs in self.found:
             if not needs.requirements:
-                lines.append(f"| `{needs.suite}` | `{needs.flow}` | {needs.tests} | none declared | credentials only |")
+                lines.append(
+                    f"| `{needs.suite}` | `{needs.flow}` | {needs.tests} | none declared | - | credentials only |"
+                )
                 continue
             for requirement in sorted(needs.requirements, key=_ordered):
                 tests = len(needs.requirements[requirement])
+                calls = ", ".join(_short(call) for call in needs.calls.get(requirement, ())) or "-"
                 lines.append(
                     f"| `{needs.suite}` | `{needs.flow}` | {tests} | "
-                    f"{requirement.describe()} | {self.status(requirement)} |"
+                    f"{requirement.describe()} | {calls} | {self.status(requirement)} |"
                 )
 
         lines += ["", "## Missing", ""]
@@ -429,7 +482,8 @@ class Report:
             if not missing:
                 lines.append("Every declared requirement is met.")
             for row in missing:
-                lines.append(f"- {row.requirement.describe()} - {_tests(len(row.tests))}, {row.state}")
+                via = f", {row.via}" if row.sources else ""
+                lines.append(f"- {row.requirement.describe()} - {_tests(len(row.tests))}, {row.state}{via}")
         return "\n".join(lines) + "\n"
 
     def json(self) -> str:
@@ -447,6 +501,7 @@ class Report:
                         {
                             "declared": requirement.describe(),
                             "status": self.status(requirement),
+                            "calls": list(needs.calls.get(requirement, ())),
                             "tests": needs.requirements[requirement],
                         }
                         for requirement in sorted(needs.requirements, key=_ordered)
