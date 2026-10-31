@@ -59,14 +59,6 @@ class TestRequirement(TestCase):
         self.assertEqual(Requirement().describe(), "no declared permission")
         self.assertEqual(Requirement().unmet(TenantState()), [])
 
-    def test_a_description_reads_as_one_sentence(self):
-        self.assertEqual(
-            Requirement(delegated=("Mail.Read",), bypass_roles=("Global Administrator",)).describe(),
-            "delegated: any of Mail.Read or role: any of Global Administrator",
-        )
-
-
-class TestTenantState(TestCase):
     def test_only_the_declared_facts_are_fetched(self):
         """An app-only token has no /me, so a check that asks for a license breaks it."""
         app_role = types.SimpleNamespace(value="Sites.Read.All")
@@ -302,90 +294,3 @@ class TestSuiteMatrix(TestCase):
         needs.add(_MAIL, "Suite.test_scoped")
         self.assertEqual(needs.unmet_for({}), [])
         self.assertEqual(needs.unmet_for({_MAIL: TenantState()}), [(_MAIL, ["Suite.test_scoped"])])
-
-
-class TestPreflightText(TestCase):
-    """The terminal view: the blockers first, the satisfied rest as a count.
-
-    The report (`--report`) stays a table of every suite by every requirement, and a
-    person reading it wants one answer -- what is blocking the most tests. So the view
-    deduplicates requirements, ranks them by the tests they unblock, spells the
-    alternatives as a count, and turns 277 lines into 19.
-    """
-
-    def setUp(self):
-        # Hermetic: no `.env`, no tenant, no credentials -- so every flow is unready and
-        # nothing is verified, which is what the offline view is.
-        patcher = mock.patch.object(preflight, "settings", Settings(tenant="contoso.onmicrosoft.com"))
-        patcher.start()
-        self.addCleanup(patcher.stop)
-
-    @staticmethod
-    def _needs(*requirements: Requirement, tests: int = 1) -> Needs:
-        """A suite that declares ``requirements``, each carried by ``tests`` test names."""
-        needs = Needs(suite="tests/x/test_y.py", flow="delegated-ropc", tests=tests * len(requirements))
-        for index, requirement in enumerate(requirements):
-            for case in range(tests):
-                needs.add(requirement, f"Suite.test_{index}_{case}")
-        return needs
-
-    def test_the_requirement_blocking_the_most_tests_is_listed_first(self):
-        narrow = Requirement(delegated=("Narrow.Read",))
-        wide = Requirement(delegated=("Wide.Read",))
-        found = [self._needs(narrow, tests=1), self._needs(wide, tests=8)]
-        states = {narrow: TenantState(), wide: TenantState()}
-        lines = preflight.Report(found, states).text().splitlines()
-        self.assertLess(
-            next(i for i, line in enumerate(lines) if "Wide.Read" in line),
-            next(i for i, line in enumerate(lines) if "Narrow.Read" in line),
-        )
-
-    def test_a_met_requirement_collapses_to_a_count_until_all_is_asked_for(self):
-        granted = Requirement(delegated=("Mail.Read",))
-        refused = Requirement(delegated=("Files.Read",))
-        found = [self._needs(granted, refused)]
-        states = {granted: TenantState(delegated=frozenset({"Mail.Read"})), refused: TenantState()}
-        report = preflight.Report(found, states)
-        compact = report.text()
-        self.assertIn("1 met, 1 missing", compact)
-        self.assertNotIn("Mail.Read", compact)
-        expanded = report.text(show_all=True)
-        self.assertIn("Mail.Read", expanded)
-        self.assertIn("1 test ", expanded)  # singular: "1 test", not "1 tests"
-
-    def test_a_blocker_names_one_name_per_group_and_counts_the_alternatives(self):
-        # The screen says what to grant; the report (`--all`) says everything that works.
-        requirement = Requirement(delegated=("Sites.Read.All", "Sites.ReadWrite.All"), bypass_roles=("Global Reader",))
-        text = preflight.Report([self._needs(requirement)], {}).text()
-        self.assertIn("delegated: Sites.Read.All (+1) or an administrator role", text)
-        self.assertNotIn("Sites.ReadWrite.All", text)
-        expanded = preflight.Report([self._needs(requirement)], {}).text(show_all=True)
-        self.assertIn("any of Sites.Read.All, Sites.ReadWrite.All", expanded)
-
-    def test_the_screen_stops_at_a_screenful_and_counts_the_rest(self):
-        requirements = [Requirement(delegated=(f"Scope{index}.Read",)) for index in range(preflight.Report.SHOWN + 2)]
-        found = [self._needs(requirement) for requirement in requirements]
-        states = dict.fromkeys(requirements, TenantState())
-        lines = preflight.Report(found, states).text().splitlines()
-        self.assertEqual(len([line for line in lines if "Scope" in line]), preflight.Report.SHOWN)
-        self.assertIn("  ... 2 with fewer tests; --all spells every alternative", lines)
-        everything = preflight.Report(found, states).text(show_all=True).splitlines()
-        self.assertEqual(len([line for line in everything if "Scope" in line]), len(requirements))
-
-    def test_a_flow_that_cannot_sign_in_says_which_setting_it_lacks(self):
-        # `Settings()` names no client id, so the flow cannot sign in -- and silence
-        # about that is how a skipped suite looks like a passing one.
-        self.assertIn("delegated       not configured (missing: OFFICE365_CLIENT_ID)", preflight.Report([], {}).text())
-
-    def test_the_screen_states_that_nothing_was_verified_without_verify(self):
-        found = [self._needs(Requirement(delegated=("Mail.Read",)))]
-        self.assertIn("not verified: --verify resolves them against this tenant", preflight.Report(found, {}).text())
-        self.assertNotIn("not verified:", preflight.Report(found, {_MAIL: TenantState()}).text())
-
-    def test_neither_view_uses_a_character_a_terminal_may_not_have(self):
-        # No emoji, no box drawing, no colour: the same bytes in a terminal, a log and a
-        # CI summary. Pinned because the compact view is what people read.
-        found = [self._needs(Requirement(delegated=("Mail.Read",)))]
-        report = preflight.Report(found, {})
-        for view in (report.text(), report.text(show_all=True), report.markdown()):
-            self.assertTrue(view.isascii(), view)

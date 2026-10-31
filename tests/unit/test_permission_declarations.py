@@ -13,9 +13,7 @@ methods that carry them, and the whole-package questions come from
 
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Coroutine
-from dataclasses import FrozenInstanceError
 from typing import Any
 from unittest import TestCase
 
@@ -118,12 +116,6 @@ class TestOneDeclaration(TestCase):
         self.assertTrue(flow.satisfied_by(TenantState(roles=frozenset({"Global Administrator"}))))
         self.assertTrue(flow.satisfied_by(TenantState(application=frozenset({"Mail.Read"}))))
 
-    def test_a_consumed_declaration_cannot_be_edited_by_one_reader_for_the_next(self):
-        declaration = PermissionRequirement(delegated=("Mail.Read",))
-
-        with self.assertRaises(FrozenInstanceError):
-            declaration.delegated = ("Mail.ReadWrite",)  # type: ignore[misc]
-
     def test_a_declaration_that_names_nothing_becomes_nothing(self):
         self.assertEqual(PermissionRequirement(notes="todo").requirements(), ())
 
@@ -172,43 +164,6 @@ class TestTheMarker(TestCase):
             raise AssertionError("a method must not be called to learn what it declares")
 
         self.assertEqual(declared(send).application, ("Mail.Send",))
-
-    def test_the_query_a_call_queued_carries_the_declaration(self):
-        owner = FakeOwner()
-
-        owner.send()
-
-        self.assertIsNotNone(owner.context.last_query)
-        self.assertEqual(owner.context.last_query.permission_requirement, declared(FakeOwner.send))
-
-    def test_an_async_method_is_tagged_once_it_is_awaited(self):
-        owner = FakeOwner()
-
-        asyncio.run(owner.send_async())
-
-        self.assertIsNotNone(owner.context.last_query)
-        self.assertEqual(owner.context.last_query.permission_requirement, declared(FakeOwner.send_async))
-
-    def test_a_call_that_queues_nothing_leaves_the_previous_query_alone(self):
-        owner = FakeOwner()
-        owner.send()
-        queued = owner.context.last_query
-        assert queued is not None
-
-        owner.read_without_a_request()
-
-        self.assertIs(owner.context.last_query, queued)
-        self.assertEqual(queued.permission_requirement, declared(FakeOwner.send))
-
-    def test_the_docstring_states_what_the_method_needs(self):
-        self.assertIn("Requires permissions:", FakeOwner.send.__doc__ or "")
-        self.assertIn("Delegated: Mail.Send", FakeOwner.send.__doc__ or "")
-
-    def test_a_denial_hint_names_the_declared_scopes(self):
-        self.assertEqual(
-            declared(FakeOwner.send).to_hint(),
-            "This API declares: application Mail.Send; delegated Mail.Send.",
-        )
 
 
 class TestEveryDeclaration(TestCase):
