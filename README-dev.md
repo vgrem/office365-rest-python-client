@@ -235,7 +235,7 @@ tenant one question per declared fact using the library's own
 declares.
 
 A model method carries the same kind of statement. `@require_permission(delegated=...,
-application=...)` marks 178 request builders in 51 modules, and both sides now produce
+application=...)` marks 182 request builders in 52 modules, and both sides now produce
 the one `Requirement` type: `PermissionRequirement.requirements()` turns a method's
 declaration into one requirement per flow it can run under, with `directory_roles`
 becoming the bypass a test spells as `bypass_roles`. Nothing calls a method to learn what
@@ -244,6 +244,15 @@ it declares either — the stamp is `method.__required_permissions__`.
 That is step 1 of `design/0002-declared-permissions.md`: a permission matrix assembled
 from declarations instead of typed, which preflight can join with the test declarations so
 a scope is priced by the endpoints it unlocks as well as by the tests it unblocks.
+
+The declarations are ratcheted per service package, not banned: `PENDING` in
+`tests/unit/test_permission_declarations.py` records how many public operations still name
+no permission, and the map only shrinks. Both directions fail — a new undeclared request
+builder raises a count, and a declaration that disappears raises one too. Outlook is absent
+from the map because it is closed: 21 request builders, every one declared, which makes it
+the pilot for reading markers instead of re-stating them in a test. What stays out of scope
+is stated in the test: `runtime` and `migration` orchestrate requests that model methods
+already declare, and the root-level base classes cannot know the type they create.
 
 ### Compared with other SDKs
 

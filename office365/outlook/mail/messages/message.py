@@ -46,12 +46,12 @@ class Message(OutlookItem):
         self.set_property("singleValueExtendedProperties", prop_value)
         return self
 
-    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def _sibling_path(self) -> ResourcePath:
         """Path of a message in the same collection as this one (for create/move/copy results)."""
         parent = self.resource_path.parent if self.resource_path is not None else None
         return ResourcePath(None, parent)
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_forward(
         self,
         to_recipients: Optional[List[Recipient]] = None,
@@ -94,6 +94,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def add_file_attachment(self, name: str, content: bytes | str | None = None, content_type: str | None = None):
         """Attach a file to a message.
 

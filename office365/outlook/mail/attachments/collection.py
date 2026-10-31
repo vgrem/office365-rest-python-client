@@ -80,6 +80,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
             return_type.content_type = content_type
         return return_type
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def resumable_upload(
         self,
         source_path: str,
