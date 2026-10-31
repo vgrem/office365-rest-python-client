@@ -12,6 +12,9 @@ Because one object both *describes* a requirement and *checks* it, the runtime g
 the skip message and the preflight report cannot disagree.
 
 Nothing here sends a request except :meth:`TenantState.of`; everything else is pure.
+
+:class:`Requirement` itself lives in the library, next to the declarations a model
+method makes, so a test and a method state the same fact with the same type.
 """
 
 from __future__ import annotations
@@ -24,6 +27,7 @@ from office365.directory.permissions.guard import (
     _cached_delegated_permissions,
     _cached_directory_roles,
 )
+from office365.directory.permissions.requirement import Requirement
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 
@@ -48,7 +52,11 @@ def forget_cached_tenant_facts() -> None:
 
 @dataclass(frozen=True)
 class TenantState:
-    """The tenant facts a requirement reads; empty sets mean "not asked for"."""
+    """The tenant facts a requirement reads; empty sets mean "not asked for".
+
+    Structurally satisfies :class:`~office365.directory.permissions.requirement.TenantFacts`,
+    so ``Requirement`` can check it without importing the harness.
+    """
 
     delegated: frozenset[str] = frozenset()
     application: frozenset[str] = frozenset()
@@ -76,59 +84,6 @@ class TenantState:
         except ClientRequestException:
             return cls(unverifiable="the permission lookup needs a scope this token does not have")
         return cls(delegated=delegated, application=application, roles=roles, licenses=licenses)
-
-
-@dataclass(frozen=True)
-class Requirement:
-    """A test's precondition, as the decorators accept it.
-
-    Every group is an *any-of*; groups are combined with *and* (a test needs the scope
-    it names and the role it names and the license it names). ``bypass_roles`` is the
-    escape hatch: holding one of them satisfies the whole requirement.
-    """
-
-    delegated: tuple[str, ...] = ()
-    application: tuple[str, ...] = ()
-    roles: tuple[str, ...] = ()
-    licenses: tuple[str, ...] = ()
-    bypass_roles: tuple[str, ...] = ()
-
-    def groups(self) -> list[tuple[str, tuple[str, ...], str]]:
-        """(label, names, state field) for every declared group, in report order."""
-        declared = (
-            ("delegated", self.delegated, "delegated"),
-            ("application", self.application, "application"),
-            ("directory role", self.roles, "roles"),
-            ("license", self.licenses, "licenses"),
-        )
-        return [(label, names, attribute) for label, names, attribute in declared if names]
-
-    def describe(self) -> str:
-        """A one-line statement of what the test needs, for a report or a skip message."""
-        parts = [f"{label}: any of {', '.join(names)}" for label, names, _ in self.groups()]
-        declared = " and ".join(parts)
-        if self.bypass_roles:
-            alternative = f"role: any of {', '.join(self.bypass_roles)}"
-            declared = f"{declared} or {alternative}" if declared else alternative
-        return declared or "no declared permission"
-
-    def shortfall(self, state: TenantState) -> list[tuple[str, tuple[str, ...]]]:
-        """The declared groups ``state`` leaves unmet, as (label, names) — empty when it may run."""
-        if state.unverifiable or (self.bypass_roles and set(self.bypass_roles) & state.roles):
-            return []
-        return [
-            (label, names) for label, names, attribute in self.groups() if not set(names) & getattr(state, attribute)
-        ]
-
-    def unmet(self, state: TenantState) -> list[str]:
-        """The declared groups ``state`` does not satisfy — empty when the test may run."""
-        if state.unverifiable:
-            return [state.unverifiable]
-        return [f"{label}: any of {', '.join(names)}" for label, names in self.shortfall(state)]
-
-    def satisfied_by(self, state: TenantState) -> bool:
-        """Whether ``state`` meets this requirement."""
-        return not self.unmet(state)
 
 
 @dataclass

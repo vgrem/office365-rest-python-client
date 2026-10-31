@@ -234,6 +234,17 @@ tenant one question per declared fact using the library's own
 `office365.directory.permissions.guard` helpers. Nothing calls a test to learn what it
 declares.
 
+A model method carries the same kind of statement. `@require_permission(delegated=...,
+application=...)` marks 178 request builders in 51 modules, and both sides now produce
+the one `Requirement` type: `PermissionRequirement.requirements()` turns a method's
+declaration into one requirement per flow it can run under, with `directory_roles`
+becoming the bypass a test spells as `bypass_roles`. Nothing calls a method to learn what
+it declares either — the stamp is `method.__required_permissions__`.
+
+That is step 1 of `design/0002-declared-permissions.md`: a permission matrix assembled
+from declarations instead of typed, which preflight can join with the test declarations so
+a scope is priced by the endpoints it unlocks as well as by the tests it unblocks.
+
 ### Compared with other SDKs
 
 Mature SDKs separate the two tiers the same way: `azure-sdk-for-python` records

@@ -7,6 +7,8 @@ from typing import Any, Callable, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
+from office365.directory.permissions.requirement import Requirement
+
 P = ParamSpec("P")
 R = TypeVar("R")
 
@@ -21,6 +23,9 @@ class PermissionRequirement:
     Stamped as ``method.__required_permissions__`` by :func:`require_permission`
     and attached to the query the method queues, so a denied request can name
     the missing permission via :meth:`to_hint`.
+
+    :meth:`requirements` restates the same declaration in the vocabulary a live
+    test uses, so one report can list both.
     """
 
     delegated: list[str] = field(default_factory=list)
@@ -28,6 +33,30 @@ class PermissionRequirement:
     directory_roles: list[str] = field(default_factory=list)
     licenses: list[str] = field(default_factory=list)
     notes: str = ""
+
+    def requirements(self) -> tuple[Requirement, ...]:
+        """One :class:`Requirement` per flow this method can run under.
+
+        The two flows are alternatives for the caller rather than conjuncts, so they
+        become two requirements instead of one. A directory role that may also perform
+        the call is a *bypass*: holding it satisfies the whole requirement, it is not
+        one more group to meet.
+        """
+        shared = {
+            "licenses": tuple(self.licenses),
+            "bypass_roles": tuple(self.directory_roles),
+        }
+        flows = [
+            flow
+            for flow in (
+                Requirement(delegated=tuple(self.delegated), **shared),
+                Requirement(application=tuple(self.application), **shared),
+            )
+            if flow.groups()
+        ]
+        if flows or not shared["bypass_roles"]:
+            return tuple(flows)
+        return (Requirement(**shared),)
 
     def to_hint(self) -> str:
         """One-line remediation naming the declared permissions (may be empty).
