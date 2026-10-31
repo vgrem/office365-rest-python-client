@@ -22,6 +22,7 @@ import argparse
 import importlib
 import json
 import sys
+import textwrap
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from inspect import getmembers, isfunction
@@ -201,6 +202,35 @@ def render_plan(plan: list[Grant]) -> str:
     return "\n".join(f"  {grant.label():<{width}} {', '.join(grant.names)}" for grant in plan)
 
 
+def _flow(row: _Row) -> str:
+    """The column value: the flow, and the API when it is not Microsoft Graph.
+
+    ``label()`` spells the resource out in full, which is right in a sentence and 41 columns
+    wide in a table; the short name is the enum member, so no second table of names exists.
+    """
+    requirement = row.requirement
+    flow = "delegated" if requirement.delegated else "application"
+    try:
+        api = ResourceName(requirement.resource).name
+    except ValueError:
+        return requirement.label(flow)
+    return flow if api == ResourceName.Graph.name else f"{flow} ({api})"
+
+
+def _article(word: str) -> str:
+    """``a`` or ``an``, so the alternative reads as a sentence fragment and not a template."""
+    return "an" if word[:1].lower() in "aeiou" else "a"
+
+
+def _group(label: str, names: tuple[str, ...], show_all: bool) -> str:
+    """One any-of group as a cell: the names, or the one name to grant and how many others."""
+    if show_all:
+        spelled = ", ".join(names)
+    else:
+        spelled = names[0] + (f" (+{len(names) - 1})" if len(names) > 1 else "")
+    return spelled if label.startswith(PERMISSION_FLOWS) else f"{label}: {spelled}"
+
+
 def _tests(count: int) -> str:
     """A count with its noun: ``1 test`` is a measurement, ``1 tests`` is a typo."""
     return f"{count} test" if count == 1 else f"{count} tests"
@@ -213,6 +243,7 @@ class _Row:
     requirement: Requirement
     tests: tuple[str, ...]
     state: str
+    facts: TenantState | None
 
 
 class Report:
@@ -229,6 +260,9 @@ class Report:
     #: person reading this wants the ones that matter, not all 149.
     SHOWN = 10
 
+    #: Where a long list of alternatives wraps, hanging under the column it belongs to.
+    WIDTH = 120
+
     def __init__(self, found: list[Needs], states: dict[Requirement, TenantState]):
         self.found = found
         self.states = states
@@ -242,7 +276,7 @@ class Report:
             for requirement, tests in needs.requirements.items():
                 totals.setdefault(requirement, []).extend(tests)
         self.rows = [
-            _Row(requirement, tuple(totals[requirement]), self.state(requirement))
+            _Row(requirement, tuple(totals[requirement]), self.state(requirement), self.states.get(requirement))
             for requirement in sorted(totals, key=lambda item: (-len(totals[item]), item.describe()))
         ]
 
@@ -273,24 +307,57 @@ class Report:
         return [row for row in self.rows if row.state != "met"]
 
     @staticmethod
-    def brief(requirement: Requirement) -> str:
-        """The screen's spelling: the first name that works per group, roles as one word.
+    def _needs(row: _Row, show_all: bool) -> list[str]:
+        """The groups this tenant leaves unmet, one string each: the delta, not the whole rule.
 
-        ``describe()`` spells every alternative -- correct, and 130 columns wide. A
-        blocker line only has to say what to grant, so the alternatives collapse to a
-        count and ``--all`` spells them out.
+        A requirement is a conjunction of any-of groups, and spelling all of it hides the
+        point: a row blocked on a directory role and a licence does not need its scope named
+        again, because that half is already granted. Only the unmet groups are listed, and
+        the flow they belong to is a column, so the name is not repeated either.
+
+        ``--all`` spells every alternative; otherwise each group collapses to the first name
+        and a count, because a line only has to say what to grant.
         """
-        parts = []
-        for label, names, _ in requirement.groups():
-            alternatives = f" (+{len(names) - 1})" if len(names) > 1 else ""
-            parts.append(f"{label}: {names[0]}{alternatives}")
-        declared = " and ".join(parts)
-        if requirement.bypass_roles:
-            declared = f"{declared} or an administrator role" if declared else "an administrator role"
-        return declared or "no declared permission"
+        requirement = row.requirement
+        if row.facts is None or row.state in ("met", "unverified"):
+            # Nothing was left out or nothing can be: either way the whole rule is the answer,
+            # and its groups still fit under the columns instead of in one 130-column sentence.
+            groups = [(label, names) for label, names, _ in requirement.groups()]
+        else:
+            groups = requirement.shortfall(row.facts)
+        return [_group(label, names, show_all) for label, names in groups] or [requirement.describe()]
+
+    def _table(self, rows: list[_Row], show_all: bool, heading: str = "to add") -> list[str]:
+        """The rows as a table: tests, the flow, and what is missing under a ``+``.
+
+        ``+`` is the line that has to be added to the tenant, and an unprefixed line is a
+        requirement already met - the two markers a diff uses, for the same reason. A role
+        that satisfies a whole requirement rides at the end of its first line, where it is
+        the alternative to everything listed under it.
+        """
+        width = max(len(_flow(row)) for row in rows)
+        hanging = " " * (11 + width + 2)
+        lines = [f"  {'tests':>7}  {'flow':<{width}}  {heading if self.states else 'needs'}"]
+        for row in rows:
+            marker = {"missing": "+ ", "unverified": "? "}.get(row.state, "")
+            indent = hanging + "   " * bool(marker)
+            roles = row.requirement.bypass_roles
+            bypass = f"(or {_article(roles[0])} {' / '.join(roles)} role)" if roles and row.state != "met" else ""
+            wrapped: list[list[str]] = []
+            for index, cell in enumerate(self._needs(row, show_all)):
+                lead = hanging if index else f"  {len(row.tests):>7}  {_flow(row):<{width}}  "
+                wrapped.append(textwrap.wrap(f"{lead}{marker}{cell}", width=self.WIDTH, subsequent_indent=indent))
+            if bypass:
+                last = wrapped[0][-1]
+                if len(last) + len(bypass) + 2 <= self.WIDTH:
+                    wrapped[0][-1] = f"{last}  {bypass}"
+                else:
+                    wrapped[0].append(f"{indent}{bypass}")
+            lines.extend(line for group in wrapped for line in group)
+        return lines
 
     def text(self, *, show_all: bool = False) -> str:
-        """The terminal view: the counts, the flows that are not ready, the blockers."""
+        """The terminal view: the counts, the flows that are not ready, and the delta."""
         lines = [
             f"Live-test preflight - {self.tenant or 'no tenant configured'}",
             f"{self.suites} suites, {_tests(self.tests)}, {self.declared} requirements ({len(self.rows)} distinct)",
@@ -307,14 +374,13 @@ class Report:
         if not self.states:
             lines.append("  not verified: --verify resolves them against this tenant")
         shown = self.blocking if show_all else self.blocking[: self.SHOWN]
-        spell = Requirement.describe if show_all else self.brief
-        lines += [f"  {_tests(len(row.tests)):>11}   {spell(row.requirement)}" for row in shown]
+        lines += self._table(shown, show_all)
         hidden = len(self.blocking) - len(shown)
         if hidden:
             lines.append(f"  ... {hidden} with fewer tests; --all spells every alternative")
         met = [row for row in self.rows if row.state == "met"]
         if show_all and met:
-            lines += ["", "  met"] + [f"  {_tests(len(row.tests)):>11}   {row.requirement.describe()}" for row in met]
+            lines += ["", f"  met ({len(met)})", *self._table(met, show_all, heading="granted")]
         if self.states and not self.blocking:
             lines.append("  every declared requirement is met")
         return "\n".join(lines) + "\n"
