@@ -89,7 +89,15 @@ The offline tests are split by what they describe:
 | --- | --- |
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus `test_regressions.py` for the pins that are one assertion long |
 | `tests/tooling` | the code generator under `generator/`, which is development tooling and is not part of the wheel |
-| `tests/test_settings.py` | the `tests/settings.py` configuration loader |
+| `tests/test_settings.py` | the `tests/settings.py` configuration loader and its `.env` grammar |
+| `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts) |
+
+The bootstrap itself has one module per job, and nothing else: `tests/settings.py`
+resolves configuration (`Settings`, the `.env` file, readiness), `tests/setup.py`
+provisions it (the interactive wizard is the only writer of `.env`), and
+`tests/doctor.py` reports it. A value is spelled once — in the `Settings` dataclass —
+and the legacy `tests.site_url` / `tests.test_site_url` spellings are a `__getattr__`
+over its fields, not a list to keep in step.
 
 A test belongs in `tests/unit` when it pins behaviour a user of the library can
 observe; it belongs in `tests/tooling` when it pins how the library is generated.

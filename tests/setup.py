@@ -35,16 +35,15 @@ from typing import Callable, TypeVar
 
 from office365.directory.applications.application import Application
 from office365.graph_client import GraphClient
+from office365.runtime.client_request_exception import ClientRequestException
 
-from tests.settings import settings
+from tests.settings import ENV, derived_urls, settings
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TEST_DIR = Path(__file__).resolve().parent
 CERT_PUBLIC = TEST_DIR / "selfsigncert.crt"
 CERT_PRIVATE = TEST_DIR / "selfsigncert.pem"
-ENV_PATH = PROJECT_ROOT / ".env"
 ENV_BAK = PROJECT_ROOT / ".env.bak"
-ENV_EXAMPLE = PROJECT_ROOT / ".env.example"
 
 DEFAULT_APP_NAME = "office365-rest-python-client"
 _T = TypeVar("_T")
@@ -171,102 +170,27 @@ def _tenant_prefix(tenant: str, upn: str = "") -> str:
 # --------------------------------------------------------------------------- #
 # .env merge
 # --------------------------------------------------------------------------- #
-def _load_env_lines() -> list[str]:
-    source = ENV_PATH if ENV_PATH.is_file() else ENV_EXAMPLE
-    if not source.is_file():
-        return []
-    return source.read_text(encoding="utf-8-sig").splitlines()
-
-
-def _read_env_values() -> dict[str, str]:
-    values: dict[str, str] = {}
-    if not ENV_PATH.is_file():
-        return values
-    for line in ENV_PATH.read_text(encoding="utf-8-sig").splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        key, _, value = stripped.partition("=")
-        values[key.strip()] = value.strip().strip("'\"")
-    return values
-
-
-def merge_env(overrides: dict[str, str], defaults: dict[str, str]) -> str:
-    """Return ``.env`` text with ``overrides`` applied and missing ``defaults`` filled.
-
-    Comments and unrelated keys are preserved. ``overrides`` replace a value in
-    place; ``defaults`` only fill an existing key when it is empty.
-    """
-    lines = _load_env_lines()
-    pending = dict(overrides)
-    fill = dict(defaults)
-    output: list[str] = []
-    for raw in lines:
-        stripped = raw.strip()
-        if stripped and not stripped.startswith("#") and "=" in stripped:
-            key, _, current = stripped.partition("=")
-            key = key.strip()
-            if key in pending:
-                output.append(f"{key}={pending.pop(key)}")
-                continue
-            if key in fill:
-                fallback = fill.pop(key)
-                if not current.strip():
-                    output.append(f"{key}={fallback}")
-                    continue
-        output.append(raw)
-    tail: dict[str, str] = {}
-    tail.update(fill)
-    tail.update(pending)
-    if tail:
-        output.append("")
-        output.append("# Added by python -m tests.setup")
-        output.extend(f"{key}={value}" for key, value in tail.items())
-    return "\n".join(output).rstrip() + "\n"
-
-
-def _mask_secrets(text: str) -> str:
-    lines = []
-    for line in text.splitlines():
-        if line.startswith(("OFFICE365_CLIENT_SECRET=", "OFFICE365_PASSWORD=")):
-            lines.append(f"{line.split('=', 1)[0]}=<hidden>")
-        else:
-            lines.append(line)
-    return "\n".join(lines)
+#: ``.env`` key <- :class:`_Options` field, for the values that are set or absent.
+_ENV_OF_OPTION = {
+    "OFFICE365_ADMIN_USERNAME": "admin",
+    "OFFICE365_USERNAME": "username",
+    "OFFICE365_USERNAME_ALT": "username_alt",
+    "OFFICE365_SHARED_MAILBOX_UPN": "shared_mailbox",
+    "OFFICE365_PASSWORD": "password",
+}
 
 
 def _env_updates(opts: _Options, target_id: str, thumbprint: str, secret_value: str) -> tuple[dict, dict]:
     overrides = {"OFFICE365_TENANT": opts.tenant, "OFFICE365_CLIENT_ID": target_id}
+    overrides |= {key: value for key, field in _ENV_OF_OPTION.items() if (value := getattr(opts, field))}
     if thumbprint:
         overrides["OFFICE365_CERT_THUMBPRINT"] = thumbprint
         overrides["OFFICE365_CERT_PATH"] = str(CERT_PRIVATE.relative_to(PROJECT_ROOT))
-    if opts.admin:
-        overrides["OFFICE365_ADMIN_USERNAME"] = opts.admin
-    if opts.username:
-        overrides["OFFICE365_USERNAME"] = opts.username
-    if opts.username_alt:
-        overrides["OFFICE365_USERNAME_ALT"] = opts.username_alt
-    if opts.shared_mailbox:
-        overrides["OFFICE365_SHARED_MAILBOX_UPN"] = opts.shared_mailbox
-    if opts.password:
-        overrides["OFFICE365_PASSWORD"] = opts.password
     if secret_value:
         overrides["OFFICE365_CLIENT_SECRET"] = secret_value
 
-    defaults: dict[str, str] = {}
-    prefix = _tenant_prefix(opts.tenant, opts.username)
-    if prefix:
-        base = f"https://{prefix}.sharepoint.com"
-        defaults.update(
-            {
-                "OFFICE365_TENANT_PREFIX": prefix,
-                "OFFICE365_ROOT_SITE_URL": base,
-                "OFFICE365_SITE_URL": base,
-                "OFFICE365_TEAM_SITE_URL": f"{base}/sites/team",
-                "OFFICE365_ADMIN_SITE_URL": f"https://{prefix}-admin.sharepoint.com",
-                "OFFICE365_CONTENT_TYPE_HUB_URL": f"{base}/sites/contentTypeHub",
-            }
-        )
+    derived = derived_urls(_tenant_prefix(opts.tenant, opts.username))
+    defaults = {key: value for key, value in derived.items() if value}
     if opts.sites_scope == "selected" and opts.site_urls:
         defaults["OFFICE365_SITE_URL"] = opts.site_urls[0]
         defaults["OFFICE365_TEAM_SITE_URL"] = opts.site_urls[0]
@@ -275,15 +199,15 @@ def _env_updates(opts: _Options, target_id: str, thumbprint: str, secret_value: 
 
 def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: str, *, dry_run: bool) -> None:
     overrides, defaults = _env_updates(opts, target_id, thumbprint, secret_value)
-    text = merge_env(overrides, defaults)
+    text = ENV.merge(overrides, defaults)
     if dry_run:
         print("== .env (dry run; nothing written) ==")
-        print(_mask_secrets(text))
+        print(ENV.redact(text))
         return
-    if ENV_PATH.is_file():
-        shutil.copy2(ENV_PATH, ENV_BAK)
-    ENV_PATH.write_text(text, encoding="utf-8")
-    print(f"Wrote {ENV_PATH.relative_to(PROJECT_ROOT)} (backup: {ENV_BAK.name})")
+    if ENV.path.is_file():
+        shutil.copy2(ENV.path, ENV_BAK)
+    ENV.path.write_text(text, encoding="utf-8")
+    print(f"Wrote {ENV.path.relative_to(PROJECT_ROOT)} (backup: {ENV_BAK.name})")
     if not secret_value:
         print(
             "Note: the 'app-only' (client secret) flow is not configured. Create one with\n"
@@ -296,28 +220,29 @@ def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: st
 # --------------------------------------------------------------------------- #
 # Options / Graph actions
 # --------------------------------------------------------------------------- #
+#: ``--flag`` name <- ``Settings`` field, for the two that are spelled differently.
+_SETTINGS_FIELD = {"admin": "admin_username"}
+
+
+def _required(args: argparse.Namespace, parser: argparse.ArgumentParser, attr: str, prompt: str) -> str:
+    """A value the wizard cannot proceed without: flag, then ``.env``, then prompt."""
+    field = _SETTINGS_FIELD.get(attr, attr)
+    if value := getattr(args, attr) or getattr(settings, field):
+        return value
+    if args.yes:
+        parser.error(f"--{attr.replace('_', '-')} is required with --yes")
+    value = _ask(prompt)
+    if not value:
+        parser.error(f"--{attr.replace('_', '-')} is required")
+    return value
+
+
 def _resolve_core(args: argparse.Namespace, parser: argparse.ArgumentParser) -> tuple[str, str, str]:
-    tenant = args.tenant or settings.tenant
-    if not tenant:
-        if args.yes:
-            parser.error("--tenant is required with --yes")
-        tenant = _ask("Tenant (domain or id)")
-    if not tenant:
-        parser.error("--tenant is required")
-
-    client_id = args.client_id or settings.client_id
-    if not client_id:
-        if args.yes:
-            parser.error("--client-id is required with --yes")
-        client_id = _ask("Sign-in app (client) ID")
-    if not client_id:
-        parser.error("--client-id is required")
-
+    tenant = _required(args, parser, "tenant", "Tenant (domain or id)")
+    client_id = _required(args, parser, "client_id", "Sign-in app (client) ID")
     admin = args.admin or settings.admin_username
-    if args.interactive and not admin and not args.yes:
-        admin = _ask("Admin UPN (interactive sign-in)")
     if args.interactive and not admin:
-        parser.error("--admin is required with --interactive")
+        admin = _required(args, parser, "admin", "Admin UPN (interactive sign-in)")
     return tenant, client_id, admin
 
 
@@ -357,7 +282,7 @@ def _resolve_secret(args: argparse.Namespace, existing_values: dict[str, str]) -
     """
     if args.no_secret:
         return False
-    if args.with_secret:
+    if args.with_secret or args.rotate_secret:
         return True
     if args.yes:
         return False
@@ -376,7 +301,7 @@ def _resolve_options(
         tenant=tenant,
         client_id=client_id,
         admin=admin,
-        app_name=args.app_name or DEFAULT_APP_NAME,
+        app_name=args.app_name,
         create_new=args.new_app,
         interactive=args.interactive,
         force=args.force,
@@ -395,31 +320,23 @@ def _resolve_options(
 
 
 def _try(call: Callable[[], _T], fallback: _T) -> _T:
+    """A discovery call the wizard can live without: a missing grant answers ``fallback``."""
     try:
         return call()
-    except Exception as exc:  # noqa: BLE001 - discovery is best-effort; the caller falls back
-        message = str(exc).splitlines()[0] if str(exc) else exc.__class__.__name__
-        print(f"  (lookup skipped: {message})")
+    except ClientRequestException as exc:
+        print(f"  (lookup skipped: {str(exc).splitlines()[0] or exc.__class__.__name__})")
         return fallback
 
 
 def _signed_in_upn(client: GraphClient) -> str:
     me = _try(lambda: client.me.get().execute_query(), None)
-    if me is None:
-        return ""
-    return getattr(me, "user_principal_name", "") or ""
+    return me.user_principal_name or "" if me is not None else ""
 
 
-def _list_users(client: GraphClient) -> list[str]:
-    users = _try(lambda: client.users.top(25).get().execute_query(), None)
-    if users is None:
-        return []
-    upns: list[str] = []
-    for user in users:
-        upn = getattr(user, "user_principal_name", "") or ""
-        if upn:
-            upns.append(upn)
-    return upns
+def _list_users(client: GraphClient, limit: int = 25) -> list[str]:
+    """UPNs offered as candidates when picking the secondary user / shared mailbox."""
+    users = _try(lambda: client.users.select(["userPrincipalName"]).top(limit).get().execute_query(), None)
+    return [user.user_principal_name for user in users or [] if user.user_principal_name]
 
 
 def _apply_discovery(opts: _Options, upn: str) -> None:
@@ -521,7 +438,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--admin", help="admin UPN (interactive sign-in and .env)")
     parser.add_argument("--interactive", action="store_true", help="browser sign-in instead of the device code flow")
     parser.add_argument("--new-app", action="store_true", help="provision or reuse a dedicated app (by --app-name)")
-    parser.add_argument("--app-name", help="display name for the dedicated app (--new-app) / certificate")
+    parser.add_argument(
+        "--app-name", default=DEFAULT_APP_NAME, help="display name for the dedicated app (--new-app) / certificate"
+    )
     parser.add_argument("--reuse-cert", action="store_true", help="keep the existing local certificate")
     parser.add_argument("--generate-cert", action="store_true", help="generate a new certificate")
     parser.add_argument("--force", action="store_true", help="regenerate and re-upload the certificate")
@@ -558,7 +477,7 @@ def _dry_run(opts: _Options, existing_values: dict[str, str]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
-    existing_values = _read_env_values()
+    existing_values = ENV.read()
     opts = _resolve_options(args, parser, existing_values)
 
     print(settings.format_readiness())
