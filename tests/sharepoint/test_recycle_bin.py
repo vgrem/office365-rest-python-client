@@ -7,6 +7,7 @@ from typing import ClassVar, Optional
 
 from office365.sharepoint.files.file import File
 from office365.sharepoint.recyclebin.item_collection import RecycleBinItemCollection
+from office365.sharepoint.sites.site import Site
 from office365.sharepoint.webs.web import Web
 
 from tests.decorators import requires_call
@@ -59,6 +60,7 @@ class TestSharePointRecycleBin(SPTestCase):
         items_after = self.client.web.recycle_bin.get().execute_query()
         self.assertEqual(len(items_after), len(items) - 1)
 
+    @requires_call(Site.get_recycle_bin_items, flow="application")
     def test_04_list_site_recycle_bin_items(self):
         """List site-level recycle bin items."""
         result = self.client.site.get_recycle_bin_items().execute_query()

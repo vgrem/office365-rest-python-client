@@ -19,12 +19,19 @@ word instead of repeating six lines and the resource name:
 The level is a claim about the *weakest* grant that works, so an endpoint that only reads
 declares ``READ`` even though ``MANAGE`` would satisfy it: over-claiming makes a live test skip
 on a tenant that could have run it.
+
+A few operations reach past one site collection - the migration API, bring-your-own-key, hub
+site registration - and no rung covers them on its own: they also want the caller to be a
+SharePoint Administrator. Those pass ``role="SharePoint Administrator"``, which declares the
+role as the alternative it is rather than as another name to grant:
+
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
 """
 
 from __future__ import annotations
 
 from enum import Enum
-from typing import Callable, TypeVar
+from typing import Callable, Optional, TypeVar
 
 from office365.permissions import ResourceName, require_permission
 
@@ -62,8 +69,13 @@ class SiteLevel(int, Enum):
         return _APPLICATION[self.value :]
 
 
-def site_access(level: SiteLevel) -> Callable[[F], F]:
+def site_access(level: SiteLevel, role: Optional[str] = None) -> Callable[[F], F]:
     """Declare a SharePoint call as needing ``level``, or any rung above it.
+
+    ``role`` names an Entra ID directory role that also satisfies the call - the escape hatch
+    for an operation that reaches past the site collection, where the permission alone does not
+    decide. Holding it satisfies the whole declaration, so it is stated as an alternative and
+    never as a name to grant.
 
     Thin on purpose: it fills in the two flow names and the resource, and hands the rest to
     :func:`~office365.permissions.declaration.require_permission`, which owns what a
@@ -72,5 +84,6 @@ def site_access(level: SiteLevel) -> Callable[[F], F]:
     return require_permission(
         delegated=level.delegated,
         application=level.application,
+        directory_roles=(role,) if role else (),
         resource=ResourceName.SharePoint,
     )

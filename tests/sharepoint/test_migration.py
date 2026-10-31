@@ -5,7 +5,9 @@ from typing import ClassVar, Optional
 from office365.sharepoint.sites.azure_container_Info import (
     ProvisionedTemporaryAzureContainerInfo,
 )
+from office365.sharepoint.sites.site import Site
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -14,6 +16,7 @@ class TestMigration(SPTestCase):
 
     azure_container_info: ClassVar[Optional[ProvisionedTemporaryAzureContainerInfo]] = None
 
+    @requires_call(Site.provision_temporary_azure_container, flow="application")
     def test_01_provision_temporary_azure_container(self):
         """Provision a temporary Azure container"""
         result = self.client.site.provision_temporary_azure_container().execute_query()
@@ -29,6 +32,7 @@ class TestMigration(SPTestCase):
         result = MigrationCenterStorage(self.client).get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(Site.get_copy_job_progress, flow="application")
     def test_03_get_copy_job_progress(self):
         """Get copy job progress"""
         result = self.client.site.get_copy_job_progress().execute_query()

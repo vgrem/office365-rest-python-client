@@ -38,6 +38,7 @@ from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.onboarding.customerkeyinfo import CustomerKeyInfo
 from office365.sharepoint.onboarding.customerkeystatusinfo import CustomerKeyStatusInfo
 from office365.sharepoint.onboarding.customerkeyvaultinfo import CustomerKeyVaultInfo
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
 from office365.sharepoint.principal.groups.group import Group
 from office365.sharepoint.principal.users.user import User
@@ -110,6 +111,7 @@ class Site(Entity):
     def __repr__(self):
         return self.url or self.entity_type_name
 
+    @site_access(SiteLevel.WRITE)
     def cancel_delete_file_versions(self) -> Self:
         """Cancels the pending deletion of file versions in the site collection.
 
@@ -120,12 +122,14 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def cancel_set_version_policy_for_doc_libs(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "CancelSetVersionPolicyForDocLibs")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_copy_job(self, export_object_uris, destination_uri, options=None) -> ClientResult[CopyMigrationInfo]:
         """"""
         return_type = ClientResult(self.context, CopyMigrationInfo())
@@ -134,6 +138,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_migration_ingestion_job(
         self,
         g_web_id: Union[str, UUID],
@@ -166,6 +171,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_migration_job(
         self,
         g_web_id: Union[str, UUID] | None = None,
@@ -195,6 +201,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_migration_job_encrypted(
         self,
         g_web_id: Union[str, UUID],
@@ -231,6 +238,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_migration_job_progress(self, job_id: str, next_token: str = "0") -> ClientResult[MigrationJobProgress]:
         """Retrieves a page of migration job progress events.
 
@@ -248,6 +256,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def provision_migration_containers(self) -> ClientResult[ProvisionedMigrationContainersInfo]:
         """Provisions SharePoint-provided Azure containers for migration content and manifest.
 
@@ -260,6 +269,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def provision_migration_queue(self) -> ClientResult[ProvisionedMigrationQueueInfo]:
         """Provisions a SharePoint-provided Azure queue for migration job progress."""
         return_type = ClientResult(self.context, ProvisionedMigrationQueueInfo())
@@ -267,6 +277,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def create_preview_site(self, upgrade: Optional[bool] = None, sendemail: Optional[str] = None) -> Self:
         """Schedules the creation of an evaluation copy of the site collection for the purposes of evaluating an upgrade
         of the site collection to a newer version
@@ -309,6 +320,7 @@ class Site(Entity):
         self.ensure_property("Id").after_execute(lambda _: _check_is_deletable())
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def extend_upgrade_reminder_date(self) -> Self:
         """
         Extend the upgrade reminder date for this site collection, so that site collection administrators will
@@ -350,6 +362,7 @@ class Site(Entity):
         self.get_available_tags().after_execute(_loaded)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_block_download_policy_for_files_data(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
@@ -357,6 +370,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_migration_status(self) -> EntityCollection[SPMigrationJobStatus]:
         """"""
         return_type = EntityCollection(self.context, SPMigrationJobStatus)
@@ -364,6 +378,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_copy_job_progress(self, copy_job_info=None) -> ClientResult[CopyJobProgress]:
         """Args:
         copy_job_info: Optional copyJobInfo object.
@@ -437,6 +452,7 @@ class Site(Entity):
         self.ensure_property("Url").after_execute(lambda _: _site_loaded())
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_changes(self, query=None) -> ChangeCollection:
         """Returns the collection of all changes from the change log that have occurred within the scope of the site,
         based on the specified query.
@@ -452,6 +468,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_recycle_bin_items(self, row_limit: int = 100, is_ascending: bool = True) -> RecycleBinItemCollection:
         """Returns a collection of recycle bin items based on the specified query.
 
@@ -478,6 +495,7 @@ class Site(Entity):
         self.ensure_property("Id").after_execute(lambda _: _get_site_administrators())
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_web_path(self, site_id: str, web_id: str) -> ClientResult[SPResPath]:
         """Args:
         site_id (int): The site identifier
@@ -489,6 +507,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_web_templates(self, lcid=1033, override_compat_level=0) -> WebTemplateCollection:
         """Returns the collection of site definitions that are available for creating
         Web sites within the site collection.
@@ -507,6 +526,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def invalidate(self) -> Self:
         """
         Invalidates cached upgrade information about the site collection so that this information will be
@@ -516,6 +536,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def needs_upgrade_by_type(self, version_upgrade: bool, recursive: bool) -> ClientResult[bool]:
         """Returns "true" if this site collection requires site collection upgrade of the specified type;
         otherwise, "false"
@@ -531,6 +552,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def join_hub_site(
         self, hub_site_id: str, approval_token: Optional[str] = None, approval_correlation_id: Optional[str] = None
     ) -> Self:
@@ -551,6 +573,7 @@ class Site(Entity):
         return self
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_url_by_id(context: ClientContext, site_id: str, stop_redirect: bool = False) -> ClientResult[str]:
         """Gets Site Url By Id
 
@@ -566,6 +589,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_url_by_id_for_web(context, site_id: str, stop_redirect: bool, web_id: str) -> ClientResult[str]:
         """Gets Site Url By Id
 
@@ -583,6 +607,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def exists(context, url: str) -> ClientResult[bool]:
         """Determine whether site exists
 
@@ -616,6 +641,7 @@ class Site(Entity):
         """
         return List(self.context, ServiceOperationPath("getCatalog", [int(type_catalog)], self.resource_path))
 
+    @site_access(SiteLevel.READ)
     def open_web(self, str_url: str) -> Web:
         """Returns the specified Web site from the site collection.
 
@@ -629,6 +655,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def open_web_by_id(self, web_id: str) -> Web:
         """Returns the specified Web site from the site collection.
 
@@ -640,6 +667,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def provision_temporary_azure_container(self) -> ClientResult[ProvisionedTemporaryAzureContainerInfo]:
         """"""
         return_type = ClientResult(self.context, ProvisionedTemporaryAzureContainerInfo())
@@ -647,12 +675,14 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def process_storage_metrics_changes(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "ProcessStorageMetricsChanges")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def get_storage_metrics(self) -> StorageMetrics:
         """Gets storage-related metrics for the site collection.
 
@@ -664,6 +694,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def register_hub_site(self, create_info: Optional[HubSiteCreationInformation] = None) -> Self:
         """Registers an existing site as a hub site.
 
@@ -674,6 +705,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def run_health_check(
         self, rule_id: Optional[str] = None, repair: Optional[bool] = None, run_always: Optional[bool] = None
     ) -> SiteHealthSummary:
@@ -693,12 +725,14 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def unregister_hub_site(self) -> Self:
         """Disables the hub site feature on a site."""
         qry = ServiceOperationQuery(self, "UnRegisterHubSite")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def update_client_object_model_use_remote_apis_permission_setting(self, require_use_remote_apis: bool) -> Self:
         """Sets whether the client-side object model (CSOM) requests that are made in the context of any site inside
         the site collection require UseRemoteAPIs permission.
@@ -1376,6 +1410,7 @@ class Site(Entity):
             super().set_property(name, value, persist_changes)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_copy_jobs(
         self, export_object_uris: list[str], destination_uri: str, options: CopyMigrationOptions
     ) -> ClientResult[ClientValueCollection[CopyMigrationInfo]]:
@@ -1402,6 +1437,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def create_preview_sp_site(self, upgrade: bool, sendemail: bool) -> Self:
         """CreatePreviewSPSite operation.
 
@@ -1415,6 +1451,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_sp_async_read_job(
         self,
         url: str,
@@ -1450,6 +1487,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def create_sp_async_read_job_with_multi_url(
         self,
         urls: list[str],
@@ -1485,6 +1523,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def delete_migration_job(self, id_: UUID) -> ClientResult[bool]:
         """DeleteMigrationJob operation.
 
@@ -1496,6 +1535,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def enqueue_apply_sensitivity_label_work(
         self, work_item_information: AutoLabellingWorkInformation
     ) -> ClientResult[EnqueueJobInformation]:
@@ -1516,6 +1556,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_bring_your_own_key_recovery_key_mode(self) -> ClientResult[int]:
         """GetBringYourOwnKeyRecoveryKeyMode operation."""
         return_type = ClientResult(self.context, int())
@@ -1523,6 +1564,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_bring_your_own_key_site_status(self) -> ClientResult[CustomerKeyStatusInfo]:
         """GetBringYourOwnKeySiteStatus operation."""
         return_type = ClientResult(self.context, CustomerKeyStatusInfo())
@@ -1530,6 +1572,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_bring_your_own_key_tenant_status(self) -> ClientResult[CustomerKeyStatusInfo]:
         """GetBringYourOwnKeyTenantStatus operation."""
         return_type = ClientResult(self.context, CustomerKeyStatusInfo())
@@ -1538,6 +1581,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_ebar_protection_units_exist_by_ids(
         context: ClientContext, site_subscription_id: UUID, protection_unit_ids: list[UUID]
     ) -> ClientResult[dict]:
@@ -1558,6 +1602,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_ebar_restore_session_exists_by_id(
         context: ClientContext, site_subscription_id: UUID, restore_session_id: UUID
     ) -> ClientResult[bool]:
@@ -1574,6 +1619,7 @@ class Site(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_hub_site_join_approval_correlation_id(self) -> ClientResult[str]:
         """GetHubSiteJoinApprovalCorrelationId operation."""
         return_type = ClientResult(self.context, str())
@@ -1581,6 +1627,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_migration_job_status(self, id_: UUID) -> ClientResult[int]:
         """GetMigrationJobStatus operation.
 
@@ -1592,6 +1639,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_progress_for_delete_file_versions(self) -> ClientResult[str]:
         """GetProgressForDeleteFileVersions operation."""
         return_type = ClientResult(self.context, str())
@@ -1599,6 +1647,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_progress_for_expire_file_versions_by_schedule(self, schedule_file_path: ResourcePath) -> ClientResult[str]:
         """GetProgressForExpireFileVersionsBySchedule operation.
 
@@ -1617,6 +1666,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_progress_for_file_version_expiration_report(self, report_file_url: str) -> ClientResult[str]:
         """GetProgressForFileVersionExpirationReport operation.
 
@@ -1635,6 +1685,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_progress_for_set_version_policy_for_doc_libs(self) -> ClientResult[str]:
         """GetProgressForSetVersionPolicyForDocLibs operation."""
         return_type = ClientResult(self.context, str())
@@ -1643,6 +1694,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_sites_exist_by_site_ids(
         context: ClientContext, site_subscription_id: UUID, site_ids: list[UUID]
     ) -> ClientResult[dict]:
@@ -1660,6 +1712,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role="SharePoint Administrator")
     def get_sites_exist_by_site_urls(
         context: ClientContext, site_subscription_id: UUID, urls: list[str]
     ) -> ClientResult[dict]:
@@ -1676,6 +1729,7 @@ class Site(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def multi_geo_copy_job(self, job_id: UUID, user_id: int, binary_payload: bytes) -> Self:
         """MultiGeoCopyJob operation.
 
@@ -1695,6 +1749,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def needs_upgrade_by_type_from_spo_shell(self, version_upgrade: bool, recursive: bool) -> ClientResult[bool]:
         """NeedsUpgradeByTypeFromSpoShell operation.
 
@@ -1707,6 +1762,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def onboard_tenant_for_bring_your_own_key(self, key_info: CustomerKeyInfo) -> ClientResult[CustomerKeyStatusInfo]:
         """OnboardTenantForBringYourOwnKey operation.
 
@@ -1720,6 +1776,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def on_hub_site_join_request_approved(self, joining_site_id: UUID) -> ClientResult[str]:
         """OnHubSiteJoinRequestApproved operation.
 
@@ -1733,6 +1790,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def on_hub_site_join_request_canceled(self, approval_correlation_id: str) -> Self:
         """OnHubSiteJoinRequestCanceled operation.
 
@@ -1745,6 +1803,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def on_hub_site_join_request_started(self, approval_correlation_id: str) -> Self:
         """OnHubSiteJoinRequestStarted operation.
 
@@ -1757,6 +1816,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def recover_tenant_for_bring_your_own_key(self, key_info: CustomerKeyInfo) -> ClientResult[CustomerKeyStatusInfo]:
         """RecoverTenantForBringYourOwnKey operation.
 
@@ -1770,6 +1830,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def roll_tenant_bring_your_own_key(
         self, key_type: int, key_vault_info: CustomerKeyVaultInfo
     ) -> ClientResult[CustomerKeyStatusInfo]:
@@ -1791,6 +1852,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def run_upgrade_site_session(self, version_upgrade: bool, queue_only: bool, send_email: bool) -> Self:
         """RunUpgradeSiteSession operation.
 
@@ -1810,6 +1872,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_block_download_policy_for_files(self, block_download_policy_file_type_ids: list[str]) -> Self:
         """SetBlockDownloadPolicyForFiles operation.
 
@@ -1827,6 +1890,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_is_contributor_owner_enabled_property_for_default_doc_lib(
         self,
         property_value: bool,
@@ -1859,6 +1923,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def start_delete_file_versions(self, delete_older_than_days: int) -> Self:
         """StartDeleteFileVersions operation.
 
@@ -1871,6 +1936,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_delete_file_versions_by_mode(self, batch_delete_parameters: FileVersionBatchDeleteParameters) -> Self:
         """StartDeleteFileVersionsByMode operation.
 
@@ -1883,6 +1949,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_expire_file_versions_by_schedule(self, schedule_file_path: ResourcePath) -> Self:
         """StartExpireFileVersionsBySchedule operation.
 
@@ -1895,6 +1962,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_file_version_expiration_report(self, report_file_url: str) -> Self:
         """StartFileVersionExpirationReport operation.
 
@@ -1907,6 +1975,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def start_set_version_policy_for_doc_libs(
         self,
         enable_auto_trim: bool,
@@ -1938,6 +2007,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
     def update_inactive_site_properties(self, operation: str, execution_id: int) -> ClientResult[UpdateCard]:
         """UpdateInactiveSiteProperties operation.
 
@@ -1957,6 +2027,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def validate_hub_site_join_approval_token(self, joining_site_id: UUID, approval_token: str) -> ClientResult[bool]:
         """ValidateHubSiteJoinApprovalToken operation.
 

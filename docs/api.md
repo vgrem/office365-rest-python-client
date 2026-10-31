@@ -347,6 +347,16 @@ from office365.sharepoint.permissions import SiteLevel, site_access
 def add_item(self, creation_information): ...
 ```
 
+A handful of operations reach past one site collection — the migration API, hub site
+registration, bring-your-own-key — where no rung is enough on its own and the caller must
+also be a SharePoint administrator. `site_access` takes that role as the alternative it is,
+so it is checked but never added to the list of things to grant:
+
+```python
+@site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+def register_hub_site(self): ...
+```
+
 Use `@require_permission(..., resource=ResourceName.SharePoint)` directly when a call
 needs a name outside that ladder, such as `TermStore.Read.All` or `Sites.Selected`.
 

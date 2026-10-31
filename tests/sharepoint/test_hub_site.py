@@ -3,7 +3,9 @@ from __future__ import annotations
 from typing import ClassVar
 
 from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
+from office365.sharepoint.sites.site import Site
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -18,6 +20,7 @@ class TestHubSite(SPTestCase):
         cls.target_site = cls.client.site.get().execute_query()
         cls.is_hub_site = cls.target_site.is_hub_site or cls.target_site.hub_site_id is not None
 
+    @requires_call(Site.register_hub_site, flow="application")
     def test_01_register_hub_site(self):
         """Register the site as a hub site"""
         if self.is_hub_site:
@@ -30,6 +33,7 @@ class TestHubSite(SPTestCase):
         result = SPHubSitesUtility(self.client).get_hub_sites().execute_query()
         self.assertGreater(len(result), 0)
 
+    @requires_call(Site.unregister_hub_site, flow="application")
     def test_03_unregister_hub_site(self):
         """Unregister the hub site"""
         if self.is_hub_site:

@@ -18,6 +18,7 @@ from tests import (
     test_tenant,
     test_user_principal_name_alt,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -32,6 +33,7 @@ class TestSite(SPTestCase):
         self.assertIs(site.is_property_available("Url"), True, "Site resource was not requested")
         self.assertIs(site.is_property_available("RootWeb"), False)
 
+    @requires_call(Site.exists, flow="application")
     def test_02_if_site_exists(self):
         """Check if a site exists at the current URL."""
         site_url = self.client.site.url
@@ -39,6 +41,7 @@ class TestSite(SPTestCase):
         result = Site.exists(self.client, site_url).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Site.get_url_by_id, flow="application")
     def test_03_get_site_by_id(self):
         """Get site URL by site ID."""
         site_id = self.client.site.id
@@ -56,6 +59,7 @@ class TestSite(SPTestCase):
         result = self.client.site.get_catalog(ListTemplateType.AppDataCatalog).get().execute_query()
         self.assertIsNotNone(result.title)
 
+    @requires_call(Site.get_web_templates, flow="application")
     def test_06_get_web_templates(self):
         """Get available web templates for the site."""
         result = self.client.site.get_web_templates().execute_query()
@@ -66,6 +70,7 @@ class TestSite(SPTestCase):
         result = self.client.site.get_site_logo().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Site.open_web_by_id, flow="application")
     def test_08_open_web_by_id(self):
         """Open a child web by its ID."""
         web = self.client.web.get().execute_query()

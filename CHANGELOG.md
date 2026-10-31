@@ -350,6 +350,24 @@ introduced.
   suites derive their precondition from the declaration. The one operation left unmarked is
   the private `ListItem._set_taxonomy_field_value`: a helper that is not an entry point names
   nothing, so it stays in the debt.
+- **`Site` declares 70 methods, and 31 of them needed a second answer.** 39 stay inside the
+  site collection — `exists`, `open_web`, `get_web_templates` and the four `get_progress_for_*`
+  readers take `READ`, the version-policy and block-download calls `MANAGE` or `WRITE`,
+  `run_upgrade_site_session` and `create_preview_site` `FULL_CONTROL`. The other 31 act on the
+  tenant: the migration API, copy jobs, bring-your-own-key, hub site registration,
+  `update_inactive_site_properties`. No rung grants those on its own — they also want a
+  SharePoint administrator — so `site_access` grew one optional argument and they read
+  `@site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")`, the role declared
+  as the *alternative* it is (`Sites.FullControl.All` still grants provisioning, and an
+  administrator needs no grant at all). The 11 tenant-scope *reads* among them name `READ` and
+  the role, following the same rule as everywhere else: the weakest grant that works. Debt
+  1,952 → 1,882, and 12 live tests across 6 suites derive their precondition from the
+  declaration. This corrected a harness assumption too: a bypass role the client cannot look
+  up — a SharePoint-only suite has no Graph surface to read directory roles from — used to make
+  the whole requirement unverifiable, so four tests skipped for a reason that had nothing to do
+  with the tenant. An alternative that cannot be checked is not a permission that is missing,
+  and the names still decide; a role or SKU the requirement *holds* is part of the answer, so
+  failing to read that is still unverifiable rather than unmet.
 
 ### Changed
 

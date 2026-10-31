@@ -81,23 +81,37 @@ class TenantState:
         requirement through it, where a Graph grant read answers "not granted here" - correctly,
         for the API it was asked about. And it cannot price a grant, because a scope that was
         never granted appears in no token.
+
+        Roles and SKUs are read last, and failing to read them only spoils the answer when the
+        requirement *holds* one: a bypass role is an alternative the names can stand without.
         """
         proven = _proven_by_token(client, requirement)
         delegated: frozenset[str] = proven if proven and requirement.delegated else frozenset()
         application: frozenset[str] = proven if proven and requirement.application else frozenset()
-        roles: frozenset[str] = frozenset()
-        licenses: frozenset[str] = frozenset()
         try:
             if proven is None:
                 delegated, application = _read_grants(client, client_id, requirement)
-            if requirement.roles or requirement.bypass_roles:
-                roles = frozenset(role.display_name for role in _cached_directory_roles(client))
-            if requirement.licenses:
-                licenses = frozenset(_cached_licenses(client))
         except AttributeError:  # a SharePoint-only client has no Graph surface to read grants from
             return cls(unverifiable="reading the tenant's grants needs a Microsoft Graph client")
         except ClientRequestException:
             return cls(unverifiable="the permission lookup needs a scope this token does not have")
+        roles: frozenset[str] = frozenset()
+        licenses: frozenset[str] = frozenset()
+        try:
+            if requirement.roles or requirement.bypass_roles:
+                roles = frozenset(role.display_name for role in _cached_directory_roles(client))
+            if requirement.licenses:
+                licenses = frozenset(_cached_licenses(client))
+        except (AttributeError, ClientRequestException) as exc:
+            # Roles and SKUs are the only facts that can be unprovable without making the whole
+            # answer unknown, because only they can be stated as an *alternative*: a bypass role
+            # says "or this", and the names decide on their own when the role cannot be read. A
+            # role or SKU the requirement *holds* is part of the answer, so failing to read it
+            # is unverifiable rather than unmet.
+            if requirement.roles or requirement.licenses:
+                if isinstance(exc, AttributeError):
+                    return cls(unverifiable="reading the tenant's grants needs a Microsoft Graph client")
+                return cls(unverifiable="the permission lookup needs a scope this token does not have")
         return cls(delegated=delegated, application=application, roles=roles, licenses=licenses)
 
 
