@@ -28,7 +28,6 @@ SHAREPOINT_SP = {
     "id": SHAREPOINT_SP_ID,
     "appId": SHAREPOINT_APP_ID,
     "appRoles": [{"id": ROLE_ID, "value": "Sites.Selected"}],
-    "appRoleAssignedTo": [],
 }
 
 
@@ -45,13 +44,25 @@ def _methods(transport: RecordingTransport) -> list[str]:
 
 
 def test_application_grant_resolves_resource_by_name():
-    client, transport = _client([APP_LIST, {"value": [SHAREPOINT_SP]}, CLIENT_SP, {"id": "assignment"}])
+    client, transport = _client([APP_LIST, {"value": [SHAREPOINT_SP]}, CLIENT_SP, {"value": []}, {"id": "assignment"}])
     app = client.applications.ensure("my-app").execute_query()
 
     app.grant_permissions("Sites.Selected", ResourceName.SharePoint).execute_query()
 
-    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Post]
+    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Post]
     assert "$filter=displayName eq 'Office 365 SharePoint Online'" in transport.requests[1].url
+    assert transport.requests[-1].data["appRoleId"] == ROLE_ID
+    assert transport.requests[-1].data["resourceId"] == SHAREPOINT_SP_ID
+
+
+def test_granting_a_role_the_client_already_holds_is_not_posted_again():
+    held = {"id": "assignment-selected", "appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID}
+    client, transport = _client([APP_LIST, {"value": [SHAREPOINT_SP]}, CLIENT_SP, {"value": [held]}])
+    app = client.applications.ensure("my-app").execute_query()
+
+    app.grant_permissions("Sites.Selected", ResourceName.SharePoint).execute_query()
+
+    assert HttpMethod.Post not in _methods(transport)
 
 
 def test_service_principal_revoke_only_removes_the_requested_role():
@@ -61,17 +72,18 @@ def test_service_principal_revoke_only_removes_the_requested_role():
             {"id": ROLE_ID, "value": "Sites.Selected"},
             {"id": OTHER_ROLE_ID, "value": "Sites.Read.All"},
         ],
-        "appRoleAssignedTo": [
-            {"id": "assignment-selected", "appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID},
-            {"id": "assignment-read", "appRoleId": OTHER_ROLE_ID, "principalId": CLIENT_SP_ID},
-        ],
     }
-    client, transport = _client([resource, CLIENT_SP, {"http_status": 204}])
+    # the filtered read returns a neighbour too, so the delete must be scoped by role itself
+    assigned = [
+        {"id": "assignment-selected", "appRoleId": ROLE_ID, "principalId": CLIENT_SP_ID},
+        {"id": "assignment-read", "appRoleId": OTHER_ROLE_ID, "principalId": CLIENT_SP_ID},
+    ]
+    client, transport = _client([resource, CLIENT_SP, {"value": assigned}, {"http_status": 204}])
 
     client.service_principals.get_by_app_id(SHAREPOINT_APP_ID).revoke_application_permissions(
         CLIENT_APP_ID, "Sites.Selected"
     ).execute_query()
 
-    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Delete]
+    assert _methods(transport) == [HttpMethod.Get, HttpMethod.Get, HttpMethod.Get, HttpMethod.Delete]
     assert transport.requests[-1].url.endswith("appRoleAssignedTo/assignment-selected")
     assert all("assignment-read" not in request.url for request in transport.requests)

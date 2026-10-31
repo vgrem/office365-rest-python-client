@@ -483,14 +483,9 @@ def test_has_application_permissions_answers_from_the_app_roles():
     client = _graph(
         [
             {"value": [graph_sp]},
-            {
-                "id": "graph-sp",
-                "appRoles": [{"id": "role-1", "value": "User.Read.All", "displayName": "Read users"}],
-                "appRoleAssignedTo": [
-                    {"id": "a", "appRoleId": "role-1", "principalId": "client-sp", "resourceId": "graph-sp"}
-                ],
-            },
+            {"id": "graph-sp", "appRoles": [{"id": "role-1", "value": "User.Read.All", "displayName": "Read users"}]},
             {"id": "client-sp"},
+            {"value": [{"id": "a", "appRoleId": "role-1", "principalId": "client-sp", "resourceId": "graph-sp"}]},
         ]
     )
 

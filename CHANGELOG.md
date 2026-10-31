@@ -564,6 +564,40 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
   now asks for the item's own zone with `Prefer: outlook.timezone`
   (`prefer_outlook_timezone`).
 
+**Permissions**
+
+- **`ServicePrincipal.get_application_permissions` reported a subset of the client's
+  grants.** It read the resource's `appRoleAssignedTo` navigation property, which was
+  expanded into the request; Graph answers an expanded collection with one truncated
+  page. Measured on a tenant where the client app holds 43 application permissions on
+  Microsoft Graph: `$expand=appRoleAssignedTo` returned 21, the paged collections
+  returned 44 assignments (43 of them the client's, 43 distinct roles, set-equal to the
+  43 `roles` in its token). Every reader believed the truncated answer — a skip decision
+  in a live test, a permission report, and the "already granted" check that makes
+  granting idempotent. `appRoleAssignedTo` accepts no `$filter` at all (`principalId`
+  answers `Links to EntitlementGrant are not supported between specified entities`,
+  `appRoleId` answers `Invalid filter clause appRoleId: System.Guid`), so the reader now
+  asks the same relationship from the client's side — paged
+  `servicePrincipals/{client}/appRoleAssignments`, filtered by `resourceId`. Measured
+  after: 43 of 43.
+- **`ServicePrincipal.grant_application_permissions` granted twice.** Its idempotency
+  check read the same truncated collection, so a role the client already held was
+  posted again; Graph rejects the duplicate and the caller saw a `ClientRequestException`
+  it could only read as a missing `AppRoleAssignment.ReadWrite.All` scope. Granting and
+  revoking now read the assignment list the reader above reads.
+- **`ServicePrincipal.get_delegated_permissions` answered from one grant.** It took
+  `next(g for g in grants if g.resource_id == self.id)` and split that grant's `scope`,
+  so a resource holding a tenant-wide grant plus per-user ones reported only the first
+  one found. It reads every grant for the resource now, and takes `consent_type`
+  (`"AllPrincipals"` by default, `"Principal"`, or `None` for both) rather than
+  silently mixing two different facts — a per-user consent makes a call work for that
+  user alone. Measured on the same tenant: 47 tenant-wide scopes, 2 per-user scopes
+  (`User.Read.All`, `UserAuthenticationMethod.ReadWrite`), 49 for both.
+- `ServicePrincipal.revoke_delegated_permissions` removes the scope from grants on *this*
+  resource only. It deleted every grant of the client app whose `scope` mentioned the
+  name, including grants on other resources that happen to spell it the same way
+  (`Mail.Send` is granted separately on Graph and on Exchange Online).
+
 ## [3.3.0] - 2026-10-18
 
 Two stories: the SharePoint migration layer grew from "copy items" to a resumable,

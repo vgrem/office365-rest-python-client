@@ -77,7 +77,11 @@ def _cached_directory_roles(client: GraphClient) -> EntityCollection[DirectoryRo
 def has_delegated_permission(
     client: GraphClient, scope: str, client_id: str, resource: str = ResourceName.Graph
 ) -> bool:
-    """True if the app has the delegated permission (OAuth scope) assigned on the resource."""
+    """True if the app has the delegated permission (OAuth scope) granted tenant-wide on ``resource``.
+
+    Tenant-wide (``AllPrincipals``) on purpose: a per-user consent makes the call work for that
+    user alone, so answering it here would be a silent yes for everyone else.
+    """
     return scope in _cached_delegated_permissions(client, client_id, resource)
 
 

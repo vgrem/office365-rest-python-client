@@ -136,23 +136,42 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
-    def get_delegated_permissions(self, app_id: str) -> ClientResult[StringCollection]:
-        """Gets delegated API permissions for the client app (AllPrincipals grants only)."""
+    def get_delegated_permissions(
+        self, app_id: str, consent_type: str | None = "AllPrincipals"
+    ) -> ClientResult[StringCollection]:
+        """Gets delegated API permissions for the client app on this resource.
+
+        Every grant is read, not the first one: a resource usually holds a tenant-wide grant
+        plus one per user who consented, and picking a single grant hid the rest.
+
+        Args:
+            app_id: Application (client) ID of the client app.
+            consent_type: ``"AllPrincipals"`` (tenant-wide, the default), ``"Principal"``
+                (consented by one user only) or ``None`` for every grant. The two are not the
+                same fact -- a per-user grant makes the call work for that user alone, so a
+                caller that asks for ``AllPrincipals`` must not read an answer about it.
+        """
         return_type = ClientResult(self.context, StringCollection())
 
-        def _on_grants_loaded(col: OAuth2PermissionGrantCollection):
-            found = next((g for g in col if g.resource_id == self.id), None)
-            if found is not None and found.scope is not None:
-                for name in found.scope.split(" "):
-                    return_type.value.add(name)
+        def _on_grants_loaded(col: OAuth2PermissionGrantCollection) -> None:
+            for grant in col:
+                if grant.resource_id != self.id or not grant.scope:
+                    continue
+                if consent_type is not None and grant.consent_type != consent_type:
+                    continue
+                for name in grant.scope.split():
+                    if name not in return_type.value:
+                        return_type.value.add(name)
 
-        def _resolve_application():
-            def _get_grant(sp: ServicePrincipal):
-                self.context.oauth2_permission_grants.get().filter(
-                    f"clientId eq '{sp.id}' and consentType eq 'AllPrincipals'"
-                ).after_execute(_on_grants_loaded)
+        def _resolve_application() -> None:
+            def _get_grants(sp: ServicePrincipal) -> None:
+                expression = f"clientId eq '{sp.id}'"
+                if consent_type is not None:
+                    expression += f" and consentType eq '{consent_type}'"
 
-            self.context.service_principals.get_by_app_id(app_id).get().after_execute(_get_grant)
+                self.context.oauth2_permission_grants.filter(expression).get_all(page_loaded=_on_grants_loaded)
+
+            self.context.service_principals.get_by_app_id(app_id).get().after_execute(_get_grants)
 
         self.ensure_property("id").after_execute(lambda _: _resolve_application())
         return return_type
@@ -192,22 +211,50 @@ class ServicePrincipal(DirectoryObject):
         return self
 
     def get_application_permissions(self, app_id: str) -> ClientResult[AppRoleCollection]:
-        """Gets application permissions (app roles) assigned to the client app on this resource."""
+        """Gets the application permissions (app roles) the client app holds on this resource.
+
+        The assignments are read from the client principal's ``appRoleAssignments``, paged and
+        filtered by ``resourceId``. The obvious reading -- the ``appRoleAssignedTo`` navigation
+        property, expanded or filtered -- is wrong twice over: Graph returns a single truncated
+        page for an expanded collection (21 of one tenant's 43 roles), and it accepts no
+        ``$filter`` on that property at all. So a resource with many grants reported a subset of
+        the client's permissions, and every reader believed it: skip decisions in live tests,
+        permission reports, and the "already granted" check before granting.
+        """
         return_type = ClientResult(self.context, AppRoleCollection())
 
-        def _get_application_permissions(client_sp_id: str) -> None:
-            assigned_role_ids = [a.app_role_id for a in self.app_role_assigned_to if a.principal_id == client_sp_id]
+        def _collect(assignments: AppRoleAssignmentCollection) -> None:
+            held_role_ids = {a.app_role_id for a in assignments}
+            reported_role_ids = {role.id for role in return_type.value}
             for role in self.app_roles:
-                if role.id in assigned_role_ids:
+                if role.id in held_role_ids and role.id not in reported_role_ids:
                     return_type.value.add(role)
 
-        def _resolve_app():
-            self.context.service_principals.get_by_app_id(app_id).get().after_execute(
-                lambda sp: _get_application_permissions(sp.id)
-            )
+        def _resolve_app() -> None:
+            def _load_assignments(sp: ServicePrincipal) -> None:
+                self._held_by(sp).get_all(page_loaded=_collect)
 
-        self.ensure_properties(["id", "appRoles", "appRoleAssignedTo"]).after_execute(lambda _: _resolve_app())
+            self.context.service_principals.get_by_app_id(app_id).select(["id"]).get().after_execute(_load_assignments)
+
+        self.ensure_properties(["id", "appRoles"]).after_execute(lambda _: _resolve_app())
         return return_type
+
+    def _held_by(self, client: ServicePrincipal) -> AppRoleAssignmentCollection:
+        """The app role assignments ``client`` holds on this resource.
+
+        Read from the *client's* side of the relationship, filtered by ``resourceId``: the
+        resource's own ``appRoleAssignedTo`` accepts no ``$filter`` (``principalId`` answers
+        "Links to EntitlementGrant are not supported between specified entities", ``appRoleId``
+        answers "Invalid filter clause"), so this is the only narrowing Graph agrees to.
+        """
+        assert self.id is not None and client.id is not None
+        # addressed by object id on purpose: ``client`` was resolved through its ``appId``
+        # alternate key, and a navigation off an alternate-key path is not the documented shape
+        assignments = AppRoleAssignmentCollection(
+            self.context,
+            ResourcePath("appRoleAssignments", ResourcePath(client.id, self.context.service_principals.resource_path)),
+        )
+        return assignments.filter(f"resourceId eq {self.id}")
 
     def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Grants an app role assignment to a client service principal.
@@ -220,23 +267,24 @@ class ServicePrincipal(DirectoryObject):
             app_role: The role to grant, as an ``AppRole`` or its name.
         """
 
-        def _grant(sp: ServicePrincipal, app_role_id: str | None) -> None:
-            assert sp.id is not None
-            assert app_role_id is not None
-            already = any(a.app_role_id == app_role_id and a.principal_id == sp.id for a in self.app_role_assigned_to)
-            if not already:
-                self.app_role_assigned_to.add(principalId=sp.id, resourceId=self.id, appRoleId=app_role_id)
+        def _grant(held: AppRoleAssignmentCollection, principal_id: str, app_role_id: str) -> None:
+            # the query asked for this resource; a role is checked by name, which is what the
+            # caller asked about
+            if any(a.app_role_id == app_role_id for a in held):
+                return
+            self.app_role_assigned_to.add(principalId=principal_id, resourceId=self.id, appRoleId=app_role_id)
 
-        def _ensure_client():
+        def _ensure_client() -> None:
             def _after(sp: ServicePrincipal) -> None:
-                if isinstance(app_role, AppRole):
-                    _grant(sp, app_role.id)
-                else:
-                    _grant(sp, self.app_roles[app_role].id)
+                assert sp.id is not None
+                principal_id = sp.id
+                app_role_id = app_role.id if isinstance(app_role, AppRole) else self.app_roles[app_role].id
+                assert app_role_id is not None
+                self._held_by(sp).get().after_execute(lambda held: _grant(held, principal_id, app_role_id))
 
-            self.context.service_principals.get_by_app_id(app_id).get().after_execute(_after)
+            self.context.service_principals.get_by_app_id(app_id).select(["id"]).get().after_execute(_after)
 
-        self.ensure_properties(["id", "appRoles", "appRoleAssignedTo"]).after_execute(lambda _: _ensure_client())
+        self.ensure_properties(["id", "appRoles"]).after_execute(lambda _: _ensure_client())
         return self
 
     def revoke_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
@@ -250,40 +298,51 @@ class ServicePrincipal(DirectoryObject):
             app_role: The role to revoke, as an ``AppRole`` or its name.
         """
 
-        def _revoke(principal_id: str | None, app_role_id: str | None) -> None:
-            assert principal_id is not None
-            assert app_role_id is not None
-            for item in self.app_role_assigned_to:
-                if item.principal_id == principal_id and item.app_role_id == app_role_id:
-                    assert item.id is not None
-                    self.app_role_assigned_to[item.id].delete_object()
+        def _revoke(held: AppRoleAssignmentCollection, app_role_id: str) -> None:
+            for item in held:
+                # the query only narrowed by resource; the role is the caller's question
+                if item.app_role_id != app_role_id:
+                    continue
+                assert item.id is not None
+                self.app_role_assigned_to[item.id].delete_object()
 
         def _ensure_app_role(sp: ServicePrincipal) -> None:
-            assert sp.id is not None
-            if isinstance(app_role, AppRole):
-                _revoke(sp.id, app_role.id)
-            else:
-                _revoke(sp.id, self.app_roles[app_role].id)
+            app_role_id = app_role.id if isinstance(app_role, AppRole) else self.app_roles[app_role].id
+            assert app_role_id is not None
+            self._held_by(sp).get().after_execute(lambda held: _revoke(held, app_role_id))
 
-        def _ensure_principal():
+        def _ensure_principal() -> None:
             self.context.service_principals.get_by_app_id(app_id).select(["id"]).get().after_execute(_ensure_app_role)
 
-        self.ensure_properties(["id", "appId", "appRoles", "appRoleAssignedTo"]).after_execute(
-            lambda _: _ensure_principal()
-        )
+        self.ensure_properties(["id", "appRoles"]).after_execute(lambda _: _ensure_principal())
         return self
 
     def revoke_delegated_permissions(self, client_id: str, scope: str) -> Self:
+        """Revokes an OAuth2 scope from the client app's grant on this resource.
+
+        Args:
+            client_id: Application (client) ID of the client app.
+            scope: The delegated permission to remove.
+        """
+
         def _revoke(all_grants: OAuth2PermissionGrantCollection) -> None:
             for g in all_grants:
-                assert g.scope is not None
+                # a scope name lives on one API: revoking it here must not delete the grant
+                # a *different* resource happens to spell the same way
+                if g.resource_id != self.id or not g.scope:
+                    continue
                 if scope in g.scope.split():
                     g.delete_object()
 
-        def _client_resolved(sp: ServicePrincipal):
-            self.context.oauth2_permission_grants.get().filter(f"clientId eq '{sp.id}'").after_execute(_revoke)
+        def _client_resolved(sp: ServicePrincipal) -> None:
+            def _get_grants() -> None:
+                self.context.oauth2_permission_grants.filter(f"clientId eq '{sp.id}'").get().after_execute(_revoke)
 
-        self.context.service_principals.get_by_app_id(client_id).get().after_execute(_client_resolved)
+            self.context.service_principals.get_by_app_id(client_id).get().after_execute(lambda _: _get_grants())
+
+        self.ensure_property("id").after_execute(
+            lambda _: self.context.service_principals.get_by_app_id(client_id).get().after_execute(_client_resolved)
+        )
         return self
 
     def remove_password(self, key_id: str) -> Self:

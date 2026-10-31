@@ -971,15 +971,21 @@ class GraphClient(ClientRuntimeContext):
         )
         return self
 
-    def get_delegated_permissions(self, app_id: str) -> ClientResult[StringCollection]:
+    def get_delegated_permissions(
+        self, app_id: str, consent_type: str | None = "AllPrincipals"
+    ) -> ClientResult[StringCollection]:
         """Gets delegated permissions granted on Microsoft Graph.
 
         Args:
             app_id (str): Application (client) ID of the client app
+            consent_type (str or None): ``"AllPrincipals"`` (tenant-wide, default),
+                ``"Principal"`` (one user) or ``None`` for every grant
         """
         from office365.permissions import ResourceName
 
-        return self.service_principals.find_by_name(ResourceName.Graph, required=True).get_delegated_permissions(app_id)
+        return self.service_principals.find_by_name(ResourceName.Graph, required=True).get_delegated_permissions(
+            app_id, consent_type
+        )
 
     def grant_application_permissions(self, app_id: str, app_role: AppRole | str) -> Self:
         """Grants an application permission on Microsoft Graph.

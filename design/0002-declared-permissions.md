@@ -167,16 +167,42 @@ so it yields two. The flow is the key of the join, not a property of a permissio
   been judged against Graph's grants; and `guard`'s cached lookups took a `resource`
   argument, used it as an `lru_cache` key, and then queried Microsoft Graph regardless - a
   wrong answer cached under the right name. Both now resolve the resource's own service
-  principal, which is what `ServicePrincipal.get_delegated_permissions` and
-  `get_application_permissions` already did correctly: they filter `oauth2PermissionGrants`
-  and `appRoleAssignedTo` by the resource. That made the dimension a one-line change per
-  reader instead of a new subsystem, and it had to land *before* the SharePoint harvest:
-  2,238 declarations written without it would each be unpriceable and would need a second
-  pass. The default stays Microsoft Graph, so all 184 existing declarations mean exactly
-  what they meant - preflight output is byte-identical - and the new
-  `tests/unit/test_permission_resources.py` pins the probe to the named resource with a
-  client whose two resources grant different things, which is the only way to see the bug:
-  a check satisfied *because* it read the wrong API looks exactly like a correct one.
+  principal. That made the dimension a one-line change per reader instead of a new
+  subsystem, and it had to land *before* the SharePoint harvest: 2,238 declarations
+  written without it would each be unpriceable and would need a second pass. The default
+  stays Microsoft Graph, so all 184 existing declarations mean exactly what they meant -
+  preflight output is byte-identical - and the new `tests/unit/test_permission_resources.py`
+  pins the probe to the named resource with a client whose two resources grant different
+  things, which is the only way to see the bug: a check satisfied *because* it read the
+  wrong API looks exactly like a correct one.
+- Those two lookups then turned out to be the *smaller* half of the story, because the
+  readers they call were wrong too - and it took a token to see it. Reading the JWT the
+  tenant actually issues (43 `roles` for Microsoft Graph, 3 for SharePoint) and comparing
+  it with what the readers answer is the only cheap oracle available: the Graph side
+  reported 20 of the 43 application permissions the token carried, and answered
+  "not granted" for `Mail.Send`, `Mail.ReadWrite` and `Domain.ReadWrite.All` - the exact
+  names the Outlook half had just been converted to declare, so 25 of 355 live-suite
+  requirements were being skipped for a reason that did not exist. Both causes were shaped
+  by the same mistake: reading a relationship the tenant builds incrementally as if the
+  first page were the whole of it. `$expand=appRoleAssignedTo` truncates (21 of 43),
+  reading one `oauth2PermissionGrants` row loses every other consent, and
+  `appRoleAssignedTo` refuses every `$filter` worth writing - so the assignment reader had
+  to move to the *client's* side of the same relationship (`appRoleAssignments` filtered
+  by `resourceId`), which is both supported and the question being asked. The lesson is not
+  "use the token": it is that a permission answer needs a second, independent way to check
+  it, and the ratchet cannot tell a false "granted" from a true one because both look like
+  a passing test. `tests/unit/test_service_principal_permissions.py` pins the truncation
+  with a scripted transport that serves two pages.
+- What the token cannot do is replace the grant read, and the remaining disagreement shows
+  exactly where the line is. After both fixes, 7 of 355 requirements still disagree, all
+  delegated, and all for one reason: `Mail.Send` is delegated on *Exchange Online* and
+  `TermStore.Read.All` on *SharePoint*, so the scope reaches the Graph token through
+  another resource's grant row and appears in no Graph row at all. A single-resource grant
+  read is therefore right to answer "not granted on this API", and a caller that asks it
+  about a cross-resource name is asking the wrong question - while the token, which is the
+  union over resources, cannot be produced for a scope that was never granted and so can
+  never price a grant. Two lenses, two questions: the token says whether the wire will
+  accept this call, the graph says what the tenant has granted and what a grant would cost.
 
 ## Open questions
 
