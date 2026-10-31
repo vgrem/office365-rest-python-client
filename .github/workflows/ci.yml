@@ -73,6 +73,8 @@ jobs:
         run: uv sync --frozen --all-extras
       - name: Run offline tests
         run: uv run pytest --offline -q
+      - name: Report live-suite prerequisites
+        run: uv run python -m tests.preflight --report tests-report
 
   docs:
     runs-on: ubuntu-latest

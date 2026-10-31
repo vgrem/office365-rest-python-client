@@ -318,7 +318,11 @@ class Settings:
             detail = "" if not missing else "  missing: " + ", ".join(missing)
             lines.append(f"  {spec.label:<{width}}  {'not ready' if missing else 'ready':<9}{detail}")
         if not any(self.is_ready(flow) for flow in FLOWS):
-            lines += ["", "  Tip: run `python -m tests.setup` (or copy .env.example), then re-run `tests.doctor`."]
+            lines += [
+                "",
+                "  Tip: run `python -m tests.setup` (or copy .env.example), then re-run `tests.doctor`.",
+                "  Then see what the live suites need: `python -m tests.preflight --verify`.",
+            ]
         return "\n".join(lines)
 
     def require(self, flow: str) -> None:
