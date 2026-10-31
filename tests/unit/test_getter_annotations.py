@@ -24,6 +24,7 @@ import datetime
 import importlib
 import pathlib
 import pkgutil
+import types
 import typing
 
 import pytest
@@ -74,8 +75,16 @@ def _getter(cls: type, name: str) -> typing.Optional[typing.Any]:
 
 
 def _unwrap_optional(annotation: typing.Any) -> typing.Any:
-    """``Optional[X]`` is ``X`` for a declared type: ``None`` is a nullability fact."""
-    if typing.get_origin(annotation) is typing.Union:
+    """``Optional[X]`` is ``X`` for a declared type: ``None`` is a nullability fact.
+
+    ``str | None`` and ``Optional[str]`` are the same declaration, but
+    ``typing.get_origin`` answers ``types.UnionType`` for the first on 3.10-3.13 and
+    ``typing.Union`` on 3.14 -- which is how this test passed locally and failed on
+    every job of the CI matrix. Both spellings are unwrapped here, the way
+    ``_unwrap_type`` in the runtime already does it.
+    """
+    origins = tuple(o for o in (typing.Union, getattr(types, "UnionType", None)) if o is not None)
+    if typing.get_origin(annotation) in origins:
         present = [arg for arg in typing.get_args(annotation) if arg is not type(None)]
         if len(present) == 1:
             return present[0]
