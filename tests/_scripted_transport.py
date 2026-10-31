@@ -99,7 +99,9 @@ class ScriptedTransport(BaseTransport):
 class RoutingTransport(BaseTransport):
     """Returns the payload of the first route whose key is a substring of the URL.
 
-    Order-independent, so it is safe for concurrent requests.
+    Order-independent, so it is safe for concurrent requests. A route's payload may be
+    a callable, which is invoked with the request and lets a route model server state
+    (e.g. a paged listing, which a client reads until it gets an empty page).
     """
 
     def __init__(self, routes: list[tuple[str, Any]]) -> None:
@@ -113,7 +115,7 @@ class RoutingTransport(BaseTransport):
         self.requests.append(request)
         for key, payload in self._routes:
             if key in url:
-                return build_response(request, payload)
+                return build_response(request, payload(request) if callable(payload) else payload)
         raise AssertionError(f"RoutingTransport: no route matched {url}")
 
 

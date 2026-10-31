@@ -1,640 +1,404 @@
-"""Offline tests for the document-library adapters.
+"""Offline tests for the document-library adapters, driven over a scripted transport.
 
-Covers the verification enumeration: a target library always contains
-SharePoint-owned scaffolding (``Forms/``, ``desktop.ini``) that the source
-projection deliberately skips, so the target must skip it too or every migrated
-library is reported as having "extra" content. On ``SiteAssets`` that scaffolding
-also includes the site icon and the auto-provisioned ``<web title> Notebook``
-folder. Also covers folder items — the source plans folders as first-class items,
-so the target must create them instead of trying to upload a file named after the
-folder.
+Each test gets a real ``ClientContext`` whose transport answers by URL, so the objects
+under test are the real ``Folder``/``File``/``ListItem`` models. What these tests pin is
+the request the client sends — the endpoint, the projection, the form values — and what it
+parses back, not a stand-in's method calls.
+
+The library adapters are the one part of the migration framework a tenant run cannot check
+for you: an E2E test writes a file and reads it, while these carry the things a single-pass
+copy loses —
+
+* the target enumeration skips SharePoint-owned scaffolding (``Forms/``, ``desktop.ini``,
+  and on ``SiteAssets`` the site icon and the auto-provisioned ``<web title> Notebook``),
+  or every migrated library is reported as having extra content;
+* timestamps are converted to the web's wall clock once per value and land in a single
+  system update, with the authorship values folded in so ``Editor`` is not reset;
+* a folder is a list item: its own column values and system metadata round-trip;
+* a draft file's approval state is carried, and its history is read oldest-first by
+  version number (``1.10`` is newer than ``1.9``, which a text sort gets backwards).
 """
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-
 from office365.migration.base import MigrationItem, Principal
-from office365.migration.offline import offline_context
 from office365.migration.sharepoint.adapters import SharePointLibrarySource, SharePointLibraryTarget
-from office365.sharepoint.fields.field import Field
-from office365.sharepoint.files.versions.version import FileVersion
-from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.client_context import ClientContext
+from tests._scripted_transport import RoutingTransport
+
+_SITE_URL = "https://contoso.sharepoint.com/sites/x"
+_DOCS = "/sites/x/Docs"
+_FILE_URL = f"{_DOCS}/doc.txt"
+_LOGIN = "i:0#.f|membership|vgrem@x.onmicrosoft.com"
 
 
-class _Entry:
-    def __init__(self, server_relative_url: str) -> None:
-        self.server_relative_url = server_relative_url
-        self.time_created = None
-        self.time_last_modified = None
+# ── The scripted library ─────────────────────────────────────────────────────
 
 
-class _Collection:
-    def __init__(self, entries: list[_Entry]) -> None:
-        self._entries = entries
-
-    def execute_query(self) -> list[_Entry]:
-        return self._entries
-
-
-class _Request:
-    def __init__(self, url: str, present: bool) -> None:
-        self._url = url
-        self._present = present
-
-    def get(self) -> "_Request":
-        return self
-
-    def execute_query(self) -> "_Request":
-        if not self._present:
-            raise ValueError(f"not found: {self._url}")
-        return self
+def _web_payload(**extra):
+    payload = {
+        "__metadata": {"type": "SP.Web"},
+        "ServerRelativeUrl": "/sites/x",
+        "Title": "Project",  # the SiteAssets notebook rule names the folder after it
+        "RegionalSettings": {
+            "__metadata": {"type": "SP.RegionalSettings"},
+            "TimeZone": {"__metadata": {"type": "SP.TimeZone"}, "Description": "UTC"},
+        },
+    }
+    payload.update(extra)
+    return {"d": payload}
 
 
-class _Web:
-    def __init__(self, folders=(), files=()) -> None:
-        self._folders = set(folders)
-        self._files = set(files)
-
-    def get_folder_by_server_relative_url(self, url: str) -> _Request:
-        return _Request(url, url in self._folders)
-
-    def get_file_by_server_relative_url(self, url: str) -> _Request:
-        return _Request(url, url in self._files)
-
-
-class _SiteAssetsWeb(_Web):
-    """A web whose title is available, so the notebook rule can be applied."""
-
-    def __init__(self, title: str, folders=(), files=()) -> None:
-        super().__init__(folders=folders, files=files)
-        self.properties = {"Title": title}
-
-    @property
-    def title(self) -> str:
-        return self.properties["Title"]
+def _file_payload(**extra):
+    payload = {
+        "__metadata": {"type": "SP.File"},
+        "ServerRelativeUrl": _FILE_URL,
+        "Length": "4",
+        "ListItemAllFields": {"__metadata": {"type": "SP.ListItem"}, "Id": "1"},
+    }
+    payload.update(extra)
+    return {"d": payload}
 
 
-class _Context:
-    def __init__(self, web: _Web | None = None) -> None:
-        self.web = web or _Web()
-        self.executed = 0
-
-    def execute_query(self) -> None:
-        self.executed += 1
+def _folder_payload(url=_DOCS, **extra):
+    payload = {"__metadata": {"type": "SP.Folder"}, "ServerRelativeUrl": url, "Exists": True}
+    payload.update(extra)
+    return {"d": payload}
 
 
-class _TargetFolder:
-    server_relative_url = "/sites/x/Docs"
-
-    def __init__(self, files=(), folders=(), context: _Context | None = None) -> None:
-        self._files = list(files)
-        self._folders = list(folders)
-        self.context = context or _Context()
-        self.ensured: list[str] = []
-        self.uploaded: tuple[str, bytes] | None = None
-
-    def get_files(self, recursive: bool = False) -> _Collection:
-        assert recursive
-        return _Collection(self._files)
-
-    def get_folders(self, recursive: bool = False) -> _Collection:
-        assert recursive
-        return _Collection(self._folders)
-
-    def ensure_folders(self, paths) -> list:
-        self.ensured.extend(paths)
-        return []
-
-    def upload_file(self, path: str, content: bytes) -> _Request:
-        self.uploaded = (path, content)
-        return _Request(path, True)
+def _listing(kind: str, *urls, **extra):
+    """A ``Files``/``Folders`` listing, as verbose JSON returns it."""
+    return {
+        "d": {"results": [{"__metadata": {"type": f"SP.{kind}"}, "ServerRelativeUrl": url, **extra} for url in urls]}
+    }
 
 
-def _folder_item(dest_path: str) -> MigrationItem:
+def _files(*urls, **extra):
+    return _listing("File", *urls, **extra)
+
+
+def _folders(*urls, **extra):
+    return _listing("Folder", *urls, **extra)
+
+
+def _paged(*pages):
+    """A listing route serving one page per read and an empty page after the last.
+
+    A library read pages until a page comes back empty, so a single static page would
+    be read forever.
+    """
+    remaining = [*pages]
+    return lambda _request: remaining.pop(0) if remaining else {"d": {"results": []}}
+
+
+def _moderated(status: int = 1) -> dict:
+    """A file's list item as the approval-state projection returns it."""
+    return {"d": {"__metadata": {"type": "SP.ListItem"}, "Id": "1", "OData__ModerationStatus": status}}
+
+
+def _list_payload(**extra):
+    payload = {
+        "__metadata": {"type": "SP.List"},
+        "Title": "Docs",
+        "BaseTemplate": 101,
+        "ItemCount": 1,
+        "EnableModeration": True,  # approval state is only read on a moderating library
+    }
+    payload.update(extra)
+    return {"d": payload}
+
+
+def _updated(*fields):
+    """A ``ValidateUpdateListItem`` response: the values the service accepted."""
+    return {
+        "d": {
+            "ValidateUpdateListItem": {
+                "results": [
+                    {
+                        "__metadata": {"type": "SP.ListItemFormUpdateValue"},
+                        "FieldName": name,
+                        "FieldValue": value,
+                        "ErrorCode": 0,
+                        "HasException": False,
+                    }
+                    for name, value in fields
+                ]
+            }
+        }
+    }
+
+
+def _context(*extra, **routes) -> ClientContext:
+    """A real context over the routes a library call makes.
+
+    ``routes`` names the ones a test cares about and keeps the default for the rest;
+    ``extra`` adds a route the defaults cannot express (a per-value answer). The order
+    below is most-specific-key-first, because a route matches on a URL substring.
+    """
+    web = routes.get("web", _web_payload())
+    entries = {"d": {"results": []}}
+    return _context_with(
+        [
+            *extra,
+            ("Files/add", routes.get("upload", {"d": {"ServerRelativeUrl": f"{_DOCS}/a.txt", "Length": "4"}})),
+            ("Folders/add", routes.get("ensure", {"d": {"ServerRelativeUrl": f"{_DOCS}/Area1"}})),
+            ("ValidateUpdateListItem", routes.get("update", _updated())),
+            ("UTCToLocalTime", routes.get("conversion", {"d": {"UTCToLocalTime": "2021-06-01T15:00:00"}})),
+            ("OpenBinaryStream", routes.get("stream", b"bytes")),
+            ("versions", routes.get("versions", entries)),
+            (
+                "EnsureUser",
+                routes.get("ensureuser", {"d": {"__metadata": {"type": "SP.User"}, "Id": 9, "LoginName": _LOGIN}}),
+            ),
+            # a listing URL sits under ``getFolderByServerRelativePath(...)``, and the
+            # recursive walk revisits each subfolder, so the collection keys come first
+            ("Folders(<key>)", entries),
+            (")/Files", routes.get("files", entries)),
+            (")/Folders", routes.get("folders", entries)),
+            (")/Items", routes.get("items", entries)),
+            (")/items", routes.get("items", entries)),
+            (")/Fields", routes.get("fields", entries)),
+            ("ItemAllFields", routes.get("moderation", _moderated())),
+            ("GetByTitle", routes.get("list", _list_payload())),
+            ("getFileByServerRelativeUrl", routes.get("file", _file_payload())),
+            ("getFolderByServerRelativePath", routes.get("folder", _folder_payload())),
+            ("RegionalSettings", web),
+            ("/_api/Web", web),
+        ]
+    )
+
+
+def _context_with(routes) -> ClientContext:
+    ctx = ClientContext(_SITE_URL)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = RoutingTransport(routes)
+    return ctx
+
+
+def _folder(ctx: ClientContext, url: str = _DOCS):
+    folder = ctx.web.get_folder_by_server_relative_path(url)
+    folder.set_property("ServerRelativeUrl", url)
+    return folder
+
+
+def _target(ctx: ClientContext, **kwargs) -> SharePointLibraryTarget:
+    return SharePointLibraryTarget(_folder(ctx), **kwargs)
+
+
+def _list(ctx: ClientContext):
+    """The target library as a list, for the folder-record path."""
+    return ctx.web.lists.get_by_title("Docs")
+
+
+def _requests(ctx: ClientContext) -> list:
+    return ctx.pending_request().transport.requests
+
+
+def _file_item(**extra) -> MigrationItem:
+    values = {"source_path": "/sites/src/doc.txt", "dest_path": "doc.txt", "item_type": "file"}
+    values.update(extra)
+    return MigrationItem(**values)
+
+
+def _folder_item(dest_path: str = "Area1/") -> MigrationItem:
     return MigrationItem(source_path=f"/sites/src/{dest_path}", dest_path=dest_path, item_type="folder")
 
 
-def test_library_target_write_uploads_files():
-    folder = _TargetFolder()
-    target = SharePointLibraryTarget(folder)
-
-    target.write(MigrationItem("/sites/src/a.txt", "a.txt"), b"data")
-
-    assert folder.uploaded == ("a.txt", b"data")
-    assert folder.ensured == []
+# ── Writing ──────────────────────────────────────────────────────────────────
 
 
-def test_library_target_folder_checksum_is_empty_hash():
-    target = SharePointLibraryTarget(_TargetFolder())
+def test_a_file_is_uploaded_to_the_library_and_costs_one_request():
+    ctx = _context()
 
-    assert target.checksum(_folder_item("a/")) == target.checksum(_folder_item("b/"))
+    _target(ctx).write(MigrationItem("/sites/src/a.txt", "a.txt"), b"data")
 
-
-def test_library_target_list_paths_skips_site_assets_scaffolding():
-    web = _SiteAssetsWeb("Project")
-    folder = _TargetFolder(
-        files=[
-            _Entry("/sites/x/SiteAssets/__siteIcon__.png"),
-            _Entry("/sites/x/SiteAssets/logo.png"),
-        ],
-        folders=[
-            _Entry("/sites/x/SiteAssets/Project Notebook"),
-            _Entry("/sites/x/SiteAssets/Images"),
-            _Entry("/sites/x/SiteAssets/Forms"),
-        ],
-        context=_Context(web),
+    (request,) = _requests(ctx)  # no folder-ensure round trip for a plain file
+    assert request.method.value == "POST"
+    assert request.url.endswith(
+        f"getFolderByServerRelativePath(DecodedUrl='{_DOCS}')/Files/add(overwrite=true,url='a.txt')"
     )
-    folder.server_relative_url = "/sites/x/SiteAssets"
-    target = SharePointLibraryTarget(folder)
+    assert request.data == b"data"
+
+
+def test_a_folders_checksum_is_the_empty_hash_not_a_content_hash():
+    # A folder has no bytes; without the target list its values are unknown, and an
+    # unknown value must not compare equal to a migrated one.
+    target = _target(_context())
+
+    assert target.checksum(_folder_item("a/")) == "" == target.checksum(_folder_item("b/"))
+
+
+# ── Target enumeration (what verification must not report as extra) ───────────
+
+
+def test_list_paths_skips_site_assets_scaffolding():
+    ctx = _context(
+        web=_web_payload(Title="Project"),
+        files=_paged(_files("/sites/x/SiteAssets/__siteIcon__.png", "/sites/x/SiteAssets/logo.png")),
+        # a folder's URL carries no trailing slash; the migration path adds it
+        folders=_folders(
+            "/sites/x/SiteAssets/Project Notebook",
+            "/sites/x/SiteAssets/Images",
+            "/sites/x/SiteAssets/Forms",
+        ),
+    )
+    target = SharePointLibraryTarget(_folder(ctx, "/sites/x/SiteAssets"))
 
     assert target.list_paths() == ["logo.png", "Images/"]
 
 
-class _ById:
-    id = None
+# ── Timestamps (web-local conversion, one system update) ─────────────────────
 
 
-class _SourceFile:
-    def __init__(self, url: str, minor_version: int = 0) -> None:
-        self.server_relative_url = url
-        self.length = 1
-        self.author = _ById()
-        self.modified_by = _ById()
-        self.time_last_modified = None
-        self.time_created = None
-        self.unique_id = None
-        self.ui_version_label = None
-        self.minor_version = minor_version
-        self.versions = _Versions([])
-
-
-class _Versions:
-    def __init__(self, versions) -> None:
-        self._versions = list(versions)
-
-    def get(self) -> "_Versions":
-        return self
-
-    def execute_query(self) -> list:
-        return self._versions
-
-
-class _Version(FileVersion):
-    """A real ``FileVersion`` — its label and ordering — with the stream kept offline."""
-
-    def __init__(self, label: str, current: bool = False) -> None:
-        super().__init__(_Context())
-        self.set_property("VersionLabel", label)
-        self.set_property("IsCurrentVersion", current)
-
-    def open_binary_stream(self) -> "_Stream":
-        return _Stream(f"bytes of {self.version_label}".encode())
-
-
-class _Stream:
-    def __init__(self, value: bytes) -> None:
-        self.value = value
-
-    def execute_query(self) -> "_Stream":
-        return self
-
-
-class _SourceFolder:
-    def __init__(self, url: str, web, files=(), folders=()) -> None:
-        self.server_relative_url = url
-        self.context = _Context(web)
-        self._files = list(files)
-        self._folders = list(folders)
-
-    def get_files(self, recursive: bool = False) -> _Collection:
-        return _Collection(self._files)
-
-    def get_folders(self, recursive: bool = False) -> _Collection:
-        return _Collection(self._folders)
-
-
-# ── Document timestamps (web-local conversion) ────────────────────────────────
-
-
-class _Conversion:
-    def __init__(self, value: datetime, offset_hours: int) -> None:
-        self._value = value
-        self._offset = offset_hours
-        self.value = None
-
-
-class _FakeTimeZone:
-    def __init__(self, offset_hours: int) -> None:
-        self.offset_hours = offset_hours
-        self.pending: list[_Conversion] = []
-        self.calls: list[str] = []
-
-    def utc_to_local_time(self, value: datetime) -> _Conversion:
-        self.calls.append(value)
-        conversion = _Conversion(value, self.offset_hours)
-        self.pending.append(conversion)
-        return conversion
-
-
-class _RegionalSettings:
-    def __init__(self, time_zone: _FakeTimeZone) -> None:
-        self.time_zone = time_zone
-
-
-class _FakeUpdateValue:
-    def __init__(self) -> None:
-        self.updates: list[tuple[dict, bool | None, bool]] = []
-
-    def validate_update_list_item(
-        self, form_values, new_document_update=False, checkin_comment=None, dates_in_utc=None
-    ) -> "_Executable":
-        self.updates.append((dict(form_values), dates_in_utc, new_document_update))
-        return _Executable()
-
-
-class _Executable:
-    def execute_query(self) -> "_Executable":
-        return self
-
-
-class _SecurableFile:
-    def __init__(self) -> None:
-        self.listItemAllFields = _FakeUpdateValue()
-
-
-class _TimestampContext:
-    def __init__(self, web) -> None:
-        self.web = web
-        self.executed = 0
-
-    def execute_query(self) -> None:
-        self.executed += 1
-        time_zone = self.web.regional_settings.time_zone
-        for conversion in list(time_zone.pending):
-            conversion.value = conversion._value + timedelta(hours=time_zone.offset_hours)
-        time_zone.pending = []
-
-
-class _TimestampFolder:
-    server_relative_url = "/sites/x/Docs"
-
-    def __init__(self, context: _TimestampContext) -> None:
-        self.context = context
-
-
-class _TargetUser:
-    def __init__(self, user_id: int, login_name: str) -> None:
-        self.id = user_id
-        self.login_name = login_name
-
-
-class _EnsureUser:
-    def __init__(self, user: _TargetUser) -> None:
-        self._user = user
-
-    def execute_query(self) -> _TargetUser:
-        return self._user
-
-
-class _TimestampWeb:
-    def __init__(self, time_zone: _FakeTimeZone) -> None:
-        self.regional_settings = _RegionalSettings(time_zone)
-        self._files: dict[str, _SecurableFile] = {}
-
-    def ensure_user(self, login: str) -> _EnsureUser:
-        return _EnsureUser(_TargetUser(9, login))
-
-    def get_file_by_server_relative_url(self, url: str) -> _SecurableFile:
-        return self._files.setdefault(url, _SecurableFile())
-
-
-def test_library_target_caches_time_zone_conversions():
-    time_zone = _FakeTimeZone(offset_hours=0)
-    web = _TimestampWeb(time_zone)
-    target = SharePointLibraryTarget(_TimestampFolder(_TimestampContext(web)))
-    item = MigrationItem(
-        "/sites/src/doc.txt",
-        "doc.txt",
-        item_type="file",
-        created="2021-06-01T15:00:00+00:00",
-        modified="2021-06-01T15:00:00+00:00",
-    )
+def test_a_timestamp_conversion_is_requested_once_per_distinct_value():
+    ctx = _context()
+    target = _target(ctx)
+    item = _file_item(created="2021-06-01T15:00:00+00:00", modified="2021-06-01T15:00:00+00:00")
 
     target.apply_timestamps(item)
     target.apply_timestamps(item)
 
-    assert len(time_zone.calls) == 1  # converted once, then cached
-    assert time_zone.calls[0].replace(tzinfo=None) == datetime(2021, 6, 1, 15, 0, 0)
+    conversions = [request for request in _requests(ctx) if "UTCToLocalTime" in request.url]
+    assert len(conversions) == 1  # the second call answered from the cache
 
 
-def test_library_target_folds_authorship_into_the_timestamp_write():
-    web = _TimestampWeb(_FakeTimeZone(offset_hours=0))
-    target = SharePointLibraryTarget(_TimestampFolder(_TimestampContext(web)))
-    item = MigrationItem(
-        "/sites/src/doc.txt",
-        "doc.txt",
-        item_type="file",
-        created="2021-06-01T15:00:00+00:00",
-        modified="2022-07-02T16:00:00+00:00",
+def test_authorship_rides_along_in_the_timestamp_update():
+    ctx = _context(
+        ("datetime'2022-07-02T16:00:00'", {"d": {"UTCToLocalTime": "2022-07-02 16:00:00"}}),
+        ("datetime'2021-06-01T15:00:00'", {"d": {"UTCToLocalTime": "2021-06-01 15:00:00"}}),
     )
-    item.author = Principal("i:0#.f|membership|vgrem@x.onmicrosoft.com", "1", "Vadim")
+    target = _target(ctx)
+    item = _file_item(created="2021-06-01T15:00:00+00:00", modified="2022-07-02T16:00:00+00:00")
+    item.author = Principal(_LOGIN, "1", "Vadim")
 
     target.apply_authorship(item)
+    assert [r for r in _requests(ctx) if "ValidateUpdateListItem" in r.url] == []  # nothing written yet
+
     target.apply_timestamps(item)
 
-    updates = web._files["/sites/x/Docs/doc.txt"].listItemAllFields.updates
-    assert len(updates) == 1  # authorship did not pay a write of its own
-    form_values, _, _ = updates[0]
-    assert form_values["Created"] == "2021-06-01 15:00:00"
-    assert form_values["Author"].LookupId == 9  # noqa: PLR2004
+    (update,) = [request for request in _requests(ctx) if "ValidateUpdateListItem" in request.url]
+    form = {entry["FieldName"]: entry["FieldValue"] for entry in update.data["formValues"]}
+    assert form["Created"] == "2021-06-01 15:00:00"  # wall clock, with datesInUTC below
+    assert form["Modified"] == "2022-07-02 16:00:00"
+    assert form["Author"] == "[{'Key':'i:0#.f|membership|vgrem@x.onmicrosoft.com'}]"
+    assert update.data["datesInUTC"] is True
+    assert update.data["bNewDocumentUpdate"] is True  # a system update: no extra version
 
 
-# ── Folder column values (a folder is a list item too) ────────────────────────
+# ── Folder values (a folder is a list item too) ──────────────────────────────
 
 
-class _Column(Field):
-    """A library column as a ``fields`` projection returns it, hydrated into the real type."""
-
-    def __init__(self, internal_name: str, type_as_string: str = "Text", *, hidden=False, read_only=False) -> None:
-        super().__init__(offline_context())
-        self.hydrate(
-            {
-                "InternalName": internal_name,
-                "TypeAsString": type_as_string,
-                "Hidden": hidden,
-                "ReadOnlyField": read_only,
-            }
-        )
-
-
-class _Fields:
-    def __init__(self, columns: list[_Column]) -> None:
-        self._columns = columns
-
-    def select(self, _columns) -> "_Fields":
-        return self
-
-    def get(self) -> "_Fields":
-        return self
-
-    def execute_query(self) -> list[_Column]:
-        return self._columns
-
-
-class _Library:
-    def __init__(self, columns: list[_Column]) -> None:
-        self.fields = _Fields(columns)
-
-
-class _FolderItem:
-    """A folder's underlying list item (MERGE target and read-back source)."""
-
-    def __init__(self, properties: dict | None = None, error: str | None = None) -> None:
-        self.properties = dict(properties or {})
-        self.written: dict = {}
-        self.updated = 0
-        self._error = error
-
-    def select(self, columns) -> "_FolderItem":
-        self._select = list(columns)
-        return self
-
-    def get(self) -> "_FolderItem":
-        return self
-
-    def set_property(self, name: str, value) -> "_FolderItem":
-        self.written[name] = value
-        return self
-
-    def update(self) -> "_FolderItem":
-        if self._error is not None:
-            raise ValueError(self._error)
-        self.updated += 1
-        return self
-
-    def execute_query(self) -> "_FolderItem":
-        return self
-
-
-class _FolderHandle:
-    """A deferred ``Folder``: its list item carries the column values, the folder
-    resource reports the system metadata that the timestamp write lands on."""
-
-    def __init__(self, item: _FolderItem) -> None:
-        self.list_item_all_fields = item
-        self.time_created = None
-        self.time_last_modified = None
-        self.reads = 0
-
-    def get(self) -> "_FolderHandle":
-        self.reads += 1
-        return self
-
-    def execute_query(self) -> "_FolderHandle":
-        return self
-
-
-class _FolderWeb:
-    def __init__(self, items: dict[str, _FolderItem]) -> None:
-        self._items = items
-        self._handles: dict[str, _FolderHandle] = {}
-
-    def get_folder_by_server_relative_path(self, url: str) -> _FolderHandle:
-        if url not in self._handles:
-            self._handles[url] = _FolderHandle(self._items.setdefault(url, _FolderItem()))
-        return self._handles[url]
-
-    def handle(self, url: str) -> _FolderHandle:
-        return self.get_folder_by_server_relative_path(url)
-
-
-def _folder_target(web: _FolderWeb, columns: list[_Column] | None = None) -> SharePointLibraryTarget:
-    folder = _TargetFolder(context=_Context(web=web))
-    return SharePointLibraryTarget(folder, sp_list=_Library(columns or [_Column("Region", "Choice")]))
-
-
-def test_library_target_reports_folder_values_it_could_not_write():
-    item = _FolderItem(error="Access denied")
-    target = _folder_target(_FolderWeb({"/sites/x/Docs/Area1": item}))
+def test_a_folder_value_the_service_rejects_is_reported_not_fatal():
+    ctx = _context(update=("deny",))
+    target = _target(ctx, sp_list=_list(ctx))
 
     target.write(_folder_item("Area1/"), {"Region": "North"})
 
     assert any("folder column values for 'Area1/'" in warning for warning in target.warnings)
 
 
-def test_library_target_reads_a_folders_metadata_back_from_the_folder_resource():
-    # The folder's list item is where the timestamp write lands; the folder resource
-    # reports the same instant, and it is what the source side reads too.
-    web = _FolderWeb({"/sites/x/Docs/Area1": _FolderItem({"Region": "North"})})
-    handle = web.handle("/sites/x/Docs/Area1")
-    handle.time_created = datetime(2021, 3, 4, 5, 6, 7, tzinfo=timezone.utc)
-    handle.time_last_modified = datetime(2021, 3, 5, 6, 7, 8, tzinfo=timezone.utc)
+def test_a_folders_metadata_reads_back_from_the_folder_resource():
+    # The timestamp write lands on the folder's list item; the folder resource reports
+    # the same instant, and it is what the source side reads too.
+    created, modified = "2021-03-04T05:06:07Z", "2021-03-05T06:07:08Z"
+    ctx = _context(folder=_folder_payload(f"{_DOCS}/Area1", TimeCreated=created, TimeLastModified=modified))
 
-    metadata = _folder_target(web).read_metadata(_folder_item("Area1/"))
+    metadata = _target(ctx).read_metadata(_folder_item("Area1/"))
 
     assert metadata == {"created": "2021-03-04T05:06:07+00:00", "modified": "2021-03-05T06:07:08+00:00"}
-    assert handle.reads == 1
 
 
-# ── Content-approval (moderation) state ───────────────────────────────────────
+# ── Approval state ───────────────────────────────────────────────────────────
 
 
-class _ModerationItem(ListItem):
-    """A library item: the row's columns, read the way the adapter reads them."""
-
-    def __init__(self, properties: dict) -> None:
-        super().__init__(offline_context())
-        self.hydrate(properties)
+def _source(ctx: ClientContext) -> SharePointLibrarySource:
+    return SharePointLibrarySource(_folder(ctx), sp_list=_list(ctx))
 
 
-class _ModerationItems:
-    """The library's items collection, which records the projection it was given."""
-
-    def __init__(self, items: list[_ModerationItem]) -> None:
-        self._items = items
-        self.selects: list[list[str]] = []
-        self.expands: list[list[str]] = []
-
-    def select(self, columns) -> "_ModerationItems":
-        self.selects.append(list(columns))
-        return self
-
-    def expand(self, names) -> "_ModerationItems":
-        self.expands.append(list(names))
-        return self
-
-    def get_all(self) -> "_ModerationItems":
-        return self
-
-    def execute_query(self) -> "_ModerationItems":
-        return self
-
-    def __iter__(self):
-        return iter(self._items)
+def _sourced(**routes) -> tuple[SharePointLibrarySource, ClientContext]:
+    """The same library read as a source, with the approval state a draft carries."""
+    routes.setdefault("files", _paged(_files(_FILE_URL)))
+    routes.setdefault(
+        "items",
+        {
+            "d": {
+                "results": [
+                    {
+                        "__metadata": {"type": "SP.ListItem"},
+                        "FileRef": _FILE_URL,
+                        "OData__ModerationStatus": 0,
+                        "OData__ModerationComments": "wip",
+                    }
+                ]
+            }
+        },
+    )
+    ctx = _context(**routes)
+    return _source(ctx), ctx
 
 
-class _ModerationList:
-    def __init__(self, items: list[_ModerationItem], moderation: bool = True) -> None:
-        self.items = _ModerationItems(items)
-        self.properties = {"EnableModeration": moderation}
-        self.ensured: list[list[str]] = []
-
-    def ensure_properties(self, names) -> "_ModerationList":
-        self.ensured.append(list(names))
-        return self
-
-    def get(self) -> "_ModerationList":
-        return self
-
-    def execute_query(self) -> "_ModerationList":
-        return self
-
-
-def _library_source(state: dict | None, moderation: bool = True, files=None):
-    """A source over one file, whose list reports the given approval columns."""
-    url = "/sites/x/Docs/doc.txt"
-    folder = _SourceFolder("/sites/x/Docs", _Web(), files=files or [_SourceFile(url)])
-    properties = {"FileRef": url}
-    properties.update(state or {})
-    lst = _ModerationList([_ModerationItem(properties)], moderation=moderation)
-    return SharePointLibrarySource(folder, sp_list=lst), lst
-
-
-def test_library_source_reads_a_draft_files_approval_state():
-    # An uploaded file starts out approved, so only a draft/pending or rejected
-    # source file needs its state carried — with its approval comments.
-    source, _ = _library_source({"OData__ModerationStatus": 0, "OData__ModerationComments": "wip"})
+def test_a_draft_files_approval_state_is_read_with_its_comments():
+    # Only a draft/pending or rejected file needs its state carried; an uploaded file
+    # starts out approved. The state rides in the author-id read, so the verification
+    # diff sees it without a round trip of its own.
+    source, ctx = _sourced()
     item = source.list_items()[0]
 
     assert source.read_item_state(item) == {"_ModerationStatus": "0", "_ModerationComments": "wip"}
-    # the same read feeds the verification diff, which needs the status even when
-    # nothing had to be written
     assert source.read_metadata(item)["moderation_status"] == "0"
+    (read,) = [request for request in _requests(ctx) if "HasUniqueRoleAssignments" in request.url]
+    assert "OData__ModerationStatus" in read.url  # projected on a moderating library
 
 
-# ── Checked-out files (in-progress edits REST cannot see) ────────────────────
+def test_the_written_approval_state_is_a_separate_system_update():
+    # A document rejects a moderation change combined with other properties, so this
+    # write cannot ride along with the timestamps; ``_ModerationStatus`` is the field
+    # name ``ValidateUpdateListItem`` accepts for the OData-escaped column.
+    ctx = _context()
+
+    _target(ctx).apply_item_state(_file_item(), {"_ModerationStatus": "1", "_ModerationComments": "wip"})
+
+    (update,) = [request for request in _requests(ctx) if "ValidateUpdateListItem" in request.url]
+    assert [(entry["FieldName"], entry["FieldValue"]) for entry in update.data["formValues"]] == [
+        ("_ModerationStatus", "1"),
+        ("_ModerationComments", "wip"),
+    ]
+    assert update.data["bNewDocumentUpdate"] is True
 
 
-# ── Un-published (minor) versions (the draft hides its published predecessor) ──
+def test_a_written_files_approval_state_reads_back_through_the_projection():
+    # The written state is read back off the file's list item, projected to the one
+    # column: a library without moderation has no such column, and the diff must not
+    # fail over it.
+    ctx = _context()
+
+    metadata = _target(ctx).read_metadata(_file_item())
+
+    assert metadata["moderation_status"] == "1"
+    (read,) = [request for request in _requests(ctx) if "ItemAllFields" in request.url]
+    assert "$select=OData__ModerationStatus" in read.url
 
 
-def test_a_files_history_is_read_oldest_first_by_number_and_without_the_current_version():
-    # Live shape (``File.Versions`` on a 13-version document): every version comes
-    # back, the file's current content included, and a label is ``major.minor`` — so
-    # comparing labels as text puts "1.10" before "1.9".
-    source_file = _SourceFile("/sites/x/Docs/doc.txt")
-    source_file.ui_version_label = "1.11"
-    source_file.versions = _Versions([_Version("1.10"), _Version("1.11", current=True), _Version("1.9")])
-    source, _ = _library_source(None, files=[source_file])
+# ── History (the draft hides its published predecessor) ──────────────────────
+
+
+def test_version_history_is_oldest_first_by_number_without_the_current_version():
+    # Live shape on a 13-version document: every version comes back, the current content
+    # included, and a label is ``major.minor`` — so comparing labels as text puts "1.10"
+    # before "1.9".
+    versions = [
+        {"__metadata": {"type": "SP.FileVersion"}, "VersionLabel": label, "IsCurrentVersion": current}
+        for label, current in (("1.10", False), ("1.11", True), ("1.9", False))
+    ]
+    ctx = _context(
+        files=_paged(_files(_FILE_URL, UIVersionLabel="1.11")),
+        versions={"d": {"results": versions}},
+        stream=_paged(b"bytes of 1.9", b"bytes of 1.10"),
+    )
+    source = _source(ctx)
 
     current, older = source.read_version_history(source.list_items()[0])
 
     assert current == "1.11"
     # the current version's bytes are the file's content, which read() already supplies
     assert older == [("1.9", b"bytes of 1.9"), ("1.10", b"bytes of 1.10")]
-
-
-# ── Folder system metadata (a folder is an item too) ─────────────────────────
-
-
-class _MetaListItem:
-    """The file's list item: the only place its approval status is exposed."""
-
-    def __init__(self, status, fails: bool = False) -> None:
-        self._status = status
-        self._fails = fails
-        self.selected: list[str] = []
-        self.properties: dict = {}
-
-    def select(self, columns) -> "_MetaListItem":
-        self.selected = list(columns)
-        return self
-
-    @property
-    def moderation_status(self):
-        """The column's getter, as ``SP.ListItem`` declares it."""
-        return self.properties.get("OData__ModerationStatus", None)
-
-    def get(self) -> "_MetaListItem":
-        return self
-
-    def execute_query(self) -> "_MetaListItem":
-        if self._fails:
-            raise ValueError("Column 'OData__ModerationStatus' does not exist")
-        self.properties = {"OData__ModerationStatus": self._status}
-        return self
-
-
-class _MetaFile:
-    def __init__(self, item: _MetaListItem) -> None:
-        self.time_created = None
-        self.time_last_modified = None
-        self.length = 3
-        self.listItemAllFields = item
-
-    def get(self) -> "_MetaFile":
-        return self
-
-    def execute_query(self) -> "_MetaFile":
-        return self
-
-
-class _MetaWeb:
-    def __init__(self, item: _MetaListItem) -> None:
-        self._item = item
-
-    def get_file_by_server_relative_url(self, _url: str) -> _MetaFile:
-        return _MetaFile(self._item)
-
-
-def _meta_target(item: _MetaListItem) -> SharePointLibraryTarget:
-    return SharePointLibraryTarget(_TargetFolder(context=_Context(web=_MetaWeb(item))))
-
-
-def test_library_target_reads_back_the_written_approval_state():
-    target = _meta_target(_MetaListItem(1))
-
-    metadata = target.read_metadata(MigrationItem("/sites/x/Docs/doc.txt", "doc.txt"))
-
-    assert metadata["moderation_status"] == "1"
