@@ -45,6 +45,7 @@ from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.pages.customized_page_status import CustomizedPageStatus
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.irm.effective_settings import (
     EffectiveInformationRightsManagementSettings,
@@ -204,6 +205,7 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _file_loaded())
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_content(self, start: Optional[int] = None) -> ClientResult[bytes]:
         """Downloads a file content.
 
@@ -270,6 +272,7 @@ class File(AbstractFile):
 
         return result
 
+    @site_access(SiteLevel.READ)
     def get_pre_authorized_access_url(self, expiration_hours: int) -> ClientResult[str]:
         """Returns a link for downloading the file without authentication.
 
@@ -302,6 +305,7 @@ class File(AbstractFile):
         """Returns the user permissions for a file"""
         return self.listItemAllFields.get_user_effective_permissions(user)
 
+    @site_access(SiteLevel.READ)
     def get_wopi_frame_url(self, action: SPWOPIFrameAction = SPWOPIFrameAction.View) -> ClientResult[str]:
         """Returns the full URL to the SharePoint frame page that will initiate the specified WOPI frame action with the
         file's associated WOPI application. If there is no associated WOPI application or associated action,
@@ -353,6 +357,7 @@ class File(AbstractFile):
         """
         return self.listItemAllFields.unshare_link(link_kind, share_id)  # type: ignore[arg-type]
 
+    @site_access(SiteLevel.READ)
     def get_image_preview_uri(self, width: int, height: int, client_type=None) -> ClientResult[str]:
         """Returns the uri where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
@@ -368,6 +373,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_image_preview_url(self, width: int, height: int, client_type: Optional[str] = None) -> ClientResult[str]:
         """Returns the url where the thumbnail with the closest size to the desired can be found.
         The actual resolution of the thumbnail might not be the same as the desired values.
@@ -401,6 +407,7 @@ class File(AbstractFile):
             self.context.before_execute(prefer_bypass_shared_lock, once=True)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
         """Moves the file to the Recycle Bin and returns the identifier of the new Recycle Bin item.
 
@@ -414,6 +421,7 @@ class File(AbstractFile):
         self._tolerate_missing(ignore_missing)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def approve(self, comment: str) -> Self:
         """Approves the file submitted for content approval with the specified comment.
 
@@ -424,6 +432,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def deny(self, comment: str) -> Self:
         """Denies approval for a file that was submitted for content approval.
 
@@ -434,6 +443,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def copyto(
         self,
         destination: Union[Folder, str],
@@ -471,6 +481,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_file_resolved())
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def copyto_using_path(self, destination, overwrite=False, file_name=None):  # type: ignore[override]
         """Copies the file to the destination path. Server MUST overwrite an existing file of the same name
         if overwrite is true.
@@ -508,6 +519,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_file_resolved())
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def moveto(self, destination: Union[str, Folder], flag: int) -> Self:
         """Moves the file to the specified destination url.
 
@@ -539,6 +551,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_file_resolved())
         return self
 
+    @site_access(SiteLevel.WRITE)
     def move_to_using_path(self, destination: Union[str, Folder], flag: MoveOperations) -> Self:
         """Moves the file to the specified destination path.
 
@@ -615,6 +628,7 @@ class File(AbstractFile):
         self.ensure_properties(["ServerRelativePath", "Name"]).after_execute(lambda _: _source_file_resolved())
         return self
 
+    @site_access(SiteLevel.WRITE)
     def publish(self, comment: str) -> Self:
         """Submits the file for content approval with the specified comment.
 
@@ -625,6 +639,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def unpublish(self, comment: str) -> Self:
         """Removes the file from content approval or unpublishes a major version.
 
@@ -635,6 +650,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def check_access_and_post_view_audit_event(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
@@ -642,12 +658,14 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def checkout(self) -> Self:
         """Checks out the file from a document library based on the check-out type."""
         qry = ServiceOperationQuery(self, "checkout")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def checkin(self, comment: str, checkin_type: CheckinType) -> Self:
         """Checks the file in to a document library based on the check-in type.
 
@@ -662,6 +680,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def undocheckout(self) -> Self:
         """Reverts an existing checkout for the file."""
         qry = ServiceOperationQuery(self, "UndoCheckout")
@@ -683,6 +702,7 @@ class File(AbstractFile):
             ServiceOperationPath("GetLimitedWebPartManager", [scope.value], self.resource_path),
         )
 
+    @site_access(SiteLevel.READ)
     def open_binary_stream(self) -> ClientResult[bytes]:
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
@@ -690,6 +710,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_binary_stream(self, stream: bytes) -> Self:
         """Saves the file in binary format.
 
@@ -700,6 +721,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_upload_status(self, upload_id: str) -> UploadStatus:
         """Gets the status of a chunk upload session.
 
@@ -714,6 +736,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def upload_with_checksum(self, upload_id: str, checksum: str, stream: bytes) -> File:
         """Args:
         upload_id (str): The upload session ID.
@@ -727,6 +750,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def cancel_upload(self, upload_id: str) -> Self:
         """Aborts the chunk upload session without saving the uploaded data. If StartUpload (section 3.2.5.64.2.1.22)
         created the file, the file will be deleted.
@@ -741,6 +765,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_upload(self, upload_id: str, content: bytes) -> ClientResult[int]:
         """Starts a new chunk upload session and uploads the first fragment.
 
@@ -754,6 +779,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def continue_upload(self, upload_id: str, file_offset: int, content: bytes) -> ClientResult[int]:
         """Continues the chunk upload session with an additional fragment. The current file content is not changed.
 
@@ -777,6 +803,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def finish_upload(self, upload_id: str, file_offset: int, content: bytes) -> Self:
         """Uploads the last file fragment and commits the file. The current file content is changed when this method
         completes.
@@ -791,6 +818,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def finish_upload_with_checksum(self, upload_id: str, file_offset: int, checksum: str, stream: bytes) -> Self:
         """Uploads the last file fragment and commits the file. The current file content is changed when this method
         completes.
@@ -918,6 +946,7 @@ class File(AbstractFile):
         self.ensure_property("ServerRelativePath").after_execute(lambda _: _download_inner())
         return self
 
+    @site_access(SiteLevel.READ)
     def download_session(
         self,
         file_object,
@@ -1092,6 +1121,7 @@ class File(AbstractFile):
             if aclose is not None:
                 await aclose()
 
+    @site_access(SiteLevel.WRITE)
     def rename(self, new_file_name: str) -> Self:
         """Rename a file
 
@@ -1503,6 +1533,7 @@ class File(AbstractFile):
 
         return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))
 
+    @site_access(SiteLevel.WRITE)
     def add_client_activities(
         self, activities_stream: bytes
     ) -> ClientResult[ClientValueCollection[ActivityClientResponse]]:
@@ -1523,6 +1554,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def change_content_storage_schema(self, desired_schema: str) -> ClientResult[bool]:
         """ChangeContentStorageSchema operation.
 
@@ -1537,6 +1569,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def check_in(self, comment: str, check_in_type: int) -> Self:
         """CheckIn operation.
 
@@ -1552,12 +1585,14 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def check_out(self) -> Self:
         """CheckOut operation."""
         qry = ServiceOperationQuery(self, "CheckOut", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def copy_to(self, str_new_url: str, bover_write: bool) -> Self:
         """CopyTo operation.
 
@@ -1573,6 +1608,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def copy_to_using_path(self, decoded_url: str, bover_write: bool) -> Self:
         """CopyToUsingPath operation.
 
@@ -1588,6 +1624,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_with_parameters(self, parameters: FileDeleteParameters) -> Self:
         """DeleteWithParameters operation.
 
@@ -1599,6 +1636,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def execute_cobalt_request(self, input_stream: bytes) -> ClientResult[bytes]:
         """ExecuteCobaltRequest operation.
 
@@ -1612,6 +1650,7 @@ class File(AbstractFile):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_content_ver_from_tag(context: ClientContext, content_tag: str) -> ClientResult[int]:
         """GetContentVerFromTag operation.
 
@@ -1626,6 +1665,7 @@ class File(AbstractFile):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_file_user_value(self, key: str) -> ClientResult[OfficeFileUserValueResponse]:
         """GetFileUserValue operation.
 
@@ -1642,6 +1682,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_media_service_metadata(self) -> ClientResult[MediaServiceUpdateParameters]:
         """GetMediaServiceMetadata operation."""
         from office365.sharepoint.approvals.mediaserviceupdateparameters import (
@@ -1653,6 +1694,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_pre_authorized_access_url2(self, expiration_hours: int, expiration_minuites: int) -> ClientResult[str]:
         """GetPreAuthorizedAccessUrl2 operation.
 
@@ -1667,6 +1709,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def move_to(self, new_url: str, flags: int) -> Self:
         """MoveTo operation.
 
@@ -1680,6 +1723,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def open_binary_stream_with_options(self, open_options: int) -> ClientResult[bytes]:
         """OpenBinaryStreamWithOptions operation.
 
@@ -1692,6 +1736,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def recycle_with_e_tag(self, etag_match: str) -> ClientResult[UUID]:
         """RecycleWithETag operation.
 
@@ -1704,6 +1749,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def recycle_with_parameters(self, parameters: FileDeleteParameters) -> ClientResult[UUID]:
         """RecycleWithParameters operation.
 
@@ -1716,6 +1762,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_expiration_date(self, expiration_date: datetime) -> Self:
         """SetExpirationDate operation.
 
@@ -1727,6 +1774,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_file_user_value(self, key: str, value: str) -> ClientResult[OfficeFileUserValueResponse]:
         """SetFileUserValue operation.
 
@@ -1745,6 +1793,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_media_service_metadata(self, parameters: MediaServiceUpdateParameters) -> Self:
         """SetMediaServiceMetadata operation.
 
@@ -1756,12 +1805,14 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def undo_check_out(self) -> Self:
         """UndoCheckOut operation."""
         qry = ServiceOperationQuery(self, "UndoCheckOut", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def un_publish(self, comment: str) -> Self:
         """UnPublish operation.
 
@@ -1773,6 +1824,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_virus_info(self, virus_status: int, virus_message: str, etag_to_check: str) -> Self:
         """UpdateVirusInfo operation.
 

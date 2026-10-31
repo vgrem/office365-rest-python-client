@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.sharepoint.files.file import File
+from office365.sharepoint.lists.collection import ListCollection
 from office365.sharepoint.lists.list import List
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -15,6 +17,7 @@ class TestPages(SPTestCase):
     pages_list: ClassVar[Optional[List]] = None
     target_file: ClassVar[Optional[File]] = None
 
+    @requires_call(ListCollection.ensure_site_pages_library, flow="application")
     def test_01_ensure_site_pages_library(self):
         """Ensure site pages library exists"""
         pages_list = self.client.web.lists.ensure_site_pages_library().execute_query()

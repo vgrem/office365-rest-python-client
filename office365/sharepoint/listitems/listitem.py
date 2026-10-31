@@ -37,6 +37,7 @@ from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateV
 from office365.sharepoint.listitems.update_parameters import ListItemUpdateParameters
 from office365.sharepoint.listitems.versions.collection import ListItemVersionCollection
 from office365.sharepoint.lists.templates.type import ListTemplateType
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.policy.dlp_policy_tip import DlpPolicyTip
@@ -95,6 +96,7 @@ class ListItem(SecurableObject):
         if parent_list is not None:
             self.set_property("ParentList", parent_list, False)
 
+    @site_access(SiteLevel.WRITE)
     def archive(self) -> ClientResult[str]:
         """Archives the list item."""
         return_type = ClientResult(self.context, str())
@@ -130,6 +132,7 @@ class ListItem(SecurableObject):
         list_folder.ensure_property("ServerRelativeUrl").after_execute(lambda _: _lock_record_item())
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def share_link(
         self,
         link_kind: int,
@@ -175,6 +178,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def unshare_link(self, link_kind: int, share_id: Optional[str] = None) -> Self:
         """Removes the specified tokenized sharing link of the list item.
 
@@ -188,6 +192,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def delete_link_by_kind(self, link_kind):
         """Removes the specified tokenized sharing link of the list item
 
@@ -297,6 +302,7 @@ class ListItem(SecurableObject):
         self.parent_list.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _list_item_loaded())
         return return_value
 
+    @site_access(SiteLevel.READ)
     def get_wopi_frame_url(self, action: SPWOPIAction) -> ClientResult[str]:
         """Gets the full URL to the SharePoint frame page that initiates the SPWOPIAction object with the WOPI
         application associated with the list item.
@@ -309,6 +315,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return result
 
+    @site_access(SiteLevel.WRITE)
     def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
         """Moves the listItem to the Recycle Bin and returns the identifier of the new Recycle Bin item.
 
@@ -323,6 +330,7 @@ class ListItem(SecurableObject):
         self._tolerate_missing(ignore_missing)
         return result
 
+    @site_access(SiteLevel.READ)
     def get_changes(self, query=None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the ListItem,
         based on the specified query.
@@ -420,6 +428,7 @@ class ListItem(SecurableObject):
         self.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _item_resolved())
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def validate_update_list_item(
         self,
         form_values: Dict,
@@ -460,6 +469,7 @@ class ListItem(SecurableObject):
         super().update()
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_ex(self, bypass_quota_check: Optional[bool] = None, bypass_shared_lock: Optional[bool] = None):
         """Args:
         bypass_quota_check (bool):
@@ -470,6 +480,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def system_update(self):
         """Update the list item."""
 
@@ -513,12 +524,14 @@ class ListItem(SecurableObject):
         self.parent_list.ensure_properties(["BaseTemplate"]).after_execute(lambda _: _list_loaded())
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_overwrite_version(self) -> ListItem:
         """Updates the item without creating another version of the item."""
         qry = ServiceOperationQuery(self, "UpdateOverwriteVersion")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_comments_disabled(self, value: bool) -> Self:
         """Sets the value of CommentsDisabled for the item.
 
@@ -529,6 +542,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_hold(self, compliance_tag: str) -> Self:
         """Sets a compliance tag with a hold
 
@@ -540,6 +554,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_comments(self) -> CommentCollection:
         """Retrieve ListItem comments"""
         return_type = CommentCollection(self.context, ServiceOperationPath("GetComments", [], self.resource_path))
@@ -551,6 +566,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry).before_execute(_create_request)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def override_policy_tip(self, user_action, justification):
         """Overrides the policy tip on this list item.
 
@@ -564,6 +580,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def parse_and_set_field_value(self, field_name: str, value: str) -> Self:
         """Sets the value of the field (2) for the list item based on an implementation-specific transformation
         of the value.
@@ -918,6 +935,7 @@ class ListItem(SecurableObject):
         if note_name:
             self.set_property(note_name, str(value))
 
+    @site_access(SiteLevel.READ)
     def ensure_type_name(self, target_list) -> Self:
         """Determine the metadata type annotation for this list item.
 
@@ -959,6 +977,7 @@ class ListItem(SecurableObject):
             "FieldValuesForEdit", FieldStringValues(self.context, ResourcePath("FieldValuesForEdit", self.resource_path))
         )
 
+    @site_access(SiteLevel.WRITE)
     def add_thumbnail_field_data(
         self, image_stream: bytes, image_name: str, field_internal_name: str, lock_id: str
     ) -> ClientResult[SPImageItem]:
@@ -993,6 +1012,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete_with_parameters(self, parameters: ListItemDeleteParameters) -> Self:
         """DeleteWithParameters operation.
 
@@ -1004,6 +1024,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def do_entities_have_access_to_label(
         self, people_picker_input: str
     ) -> ClientResult[ClientValueCollection[LabelAccessControlData]]:
@@ -1024,6 +1045,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def folder_archive_progress(self) -> ClientResult[str]:
         """FolderArchiveProgress operation."""
         return_type = ClientResult(self.context, str())
@@ -1031,6 +1053,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def folder_unarchive_progress(self) -> ClientResult[str]:
         """FolderUnarchiveProgress operation."""
         return_type = ClientResult(self.context, str())
@@ -1038,6 +1061,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def media_service_update(self, parameters: MediaServiceUpdateParameters) -> Self:
         """MediaServiceUpdate operation.
 
@@ -1049,6 +1073,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def media_service_update_v2(self, parameters: MediaServiceUpdateParameters, event_firing_enabled: bool) -> Self:
         """MediaServiceUpdateV2 operation.
 
@@ -1069,6 +1094,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def recycle_with_parameters(self, parameters: ListItemDeleteParameters) -> ClientResult[UUID]:
         """RecycleWithParameters operation.
 
@@ -1081,6 +1107,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_item_data_as_stream(self, options: int) -> ClientResult[bytes]:
         """RenderListItemDataAsStream operation.
 
@@ -1093,6 +1120,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag(
         self,
         compliance_tag: str,
@@ -1136,6 +1164,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_explicit_metas_update(
         self,
         compliance_tag: str,
@@ -1171,6 +1200,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_meta_info(
         self,
         compliance_tag: str,
@@ -1218,6 +1248,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_no_hold(self, compliance_tag: str) -> Self:
         """SetComplianceTagWithNoHold operation.
 
@@ -1231,6 +1262,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_record(self, compliance_tag: str) -> Self:
         """SetComplianceTagWithRecord operation.
 
@@ -1244,6 +1276,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def unarchive(self) -> ClientResult[str]:
         """Unarchive operation."""
         return_type = ClientResult(self.context, str())
@@ -1251,6 +1284,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def validate_update_fetch_list_item(
         self,
         form_values: ClientValueCollection[ListItemFormUpdateValue],
@@ -1301,6 +1335,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def validate_update_fetch_list_item_in_folder(
         self,
         form_values: ClientValueCollection[ListItemFormUpdateValue],
@@ -1347,6 +1382,7 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_v2(
         self,
         compliance_tag: str,

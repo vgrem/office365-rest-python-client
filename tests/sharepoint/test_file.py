@@ -20,6 +20,7 @@ from tests import (
     test_team_site_url,
     test_tenant,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -121,6 +122,7 @@ class TestSharePointFile(SPTestCase):
         self.client.execute_query()
         self.assertIsInstance(list_item.file, File)
 
+    @requires_call(File.save_binary_stream, flow="application")
     def test_07_update_file_content(self):
         """Update file binary content"""
         file = TestSharePointFile.file
@@ -153,6 +155,7 @@ class TestSharePointFile(SPTestCase):
         self.assertIsNotNone(first_version.resource_path)
         first_version.delete_object().execute_query()
 
+    @requires_call(File.get_content, flow="application")
     def test_11_download_file_content(self):
         """Download file content"""
         file = TestSharePointFile.file
@@ -169,6 +172,7 @@ class TestSharePointFile(SPTestCase):
             content = f.getvalue()
         self.assertEqual(content, self.text_content)
 
+    @requires_call(File.copyto, flow="application")
     def test_13_copy_file(self):
         """Copy file to another folder"""
         file = TestSharePointFile.file
@@ -178,6 +182,7 @@ class TestSharePointFile(SPTestCase):
         copied_file = file.copyto(folder, True).execute_query()
         self.assertIsNotNone(copied_file.server_relative_url)
 
+    @requires_call(File.moveto, flow="application")
     def test_14_move_file(self):
         """Move file to another folder"""
         file = TestSharePointFile.file
@@ -187,6 +192,7 @@ class TestSharePointFile(SPTestCase):
         moved_file = file.moveto(folder, 1).get().execute_query()
         self.assertIsNotNone(moved_file.server_relative_url)
 
+    @requires_call(File.recycle, flow="application")
     def test_15_recycle_file(self):
         """Recycle file"""
         file = TestSharePointFile.file

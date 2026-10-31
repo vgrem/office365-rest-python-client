@@ -340,6 +340,16 @@ introduced.
   the same one-liner — six lines each, still naming the same names by hand. Debt 2,228 →
   2,043, and 30 live tests across 16 SharePoint suites now derive their precondition from the
   declaration of the method they call.
+- **The everyday objects carry the rung too.** `File` declares 51 methods, `ListItem` 35 and
+  `ListCollection` 5 — the part of the tree where the rung has to be judged one method at a
+  time rather than read off a name: `File.get_content` reads, `File.recycle` writes,
+  `File.change_content_storage_schema` manages a library's schema, and the three sharing-link
+  calls on an item (`share_link`, `unshare_link`, `delete_link_by_kind`) manage permissions.
+  `ListItem.ensure_type_name` declares `READ` even though it sits on the write path, because
+  all it queues is a read of the target list. Debt 2,043 → 1,952, and 15 live tests across 6
+  suites derive their precondition from the declaration. The one operation left unmarked is
+  the private `ListItem._set_taxonomy_field_value`: a helper that is not an entry point names
+  nothing, so it stays in the debt.
 
 ### Changed
 

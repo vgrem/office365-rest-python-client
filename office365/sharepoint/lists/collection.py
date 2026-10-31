@@ -11,6 +11,7 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.lists.creation_information import ListCreationInformation
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -114,6 +115,7 @@ class ListCollection(EntityCollection[List]):
             reconcile=_reconcile,
         )
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_client_rendered_site_pages_library(self) -> List:
         """
         Gets or creates the default client-rendered site pages library.
@@ -127,6 +129,7 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_events_list(self) -> List:
         """
         Gets or creates the default events list for the site.
@@ -140,6 +143,7 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_site_assets_library(self) -> List:
         """
         Gets or creates the default site assets library for images and files.
@@ -153,6 +157,7 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_site_pages_library(self) -> List:
         """
         Gets or creates the default wiki pages library.
@@ -166,6 +171,7 @@ class ListCollection(EntityCollection[List]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, list_creation_information: ListCreationInformation) -> List:
         """
         Creates a new list in the collection.

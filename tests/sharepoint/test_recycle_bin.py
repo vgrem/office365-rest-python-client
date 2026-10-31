@@ -33,6 +33,7 @@ class TestSharePointRecycleBin(SPTestCase):
     def tearDownClass(cls):
         pass
 
+    @requires_call(File.recycle, flow="application")
     def test_01_recycle_file(self):
         """Recycle a file and verify the operation result."""
         target = TestSharePointRecycleBin.target_file

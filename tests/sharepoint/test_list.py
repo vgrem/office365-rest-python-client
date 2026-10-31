@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.sharepoint.lists.collection import ListCollection
 from office365.sharepoint.lists.currency import CurrencyList
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
@@ -91,6 +92,7 @@ class TestSPList(SPTestCase):
         result = self.client.web.get_list_using_path("SitePages").execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(ListCollection.ensure_events_list, flow="application")
     def test_10_ensure_events_list(self):
         """Ensure events list exists"""
         events_list = self.client.web.lists.ensure_events_list().execute_query()

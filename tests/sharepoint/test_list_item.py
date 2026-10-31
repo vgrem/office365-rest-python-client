@@ -83,6 +83,7 @@ class TestSharePointListItem(SPTestCase):
         result = TestSharePointListItem.target_list.get_items(caml_query).execute_query()
         self.assertEqual(len(result), 1)
 
+    @requires_call(ListItem.get_wopi_frame_url, flow="application")
     def test_06_get_wopi_frame_url(self):
         """Get WOPI frame URL for the list item"""
         self.assertIsNotNone(TestSharePointListItem.target_item)
@@ -103,6 +104,7 @@ class TestSharePointListItem(SPTestCase):
         self.assertNotEqual(item_to_update.properties["Modified"], last_updated)
         self.assertNotEqual(self.default_title, new_title)
 
+    @requires_call(ListItem.system_update, flow="application")
     def test_08_systemUpdate_listItem(self):
         """System update list item"""
         self.assertIsNotNone(TestSharePointListItem.target_item)
@@ -116,12 +118,14 @@ class TestSharePointListItem(SPTestCase):
         self.assertEqual(item_to_update.properties["Modified"], last_updated)
         self.assertNotEqual(self.default_title, new_title)
 
+    @requires_call(ListItem.update_overwrite_version, flow="application")
     def test_09_update_overwrite_version(self):
         """Update list item overwriting version"""
         self.assertIsNotNone(TestSharePointListItem.target_item)
         item_to_update = TestSharePointListItem.target_item
         item_to_update.update_overwrite_version().execute_query()
 
+    @requires_call(ListItem.get_comments, flow="application")
     def test_10_get_comments(self):
         """Get comments on list item"""
         self.assertIsNotNone(TestSharePointListItem.target_item)
@@ -140,12 +144,14 @@ class TestSharePointListItem(SPTestCase):
         result = TestSharePointListItem.target_item.get_dlp_policy_tip.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(ListItem.set_comments_disabled, flow="application")
     def test_13_enable_comments(self):
         """Enable comments on list item"""
         self.assertIsNotNone(TestSharePointListItem.target_item)
         result = TestSharePointListItem.target_item.set_comments_disabled(False).execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(ListItem.recycle, flow="application")
     def test_14_recycle_item(self):
         """Recycle list item"""
         self.assertIsNotNone(TestSharePointListItem.target_item)

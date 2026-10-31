@@ -106,6 +106,7 @@ class TestCompliance(SPTestCase):
         result = self.target_list.get_compliance_tag().execute_query()
         self.assertTrue(answered_null(result), "a reset list carries no compliance tag")
 
+    @requires_call(ListItem.set_compliance_tag_with_hold, flow="application")
     def test_07_set_item_compliance_tag_with_hold(self):
         """Apply a compliance tag with hold to a list item."""
         if TestCompliance.tag_name is None:
