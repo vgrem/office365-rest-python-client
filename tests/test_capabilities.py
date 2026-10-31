@@ -233,6 +233,23 @@ class TestSuiteMatrix(TestCase):
         self.assertEqual(flow_of(SharePointCase), "app-only-cert")
         self.assertIsNone(flow_of(TestCase))
 
+    def test_a_property_named_like_a_test_is_not_a_test(self):
+        module = types.ModuleType("fake_props")
+
+        class TestWithProperty(GraphDelegatedTestCase):
+            @property
+            def test_site(self):
+                return None
+
+            def test_real(self):
+                pass
+
+        TestWithProperty.__module__ = module.__name__
+        module.TestWithProperty = TestWithProperty
+        needs = needs_of(ROOT / "tests/fake/test_props.py", module)
+        assert needs is not None
+        self.assertEqual(needs.tests, 1)
+
     def test_an_unverified_requirement_is_not_reported_as_missing(self):
         needs = Needs(suite="tests/x/test_y.py", flow="delegated-ropc", tests=1)
         needs.add(_MAIL, "Suite.test_scoped")

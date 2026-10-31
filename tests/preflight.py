@@ -21,6 +21,7 @@ import importlib
 import json
 import sys
 from datetime import datetime, timezone
+from inspect import getmembers, isfunction
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -75,7 +76,10 @@ def needs_of(path: Path, module: ModuleType) -> Needs | None:
         flow = flow_of(obj)
         if flow is None:
             continue
-        test_names = [attr for attr in dir(obj) if attr.startswith("test")]
+        # Count what pytest collects -- test *methods*, in a class pytest would collect.
+        # ``dir()`` would also hand back a ``@property def test_site(self)``, and a
+        # suite that says it has 15 tests when pytest runs 13 is a report nobody trusts.
+        test_names = [attr for attr, member in getmembers(obj, isfunction) if attr.startswith("test")]
         if needs is None:
             needs = Needs(suite=path.relative_to(ROOT).as_posix(), flow=flow)
         needs.tests += len(test_names)
