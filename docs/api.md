@@ -334,6 +334,23 @@ mislead. Application code can append its own context with `exc.add_hint("...")`
 and read the collected text back via `exc.hints`. The most recently queued query
 is available as `client.last_query`.
 
+A name is worth checking before it reaches a tenant. `office365.permissions.catalog()`
+answers what an API publishes — `publishes(name, kind)`,
+`requires_admin_consent(name, kind)`, and the names themselves — from a committed
+snapshot of that API's own service principal, so the question needs no sign-in:
+
+```python
+from office365.permissions import APPLICATION, catalog
+
+graph = catalog("Microsoft Graph")
+graph.publishes("Files.ReadWrite.All", APPLICATION)  # True
+graph.publishes("Files.ReadWrite", APPLICATION)  # False - the scope exists, the role does not
+```
+
+The same catalog is what keeps the library's own declarations honest, and a live
+suite re-reads the tenant, so a name that stops being published fails a test
+rather than a customer's deployment.
+
 ## Power features
 
 ### Proxy, custom SSL, timeouts

@@ -29,14 +29,14 @@ from office365.runtime.types.odata_property import odata
 class Workbook(Entity):
     """The top-level object that contains related workbook objects such as worksheets, tables, and ranges."""
 
-    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def session_info_resource(self) -> ClientResult[WorkbookSessionInfo]:
         return_type = ClientResult(self.context, WorkbookSessionInfo())
         qry = FunctionQuery(self, "sessionInfoResource", None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def create_session(self, persist_changes: bool | None = None) -> ClientResult[WorkbookSessionInfo]:
         """Create a new workbook session.
 
@@ -58,7 +58,7 @@ class Workbook(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def refresh_session(self, session_id: str) -> Self:
         """Use this API to refresh an existing workbook session.
 
@@ -73,7 +73,7 @@ class Workbook(Entity):
         self.context.add_query(qry).before_execute(_construct_request)
         return self
 
-    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite"])
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def close_session(self, session_id: str) -> Self:
         """Use this API to close an existing workbook session.
 

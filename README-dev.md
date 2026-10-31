@@ -263,6 +263,15 @@ def get(self) -> Message: ...
 `office365/sharepoint` names `ResourceName.SharePoint`, because the same name is a different
 grant on each API.
 
+A name has to be one the API actually publishes, and that is checked offline against
+`office365/permissions/snapshots/` — one generated module per API, holding the names its own
+service principal offers. When a name is wrong, or an API ships a new permission you want to
+use, re-read the API and commit what it writes:
+
+```bash
+uv run python scripts/gen_permission_catalog.py
+```
+
 ## Publish a release
 
 Publishing is a tag push; `.github/workflows/release.yml` builds and uploads the

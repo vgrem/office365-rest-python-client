@@ -1,6 +1,6 @@
 """What a call needs from a tenant, declared beside the request and checked by one type.
 
-Four questions, one package:
+Five questions, one package:
 
 :mod:`~office365.permissions.declaration`
     What a *model method* needs - ``@require_permission`` beside the request it builds, read
@@ -9,6 +9,10 @@ Four questions, one package:
     What a *caller* needs - one :class:`~office365.permissions.requirement.Requirement` per
     flow, joinable across calls, checked against a tenant's facts. A live test and a model
     method state the same fact with the same type.
+:mod:`~office365.permissions.catalog`
+    What an *API* publishes - the names a declaration may use, generated from the API's own
+    service principal and committed, so a wrong name fails offline instead of looking like a
+    grant the tenant never gave.
 :mod:`~office365.permissions.index`
     What a *package* has - every operation that issues a request or names a permission,
     answered from source, so "which requests still name nothing" is a number, not a rumour.
@@ -29,6 +33,7 @@ Graph's own permissions *entities* - ``identity``, ``identitySet``, ``resourceSp
 them. This package is the vocabulary a caller uses, not a service namespace.
 """
 
+from office365.permissions.catalog import APPLICATION, DELEGATED, Catalog, catalog, catalog_resources
 from office365.permissions.declaration import PermissionRequirement, declared, require_permission
 from office365.permissions.index import Index, Operation, index
 from office365.permissions.requirement import FLOWS, Requirement, TenantFacts
@@ -36,7 +41,10 @@ from office365.permissions.resource import ResourceName
 from office365.permissions.token import TokenClaims
 
 __all__ = [
+    "APPLICATION",
+    "DELEGATED",
     "FLOWS",
+    "Catalog",
     "Index",
     "Operation",
     "PermissionRequirement",
@@ -44,6 +52,8 @@ __all__ = [
     "ResourceName",
     "TenantFacts",
     "TokenClaims",
+    "catalog",
+    "catalog_resources",
     "declared",
     "index",
     "require_permission",

@@ -40,7 +40,7 @@ class SearchEntity(Entity):
             "Calendars.Read",
             "Files.Read.All",
             "Sites.Read.All",
-            "People.Read",
+            "People.Read.All",
             "ExternalItem.Read.All",
             "Chat.Read.All",
         ],
@@ -179,7 +179,7 @@ class SearchEntity(Entity):
             region=region,
         )
 
-    @require_permission(delegated=["People.Read"], application=["People.Read"])
+    @require_permission(delegated=["People.Read"], application=["People.Read.All"])
     def query_peoples(
         self,
         query_string: str,
