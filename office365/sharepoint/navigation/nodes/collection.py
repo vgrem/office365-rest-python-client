@@ -71,7 +71,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         ``SP.NavigationNode`` does not have, ``IsExternal`` is the service's own
         computation from the URL, and ``IsVisible`` is ignored both here and in an
         update -- so a node cannot be created hidden. See
-        ``tests/unit/test_navigation_node_create.py``.
+        ``tests/unit/test_sharepoint_navigation.py``.
         """
         return_type = NavigationNode(self.context)
         return_type.title = create_node_info.Title  # type: ignore[assignment]

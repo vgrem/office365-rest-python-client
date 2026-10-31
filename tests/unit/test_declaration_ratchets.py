@@ -1,14 +1,21 @@
-"""``Compare`` rules say something their field's type can bear (see ``runtime/compare_check.py``)."""
+"""Two ratchets that walk the whole package and fail on *this* tree.
+
+The first is ``Compare`` rules: each must say something its field's type can bear
+(see ``runtime/compare_check.py``). The second is a dataclass field default: it
+must be hashable on whichever interpreter runs the suite.
+"""
 
 from __future__ import annotations
 
+import dataclasses
 import importlib
 import pkgutil
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, Iterator, List, Optional
 
 import office365
+import office365.runtime as runtime_package
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.compare_check import _fields, compare_problems
@@ -42,3 +49,37 @@ def _problems(**declared) -> list:
         label: Optional[str] = field(default=None, metadata=odata("label", compare=declared.get("label")))
 
     return compare_problems(Sample)
+
+
+def _dataclasses_under(package: object) -> Iterator[type]:
+    """Every dataclass defined by ``package`` and its submodules."""
+    for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):  # type: ignore[attr-defined]
+        module = importlib.import_module(module_info.name)
+        for value in vars(module).values():
+            if isinstance(value, type) and dataclasses.is_dataclass(value):
+                yield value
+
+
+def _unhashable_defaults(model: type) -> List[str]:
+    """The fields of ``model`` whose default is an unhashable instance."""
+    offenders: List[str] = []
+    for declared in dataclasses.fields(model):
+        if declared.default is dataclasses.MISSING or declared.default_factory is not dataclasses.MISSING:
+            continue
+        try:
+            hash(declared.default)
+        except TypeError:
+            offenders.append(declared.name)
+    return offenders
+
+
+def test_no_runtime_dataclass_default_is_an_unhashable_instance() -> None:
+    offenders = {
+        f"{model.__module__}.{model.__qualname__}.{name}": "field(default_factory=...)"
+        for model in _dataclasses_under(runtime_package)
+        for name in _unhashable_defaults(model)
+    }
+    assert not offenders, (
+        "these dataclass fields default to an unhashable instance, which Python 3.11 "
+        f"rejects at class-creation time: {sorted(offenders)}"
+    )

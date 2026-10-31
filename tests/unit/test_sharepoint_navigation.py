@@ -187,7 +187,7 @@ def test_a_web_that_inherits_only_flips_the_targets_flag():
     assert verify_navigation(source, target) == []
 
 
-# --- test_navigation_tree ------------------------------------------------------
+# --- Navigation.get_tree(): both bars, one execution --------------------------
 
 
 def _rest_node(node_id: int, title: str, url: str) -> dict:
@@ -231,7 +231,7 @@ def test_get_tree_expands_both_bars_and_walks_every_level_in_one_execution():
     assert len(transport.requests) == expected_requests
 
 
-# --- test_navigation_node_create -----------------------------------------------
+# --- A node's create body: the two fields the service takes -------------------
 
 #: The id the scripted create answers with.
 _NODE_ID = 7

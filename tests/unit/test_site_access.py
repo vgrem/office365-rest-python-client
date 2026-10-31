@@ -76,7 +76,7 @@ def test_revoke_app_access_resolves_service_principal_and_deletes():
     assert deletes == ["perm-1"]
 
 
-# --- test_securable_object -----------------------------------------------------
+# --- The SharePoint REST side: get_securable_object and its wrappers ----------
 
 
 class _CaptureTransport(ScriptedTransport):

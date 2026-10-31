@@ -78,7 +78,7 @@ def test_get_or_create_tolerant_miss_defers_create():
     assert return_type.copied_from is None
 
 
-# --- test_get_or_none ----------------------------------------------------------
+# --- ClientObject.get_or_none: the read-side twin -----------------------------
 
 _NOT_FOUND = {
     "http_status": 404,

@@ -1,13 +1,17 @@
-"""Offline tests for the ``POST /teams`` payload built by ``TeamCollection``.
+"""Offline tests for the creation payloads ``TeamCollection`` and ``ChannelCollection`` build.
 
 Application-context team creation must name at least one owner, so
 ``create``/``create_and_wait`` accept an ``owners`` argument that is rendered as
 ``aadUserConversationMember`` entries in the request body.
+
+A channel created asynchronously (HTTP 202) is covered here too.
 """
 
 from __future__ import annotations
 
 from office365.graph_client import GraphClient
+from office365.runtime.paths.resource_path import ResourcePath
+from office365.teams.channels.collection import ChannelCollection
 from tests._scripted_transport import ScriptedTransport
 
 _OPERATION = {
@@ -79,3 +83,44 @@ def test_create_and_wait_polls_inside_the_after_execute_hook():
     assert team.display_name == "Team A"
     assert transport.calls == 3  # noqa: PLR2004 - create, poll, reload
     assert transport.requests[1].url.endswith("/teams/abc/operations/op1")
+
+
+# --- Channel creation: an async (HTTP 202) add follows its operation ----------
+
+_CHANNEL_ID = "19:abc@thread.tacv2"
+_ACCEPTED = {
+    "http_status": 202,
+    "headers": {"Location": "/teams/t1/operations/op1"},
+    "body": {},
+}
+_OPERATION_SUCCEEDED = {
+    "http_status": 200,
+    "headers": {"Content-Type": "application/json"},
+    "body": {
+        "status": "succeeded",
+        # targetResourceId is the *team* id, not the channel id.
+        "targetResourceId": "t1",
+        "targetResourceLocation": f"/teams('t1')/channels('{_CHANNEL_ID}')",
+    },
+}
+_CHANNEL = {
+    "http_status": 200,
+    "headers": {"Content-Type": "application/json"},
+    "body": {"id": _CHANNEL_ID, "displayName": "Verify", "membershipType": "shared"},
+}
+
+
+def _channels(client: GraphClient) -> ChannelCollection:
+    team_path = ResourcePath("t1", ResourcePath("teams"))
+    return ChannelCollection(client, ResourcePath("channels", team_path))
+
+
+def test_add_async_channel_follows_operation():
+    transport = _RecordingTransport([_ACCEPTED, _OPERATION_SUCCEEDED, _CHANNEL])
+    client = _client(transport)
+
+    channel = _channels(client).add("Verify", membership_type="shared").execute_query()
+
+    assert transport.calls == 3  # noqa: PLR2004
+    assert channel.id == _CHANNEL_ID
+    assert channel.display_name == "Verify"

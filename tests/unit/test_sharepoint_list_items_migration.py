@@ -17,6 +17,8 @@ from __future__ import annotations
 import hashlib
 from typing import TYPE_CHECKING, cast
 
+import pytest
+
 if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List as SPList
 
@@ -482,30 +484,6 @@ def test_list_target_remaps_content_type_id_from_the_map():
     assert payload == {"Title": "A", "ContentTypeId": "0x0100SOURCE"}
 
 
-def test_list_target_content_checksum_compares_multi_choice_values():
-    # The source records a bare list while the target reads a positional mapping;
-    # both must project to the same content or every run reports a false mismatch.
-    row = _TargetRow(10, "1", properties={"Title": "Alpha", "Tags": {0: "red", 1: "green"}})
-    fields = [_Field("Tags", "MultiChoice", allow_multiple_values=True)]
-    target = SharePointListTarget(cast("SPList", _TargetList(rows=[row], fields=fields)))
-
-    checksum = target.checksum(MigrationItem("Docs/1", "1", item_type="record"))
-
-    assert checksum == _content_checksum({"Title": "Alpha", "Tags": ["red", "green"]})
-
-
-def test_list_target_content_checksum_compares_hyperlink_values():
-    # The source records the value object it read; the target reads the same shape
-    # back, so both must hash identically.
-    value = {"Description": "one", "Url": "https://example.com/1"}
-    row = _TargetRow(10, "1", properties={"Title": "Alpha", "Link": value})
-    target = SharePointListTarget(cast("SPList", _TargetList(rows=[row])))
-
-    checksum = target.checksum(MigrationItem("Docs/1", "1", item_type="record"))
-
-    assert checksum == _content_checksum({"Title": "Alpha", "Link": value})
-
-
 def test_content_checksum_treats_a_null_column_as_absent():
     # The source drops an empty multi-value column while the target reads it back
     # as ``None``; the two must reconcile as "no value", not a mismatch.
@@ -516,7 +494,7 @@ def test_content_checksum_treats_a_null_column_as_absent():
     )
 
 
-# ── Typed values: lookup column value remapping ───────────────────────────────
+# ── Typed values: a lookup or person the target cannot resolve is dropped ─────
 
 _LOOKUP_LIST_ID = "ed0abd71-7d64-429a-9de7-7dfabbac6aa7"
 _LOOKUP_SCHEMA_LIST_ID = "{" + _LOOKUP_LIST_ID + "}"
@@ -546,21 +524,6 @@ def test_list_target_drops_unresolved_lookup_and_warns_once():
     assert sum("'Dept'" in w for w in target.warnings) == 1
 
 
-def test_list_target_content_checksum_canonicalizes_lookup_id():
-    # Verification must compare like for like: the target's fresh item holds the
-    # target id (1), so it is mapped back to the source id (2) before hashing.
-    referenced = [_Item(1, {DEFAULT_LIST_IDENTITY_FIELD: "2"})]
-    fields = [_Field("Dept", "Lookup", _LOOKUP_SCHEMA_LIST_ID)]
-    row = _TargetRow(10, "1", properties={"Title": "Alpha", "DeptId": 1})
-    _, target = _lookup_target(rows=[row], referenced=referenced, fields=fields)
-
-    checksum = target.checksum(MigrationItem("Docs/1", "1", item_type="record"))
-
-    assert checksum == _content_checksum({"Title": "Alpha", "DeptId": 2})
-
-
-# ── Typed values: person column value remapping ──────────────────────────────
-
 _USERINFO_LIST_ID = "{0c574566-cae0-4e81-a454-616804f55a5a}"
 _LOGIN = "vgrem@mediadev8.onmicrosoft.com"
 
@@ -576,50 +539,70 @@ def test_list_target_drops_unresolvable_person_login():
     assert any("ghost@example.com" in w for w in target.warnings)
 
 
-def test_list_target_content_checksum_canonicalizes_person_id_to_login():
-    web = _Web(users={7: _LOGIN})
-    row = _TargetRow(10, "1", properties={"Title": "Alpha", "OwnerId": 7, "OwnerStringId": "7"})
-    target_list = _TargetList(rows=[row], fields=[_Field("Owner", "User", _USERINFO_LIST_ID)], web=web)
-    target = SharePointListTarget(cast("SPList", target_list))
+# ── Content checksums: the target reads back in the source's shape ────────────
 
-    checksum = target.checksum(MigrationItem("Docs/1", "1", item_type="record"))
-
-    assert checksum == _content_checksum({"Title": "Alpha", "OwnerId": _LOGIN})
-
-
-# ── Typed values: multi-value Lookup/Person columns ──────────────────────────
-
+#: The second user the multi-value case resolves.
 _MDOE = "mdoe@mediadev8.onmicrosoft.com"
 
 
-def test_list_target_content_checksum_canonicalizes_multi_values():
-    # Verification compares like for like: the target's multi-value ids are mapped
-    # back to source ids / logins before the content hashes are compared.
-    referenced = [
-        _Item(1, {DEFAULT_LIST_IDENTITY_FIELD: "2"}),
-        _Item(2, {DEFAULT_LIST_IDENTITY_FIELD: "3"}),
-    ]
-    fields = [
-        _Field("MultiDept", "LookupMulti", _LOOKUP_SCHEMA_LIST_ID),
-        _Field("MultiOwner", "UserMulti", _USERINFO_LIST_ID),
-    ]
-    row = _TargetRow(
-        10,
-        "1",
-        properties={
-            "Title": "Alpha",
-            "MultiDeptId": {0: 1, 1: 2},
-            "MultiOwnerId": {0: 7, 1: 12},
-            "MultiOwnerStringId": "7;12",
-        },
-    )
-    web = _Web({_LOOKUP_LIST_ID: referenced}, users={7: _LOGIN, 12: _MDOE})
-    target_list = _TargetList(rows=[row], fields=fields, web=web)
-    target = SharePointListTarget(cast("SPList", target_list))
+@pytest.mark.parametrize(
+    ("fields", "properties", "referenced", "users", "expected"),
+    [
+        # the source records a bare list, the target reads back a positional mapping
+        (
+            [_Field("Tags", "MultiChoice", allow_multiple_values=True)],
+            {"Tags": {0: "red", 1: "green"}},
+            None,
+            None,
+            {"Tags": ["red", "green"]},
+        ),
+        # the value object the source recorded is what the target reads back
+        (
+            [],
+            {"Link": {"Description": "one", "Url": "https://example.com/1"}},
+            None,
+            None,
+            {"Link": {"Description": "one", "Url": "https://example.com/1"}},
+        ),
+        # the target's fresh item holds the target id (1), so it maps back to the source id (2)
+        (
+            [_Field("Dept", "Lookup", _LOOKUP_SCHEMA_LIST_ID)],
+            {"DeptId": 1},
+            [_Item(1, {DEFAULT_LIST_IDENTITY_FIELD: "2"})],
+            None,
+            {"DeptId": 2},
+        ),
+        # a fresh user id maps back to the login the source recorded
+        (
+            [_Field("Owner", "User", _USERINFO_LIST_ID)],
+            {"OwnerId": 7, "OwnerStringId": "7"},
+            None,
+            {7: _LOGIN},
+            {"OwnerId": _LOGIN},
+        ),
+        # both lookups at once, as a multi-value column reads them back
+        (
+            [
+                _Field("MultiDept", "LookupMulti", _LOOKUP_SCHEMA_LIST_ID),
+                _Field("MultiOwner", "UserMulti", _USERINFO_LIST_ID),
+            ],
+            {"MultiDeptId": {0: 1, 1: 2}, "MultiOwnerId": {0: 7, 1: 12}, "MultiOwnerStringId": "7;12"},
+            [_Item(1, {DEFAULT_LIST_IDENTITY_FIELD: "2"}), _Item(2, {DEFAULT_LIST_IDENTITY_FIELD: "3"})],
+            {7: _LOGIN, 12: _MDOE},
+            {"MultiDeptId": [2, 3], "MultiOwnerId": [_LOGIN, _MDOE]},
+        ),
+    ],
+    ids=["multi-choice", "hyperlink", "lookup", "person", "multi-lookup-and-person"],
+)
+def test_the_checksum_reads_back_in_the_source_shape(fields, properties, referenced, users, expected):
+    """Verification compares like for like, or every run reports a false mismatch."""
+    web = _Web({_LOOKUP_LIST_ID: referenced or []}, users=users or {})
+    row = _TargetRow(10, "1", properties={"Title": "Alpha", **properties})
+    target = SharePointListTarget(cast("SPList", _TargetList(rows=[row], fields=fields, web=web)))
 
     checksum = target.checksum(MigrationItem("Docs/1", "1", item_type="record"))
 
-    assert checksum == _content_checksum({"Title": "Alpha", "MultiDeptId": [2, 3], "MultiOwnerId": [_LOGIN, _MDOE]})
+    assert checksum == _content_checksum({"Title": "Alpha", **expected})
 
 
 class _RecordingUpsertTarget:
