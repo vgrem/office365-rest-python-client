@@ -536,10 +536,10 @@ Issues and pull requests are welcome — please use the
 git clone https://github.com/vgrem/office365-rest-python-client.git
 cd office365-rest-python-client
 uv sync --all-extras
-pytest --offline -q
+pytest -q
 ```
 
-See [CONTRIBUTING.md](https://github.com/vgrem/office365-rest-python-client/blob/master/CONTRIBUTING.md) for the full development setup. Run the gate before submitting: `ruff check .`, `ruff format --check .`, `pyright` and `pytest --offline -q`.
+See [CONTRIBUTING.md](https://github.com/vgrem/office365-rest-python-client/blob/master/CONTRIBUTING.md) for the full development setup. Run the gate before submitting: `ruff check .`, `ruff format --check .`, `pyright` and `pytest -q`.
 
 ## Support
 

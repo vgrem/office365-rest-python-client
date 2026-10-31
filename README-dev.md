@@ -18,8 +18,11 @@ Using `pip`: `python3 -m venv venv && source venv/bin/activate && pip install -e
 ## Run offline tests (no tenant)
 
 ```bash
-uv run pytest --offline -q
+uv run pytest -q
 ```
+
+Offline is the default: a bare `pytest` cannot reach a tenant. Add `--live` to also run
+what the credentials in `.env` make reachable (slow, and it writes to the tenant).
 
 That is the whole setup for most contributions. Continue only to run against a real tenant.
 
@@ -35,7 +38,7 @@ That single command registers both stages:
 
 - **commit** — `pyproject-fmt`, `uv lock`, and `ruff check --fix` / `ruff format` on the
   files you staged (fast).
-- **push** — `pyright` and the offline test suite, `uv run pytest --offline` (slower).
+- **push** — `pyright` and the offline test suite, `uv run pytest` (slower).
 
 Run everything against the whole tree without committing:
 

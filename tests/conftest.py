@@ -13,8 +13,10 @@ Test conventions:
   that require tenant credentials. They are skipped automatically when the
   matching credentials are not configured, so a fresh checkout stays green.
 
-Use ``--offline`` to skip every live test explicitly (what CI runs), or
-``python -m tests.doctor`` to see what is configured.
+A plain ``pytest`` runs the offline suites only: a live run is opt-in, because it signs
+in and writes to a real tenant. Pass ``--live`` to also run what the credentials in
+``.env`` make reachable (``--offline`` is still accepted, and is now the default).
+``python -m tests.doctor`` says what is configured.
 """
 
 from __future__ import annotations
@@ -57,8 +59,14 @@ def _permission_skips(terminalreporter: pytest.TerminalReporter) -> dict[str, in
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
-    """Support command line marks."""
-    parser.addoption("--offline", action="store_true", help="skip all live integration tests")
+    """Live tests are opt-in, so a plain `pytest` cannot touch a tenant."""
+    parser.addoption("--live", action="store_true", help="also run the live integration tests (needs .env)")
+    parser.addoption("--offline", action="store_true", help="the default; kept so existing commands stay valid")
+
+
+def _live(config: pytest.Config) -> bool:
+    """Whether this run may sign in: `--live` and no `--offline`, which wins if both are given."""
+    return bool(config.getoption("--live")) and not config.getoption("--offline")
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -67,8 +75,8 @@ def pytest_configure(config: pytest.Config) -> None:
 
 def pytest_report_header(config: pytest.Config) -> str:
     """Show, up front, which auth flows are configured."""
-    if config.getoption("--offline"):
-        return "auth: live tests disabled (--offline)"
+    if not _live(config):
+        return "auth: live tests skipped (pass --live to run them; `python -m tests.doctor` shows what is configured)"
     parts = [f"{flow}: {'off' if missing else 'on'}" for flow, missing in _READINESS.items()]
     header = "auth: " + " | ".join(parts)
     if all(_READINESS.values()):
@@ -81,8 +89,8 @@ def pytest_report_header(config: pytest.Config) -> str:
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: Iterable[pytest.Item]) -> None:
-    """Skip live tests whose credentials are not configured (or when ``--offline``)."""
-    offline = config.getoption("--offline")
+    """Skip live tests unless ``--live`` was given, and unless their credentials exist."""
+    live = _live(config)
     skipped: set[str] = config.stash[_SKIPPED_FLOWS]
 
     for item in items:
@@ -90,8 +98,8 @@ def pytest_collection_modifyitems(config: pytest.Config, items: Iterable[pytest.
         if flow is None:
             continue
 
-        if offline:
-            item.add_marker(pytest.mark.skip(reason="--offline: live integration tests are skipped"))
+        if not live:
+            item.add_marker(pytest.mark.skip(reason="live tests are opt-in: pass --live to run them"))
             continue
 
         missing = _READINESS[flow]
@@ -101,7 +109,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: Iterable[pytest.
                 pytest.mark.skip(
                     reason=(
                         f"{flow} credentials are not configured (missing: {', '.join(missing)}). "
-                        "Copy .env.example to .env, run `python -m tests.doctor`, or pass --offline."
+                        "Copy .env.example to .env, run `python -m tests.doctor`, or drop --live."
                     )
                 )
             )
@@ -109,7 +117,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: Iterable[pytest.
 
 def pytest_terminal_summary(terminalreporter: pytest.TerminalReporter, exitstatus: int, config: pytest.Config) -> None:
     """Explain the skips: missing credentials first, then permissions the tenant denied."""
-    if config.getoption("--offline"):
+    if not _live(config):
         return
     skipped: set[str] = config.stash[_SKIPPED_FLOWS]
     if skipped:
@@ -118,13 +126,13 @@ def pytest_terminal_summary(terminalreporter: pytest.TerminalReporter, exitstatu
             missing = _READINESS[flow]
             terminalreporter.write_line(f"{FLOWS[flow].label}: missing {', '.join(missing)}")
         terminalreporter.write_line("Copy .env.example to .env and fill it in, then run `python -m tests.doctor`.")
-        terminalreporter.write_line("Pass --offline to make this quiet.")
+        terminalreporter.write_line("Run without --live to make this quiet.")
     _report_permission_skips(terminalreporter, config)
 
 
 def _report_permission_skips(terminalreporter: pytest.TerminalReporter, config: pytest.Config) -> None:
     """Say which permissions this tenant denied, instead of leaving a bare skip count."""
-    if config.getoption("--offline"):
+    if not _live(config):
         return
     reasons = _permission_skips(terminalreporter)
     if reasons:

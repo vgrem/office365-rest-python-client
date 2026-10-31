@@ -72,7 +72,7 @@ jobs:
       - name: Install Requirements
         run: uv sync --frozen --all-extras
       - name: Run offline tests
-        run: uv run pytest --offline -q
+        run: uv run pytest -q          # offline by default; live suites need --live and a tenant
       - name: Report live-suite prerequisites
         run: uv run python -m tests.preflight --report tests-report --json tests-report
 

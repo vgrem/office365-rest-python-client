@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to the `office365-rest-python-client` library. This project provides a comprehensive Python client for Microsoft 365 and Microsoft Graph APIs.
 
-> **No Microsoft 365 tenant is needed to contribute code.** `uv run pytest --offline -q`
+> **No Microsoft 365 tenant is needed to contribute code.** `uv run pytest -q`
 > runs the unit suite offline — it's exactly what CI runs. Use it to validate your
 > change; maintainers run the credentialed end-to-end suite.
 
@@ -77,11 +77,12 @@ uv run pyright
 ### Offline unit tests (no tenant required)
 
 ```bash
-uv run pytest --offline -q
+uv run pytest -q
 ```
 
-This runs the offline suites and is what CI runs on Python 3.10 and 3.13. It is the
-fastest way to validate a change, and where new tests should go.
+A plain `pytest` never signs in: live suites are opt-in with `--live`, because they
+write to a real tenant. This runs the offline suites and is what CI runs on Python 3.10
+and 3.13. It is the fastest way to validate a change, and where new tests should go.
 
 The offline tests are split by what they describe:
 
@@ -267,14 +268,14 @@ tests with unconfigured credentials are skipped, not failed.
    ```
 
 2. Make your changes with clear, focused commits
-3. Ensure the offline checks pass (`ruff`, `pyright`, `pytest --offline`)
+3. Ensure the offline checks pass (`ruff`, `pyright`, `pytest`)
 
 ### Pull Request Process
 
 1. CI checks must pass:
    - Ruff linting and formatting
    - Pyright
-   - Offline unit tests (`pytest --offline`)
+   - Offline unit tests (`pytest`)
    - Documentation build (`mkdocs build --strict`) when docs/examples change
 2. Await maintainer review
 3. Update documentation and examples where applicable

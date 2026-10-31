@@ -42,7 +42,7 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: uv run pytest --offline
+        entry: uv run pytest
         language: system
         pass_filenames: false
         stages: [pre-push]
