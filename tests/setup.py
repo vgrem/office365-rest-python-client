@@ -36,7 +36,7 @@ from typing import Callable, TypeVar
 from office365.directory.applications.application import Application
 from office365.graph_client import GraphClient
 
-from tests.settings import FLOWS, settings
+from tests.settings import settings
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TEST_DIR = Path(__file__).resolve().parent
@@ -291,17 +291,6 @@ def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: st
             "examples/entraid/applications/rotate_secret.py."
         )
     print("Next: python -m tests.doctor")
-
-
-def _print_readiness() -> None:
-    ready = settings.readiness()
-    width = max(len(flow.label) for flow in FLOWS.values())
-    print("Auth readiness (environment + .env):")
-    for flow, spec in FLOWS.items():
-        missing = ready[flow]
-        detail = "" if not missing else "  missing: " + ", ".join(missing)
-        print(f"  {spec.label:<{width}}  {'ready' if not missing else 'not ready':<9}{detail}")
-    print()
 
 
 # --------------------------------------------------------------------------- #
@@ -572,7 +561,7 @@ def main(argv: list[str] | None = None) -> int:
     existing_values = _read_env_values()
     opts = _resolve_options(args, parser, existing_values)
 
-    _print_readiness()
+    print(settings.format_readiness())
 
     if args.dry_run:
         _dry_run(opts, existing_values)

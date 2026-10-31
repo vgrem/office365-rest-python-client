@@ -1,93 +1,45 @@
+"""Test-suite helpers.
+
+Configuration lives in :mod:`tests.settings` as one :class:`~tests.settings.Settings`
+object. The ``test_*`` names below are the suite's older spelling of the same values;
+they are resolved from the object rather than restated, so a field added to
+:class:`Settings` is available under both names at once.
+"""
+
 import random
 import string
 
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.user_credential import UserCredential
 
-from tests.settings import (
-    admin_site_url as test_admin_site_url,
-)
-from tests.settings import (
-    admin_username as test_admin_principal_name,
-)
-from tests.settings import (
-    cert_path as test_cert_path,
-)
-from tests.settings import (
-    cert_thumbprint as test_cert_thumbprint,
-)
-from tests.settings import (
-    client_id as test_client_id,
-)
-from tests.settings import (
-    client_secret as test_client_secret,
-)
-from tests.settings import (
-    content_type_hub_url as test_content_type_hub_url,
-)
-from tests.settings import (
-    password as test_password,
-)
-from tests.settings import (
-    root_site_url as test_root_site_url,
-)
-from tests.settings import (
-    shared_mailbox_upn as test_shared_mailbox_upn,
-)
-from tests.settings import (
-    site_url as test_site_url,
-)
-from tests.settings import (
-    team_site_url as test_team_site_url,
-)
-from tests.settings import (
-    tenant as test_tenant,
-)
-from tests.settings import (
-    tenant_prefix as test_tenant_name,
-)
-from tests.settings import (
-    user_principal as test_user_principal_name,
-)
-from tests.settings import (
-    user_principal_alt as test_user_principal_name_alt,
-)
-from tests.settings import (
-    username as test_username,
-)
+from tests.settings import Settings
+from tests.settings import settings as _settings
 
-__all__ = [
-    "test_admin_credentials",
-    "test_admin_principal_name",
-    "test_admin_site_url",
-    "test_cert_thumbprint",
-    "test_cert_path",
-    "test_client_credentials",
-    "test_client_id",
-    "test_client_secret",
-    "test_content_type_hub_url",
-    "test_password",
-    "test_root_site_url",
-    "test_shared_mailbox_upn",
-    "test_site_url",
-    "test_team_site_url",
-    "test_tenant",
-    "test_tenant_name",
-    "test_user_credentials",
-    "test_user_principal_name",
-    "test_user_principal_name_alt",
-    "test_username",
-    "create_unique_name",
-    "create_unique_file_name",
-    "answered_null",
-]
+#: ``test_<name>`` names the settings field is not spelled like.
+_RENAMED = {
+    "test_admin_principal_name": "admin_username",
+    "test_tenant_name": "tenant_prefix",
+    "test_user_principal_name": "user_principal",
+    "test_user_principal_name_alt": "user_principal_alt",
+}
+
+
+def __getattr__(name: str):
+    field = _RENAMED.get(name, name.removeprefix("test_"))
+    if field in Settings.__dataclass_fields__:
+        return getattr(_settings, field)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 # Credential containers are only built when their inputs are configured, so
 # importing ``tests`` never fails on a machine without a ``.env``. Live tests
 # that use them are skipped by ``tests/conftest.py`` when credentials are absent.
-test_client_credentials = ClientCredential(test_client_id, test_client_secret) if test_client_secret else None
-
-test_user_credentials = UserCredential(test_username, test_password) if test_username and test_password else None
+test_client_credentials = (
+    ClientCredential(_settings.client_id, _settings.client_secret) if _settings.client_secret else None
+)
+test_user_credentials = (
+    UserCredential(_settings.username, _settings.password) if _settings.username and _settings.password else None
+)
 test_admin_credentials = test_user_credentials
 
 
@@ -96,7 +48,7 @@ def create_unique_name(prefix: str) -> str:
 
 
 def create_unique_file_name(prefix: str, ext: str) -> str:
-    return ".".join([create_unique_name(prefix), ext])
+    return create_unique_name(prefix) + "." + ext
 
 
 def answered_null(result) -> bool:

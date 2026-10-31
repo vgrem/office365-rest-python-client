@@ -209,6 +209,19 @@ class Settings:
         """Missing requirements for every flow, computed once."""
         return {flow: self.missing_for(flow) for flow in FLOWS}
 
+    def format_readiness(self) -> str:
+        """A human-readable readiness report for every flow (the doctor/setup banner)."""
+        ready = self.readiness()
+        width = max(len(spec.label) for spec in FLOWS.values())
+        lines = ["Auth readiness (environment + .env):"]
+        for flow, spec in FLOWS.items():
+            missing = ready[flow]
+            detail = "" if not missing else "  missing: " + ", ".join(missing)
+            lines.append(f"  {spec.label:<{width}}  {'not ready' if missing else 'ready':<9}{detail}")
+        if not any(self.is_ready(flow) for flow in FLOWS):
+            lines += ["", "  Tip: run `python -m tests.setup` (or copy .env.example), then re-run `tests.doctor`."]
+        return "\n".join(lines)
+
     def require(self, flow: str) -> None:
         """Raise :class:`CredentialsNotConfigured` when ``flow`` is not ready."""
         missing = self.missing_for(flow)
@@ -219,22 +232,14 @@ class Settings:
 _load_dotenv(PROJECT_ROOT / ".env")
 settings = Settings.from_env()
 
-# Backwards-compatible module-level aliases (imported by tests and examples).
-tenant = settings.tenant
-client_id = settings.client_id
-setup_client_id = settings.setup_client_id
-client_secret = settings.client_secret
-username = settings.username
-password = settings.password
-tenant_prefix = settings.tenant_prefix
-root_site_url = settings.root_site_url
-site_url = settings.site_url
-team_site_url = settings.team_site_url
-admin_site_url = settings.admin_site_url
-content_type_hub_url = settings.content_type_hub_url
-cert_thumbprint = settings.cert_thumbprint
-cert_path = settings.cert_path
-user_principal = settings.user_principal
-user_principal_alt = settings.user_principal_alt
-admin_username = settings.admin_username
-shared_mailbox_upn = settings.shared_mailbox_upn
+
+def __getattr__(name: str):
+    """The module-level aliases (``tests.settings.site_url`` …) read the settings object.
+
+    One vocabulary: a field added to :class:`Settings` is reachable as
+    ``settings.<field>`` and as ``tests.settings.<field>`` without a second list to
+    keep in step.
+    """
+    if name in Settings.__dataclass_fields__:
+        return getattr(settings, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
