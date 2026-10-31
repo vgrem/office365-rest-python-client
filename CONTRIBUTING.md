@@ -91,16 +91,42 @@ The offline tests are split by what they describe:
 | `tests/tooling` | the code generator under `generator/`, which is development tooling and is not part of the wheel |
 | `tests/test_settings.py` | the `tests/settings.py` configuration loader and its `.env` grammar |
 | `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts) |
+| `tests/test_capabilities.py` | the declared-permission vocabulary: checking, skipping and reporting |
 
 The bootstrap itself has one module per job, and nothing else: `tests/settings.py`
 resolves configuration (`Settings`, the `.env` file, readiness), `tests/setup.py`
-provisions it (the interactive wizard is the only writer of `.env`), and
-`tests/doctor.py` reports it. A value is spelled once — in the `Settings` dataclass —
+provisions it (the interactive wizard is the only writer of `.env`), `tests/doctor.py`
+reports it, and `tests/preflight.py` reports what the *live suites* still need from the
+tenant (permissions, roles, licenses) — see below. A value is spelled once — in the `Settings` dataclass —
 and the legacy `tests.site_url` / `tests.test_site_url` spellings are a `__getattr__`
 over its fields, not a list to keep in step.
 
 A test belongs in `tests/unit` when it pins behaviour a user of the library can
 observe; it belongs in `tests/tooling` when it pins how the library is generated.
+
+### A live test declares what it needs from the tenant
+
+A credentialed test that needs more than credentials says so next to itself, and the
+declaration is the only place the requirement is written:
+
+```python
+@requires_delegated("Mail.Read", bypass_roles=["Global Administrator"])
+def test_01_list_messages(self): ...
+```
+
+`tests/decorators.py` stamps the requirement on the test it returns, so
+`tests/preflight.py` can read the whole matrix off the test tree without running
+anything — `python -m tests.preflight` needs no credentials, `--verify` resolves each
+requirement against the signed-in app and user, and `--report tests-report` writes
+`preflight.md` + `preflight.json`. Both the guard and the report call the same
+`tests/capabilities.py`, where a `Requirement` answers `unmet(state)` and
+`TenantState` fetches *only* the facts the requirement names — an app-only token has no
+`/me` to ask for licenses, so asking would turn a skip into a failure.
+
+A permission the tenant does not grant must be visible in three places, and all three
+read from the same object: the skip reason (`missing delegated: any of Mail.Read`), the
+`pytest` summary (`N  delegated: any of …`), and the report file. Add the requirement
+to the test, not to a list in the report.
 
 Within a file, a test also has to earn its place: it must execute a line, or make
 an assertion, that no other test in that file makes. Where a richer test already

@@ -1,55 +1,44 @@
-"""Test decorators for permission and role checks."""
+"""Skip a live test when the tenant does not meet the precondition it declares."""
 
 from __future__ import annotations
 
-from functools import lru_cache, wraps
+from functools import wraps
 from typing import Any, Callable, TypeVar, cast
 from unittest import TestCase
 
-from office365.directory.permissions.guard import (
-    _cached_app_permissions,
-    has_delegated_permission,
-    has_role,
-)
-from office365.graph_client import GraphClient
-from office365.runtime.client_request_exception import ClientRequestException
-
 from tests import test_client_id
+from tests.capabilities import Requirement, TenantState
 
 T = TypeVar("T", bound=Callable[..., Any])
 
 
-@lru_cache(maxsize=1)
-def _cached_licenses(client: GraphClient) -> list[str]:
-    """Get and cache the signed-in user's license SKU part numbers."""
-    result = client.me.license_details.get().execute_query()
-    return [d.get_property("skuPartNumber") for d in result]
+def _requires(requirement: Requirement) -> Callable[[T], T]:
+    """Build the decorator that stamps ``requirement`` and enforces it.
 
-
-def requires_application(*app_roles: str) -> Callable[[T], T]:
-    """Skip test unless the app has the required application permissions."""
+    The stamp is the point: :mod:`tests.preflight` reads it off the test tree to
+    report what a tenant must grant before the test can run, without running it.
+    """
 
     def decorator(test_method: T) -> T:
         @wraps(test_method)
         def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
             client = getattr(self, "client", None)
-            if not client:
-                self.skipTest("No client available for permission check")
-
-            try:
-                permissions = _cached_app_permissions(client, test_client_id)
-            except ClientRequestException:
-                self.skipTest("Could not verify app permissions — permission check endpoint requires additional scopes")
-
-            if not any(role.value in app_roles for role in permissions):
-                required = ", ".join(f"'{r}'" for r in app_roles)
-                self.skipTest(f"Required app permission {required} not granted")
-
+            if client is None:
+                self.skipTest("no client to check permissions against")
+            unmet = requirement.unmet(TenantState.of(client, test_client_id, requirement))
+            if unmet:
+                self.skipTest(f"missing {' and '.join(unmet)}")
             return test_method(self, *args, **kwargs)
 
+        wrapper.__requires__ = requirement
         return cast(T, wrapper)
 
     return decorator
+
+
+def requires_application(*app_roles: str) -> Callable[[T], T]:
+    """Skip the test unless the app holds one of these application permissions."""
+    return _requires(Requirement(application=tuple(app_roles)))
 
 
 def requires_delegated(
@@ -58,47 +47,19 @@ def requires_delegated(
     require_roles: list[str] | None = None,
     require_licenses: list[str] | None = None,
 ) -> Callable[[T], T]:
-    """Skip test unless token has one of the scopes (delegated or app)
-    AND the user has all required require_roles,
-    OR the user has one of the bypass_roles (bypass).
+    """Skip the test unless it has a declared scope *and* every declared role/license.
 
     Args:
-        *scopes: Delegated or application permission names — ANY match passes.
-        bypass_roles: Directory role display names — ANY match bypasses all checks.
-        require_roles: Directory role display names — ANY must match (OR with scopes).
-        require_licenses: SKU part numbers — ANY must match (e.g. SPE_E5).
+        *scopes: Delegated (or application) permission names — any one suffices.
+        bypass_roles: Directory roles — holding one satisfies the whole requirement.
+        require_roles: Directory roles — one must be held.
+        require_licenses: SKU part numbers (e.g. ``SPE_E5``) — one must be held.
     """
-
-    def decorator(test_method: T) -> T:
-        @wraps(test_method)
-        def wrapper(self: TestCase, *args: Any, **kwargs: Any) -> Any:
-            client = getattr(self, "client", None)
-            if not client:
-                self.skipTest("No client available")
-            assert client is not None
-
-            try:
-                has_scope = any(has_delegated_permission(client, s, test_client_id) for s in scopes)
-                has_require = not require_roles or any(has_role(client, r) for r in require_roles)
-                has_bypass = any(has_role(client, r) for r in (bypass_roles or []))
-                has_license = not require_licenses or any(lic in _cached_licenses(client) for lic in require_licenses)
-            except ClientRequestException:
-                self.skipTest("Could not verify permissions — permission check endpoint requires additional scopes")
-
-            if has_bypass or (has_scope and has_require and has_license):
-                return test_method(self, *args, **kwargs)
-
-            reasons = []
-            if scopes:
-                reasons.append(f"one of scopes: {', '.join(scopes)}")
-            if require_roles:
-                reasons.append(f"one of roles: {', '.join(require_roles)}")
-            if require_licenses:
-                reasons.append(f"one of licenses: {', '.join(require_licenses)}")
-            if bypass_roles:
-                reasons.append(f"one of bypass roles: {', '.join(bypass_roles)}")
-            self.skipTest(f"Insufficient — required: {' and '.join(reasons)}")
-
-        return cast(T, wrapper)
-
-    return decorator
+    return _requires(
+        Requirement(
+            delegated=tuple(scopes),
+            roles=tuple(require_roles or ()),
+            licenses=tuple(require_licenses or ()),
+            bypass_roles=tuple(bypass_roles or ()),
+        )
+    )

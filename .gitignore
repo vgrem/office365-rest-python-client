@@ -36,3 +36,6 @@ generator/documentation/graphopenapi.cache.json
 
 # JetBrains AI assistant plans/session state (local tooling, not project source)
 .junie/
+
+# Preflight reports (`python -m tests.preflight --report`)
+tests-report/

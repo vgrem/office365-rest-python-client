@@ -157,6 +157,44 @@ uv run pytest -q
 uv run python examples/auth/with_client_secret.py
 ```
 
+## Check what the live suites need
+
+A live test states its precondition beside itself — `@requires_delegated("Mail.Read")`,
+`@requires_application("Sites.Read.All")` — and skips when the tenant does not grant it.
+The declared requirements are read off the test tree, so what a tenant must grant is
+known before a run and never kept in a second list:
+
+```bash
+uv run python -m tests.preflight                      # the matrix, no credentials needed
+uv run python -m tests.preflight --verify             # ... and what this tenant grants
+uv run python -m tests.preflight --verify --report tests-report
+```
+
+The last command writes `tests-report/preflight.md` (a table per suite: flow, tests,
+declared permission, `met` / `missing …`) and `preflight.json` for CI. `--strict`
+exits non-zero when a flow is not configured or a declared requirement is not met.
+
+A skipped test run says the same thing in its summary — `2 tests skipped: application:
+any of Domain.Read.All` — so a green-but-skipped run names what it did not exercise
+rather than just counting.
+
+Both the runtime check and the report go through `tests/capabilities.py`, which asks the
+tenant one question per declared fact using the library's own
+`office365.directory.permissions.guard` helpers. Nothing calls a test to learn what it
+declares.
+
+### Compared with other SDKs
+
+Mature SDKs separate the two tiers the same way: `azure-sdk-for-python` records
+fixtures and runs live only under `AZURE_TEST_RUN_LIVE`, listing each package's env
+vars and role assignments in its `tests/README.md`; Terraform providers and Google
+Cloud's `nox -s integration` gate live suites behind an opt-in environment variable;
+AWS SDK integration suites live outside the default collection and fail with
+`AccessDenied` at run time. The prerequisites in those projects are documented by hand,
+next to the tests, and drift. Here they are declared by the test and read back, and
+the answer is resolved through the same guard the library gives users — so a permission
+gap is reported the way the library itself would report it.
+
 ## Publish a release
 
 Publishing is a tag push; `.github/workflows/release.yml` builds and uploads the
