@@ -138,6 +138,19 @@ identity bookkeeping, the docs generator's scanner, and the self-check that
 ratchet's job is to fail on this tree; feeding it a synthetic offender tests the
 interpreter.
 
+A fifth pass asked whether a fake payload for a real endpoint earns its keep.
+`test_comparable_profile.py` spelled out one comparison rule at a time — 25 tests whose
+subject is the digest the migration engine computes, not the service — and it duplicated a
+property two other files already hold: `test_calendar_profile.py` pins the digest of an
+event's canonical form and what gating a field does to it, and the declaration ratchet pins
+that every rule fits its field. `test_content_type_links.py` asserted a request body one
+assertion long. Both are gone, as is a download test whose async terminal re-walked its own
+sync twin (async dispatch has its own file). What stayed is what no run against a tenant
+provokes: a download that resumes a partial file, and a feature activation whose `GetById`
+answers `null` for every feature at site scope — the end-to-end activation test is
+idempotent, so on a tenant where the feature is already active it passes even when the
+client suppresses the write.
+
 ### End-to-end tests (maintainers / optional)
 
 The product suites (`tests/sharepoint/`, `tests/onedrive/`, …) are end-to-end and

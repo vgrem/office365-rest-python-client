@@ -9,8 +9,9 @@ change also carries: at that commit an event with no attendees and
 captured from it as it stood. Regenerating from that tree (``UPDATE_SNAPSHOT=1``)
 reproduces this file byte for byte; a snapshot that cannot be regenerated from a named tree
 is not a behaviour guarantee. The comparable form and its digest are not pinned: they
-change by design, and ``test_comparable_profile.py`` and the import tests cover them as
-properties (what the service rewrites compares equal, a real change does not).
+change by design. What survives is pinned elsewhere as properties -- ``test_calendar_profile.py``
+holds an event's digest of its canonical form and what gating a field does to it, and
+``test_declaration_ratchets.py`` holds that every declared comparison rule fits its field.
 
 Regenerate deliberately with ``UPDATE_SNAPSHOT=1`` and review the diff.
 """
