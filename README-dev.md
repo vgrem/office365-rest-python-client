@@ -178,17 +178,26 @@ The declared requirements are read off the test tree, so what a tenant must gran
 known before a run and never kept in a second list:
 
 ```bash
-uv run python -m tests.preflight                      # the matrix, no credentials needed
+uv run python -m tests.preflight                      # what is blocking the most tests
 uv run python -m tests.preflight --verify             # ... and what this tenant grants
+uv run python -m tests.preflight --all                # every requirement, not just the blockers
 uv run python -m tests.preflight --verify --report tests-report
 ```
 
-`--report` writes `tests-report/preflight.md`: a table per suite (flow, tests, declared
-permission, `met` / `missing …`). `--json tests-report` writes the same matrix as
-`preflight.json` for a tool to read; nothing in the repo consumes it yet, so it is
-opt-in rather than something every run pays for. Both files describe *a tenant*, not the
-library, so `tests-report/` is gitignored. `--strict` exits non-zero when a flow is not
-configured or a declared requirement is not met.
+The default view is the screen, not the matrix: the counts, only the flows that are not
+ready, and the unmet requirements deduplicated and ranked by the tests they unblock —
+`35 tests  delegated: Sites.Read.All (+1) or an administrator role`. The alternatives
+collapse to `(+1)` because a blocker line only has to say what to grant; `--all` spells
+them all out, and requirements already met collapse to a count.
+
+`--report` writes `tests-report/preflight.md`: the table per suite (flow, tests,
+declared permission, `met` / `missing …`), which is what you want when the question is
+about one suite rather than "what next". `--markdown` prints that table instead of the
+summary. `--json tests-report` writes the same matrix as `preflight.json` for a tool to
+read; nothing in the repo consumes it yet, so it is opt-in rather than something every
+run pays for. Both files describe *a tenant*, not the library, so `tests-report/` is
+gitignored. `--strict` exits non-zero when a flow is not configured or a declared
+requirement is not met.
 
 A skipped test run says the same thing in its summary — `2 tests skipped: application:
 any of Domain.Read.All` — so a green-but-skipped run names what it did not exercise
