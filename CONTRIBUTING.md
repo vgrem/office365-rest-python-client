@@ -89,7 +89,7 @@ The offline tests are split by what they describe:
 | Directory | Subject |
 | --- | --- |
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus `test_regressions.py` for the pins that are one assertion long |
-| `tests/tooling` | the code generator under `generator/`, which is development tooling and is not part of the wheel |
+| `tests/tooling` | the code generator under `generator/` — two files: an end-to-end run, and the in-place editing that rewrites shipped source |
 | `tests/test_settings.py` | the `tests/settings.py` configuration loader and its `.env` grammar |
 | `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts) |
 | `tests/test_capabilities.py` | the declared-permission vocabulary: checking, skipping and reporting |
@@ -103,12 +103,20 @@ and the legacy `tests.site_url` / `tests.test_site_url` spellings are a `__getat
 over its fields, not a list to keep in step.
 
 A test belongs in `tests/unit` when it pins behaviour a user of the library can
-observe; it belongs in `tests/tooling` when it pins how the library is generated. A
-generator file is named after the module it drives, and holds both halves of that module's
-subject: the keys plan and the write it feeds (`@key(...)`), the beta gate and the write it
-feeds (`@version(beta=...)`), the import block and the helpers that insert into it. A
-17-line test of `BuilderContext` is not a file; it is the last section of the config file
-that builds one.
+observe; it belongs in `tests/tooling` when it pins how the library is generated. The
+generator is a development tool — nobody imports it, nobody holds its API — so `tests/tooling`
+keeps only what a wrong change would break silently:
+
+- `test_generator_e2e.py` reads a small metadata document, runs the pipeline, and
+  imports what it generated. It is the happy path for every kind of type, and it is the
+  test that fails when the generator stops producing a model that works.
+- `test_generator_markers.py` pins the edits the generator makes *to source it did not
+  write* (`@key(...)`, `@version(beta=...)`): add what the snapshots justify, replace what
+  moved, remove what they stopped justifying, and make the second run a no-op.
+
+The builders' individual decisions (how a name is snake-cased, how a type is mapped) are
+not pinned one by one: a regression there shows up in the end-to-end run, and a test of a
+private helper costs more to maintain than the bug it prevents.
 
 ### A live test declares what it needs from the tenant
 
