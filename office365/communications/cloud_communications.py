@@ -8,6 +8,7 @@ from office365.communications.onlinemeetings.collection import OnlineMeetingColl
 from office365.communications.presences.presence import Presence
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
 class CloudCommunications(Entity):
     """ """
 
+    @require_permission(delegated=["Presence.Read.All"], application=["Presence.Read.All"])
     def get_presences_by_user_id(self, ids: List[str]) -> EntityCollection[Presence]:
         """Get the presence information for multiple users.
 

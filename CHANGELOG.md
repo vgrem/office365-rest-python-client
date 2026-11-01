@@ -460,6 +460,26 @@ introduced.
   escape hatch rather than a grant, so it belongs in the test and not in the declaration.
   Three endpoints — the three `getAllMessages` exports — are application-only, so they declare
   `application=` and no delegated column at all.
+- **Communications declares every operation, and the calls subtree is application-only.**
+  18 methods name what Microsoft Graph documents for the endpoint: the five presence writers
+  (`Presence.ReadWrite` for the signed-in user's own presence, `Presence.ReadWrite.All` for
+  any), `getPresencesByUserId` (`Presence.Read.All`), `createOrGet`
+  (`OnlineMeetings.ReadWrite`), `getAllRecordings` (`OnlineMeetingRecording.Read.All`),
+  `getVirtualAppointmentJoinWebUrl` (`VirtualAppointment.ReadWrite`) and
+  `getDirectRoutingCalls` (`CallRecords.Read.All`). The eight call-control operations —
+  `cancelMediaProcessing`, `reject`, `unmute`, `updateRecordingStatus`, `invite`,
+  `logTeleconferenceDeviceQuality` and the two hold-music calls — have no delegated column at
+  all: the committed snapshot shows Graph publishes `Calls.AccessMedia.All`,
+  `Calls.InitiateGroupCall.All` and `CallRecords.Read.All` as application roles, and the
+  delegated half of that subtree is empty, so a delegated client can neither be granted the
+  name nor honestly be told it lacks it. Checking the names against the snapshot before the
+  edit is what caught this: a plausible `Calls.*` scope would have failed the offline
+  published-name check, which is the whole reason that check exists. Both flows are named per
+  method rather than through a helper, because unlike SharePoint's four rungs these are
+  unrelated grants — one operation wants media access, another a meeting, another a
+  recording. `communications` leaves the ratchet map with nothing undeclared, as `outlook`
+  and `teams` did, and nine live tests derive their precondition from the declaration
+  instead of restating the scope by hand. Debt 1,540 → 1,522.
 
 ### Changed
 

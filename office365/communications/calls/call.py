@@ -33,6 +33,7 @@ from office365.communications.result_info import ResultInfo
 from office365.communications.tone_info import ToneInfo
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
@@ -53,6 +54,7 @@ class Call(Entity):
     new outgoing call via a POST on app/calls.
     """
 
+    @require_permission(application=["Calls.AccessMedia.All"])
     def cancel_media_processing(self, client_context=None):
         """Cancels processing for any in-progress media operations.
 
@@ -71,6 +73,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(application=["Calls.AccessMedia.All"])
     def reject(self, reason=None, callback_uri=None):
         """Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in
         a group call or a peer-to-peer call. If an invite to a group call is received, the notification will contain
@@ -98,6 +101,7 @@ class Call(Entity):
         group call will still continue."""
         return super().delete_object()
 
+    @require_permission(application=["Calls.AccessMedia.All"])
     def update_recording_status(self, status, client_context):
         """Update the application's recording status associated with a call.
         This requires the use of the Teams policy-based recording solution.
@@ -112,6 +116,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(application=["Calls.AccessMedia.All"])
     def unmute(self, client_context):
         """Allow the application to unmute itself.
 

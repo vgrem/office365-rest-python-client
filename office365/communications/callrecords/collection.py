@@ -8,6 +8,7 @@ from office365.communications.callrecords.direct_routing_log_row import (
 )
 from office365.communications.quotas import CALL_RECORD_FEED_QUOTA, PSTN_RECORD_QUOTAS
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
@@ -31,6 +32,7 @@ class CallRecordCollection(EntityCollection[CallRecord]):
         super().__init__(context, CallRecord, resource_path)
 
     @limit(*PSTN_RECORD_QUOTAS)
+    @require_permission(application=["CallRecords.Read.All"])
     def get_direct_routing_calls(
         self, from_datetime: datetime | None = None, to_datetime: datetime | None = None
     ) -> ClientResult[ClientValueCollection[DirectRoutingLogRow]]:

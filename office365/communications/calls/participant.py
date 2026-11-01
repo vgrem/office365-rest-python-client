@@ -16,6 +16,7 @@ from office365.communications.operations.stop_hold_music import StopHoldMusicOpe
 from office365.communications.recording_info import RecordingInfo
 from office365.communications.removed_state import RemovedState
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -24,6 +25,7 @@ from office365.runtime.types.odata_property import odata
 class Participant(Entity):
     """Represents a participant in a call."""
 
+    @require_permission(application=["Calls.InitiateGroupCall.All"])
     def invite(self, participants: List[InvitationParticipantInfo], client_context: str) -> InviteParticipantsOperation:
         """Invite participants to the active call.
 
@@ -40,6 +42,7 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(application=["Calls.AccessMedia.All"])
     def start_hold_music(
         self, custom_prompt: Optional[str] = None, client_context: Optional[str] = None
     ) -> StartHoldMusicOperation:
@@ -55,6 +58,7 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(application=["Calls.AccessMedia.All"])
     def stop_hold_music(self, client_context: Optional[str] = None) -> StopHoldMusicOperation:
         """Reincorporate a participant previously put on hold to the call.
 

@@ -7,6 +7,7 @@ from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
 from office365.communications.onlinemeetings.participants import MeetingParticipants
 from office365.communications.onlinemeetings.recordings.call import CallRecording
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value import ClientValue
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
@@ -46,6 +47,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         """
         return super().add(subject=subject, startDateTime=start_datetime, endDateTime=end_datetime, **kwargs)
 
+    @require_permission(delegated=["OnlineMeetings.ReadWrite"], application=["OnlineMeetings.ReadWrite.All"])
     def create_or_get(
         self,
         external_id: str | None = None,
@@ -81,6 +83,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["OnlineMeetingRecording.Read.All"], application=["OnlineMeetingRecording.Read.All"])
     def get_all_recordings(
         self,
         meeting_organizer_user_id: str,

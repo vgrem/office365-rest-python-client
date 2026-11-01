@@ -12,7 +12,9 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from tests.decorators import requires_application
+from office365.communications.callrecords.collection import CallRecordCollection
+
+from tests.decorators import requires_application, requires_call
 from tests.graph_case import GraphApplicationTestCase
 
 
@@ -25,13 +27,13 @@ class TestCallRecords(GraphApplicationTestCase):
         records = self.client.communications.call_records.top(3).get().execute_query()
         self.assertIsNotNone(records)
 
-    @requires_application("CallRecords.Read.All")
+    @requires_call(CallRecordCollection.get_direct_routing_calls, flow="application")
     def test_02_get_direct_routing_calls_default(self):
         """Getting direct routing calls without date range defaults to last 30 days."""
         result = self.client.communications.call_records.get_direct_routing_calls().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_application("CallRecords.Read.All")
+    @requires_call(CallRecordCollection.get_direct_routing_calls, flow="application")
     def test_03_get_direct_routing_calls_with_date_range(self):
         """Getting direct routing calls within a specific date range returns filtered rows."""
         from_date = datetime.now() - timedelta(days=7)
@@ -41,7 +43,7 @@ class TestCallRecords(GraphApplicationTestCase):
         ).execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_application("CallRecords.Read.All")
+    @requires_call(CallRecordCollection.get_direct_routing_calls, flow="application")
     def test_04_get_direct_routing_calls_single_day(self):
         """Getting direct routing calls for a single day returns rows for that window."""
         from_date = datetime.now() - timedelta(days=1)
@@ -80,7 +82,7 @@ class TestCallRecords(GraphApplicationTestCase):
             except Exception:
                 continue
 
-    @requires_application("CallRecords.Read.All")
+    @requires_call(CallRecordCollection.get_direct_routing_calls, flow="application")
     def test_07_direct_routing_row_has_expected_fields(self):
         """A direct routing log row exposes callId, userId, and userDisplayName."""
         result = self.client.communications.call_records.get_direct_routing_calls().execute_query()

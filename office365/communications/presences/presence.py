@@ -12,6 +12,7 @@ from office365.communications.user_work_location import UserWorkLocation
 from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.item_body import ItemBody
+from office365.permissions import require_permission
 from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.duration import Duration
@@ -22,6 +23,7 @@ from office365.runtime.types.odata_property import odata
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
+    @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def clear_presence(self, session_id: str | None = None) -> Self:
         """Clear the application's presence session for a user. If it is the user's only presence session,
         the user's presence will change to Offline/Offline.
@@ -34,6 +36,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def clear_user_preferred_presence(self) -> Self:
         """
         Clear the preferred availability and activity status for a user.
@@ -42,6 +45,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def set_presence(
         self,
         session_id: str,
@@ -69,6 +73,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def set_status_message(self, message: str | ItemBody, expiry: Optional[datetime] = None):
         """Set a presence status message for a user. An optional expiration date and time can be supplied.
 
@@ -88,6 +93,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def set_user_preferred_presence(
         self, availability="Available", activity="Available", expiration_duration: Duration | str | None = None
     ) -> Self:

@@ -375,6 +375,11 @@ tokens, and rejects a delegated one whatever scopes it holds — so those declar
 alone. Nothing is invented for the other column: `declared(method, flow="delegated")` raises
 and names the method instead of answering a grant that would never satisfy it.
 
+The same holds for a whole subtree: every `Calls.*` permission is an application role, so the
+call-control methods on `Call`, `Participant` and `CallCollection` declare no delegated column
+either. A delegated client can neither be granted the name nor told it lacks one — the calls
+API answers a bot, not a signed-in user.
+
 A name is worth checking before it reaches a tenant. `office365.permissions.catalog()`
 answers what an API publishes — `publishes(name, kind)`,
 `requires_admin_consent(name, kind)`, and the names themselves — from a committed

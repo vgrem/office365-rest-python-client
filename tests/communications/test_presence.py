@@ -11,7 +11,10 @@ Tests cover:
 
 from __future__ import annotations
 
-from tests.decorators import requires_delegated
+from office365.communications.cloud_communications import CloudCommunications
+from office365.communications.presences.presence import Presence
+
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -26,7 +29,7 @@ class TestPresence(GraphDelegatedTestCase):
         self.assertIsNotNone(result.get_property("availability"))
         self.assertIsNotNone(result.get_property("activity"))
 
-    @requires_delegated("Presence.ReadWrite", bypass_roles=["Global Administrator"])
+    @requires_call(Presence.set_user_preferred_presence, flow="delegated", bypass_roles=["Global Administrator"])
     def test_02_set_my_preferred_presence(self):
         """Setting preferred presence to 'DoNotDisturb' should succeed."""
         try:
@@ -39,7 +42,7 @@ class TestPresence(GraphDelegatedTestCase):
         except Exception as e:
             self.skipTest(f"Cannot set preferred presence: {e}")
 
-    @requires_delegated("Presence.ReadWrite", bypass_roles=["Global Administrator"])
+    @requires_call(Presence.clear_user_preferred_presence, flow="delegated", bypass_roles=["Global Administrator"])
     def test_03_clear_my_preferred_presence(self):
         """Clearing the preferred presence should reset to auto-computed state."""
         try:
@@ -48,7 +51,7 @@ class TestPresence(GraphDelegatedTestCase):
         except Exception as e:
             self.skipTest(f"Cannot clear preferred presence: {e}")
 
-    @requires_delegated("Presence.ReadWrite", bypass_roles=["Global Administrator"])
+    @requires_call(CloudCommunications.get_presences_by_user_id, flow="delegated", bypass_roles=["Global Administrator"])
     def test_04_get_presences_by_user_id(self):
         """Getting presences for multiple users by ID should return a valid collection."""
         me = self.client.me.get().execute_query()
@@ -60,7 +63,7 @@ class TestPresence(GraphDelegatedTestCase):
         if len(result) > 0:
             self.assertIsNotNone(result[0].get_property("availability"))
 
-    @requires_delegated("Presence.ReadWrite", bypass_roles=["Global Administrator"])
+    @requires_call(Presence.set_status_message, flow="delegated", bypass_roles=["Global Administrator"])
     def test_05_set_status_message(self):
         """Setting a status message on the current user should succeed."""
         try:
@@ -69,7 +72,7 @@ class TestPresence(GraphDelegatedTestCase):
         except Exception as e:
             self.skipTest(f"Cannot set status message: {e}")
 
-    @requires_delegated("Presence.ReadWrite", bypass_roles=["Global Administrator"])
+    @requires_call(Presence.set_status_message, flow="delegated", bypass_roles=["Global Administrator"])
     def test_06_clear_status_message(self):
         """Clearing the status message should succeed."""
         try:

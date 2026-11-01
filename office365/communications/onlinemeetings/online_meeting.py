@@ -8,6 +8,7 @@ from office365.communications.onlinemeetings.participants import MeetingParticip
 from office365.communications.onlinemeetings.recordings.call import CallRecording
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -20,6 +21,7 @@ class OnlineMeeting(OnlineMeetingBase):
     the attendees list, and the description.
     """
 
+    @require_permission(delegated=["VirtualAppointment.ReadWrite"], application=["VirtualAppointment.ReadWrite.All"])
     def get_virtual_appointment_join_web_url(self) -> ClientResult[str]:
         """Get a join web URL for a Microsoft Virtual Appointment. This web URL includes enhanced
         business-to-customer experiences such as mobile browser join and virtual lobby rooms.
