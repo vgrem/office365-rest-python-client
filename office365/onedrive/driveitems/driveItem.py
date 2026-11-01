@@ -99,6 +99,10 @@ class DriveItem(BaseItem):
         """Retrieve drive item metadata"""
         return super().get()
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def assign_sensitivity_label(
         self,
         sensitivity_label_id: str,
@@ -132,6 +136,17 @@ class DriveItem(BaseItem):
         self.retention_label.update()
         return self
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def get_files(
         self,
         recursive: bool = False,
@@ -179,6 +194,17 @@ class DriveItem(BaseItem):
         self.context.add_query(placeholder).after_execute(lambda _: _get_files(self))
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def get_folders(
         self,
         recursive: bool = False,
@@ -460,6 +486,10 @@ class DriveItem(BaseItem):
             self.context.before_execute(prefer_bypass_shared_lock, once=True)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def extract_sensitivity_labels(
         self,
     ) -> ClientResult[ExtractSensitivityLabelsResult]:
@@ -528,6 +558,10 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def resumable_upload(
         self,
         source_path: str,
@@ -560,6 +594,10 @@ class DriveItem(BaseItem):
         self.context.add_query(qry).after_execute(_start_upload)
         return return_type
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     async def resumable_upload_async(
         self,
         source_path: str,
@@ -697,6 +735,10 @@ class DriveItem(BaseItem):
         _upload_folder(path, self)
         return self
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def get_content(self, format_name: str | None = None) -> ClientResult[AnyStr]:
         """Download the contents of the primary stream (file) of a DriveItem.
         Only driveItems with the file property can be downloaded.
@@ -1156,6 +1198,17 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def get_activities_by_interval(
         self,
         start_dt: datetime | None = None,
@@ -1219,6 +1272,17 @@ class DriveItem(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def preview(self, page: str | int, zoom: int | None = None) -> ClientResult[ItemPreviewInfo]:
         """This action allows you to obtain a short-lived embeddable URL for an item in order
         to render a temporary preview.

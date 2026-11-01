@@ -3,8 +3,11 @@ from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
+from office365.onedrive.workbooks.tables.collection import WorkbookTableCollection
+from office365.onedrive.workbooks.tables.columns.collection import WorkbookTableColumnCollection
+from office365.onedrive.workbooks.tables.rows.collection import WorkbookTableRowCollection
 from office365.onedrive.workbooks.tables.table import WorkbookTable
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -37,7 +40,9 @@ class TestExcel(GraphDelegatedTestCase):
         workbook = TestExcel.target_item.workbook.get().execute_query_retry()
         self.assertIsNotNone(workbook.resource_path)
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookTableCollection.add, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
+    )
     def test2_create_workbook_table(self):
         """Create a workbook table"""
         assert TestExcel.target_item is not None
@@ -53,7 +58,11 @@ class TestExcel(GraphDelegatedTestCase):
         self.assertIsNotNone(tables.resource_path)
         self.assertGreater(len(tables), 0)
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookTable.data_body_range,
+        flow="delegated",
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    )
     def test4_data_body_range(self):
         """Get data body range of a table"""
         assert TestExcel.table is not None
@@ -67,7 +76,11 @@ class TestExcel(GraphDelegatedTestCase):
         column = TestExcel.table.columns.add(3, "Column4").execute_query()
         self.assertIsNotNone(column.resource_path)
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookTableColumnCollection.count,
+        flow="delegated",
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    )
     def test6_create_table_column_count(self):
         """Count columns in a workbook table"""
         assert TestExcel.table is not None
@@ -97,7 +110,11 @@ class TestExcel(GraphDelegatedTestCase):
         self.assertIsNotNone(row.index)
         self.assertIsNotNone(row.values)
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookTableRowCollection.count,
+        flow="delegated",
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    )
     def test_10_table_rows_count(self):
         """Count rows in a workbook table"""
         assert TestExcel.table is not None
@@ -110,7 +127,9 @@ class TestExcel(GraphDelegatedTestCase):
     #    self.assertIsNotNone(result.resource_path)
     #    self.assertIsNotNone(result.values)
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookTable.range, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
+    )
     def test_12_table_range(self):
         """Get the range of a workbook table"""
         assert TestExcel.table is not None

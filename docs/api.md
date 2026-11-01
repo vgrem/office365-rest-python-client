@@ -375,6 +375,18 @@ clear case: the same `directoryObjects/add` adds to whichever collection it was 
 a role's. There is no single name the method could claim, and claiming only the first would tell a
 correctly-granted tenant to go and buy another grant.
 
+The same any-of shape covers a drive item, for a different reason. Graph publishes the file
+permissions twice — `Files.*` and `Sites.*` — because a drive can be someone's OneDrive or a
+document library, and the same item is reachable through either set. `DriveItem.preview` and
+`Drive.recent` therefore declare the whole rung (`Files.Read`, `Files.Read.All`, `Files.ReadWrite`,
+`Files.ReadWrite.All`, `Sites.Read.All`, `Sites.ReadWrite.All`) instead of picking the two names that
+fit the endpoint: the tenant in front of you decides which half is granted.
+
+The verb does not decide the rung either. Every workbook call declares `Files.ReadWrite`
+(`Files.ReadWrite.All` for an app-only token), reads included, because a workbook session is opened
+by a write grant and the reads happen inside it — the operation the endpoint checks is the session,
+not the `GET`.
+
 Some endpoints exist for one flow only. Graph documents its tenant-wide message exports
 (`chats/getAllMessages`, `teams/getAllMessages`, `channels/getAllMessages`) for application
 tokens, and rejects a delegated one whatever scopes it holds — so those declare `application=`

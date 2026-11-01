@@ -22,7 +22,7 @@ from tests import (
     test_team_site_url,
     test_user_principal_name_alt,
 )
-from tests.decorators import requires_application, requires_delegated
+from tests.decorators import requires_application, requires_call, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
 
 
@@ -144,13 +144,7 @@ class TestSitePermissions(GraphDelegatedTestCase):
 class TestDriveItemGrantAccess(GraphDelegatedTestCase):
     """Granting access to a drive item by URL."""
 
-    @requires_delegated(
-        "Files.Read",
-        "Files.Read.All",
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
-    )
+    @requires_call(Permission.grant, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test_01_grant_access_by_url(self):
         """Granting access to a file by absolute URL should succeed."""
         file_url = f"{test_team_site_url}/Shared Documents/Financial Sample.xlsx"

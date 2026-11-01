@@ -1,8 +1,9 @@
 from typing import Optional
 
 from office365.onedrive.sites.site import Site
+from office365.onedrive.sites.sites_with_root import SitesWithRoot
 from tests import test_team_site_url
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -32,33 +33,25 @@ class TestSite(GraphDelegatedTestCase):
         result = self.client.sites.root.get().execute_query()
         assert result.id is not None
 
-    @requires_delegated(
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    @requires_call(
+        SitesWithRoot.get_by_path, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
     )
     def test2_get_site_by_path(self):
         """Get a site by its server-relative path"""
         result = self.client.sites.get_by_path("/sites/project").execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    @requires_call(
+        SitesWithRoot.get_by_url, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
     )
     def test3_get_site_by_url(self):
         """Get a site by its absolute URL"""
         result = self.client.sites.get_by_url(test_team_site_url).execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Files.Read",
-        "Files.ReadWrite",
-        "Files.Read.All",
-        "Files.ReadWrite.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
+    @requires_call(
+        Site.get_activities_by_interval,
+        flow="delegated",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test4_get_activities_by_interval(self):

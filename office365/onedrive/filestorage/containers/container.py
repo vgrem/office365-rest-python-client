@@ -16,6 +16,7 @@ from office365.onedrive.filestorage.containers.settings import FileStorageContai
 from office365.onedrive.filestorage.containers.status import FileStorageContainerStatus
 from office365.onedrive.filestorage.containers.viewpoint import FileStorageContainerViewpoint
 from office365.onedrive.filestorage.sitelockstate import SiteLockState
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -36,6 +37,10 @@ class FileStorageContainer(Entity):
     via an application. All file system objects in a fileStorageContainer are returned as driveItem resources.
     """
 
+    @require_permission(
+        delegated=["FileStorageContainer.Selected"],
+        notes="Activate a container. Requires the SharePoint Embedded Administrator role",
+    )
     def activate(self) -> Self:
         """Activate a fileStorageContainer object.
 

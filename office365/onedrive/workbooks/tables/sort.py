@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.sort_field import WorkbookSortField
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -14,6 +15,7 @@ from office365.runtime.types.odata_property import odata
 class WorkbookTableSort(Entity):
     """Manages sorting operations on Table objects."""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply(
         self,
         fields: List[WorkbookSortField],

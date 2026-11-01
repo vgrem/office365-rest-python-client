@@ -1,12 +1,13 @@
 from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
+from office365.onedrive.workbooks.worksheets.protection import WorkbookWorksheetProtection
 from office365.onedrive.workbooks.worksheets.protection_options import (
     WorkbookWorksheetProtectionOptions,
 )
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
 from tests import create_unique_name
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 from tests.onedrive.test_excel import upload_excel
 
@@ -50,7 +51,11 @@ class TestExcelWorksheets(GraphDelegatedTestCase):
         result = TestExcelWorksheets.worksheet.used_range().execute_query()
         self.assertIsNotNone(result.address)
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookWorksheetProtection.protect,
+        flow="delegated",
+        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    )
     def test4_protect_worksheet(self):
         """Protect a worksheet"""
         ws = TestExcelWorksheets.worksheet

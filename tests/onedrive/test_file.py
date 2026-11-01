@@ -28,7 +28,7 @@ from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.lists.template_type import ListTemplateType
 from tests import create_unique_name
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -107,11 +107,8 @@ class TestFile(GraphDelegatedTestCase):
         self.assertTrue(file_item.is_file)
         TestFile.target_file = file_item
 
-    @requires_delegated(
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    @requires_call(
+        DriveItem.preview, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
     )
     def test_04_preview_file(self):
         """Getting a preview of the target file should succeed."""
@@ -169,11 +166,8 @@ class TestFile(GraphDelegatedTestCase):
         versions = file_item.versions.get().execute_query()
         self.assertGreaterEqual(len(versions), 1)
 
-    @requires_delegated(
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    @requires_call(
+        DriveItem.resumable_upload, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
     )
     def test_08_resumable_upload(self):
         """Uploading a file via resumable upload session should succeed."""
@@ -186,11 +180,8 @@ class TestFile(GraphDelegatedTestCase):
         file_item = drive.root.resumable_upload(path).get().execute_query()
         self.assertIsNotNone(file_item.web_url)
 
-    @requires_delegated(
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    @requires_call(
+        DriveItem.get_content, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
     )
     def test_09_download_file(self):
         """Downloading the target file content should return bytes."""
@@ -235,10 +226,9 @@ class TestFile(GraphDelegatedTestCase):
         result = file_item.copy(name).execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated(
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.ReadWrite.All",
+    @requires_call(
+        DriveItem.get_activities_by_interval,
+        flow="delegated",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_12_get_activities_by_interval(self):
@@ -267,10 +257,9 @@ class TestFile(GraphDelegatedTestCase):
         result = file_item.analytics.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.ReadWrite.All",
+    @requires_call(
+        DriveItem.extract_sensitivity_labels,
+        flow="delegated",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_14_extract_sensitivity_labels(self):

@@ -14,6 +14,7 @@ import re
 from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import unquote
 
+from office365.permissions import require_permission
 from office365.runtime.lro import LongRunningOperationResult, OperationError, OperationStatus
 
 if TYPE_CHECKING:
@@ -88,6 +89,11 @@ class DriveItemCopyResult(LongRunningOperationResult):
         status = await self.wait_async(interval=interval, timeout=timeout, on_progress=on_progress)
         return self._resolve_item(status)
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        notes="Read the item a copy produced, once the operation reports it exists",
+    )
     def _resolve_item(self, status: OperationStatus) -> "DriveItem":
         from office365.onedrive.driveitems.driveItem import DriveItem
 

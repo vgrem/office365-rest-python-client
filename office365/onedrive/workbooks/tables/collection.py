@@ -1,5 +1,6 @@
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.tables.table import WorkbookTable
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
@@ -7,6 +8,7 @@ class WorkbookTableCollection(EntityCollection[WorkbookTable]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, WorkbookTable, resource_path)
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def add(self, address, has_headers) -> WorkbookTable:
         """Create a new table. The range source address determines the worksheet under which the table will be added.
         If the table cannot be added (e.g., because the address is invalid, or the table would overlap with

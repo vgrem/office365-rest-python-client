@@ -8,6 +8,7 @@ from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.permissions.permission import Permission
+from office365.permissions import require_permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
 if TYPE_CHECKING:
@@ -20,6 +21,10 @@ class PermissionCollection(EntityCollection[Permission]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Permission, resource_path)
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def add(
         self,
         roles: list[str],

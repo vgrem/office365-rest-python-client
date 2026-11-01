@@ -4,6 +4,7 @@ from office365.delta_collection import DeltaCollection
 from office365.onedrive.internal.paths.root import RootPath
 from office365.onedrive.internal.paths.site import SitePath
 from office365.onedrive.sites.site import Site
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
@@ -16,6 +17,9 @@ class SitesWithRoot(DeltaCollection[Site]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Site, resource_path)
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"]
+    )
     def get_all_sites(self) -> SitesWithRoot:
         """List root sites across geographies in an organization."""
         return_type = SitesWithRoot(self.context)
@@ -23,6 +27,9 @@ class SitesWithRoot(DeltaCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"]
+    )
     def get_by_path(self, path: str) -> Site:
         """Address a Site resource by server-relative path and queue its read.
 
@@ -45,6 +52,9 @@ class SitesWithRoot(DeltaCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"]
+    )
     def get_by_url(self, url: str) -> Site:
         """Address a Site resource by absolute URL and queue its read.
 
@@ -61,6 +71,9 @@ class SitesWithRoot(DeltaCollection[Site]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Sites.FullControl.All"], application=["Sites.FullControl.All"], notes="Remove sites from the tenant"
+    )
     def remove(self, sites: SitesWithRoot) -> SitesWithRoot:
         """Removes sites from the tenant."""
         return_type = SitesWithRoot(self.context, self.resource_path)

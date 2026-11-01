@@ -3,6 +3,7 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -14,12 +15,14 @@ class WorkbookPivotTable(Entity):
     def __str__(self):
         return self.name or self.entity_type_name
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def refresh(self) -> Self:
         """Refreshes the PivotTable."""
         qry = ServiceOperationQuery(self, "refresh")
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def refresh_all(self) -> Self:
         """Refreshes the PivotTable within a given worksheet."""
         qry = ServiceOperationQuery(self, "refreshAll")

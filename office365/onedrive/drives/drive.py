@@ -41,6 +41,10 @@ class Drive(BaseItem):
         """Retrieve drive metadata"""
         return super().get()
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def create_bundle(self, name: str, children: list | None = None) -> DriveItem:
         """Add a new bundle to the user's drive.
 
@@ -61,6 +65,17 @@ class Drive(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def search(self, query_text: str) -> EntityCollection[DriveItem]:
         """Search the hierarchy of items for items matching a query.
 
@@ -72,6 +87,17 @@ class Drive(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def recent(self) -> EntityCollection[DriveItem]:
         """
         List a set of items that have been recently used by the signed in user.
@@ -83,6 +109,17 @@ class Drive(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def shared_with_me(self) -> EntityCollection[DriveItem]:
         """Retrieve a collection of DriveItem resources that have been shared with the owner of the Drive."""
         return_type = DriveItemCollection(self.context, self.items.resource_path)

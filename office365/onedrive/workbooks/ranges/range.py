@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.format import WorkbookRangeFormat
 from office365.onedrive.workbooks.ranges.sort import WorkbookRangeSort
 from office365.onedrive.workbooks.ranges.view import WorkbookRangeView
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -22,6 +23,7 @@ class WorkbookRange(Entity):
     def __str__(self):
         return self.address or self.entity_type_name
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def cell(self, row, column):
         """Gets the range object containing the single cell based on row and column numbers. The cell can be outside
         the bounds of its parent range, so long as it's stays within the worksheet grid.
@@ -36,6 +38,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def clear(self, apply_to=None):
         """Clear range values such as format, fill, and border.
 
@@ -47,6 +50,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def insert(self, shift):
         """Inserts a cell or a range of cells into the worksheet in place of this range, and shifts the other cells to
         make space. Returns a new Range object at the now blank space.
@@ -60,6 +64,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def last_row(self):
         """
         Get the last row within the range. For example, the last row of B2:D5 is B5:D5.
@@ -69,6 +74,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def visible_view(self):
         """Get the range visible from a filtered range."""
         return_type = WorkbookRangeView(self.context)
@@ -76,6 +82,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def used_range(self, values_only=False):
         """Return the used range of the given range object.
 

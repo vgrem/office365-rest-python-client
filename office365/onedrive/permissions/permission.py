@@ -10,6 +10,7 @@ from office365.onedrive.listitems.item_reference import ItemReference
 from office365.onedrive.permissions.sharepoint_identity_set import SharePointIdentitySet
 from office365.onedrive.permissions.sharing_invitation import SharingInvitation
 from office365.onedrive.permissions.sharing_link import SharingLink
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -23,6 +24,10 @@ if TYPE_CHECKING:
 class Permission(Entity):
     """The Permission resource provides information about a sharing permission granted for a DriveItem resource."""
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def grant(self, recipients: List[str], roles: List[str]) -> PermissionCollection:
         """Grant users access to a link represented by a permission.
 

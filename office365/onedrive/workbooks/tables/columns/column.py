@@ -5,6 +5,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.onedrive.workbooks.filter import WorkbookFilter
 from office365.onedrive.workbooks.ranges.range import WorkbookRange
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.json import Json
@@ -14,6 +15,7 @@ from office365.runtime.types.odata_property import odata
 class WorkbookTableColumn(Entity):
     """Represents a column in a table."""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def header_row_range(self) -> WorkbookRange:
         """
         Gets the range object associated with the header row of the column.
@@ -23,6 +25,7 @@ class WorkbookTableColumn(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def range(self) -> WorkbookRange:
         """
         Gets the range object associated with the entire column.

@@ -18,7 +18,7 @@ from office365.onedrive.contenttypes.content_type import ContentType
 from office365.onedrive.sites.site import Site
 from office365.runtime.client_request_exception import ClientRequestException
 from tests import test_content_type_hub_url, test_root_site_url
-from tests.decorators import requires_application, requires_delegated
+from tests.decorators import requires_application, requires_call, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
 
 
@@ -64,11 +64,9 @@ class TestContentType(GraphDelegatedTestCase):
         result = self.client.sites.root.content_types.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Sites.Read.All",
-        "Sites.FullControl.All",
-        "Sites.Manage.All",
-        "Sites.ReadWrite.All",
+    @requires_call(
+        Site.get_applicable_content_types_for_list,
+        flow="delegated",
         bypass_roles=["Global Administrator", "SharePoint Administrator"],
     )
     def test_03_get_applicable_content_types_for_list(self):

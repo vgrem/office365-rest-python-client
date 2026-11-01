@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.workbooks.tables.rows.row import WorkbookTableRow
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 
@@ -28,6 +29,7 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
         """
         return super().add(values=values, index=index)
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def count(self) -> ClientResult[int]:
         """"""
         return_type = ClientResult(self.context, int())
@@ -35,6 +37,7 @@ class WorkbookTableRowCollection(EntityCollection[WorkbookTableRow]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def item_at(self, index: int) -> WorkbookTableRow:
         """Gets a row based on its position in the collection.
 

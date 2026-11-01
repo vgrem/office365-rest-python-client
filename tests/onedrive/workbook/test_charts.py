@@ -4,7 +4,7 @@ from typing import Optional
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.charts.chart import WorkbookChart
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -42,7 +42,9 @@ class TestExcelCharts(GraphDelegatedTestCase):
         assert result.resource_path is not None
         TestExcelCharts.chart = result
 
-    @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
+    @requires_call(
+        WorkbookChart.image, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
+    )
     def test3_get_image(self):
         """Get the chart image"""
         assert TestExcelCharts.chart is not None

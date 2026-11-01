@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.onedrive.workbooks.worksheets.protection_options import (
     WorkbookWorksheetProtectionOptions,
 )
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -15,12 +16,14 @@ from office365.runtime.types.odata_property import odata
 class WorkbookWorksheetProtection(Entity):
     """Represents the protection of a sheet object."""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def protect(self, options: WorkbookWorksheetProtectionOptions | None = None) -> Self:
         """Protect a worksheet. It throws if the worksheet has been protected."""
         qry = ServiceOperationQuery(self, "protect", parameters_type=options)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def unprotect(self) -> Self:
         """Unprotect a worksheet"""
         qry = ServiceOperationQuery(self, "unprotect")

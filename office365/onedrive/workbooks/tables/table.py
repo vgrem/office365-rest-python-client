@@ -13,6 +13,7 @@ from office365.onedrive.workbooks.tables.rows.collection import (
     WorkbookTableRowCollection,
 )
 from office365.onedrive.workbooks.tables.sort import WorkbookTableSort
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -25,6 +26,7 @@ class WorkbookTable(Entity):
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def data_body_range(self) -> WorkbookRange:
         """Gets the range object associated with the data body of the table."""
         return_type = WorkbookRange(self.context, ResourcePath("dataBodyRange", self.resource_path))
@@ -32,6 +34,7 @@ class WorkbookTable(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def range(self) -> WorkbookRange:
         """Get the range object associated with the entire table."""
         return_type = WorkbookRange(self.context, ResourcePath("range", self.resource_path))
@@ -39,6 +42,7 @@ class WorkbookTable(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def total_row_range(self) -> WorkbookRange:
         """Gets the range object associated with totals row of the table."""
         return_type = WorkbookRange(self.context)
@@ -46,12 +50,14 @@ class WorkbookTable(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def clear_filters(self) -> Self:
         """Clears all the filters currently applied on the table."""
         qry = ServiceOperationQuery(self, "clearFilters")
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def reapply_filters(self) -> Self:
         """Reapplies all the filters currently on the table."""
         qry = ServiceOperationQuery(self, "reapplyFilters")

@@ -31,7 +31,6 @@ PENDING: dict[str, int] = {
     "booking": 2,
     "common": 1,
     "intune": 14,
-    "onedrive": 61,
     "planner": 3,
     "reports": 4,
     "security": 2,

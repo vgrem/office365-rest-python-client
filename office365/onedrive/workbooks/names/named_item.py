@@ -4,6 +4,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.range import WorkbookRange
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.json import Json
@@ -15,6 +16,7 @@ class WorkbookNamedItem(Entity):
     (as seen in the type below), range object, reference to a range. This object can be used to obtain range
     object associated with names."""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def range(self):
         """Returns the range object that is associated with the name. Throws an exception if the named item's type
         isn't a range."""

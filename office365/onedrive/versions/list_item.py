@@ -3,6 +3,7 @@ from typing_extensions import Self
 from office365.entity_collection import EntityCollection
 from office365.onedrive.listitems.field_value_set import FieldValueSet
 from office365.onedrive.versions.base_item import BaseItemVersion
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -11,6 +12,10 @@ from office365.runtime.types.odata_property import odata
 class ListItemVersion(BaseItemVersion):
     """The listItemVersion resource represents a previous version of a ListItem resource."""
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def restore_version(self) -> Self:
         """
         Restore a previous version of a DriveItem to be the current version. This will create a new version with

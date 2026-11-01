@@ -26,6 +26,7 @@ from office365.onedrive.sitepages.collection import SitePageCollection
 from office365.onedrive.sites.collection import SiteCollection
 from office365.onedrive.termstore.store import Store
 from office365.onenote.onenote import Onenote
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -60,6 +61,9 @@ class Site(BaseItem):
     def __repr__(self):
         return self.name or self.web_url or self.id or self.entity_type_name
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All"], application=["Sites.Read.All", "Sites.ReadWrite.All"]
+    )
     def get_by_path(self, path: str) -> Site:
         """
         Retrieve properties and relationships for a site resource. A site resource represents a team site in SharePoint.
@@ -79,6 +83,10 @@ class Site(BaseItem):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+        application=["Sites.Read.All", "Sites.ReadWrite.All", "Sites.Manage.All", "Sites.FullControl.All"],
+    )
     def get_applicable_content_types_for_list(self, list_or_id: Union[List, str]) -> ContentTypeCollection:
         """Get site contentTypes that can be added to a list.
 
@@ -102,6 +110,17 @@ class Site(BaseItem):
             _get_applicable_content_types_for_list(list_or_id)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Files.Read",
+            "Files.Read.All",
+            "Files.ReadWrite",
+            "Files.ReadWrite.All",
+            "Sites.Read.All",
+            "Sites.ReadWrite.All",
+        ],
+        application=["Files.Read.All", "Files.ReadWrite.All", "Sites.Read.All", "Sites.ReadWrite.All"],
+    )
     def get_activities_by_interval(
         self, start_dt: datetime | None = None, end_dt: datetime | None = None, interval: str | None = None
     ) -> EntityCollection[ItemActivityStat]:

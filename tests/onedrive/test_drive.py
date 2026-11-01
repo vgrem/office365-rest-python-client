@@ -11,7 +11,8 @@ Tests cover:
 
 from __future__ import annotations
 
-from tests.decorators import requires_delegated
+from office365.onedrive.drives.drive import Drive
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -48,42 +49,20 @@ class TestDrive(GraphDelegatedTestCase):
         result = self.client.me.drive.root.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Files.Read",
-        "Files.Read.All",
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
-    )
+    @requires_call(Drive.recent, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test_03_get_recent_items(self):
         """Getting recently used items returns a valid collection."""
         items = self.client.me.drive.recent().execute_query()
         self.assertIsNotNone(items.resource_path)
 
-    @requires_delegated(
-        "Files.Read",
-        "Files.Read.All",
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
-    )
+    @requires_call(Drive.search, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test_04_search_drive(self):
         """Searching for files in the drive by keyword returns results."""
         items = self.client.me.drive.search("Guide.docx").execute_query()
         self.assertIsNotNone(items.resource_path)
 
-    @requires_delegated(
-        "Files.Read",
-        "Files.Read.All",
-        "Files.ReadWrite",
-        "Files.ReadWrite.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        bypass_roles=["Global Administrator", "SharePoint Administrator"],
+    @requires_call(
+        Drive.shared_with_me, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
     )
     def test_05_shared_with_me(self):
         """Listing items shared with the current user returns a valid collection."""

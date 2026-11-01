@@ -11,6 +11,7 @@ from office365.onedrive.workbooks.charts.data_labels import WorkbookChartDataLab
 from office365.onedrive.workbooks.charts.legend.legend import WorkbookChartLegend
 from office365.onedrive.workbooks.charts.series.series import WorkbookChartSeries
 from office365.onedrive.workbooks.charts.title import WorkbookChartTitle
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -24,6 +25,7 @@ if TYPE_CHECKING:
 class WorkbookChart(Entity):
     """Represents a chart object in a workbook."""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def image(self, width: int | None = None, height: int | None = None) -> ClientResult[str]:
         """Renders the chart as a base64-encoded image by scaling the chart to fit the specified dimensions.
 
@@ -37,6 +39,7 @@ class WorkbookChart(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def set_data(self, source_data: Dict, series_by: str) -> Self:
         """Updates the data source of a chart
 
@@ -49,6 +52,7 @@ class WorkbookChart(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def set_position(self, start_cell: str, end_cell: str) -> Self:
         """Positions the chart relative to cells on the worksheet.
 

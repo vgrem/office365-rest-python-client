@@ -507,6 +507,30 @@ introduced.
   `directory` leaves the ratchet map, the fourth package to do so; debt 1,522 → 1,461, and
   eleven live tests now derive their precondition from the declaration rather than restating
   the scope by hand.
+- **The drive declares every operation, and a file's grants come as a rung.**
+  62 methods across 26 modules under `office365.onedrive`: `DriveItem` (nine, including
+  `preview`, `getContent`, `getFiles`/`getFolders`, the resumable upload and
+  `extractSensitivityLabels`), `Drive` (`recent`, `search`, `sharedWithMe`, `createBundle`), the
+  two site objects, the web-part position, the sharing calls (`PermissionCollection.add`,
+  `Permission.grant`), the version restore, the container activation, and 36 that belong to the
+  workbook. The item operations do not pick a name each. Graph publishes the file permissions
+  twice — `Files.*` and `Sites.*` — because a drive can be someone's OneDrive or a document
+  library and the same item is reachable through either, so the declaration lists the whole rung
+  (six names for a read, three for a write) and any one of them satisfies it: the shape the tree
+  already used for `DriveItem.get` and `ensure_folder`. The workbook is the opposite case: all 36
+  declare `Files.ReadWrite` (or `Files.ReadWrite.All`), reads included, because a workbook
+  session is opened by a write grant and the reads happen inside it — the four workbook
+  declarations already in the tree say the same, and this batch agrees with them rather than
+  inventing a read rung the endpoint never checks. Two methods reach across the tenant and say
+  so: `getAllSites` takes the read rung and `removeSites` `Sites.FullControl.All`. Two more name
+  something other than a grant: `FileStorageContainer.activate` declares
+  `FileStorageContainer.Selected` with the SharePoint Embedded Administrator role in its note,
+  and `DriveItemCopyResult._resolveItem` — a private helper that does put a request on the wire,
+  to read the item the copy produced — declares the write rung it inherits from the copy. That
+  last one is the rule working rather than an exception to it: a private helper that builds no
+  request names nothing. `onedrive` leaves the ratchet map, the fifth package to do so, and 26
+  live tests derive their precondition from the declaration instead of restating the scope by
+  hand. Debt 1,461 → 1,399.
 
 ### Changed
 

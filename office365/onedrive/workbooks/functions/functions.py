@@ -4,12 +4,14 @@ from datetime import datetime
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
 class WorkbookFunctions(Entity):
     """Used as a container for Microsoft Excel worksheet function"""
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def abs(self, number):
         """Returns the absolute value of a number. The absolute value of a number is the number without its sign
 
@@ -24,6 +26,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def accr_int(self, issue, first_interest, settlement, rate, par, frequency):
         """Returns the accrued interest for a security that pays periodic interest.
 
@@ -50,6 +53,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def accr_int_m(self, issue, settlement, rate, par, basis):
         """Returns the accrued interest for a security that pays periodic interest.
 
@@ -73,6 +77,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def days(self, start_date: datetime, end_date: datetime) -> WorkbookFunctionResult:
         """Returns the number of days between two dates.
 
@@ -89,6 +94,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def power(self, number, power):
         """Returns the result of a number raised to a power.
 
