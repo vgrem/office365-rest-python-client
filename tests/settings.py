@@ -49,25 +49,22 @@ def _assignment(line: str) -> tuple[str, str] | None:
 
 
 class EnvFile:
-    """The ``.env`` file: read it into the environment, merge discoveries back, redact it.
+    """The ``.env`` file, read into the environment at import.
 
-    Two programs write through it — :mod:`tests.settings` at import, :mod:`tests.setup`
-    when it has discovered credentials — and they each had a parser before, which
-    disagreed about an unquoted ``KEY=value  # note`` (the reader dropped the comment,
-    the writer kept it in the value). One grammar:
+    One grammar, because the readers that came before it disagreed about an unquoted
+    ``KEY=value  # note`` (one dropped the comment, the other kept it in the value):
 
     * blank and ``#`` lines carry nothing; ``export KEY=value`` is ``KEY=value``;
-    * quotes are removed, and a value keeps a trailing ``#`` comment only when quoted;
-    * merging replaces a value in place, fills only an empty key, and preserves every
-      comment and unrelated key.
+    * quotes are removed, and a value keeps a trailing ``#`` comment only when quoted.
+
+    Nothing here writes. ``.env.example`` is the skeleton a human copies and fills in, and
+    :mod:`tests.setup` prints the lines this checkout still needs rather than editing the
+    file: the program that can rewrite a secret file in place is one program that can
+    truncate one.
     """
 
-    #: Values :meth:`redact` replaces before the wizard prints anything.
-    secrets: tuple[str, ...] = ("OFFICE365_CLIENT_SECRET", "OFFICE365_PASSWORD")
-
-    def __init__(self, path: Path, example: Path | None = None) -> None:
+    def __init__(self, path: Path) -> None:
         self.path = path
-        self.example = example
 
     @staticmethod
     def _parse(text: str) -> dict[str, str]:
@@ -94,48 +91,9 @@ class EnvFile:
         for key, value in self.read().items():
             os.environ.setdefault(key, value)
 
-    def source_lines(self) -> list[str]:
-        """The lines to edit: the file when it exists, else the commented template."""
-        for candidate in (self.path, self.example):
-            if candidate is not None and candidate.is_file():
-                return candidate.read_text(encoding="utf-8-sig").splitlines()
-        return []
 
-    def merge(self, overrides: dict[str, str], defaults: dict[str, str]) -> str:
-        """Return the file's text with ``overrides`` set and missing ``defaults`` filled."""
-        pending = dict(overrides)
-        fill = dict(defaults)
-        output: list[str] = []
-        for line in self.source_lines():
-            entry = _assignment(line)
-            if entry is not None:
-                key, current = entry
-                if key in pending:
-                    output.append(f"{key}={pending.pop(key)}")
-                    continue
-                if key in fill:
-                    fallback = fill.pop(key)
-                    if not current.strip():
-                        output.append(f"{key}={fallback}")
-                        continue
-            output.append(line)
-        tail = {**fill, **pending}
-        if tail:
-            output += ["", "# Added by python -m tests.setup"]
-            output += [f"{key}={value}" for key, value in tail.items()]
-        return "\n".join(output).rstrip() + "\n"
-
-    def redact(self, text: str) -> str:
-        """Return ``text`` with the values of :attr:`secrets` replaced by ``<hidden>``."""
-        output: list[str] = []
-        for line in text.splitlines():
-            entry = _assignment(line)
-            output.append(f"{entry[0]}=<hidden>" if entry is not None and entry[0] in self.secrets else line)
-        return "\n".join(output)
-
-
-#: The repository's ``.env``, and the commented template that stands in for it.
-ENV = EnvFile(PROJECT_ROOT / ".env", PROJECT_ROOT / ".env.example")
+#: The repository's ``.env``. The commented template beside it is the skeleton to copy.
+ENV = EnvFile(PROJECT_ROOT / ".env")
 
 #: Environment variable backing each :class:`Settings` field used for readiness.
 _ENV = {
@@ -178,6 +136,21 @@ FLOWS: dict[str, Flow] = {
         ("tenant", "client_id", "cert_thumbprint"),
     ),
 }
+
+
+#: Set in ``.env`` to make a bare ``pytest`` run the live suites, which is what an IDE's test
+#: runner needs: it has no command line of its own to put ``--live`` on.
+LIVE_SWITCH = "OFFICE365_LIVE"
+
+
+def _switched_on(name: str) -> bool:
+    """A boolean out of the environment: ``1``/``true``/``yes``/``on``, anything else is off."""
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def live_by_default() -> bool:
+    """Whether this checkout signs in from a bare ``pytest`` — ``.env``, not an argument."""
+    return _switched_on(LIVE_SWITCH)
 
 
 def _optional(key: str, default: str = "") -> str:
@@ -317,6 +290,8 @@ class Settings:
             missing = ready[flow]
             detail = "" if not missing else "  missing: " + ", ".join(missing)
             lines.append(f"  {spec.label:<{width}}  {'not ready' if missing else 'ready':<9}{detail}")
+        state = "on" if live_by_default() else f"off (pass --live, or set {LIVE_SWITCH}=1 in .env)"
+        lines += ["", f"Live suites from a bare `pytest`: {state}"]
         if not any(self.is_ready(flow) for flow in FLOWS):
             lines += [
                 "",

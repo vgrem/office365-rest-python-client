@@ -24,6 +24,22 @@ uv run pytest -q
 Offline is the default: a bare `pytest` cannot reach a tenant. Add `--live` to also run
 what the credentials in `.env` make reachable (slow, and it writes to the tenant).
 
+### From an IDE
+
+An IDE's test runner is handed a path, not a command line, so a suite picked in the test
+tree runs offline however many times you click it. Two ways out, both once per checkout:
+
+- **Switch the checkout on** — put `OFFICE365_LIVE=1` in `.env`. `tests/settings.py` gives
+  `.env` to the environment, so every runner in this checkout signs in: the test tree, a
+  debugger, a bare `uv run pytest`. `--offline` still wins for the run that must not, and
+  CI has no `.env`, so nothing there changes.
+- **Or give the runner the flag** — VS Code: `"python.testing.pytestArgs": ["tests",
+  "--live"]` in `.vscode/settings.json`; PyCharm: *Run → Edit Configurations → Edit
+  configuration templates… → Python tests → pytest → Additional arguments*. A template
+  covers every run created after it.
+
+`python -m tests.doctor` ends its report with which of the two is in force.
+
 That is the whole setup for most contributions. Continue only to run against a real tenant.
 
 ## Lint, format and git hooks
@@ -121,23 +137,26 @@ uv run python examples/entraid/applications/redirect_uris.py
 
 ### 5. App-only
 
-The guided wizard generates `.env` for you. It reads the values already present,
-prompts only for the tenant and sign-in app id when they are missing, signs in,
-reuses or generates one self-signed certificate (valid for both Graph and
-SharePoint), optionally creates a client secret, and derives the SharePoint URLs
-from the tenant name (or the signed-in UPN). Entra reveals a secret's value only
-at creation, so the wizard asks whether to create one (default no) unless a secret
-is already configured:
+The guided wizard finds the values, prints them, and leaves `.env` to you. It reads
+what is already configured, prompts only for the tenant and sign-in app id when they
+are missing, signs in, reuses or generates one self-signed certificate (valid for both
+Graph and SharePoint), optionally creates a client secret, and derives the SharePoint
+URLs from the tenant name (or the signed-in UPN). Entra reveals a secret's value only
+at creation, so the wizard asks whether to create one (default no) unless a secret is
+already configured:
 
 ```bash
 uv run python -m tests.setup
 ```
 
-Everything else — the admin/primary usernames, the optional secondary user and
-shared mailbox, and the `*_SITE_URL` defaults — is discovered or derived.
-Re-running reuses what is already there; `--dry-run` previews the `.env` merge
-without signing in or writing. The file holds an app secret and the admin account,
-so it is written with mode `600` (and so is the `.env.bak` it leaves behind):
+It ends with the block this checkout still needs — the derived URLs commented out, the
+way the skeleton marks them as optional — for you to paste into `.env`, replacing a key
+that is already there. Nothing writes that file: it holds an app secret and the admin
+account, and a program that can rewrite it can also truncate it. Everything else — the
+admin/primary usernames, the optional secondary user and shared mailbox, and the
+`*_SITE_URL` defaults — is discovered or derived. Re-running reuses what is already
+there; `--dry-run` prints the same block without signing in, and marks a secret that is
+already in `.env` as `<kept>` rather than repeating it:
 
 ```bash
 uv run python -m tests.setup --dry-run
@@ -155,7 +174,7 @@ permissions are granted by `--grant` (step 3). Prefer the individual scripts?
 # Certificate (Graph)
 uv run python examples/entraid/applications/rotate_cert.py --generate
 
-# SharePoint app-only, full cycle (cert + Sites.Selected + per-site access + .env)
+# SharePoint app-only, full cycle (cert + Sites.Selected + per-site access + values to paste)
 uv run python examples/sharepoint/getting-started/setup_sharepoint_app.py \
     --site https://contoso.sharepoint.com/sites/project
 

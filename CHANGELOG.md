@@ -381,6 +381,26 @@ introduced.
   them as a list. The provenance is kept *beside* the requirement rather than on it: two tests
   that need the same grant are one row however many methods each of them exercised, and a
   requirement stated by hand with `@requires_delegated` names no call and shows none.
+- **A checkout can answer "run live" for itself.** An IDE's test runner is handed a path,
+  not a command line, so a suite selected in VS Code's test tree or PyCharm's was skipped
+  with `live tests are opt-in: pass --live to run them` and nowhere to pass it.
+  `OFFICE365_LIVE=1` in `.env` is now that switch: `.env` already reaches the environment,
+  so every runner in the checkout signs in — the test tree, a debugger, a bare `pytest` —
+  and `--offline` still wins for the run that must not. CI has no `.env`, so it stays
+  offline. The skip reason, the session header and `python -m tests.doctor` all name the
+  switch instead of assuming a terminal; the flag itself is unchanged, and a runner that
+  can hold arguments should still use it.
+- **Nothing writes `.env` any more.** The wizard that discovers credentials and grants what
+  the live suites declare used to merge its findings back into the repo-root `.env`, leaving
+  a `.env.bak` and `chmod`-ing both. It now prints the block instead: the file holds an app
+  secret and the admin account, `.env.example` is already the skeleton, and a program that
+  rewrites a secret file can also truncate one. The old writer had in fact stopped working —
+  its merge helper was removed without its call site, so `python -m tests.setup` raised
+  `NameError` before doing anything, and the certificate/secret provisioning it wrapped was
+  reachable from nowhere. `tests.setup` is once again the one program that creates a
+  certificate, a secret and the grants, and it ends by naming what `.env` needs; `--dry-run`
+  prints the same block without signing in and marks a secret already in `.env` as `<kept>`,
+  so a preview stays safe to paste into an issue.
 
 ### Changed
 

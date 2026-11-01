@@ -47,12 +47,12 @@ class TestResolvePath(unittest.TestCase):
 
 
 class TestEnvFile(unittest.TestCase):
-    """The `.env` grammar `tests.settings` loads and `tests.setup` writes."""
+    """The `.env` grammar `tests.settings` reads: one parser, and nothing that writes."""
 
     def _file(self, text: str = "") -> EnvFile:
         folder = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, folder, True)
-        env = EnvFile(folder / ".env", folder / ".env.example")
+        env = EnvFile(folder / ".env")
         if text:
             env.path.write_text(text, encoding="utf-8")
         return env
@@ -79,28 +79,6 @@ class TestEnvFile(unittest.TestCase):
             },
         )
 
-    def test_merge_replaces_in_place_and_only_fills_an_empty_value(self) -> None:
-        env = self._file("# header\nOFFICE365_TENANT=old\nOFFICE365_SITE_URL=\nUNRELATED=kept\n")
-        text = env.merge(
-            overrides={"OFFICE365_TENANT": "contoso.onmicrosoft.com"},
-            defaults={"OFFICE365_SITE_URL": "https://contoso.sharepoint.com"},
-        )
-        self.assertEqual(
-            text,
-            "# header\nOFFICE365_TENANT=contoso.onmicrosoft.com\nOFFICE365_SITE_URL=https://contoso.sharepoint.com\n"
-            "UNRELATED=kept\n",
-        )
-
-    def test_a_default_never_overwrites_a_configured_value(self) -> None:
-        env = self._file("OFFICE365_SITE_URL=https://mine.sharepoint.com\n")
-        text = env.merge({}, {"OFFICE365_SITE_URL": "https://derived.sharepoint.com"})
-        self.assertEqual(text, "OFFICE365_SITE_URL=https://mine.sharepoint.com\n")
-
-    def test_a_key_the_file_does_not_have_is_appended_under_one_comment(self) -> None:
-        env = self._file("OFFICE365_TENANT=contoso.onmicrosoft.com\n")
-        text = env.merge({"OFFICE365_CLIENT_ID": "app-id"}, {})
-        self.assertTrue(text.endswith("# Added by python -m tests.setup\nOFFICE365_CLIENT_ID=app-id\n"))
-
     def test_the_environment_wins_over_the_file(self) -> None:
         env = self._file("OFFICE365_TENANT=from-file\n")
         with mock.patch.dict(os.environ, {"OFFICE365_TENANT": "from-shell"}):
@@ -110,22 +88,7 @@ class TestEnvFile(unittest.TestCase):
     def test_a_missing_file_reads_as_nothing_and_loads_without_failing(self) -> None:
         env = self._file()
         self.assertEqual(env.read(), {})
-        self.assertEqual(env.source_lines(), [])
         env.load()
-
-    def test_the_source_is_the_env_file_when_present_else_the_template(self) -> None:
-        env = self._file()
-        env.example.write_text("OFFICE365_TENANT=\n", encoding="utf-8")
-        self.assertEqual(env.source_lines(), ["OFFICE365_TENANT="])
-        env.path.write_text("OFFICE365_TENANT=contoso.onmicrosoft.com\n", encoding="utf-8")
-        self.assertEqual(env.source_lines(), ["OFFICE365_TENANT=contoso.onmicrosoft.com"])
-
-    def test_redact_hides_the_secrets_and_leaves_the_rest(self) -> None:
-        text = "OFFICE365_TENANT=contoso\nOFFICE365_CLIENT_SECRET=s3cret\nOFFICE365_PASSWORD=pw # note\n"
-        self.assertEqual(
-            self._file().redact(text),
-            "OFFICE365_TENANT=contoso\nOFFICE365_CLIENT_SECRET=<hidden>\nOFFICE365_PASSWORD=<hidden>",
-        )
 
 
 class TestDerivedUrls(unittest.TestCase):

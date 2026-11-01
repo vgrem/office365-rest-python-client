@@ -1,10 +1,10 @@
 """Guided local credential setup — run ``python -m tests.setup``.
 
 Prompts for the minimum it needs (tenant and sign-in app id, only when they are
-missing), reuses or creates a certificate and secret, derives the SharePoint
-URLs from the tenant name, then generates the repo-root ``.env``. Re-running is
-safe: existing credentials and ``.env`` entries are reused unless you ask for new
-ones.
+missing), reuses or creates a certificate and secret, derives the SharePoint URLs from
+the tenant name, and prints the block ``.env`` needs. It does not write that file:
+``.env.example`` is the skeleton, and the lines are the human's to paste in. Re-running
+is safe — existing credentials are reused unless you ask for new ones.
 
 Prerequisite: an app registration that allows public client flows and has the
 delegated ``Application.ReadWrite.All`` permission with admin consent. The app
@@ -33,7 +33,7 @@ import argparse
 import getpass
 import shutil
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Callable, TypeVar
 
@@ -50,7 +50,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TEST_DIR = Path(__file__).resolve().parent
 CERT_PUBLIC = TEST_DIR / "selfsigncert.crt"
 CERT_PRIVATE = TEST_DIR / "selfsigncert.pem"
-ENV_BAK = PROJECT_ROOT / ".env.bak"
 
 DEFAULT_APP_NAME = "office365-rest-python-client"
 _T = TypeVar("_T")
@@ -175,7 +174,7 @@ def _tenant_prefix(tenant: str, upn: str = "") -> str:
 
 
 # --------------------------------------------------------------------------- #
-# .env merge
+# What .env needs
 # --------------------------------------------------------------------------- #
 #: ``.env`` key <- :class:`_Options` field, for the values that are set or absent.
 _ENV_OF_OPTION = {
@@ -188,6 +187,7 @@ _ENV_OF_OPTION = {
 
 
 def _env_updates(opts: _Options, target_id: str, thumbprint: str, secret_value: str) -> tuple[dict, dict]:
+    """The keys this run settled, and the derived URLs the skeleton marks optional."""
     overrides = {"OFFICE365_TENANT": opts.tenant, "OFFICE365_CLIENT_ID": target_id}
     overrides |= {key: value for key, field in _ENV_OF_OPTION.items() if (value := getattr(opts, field))}
     if thumbprint:
@@ -204,24 +204,18 @@ def _env_updates(opts: _Options, target_id: str, thumbprint: str, secret_value: 
     return overrides, defaults
 
 
-def _protect(path: Path) -> None:
-    """Keep ``.env`` to its owner: it holds an app secret and the admin account."""
-    path.chmod(0o600)
+def _print_env(opts: _Options, target_id: str, thumbprint: str, secret_value: str, *, dry_run: bool = False) -> None:
+    """Print the block ``.env`` needs; the file is the human's, and nothing is written.
 
-
-def _write_env(opts: _Options, target_id: str, thumbprint: str, secret_value: str, *, dry_run: bool) -> None:
+    Printing the secret is the point — Entra shows a client secret's value once, at
+    creation, so a wizard that hid it would have to store it somewhere instead.
+    """
     overrides, defaults = _env_updates(opts, target_id, thumbprint, secret_value)
-    text = ENV.merge(overrides, defaults)
-    if dry_run:
-        print("== .env (dry run; nothing written) ==")
-        print(ENV.redact(text))
-        return
-    if ENV.path.is_file():
-        shutil.copy2(ENV.path, ENV_BAK)
-        _protect(ENV_BAK)
-    ENV.path.write_text(text, encoding="utf-8")
-    _protect(ENV.path)
-    print(f"Wrote {ENV.path.relative_to(PROJECT_ROOT)} (backup: {ENV_BAK.name})")
+    print("== .env (dry run; nothing looked up or created) ==" if dry_run else "== add to .env ==")
+    for key, value in {**defaults, **overrides}.items():
+        # A derived URL is optional in the skeleton, so it is shown commented out with it.
+        print(f"{key}={value}" if key in overrides else f"# {key}={value}")
+    print("\nPaste these into .env, replacing a key that is already there (`cp .env.example .env` gives the skeleton).")
     if not secret_value:
         print(
             "Note: the 'app-only' (client secret) flow is not configured. Create one with\n"
@@ -564,19 +558,29 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="grant the permissions the live suites declare and this tenant lacks (asks first)",
     )
-    parser.add_argument("--dry-run", action="store_true", help="preview the .env merge without signing in or writing")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="print the .env lines without signing in or changing anything"
+    )
     parser.add_argument("-y", "--yes", action="store_true", help="accept defaults; never prompt")
     return parser
 
 
 def _dry_run(opts: _Options, existing_values: dict[str, str]) -> None:
+    """The block a real run would print, with every secret marked instead of shown.
+
+    A preview is the one output that ends up pasted into an issue, so it says *that* a
+    value is already in ``.env`` rather than repeating it.
+    """
     target_id = "<new-app-id>" if opts.create_new else opts.client_id
     has_cert = CERT_PUBLIC.is_file() and shutil.which("openssl") is not None
     thumbprint = cert_thumbprint() if has_cert else "<thumbprint>"
-    secret_value = ""
-    if opts.want_secret:
-        secret_value = existing_values.get("OFFICE365_CLIENT_SECRET") or "<created-at-setup>"
-    _write_env(opts, target_id, thumbprint, secret_value, dry_run=True)
+    if existing_values.get("OFFICE365_CLIENT_SECRET"):
+        secret_value = "<kept>"
+    else:
+        secret_value = "<created-at-setup>" if opts.want_secret else ""
+    _print_env(
+        replace(opts, password="<kept>" if opts.password else ""), target_id, thumbprint, secret_value, dry_run=True
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -593,23 +597,18 @@ def main(argv: list[str] | None = None) -> int:
         _dry_run(opts, existing_values)
         return 0
 
-    if not _needs_sign_in(opts, existing_values):
-        print("Credentials already configured; refreshing .env.")
-        _write_env(
-            opts,
-            opts.client_id,
-            existing_values.get("OFFICE365_CERT_THUMBPRINT", ""),
-            existing_values.get("OFFICE365_CLIENT_SECRET", ""),
-            dry_run=False,
-        )
-        return _grant_missing(opts, args) if args.grant else 0
-
-    client = _sign_in(opts)
-    _apply_discovery(opts, _signed_in_upn(client))
-    if opts.extras:
-        _prompt_optional_users(client, opts)
-    target_id, thumbprint, secret_value = _configure_credentials(client, opts, existing_values)
-    _write_env(opts, target_id, thumbprint, secret_value, dry_run=False)
+    if _needs_sign_in(opts, existing_values):
+        client = _sign_in(opts)
+        _apply_discovery(opts, _signed_in_upn(client))
+        if opts.extras:
+            _prompt_optional_users(client, opts)
+        target_id, thumbprint, secret_value = _configure_credentials(client, opts, existing_values)
+    else:
+        print("Certificate and secret already configured; nothing to ask the tenant.")
+        target_id = opts.client_id
+        thumbprint = existing_values.get("OFFICE365_CERT_THUMBPRINT", "")
+        secret_value = existing_values.get("OFFICE365_CLIENT_SECRET", "")
+    _print_env(opts, target_id, thumbprint, secret_value)
     return _grant_missing(opts, args) if args.grant else 0
 
 

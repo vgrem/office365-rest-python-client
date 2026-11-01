@@ -1,18 +1,17 @@
 """Offline pins for the choices `tests.setup` makes before it touches the network.
 
-The wizard is the one program that writes `.env`, and every branch in it used to be
-reachable only by answering a prompt, so none of it was tested. `-y` turns every
-prompt into its default, which keeps this a pure decision test: no client, no
-terminal, no `.env` on disk.
+Every branch in the wizard used to be reachable only by answering a prompt, so none of
+it was tested. `-y` turns every prompt into its default, which keeps this a pure
+decision test: no client, no terminal, and no `.env` on disk — the wizard prints the
+block instead of writing it.
 """
 
 from __future__ import annotations
 
-import os
-import stat
-import tempfile
+import io
 import unittest
 from argparse import ArgumentParser, Namespace
+from contextlib import redirect_stdout
 from pathlib import Path
 from typing import cast
 from unittest import mock
@@ -38,7 +37,7 @@ def _no_env_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     code. Nothing here may see the real file or the `Settings` read from it.
     """
     monkeypatch.setattr(setup, "settings", Settings())
-    monkeypatch.setattr(setup, "ENV", EnvFile(tmp_path / ".env", tmp_path / ".env.example"))
+    monkeypatch.setattr(setup, "ENV", EnvFile(tmp_path / ".env"))
 
 
 def _resolve(argv: list[str], existing: dict[str, str] | None = None) -> setup._Options:
@@ -219,24 +218,27 @@ class TestGrant(unittest.TestCase):
         sign_in.assert_not_called()
 
 
-class TestWritesEnv(unittest.TestCase):
-    """`python -m tests.setup` is the one writer of `.env`, and `.env` holds secrets."""
+class TestPrintsEnv(unittest.TestCase):
+    """The output is the block to paste; `.env` itself is the human's to edit."""
 
-    @unittest.skipIf(os.name == "nt", "POSIX mode bits do not exist on Windows")
-    def test_the_written_env_and_its_backup_are_readable_only_by_their_owner(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            env = EnvFile(root / ".env", root / ".env.example")
-            (root / ".env.example").write_text("OFFICE365_TENANT=\n", encoding="utf-8")
-            (root / ".env").write_text("OFFICE365_TENANT=old.onmicrosoft.com\n", encoding="utf-8")
-            (root / ".env").chmod(0o644)
-            opts = _resolve(["--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"])
-            with mock.patch.object(setup, "ENV", env):
-                with mock.patch.object(setup, "ENV_BAK", root / ".env.bak"):
-                    with mock.patch.object(setup, "PROJECT_ROOT", root):
-                        setup._write_env(opts, "app", "", "s3cret", dry_run=False)
-            self.assertEqual(stat.S_IMODE((root / ".env").stat().st_mode), 0o600)
-            self.assertEqual(stat.S_IMODE((root / ".env.bak").stat().st_mode), 0o600)
+    def test_the_block_names_what_the_run_settled_and_nothing_is_written(self) -> None:
+        opts = _resolve(["--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"])
+        out = io.StringIO()
+        with redirect_stdout(out):
+            setup._print_env(opts, "app-id", "ABC123", "s3cret")
+        printed = out.getvalue()
+        self.assertIn("OFFICE365_TENANT=contoso.onmicrosoft.com", printed)
+        self.assertIn("OFFICE365_CERT_THUMBPRINT=ABC123", printed)
+        self.assertIn("OFFICE365_CLIENT_SECRET=s3cret", printed)
+        self.assertFalse(setup.ENV.path.exists(), "a program that writes a secret file can truncate one")
+
+    def test_a_preview_says_a_secret_is_there_instead_of_showing_it(self) -> None:
+        opts = _resolve(["--tenant", "contoso.onmicrosoft.com", "--client-id", "app-id"])
+        out = io.StringIO()
+        with redirect_stdout(out):
+            setup._dry_run(opts, {"OFFICE365_CLIENT_SECRET": "s3cret"})
+        self.assertNotIn("s3cret", out.getvalue())
+        self.assertIn("OFFICE365_CLIENT_SECRET=<kept>", out.getvalue())
 
 
 class TestDiscovery(unittest.TestCase):

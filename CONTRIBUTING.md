@@ -80,7 +80,8 @@ uv run pyright
 uv run pytest -q
 ```
 
-A plain `pytest` never signs in: live suites are opt-in with `--live`, because they
+A plain `pytest` never signs in: live suites are opt-in with `--live` (or
+`OFFICE365_LIVE=1` in `.env`, which is how an IDE's test runner gets one), because they
 write to a real tenant. This runs the offline suites and is what CI runs on Python 3.10
 and 3.13. It is the fastest way to validate a change, and where new tests should go.
 
@@ -91,14 +92,14 @@ The offline tests are split by what they describe:
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus the declaration ratchet |
 | `tests/tooling` | the code generator under `generator/` — two files: an end-to-end run, and the in-place editing that rewrites shipped source |
 | `tests/test_settings.py` | the `tests/settings.py` configuration loader and its `.env` grammar |
-| `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts) |
+| `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts, no `.env` writes) |
 | `tests/test_capabilities.py` | the declared-permission vocabulary: checking, skipping and reporting |
 
 The bootstrap itself has one module per job, and nothing else: `tests/settings.py`
 resolves configuration (`Settings`, the `.env` file, readiness), `tests/setup.py`
-provisions it (the interactive wizard is the only writer of `.env`), `tests/doctor.py`
-reports it, and `tests/preflight.py` reports what the *live suites* still need from the
-tenant (permissions, roles, licenses) — see below. A value is spelled once — in the `Settings` dataclass —
+discovers credentials and prints the lines `.env` needs — nothing in the repo writes
+that file — `tests/doctor.py` reports it, and `tests/preflight.py` reports what the
+*live suites* still need from the tenant (permissions, roles, licenses) — see below. A value is spelled once — in the `Settings` dataclass —
 and the legacy `tests.site_url` / `tests.test_site_url` spellings are a `__getattr__`
 over its fields, not a list to keep in step.
 

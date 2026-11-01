@@ -16,7 +16,9 @@ Test conventions:
 A plain ``pytest`` runs the offline suites only: a live run is opt-in, because it signs
 in and writes to a real tenant. Pass ``--live`` to also run what the credentials in
 ``.env`` make reachable (``--offline`` is still accepted, and is now the default).
-``python -m tests.doctor`` says what is configured.
+Setting ``OFFICE365_LIVE=1`` in ``.env`` makes the live run the default for this checkout
+instead, which is how an IDE's test runner — it has no command line to put ``--live`` on —
+gets one. ``python -m tests.doctor`` says what is configured.
 """
 
 from __future__ import annotations
@@ -26,7 +28,7 @@ from collections.abc import Iterable
 import pytest
 
 from tests.preflight import flow_of
-from tests.settings import FLOWS, settings
+from tests.settings import FLOWS, LIVE_SWITCH, live_by_default, settings
 
 #: Missing requirements per flow, computed once for the whole session.
 _READINESS = settings.readiness()
@@ -60,8 +62,17 @@ def _permission_skips(terminalreporter: pytest.TerminalReporter) -> dict[str, in
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Live tests are opt-in, so a plain `pytest` cannot touch a tenant."""
-    parser.addoption("--live", action="store_true", help="also run the live integration tests (needs .env)")
-    parser.addoption("--offline", action="store_true", help="the default; kept so existing commands stay valid")
+    parser.addoption(
+        "--live",
+        action="store_true",
+        default=live_by_default(),
+        help=f"also run the live integration tests (needs .env); also set by {LIVE_SWITCH}=1 in .env",
+    )
+    parser.addoption(
+        "--offline",
+        action="store_true",
+        help=f"the default; kept so existing commands stay valid, and it overrides {LIVE_SWITCH}",
+    )
 
 
 def _live(config: pytest.Config) -> bool:
@@ -76,7 +87,11 @@ def pytest_configure(config: pytest.Config) -> None:
 def pytest_report_header(config: pytest.Config) -> str:
     """Show, up front, which auth flows are configured."""
     if not _live(config):
-        return "auth: live tests skipped (pass --live to run them; `python -m tests.doctor` shows what is configured)"
+        # The switch is named here because an IDE shows this header and offers no `--live`.
+        return (
+            f"auth: live tests skipped (pass --live, or set {LIVE_SWITCH}=1 in .env to run them in this checkout;"
+            " `python -m tests.doctor` shows what is configured)"
+        )
     parts = [f"{flow}: {'off' if missing else 'on'}" for flow, missing in _READINESS.items()]
     header = "auth: " + " | ".join(parts)
     if all(_READINESS.values()):
@@ -99,7 +114,9 @@ def pytest_collection_modifyitems(config: pytest.Config, items: Iterable[pytest.
             continue
 
         if not live:
-            item.add_marker(pytest.mark.skip(reason="live tests are opt-in: pass --live to run them"))
+            item.add_marker(
+                pytest.mark.skip(reason=f"live tests are opt-in: pass --live, or set {LIVE_SWITCH}=1 in .env")
+            )
             continue
 
         missing = _READINESS[flow]
