@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from office365.directory.users.activities.activity import UserActivity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.queries.function import FunctionQuery
 
 
@@ -11,6 +12,7 @@ class UserActivityCollection(EntityCollection[UserActivity]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, UserActivity, resource_path)
 
+    @require_permission(delegated=["UserActivity.ReadWrite.CreatedByApp"])
     def recent(self) -> UserActivityCollection:
         """
         List a set of items that have been recently used by the signed in user.

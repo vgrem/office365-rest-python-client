@@ -29,6 +29,7 @@ from office365.directory.permissions.scope import PermissionScope
 from office365.directory.serviceprincipals.samlsinglesignonsettings import SamlSingleSignOnSettings
 from office365.directory.synchronization.synchronization import Synchronization
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.appid import AppIdPath
@@ -63,6 +64,10 @@ class ServicePrincipal(DirectoryObject):
     def __str__(self):
         return self.display_name or ""
 
+    @require_permission(
+        delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
+    )
     def add_key(
         self,
         key_credential: KeyCredential,
@@ -91,6 +96,10 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
+    )
     def add_password(self, display_name: str | None = None) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
 
@@ -103,6 +112,10 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
+    )
     def add_token_signing_certificate(
         self, display_name: str, end_datetime: str | None = None
     ) -> ClientResult[SelfSignedCertificate]:
@@ -345,6 +358,10 @@ class ServicePrincipal(DirectoryObject):
         )
         return self
 
+    @require_permission(
+        delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
+    )
     def remove_password(self, key_id: str) -> Self:
         """Remove a password from a servicePrincipal object.
 

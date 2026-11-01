@@ -11,6 +11,7 @@ from office365.directory.policies.authentication_combination_configuration impor
 from office365.directory.policies.update_allowed_combinations_result import UpdateAllowedCombinationsResult
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -27,6 +28,7 @@ class AuthenticationStrengthPolicy(Entity):
     may be built-in or custom (defined by the tenant) and may or may not fulfill the requirements to grant an MFA claim.
     """
 
+    @require_permission(delegated=["Policy.Read.All"], application=["Policy.Read.All"])
     def usage(self) -> ClientResult[AuthenticationStrengthUsage]:
         """
         Allows the caller to see which Conditional Access policies reference a specified authentication strength policy.
@@ -40,6 +42,9 @@ class AuthenticationStrengthPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Policy.ReadWrite.AuthenticationMethod"], application=["Policy.ReadWrite.AuthenticationMethod"]
+    )
     def update_allowed_combinations(
         self, allowed_combinations: List[str] | None = None
     ) -> ClientResult[UpdateAllowedCombinationsResult]:

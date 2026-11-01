@@ -5,6 +5,7 @@ from office365.directory.applications.application_risk_factors import Applicatio
 from office365.directory.applications.application_risk_score import ApplicationRiskScore
 from office365.directory.applications.service_principal import ApplicationServicePrincipal
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -13,6 +14,7 @@ from office365.runtime.types.odata_property import odata
 class ApplicationTemplate(Entity):
     """Represents an application in the Azure AD application gallery."""
 
+    @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def instantiate(self, display_name: str) -> ApplicationServicePrincipal:
         """Add an instance of an application from the Azure AD application gallery into your directory. You can also use
         this API to instantiate non-gallery apps.

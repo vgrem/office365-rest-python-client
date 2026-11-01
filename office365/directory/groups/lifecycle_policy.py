@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -17,6 +18,7 @@ class GroupLifecyclePolicy(Entity):
     The group can be restored within a period of 30 days from deletion.
     """
 
+    @require_permission(delegated=["Directory.ReadWrite.All"], application=["Directory.ReadWrite.All"])
     def add_group(self, group_id: str) -> ClientResult[bool]:
         """Adds specific groups to a lifecycle policy. This action limits the group lifecycle policy to a set of groups
         only if the managedGroupTypes property of groupLifecyclePolicy is set to Selected.
@@ -30,6 +32,7 @@ class GroupLifecyclePolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Directory.ReadWrite.All"], application=["Directory.ReadWrite.All"])
     def remove_group(self, group_id: str) -> ClientResult[bool]:
         """Removes a group from a lifecycle policy.
 

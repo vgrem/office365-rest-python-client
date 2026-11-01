@@ -19,13 +19,14 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.directory.extensions.open_type import OpenTypeExtension
+from office365.directory.objects.object import DirectoryObject
 from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
 from office365.runtime.client_value_collection import ClientValueCollection
 
 from tests import create_unique_name, test_tenant
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -152,9 +153,8 @@ class TestGraphUser(GraphDelegatedTestCase):
         changed_users = self.client.users.delta.get().execute_query()
         self.assertGreater(len(changed_users), 0)
 
-    @requires_delegated(
-        "GroupMember.Read.All",
-        "Directory.Read.All",
+    @requires_call(
+        DirectoryObject.get_member_groups,
         bypass_roles=["Global Reader", "Global Administrator"],
     )
     def test_11_get_my_member_groups(self):

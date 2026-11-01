@@ -8,6 +8,7 @@ from office365.directory.tenantinformation.multi_organization import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -23,6 +24,10 @@ if TYPE_CHECKING:
 class TenantRelationship(Entity):
     """Represent the various type of tenant relationships."""
 
+    @require_permission(
+        delegated=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
+        application=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
+    )
     def find_tenant_information_by_domain_name(self, domain_name: str) -> ClientResult[TenantInformation]:
         """Given a domain name, search for a tenant and read its tenantInformation. You can use this API to
         validate tenant information and use their tenantId to configure cross-tenant access settings between you
@@ -37,6 +42,10 @@ class TenantRelationship(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
+        application=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
+    )
     def find_tenant_information_by_tenant_id(self, tenant_id: str) -> ClientResult[TenantInformation]:
         """Given a tenant ID, search for a tenant and read its tenantInformation. You can use this API to validate
         tenant information and use the tenantId to configure cross-tenant cross-tenant access settings between you

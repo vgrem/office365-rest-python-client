@@ -9,6 +9,7 @@ from office365.directory.synchronization.directory_definition import DirectoryDe
 from office365.directory.synchronization.rule import SynchronizationRule
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -24,6 +25,7 @@ class SynchronizationSchema(Entity):
     The following sections describe the high-level components of the synchronization schema.
     """
 
+    @require_permission(delegated=["Synchronization.Read.All"], application=["Synchronization.Read.All"])
     def functions(self) -> EntityCollection[AttributeMappingFunctionSchema]:
         """List all the functions currently supported in the attributeMappingSource."""
         return_type = EntityCollection(self.context, AttributeMappingFunctionSchema)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from office365.directory.protection.riskyusers.risky_user import RiskyUser
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 
@@ -12,6 +13,7 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, RiskyUser, resource_path)
 
+    @require_permission(delegated=["IdentityRiskyUser.ReadWrite.All"], application=["IdentityRiskyUser.ReadWrite.All"])
     def confirm_compromised(self, user_ids: list[str] | None = None):
         """Confirm one or more riskyUser objects as compromised. This action sets the targeted user's risk level
         to high.
@@ -24,6 +26,7 @@ class RiskyUserCollection(EntityCollection[RiskyUser]):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["IdentityRiskyUser.ReadWrite.All"], application=["IdentityRiskyUser.ReadWrite.All"])
     def dismiss(self, user_ids=None):
         """Dismiss the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 

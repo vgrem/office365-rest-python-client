@@ -18,7 +18,7 @@ from office365.directory.applications.application import Application
 from office365.directory.password_credential import PasswordCredential
 
 from tests import create_unique_name
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -87,9 +87,8 @@ class TestApplication(GraphDelegatedTestCase):
         result = self.client.applications.count().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
+    @requires_call(
+        Application.add_password,
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test_05_add_password(self):
@@ -101,9 +100,8 @@ class TestApplication(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value.secretText)
         TestApplication.target_password = result.value
 
-    @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
+    @requires_call(
+        Application.remove_password,
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test_06_remove_password(self):

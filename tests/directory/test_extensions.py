@@ -12,9 +12,10 @@ from typing import ClassVar, Optional
 
 from office365.directory.applications.application import Application
 from office365.directory.extensions.extension_property import ExtensionProperty
+from office365.directory.objects.collection import DirectoryObjectCollection
 
 from tests import create_unique_name
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -56,8 +57,8 @@ class TestExtensions(GraphDelegatedTestCase):
         self.assertIsNotNone(new_extension.id)
         TestExtensions.target_extension = new_extension
 
-    @requires_delegated(
-        "Directory.Read.All",
+    @requires_call(
+        DirectoryObjectCollection.get_available_extension_properties,
         bypass_roles=["Global Reader", "Global Administrator"],
     )
     def test_02_list_extensions(self):

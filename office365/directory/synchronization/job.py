@@ -7,6 +7,7 @@ from office365.directory.synchronization.schedule import SynchronizationSchedule
 from office365.directory.synchronization.schema import SynchronizationSchema
 from office365.directory.synchronization.status import SynchronizationStatus
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -22,6 +23,7 @@ class SynchronizationJob(Entity):
     to read and write objects in your target directory, and customize the job's synchronization schema.
     """
 
+    @require_permission(delegated=["Synchronization.ReadWrite.All"], application=["Synchronization.ReadWrite.All"])
     def pause(self):
         """
         Temporarily stop a running synchronization job. All the progress, including job state, is persisted, and the
@@ -31,6 +33,7 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Synchronization.ReadWrite.All"], application=["Synchronization.ReadWrite.All"])
     def start(self):
         """
         Start an existing synchronization job. If the job is in a paused state, it will continue processing changes

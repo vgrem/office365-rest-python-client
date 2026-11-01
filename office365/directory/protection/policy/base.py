@@ -10,6 +10,7 @@ from office365.directory.policies.protection_policy_artifact_count import Protec
 from office365.directory.policies.retention_setting import RetentionSetting
 from office365.directory.protection.policystatus import ProtectionPolicyStatus
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -23,12 +24,18 @@ class ProtectionPolicyBase(Entity):
     for a single Microsoft 365 service.
     """
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"], application=["BackupRestore-Control.ReadWrite.All"]
+    )
     def activate(self) -> Self:
         """Activate the protection policy so protection starts for its units."""
         qry = ServiceOperationQuery(self, "activate", return_type=self)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"], application=["BackupRestore-Control.ReadWrite.All"]
+    )
     def deactivate(self) -> Self:
         """Deactivate the protection policy (protection stops for its units)."""
         qry = ServiceOperationQuery(self, "deactivate", return_type=self)

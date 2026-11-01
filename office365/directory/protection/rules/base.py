@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.directory.identity_set import IdentitySet
 from office365.directory.protection.rulestatus import ProtectionRuleStatus
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.types.public_error import PublicError
@@ -21,12 +22,18 @@ class ProtectionRuleBase(Entity):
     Currently, protection Rules are static in nature, meaning policy changes are applied only when the
     rule is executed, with no automatic/dynamic updates."""
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"], application=["BackupRestore-Control.ReadWrite.All"]
+    )
     def run(self) -> Self:
         """Run the protection rule to (re)evaluate the units a policy protects."""
         qry = ServiceOperationQuery(self, "run", return_type=self)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"], application=["BackupRestore-Control.ReadWrite.All"]
+    )
     def delete_and_unprotect(self) -> Self:
         """Delete the protection rule and unprotect the units it had matched."""
         qry = ServiceOperationQuery(self, "deleteAndUnprotect", return_type=self)

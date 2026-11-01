@@ -20,7 +20,7 @@ from office365.directory.password_credential import PasswordCredential
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 
 from tests import create_unique_name
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -118,9 +118,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         principal = self.client.service_principals.get_by_app_id(app_id).get().execute_query()
         self.assertIsNotNone(principal.resource_path)
 
-    @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
+    @requires_call(
+        ServicePrincipal.add_password,
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test_05_add_password(self):
@@ -132,9 +131,8 @@ class TestServicePrincipal(GraphDelegatedTestCase):
         self.assertIsNotNone(result.value)
         TestServicePrincipal.password_creds = result.value
 
-    @requires_delegated(
-        "Application.ReadWrite.All",
-        "Directory.ReadWrite.All",
+    @requires_call(
+        ServicePrincipal.remove_password,
         bypass_roles=["Application Administrator", "Cloud Application Administrator", "Global Administrator"],
     )
     def test_06_remove_password(self):

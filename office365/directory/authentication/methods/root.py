@@ -1,6 +1,7 @@
 from office365.directory.authentication.methods.details import UserRegistrationDetails
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.reports.userregistration.feature_summary import UserRegistrationFeatureSummary
 from office365.reports.userregistration.method_summary import UserRegistrationMethodSummary
 from office365.runtime.client_result import ClientResult
@@ -12,6 +13,10 @@ from office365.runtime.types.odata_property import odata
 class AuthenticationMethodsRoot(Entity):
     """Container for navigation properties for Azure AD authentication methods resources."""
 
+    @require_permission(
+        delegated=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
+        application=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
+    )
     def users_registered_by_feature(self) -> ClientResult[UserRegistrationFeatureSummary]:
         """Get the number of users capable of multi-factor authentication, self-service password reset,
         and passwordless authentication."""
@@ -20,6 +25,10 @@ class AuthenticationMethodsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
+        application=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
+    )
     def users_registered_by_method(self) -> ClientResult[UserRegistrationMethodSummary]:
         """Get the number of users registered for each authentication method."""
         return_type = ClientResult(self.context, UserRegistrationMethodSummary())

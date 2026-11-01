@@ -1,5 +1,6 @@
 from office365.directory.identities.provider import IdentityProvider
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
@@ -9,6 +10,7 @@ class IdentityProviderCollection(EntityCollection):
     def __init__(self, context, resource_path=None):
         super().__init__(context, IdentityProvider, resource_path)
 
+    @require_permission(delegated=["IdentityProvider.Read.All"], application=["IdentityProvider.Read.All"])
     def available_provider_types(self) -> ClientResult[StringCollection]:
         """
         Get all identity providers supported in a directory.

@@ -18,9 +18,10 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.directory.administrative_unit import AdministrativeUnit
+from office365.directory.objects.object import DirectoryObject
 from office365.runtime.client_value_collection import ClientValueCollection
 
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -59,8 +60,8 @@ class TestDirectory(GraphDelegatedTestCase):
         self.assertEqual(result.resource_path.segment, "microsoft.graph.application")
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Directory.Read.All",
+    @requires_call(
+        DirectoryObject.get_member_objects,
         bypass_roles=["Global Reader", "Global Administrator"],
     )
     def test_04_get_member_objects(self):

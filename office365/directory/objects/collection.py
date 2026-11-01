@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.count_collection import CountCollection
 from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -48,6 +49,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             self._item_type = _resolve_directory_type(value.get("__odata_type"))
         return super().set_property(name, value, persist_changes)
 
+    @require_permission(delegated=["Directory.Read.All"], application=["Directory.Read.All"])
     def get_by_ids(self, ids: List[str], types: list[str] | None = None) -> DirectoryObjectCollection:
         """Returns the directory objects specified in a list of IDs.
 
@@ -65,6 +67,22 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Directory.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "GroupMember.ReadWrite.All",
+            "RoleManagement.ReadWrite.Directory",
+            "AdministrativeUnit.ReadWrite.All",
+        ],
+        application=[
+            "Directory.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "GroupMember.ReadWrite.All",
+            "RoleManagement.ReadWrite.Directory",
+            "AdministrativeUnit.ReadWrite.All",
+        ],
+    )
     def add(self, directory_object: DirectoryObject) -> DirectoryObject:
         """Adds directory objects to the collection."""
 
@@ -76,6 +94,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         directory_object.ensure_property("id").after_execute(lambda _: _add())
         return directory_object
 
+    @require_permission(delegated=["Directory.Read.All"], application=["Directory.Read.All"])
     def get_available_extension_properties(self, is_synced_from_on_premises=None):
         """
         Return all or a filtered list of the directory extension properties that have been registered in a directory.
@@ -94,6 +113,22 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "Directory.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "GroupMember.ReadWrite.All",
+            "RoleManagement.ReadWrite.Directory",
+            "AdministrativeUnit.ReadWrite.All",
+        ],
+        application=[
+            "Directory.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "GroupMember.ReadWrite.All",
+            "RoleManagement.ReadWrite.Directory",
+            "AdministrativeUnit.ReadWrite.All",
+        ],
+    )
     def remove(self, directory_object: Union[DirectoryObject, str]) -> Self:
         """Removes directory object from the collection.
 
@@ -116,6 +151,10 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
 
         return self
 
+    @require_permission(
+        delegated=["Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Directory.ReadWrite.All", "Group.ReadWrite.All"],
+    )
     def validate_properties(
         self,
         entity_type: str | None = None,

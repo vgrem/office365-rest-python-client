@@ -5,6 +5,7 @@ from typing import Optional
 from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.directory.authentication.methods.signinstate import AuthenticationMethodSignInState
 from office365.directory.authentication.phonetype import AuthenticationPhoneType
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -24,6 +25,9 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
     An office phone can only receive voice calls, not SMS messages.
     """
 
+    @require_permission(
+        delegated=["UserAuthenticationMethod.ReadWrite.All"], application=["UserAuthenticationMethod.ReadWrite.All"]
+    )
     def disable_sms_signin(self):
         """
         Disable SMS sign-in for an existing mobile phone number registered to a user.
@@ -33,6 +37,9 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["UserAuthenticationMethod.ReadWrite.All"], application=["UserAuthenticationMethod.ReadWrite.All"]
+    )
     def enable_sms_signin(self):
         """
         Enable SMS sign-in for an existing mobile phone number registered to a user. To be successfully enabled:

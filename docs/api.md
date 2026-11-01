@@ -369,6 +369,12 @@ not name; it holds the ones this library declares.
 Use `@require_permission(..., resource=ResourceName.SharePoint)` directly when a call
 needs a name outside that ladder, such as `TermStore.Read.All` or `Sites.Selected`.
 
+Some declarations list several names and mean any one of them. A `$ref` membership call is the
+clear case: the same `directoryObjects/add` adds to whichever collection it was called on, so
+`Group.ReadWrite.All` is enough for a group's members and `RoleManagement.ReadWrite.Directory` for
+a role's. There is no single name the method could claim, and claiming only the first would tell a
+correctly-granted tenant to go and buy another grant.
+
 Some endpoints exist for one flow only. Graph documents its tenant-wide message exports
 (`chats/getAllMessages`, `teams/getAllMessages`, `channels/getAllMessages`) for application
 tokens, and rejects a delegated one whatever scopes it holds — so those declare `application=`
@@ -379,6 +385,12 @@ The same holds for a whole subtree: every `Calls.*` permission is an application
 call-control methods on `Call`, `Participant` and `CallCollection` declare no delegated column
 either. A delegated client can neither be granted the name nor told it lacks one — the calls
 API answers a bot, not a signed-in user.
+
+The reverse is just as real. `filterByCurrentUser` on app-consent and user-consent requests
+filters by *who is asking*, and `ThreatAssessment.ReadWrite.All` and
+`UserActivity.ReadWrite.CreatedByApp` are published as delegated scopes with no application role
+behind them — so seven methods under `office365.directory` declare `delegated=` alone, and
+`declared(method, flow="application")` raises for them the same way it does in the other direction.
 
 A name is worth checking before it reaches a tenant. `office365.permissions.catalog()`
 answers what an API publishes — `publishes(name, kind)`,

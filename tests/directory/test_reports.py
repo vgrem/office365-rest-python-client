@@ -9,7 +9,9 @@ Tests cover:
 
 from __future__ import annotations
 
-from tests.decorators import requires_delegated
+from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
+
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -34,8 +36,8 @@ class TestReports(GraphDelegatedTestCase):
         result = self.client.reports.authentication_methods.user_registration_details.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "AuditLog.Read.All",
+    @requires_call(
+        AuthenticationMethodsRoot.users_registered_by_method,
         bypass_roles=["Security Administrator", "Security Reader", "Global Reader", "Global Administrator"],
     )
     def test_03_list_users_registered_by_method(self):
@@ -43,8 +45,8 @@ class TestReports(GraphDelegatedTestCase):
         result = self.client.reports.authentication_methods.users_registered_by_method().execute_query()
         self.assertIsNotNone(result.value)
 
-    @requires_delegated(
-        "AuditLog.Read.All",
+    @requires_call(
+        AuthenticationMethodsRoot.users_registered_by_feature,
         bypass_roles=["Security Administrator", "Security Reader", "Global Reader", "Global Administrator"],
     )
     def test_04_users_registered_by_feature(self):

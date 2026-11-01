@@ -11,7 +11,9 @@ Tests cover:
 
 from __future__ import annotations
 
-from tests.decorators import requires_application
+from office365.directory.identities.provider_collection import IdentityProviderCollection
+
+from tests.decorators import requires_application, requires_call
 from tests.graph_case import GraphApplicationTestCase
 
 
@@ -30,7 +32,10 @@ class TestIdentity(GraphApplicationTestCase):
         result = self.client.identity.b2x_user_flows.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_application("IdentityProvider.Read.All")
+    @requires_call(
+        IdentityProviderCollection.available_provider_types,
+        flow="application",
+    )
     def test_03_available_provider_types(self):
         """Listing available identity provider types returns a value."""
         result = self.client.identity.identity_providers.available_provider_types().execute_query()

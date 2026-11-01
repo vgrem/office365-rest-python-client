@@ -7,6 +7,7 @@ from office365.directory.authentication.password_reset_response import (
     PasswordResetResponse,
 )
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -17,6 +18,9 @@ class AuthenticationMethod(Entity):
     to authenticate or otherwise prove their identity to the system. Some examples include password,
     phone (usable via SMS or voice call), FIDO2 security keys, and more."""
 
+    @require_permission(
+        delegated=["UserAuthenticationMethod.ReadWrite.All"], application=["UserAuthenticationMethod.ReadWrite.All"]
+    )
     def reset_password(self, new_password: Optional[str] = None, require_change_on_next_signin: Optional[bool] = None):
         """Reset a user's password, represented by a password authentication method object. This can only be done by an
         administrator with appropriate permissions and cannot be performed on a user's own account.

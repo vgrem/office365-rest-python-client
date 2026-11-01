@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.directory.quotas import IDENTITY_QUOTAS
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -18,6 +19,10 @@ class DirectoryObject(Entity):
     """Represents an Azure Active Directory object. The directoryObject type is the base type for many other
     directory entity types."""
 
+    @require_permission(
+        delegated=["Directory.Read.All", "GroupMember.Read.All"],
+        application=["Directory.Read.All", "GroupMember.Read.All"],
+    )
     def check_member_objects(self, ids: list[str] | None = None) -> ClientResult[StringCollection]:
         """Check for membership in a list of group IDs, administrative unit IDs, or directory role IDs, for the IDs of
         the specified user, group, service principal, organizational contact, device, or directory object.
@@ -31,6 +36,10 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Directory.Read.All", "GroupMember.Read.All"],
+        application=["Directory.Read.All", "GroupMember.Read.All"],
+    )
     def get_member_objects(self, security_enabled_only: bool = True) -> ClientResult[StringCollection]:
         """Returns all the groups and directory roles that a user, group, or directory object is a member of.
         This function is transitive.
@@ -44,6 +53,10 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Directory.Read.All", "GroupMember.Read.All"],
+        application=["Directory.Read.All", "GroupMember.Read.All"],
+    )
     def get_member_groups(self, security_enabled_only: bool = True) -> ClientResult[StringCollection]:
         """Return all the groups that the specified user, group, or directory object is a member of. This function is
         transitive.
@@ -60,6 +73,10 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Directory.Read.All", "GroupMember.Read.All"],
+        application=["Directory.Read.All", "GroupMember.Read.All"],
+    )
     def check_member_groups(self, group_ids: list[str] | None = None) -> ClientResult[StringCollection]:
         """Check for membership in the specified list of groups. Returns from the list those groups of which
         the specified group has a direct or transitive membership.
@@ -78,6 +95,16 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Directory.ReadWrite.All", "Application.ReadWrite.All", "Group.ReadWrite.All", "User.ReadWrite.All"],
+        application=[
+            "Directory.ReadWrite.All",
+            "Application.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "User.ReadWrite.All",
+            "Application.ReadWrite.OwnedBy",
+        ],
+    )
     def restore(self) -> Self:
         """
         Restore a recently deleted application, group, servicePrincipal, administrative unit, or user object from

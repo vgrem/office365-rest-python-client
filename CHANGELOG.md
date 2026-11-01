@@ -480,6 +480,33 @@ introduced.
   recording. `communications` leaves the ratchet map with nothing undeclared, as `outlook`
   and `teams` did, and nine live tests derive their precondition from the declaration
   instead of restating the scope by hand. Debt 1,540 → 1,522.
+- **Directory declares every operation, and seven of them answer a signed-in user.**
+  61 methods across 25 modules: the app-registration writers (`ApplicationCollection.ensure`
+  and the four `ServicePrincipal` credential calls — `addKey`, `addPassword`,
+  `addTokenSigningCertificate`, `removePassword`), the authentication-method writers
+  (`resetPassword`, `enableSmsSignIn`, `disableSmsSignIn`), the two registration reports, the
+  lifecycle-policy membership verbs, `uploadClientCertificate`, `availableProviderTypes` on
+  both provider collections, invitations, the `directoryObjects` functions (`getByIds`,
+  `getAvailableExtensionProperties`, `validateProperties`, `add`, `remove`, the four member
+  queries, `restore`), the authentication-strength policy update and its `usage` report, the
+  risk decisions (`confirmCompromised`, `dismiss`), the backup-protection `activate`/
+  `deactivate`/`run`/`deleteAndUnprotect` verbs, synchronization `pause`/`start`/`functions`,
+  cross-tenant lookup, and fourteen `User` actions. Seven of those name no application role,
+  because no app-only token can satisfy them: `filterByCurrentUser` on app-consent and
+  user-consent requests filters by *the signed-in user*, and `ThreatAssessment.ReadWrite.All`
+  (the four assessment creators) and `UserActivity.ReadWrite.CreatedByApp` (`/me/activities/
+  recent`) are published as delegated scopes with no application role behind them. Where
+  several grants genuinely work the declaration says so instead of picking one: `$ref`
+  membership takes any of `Directory.ReadWrite.All`, `Group.ReadWrite.All`,
+  `GroupMember.ReadWrite.All`, `RoleManagement.ReadWrite.Directory` or
+  `AdministrativeUnit.ReadWrite.All` — the collection being added to decides which — `restore`
+  takes the write grant of whichever object type is being restored, the member queries also
+  accept `GroupMember.Read.All`, the calendar views `Calendars.Read` or `Calendars.ReadWrite`,
+  and `findTenantInformationBy*` accepts `Organization.Read.All` beside
+  `CrossTenantInformation.ReadBasic.All`, which is the gate the suite already passed.
+  `directory` leaves the ratchet map, the fourth package to do so; debt 1,522 → 1,461, and
+  eleven live tests now derive their precondition from the declaration rather than restating
+  the scope by hand.
 
 ### Changed
 

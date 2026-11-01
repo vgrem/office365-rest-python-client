@@ -264,6 +264,7 @@ class User(DirectoryObject):
             _assign_manager(str(user))
         return self.manager
 
+    @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def remove_manager(self) -> Self:
         """Remove a user's manager."""
         qry = ServiceOperationQuery(self.manager, "$ref")
@@ -289,6 +290,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def follow_site(self, site: str | Site) -> Self:
         """follow a site"""
 
@@ -305,6 +307,7 @@ class User(DirectoryObject):
             _follow_site(str(site))
         return self
 
+    @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def unfollow_site(self, site: str | Site) -> Self:
         """Unfollow a user's site or multiple sites."""
 
@@ -416,6 +419,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["User.Export.All"], application=["User.Export.All"])
     def export_personal_data(self, storage_location) -> Self:
         """Submit a data policy operation request from a company administrator or an application to
         export an organizational user's data.
@@ -431,6 +435,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.Read.All"], application=["DeviceManagementManagedDevices.Read.All"]
+    )
     def export_device_and_app_management_data(self) -> ClientResult[ClientValueCollection[DeviceAndAppManagementData]]:
         """"""
         return_type = ClientResult(self.context, ClientValueCollection(DeviceAndAppManagementData))
@@ -438,6 +445,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Calendars.Read", "Calendars.ReadWrite"], application=["Calendars.Read", "Calendars.ReadWrite"]
+    )
     def find_meeting_times(
         self,
         attendees: list[str] | None = None,
@@ -502,6 +512,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Calendars.Read", "Calendars.ReadWrite"], application=["Calendars.Read", "Calendars.ReadWrite"]
+    )
     def get_calendar_view(self, start_dt: datetime, end_dt: datetime) -> EntityCollection[Event]:
         """Get the occurrences, exceptions, and single instances of events in a calendar view defined by a time range,
         from the user's default calendar, or from some other calendar of the user's.
@@ -522,6 +535,9 @@ class User(DirectoryObject):
         self.context.add_query(qry).before_execute(_construct_request)
         return return_type
 
+    @require_permission(
+        delegated=["Calendars.Read", "Calendars.ReadWrite"], application=["Calendars.Read", "Calendars.ReadWrite"]
+    )
     def get_reminder_view(self, start_dt: datetime, end_dt: datetime) -> ClientResult[ClientValueCollection[Reminder]]:
         """Get the occurrences, exceptions, and single instances of events in a calendar view defined by a time range,
         from the user's default calendar, or from some other calendar of the user's.
@@ -538,6 +554,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["DeviceManagementApps.Read.All"], application=["DeviceManagementApps.Read.All"])
     def get_managed_app_diagnostic_statuses(self) -> ClientResult[ClientValueCollection[ManagedAppDiagnosticStatus]]:
         """Gets diagnostics validation status for a given user."""
         return_type = ClientResult(self.context, ClientValueCollection(ManagedAppDiagnosticStatus))
@@ -545,6 +562,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["DeviceManagementApps.Read.All"], application=["DeviceManagementApps.Read.All"])
     def get_managed_app_policies(self) -> EntityCollection[ManagedAppPolicy]:
         """Gets app restrictions for a given user."""
         return_type = EntityCollection(self.context, ManagedAppPolicy)
@@ -584,6 +602,10 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return result
 
+    @require_permission(
+        delegated=["User.ReadWrite.All", "LicenseAssignment.ReadWrite.All"],
+        application=["User.ReadWrite.All", "LicenseAssignment.ReadWrite.All"],
+    )
     def reprocess_license_assignment(self) -> User:
         """
         Reprocess all group-based license assignments for the user. To learn more about group-based licensing,
@@ -595,6 +617,10 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def remove_all_devices_from_management(self) -> Self:
         """
         Retire all devices from management for this user
@@ -603,6 +629,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementApps.ReadWrite.All"], application=["DeviceManagementApps.ReadWrite.All"]
+    )
     def wipe_managed_app_registrations_by_device_tag(self, device_tag: str) -> Self:
         """Issues a wipe operation on an app registration with specified device tag.
 
@@ -614,6 +643,9 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["User.Read.All", "User.ReadWrite.All"], application=["User.Read.All", "User.ReadWrite.All"]
+    )
     def translate_exchange_ids(
         self,
         input_ids: list[str],
