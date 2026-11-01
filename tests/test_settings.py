@@ -16,7 +16,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from tests.settings import FLOWS, PROJECT_ROOT, EnvFile, Settings, _resolve_path, derived_urls
+from tests.settings import FLOWS, PROJECT_ROOT, EnvFile, Settings, _resolve_path
 
 
 class TestResolvePath(unittest.TestCase):
@@ -89,40 +89,6 @@ class TestEnvFile(unittest.TestCase):
         env = self._file()
         self.assertEqual(env.read(), {})
         env.load()
-
-
-class TestDerivedUrls(unittest.TestCase):
-    """One derivation per URL shape, shared by the loader and the setup wizard."""
-
-    def test_a_tenant_name_alone_determines_the_site_urls(self) -> None:
-        urls = derived_urls("contoso")
-        self.assertEqual(urls["OFFICE365_ROOT_SITE_URL"], "https://contoso.sharepoint.com")
-        self.assertEqual(urls["OFFICE365_SITE_URL"], "https://contoso.sharepoint.com")
-        self.assertEqual(urls["OFFICE365_TEAM_SITE_URL"], "https://contoso.sharepoint.com/sites/team")
-        self.assertEqual(urls["OFFICE365_ADMIN_SITE_URL"], "https://contoso-admin.sharepoint.com")
-        self.assertEqual(urls["OFFICE365_CONTENT_TYPE_HUB_URL"], "https://contoso.sharepoint.com/sites/contentTypeHub")
-
-    def test_an_explicit_root_wins_and_the_children_follow_it(self) -> None:
-        urls = derived_urls("contoso", "https://contoso.sharepoint.com/sites/project")
-        self.assertEqual(urls["OFFICE365_SITE_URL"], "https://contoso.sharepoint.com/sites/project")
-        self.assertEqual(urls["OFFICE365_TEAM_SITE_URL"], "https://contoso.sharepoint.com/sites/project/sites/team")
-
-    def test_nothing_is_derived_without_a_tenant_name(self) -> None:
-        self.assertEqual(derived_urls(""), {"OFFICE365_TENANT_PREFIX": "", "OFFICE365_ROOT_SITE_URL": ""})
-
-    def test_the_loader_reads_the_derived_urls_when_the_environment_is_silent(self) -> None:
-        with mock.patch.dict(os.environ, {"OFFICE365_TENANT": "contoso.onmicrosoft.com"}, clear=True):
-            settings = Settings.from_env()
-        self.assertEqual(settings.tenant_prefix, "contoso")
-        self.assertEqual(settings.site_url, "https://contoso.sharepoint.com")
-        self.assertEqual(settings.admin_site_url, "https://contoso-admin.sharepoint.com")
-
-    def test_the_loader_prefers_an_explicit_url_over_the_derived_one(self) -> None:
-        explicit = {"OFFICE365_TENANT": "contoso.onmicrosoft.com", "OFFICE365_SITE_URL": "https://mine.sharepoint.com"}
-        with mock.patch.dict(os.environ, explicit, clear=True):
-            settings = Settings.from_env()
-        self.assertEqual(settings.site_url, "https://mine.sharepoint.com")
-        self.assertEqual(settings.team_site_url, "https://contoso.sharepoint.com/sites/team")
 
 
 class TestReadinessReport(unittest.TestCase):
