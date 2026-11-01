@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -13,6 +15,7 @@ if TYPE_CHECKING:
 
 class Automations(Entity):
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_flow_owner(
         context: ClientContext, flow_id: str, principal_object_id: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -42,6 +45,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def authorize_connection(
         context: ClientContext, connector_name: str, connection_id: str, consent_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -78,6 +82,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def confirm_connection_consent_code(
         context: ClientContext, connector_name: str, connection_id: str, consent_code_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -114,6 +119,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_connection(
         context: ClientContext, connector_name: str, new_connection_id: str, connection_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -150,6 +156,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_first_party_connection(
         context: ClientContext, connector_name: str, connection_id: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -179,6 +186,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_flow(context: ClientContext, flow_payload: str, environment_id: str) -> ClientResult[bytes]:
         """CreateFlow operation.
 
@@ -204,6 +212,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_or_update_connection(
         context: ClientContext, connector_name: str, connection_id: str, connection_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -240,6 +249,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_connection(
         context: ClientContext, connector_name: str, connection_id: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -269,6 +279,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_flow(context: ClientContext, flow_id: str, environment_id: str) -> ClientResult[bytes]:
         """DeleteFlow operation.
 
@@ -294,6 +305,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_connection_consent_link(
         context: ClientContext, connector_name: str, connection_id: str, consent_link_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -330,6 +342,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_connectors(context: ClientContext, environment_id: str) -> ClientResult[bytes]:
         """GetConnectors operation.
 
@@ -347,6 +360,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_dynamic_properties(
         context: ClientContext, api_name: str, connection_name: str, request_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -383,6 +397,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_environment(context: ClientContext, environment_id: str) -> ClientResult[bytes]:
         """GetEnvironment operation.
 
@@ -400,6 +415,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def list_dynamic_enum_values(
         context: ClientContext, api_name: str, connection_name: str, request_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -436,6 +452,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def list_dynamic_schema_properties(
         context: ClientContext, api_name: str, connection_name: str, request_payload: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -472,6 +489,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def prepare_flow_operations(context: ClientContext, environment_id: str) -> ClientResult[bytes]:
         """PrepareFlowOperations operation.
 
@@ -495,6 +513,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_flow_owner(
         context: ClientContext, flow_id: str, principal_object_id: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -524,6 +543,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def run_recurrence_flow(
         context: ClientContext, flow_id: str, trigger_name: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -553,6 +573,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def start_flow(context: ClientContext, flow_id: str, environment_id: str) -> ClientResult[bytes]:
         """StartFlow operation.
 
@@ -578,6 +599,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def stop_flow(context: ClientContext, flow_id: str, environment_id: str) -> ClientResult[bytes]:
         """StopFlow operation.
 
@@ -603,6 +625,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def test_connection(
         context: ClientContext, connector_name: str, connection_id: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -632,6 +655,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_first_party_connection(
         context: ClientContext, connector_name: str, connection_id: str, environment_id: str
     ) -> ClientResult[bytes]:
@@ -661,6 +685,7 @@ class Automations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_flow(context: ClientContext, flow_id: str, flow_payload: str, environment_id: str) -> ClientResult[bytes]:
         """UpdateFlow operation.
 

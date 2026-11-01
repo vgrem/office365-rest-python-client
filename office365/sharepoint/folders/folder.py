@@ -21,6 +21,7 @@ from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.folders.delete_parameters import FolderDeleteParameters
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.document_manager import DocumentSharingManager
@@ -200,6 +201,7 @@ class Folder(Entity):
         """Returns the user permissions for a folder"""
         return self.list_item_all_fields.get_user_effective_permissions(user)
 
+    @site_access(SiteLevel.READ)
     def get_folders(
         self,
         recursive: bool = False,
@@ -243,6 +245,7 @@ class Folder(Entity):
         return return_type
 
     @limit(Limits.LIST_VIEW, arg="page_size")
+    @site_access(SiteLevel.READ)
     def get_files(
         self,
         recursive: bool = False,
@@ -308,6 +311,7 @@ class Folder(Entity):
         """Gets the sharing information for a folder."""
         return self.list_item_all_fields.get_sharing_information()
 
+    @site_access(SiteLevel.WRITE)
     def move_to(self, destination: Union[str, Folder]) -> Self:
         """Moves the folder and its contents under a new folder at the specified destination.
         This method applies only to the context of a single site.
@@ -337,6 +341,7 @@ class Folder(Entity):
         self.ensure_properties(["ServerRelativeUrl", "Name"]).after_execute(lambda _: _source_folder_resolved())
         return self
 
+    @site_access(SiteLevel.WRITE)
     def move_to_using_path(self, destination: Union[str, Folder]) -> Self:
         """Moves the folder and its contents to a new folder at the specified path.
         An exception is thrown if a folder with the same name as specified in the parameter already exists.
@@ -421,6 +426,7 @@ class Folder(Entity):
         """
         return self.list_item_all_fields.unshare_link(link_kind, share_id)  # type: ignore[returnType]
 
+    @site_access(SiteLevel.WRITE)
     def recycle(self, ignore_missing: bool = False) -> ClientResult[str]:
         """Moves the folder to the Recycle Bin and returns the identifier of the new Recycle Bin item.
 
@@ -434,6 +440,7 @@ class Folder(Entity):
         self._tolerate_missing(ignore_missing)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def recycle_with_parameters(self, parameters: FolderDeleteParameters) -> ClientResult[str]:
         """Moves the list folder to the Recycle Bin and returns the identifier of the new Recycle Bin item
 
@@ -446,6 +453,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_changes(self, query: Optional[ChangeQuery] = None) -> ChangeCollection:
         """Returns the collection of changes from the change log that have occurred within the folder,
         based on the specified query.
@@ -461,6 +469,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_list_item_changes(self, query: ChangeQuery) -> ChangeCollection:
         """Gets the collection of all changes from the change log that have occurred within the scope of the SharePoint
         folder based on the specified query.
@@ -478,6 +487,7 @@ class Folder(Entity):
         """Adds the folder that is located under a current folder"""
         return self.folders.add(name)  # type: ignore[returnType]
 
+    @site_access(SiteLevel.WRITE)
     def rename(self, name: str) -> Self:
         """Rename a Folder resource"""
         item = self.list_item_all_fields
@@ -518,6 +528,7 @@ class Folder(Entity):
             folder = self.ensure_folder("/".join(parts[:-1]))
         return folder.files.upload_content(content, parts[-1], chunk_size, progress)
 
+    @site_access(SiteLevel.WRITE)
     def ensure_file(
         self,
         relative_path: str,
@@ -935,6 +946,7 @@ class Folder(Entity):
         """Gets the ItemCount property"""
         return self.properties.get("ItemCount", None)
 
+    @site_access(SiteLevel.WRITE)
     def add_sub_folder(self, leaf_name: str) -> Self:
         """AddSubFolder operation.
 
@@ -946,6 +958,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def add_sub_folder_using_path(self, decoded_url: str) -> Self:
         """AddSubFolderUsingPath operation.
 
@@ -957,6 +970,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_with_parameters(self, parameters: FolderDeleteParameters) -> Self:
         """DeleteWithParameters operation.
 
@@ -968,6 +982,7 @@ class Folder(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_delete(self) -> ClientResult[UUID]:
         """StartDelete operation."""
         return_type = ClientResult(self.context, UUID(int=0))

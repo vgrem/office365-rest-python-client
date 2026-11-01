@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.catalog_management_custom_property_map import (
     CatalogManagementCustomPropertyMap,
 )
@@ -19,6 +21,7 @@ from office365.sharepoint.tenant.administration.uploaded_site_group_definition i
 
 
 class CatalogManagementCustomPropertiesCollection(Entity):
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_site_property_bag_mappings(
         self, property_bag_keys: list[str]
     ) -> ClientResult[CatalogManagementCustomPropertyMap]:
@@ -39,6 +42,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_category_group_to_csv(self, source: int, key: str, value_id: UUID, group_name: str) -> ClientResult[str]:
         """ExportCategoryGroupToCSV operation.
 
@@ -60,6 +64,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_category_to_csv(self, source: int, key: str, value_id: UUID) -> ClientResult[str]:
         """ExportCategoryToCSV operation.
 
@@ -73,6 +78,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_category_to_csv_by_group(
         self, source: int, key: str, value_id: UUID, group_name: str
     ) -> ClientResult[str]:
@@ -89,6 +95,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_custom_property_map(self) -> ClientResult[CatalogManagementCustomPropertyMap]:
         """GetCustomPropertyMap operation."""
         return_type = ClientResult(self.context, CatalogManagementCustomPropertyMap())
@@ -96,6 +103,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_custom_site_property_data(self) -> ClientResult[ClientValueCollection[CustomSitePropertyData]]:
         """GetCustomSitePropertyData operation."""
         return_type = ClientResult(self.context, ClientValueCollection[CustomSitePropertyData]())
@@ -103,6 +111,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_extended_attribute_settings(self) -> ClientResult[ClientValueCollection[ExtendedAttributeSettings]]:
         """GetExtendedAttributeSettings operation."""
         return_type = ClientResult(self.context, ClientValueCollection[ExtendedAttributeSettings]())
@@ -110,6 +119,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_property_bag_site_list(self) -> ClientResult[StringCollection]:
         """GetSitePropertyBagSiteList operation."""
         return_type = ClientResult(self.context, StringCollection())
@@ -117,6 +127,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_uploaded_site_categories(self) -> ClientResult[ClientValueCollection[UploadedSiteCategoryMetadata]]:
         """GetUploadedSiteCategories operation."""
         return_type = ClientResult(self.context, ClientValueCollection[UploadedSiteCategoryMetadata]())
@@ -124,6 +135,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_uploaded_site_category_detail(
         self, category_id: str
     ) -> ClientResult[ClientValueCollection[UploadedSiteGroupDefinition]]:
@@ -137,6 +149,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_site_property_bag_mapping(
         self, site_property_key: str
     ) -> ClientResult[CatalogManagementCustomPropertyMap]:
@@ -152,6 +165,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_uploaded_site_category(
         self, category_id: str
     ) -> ClientResult[ClientValueCollection[UploadedSiteCategoryMetadata]]:
@@ -167,6 +181,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_extended_attribute_settings(
         self, extended_attributes: ClientValueCollection[ExtendedAttributeSettings]
     ) -> ClientResult[ClientValueCollection[ExtendedAttributeSettings]]:
@@ -182,6 +197,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_site_property_bag_config(
         self, site_property_mapping: dict
     ) -> ClientResult[CatalogManagementCustomPropertyMap]:
@@ -197,6 +213,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_site_property_bag_scope_config(
         self, sites_option: int, site_urls: list[str], uploaded_file_name: str
     ) -> ClientResult[CatalogManagementCustomPropertyMap]:
@@ -223,6 +240,7 @@ class CatalogManagementCustomPropertiesCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_uploaded_site_category(
         self, category: UploadedSiteCategory
     ) -> ClientResult[ClientValueCollection[UploadedSiteCategoryMetadata]]:

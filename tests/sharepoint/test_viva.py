@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from office365.runtime.client_request_exception import ClientRequestException
+from office365.sharepoint.viva.employee_engagement import EmployeeEngagement
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -26,11 +28,13 @@ class TestViva(SPTestCase):
     #    return_type = self.client.ee.viva_home().execute_query()
     #    self.assertIsNotNone(return_type.resource_path)
 
+    @requires_call(EmployeeEngagement.dashboard_content, flow="application")
     def test_02_get_dashboard_content(self):
         """Get dashboard content."""
         return_type = self.client.ee.dashboard_content().execute_query()
         self.assertIsNotNone(return_type.value)
 
+    @requires_call(EmployeeEngagement.full_dashboard_content, flow="application")
     def test_03_get_full_dashboard_content(self):
         """Get full dashboard content."""
         return_type = self.client.ee.full_dashboard_content().execute_query()

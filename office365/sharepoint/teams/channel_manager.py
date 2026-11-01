@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.team_site_data import TeamSiteData
 from office365.sharepoint.teams.channel import TeamChannel
 
@@ -21,6 +23,7 @@ class TeamChannelManager(Entity):
     """This class is a placeholder for all TeamChannel related methods."""
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_team_channel(context, channel_url, private_channel=False, private_channel_group_owner=None):
         """Create Team Channel based folder with specific prodID.
 
@@ -43,6 +46,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_team_site_data(context, ignore_validation: bool = True):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): SharePoint client context
@@ -65,6 +69,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def save_conversations(
         context, list_url: str, list_item_id: int, updated_conversations_object: str
     ) -> "TeamChannelManager":
@@ -85,6 +90,7 @@ class TeamChannelManager(Entity):
         return binding_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def sync_teamsite_settings(context):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): SharePoint client context
@@ -100,6 +106,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def archive_team_channel_by_id(context: ClientContext, folder_id: UUID) -> ClientResult[bool]:
         """ArchiveTeamChannelById operation.
 
@@ -117,6 +124,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def archive_team_channel_by_path(context: ClientContext, folder_path: ResourcePath) -> ClientResult[bool]:
         """ArchiveTeamChannelByPath operation.
 
@@ -140,6 +148,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def demote_team_channel_by_id(context: ClientContext, folder_id: UUID) -> ClientResult[bool]:
         """DemoteTeamChannelById operation.
 
@@ -157,6 +166,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def demote_team_channel_by_path(context: ClientContext, decoded_url: str) -> ClientResult[bool]:
         """DemoteTeamChannelByPath operation.
 
@@ -180,6 +190,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_conversations(context: ClientContext, list_url: str, list_item_id: int) -> ClientResult[str]:
         """GetConversations operation.
 
@@ -205,6 +216,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def manage_channel_capabilities(context: ClientContext, request: ManageChannelCapabilitiesRequest) -> None:
         """ManageChannelCapabilities operation.
 
@@ -220,6 +232,7 @@ class TeamChannelManager(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def promote_to_team_channel_by_id(
         context: ClientContext, folder_id: UUID, team_channel_url: str, channel_name: str
     ) -> ClientResult[bool]:
@@ -249,6 +262,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def promote_to_team_channel_by_path(
         context: ClientContext, decoded_url: str, team_channel_url: str, channel_name: str
     ) -> ClientResult[bool]:
@@ -278,6 +292,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def stamp_lwg_id_on_private_channel_site(context: ClientContext, id_lwg: UUID) -> ClientResult[bool]:
         """StampLWGIdOnPrivateChannelSite operation.
 
@@ -301,6 +316,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unarchive_team_channel_by_id(context: ClientContext, folder_id: UUID) -> ClientResult[bool]:
         """UnarchiveTeamChannelById operation.
 
@@ -324,6 +340,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unarchive_team_channel_by_path(context: ClientContext, folder_path: ResourcePath) -> ClientResult[bool]:
         """UnarchiveTeamChannelByPath operation.
 
@@ -347,6 +364,7 @@ class TeamChannelManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unstamp_lwg_id_on_private_channel_site(context: ClientContext) -> ClientResult[bool]:
         """UnstampLWGIdOnPrivateChannelSite operation."""
         from office365.sharepoint.teams.channel_manager import TeamChannelManager

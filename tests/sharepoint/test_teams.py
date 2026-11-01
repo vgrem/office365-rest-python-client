@@ -13,12 +13,14 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
 class TestTeam(SPTestCase):
     """Test SharePoint team channel operations."""
 
+    @requires_call(TeamChannelManager.get_team_site_data, flow="application")
     def test_01_get_team_site_data(self):
         """Get team site data via channel manager.
 

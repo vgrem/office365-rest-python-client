@@ -10,6 +10,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.search.query.auto_completion_results import QueryAutoCompletionResults
 from office365.sharepoint.search.query.popular_tenant_query import PopularTenantQuery
@@ -29,6 +30,7 @@ class SearchService(Entity):
             self._resource_path = StaticPath("Microsoft.Office.Server.Search.REST.SearchService")
         return self._resource_path
 
+    @site_access(SiteLevel.READ)
     def export(self, user: Union[str, User], start_time: datetime) -> ClientResult[str]:
         """The operation is used by the administrator to retrieve the query log entries,
         issued after a specified date, for a specified user.
@@ -53,6 +55,7 @@ class SearchService(Entity):
             _export(user)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def export_manual_suggestions(self) -> ClientResult[TenantCustomQuerySuggestions]:
         """ """
         return_type = ClientResult(self.context, TenantCustomQuerySuggestions())
@@ -60,6 +63,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def export_popular_tenant_queries(self, count: int) -> ClientResult[ClientValueCollection[PopularTenantQuery]]:
         """This method is used to get a list of popular search queries executed on the tenant.
 
@@ -72,6 +76,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def query(
         self,
         query_text: str,
@@ -142,6 +147,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def post_query(
         self,
         query_text: str,
@@ -182,6 +188,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def record_page_click(self, page_info=None, click_type=None, block_type=None):
         """This operation is used by the protocol client to inform the protocol server that a user clicked a
         query result on a page. When a click happens, the protocol client sends the details about the click
@@ -202,6 +209,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def search_center_url(self) -> ClientResult[str]:
         """The operation is used to get the URI address of the search center by using the HTTP protocol
         with the GET method. The operation returns the URI of the of the search center.
@@ -211,6 +219,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def results_page_address(self) -> ClientResult[str]:
         """The operation is used to get the URI address of the result page by using the HTTP protocol
         with the GET method. The operation returns the URI of the result page."""
@@ -219,6 +228,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def suggest(self, query_text: str) -> ClientResult[QuerySuggestionResults]:
         """Args:
         query_text (str): The query text of the search query. If this element is not present or a value is
@@ -231,6 +241,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def auto_completions(
         self,
         query_text: str,
@@ -270,6 +281,7 @@ class SearchService(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Office.Server.Search.REST.SearchService"
 
+    @site_access(SiteLevel.READ)
     def autocompletions(
         self, querytext: str, sources: str, number_of_completions: int, cursor_position: int
     ) -> ClientResult[QueryAutoCompletionResults]:
@@ -288,6 +300,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def exportmanualsuggestions(self) -> ClientResult[TenantCustomQuerySuggestions]:
         """exportmanualsuggestions operation."""
         return_type = ClientResult(self.context, TenantCustomQuerySuggestions())
@@ -295,6 +308,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def exportpopulartenantqueries(self, count: int) -> ClientResult[ClientValueCollection[PopularTenantQuery]]:
         """exportpopulartenantqueries operation.
 
@@ -306,6 +320,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def postquery(self, request: SearchRequest) -> ClientResult[SearchResult]:
         """postquery operation.
 
@@ -317,6 +332,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def resultspageaddress(self) -> ClientResult[str]:
         """resultspageaddress operation."""
         return_type = ClientResult(self.context, str())
@@ -324,6 +340,7 @@ class SearchService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def searchcenterurl(self) -> ClientResult[str]:
         """searchcenterurl operation."""
         return_type = ClientResult(self.context, str())

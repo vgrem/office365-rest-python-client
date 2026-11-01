@@ -34,7 +34,7 @@ PENDING: dict[str, int] = {
     "planner": 3,
     "reports": 4,
     "security": 2,
-    "sharepoint": 939,
+    "sharepoint": 824,
     "subscriptions": 2,
     "todo": 4,
 }

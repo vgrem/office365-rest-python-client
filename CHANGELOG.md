@@ -565,6 +565,22 @@ introduced.
   `DigitalLegacy` is a user's own beneficiary settings, so `WRITE`/`READ` and no role.
   Debt 1,273 → 1,155, and nine live tests (user profile, publishing, client-side
   components) derive their precondition from the declaration.
+- **Tenant plumbing names its grants, and the flow runners are tenant work.** 115 methods
+  across seven modules: `Automations` (23), `SPMachineLearningHub` (16), `SearchService`
+  (16), `TeamChannelManager` (16), `CatalogManagementCustomPropertiesCollection` (16),
+  `Folder` (14) and the Viva `EmployeeEngagement` (14). Three of them reach past a site
+  collection and declare the tenant rung with the SharePoint Administrator role:
+  `Automations` creates and deletes Power Automate flows and their connections, which
+  belong to the tenant and not to the web that happens to host the proxy;
+  `TeamChannelManager` promotes, demotes and archives the site behind a Teams channel; and
+  the catalog custom-property collection is tenant administration by construction. The
+  machine-learning hub is a Syntex content center — a site again, so `MANAGE` for its six
+  writers. `SearchService` declares one write (`record_page_click`, which records an
+  analytics hit) and fifteen reads, since a query, a suggestion and an export all read.
+  `Folder` is ten writes and four reads, and the Viva surface is eleven reads and the two
+  like/unlike writes plus dashboard personalization. Debt 1,155 → 1,040, and thirteen live
+  tests (folder, search, Viva, teams) derive their precondition from the declaration.
+
 
 
 ### Changed

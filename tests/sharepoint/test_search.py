@@ -10,6 +10,7 @@ from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
+from office365.sharepoint.search.service import SearchService
 
 from tests import (
     test_client_id,
@@ -18,6 +19,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -36,6 +38,7 @@ class TestSearch(SPTestCase):
         result = self.client.search.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(SearchService.export, flow="delegated")
     def test_02_export_search_settings(self):
         """Export search settings for the current user.
 
@@ -50,22 +53,26 @@ class TestSearch(SPTestCase):
             self.skipTest(f"{test_username} is not a search administrator")
         self.assertIsNotNone(result.value)
 
+    @requires_call(SearchService.export_popular_tenant_queries, flow="delegated")
     def test_03_export_popular_tenant_queries(self):
         """Export popular tenant search queries."""
         result = self.client.search.export_popular_tenant_queries(10).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SearchService.search_center_url, flow="delegated")
     def test_04_get_search_center_url(self):
         """Get the search center URL."""
         result = self.client.search.search_center_url().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SearchService.post_query, flow="delegated")
     def test_05_search_post_query(self):
         """Execute a search POST query."""
         result = self.client.search.post_query(query_text="filename:guide.docx").execute_query()
         self.assertIsInstance(result.value, SearchResult)
         self.assertIsInstance(result.value.PrimaryQueryResult, QueryResult)
 
+    @requires_call(SearchService.query, flow="delegated")
     def test_06_search_get_query(self):
         """Execute a search GET query."""
         result = self.client.search.query("guide.docx").execute_query()
@@ -87,6 +94,7 @@ class TestSearch(SPTestCase):
         ).execute_query()
         self.assertIsInstance(result.value.PrimaryQueryResult, QueryResult)
 
+    @requires_call(SearchService.suggest, flow="delegated")
     def test_09_search_suggest(self):
         """Execute a search suggestion query."""
         result = self.client.search.suggest("guide").execute_query()

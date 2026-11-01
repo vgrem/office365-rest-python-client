@@ -6,6 +6,7 @@ from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.folders.folder import Folder
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -95,6 +96,7 @@ class TestSharePointFolder(SPTestCase):
         self.assertGreater(len(files_to), 0)
         TestSharePointFolder.output_folder = output_folder
 
+    @requires_call(Folder.rename, flow="application")
     def test_09_rename_folder(self):
         """Rename folder"""
         self.assertIsNotNone(TestSharePointFolder.input_folder)
@@ -103,6 +105,7 @@ class TestSharePointFolder(SPTestCase):
         folder = folder.rename(new_folder_name).get().execute_query()
         self.assertEqual(new_folder_name, folder.name)
 
+    @requires_call(Folder.move_to, flow="application")
     def test_10_move_folder(self):
         """Move folder"""
         self.assertIsNotNone(TestSharePointFolder.input_folder)
@@ -111,6 +114,7 @@ class TestSharePointFolder(SPTestCase):
         folder_to = folder.move_to(TestSharePointFolder.output_folder).execute_query()
         self.assertIsNotNone(folder_to.server_relative_url)
 
+    @requires_call(Folder.recycle, flow="application")
     def test_11_recycle_folder(self):
         """Recycle folder"""
         self.assertIsNotNone(TestSharePointFolder.input_folder)
@@ -125,6 +129,7 @@ class TestSharePointFolder(SPTestCase):
         recycle_item = self.client.web.recycle_bin.get_by_id(TestSharePointFolder.deleted_folder_guid)
         recycle_item.restore().execute_query()
 
+    @requires_call(Folder.get_changes, flow="application")
     def test_13_get_folder_changes(self):
         """Get folder change log"""
         self.assertIsNotNone(TestSharePointFolder.input_folder)

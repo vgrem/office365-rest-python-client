@@ -36,6 +36,7 @@ from office365.sharepoint.contentcenter.syntex_models_landing_info import (
 )
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.utilities.autofillcolumninfo import AutofillColumnInfo
 from office365.sharepoint.viva.syntexcontext import SyntexContext
 
@@ -46,6 +47,7 @@ if TYPE_CHECKING:
 class SPMachineLearningHub(Entity):
     """ """
 
+    @site_access(SiteLevel.READ)
     def get_by_content_type_id(self, content_type_id: str) -> SyntexModelsLandingInfo:
         """Args:
         content_type_id (str):
@@ -56,6 +58,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_models(
         self, list_id=None, model_types=None, publication_types=None, include_management_not_allowed_models=None
     ):
@@ -76,6 +79,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_retention_labels(self):
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(ComplianceTag))
@@ -174,6 +178,7 @@ class SPMachineLearningHub(Entity):
             ),
         )
 
+    @site_access(SiteLevel.READ)
     def get_autofill_column_settings(self, doc_lib_id: UUID) -> ClientResult[str]:
         """GetAutofillColumnSettings operation.
 
@@ -185,6 +190,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_library_llm_info(self, doc_lib_id: UUID) -> ClientResult[ClientValueCollection[AutofillColumnInfo]]:
         """GetLibraryLLMInfo operation.
 
@@ -196,6 +202,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_machine_learning_flags(self, doc_lib_id: UUID) -> ClientResult[int]:
         """GetMachineLearningFlags operation.
 
@@ -207,6 +214,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_model_id_for_content_type(self, content_type_name: str) -> ClientResult[str]:
         """GetModelIdForContentType operation.
 
@@ -218,6 +226,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_syntex_powered_column_prompts(self, doc_lib_id: UUID) -> ClientResult[str]:
         """GetSyntexPoweredColumnPrompts operation.
 
@@ -229,6 +238,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_autofill_column_settings(self, doc_lib_id: UUID, autofill_column_settings: str) -> Self:
         """SetAutofillColumnSettings operation.
 
@@ -246,6 +256,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_column_llm_info(
         self,
         doc_lib_id: UUID,
@@ -285,6 +296,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_machine_learning_flags(self, doc_lib_id: UUID, machine_learning_flags: int) -> Self:
         """SetMachineLearningFlags operation.
 
@@ -302,6 +314,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_syntex_powered_column_prompts(self, doc_lib_id: UUID, syntex_powered_column_prompts: str) -> Self:
         """SetSyntexPoweredColumnPrompts operation.
 
@@ -319,6 +332,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def verify_model_urls(self, urls: StringCollection) -> Self:
         """VerifyModelUrls operation.
 
@@ -329,6 +343,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def verify_model_urls_and_grant_pac(self, urls: StringCollection) -> ClientResult[str]:
         """VerifyModelUrlsAndGrantPAC operation.
 
@@ -340,6 +355,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_column_llm_info(self, doc_lib_id: UUID, column_id: UUID) -> ClientResult[LLMColumnInfo]:
         """GetColumnLLMInfo operation.
 
@@ -356,6 +372,7 @@ class SPMachineLearningHub(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_retention_label(self, retention_label_id: UUID) -> ClientResult[ComplianceTag]:
         """GetRetentionLabel operation.
 
