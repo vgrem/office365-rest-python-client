@@ -10,7 +10,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from generator.config import GeneratorOptions
+from generator.core.config import GeneratorOptions
 from generator.odata.v3.metadata_reader import ODataV3Reader
 from generator.odata.v4.metadata_reader import ODataV4Reader
 from generator.pipeline import GeneratorPipeline

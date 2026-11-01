@@ -1,7 +1,8 @@
 # Placement contract
 
-How the generator decides where a generated type lives. Everything here is
-enforced (or asserted) by the tests in `tests/tooling/test_generator_placement_contract.py`.
+How the generator decides where a generated type lives. This is a decision
+table, not a test: `tests/tooling` covers an end-to-end run and the
+preservation of hand-written code, not placement.
 
 ## Target levels
 
@@ -60,13 +61,12 @@ into it with the prefix stripped —
 Placement names a file after the **class**, so two CSDL types that differ only by
 namespace resolve to one module — `microsoft.graph.Alert` and
 `microsoft.graph.security.Alert` both land in `office365/security/alerts/alert.py`.
-The v1.0 snapshot has 12 such modules; they are frozen in
-`tests/tooling/test_generator_type_identity.py`, so a new one fails that test
-instead of quietly becoming a `system=True` marker.
+The v1.0 snapshot has 12 such modules. Nothing freezes that count:
+`python -m generator --report-duplicates` prints it on demand.
 
 The file holds one class, and `entity_type_name` is written once (a later run never
 overwrites it), so the class can answer for a member set it does not belong to.
-`generator/type_identity.py` decides from the class's own members: when it spells a
+`generator/tools/type_identity.py` decides from the class's own members: when it spells a
 name only the type being built declares, and none that only the name it answers
 with declares, the literal is corrected (one line, reported on stdout). When it
 spells members of both, the class is **merged** — which name it answers with is
@@ -74,10 +74,10 @@ then a placement question, and the audit reports it rather than rewriting it.
 
 ## Adding routing (2-stage workflow)
 
-1. `python -m generator.generate_model <service> --suggest-routing` proposes
+1. `python -m generator <service> --suggest-routing` proposes
    `[routing]` / `[type_routing]` entries for unrouted types.
 2. Review and paste them into `generator/settings.<service>.yaml`.
-3. `python -m generator.generate_model <service> --force` generates.
+3. `python -m generator <service> --force` generates.
 
 The tool proposes; a human commits. **Routing is never written automatically.**
 
@@ -111,6 +111,6 @@ For preview-only members and preview types the generator can still rewrite exist
 files, because those facts come from a metadata diff and not from a template:
 
 ```bash
-uv run python -m generator.cli graph --diff-metadata generator/metadata/GraphBeta.xml \
+uv run python -m generator graph --diff-metadata generator/metadata/GraphBeta.xml \
     --apply-markers --dry-run    # @odata(beta=...) and @version("beta") gates
 ```

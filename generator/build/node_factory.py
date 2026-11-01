@@ -1,0 +1,151 @@
+"""AST node factory — the nodes a generated file is made of.
+
+Plain functions: nothing here remembers anything, and the seed a brand-new file
+starts as is a table in :mod:`generator.build.type`, so no file is read.
+"""
+
+from __future__ import annotations
+
+import ast
+import inspect
+from enum import Enum
+from typing import TYPE_CHECKING, cast
+
+from generator.model_index.collector import TypeReferenceCollector
+from generator.odata.type_system import TypeRef
+
+if TYPE_CHECKING:
+    from generator.build.member import MemberBuilder
+    from generator.build.property import PropertyBuilder
+
+
+def build_references(collector: TypeReferenceCollector) -> list[ast.stmt]:
+    """Generate import statements from a TypeReferenceCollector."""
+    return collector.build()
+
+
+def build_member(builder: MemberBuilder) -> ast.Assign:
+    """The assignment an enum member becomes."""
+    return ast.Assign(
+        targets=[ast.Name(id=builder.name, ctx=ast.Store())],
+        value=ast.Constant(value=builder.value),
+    )
+
+
+def existing_members(class_node: ast.ClassDef) -> set[str]:
+    """Names the class already assigns, so a regeneration adds nothing twice."""
+    names: set[str] = set()
+
+    for node in class_node.body:
+        if isinstance(node, ast.Assign):
+            names.update(target.id for target in node.targets if isinstance(target, ast.Name))
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            names.add(node.target.id)
+
+    return names
+
+
+def declared_wire_name(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
+    """The ``@odata(name=...)`` a getter declares, or ``""`` when it declares none.
+
+    A class may read a column under a name of its own (``CanvasContent1`` is read as
+    ``canvas_content``), so matching a schema property by Python name alone declares
+    the same column twice.
+    """
+    for decorator in node.decorator_list:
+        if not (isinstance(decorator, ast.Call) and _is_odata(decorator.func)):
+            continue
+        for keyword in decorator.keywords:
+            if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
+                return str(keyword.value.value)
+        if decorator.args and isinstance(decorator.args[0], ast.Constant):
+            return str(decorator.args[0].value)
+    return ""
+
+
+def _is_odata(func: ast.expr) -> bool:
+    """Whether a decorator's callee is ``odata`` (bare or attribute)."""
+    return (isinstance(func, ast.Name) and func.id == "odata") or (
+        isinstance(func, ast.Attribute) and func.attr == "odata"
+    )
+
+
+def build_get_property(builder: PropertyBuilder, runtime_import: str | None = None) -> ast.FunctionDef:
+    """Build the getter property method.
+
+    ``runtime_import`` is a function-local import (e.g. a cyclic navigation
+    type) placed at the top of the getter body.
+
+    An absent primitive reads as ``None``, ``datetime`` included: the annotation
+    already says optional, and a ``datetime.min`` default made the body name a
+    module the surrounding file may bind only for the type checker (so updating
+    ``SP.ListItem`` produced a getter that raised ``NameError``). What a getter
+    returns when the column is missing is not allowed to depend on which imports
+    the file already carries.
+    """
+    docstring = f"Gets the {builder.schema.Name} property"
+    method_name = builder.name
+    prop_name = builder.schema.Name
+    prop_type_name = builder.client_type_name
+    if prop_type_name in TypeReferenceCollector.OPTIONAL_TYPES:
+        type_annotation = f"Optional[{prop_type_name}]"
+    else:
+        type_annotation = prop_type_name
+    if builder.has_optional_getter() and not type_annotation.startswith("Optional["):
+        type_annotation = f"Optional[{prop_type_name}]"
+    default_value = "None"
+    if builder.is_object_type:
+        if builder.is_collection_type:
+            default_value = (
+                f"{prop_type_name}("
+                f"self.context, "
+                f"{builder.client_item_type_name}, "
+                f"ResourcePath('{prop_name}', self.resource_path)"
+                f")"
+            )
+        else:
+            default_value = f"{prop_type_name}(self.context, ResourcePath('{prop_name}', self.resource_path))"
+    elif builder.is_collection_type:
+        if prop_type_name in ("StringCollection", "GuidCollection"):
+            default_value = f"{prop_type_name}()"
+        else:
+            default_value = f"{prop_type_name}({builder.client_item_type_name})"
+    else:
+        resolved = builder.resolve_client_type()
+        if resolved is not None and inspect.isclass(resolved):
+            if issubclass(resolved, Enum):
+                members = list(resolved)
+                if members:
+                    default_value = f"{prop_type_name}.{members[0].name}"
+            elif not TypeRef.parse(builder.schema.TypeName).is_primitive:
+                default_value = f"{prop_type_name}()"
+
+    body_lines = [f'    """{docstring}"""']
+    if runtime_import:
+        body_lines.append(f"    {runtime_import}")
+    body_lines.append(f'    return self.properties.get("{prop_name}", {default_value})')
+    decorator = _declaration(builder, prop_name)
+    property_code = (
+        decorator + "\n@property\n" + f"def {method_name}(self) -> {type_annotation}:\n" + "\n".join(body_lines)
+    )
+
+    parsed = ast.parse(property_code)
+    return cast(ast.FunctionDef, parsed.body[0])
+
+
+def _declaration(builder: PropertyBuilder, prop_name: str) -> str:
+    """The ``@odata(...)`` line of a getter: the wire name, plus what it is.
+
+    The wire name travels with the property so callers never spell it again,
+    ``navigation`` records that $expand, not $select, reaches this one, and
+    ``readonly`` records a value the service assigns (CSDL ``Core.Computed``) --
+    reading it is fine, sending it back is a write to a member it owns. ``system``
+    records that this type's own CSDL does not declare the name: every subtype does
+    (see :mod:`generator.build.intrinsic_members`).
+    """
+    flags = ["navigation=True"] if builder.is_object_type else []
+    if builder.schema.ReadOnly:
+        flags.append("readonly=True")
+    if builder.schema.IsSystem:
+        flags.append("system=True")
+    return f'@odata(name="{prop_name}"' + "".join(f", {flag}" for flag in flags) + ")"

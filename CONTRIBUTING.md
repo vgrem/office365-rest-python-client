@@ -90,7 +90,7 @@ The offline tests are split by what they describe:
 | Directory | Subject |
 | --- | --- |
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus the declaration ratchet |
-| `tests/tooling` | the code generator under `generator/` — two files: an end-to-end run, and the in-place editing that rewrites shipped source |
+| `tests/tooling` | the code generator under `generator/` — minimal smoke tests: an end-to-end run, preservation of hand-written code, and CLI dispatch |
 | `tests/test_capabilities.py` | the declared-permission vocabulary: checking, skipping and reporting |
 
 The bootstrap itself has one module per job, and nothing else: `tests/settings.py`

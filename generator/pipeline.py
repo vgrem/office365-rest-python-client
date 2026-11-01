@@ -3,18 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Optional
 
-from generator.builders.member import sanitize_member_name
-from generator.builders.naming import normalize_member_key
-from generator.builders.resolution import TypeRegistry
-from generator.builders.type import TypeBuilder
-from generator.config import GeneratorOptions
-from generator.cycles import find_cyclic_types
-from generator.documentation.base import DocumentationProvider
-from generator.filters import TypeFilter
-from generator.intrinsic_members import intrinsic_members
-from generator.manifest import (
+from generator.build.type import TypeBuilder
+from generator.checkpoint.manifest import (
     Manifest,
     MetadataChanges,
     diff_members,
@@ -24,72 +16,15 @@ from generator.manifest import (
     run_signature,
     schema_members,
 )
+from generator.checkpoint.reporting import Reporter
+from generator.checkpoint.verification import PostCommitVerifier, semantic_issues
+from generator.core.config import GeneratorOptions
+from generator.core.log import log
+from generator.edit.validation import ValidationError, validate_source
+from generator.metadata.documentation.base import DocumentationProvider
 from generator.odata.model import ODataModel
-from generator.reporting import Reporter
-from generator.routing import Router, planned_module
-from generator.validation import ValidationError, validate_source
-from generator.verification import PostCommitVerifier, semantic_issues
-
-
-def _pollable_types(model: ODataModel) -> frozenset[str]:
-    """Entity types that model a long-running/async operation.
-
-    A type is pollable when it or any ancestor in the CSDL base chain is an
-    ``*Operation`` entity with a ``status`` property (``LongRunningOperation``,
-    ``security.CaseOperation``, ``PrintOperation`` …); subtypes inherit it. Such
-    types get the ``PollableOperation`` mixin so ``wait()`` / ``wait_async()``
-    work on them.
-    """
-
-    def is_operation_with_status(name: str) -> bool:
-        schema = model.types.get(name)
-        return (
-            bool(schema)
-            and name.rsplit(".", 1)[-1].endswith("Operation")
-            and any(prop.lower() == "status" for prop in schema.Properties)
-        )
-
-    def walk(name: str) -> bool:
-        seen: set[str] = set()
-        while name and name not in seen:
-            seen.add(name)
-            if is_operation_with_status(name):
-                return True
-            schema = model.types.get(name)
-            name = (getattr(schema, "BaseTypeName", None) or "") if schema else ""
-        return False
-
-    return frozenset(
-        name for name, schema in model.types.items() if schema.BaseTypeFullName == "EntityType" and walk(name)
-    )
-
-
-def _qualified_types(requested: Iterable[str], model: ODataModel) -> Tuple[Tuple[str, ...], Dict[str, str]]:
-    """The model's own spelling of each requested type, and why the rest cannot be used.
-
-    ``--type Event`` and ``--type microsoft.graph.Event`` mean the same thing, and both
-    surfaces stayed reachable for a while: the pipeline wanted the qualified name while
-    the marker plan accepted the short one, so the same flag worked in one mode and
-    silently selected nothing in the other. The metadata decides here, as it does
-    everywhere else -- and a short name two types share is reported, never guessed.
-    """
-    by_short: Dict[str, List[str]] = {}
-    for name in model.types:
-        by_short.setdefault(name.rsplit(".", maxsplit=1)[-1].lower(), []).append(name)
-    qualified: List[str] = []
-    unresolved: Dict[str, str] = {}
-    for name in requested:
-        if name in model.types:
-            qualified.append(name)
-            continue
-        candidates = by_short.get(name.rsplit(".", maxsplit=1)[-1].lower(), [])
-        if len(candidates) == 1:
-            qualified.append(candidates[0])
-        elif candidates:
-            unresolved[name] = f"ambiguous, the metadata has {', '.join(sorted(candidates))}"
-        else:
-            unresolved[name] = "not in metadata"
-    return tuple(qualified), unresolved
+from generator.planning.filters import TypeFilter
+from generator.planning.plan import PlanBuilder, _qualified_types
 
 
 class GeneratorPipeline:
@@ -124,46 +59,10 @@ class GeneratorPipeline:
         self._base_dir = base_dir
         self._report_path = report_path
         self._previous = Manifest.load(options.metadata_path, base_dir)
-        self._builder_context = options.builder_context()
         self._filter = TypeFilter.from_options(options)
-        # Only types this run will actually generate (attached or routed) are
-        # importable by name; members referencing the rest are skipped.
-        router = Router.from_options(self._builder_context)
-        registry = TypeRegistry(options.modules.split(","), namespace=options.namespace)
-        known_types: set[str] = set()
-        type_modules: dict[str, str] = {}
-        for name, schema in model.types.items():
-            if not self._filter.in_scope(name, schema):
-                continue
-            module = planned_module(name, schema, registry, router, options.output_path)
-            if module is not None:
-                known_types.add(name)
-                type_modules[name] = module
-        #: First member per in-scope enum, so enum-typed fields planned in this run
-        #: default to the first member rather than ``field(default_factory=Enum)``.
-        enum_defaults: dict[str, str] = {}
-        for name, schema in model.types.items():
-            if schema.BaseTypeFullName == "EnumType" and self._filter.in_scope(name, schema):
-                enum_defaults[name] = next((sanitize_member_name(m) for m in schema.Members), "")
-        self._builder_context = self._builder_context.with_plan(
-            known_types=frozenset(known_types),
-            type_modules=type_modules,
-            cyclic_types=frozenset(find_cyclic_types(model, known_types)),
-            enum_defaults=enum_defaults,
-            inherited_members=model.inherited_member_names(),
-            entity_types=frozenset(
-                name for name, schema in model.types.items() if schema.BaseTypeFullName == "EntityType"
-            ),
-            client_value_types=frozenset(
-                name for name in known_types if model.types[name].BaseTypeFullName != "EntityType"
-            ),
-            pollable_types=_pollable_types(model),
-            declared_properties={
-                name: frozenset(normalize_member_key(key) for key in keys)
-                for name, keys in model.effective_property_names().items()
-            },
-            intrinsic_properties=intrinsic_members(model),
-        )
+        context = options.builder_context()
+        self._plan = PlanBuilder.build(model, options, self._filter, context)
+        self._builder_context = self._plan.apply(context)
         self._output_root = Path(options.output_path).resolve()
         self._reporter = Reporter(self._metadata_path, report_path, options.dry_run)
         self._verifier = PostCommitVerifier(self._output_root, smoke=smoke, check=check)
@@ -171,7 +70,7 @@ class GeneratorPipeline:
     def run(self) -> None:
         """Build, validate and (unless dry-run) commit every in-scope type."""
         if self._can_skip():
-            print("Model is up to date (metadata and config unchanged); nothing to do.")
+            log.info("Model is up to date (metadata and config unchanged); nothing to do.")
             return
         # A request that resolved to nothing is still a targeted run: falling back to
         # the whole metadata would answer a mistyped --type by writing every file.
@@ -202,7 +101,7 @@ class GeneratorPipeline:
                 skipped_new += 1
                 continue
             count += 1
-            print(f"[{count}/{total}] Processing: {name}")
+            log.info(f"[{count}/{total}] Processing: {name}")
             self._build(name, builder)
             if builder.built:
                 planned.append((name, builder))
@@ -234,14 +133,14 @@ class GeneratorPipeline:
 
     def _warn_unknown_types(self) -> None:
         for name, reason in self._unresolved_types.items():
-            print(f"  Unusable --type {name}: {reason}")
+            log.info(f"  Unusable --type {name}: {reason}")
 
     def _start_at_index(self) -> int:
         """Digit ``start_at``: begin N types into the metadata order."""
         start_at = self._filter.start_at
         if not start_at.isdigit() or int(start_at) <= 0:
             return 0
-        print(f"  Skipping first {start_at} types (start_at={start_at})")
+        log.info(f"  Skipping first {start_at} types (start_at={start_at})")
         return int(start_at)
 
     def _build(self, name: str, builder: TypeBuilder) -> None:
@@ -254,13 +153,13 @@ class GeneratorPipeline:
                 if issues:
                     raise ValidationError(f"{name}: " + "; ".join(issues))
         except Exception as e:
-            print(f"Failed on {name}: {e}")
+            log.warning(f"Failed on {name}: {e}")
             raise
 
     def _commit(self, planned: list[tuple[str, TypeBuilder]]) -> None:
         if self._options.dry_run:
             for _, builder in planned:
-                print(f"  [dry-run] {builder.status}: {builder.file}")
+                log.info(f"  [dry-run] {builder.status}: {builder.file}")
             return
         for name, builder in planned:
             if not self._within_output(builder.file):

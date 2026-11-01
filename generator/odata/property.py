@@ -14,7 +14,7 @@ class PropertyInformation:
         ReadOnly: True when the service assigns the value (CSDL ``Core.Computed``),
             so a request may read it but never send it back
         IsSystem: True when the type's own CSDL does not declare the name but every
-            one of its subtypes does (see :mod:`generator.intrinsic_members`)
+            one of its subtypes does (see :mod:`generator.build.intrinsic_members`)
     """
 
     Name: str = ""
