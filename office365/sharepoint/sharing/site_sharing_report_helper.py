@@ -2,6 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sharing.reports.site_capabilities import (
     SiteSharingReportCapabilities,
 )
@@ -12,6 +13,7 @@ from office365.sharepoint.sharing.site_sharing_report_status import (
 
 class SiteSharingReportHelper(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def cancel_sharing_report_job(
         context: ClientContext,
     ) -> ClientResult[SiteSharingReportStatus]:
@@ -22,6 +24,7 @@ class SiteSharingReportHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create_sharing_report_job(context, web_url, folder_url):
         """Args:
         context (office365.sharepoint.client_context.ClientContext):
@@ -44,6 +47,7 @@ class SiteSharingReportHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_site_sharing_report_capabilities(context):
         """Args:
         context (office365.sharepoint.client_context.ClientContext):

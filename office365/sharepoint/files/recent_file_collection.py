@@ -6,6 +6,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class RecentFileCollection(Entity):
@@ -13,6 +14,7 @@ class RecentFileCollection(Entity):
         super().__init__(context, ResourcePath("SP.RecentFileCollection"))
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_recent_files(context: ClientContext, top: int) -> ClientResult[str]:
         return_type = ClientResult(context, str())
         payload = {"top": top}
@@ -22,6 +24,7 @@ class RecentFileCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def delta_sync(context: ClientContext, top: int, start_datetime: str, skip_token: str) -> ClientResult[str]:
         """DeltaSync operation.
 
@@ -43,6 +46,7 @@ class RecentFileCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_recommendations(context: ClientContext, top: int) -> ClientResult[str]:
         """GetRecommendations operation.
 

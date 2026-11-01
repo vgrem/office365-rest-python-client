@@ -13,6 +13,7 @@ from office365.sharepoint.contenttypes.creation_information import (
 )
 from office365.sharepoint.contenttypes.entity_data import ContentTypeEntityData
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ContentTypeCollection(EntityCollection[ContentType]):
@@ -119,6 +120,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
                 return_type.set_property(k, v, True)
         return CreateEntityQuery(self, return_type, return_type)
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, content_type_info: ContentTypeCreationInformation) -> ContentType:
         """Adds a new content type to the collection and returns a reference to the added SP.ContentType.
 
@@ -131,6 +133,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
         self.context.add_query(self._build_add_query(content_type_info, return_type))
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create(
         self,
         name: str,
@@ -163,6 +166,7 @@ class ContentTypeCollection(EntityCollection[ContentType]):
             _create(parent_content_type)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_available_content_type(self, content_type_id: str) -> ContentType:
         """Adds the specified content type to the content type collection.
 

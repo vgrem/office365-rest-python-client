@@ -1,9 +1,11 @@
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class RankingLabeling(Entity):
@@ -13,6 +15,7 @@ class RankingLabeling(Entity):
         static_path = StaticPath("Microsoft.SharePoint.Client.Search.Query.RankingLabeling")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def add_judgment(self, user_query: str, url: str, label_id: str) -> Self:
         """Adds a single relevance judgment for the specified query and URL pair.
 
@@ -27,6 +30,7 @@ class RankingLabeling(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def normalize_result_url(self, url: str) -> ClientResult[str]:
         """A URL string after normalization. The input and output URL strings MUST resolve to the same document.
 
@@ -43,6 +47,7 @@ class RankingLabeling(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Query.RankingLabeling"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_judgements_for_query(self, query: str) -> ClientResult[dict]:
         """GetJudgementsForQuery operation.
 

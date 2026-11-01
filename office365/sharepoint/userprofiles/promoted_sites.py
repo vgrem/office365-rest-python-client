@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.webparts.tile_data import TileData
 
 
@@ -15,6 +16,7 @@ class PromotedSites(Entity):
     """
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_site_link(
         context, url: str, title: str, description: Optional[str] = None, image_url: Optional[str] = None
     ) -> PromotedSites:
@@ -39,6 +41,7 @@ class PromotedSites(Entity):
         return binding_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def delete_site_link(context, item_id: int) -> PromotedSites:
         """Removes the promoted site with the specified identifier from the collection.
 
@@ -53,6 +56,7 @@ class PromotedSites(Entity):
         return binding_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_promoted_links_as_tiles(
         context,
     ) -> ClientResult[ClientValueCollection[TileData]]:

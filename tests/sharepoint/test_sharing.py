@@ -48,6 +48,7 @@ class TestSharePointSharing(SPTestCase):
         cls.target_user = current_user
         cls.client = client
 
+    @requires_call(DocumentSharingManager.get_role_definition, flow="delegated")
     def test_01_get_role_def(self):
         """Get a role definition by role type."""
         role_def = DocumentSharingManager.get_role_definition(self.client, RoleType.Contributor).execute_query()
@@ -112,6 +113,7 @@ class TestSharePointSharing(SPTestCase):
         result = ObjectSharingInformation.get_web_sharing_information(self.client).execute_query()
         self.assertIsNotNone(result.properties)
 
+    @requires_call(SiteSharingReportHelper.get_site_sharing_report_capabilities, flow="delegated")
     def test_10_get_site_sharing_report_capabilities(self):
         """Get site sharing report capabilities."""
         result = SiteSharingReportHelper.get_site_sharing_report_capabilities(self.client).execute_query()

@@ -6,6 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.alerts.alert import Alert
 from office365.sharepoint.alerts.creation_information import AlertCreationInformation
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AlertCollection(EntityCollection[Alert]):
@@ -14,6 +15,7 @@ class AlertCollection(EntityCollection[Alert]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Alert, resource_path)
 
+    @site_access(SiteLevel.WRITE)
     def add(self, parameters: AlertCreationInformation) -> Alert:
         """Add an SP.Alert to SP.AlertCollection based on the given alertCreationInformation
 
@@ -26,6 +28,7 @@ class AlertCollection(EntityCollection[Alert]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def contains(self, id_alert: str) -> ClientResult[bool]:
         """Returns true if the given alert exists in the alert collection. False otherwise.
 
@@ -37,6 +40,7 @@ class AlertCollection(EntityCollection[Alert]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete_alert_at_index(self, index: int) -> Self:
         """Deletes the alert based on the given index.
 

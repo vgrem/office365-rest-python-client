@@ -10,6 +10,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FontPackage(Entity):
@@ -57,18 +58,21 @@ class FontPackage(Entity):
         """Gets the Title property"""
         return self.properties.get("Title", None)
 
+    @site_access(SiteLevel.MANAGE)
     def apply(self) -> Self:
         """Apply operation."""
         qry = ServiceOperationQuery(self, "Apply", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def font_stream(self, font_family: str) -> ClientResult[bytes]:
         """FontStream operation.
 

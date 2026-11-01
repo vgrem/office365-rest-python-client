@@ -6,6 +6,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 from office365.sharepoint.permissions.roles.definitions.creation_information import (
     RoleDefinitionCreationInformation,
@@ -20,6 +21,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, RoleDefinition, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def add(
         self,
         base_permissions: BasePermissions,
@@ -43,6 +45,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def recreate_missing_default_role_definitions(self) -> Self:
         """
         Recreates missing default role definitions. Requires that Microsoft.SharePoint.SPWeb has unique
@@ -52,6 +55,7 @@ class RoleDefinitionCollection(EntityCollection[RoleDefinition]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_all(self) -> Self:
         """
         Removes all role definitions.

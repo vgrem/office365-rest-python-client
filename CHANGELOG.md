@@ -684,6 +684,24 @@ introduced.
   from inside a site. Debt 462 → 373, and three more live tests derive their precondition:
   the communication site that the suite then operates on, three view-field edits, and the
   profile loader.
+- **The thirty-nine owners at three operations each.** 117 methods, and the tier is where
+  the site's own furniture is separated from the tenant's. The site's: a content type
+  collection is three `MANAGE`s, the navigation nodes and the view's schema are `MANAGE`, the
+  two principal collections and the role definitions are `MANAGE`, and the web part manager
+  reads two exports but `MANAGE`s an import. A time zone `set_id` is `MANAGE` - a regional
+  setting of the web. Deleting or updating any SharePoint `Entity` is `WRITE`, declared once on
+  the base class instead of on the four hundred subclasses. The tenant's, with the SharePoint
+  Administrator role: the app-service principal public surface, the content security policy
+  configuration, `TenantSettings` (two catalogue switches at `FULL_CONTROL`, one report config
+  read), the search administration providers (recycle-bin discoverability, content-processing
+  status, ranking judgments, semantic enqueue), and the log export, which is
+  `Microsoft.Online.*` and therefore reads with the role. Three answers that could have gone
+  either way: `DocumentSharingManager.update_document_sharing_info` stops at `MANAGE` because
+  the documentation asks for `ManagePermissions`, while `RichSharing`'s three email shares are
+  `WRITE`; `Campaign` and the portal launch waves are publishing objects, so they `MANAGE`;
+  and the portal navigation cache wrapper is three `MANAGE`s that mirror the structural
+  navigation one. Debt 373 → 256, and three more live tests derive their precondition: adding
+  a user to a site group, reading a role definition, and the sharing report capabilities.
 
 
 

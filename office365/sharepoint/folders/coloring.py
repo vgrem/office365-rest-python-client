@@ -10,12 +10,14 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.folders.coloring_information import FolderColoringInformation
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 
 class FolderColoring(Entity):
     """"""
 
+    @site_access(SiteLevel.WRITE)
     def create_folder(
         self,
         decoded_url: str,
@@ -38,6 +40,7 @@ class FolderColoring(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def stamp_color(self, decoded_url: str, coloring_information: FolderColoringInformation) -> Self:
         """Args:
         decoded_url (str):
@@ -51,6 +54,7 @@ class FolderColoring(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def rename_folder(
         self, decoded_url: str, new_name: str, coloring_information: FolderColoringInformation
     ) -> ClientResult[UUID]:

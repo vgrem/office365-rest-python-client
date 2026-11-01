@@ -13,6 +13,7 @@ from office365.sharepoint.navigation.nodes.creationinformation import (
     NavigationNodeCreationInformation,
 )
 from office365.sharepoint.navigation.nodes.node import NavigationNode
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -63,6 +64,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
             _walk(self)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, create_node_info: NavigationNodeCreationInformation) -> NavigationNode:
         """Adds a navigation node to the collection.
 
@@ -81,6 +83,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def move_after(self, node_id: int, previous_node_id: int) -> Self:
         """
         Moves a navigation node after a specified navigation node in the navigation node collection.
@@ -94,6 +97,7 @@ class NavigationNodeCollection(EntityCollection[NavigationNode]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_by_index(self, index: int) -> NavigationNode:
         """
         Returns the navigation node at the specified index.

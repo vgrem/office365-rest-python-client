@@ -1,3 +1,4 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
@@ -5,6 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.logger.fileinfocollection import LogFileInfoCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class LogExport(Entity):
@@ -17,6 +19,7 @@ class LogExport(Entity):
             self._resource_path = StaticPath("Microsoft.Online.SharePoint.SPLogger.LogExport")
         return self._resource_path
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_files(self) -> LogFileInfoCollection:
         """ """
         return_type = LogFileInfoCollection(self.context)
@@ -24,6 +27,7 @@ class LogExport(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_log_types(self) -> ClientResult[StringCollection]:
         """ """
         return_type = ClientResult(self.context, StringCollection())
@@ -35,6 +39,7 @@ class LogExport(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.SPLogger.LogExport"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_partitions(self, log_type: str) -> ClientResult[StringCollection]:
         """GetPartitions operation.
 

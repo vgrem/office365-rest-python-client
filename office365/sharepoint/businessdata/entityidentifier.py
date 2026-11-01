@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class EntityIdentifier(Entity):
@@ -23,6 +24,7 @@ class EntityIdentifier(Entity):
     def entity_type_name(self):
         return "SP.BusinessData.EntityIdentifier"
 
+    @site_access(SiteLevel.READ)
     def contains_localized_display_name(self) -> ClientResult[bool]:
         """ContainsLocalizedDisplayName operation."""
         return_type = ClientResult(self.context, bool())
@@ -30,6 +32,7 @@ class EntityIdentifier(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_default_display_name(self) -> ClientResult[str]:
         """GetDefaultDisplayName operation."""
         return_type = ClientResult(self.context, str())
@@ -37,6 +40,7 @@ class EntityIdentifier(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_localized_display_name(self) -> ClientResult[str]:
         """GetLocalizedDisplayName operation."""
         return_type = ClientResult(self.context, str())

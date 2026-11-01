@@ -13,6 +13,7 @@ from office365.sharepoint.documents.gridinitinfotype import GridInitInfoType
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.collection import ListItemCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.views.field_collection import ViewFieldCollection
 from office365.sharepoint.views.visualization.visualization import Visualization
@@ -35,6 +36,7 @@ class View(Entity):
         super().__init__(context, resource_path)
         self._parent_list = parent_list
 
+    @site_access(SiteLevel.READ)
     def get_items(self) -> ListItemCollection:
         """Get list items per a view"""
         assert self.parent_list is not None
@@ -50,6 +52,7 @@ class View(Entity):
         self.ensure_properties(["ViewQuery", "ViewFields"]).after_execute(lambda _: _get_items())
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_as_html(self) -> ClientResult[str]:
         """Returns the list view as HTML."""
         return_type = ClientResult[str](self.context)
@@ -57,6 +60,7 @@ class View(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_view_xml(self, view_xml: str) -> Self:
         """Sets the view schema.
 

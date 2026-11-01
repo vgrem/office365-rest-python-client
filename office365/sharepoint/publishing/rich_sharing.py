@@ -6,6 +6,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class RichSharing(Entity):
@@ -14,6 +15,7 @@ class RichSharing(Entity):
             resource_path = ResourcePath("SP.Publishing.RichSharing")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.WRITE)
     def share_page_by_email(self, url: str, message: str, recipient_emails: List[str], page_content: str, subject: str):
         """Args:
         url (str):
@@ -33,6 +35,7 @@ class RichSharing(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def share_site_by_email(self, custom_description, custom_title, message, url, recipient_emails):
         """Args:
         url (str):
@@ -56,6 +59,7 @@ class RichSharing(Entity):
     def entity_type_name(self):
         return "SP.Publishing.RichSharing"
 
+    @site_access(SiteLevel.WRITE)
     def share_page_by_email_stream(self, content_stream: bytes) -> Self:
         """SharePageByEmailStream operation.
 

@@ -30,7 +30,7 @@ LIBRARY = index(office365)
 #: ``execute_batch``) and skips one that merely builds a query and returns it, so these are a
 #: floor: the real number is higher, never lower.
 PENDING: dict[str, int] = {
-    "sharepoint": 373,
+    "sharepoint": 256,
 }
 
 

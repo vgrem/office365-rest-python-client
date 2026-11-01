@@ -2,22 +2,26 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TenantSettings(Entity):
     """Specifies the tenant properties."""
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_corporate_catalog(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "ClearCorporateCatalog", None, None, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_access_governance_report_config(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
@@ -25,6 +29,7 @@ class TenantSettings(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_corporate_catalog(self, url: str) -> Self:
         """Args:
         url (str):

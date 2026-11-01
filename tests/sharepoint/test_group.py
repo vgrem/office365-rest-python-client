@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.sharepoint.principal.groups.group import Group
+from office365.sharepoint.principal.users.collection import UserCollection
 
 from tests import create_unique_name, test_user_principal_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -25,6 +27,7 @@ class TestSharePointGroup(SPTestCase):
         self.assertIsNotNone(result.resource_path)
         TestSharePointGroup.result_group = result
 
+    @requires_call(UserCollection.add_user, flow="application")
     def test_02_add_user_to_group(self):
         """Add a user to the group"""
         if TestSharePointGroup.result_group is None:

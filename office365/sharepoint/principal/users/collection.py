@@ -6,6 +6,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 
 
@@ -21,6 +22,7 @@ class UserCollection(EntityCollection[User]):
         """
         super().__init__(context, User, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def add_user(self, user: Union[str, User]) -> User:
         """Creates a new user in the collection.
 
@@ -91,6 +93,7 @@ class UserCollection(EntityCollection[User]):
             ServiceOperationPath("GetByLoginName", [login_name], self.resource_path),
         )
 
+    @site_access(SiteLevel.MANAGE)
     def remove_by_id(self, user_id: str) -> Self:
         """Retrieve User object by id
 
@@ -101,6 +104,7 @@ class UserCollection(EntityCollection[User]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_by_login_name(self, login_name: str) -> Self:
         """Remove User object by login name
 

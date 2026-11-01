@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPOWebAppServicePrincipalPublic(Entity):
@@ -19,6 +21,7 @@ class SPOWebAppServicePrincipalPublic(Entity):
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOWebAppServicePrincipalPublic"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_custom_spfx3rd_party_app_principal(self, app_id: str, app_uri: str, client_secret: str) -> Self:
         """AddCustomSpfx3rdPartyAppPrincipal operation.
 
@@ -41,12 +44,14 @@ class SPOWebAppServicePrincipalPublic(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_custom_spfx3rd_party_app_principal(self) -> Self:
         """RemoveCustomSpfx3rdPartyAppPrincipal operation."""
         qry = ServiceOperationQuery(self, "RemoveCustomSpfx3rdPartyAppPrincipal", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_custom_spfx3rd_party_app_principal_client_secret(self, client_secret: str) -> Self:
         """UpdateCustomSpfx3rdPartyAppPrincipalClientSecret operation.
 

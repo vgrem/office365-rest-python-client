@@ -11,6 +11,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.publicationmetadata import PublicationMetadata
 from office365.sharepoint.publishing.sharepointids import SharePointIds
 
@@ -68,6 +69,7 @@ class Campaign(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Publishing.Campaigns.Campaign"
 
+    @site_access(SiteLevel.MANAGE)
     def associate(self, publication_id: int) -> Self:
         """Associate operation.
 
@@ -78,12 +80,14 @@ class Campaign(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def publications(self, offset: int, limit: int) -> ClientResult[ClientValueCollection[PublicationMetadata]]:
         """Publications operation.
 

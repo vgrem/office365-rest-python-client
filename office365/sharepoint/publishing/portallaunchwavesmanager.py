@@ -3,6 +3,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.portallaunchwavesetup import PortalLaunchWaveSetup
 
 
@@ -11,6 +12,7 @@ class PortalLaunchWavesManager(Entity):
     def entity_type_name(self) -> str:
         return "SP.Publishing.PortalLaunch.PortalLaunchWavesManager"
 
+    @site_access(SiteLevel.READ)
     def get_all(self) -> ClientResult[ClientValueCollection[PortalLaunchWaveSetup]]:
         """GetAll operation."""
         return_type = ClientResult(self.context, ClientValueCollection[PortalLaunchWaveSetup]())
@@ -18,6 +20,7 @@ class PortalLaunchWavesManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def remove(self, site_url: str) -> ClientResult[bool]:
         """Remove operation.
 
@@ -29,6 +32,7 @@ class PortalLaunchWavesManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def save_wave_setup(self, portal_launch_setup: PortalLaunchWaveSetup) -> ClientResult[PortalLaunchWaveSetup]:
         """SaveWaveSetup operation.
 

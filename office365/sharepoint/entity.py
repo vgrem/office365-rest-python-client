@@ -13,6 +13,7 @@ from office365.runtime.http.url import get_absolute_url
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import Limits, limit
 
 if TYPE_CHECKING:
@@ -54,6 +55,7 @@ class Entity(ClientObject):
         return self
 
     @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+    @site_access(SiteLevel.WRITE)
     def execute_batch(
         self,
         items_per_batch: int = Limits.BATCH_ITEMS.value,
@@ -178,6 +180,7 @@ class Entity(ClientObject):
         self.context.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_object(self, *, ignore_missing: bool = False) -> Self:
         """
         Delete the SharePoint entity
@@ -197,6 +200,7 @@ class Entity(ClientObject):
         self.remove_from_parent_collection()
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update(self, *args: Any) -> Self:
         """
         Update the SharePoint entity

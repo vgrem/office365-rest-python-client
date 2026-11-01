@@ -8,9 +8,11 @@ from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class GroupService(Entity):
+    @site_access(SiteLevel.READ)
     def get_group_image(
         self,
         group_id: str,
@@ -31,6 +33,7 @@ class GroupService(Entity):
         self.context.add_query(qry).before_execute(_create_request)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def sync_group_properties(self):
         """ """
         qry = ServiceOperationQuery(self, "SyncGroupProperties")
@@ -41,6 +44,7 @@ class GroupService(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Portal.GroupService"
 
+    @site_access(SiteLevel.WRITE)
     def set_group_image(self, image_stream: bytes) -> Self:
         """SetGroupImage operation.
 

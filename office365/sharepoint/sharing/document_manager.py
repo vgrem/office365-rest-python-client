@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 from office365.sharepoint.portal.userprofiles.sharedwithme.view_item_removal_result import (
     SharedWithMeViewItemRemovalResult,
@@ -22,6 +23,7 @@ class DocumentSharingManager(Entity):
     """Specifies document sharing related methods."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_role_definition(context: ClientContext, role: RoleType):
         """This method returns a role definition in the current web that is associated with a given Role
         (section 3.2.5.188) value.
@@ -46,6 +48,7 @@ class DocumentSharingManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_items_from_shared_with_me_view(
         context: ClientContext, item_urls: List[str]
     ) -> ClientResult[ClientValueCollection[SharedWithMeViewItemRemovalResult]]:
@@ -74,6 +77,7 @@ class DocumentSharingManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def update_document_sharing_info(
         context: ClientContext,
         resource_address: str,

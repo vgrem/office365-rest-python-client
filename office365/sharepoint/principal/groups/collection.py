@@ -8,6 +8,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.groups.creation_information import (
     GroupCreationInformation,
 )
@@ -32,6 +33,7 @@ class GroupCollection(EntityCollection[Group]):
             return_type = cur_grp.expand_to_principals(max_count)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, title: str, description: Optional[str] = None) -> Group:
         """Adds a group to the collection. A reference to the SP.Group that was added is returned.
 
@@ -70,6 +72,7 @@ class GroupCollection(EntityCollection[Group]):
             ServiceOperationPath("GetByName", [group_name], self.resource_path),
         )
 
+    @site_access(SiteLevel.MANAGE)
     def remove_by_id(self, group_id) -> Self:
         """Removes the group with the specified member ID from the collection.
 
@@ -80,6 +83,7 @@ class GroupCollection(EntityCollection[Group]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_by_login_name(self, group_name: str) -> Self:
         """Removes the cross-site group with the specified name from the collection.
 

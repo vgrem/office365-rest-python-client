@@ -8,6 +8,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.internal.queries.upload_file import create_upload_file_query
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
@@ -48,6 +49,7 @@ class Attachment(Entity):
             self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _download_file_by_url())
         return self
 
+    @site_access(SiteLevel.READ)
     def get_content(self) -> ClientResult[bytes]:
         """Gets the raw contents of attachment"""
         return_type = ClientResult[bytes](self.context)
@@ -55,12 +57,14 @@ class Attachment(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def recycle_object(self) -> Self:
         """Move this attachment to site recycle bin."""
         qry = ServiceOperationQuery(self, "RecycleObject")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def upload(self, file_object: IO, use_path: bool = True) -> Self:
         """Upload attachment into list item
 

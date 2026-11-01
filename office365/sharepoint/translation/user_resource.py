@@ -4,12 +4,14 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
 
 
 class UserResource(Entity):
     """An object representing user-defined localizable resources."""
 
+    @site_access(SiteLevel.READ)
     def get_value_for_ui_culture(self, culture_name: str) -> ClientResult[str]:
         """Returns the value of the resource for the requested culture.
 
@@ -24,6 +26,7 @@ class UserResource(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_resource_entries(self) -> ClientResult[ClientValueCollection[SPResourceEntry]]:
         """Returns all resource entries for this user resource."""
         return_type = ClientResult(self.context, ClientValueCollection(SPResourceEntry))
@@ -31,6 +34,7 @@ class UserResource(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_value_for_ui_culture(self, culture_name: str, value: str) -> ClientResult[str]:
         """Sets the value of the resource for the requested culture.
 

@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 class RecentListCollection(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_recent_lists_with_page_context_info(
         context: ClientContext, sort_by: int, template_type_id: str
     ) -> ClientResult[bytes]:
@@ -38,6 +40,7 @@ class RecentListCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_recent_lists(context: ClientContext, recent_lists_json: str) -> None:
         """UpdateRecentLists operation.
 
@@ -59,6 +62,7 @@ class RecentListCollection(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_recent_lists_remote(context: ClientContext, recent_lists_json: str) -> None:
         """UpdateRecentListsRemote operation.
 

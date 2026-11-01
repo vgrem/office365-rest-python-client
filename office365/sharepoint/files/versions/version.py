@@ -8,6 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FileVersion(Entity):
@@ -31,6 +32,7 @@ class FileVersion(Entity):
         self.ensure_property("ID").after_execute(lambda _: _file_version_loaded())
         return self
 
+    @site_access(SiteLevel.READ)
     def open_binary_stream(self) -> ClientResult[bytes]:
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
@@ -38,6 +40,7 @@ class FileVersion(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def open_binary_stream_with_options(self, open_options: int) -> ClientResult[bytes]:
         """Opens the file as a stream."""
         return_type = ClientResult(self.context, bytes())
@@ -138,6 +141,7 @@ class FileVersion(Entity):
     def property_ref_name(self) -> str:
         return "ID"
 
+    @site_access(SiteLevel.WRITE)
     def set_expiration_date(self, expiration_date: datetime) -> Self:
         """SetExpirationDate operation.
 

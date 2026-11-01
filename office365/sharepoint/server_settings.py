@@ -6,6 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.language_collection import LanguageCollection
 
 
@@ -19,6 +20,7 @@ class ServerSettings(Entity):
         return self._resource_path
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def is_sharepoint_online(context: ClientContext) -> ClientResult[bool]:
         binding_type = ServerSettings(context)
         return_type = ClientResult(context)
@@ -27,6 +29,7 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_blocked_file_extensions(context: ClientContext) -> ClientResult[StringCollection]:
         binding_type = ServerSettings(context)
         return_type = ClientResult(context, StringCollection())
@@ -43,6 +46,7 @@ class ServerSettings(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_global_installed_languages(context: ClientContext, compatibility_level: int) -> LanguageCollection:
         """Gets a list of installed languages that are compatible with a given version of SharePoint.
 
