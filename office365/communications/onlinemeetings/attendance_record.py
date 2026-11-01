@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.common.meeting_engagement import MeetingEngagement
 from office365.communications.attendance_interval import AttendanceInterval
 from office365.communications.virtualevents.external_registration_information import (  # noqa: E501
     VirtualEventExternalRegistrationInformation,
@@ -58,3 +59,9 @@ class AttendanceRecord(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.AttendanceRecord"
+
+    @odata(name="engagements")
+    @property
+    def engagements(self) -> ClientValueCollection[MeetingEngagement]:
+        """Gets the engagements property"""
+        return self.properties.get("engagements", ClientValueCollection[MeetingEngagement](MeetingEngagement))

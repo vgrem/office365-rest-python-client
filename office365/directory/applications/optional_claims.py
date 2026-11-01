@@ -18,6 +18,9 @@ class OptionalClaims(ClientValue):
         default_factory=lambda: ClientValueCollection(OptionalClaim)
     )
     idToken: ClientValueCollection[OptionalClaim] = field(default_factory=lambda: ClientValueCollection(OptionalClaim))
+    kerberosTicket: ClientValueCollection[OptionalClaim] = field(
+        default_factory=lambda: ClientValueCollection(OptionalClaim)
+    )
     saml2Token: ClientValueCollection[OptionalClaim] = field(
         default_factory=lambda: ClientValueCollection(OptionalClaim)
     )

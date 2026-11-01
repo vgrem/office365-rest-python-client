@@ -7,6 +7,8 @@ class RecipientType(Enum):
     user = "1"
     roleGroup = "2"
     unknownFutureValue = "4"
+    contact = "0"
+    privateDL = "3"
 
     @property
     def entity_type_name(self) -> str:

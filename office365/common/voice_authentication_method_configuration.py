@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.common.telecom_provider_settings import TelecomProviderSettings
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -38,3 +39,9 @@ class VoiceAuthenticationMethodConfiguration(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.VoiceAuthenticationMethodConfiguration"
+
+    @odata(name="telecomProviderSettings")
+    @property
+    def telecom_provider_settings(self) -> Optional[TelecomProviderSettings]:
+        """Gets the telecomProviderSettings property"""
+        return self.properties.get("telecomProviderSettings", None)

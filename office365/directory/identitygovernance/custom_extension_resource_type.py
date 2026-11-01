@@ -8,6 +8,8 @@ class CustomExtensionResourceType(Enum):
     azureResources = "2"
     entraGroups = "3"
     unknownFutureValue = "4"
+    applicationAuthorization = "5"
+    appRoles = "6"
 
     @property
     def entity_type_name(self) -> str:

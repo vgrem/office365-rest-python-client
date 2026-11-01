@@ -1,0 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from uuid import UUID
+
+from office365.runtime.client_value import ClientValue
+
+
+@dataclass
+class TelecomProviderSettings(ClientValue):
+    appId: UUID | None = None
+    isEvaluationModeEnabled: bool | None = None
+    migrationPercentage: int | None = None
+    url: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TelecomProviderSettings"

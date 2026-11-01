@@ -3890,6 +3890,13 @@
             <Member Name="externalPartner" Value="4"/>
             <Member Name="externalNonPartner" Value="8"/>
          </EnumType>
+         <EnumType Name="recipientType">
+            <Member Name="contact" Value="0"/>
+            <Member Name="oneOff" Value="1"/>
+            <Member Name="mailbox" Value="2"/>
+            <Member Name="privateDL" Value="3"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
          <EnumType Name="recurrencePatternType">
             <Member Name="daily" Value="0"/>
             <Member Name="weekly" Value="1"/>
@@ -6221,6 +6228,8 @@
             <Member Name="azureResources" Value="2"/>
             <Member Name="entraGroups" Value="3"/>
             <Member Name="unknownFutureValue" Value="4"/>
+            <Member Name="applicationAuthorization" Value="5"/>
+            <Member Name="appRoles" Value="6"/>
          </EnumType>
          <EnumType Name="eligibilityScheduleFilterByCurrentUserOptions">
             <Member Name="principal" Value="1"/>
@@ -7871,6 +7880,13 @@
             <Member Name="all" Value="1"/>
             <Member Name="unknownFutureValue" Value="2"/>
          </EnumType>
+         <EnumType Name="meetingEngagementType">
+            <Member Name="reaction" Value="0"/>
+            <Member Name="hand" Value="1"/>
+            <Member Name="camera" Value="2"/>
+            <Member Name="microphone" Value="3"/>
+            <Member Name="unknownFutureValue" Value="4"/>
+         </EnumType>
          <EnumType Name="meetingLiveShareOptions">
             <Member Name="enabled" Value="0"/>
             <Member Name="disabled" Value="1"/>
@@ -8747,6 +8763,7 @@
          <ComplexType Name="optionalClaims">
             <Property Name="accessToken" Type="Collection(graph.optionalClaim)"/>
             <Property Name="idToken" Type="Collection(graph.optionalClaim)"/>
+            <Property Name="kerberosTicket" Type="Collection(graph.optionalClaim)"/>
             <Property Name="saml2Token" Type="Collection(graph.optionalClaim)"/>
          </ComplexType>
          <ComplexType Name="parentalControlSettings">
@@ -9382,6 +9399,7 @@
             <NavigationProperty Name="calendarView" Type="Collection(graph.event)" ContainsTarget="true"/>
             <NavigationProperty Name="contactFolders" Type="Collection(graph.contactFolder)" ContainsTarget="true"/>
             <NavigationProperty Name="contacts" Type="Collection(graph.contact)" ContainsTarget="true"/>
+            <NavigationProperty Name="distributionLists" Type="Collection(graph.distributionList)" ContainsTarget="true"/>
             <NavigationProperty Name="events" Type="Collection(graph.event)" ContainsTarget="true"/>
             <NavigationProperty Name="inferenceClassification" Type="graph.inferenceClassification" ContainsTarget="true"/>
             <NavigationProperty Name="mailFolders" Type="Collection(graph.mailFolder)" ContainsTarget="true"/>
@@ -9581,6 +9599,13 @@
             <NavigationProperty Name="extensions" Type="Collection(graph.extension)" ContainsTarget="true"/>
             <NavigationProperty Name="multiValueExtendedProperties" Type="Collection(graph.multiValueLegacyExtendedProperty)" ContainsTarget="true"/>
             <NavigationProperty Name="photo" Type="graph.profilePhoto" ContainsTarget="true"/>
+            <NavigationProperty Name="singleValueExtendedProperties" Type="Collection(graph.singleValueLegacyExtendedProperty)" ContainsTarget="true"/>
+         </EntityType>
+         <EntityType Name="distributionList" BaseType="graph.outlookItem">
+            <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="notes" Type="Edm.String"/>
+            <Property Name="personId" Type="Edm.String"/>
+            <NavigationProperty Name="members" Type="Collection(graph.distributionListMember)" ContainsTarget="true"/>
             <NavigationProperty Name="singleValueExtendedProperties" Type="Collection(graph.singleValueLegacyExtendedProperty)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="inferenceClassification" BaseType="graph.entity">
@@ -10495,6 +10520,12 @@
          <ComplexType Name="registrationEnforcement">
             <Property Name="authenticationMethodsRegistrationCampaign" Type="graph.authenticationMethodsRegistrationCampaign"/>
          </ComplexType>
+         <ComplexType Name="telecomProviderSettings">
+            <Property Name="appId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="isEvaluationModeEnabled" Type="Edm.Boolean" Nullable="false"/>
+            <Property Name="migrationPercentage" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="url" Type="Edm.String" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="updateAllowedCombinationsResult">
             <Property Name="additionalInformation" Type="Edm.String"/>
             <Property Name="conditionalAccessReferences" Type="Collection(Edm.String)"/>
@@ -10779,6 +10810,7 @@
             <NavigationProperty Name="includeTargets" Type="Collection(graph.authenticationMethodTarget)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="smsAuthenticationMethodConfiguration" BaseType="graph.authenticationMethodConfiguration">
+            <Property Name="telecomProviderSettings" Type="graph.telecomProviderSettings"/>
             <NavigationProperty Name="includeTargets" Type="Collection(graph.smsAuthenticationMethodTarget)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="smsAuthenticationMethodTarget" BaseType="graph.authenticationMethodTarget">
@@ -10803,6 +10835,7 @@
          </EntityType>
          <EntityType Name="voiceAuthenticationMethodConfiguration" BaseType="graph.authenticationMethodConfiguration">
             <Property Name="isOfficePhoneAllowed" Type="Edm.Boolean"/>
+            <Property Name="telecomProviderSettings" Type="graph.telecomProviderSettings"/>
             <NavigationProperty Name="includeTargets" Type="Collection(graph.authenticationMethodTarget)" ContainsTarget="true"/>
          </EntityType>
          <EntityType Name="x509CertificateAuthenticationMethodConfiguration" BaseType="graph.authenticationMethodConfiguration">
@@ -15888,6 +15921,12 @@
             <Property Name="recipientSuggestions" Type="Collection(graph.recipient)"/>
             <Property Name="totalMemberCount" Type="Edm.Int32"/>
          </ComplexType>
+         <ComplexType Name="member">
+            <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="key" Type="Edm.String"/>
+            <Property Name="memberId" Type="Edm.String"/>
+            <Property Name="type" Type="graph.recipientType" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="messageRuleActions">
             <Property Name="assignCategories" Type="Collection(Edm.String)"/>
             <Property Name="copyToFolder" Type="Edm.String"/>
@@ -16058,6 +16097,12 @@
             <NavigationProperty Name="inReplyTo" Type="graph.post" ContainsTarget="true"/>
             <NavigationProperty Name="multiValueExtendedProperties" Type="Collection(graph.multiValueLegacyExtendedProperty)" ContainsTarget="true"/>
             <NavigationProperty Name="singleValueExtendedProperties" Type="Collection(graph.singleValueLegacyExtendedProperty)" ContainsTarget="true"/>
+         </EntityType>
+         <EntityType Name="distributionListMember" BaseType="graph.entity">
+            <Property Name="displayName" Type="Edm.String"/>
+            <Property Name="memberId" Type="Edm.String"/>
+            <Property Name="type" Type="graph.recipientType" Nullable="false"/>
+            <NavigationProperty Name="contact" Type="graph.contact"/>
          </EntityType>
          <EntityType Name="eventMessage" BaseType="graph.message">
             <Property Name="endDateTime" Type="graph.dateTimeTimeZone"/>
@@ -21127,6 +21172,7 @@
          </ComplexType>
          <EntityType Name="roleManagementCustomCalloutExtension" BaseType="graph.customCalloutExtension">
             <Property Name="customAttributes" Type="Collection(Edm.String)"/>
+            <Property Name="isEnabled" Type="Edm.Boolean"/>
             <Property Name="resourceType" Type="graph.customExtensionResourceType" Nullable="false"/>
             <Property Name="type" Type="graph.customCalloutExtensionType" Nullable="false"/>
          </EntityType>
@@ -22161,6 +22207,11 @@
             <Property Name="serverMuted" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="sourceId" Type="Edm.String" Nullable="false"/>
          </ComplexType>
+         <ComplexType Name="meetingEngagement">
+            <Property Name="dateTime" Type="Edm.DateTimeOffset"/>
+            <Property Name="engagementSubType" Type="Edm.String"/>
+            <Property Name="engagementType" Type="graph.meetingEngagementType"/>
+         </ComplexType>
          <ComplexType Name="meetingParticipantInfo">
             <Property Name="identity" Type="graph.identitySet"/>
             <Property Name="role" Type="graph.onlineMeetingRole"/>
@@ -22301,6 +22352,7 @@
          <EntityType Name="attendanceRecord" BaseType="graph.entity">
             <Property Name="attendanceIntervals" Type="Collection(graph.attendanceInterval)"/>
             <Property Name="emailAddress" Type="Edm.String"/>
+            <Property Name="engagements" Type="Collection(graph.meetingEngagement)"/>
             <Property Name="externalRegistrationInformation" Type="graph.virtualEventExternalRegistrationInformation"/>
             <Property Name="identity" Type="graph.identity"/>
             <Property Name="registrationId" Type="Edm.String"/>
@@ -28111,6 +28163,16 @@
             <Parameter Name="ProposedNewTime" Type="graph.timeSlot"/>
             <Parameter Name="SendResponse" Type="Edm.Boolean"/>
             <Parameter Name="Comment" Type="Edm.String" Unicode="false"/>
+         </Action>
+         <Action Name="addMembers" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.distributionList"/>
+            <Parameter Name="Members" Type="Collection(graph.member)" Nullable="false"/>
+            <ReturnType Type="graph.distributionList"/>
+         </Action>
+         <Action Name="deleteMembers" IsBound="true">
+            <Parameter Name="bindingParameter" Type="graph.distributionList"/>
+            <Parameter Name="Members" Type="Collection(graph.member)" Nullable="false"/>
+            <ReturnType Type="graph.distributionList"/>
          </Action>
          <Action Name="copy" IsBound="true" EntitySetPath="bindingParameter">
             <Parameter Name="bindingParameter" Type="graph.mailFolder"/>

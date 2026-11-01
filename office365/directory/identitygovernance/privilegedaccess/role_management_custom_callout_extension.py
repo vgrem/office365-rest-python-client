@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from office365.directory.identitygovernance.custom_callout_extension_type import CustomCalloutExtensionType
 from office365.directory.identitygovernance.custom_extension_resource_type import CustomExtensionResourceType
 from office365.entity import Entity
@@ -29,3 +31,9 @@ class RoleManagementCustomCalloutExtension(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.RoleManagementCustomCalloutExtension"
+
+    @odata(name="isEnabled")
+    @property
+    def is_enabled(self) -> Optional[bool]:
+        """Gets the isEnabled property"""
+        return self.properties.get("isEnabled", None)
