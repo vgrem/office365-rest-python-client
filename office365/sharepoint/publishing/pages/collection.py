@@ -9,6 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.pages.metadata_collection import (
     SitePageMetadataCollection,
 )
@@ -25,6 +26,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
             resource_path = ResourcePath("SP.Publishing.SitePageCollection")
         super().__init__(context, SitePage, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def add(
         self,
         name: Optional[str] = None,
@@ -51,6 +53,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.add_child(return_type)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create_app_page(self, web_part_data: Optional[str] = None) -> ClientResult[str]:
         """Args:
         web_part_data (str):
@@ -61,6 +64,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_translations(self, source_item_id=None):
         """Args:
         source_item_id (str):
@@ -70,6 +74,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def is_site_page(self, url: str) -> ClientResult[bool]:
         """Indicates whether a specific item is a modern site page.
 
@@ -81,6 +86,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_page_column_state(self, url: str) -> ClientResult[int]:
         """Determines whether a specific SitePage is a single or multicolumn page.
 
@@ -131,6 +137,7 @@ class SitePageCollection(SitePageMetadataCollection[SitePage]):
             ServiceOperationPath("Templates", None, self.resource_path),
         )
 
+    @site_access(SiteLevel.MANAGE)
     def update_full_page_app(self, server_relative_url: str, web_part_data_as_json: str) -> Self:
         """Args:
         server_relative_url (str):

@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.spom365agentinsightsm365agentsonsitesdetails import (
@@ -28,6 +30,7 @@ class SPOM365AgentInsightsRestApiClient(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOM365AgentInsightsRestApiClient"
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def create_m365_agent_insights_report(self, report_period: int) -> ClientResult[SPOM365AgentInsightsReportMetadata]:
         """CreateM365AgentInsightsReport operation.
 
@@ -46,6 +49,7 @@ class SPOM365AgentInsightsRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_m365_agent_insights_reports_metadata(
         self,
     ) -> ClientResult[ClientValueCollection[SPOM365AgentInsightsReportMetadata]]:
@@ -59,6 +63,7 @@ class SPOM365AgentInsightsRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_m365_agent_insights_full_report_content(
         self, report_id: UUID, report_sub_type: str, is_full_details: bool
     ) -> ClientResult[str]:
@@ -84,6 +89,7 @@ class SPOM365AgentInsightsRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_m365_agents_on_sites_top_details(
         self, report_id: UUID, is_full_details: bool
     ) -> ClientResult[ClientValueCollection[SPOM365AgentInsightsM365AgentsOnSitesDetails]]:
@@ -111,6 +117,7 @@ class SPOM365AgentInsightsRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_distributions_top_details(
         self, report_id: UUID, is_full_details: bool
     ) -> ClientResult[ClientValueCollection[SPOM365AgentInsightsSiteDistributionDetails]]:
@@ -138,6 +145,7 @@ class SPOM365AgentInsightsRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_top20_agents_top_details(
         self, report_id: UUID, is_full_details: bool
     ) -> ClientResult[ClientValueCollection[SPOM365AgentInsightsTop20AgentsDetails]]:

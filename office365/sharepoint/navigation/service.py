@@ -16,6 +16,7 @@ from office365.sharepoint.navigation.home_site_navigation_settings import (
 from office365.sharepoint.navigation.menu.state import MenuState
 from office365.sharepoint.navigation.provider_type import NavigationProviderType
 from office365.sharepoint.navigation.publishing_navigation_provider_type import PublishingNavigationProviderType
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -31,6 +32,7 @@ class NavigationService(Entity):
             StaticPath("Microsoft.SharePoint.Navigation.REST.NavigationServiceRest"),
         )
 
+    @site_access(SiteLevel.READ)
     def get_publishing_navigation_provider_type(
         self,
         map_provider_name: NavigationProviderType = NavigationProviderType.SPNavigationProvider,
@@ -49,18 +51,21 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def global_nav(self) -> ClientResult[MenuState]:
         return_type = ClientResult(self.context, MenuState())
         qry = ServiceOperationQuery(self, "GlobalNav", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def global_nav_enabled(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "GlobalNavEnabled", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_global_nav_enabled(self, is_enabled: bool) -> Self:
         """
         Args:
@@ -70,6 +75,7 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def menu_node_key(self, current_url: str, map_provider_name: str | None = None) -> ClientResult[str]:
         """
         Returns the unique key for a node within the menu tree. If a key cannot be found, an exception is returned.
@@ -84,6 +90,7 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def menu_state(
         self,
         menu_node_key: str,
@@ -114,6 +121,7 @@ class NavigationService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def save_menu_state(self, menu_node_key: str, map_provider_name: NavigationProviderType) -> ClientResult[int]:
         """Updates the menu tree rooted at the specified root node for a given provider.
 

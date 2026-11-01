@@ -11,6 +11,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.lists.batch_convert_result import BatchConvertResult
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.lists.batch_convert_classic_wiki_page_input import (
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
 
 
 class SmartWikiLibraryUtility(Entity):
+    @site_access(SiteLevel.MANAGE)
     def batch_convert_classic_wiki_pages(
         self,
         source_list_id: str,
@@ -63,6 +65,7 @@ class SmartWikiLibraryUtility(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def ensure_smart_wiki_library_feature(self) -> Self:
         """EnsureSmartWikiLibraryFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureSmartWikiLibraryFeature", None, {}, None, None)
@@ -73,6 +76,7 @@ class SmartWikiLibraryUtility(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility"
 
+    @site_access(SiteLevel.READ)
     def get_skill_status(self, list_id: str) -> ClientResult[str]:
         """GetSkillStatus operation.
 
@@ -85,6 +89,7 @@ class SmartWikiLibraryUtility(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_skill_status(self, list_id: str, skill_status: str) -> Self:
         """SetSkillStatus operation.
 
@@ -100,6 +105,7 @@ class SmartWikiLibraryUtility(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def batch_convert_classic_wiki_pages_v2(
         self,
         source_list_id: str,
@@ -142,6 +148,7 @@ class SmartWikiLibraryUtility(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_file_metadata(self, list_id: str, item_id: str, metadata: SmartWikiMetadataUpdateParameters) -> Self:
         """SetFileMetadata operation.
 

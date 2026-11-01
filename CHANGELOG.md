@@ -630,6 +630,24 @@ introduced.
   external members; the two social following managers are one operation set worn twice, as the
   SharePoint and the REST spelling of the same user's followers; and every `MoveCopyUtil` entry
   is a write, because copying a file is still writing one. Debt 703 → 636.
+- **The fifteen owners at seven and six operations each.** 94 methods: the business-data
+  catalog of a site (7), the machine-learning model (7), the second navigation service (7),
+  the shared-with-me view (7), the directory session (6), the file version collection (6),
+  the related-item manager (6), the smart wiki library utility (6), the corporate catalog app
+  metadata (6), the microfeed store (6), the site page collection (6), the recycle bin item
+  collection (6), the tenant DDI adapter (6) and the two Copilot agent-insights clients (6
+  each). The interesting splits are the ones where "delete" is not one thing: emptying the
+  recycle bin, emptying its second stage and moving items there are `MANAGE`, while
+  `restore_all` is a `WRITE`; a site page's `add`, `create_app_page` and `update_full_page_app`
+  stop at `MANAGE`, as every other publishing writer does; and the wiki library's
+  `ensure_smart_wiki_library_feature` is the one `FULL_CONTROL`, because activating a feature
+  is a site-collection setting, beside two `MANAGE` batch conversions. The corporate catalog's
+  `deploy`, `remove`, `retract` and `upgrade` touch the tenant app catalog and name the
+  SharePoint Administrator role; `install` and `uninstall` act on a web and stop at `MANAGE`.
+  The tenant DDI adapter and both Copilot agent-insights clients are
+  `Microsoft.Online.SharePoint.TenantAdministration`, so all three carry the role, and their
+  report *creators* are `WRITE`. Debt 636 → 542, and the recycle-bin suite's last test derives
+  its precondition from the declaration.
 
 
 

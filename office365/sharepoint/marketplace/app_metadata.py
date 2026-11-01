@@ -2,9 +2,11 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class CorporateCatalogAppMetadata(Entity):
@@ -13,6 +15,7 @@ class CorporateCatalogAppMetadata(Entity):
     def __str__(self):
         return self.title or self.entity_type_name
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def deploy(self, skip_feature_deployment: bool) -> Self:
         """This method deploys an app on the app catalog.  It MUST be called in the context of the tenant app
         catalog web or it will fail.
@@ -25,6 +28,7 @@ class CorporateCatalogAppMetadata(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove(self) -> Self:
         """This is the inverse of the add step above. One removed from the app catalog,
         the solution can't be deployed."""
@@ -32,12 +36,14 @@ class CorporateCatalogAppMetadata(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def install(self) -> Self:
         """This method allows an app which is already deployed to be installed on a web."""
         qry = ServiceOperationQuery(self, "Install")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def uninstall(self) -> Self:
         """This method uninstalls an app from a web."""
         qry = ServiceOperationQuery(self, "Uninstall")
@@ -190,12 +196,14 @@ class CorporateCatalogAppMetadata(Entity):
         """Gets the ThumbnailUrl property"""
         return self.properties.get("ThumbnailUrl", None)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def retract(self) -> Self:
         """Retract operation."""
         qry = ServiceOperationQuery(self, "Retract", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def upgrade(self) -> Self:
         """Upgrade operation."""
         qry = ServiceOperationQuery(self, "Upgrade", None, {}, None, None)

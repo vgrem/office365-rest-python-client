@@ -11,6 +11,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.directory.users.user import User
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.directory.groups.namevalidationresult import (
@@ -29,6 +30,7 @@ class DirectorySession(Entity):
     def me(self) -> User:
         return self.properties.get("Me", User(self.context, ResourcePath("Me", self.resource_path)))
 
+    @site_access(SiteLevel.READ)
     def get_graph_user(self, principal_name: str) -> User:
         """Args:
         principal_name (str):
@@ -38,6 +40,7 @@ class DirectorySession(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_sharepoint_data_for_user(self, user_id: str) -> User:
         return_type = User(self.context)
         qry = ServiceOperationQuery(self, "GetSharePointDataForUser", [user_id], None, None, return_type)
@@ -48,6 +51,7 @@ class DirectorySession(Entity):
     def entity_type_name(self):
         return "SP.Directory.DirectorySession"
 
+    @site_access(SiteLevel.READ)
     def get_consumer_user_test(self, property_name: str, property_value: str) -> ClientResult[StringCollection]:
         """GetConsumerUserTest operation.
 
@@ -62,6 +66,7 @@ class DirectorySession(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_user_portal_url(self, mail: str) -> ClientResult[str]:
         """GetUserPortalUrl operation.
 
@@ -74,6 +79,7 @@ class DirectorySession(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def join_group(self, group_id: UUID) -> ClientResult[int]:
         """JoinGroup operation.
 
@@ -86,6 +92,7 @@ class DirectorySession(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def validate_group_name(self, display_name: str, alias: str) -> ClientResult[GroupNameValidationResult]:
         """ValidateGroupName operation.
 

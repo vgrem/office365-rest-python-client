@@ -16,6 +16,7 @@ from office365.sharepoint.contentcenter.machinelearning.modelpublishconfig impor
     SPModelPublishConfig,
 )
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPMachineLearningModel(Entity):
@@ -223,6 +224,7 @@ class SPMachineLearningModel(Entity):
         """Gets the UniqueId property"""
         return self.properties.get("UniqueId", None)
 
+    @site_access(SiteLevel.WRITE)
     def add_model_dependency(self, model_id: str, update_existing: bool) -> Self:
         """AddModelDependency operation.
 
@@ -236,12 +238,14 @@ class SPMachineLearningModel(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def remove_model_dependency(self, model_id: str) -> Self:
         """RemoveModelDependency operation.
 
@@ -252,6 +256,7 @@ class SPMachineLearningModel(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_as_model_author(self) -> ClientResult[bool]:
         """SetAsModelAuthor operation."""
         return_type = ClientResult(self.context, bool())
@@ -259,6 +264,7 @@ class SPMachineLearningModel(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def update_model_settings(self, model_settings: str) -> Self:
         """UpdateModelSettings operation.
 
@@ -269,6 +275,7 @@ class SPMachineLearningModel(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_model_type_specific_settings(self, settings: dict) -> Self:
         """UpdateModelTypeSpecificSettings operation.
 
@@ -285,6 +292,7 @@ class SPMachineLearningModel(Entity):
         """Gets the ID property"""
         return self.properties.get("ID", None)
 
+    @site_access(SiteLevel.READ)
     def invoke_connector_query(self) -> ClientResult[bytes]:
         """InvokeConnectorQuery operation."""
         return_type = ClientResult(self.context, bytes())

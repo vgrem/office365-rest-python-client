@@ -73,6 +73,7 @@ class TestSharePointRecycleBin(SPTestCase):
         items = self.client.web.get_recycle_bin_items().execute_query()
         self.assertIsInstance(items, RecycleBinItemCollection)
 
+    @requires_call(RecycleBinItemCollection.delete_all, flow="application")
     def test_06_clear_recycle_bin(self):
         """Clear all items from the site recycle bin."""
         self.client.site.recycle_bin.delete_all().execute_query()

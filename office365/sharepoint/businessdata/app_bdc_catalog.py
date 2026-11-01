@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AppBdcCatalog(Entity):
@@ -12,6 +13,7 @@ class AppBdcCatalog(Entity):
     types provisioned by the application.
     """
 
+    @site_access(SiteLevel.READ)
     def get_permissible_connections(self) -> ClientResult[StringCollection]:
         """
         Gets the list of external connections that the application has permissions to use.
@@ -25,6 +27,7 @@ class AppBdcCatalog(Entity):
     def entity_type_name(self):
         return "SP.BusinessData.AppBdcCatalog"
 
+    @site_access(SiteLevel.READ)
     def get_connection_id(self, lob_system_name: str, lob_system_instance_name: str) -> ClientResult[str]:
         """GetConnectionId operation.
 
@@ -44,6 +47,7 @@ class AppBdcCatalog(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_lob_system_instance_property(
         self, lob_system_name: str, lob_system_instance_name: str, property_name: str
     ) -> ClientResult[str]:
@@ -70,6 +74,7 @@ class AppBdcCatalog(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_lob_system_property(self, lob_system_name: str, property_name: str) -> ClientResult[str]:
         """GetLobSystemProperty operation.
 
@@ -89,6 +94,7 @@ class AppBdcCatalog(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_connection_id(self, lob_system_name: str, lob_system_instance_name: str, connection_id: str) -> Self:
         """SetConnectionId operation.
 
@@ -112,6 +118,7 @@ class AppBdcCatalog(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_lob_system_instance_property(
         self, lob_system_name: str, lob_system_instance_name: str, property_name: str, property_value: str
     ) -> Self:
@@ -139,6 +146,7 @@ class AppBdcCatalog(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_lob_system_property(self, lob_system_name: str, property_name: str, property_value: str) -> Self:
         """SetLobSystemProperty operation.
 

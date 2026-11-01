@@ -1,6 +1,8 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class DDIAdapter(Entity):
@@ -8,6 +10,7 @@ class DDIAdapter(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdmin.MiddleTier.DDIAdapter"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_list(self, schema: str, workflow: str, stream: bytes) -> ClientResult[str]:
         """GetList operation.
 
@@ -23,6 +26,7 @@ class DDIAdapter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_object(self, schema: str, workflow: str, stream: bytes) -> ClientResult[str]:
         """GetObject operation.
 
@@ -38,6 +42,7 @@ class DDIAdapter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def multi_object_execute(self, schema: str, workflow: str, stream: bytes) -> ClientResult[str]:
         """MultiObjectExecute operation.
 
@@ -58,6 +63,7 @@ class DDIAdapter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def new_object(self, schema: str, workflow: str, stream: bytes) -> ClientResult[str]:
         """NewObject operation.
 
@@ -73,6 +79,7 @@ class DDIAdapter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def remove_objects(self, schema: str, workflow: str, stream: bytes) -> ClientResult[str]:
         """RemoveObjects operation.
 
@@ -88,6 +95,7 @@ class DDIAdapter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def set_object(self, schema: str, workflow: str, stream: bytes) -> ClientResult[str]:
         """SetObject operation.
 

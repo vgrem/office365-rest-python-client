@@ -4,6 +4,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.versions.version import FileVersion
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FileVersionCollection(EntityCollection[FileVersion]):
@@ -23,12 +24,14 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         """Gets the file version with the specified Label."""
         return self.single(f"VersionLabel eq '{label}'")
 
+    @site_access(SiteLevel.WRITE)
     def delete_all(self) -> Self:  # type: ignore[reportIncompatibleMethodOverride]
         """Deletes all the file version objects in the collection."""
         qry = ServiceOperationQuery(self, "DeleteAll")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_by_id(self, vid: int) -> Self:
         """Removes the file version object with the specified integer ID from the collection.
 
@@ -39,6 +42,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_by_label(self, label: str) -> Self:
         """Deletes the file version object with the specified version label.
 
@@ -49,6 +53,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def recycle_by_id(self, vid: int) -> Self:
         """Recycles a file version objects in the collection by version identifier.
 
@@ -59,6 +64,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def recycle_by_label(self, label: str) -> Self:
         """Recycles the file version object with the specified version label.
 
@@ -69,6 +75,7 @@ class FileVersionCollection(EntityCollection[FileVersion]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def restore_by_label(self, label: str) -> Self:
         """Restores the file version object that has the specified version label.
 

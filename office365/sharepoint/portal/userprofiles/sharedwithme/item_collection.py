@@ -9,6 +9,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -18,6 +19,7 @@ class SharedWithMeItemCollection(Entity):
     """"""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_shared_with_me_external_items(context, top: int) -> ClientResult[str]:
         """Args:
         context (office365.sharepoint.client_context.ClientContext): Client context
@@ -37,6 +39,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_shared_with_me_items(context, top, skip_token=None, include_sharing_history=None):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): Client context
@@ -63,6 +66,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_calendar_events(context: ClientContext) -> ClientResult[str]:
         """GetCalendarEvents operation."""
         from office365.sharepoint.portal.userprofiles.sharedwithme.item_collection import (
@@ -75,6 +79,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_from_shared_with_me(
         context: ClientContext, spo_ids: str, item_ids: list[str], working_set_ids: list[str]
     ) -> ClientResult[str]:
@@ -110,6 +115,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_items_from_shared_with_me_view_by_path(
         context: ClientContext, item_paths: ClientValueCollection[ResourcePath]
     ) -> ClientResult[StringCollection]:
@@ -137,6 +143,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def restore_items_from_shared_with_me_view_by_path(
         context: ClientContext, item_paths: ClientValueCollection[ResourcePath]
     ) -> ClientResult[StringCollection]:
@@ -164,6 +171,7 @@ class SharedWithMeItemCollection(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def restore_to_shared_with_me(
         context: ClientContext, spo_ids: str, item_ids: list[str], working_set_ids: list[str]
     ) -> ClientResult[str]:

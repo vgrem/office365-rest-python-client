@@ -3,6 +3,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MicrofeedStore(Entity):
@@ -10,6 +11,7 @@ class MicrofeedStore(Entity):
     def entity_type_name(self) -> str:
         return "SP.Microfeed.MicrofeedStore"
 
+    @site_access(SiteLevel.WRITE)
     def add_data(self, name: str, data: bytes) -> Self:
         """AddData operation.
 
@@ -21,6 +23,7 @@ class MicrofeedStore(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def add_data_as_stream(self, name: str, data: bytes) -> Self:
         """AddDataAsStream operation.
 
@@ -32,12 +35,14 @@ class MicrofeedStore(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def execute_pending_operations(self) -> Self:
         """ExecutePendingOperations operation."""
         qry = ServiceOperationQuery(self, "ExecutePendingOperations", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_social_properties(self, account_name: str) -> ClientResult[str]:
         """GetSocialProperties operation.
 
@@ -49,6 +54,7 @@ class MicrofeedStore(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def increment_unread_at_mention_count(self, account_name: str) -> Self:
         """IncrementUnreadAtMentionCount operation.
 
@@ -61,6 +67,7 @@ class MicrofeedStore(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_post_like_status(self, account_name: str, post_id: str, like: bool) -> Self:
         """SetPostLikeStatus operation.
 

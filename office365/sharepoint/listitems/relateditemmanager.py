@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 class RelatedItemManager(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_single_link(
         context: ClientContext,
         source_list_name: str,
@@ -65,6 +67,7 @@ class RelatedItemManager(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_single_link_from_url(
         context: ClientContext,
         source_item_url: str,
@@ -103,6 +106,7 @@ class RelatedItemManager(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_single_link_to_url(
         context: ClientContext,
         source_list_name: str,
@@ -141,6 +145,7 @@ class RelatedItemManager(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def delete_single_link(
         context: ClientContext,
         source_list_name: str,
@@ -191,6 +196,7 @@ class RelatedItemManager(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_page_one_related_items(
         context: ClientContext, source_list_name: str, source_item_id: int
     ) -> ClientResult[ClientValueCollection[RelatedItem]]:
@@ -213,6 +219,7 @@ class RelatedItemManager(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_related_items(
         context: ClientContext, source_list_name: str, source_item_id: int
     ) -> ClientResult[ClientValueCollection[RelatedItem]]:
