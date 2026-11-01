@@ -81,9 +81,9 @@ def _options(tmp_path: Path, *, graph: bool, namespace: str, kinds: list[str], p
     )
 
 
-def _run(options: GeneratorOptions, reader: type, tmp_path: Path, *, force: bool = False) -> None:
+def _run(options: GeneratorOptions, reader: type, tmp_path: Path, *, force: bool = False, **partial) -> None:
     model = reader(options.metadata_path).read()
-    GeneratorPipeline(model, options, base_dir=tmp_path, force=force, smoke=False).run()
+    GeneratorPipeline(model, options, base_dir=tmp_path, force=force, smoke=False, **partial).run()
 
 
 def _source(tmp_path: Path, name: str) -> str:
@@ -211,3 +211,36 @@ def test_a_computed_member_is_generated_read_only(tmp_path: Path) -> None:
     assert '@odata(name="subject")' in entity
     # A computed navigation keeps both facts: $expand reaches it, a write does not.
     assert '@odata(name="owner", navigation=True, readonly=True)' in entity
+
+
+def test_a_partial_run_does_not_record_the_model_as_up_to_date(tmp_path: Path) -> None:
+    """`--type` and `--update-only` leave files a full run would create.
+
+    Their signature is indistinguishable from a full run's (neither flag reaches
+    ``run_signature``), so a manifest saved by one of them would answer the next
+    plain run with "nothing to do" -- for work that was never done.
+    """
+    metadata = tmp_path / "metadata.xml"
+    metadata.write_text(_V3_CSDL, encoding="utf-8")
+    options = _options(tmp_path, graph=False, namespace="SP", kinds=["EntityType"], prefix="SP")
+    _run(options, ODataV3Reader, tmp_path)
+
+    # The metadata gains a property and a type the partial run will not touch.
+    metadata.write_text(
+        _V3_CSDL.replace(
+            '<Property Name="Title"', '<Property Name="Note" Type="Edm.String" />\n        <Property Name="Title"'
+        ).replace(
+            "      </EntityType>\n      <FunctionImport",
+            '      </EntityType>\n      <EntityType Name="Gadget">\n'
+            '        <Key><PropertyRef Name="Id" /></Key>\n'
+            '        <Property Name="Id" Type="Edm.String" Nullable="false" />\n'
+            "      </EntityType>\n      <FunctionImport",
+        ),
+        encoding="utf-8",
+    )
+
+    _run(options, ODataV3Reader, tmp_path, force=True, only_types=["SP.Widget"])
+    assert not (tmp_path / "office365" / "gadget.py").exists()
+
+    _run(options, ODataV3Reader, tmp_path)
+    assert (tmp_path / "office365" / "gadget.py").exists()

@@ -114,13 +114,25 @@ class GeneratorPipeline:
         self._reporter.metadata_changes(changes)
         if not self._options.dry_run:
             self._verifier.verify(planned)
-            Manifest(
-                manifest_path(self._metadata_path, self._base_dir),
-                metadata_fingerprint(self._metadata_path),
-                current_members,
-                run_signature(self._options),
-            ).save()
+            if self._covers_whole_model:
+                Manifest(
+                    manifest_path(self._metadata_path, self._base_dir),
+                    metadata_fingerprint(self._metadata_path),
+                    current_members,
+                    run_signature(self._options),
+                ).save()
         self._reporter.write(planned, unrouted, changes)
+
+    @property
+    def _covers_whole_model(self) -> bool:
+        """True when this pass wrote everything a full run would have written.
+
+        A partial pass (``--type``, ``--update-only``) leaves files a full run
+        would create, yet its signature is indistinguishable from one -- those
+        flags never reach :func:`run_signature`. Recording such a run would tell
+        the next plain run there is nothing to do, so only full passes record.
+        """
+        return not (self._requested_types or self._update_only)
 
     def _can_skip(self) -> bool:
         """True when a previous successful run already covered this exact input."""
