@@ -369,6 +369,12 @@ not name; it holds the ones this library declares.
 Use `@require_permission(..., resource=ResourceName.SharePoint)` directly when a call
 needs a name outside that ladder, such as `TermStore.Read.All` or `Sites.Selected`.
 
+Some endpoints exist for one flow only. Graph documents its tenant-wide message exports
+(`chats/getAllMessages`, `teams/getAllMessages`, `channels/getAllMessages`) for application
+tokens, and rejects a delegated one whatever scopes it holds — so those declare `application=`
+alone. Nothing is invented for the other column: `declared(method, flow="delegated")` raises
+and names the method instead of answering a grant that would never satisfy it.
+
 A name is worth checking before it reaches a tenant. `office365.permissions.catalog()`
 answers what an API publishes — `publishes(name, kind)`,
 `requires_admin_consent(name, kind)`, and the names themselves — from a committed

@@ -2,6 +2,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -61,6 +62,11 @@ class UserTeamwork(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["TeamsActivity.Send"],
+        application=["TeamsActivity.Send"],
+        notes="Send an activity feed notification to a user",
+    )
     def send_activity_notification(self, topic, activity_type, chain_id: int, preview_text, template_parameters=None):
         """Send an activity feed notification in the scope of a team. For more details about sending notifications
         and the requirements for doing so, see sending Teams activity notifications.

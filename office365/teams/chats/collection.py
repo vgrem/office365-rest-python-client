@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Optional, Union
 
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.teams.chats.chat import Chat
@@ -16,6 +17,11 @@ class ChatCollection(EntityCollection[Chat]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Chat, resource_path)
 
+    @require_permission(
+        delegated=["Chat.Create", "Chat.ReadWrite"],
+        application=["Chat.Create"],
+        notes="Create a chat, or return the one-on-one chat that already exists",
+    )
     def add(
         self,
         chat_type: Union[str, ChatType],
@@ -54,6 +60,9 @@ class ChatCollection(EntityCollection[Chat]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        application=["Teamwork.Migrate.All"], notes="Export every chat message in the tenant; application tokens only"
+    )
     def get_all_messages(self) -> ChatMessageCollection:
         """Export every chat message visible to the collection scope.
 

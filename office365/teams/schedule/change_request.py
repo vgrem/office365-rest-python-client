@@ -5,6 +5,7 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
@@ -15,6 +16,11 @@ from office365.teams.schedule.changestate import ScheduleChangeState
 class ScheduleChangeRequest(ChangeTrackedEntity):
     """"""
 
+    @require_permission(
+        delegated=["Schedule.ReadWrite.All"],
+        application=["Schedule.ReadWrite.All"],
+        notes="Approve a schedule change request",
+    )
     def approve(self, message: str) -> Self:
         """Approve an ScheduleChangeRequest object.
 
@@ -25,6 +31,11 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Schedule.ReadWrite.All"],
+        application=["Schedule.ReadWrite.All"],
+        notes="Decline a schedule change request",
+    )
     def decline(self, message: str) -> Self:
         """Args:
         message (str): A custom approval message.

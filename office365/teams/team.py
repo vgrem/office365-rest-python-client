@@ -10,6 +10,7 @@ from office365.directory.permissions.grants.resource_specific import ResourceSpe
 from office365.directory.profile_photo import ProfilePhoto
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.limits import limit
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
@@ -273,6 +274,11 @@ class Team(Entity):
         """Gets the photo property"""
         return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
+    @require_permission(
+        delegated=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        notes="Archive a team",
+    )
     def archive(self) -> Self:
         """Archive the specified team. When a team is archived, users can no longer send or like messages on any
         channel in the team, edit the team's name, description, or other settings, or in general make most changes to
@@ -281,6 +287,11 @@ class Team(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        notes="Restore an archived team",
+    )
     def unarchive(self) -> Self:
         """Restore an archived team. This restores users' ability to send messages and edit the team, abiding by
         tenant and team settings."""
@@ -288,6 +299,11 @@ class Team(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Team.Create", "Group.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Team.Create", "Group.ReadWrite.All", "Directory.ReadWrite.All"],
+        notes="Clone a team; the copy is provisioned asynchronously",
+    )
     def clone(
         self,
         mail_nickname: str,
@@ -335,6 +351,11 @@ class Team(Entity):
         self.context.add_query(qry).after_execute(_handle_response, include_response=True)
         return return_type
 
+    @require_permission(
+        delegated=["Team.Create", "Group.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Team.Create", "Group.ReadWrite.All", "Directory.ReadWrite.All"],
+        notes="Clone a team, poll the operation and read the clone",
+    )
     def clone_and_wait(
         self,
         mail_nickname: str,
@@ -389,6 +410,11 @@ class Team(Entity):
         self.context.add_query(qry).after_execute(_handle_response, include_response=True)
         return return_type
 
+    @require_permission(
+        delegated=["TeamsActivity.Send"],
+        application=["TeamsActivity.Send"],
+        notes="Send an activity feed notification in the scope of a team",
+    )
     def send_activity_notification(
         self,
         topic: TeamworkActivityTopic,

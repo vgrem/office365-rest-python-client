@@ -6,6 +6,7 @@ from typing import Any
 import requests
 
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -21,6 +22,11 @@ class ChannelCollection(EntityCollection[Channel]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Channel, resource_path)
 
+    @require_permission(
+        delegated=["Channel.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Channel.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        notes="Create a channel; shared and private ones are provisioned asynchronously",
+    )
     def add(
         self,
         display_name: str,
@@ -86,6 +92,10 @@ class ChannelCollection(EntityCollection[Channel]):
         self.context.add_query(qry).after_execute(_handle_response, include_response=True)
         return return_type
 
+    @require_permission(
+        application=["ChannelMessage.Read.All"],
+        notes="Export every channel message in the tenant; application tokens only",
+    )
     def get_all_messages(self) -> ChatMessageCollection:
         """
         Retrieve messages across all channels in a team, including text, audio, and video conversations.

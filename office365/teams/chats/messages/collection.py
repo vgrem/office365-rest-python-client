@@ -6,6 +6,7 @@ from pathlib import Path
 from typing_extensions import Self
 
 from office365.delta_collection import DeltaCollection
+from office365.permissions import require_permission
 from office365.teams.chats.messages.body import ChatMessageBody
 from office365.teams.chats.messages.message import ChatMessage
 
@@ -19,6 +20,11 @@ class ChatMessageCollection(DeltaCollection[ChatMessage]):
     def add(self, content: str) -> ChatMessage:
         return super().add(body=ChatMessageBody(content=content))
 
+    @require_permission(
+        delegated=["Chat.Read", "ChannelMessage.Read.All"],
+        application=["ChatMessage.Read.All", "ChannelMessage.Read.All"],
+        notes="Download the inline images the loaded messages carry, one hosted-content read each",
+    )
     def download_hosted_contents(self, target_dir: str | os.PathLike) -> Self:
         """Download inline images (hosted contents) of the loaded messages.
 

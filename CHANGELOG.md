@@ -442,6 +442,19 @@ introduced.
   alternative — they are reached from `ClientContext` and create site collections. Debt
   1,469 → 1,183, and 1,474 → 1,188 undeclared operations including the 25 the duplicate module
   had been contributing.
+- **Teams declares its whole surface.** All 21 operations that put a Teams request on the wire
+  now name what Microsoft Graph documents for the endpoint — 15 writes and 6 reads across
+  `Team`/`TeamCollection`, `Channel`/`ChannelCollection`, `ChatCollection`, conversation
+  members, chat hosted content, schedule change requests and the two activity-feed senders —
+  and `teams` leaves the ratchet map with nothing undeclared, as `outlook` did. The name sets
+  are the any-of sets Graph publishes (`Team.Create`, `Directory.ReadWrite.All`,
+  `Group.ReadWrite.All` for a team; `TeamSettings.ReadWrite.All` and its two alternatives for
+  archive), which are the same sets the suites already wrote by hand in `@requires_delegated`;
+  the harvest moved that knowledge onto the methods. Those test markers stay as they are: each
+  also carries `bypass_roles` for the tenant's administrator roles, and a role is a live-run
+  escape hatch rather than a grant, so it belongs in the test and not in the declaration.
+  Three endpoints — the three `getAllMessages` exports — are application-only, so they declare
+  `application=` and no delegated column at all.
 
 ### Changed
 

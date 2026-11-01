@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.directory.groups.collection import GroupCollection
 from office365.directory.groups.group import Group
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
@@ -86,6 +87,10 @@ class TeamCollection(EntityCollection[Team]):
         group.after_execute(_populate)
         return return_type
 
+    @require_permission(
+        application=["Teamwork.Migrate.All"],
+        notes="Export every channel message across all teams; application tokens only",
+    )
     def get_all_messages(self) -> ChatMessageCollection:
         """Export every channel message across all teams (``GET /teams/getAllMessages``).
 
@@ -128,6 +133,11 @@ class TeamCollection(EntityCollection[Team]):
             ]
         return payload
 
+    @require_permission(
+        delegated=["Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        notes="Create a team; the service answers 202 and the provisioning is polled separately",
+    )
     def create(
         self,
         display_name: str,
@@ -163,6 +173,11 @@ class TeamCollection(EntityCollection[Team]):
         self.context.add_query(qry).after_execute(_handle_response, include_response=True)
         return return_type
 
+    @require_permission(
+        delegated=["Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Team.Create", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        notes="Create a team, poll the operation and read the finished team",
+    )
     def create_and_wait(
         self,
         display_name: str,

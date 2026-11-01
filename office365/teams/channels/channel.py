@@ -7,6 +7,7 @@ from urllib.parse import quote
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.driveitems.driveItem import DriveItem
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
@@ -34,6 +35,11 @@ class Channel(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @require_permission(
+        delegated=["Channel.ReadBasic.All", "ChannelMember.Read.All"],
+        application=["Channel.ReadBasic.All", "ChannelMember.Read.All"],
+        notes="Ask whether a user may open a shared channel",
+    )
     def does_user_have_access(
         self,
         user_id: str | None = None,
@@ -60,6 +66,11 @@ class Channel(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["ChannelSettings.ReadWrite.All"],
+        application=["ChannelSettings.ReadWrite.All"],
+        notes="Give a channel an email address",
+    )
     def provision_email(self) -> ClientResult[ProvisionChannelEmailResult]:
         """
         Provision an email address for a channel.
@@ -76,6 +87,11 @@ class Channel(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["ChannelSettings.ReadWrite.All"],
+        application=["ChannelSettings.ReadWrite.All"],
+        notes="Remove a channel's email address",
+    )
     def remove_email(self):
         """
         Remove the email address of a channel.

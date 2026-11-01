@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.types.collections import StringCollection
@@ -20,6 +21,11 @@ class ConversationMemberCollection(EntityCollection[ConversationMember]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, ConversationMember, resource_path)
 
+    @require_permission(
+        delegated=["TeamMember.ReadWrite.All", "ChannelMember.ReadWrite.All", "Chat.ReadWrite"],
+        application=["TeamMember.ReadWrite.All", "ChannelMember.ReadWrite.All", "ChatMember.ReadWrite.All"],
+        notes="Add a member to a team, a channel or a chat - the same collection serves all three",
+    )
     def add(
         self,
         user: str | User,

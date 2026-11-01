@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import AnyStr
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
@@ -17,6 +18,11 @@ class ChatMessageHostedContent(Entity):
         """The media type of the hosted content (e.g. ``image/png``)."""
         return self.properties.get("contentType")
 
+    @require_permission(
+        delegated=["Chat.Read", "ChannelMessage.Read.All"],
+        application=["ChatMessage.Read.All", "ChannelMessage.Read.All"],
+        notes="Download the hosted content bytes",
+    )
     def get_content(self) -> ClientResult[AnyStr]:
         """Download the hosted content bytes (``.../hostedContents/{id}/$value``)."""
         return_type = ClientResult[AnyStr](self.context)
