@@ -40,9 +40,12 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
+      # `--offline` is not a convenience here. The IDE switch (`OFFICE365_LIVE=1` in `.env`)
+      # makes a plain `pytest` a live sweep of a real tenant, and a push gate that depends on
+      # one is a gate that takes hours and fails for reasons the commit cannot fix.
       - id: pytest
         name: pytest
-        entry: uv run pytest
+        entry: uv run pytest --offline
         language: system
         pass_filenames: false
         stages: [pre-push]
