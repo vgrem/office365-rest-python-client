@@ -906,6 +906,15 @@ introduced.
 
 **Runtime**
 
+- **The two retention feeds reject every query option they are offered.** A bare `GET
+  security/triggerTypes/retentionEventTypes` is refused by Exchange's data-insights
+  service before any option matters, and the same request with `$top`, `$skip`,
+  `$orderby`, `$filter`, `$select` or `$count` answers 400 *"Query option 'Top' is not
+  allowed. To allow it, set the 'AllowedQueryOptions' property on
+  EnableQueryAttribute"* — an ASP.NET knob no client can turn. Both collections now
+  declare the refusal with `@query_capabilities(...)`, so `.top(...)` and `.filter(...)`
+  raise `QueryOptionNotSupportedError` with the documented reason instead of spending a
+  round trip on a validation error that reads like a client bug.
 - **The library imports on Python 3.11 again.** `TypeSchema` gave five `Mapping` fields
 a `mappingproxy` instance as their dataclass default; 3.11 rejects an unhashable
 default at class creation — 3.12 relaxed the check back to `list`/`dict`/`set` — so

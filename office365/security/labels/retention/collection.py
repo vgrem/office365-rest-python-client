@@ -5,6 +5,7 @@ from office365.permissions import require_permission
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.query_capabilities import query_capabilities
 from office365.security.labels.retention.actionafterretentionperiod import (
     ActionAfterRetentionPeriod,
 )
@@ -18,7 +19,14 @@ from office365.security.labels.retention.duration import RetentionDuration
 from office365.security.labels.retention.label import RetentionLabel
 from office365.security.labels.retention.trigger import RetentionTrigger
 
+_DOC = "https://learn.microsoft.com/en-us/graph/api/security-labels-list-retentionlabels"
 
+
+@query_capabilities(
+    unsupported={"top", "skip", "order_by", "filter", "select"},
+    doc=_DOC,
+    note="the retention feed rejects every standard query option",
+)
 class RetentionLabelCollection(EntityCollection[RetentionLabel]):
     """"""
 

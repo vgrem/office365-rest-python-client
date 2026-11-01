@@ -594,6 +594,10 @@ class Report:
         that satisfies a whole requirement rides at the end of its first line, where it is
         the alternative to everything listed under it.
         """
+        if not rows:
+            # Everything is met, or everything met was collapsed to a count: a table with no
+            # rows is not an empty table, it is no table - the summary above already said so.
+            return []
         width = max(len(_flow(row)) for row in rows)
         hanging = " " * (11 + width + 2)
         lines = [f"  {'tests':>7}  {'flow':<{width}}  {heading if self.states else 'needs'}"]
