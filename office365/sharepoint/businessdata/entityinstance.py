@@ -3,6 +3,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class EntityInstance(Entity):
@@ -10,6 +11,7 @@ class EntityInstance(Entity):
     def entity_type_name(self) -> str:
         return "SP.BusinessData.Runtime.EntityInstance"
 
+    @site_access(SiteLevel.WRITE)
     def create_collection_instance(self, field_dot_notation: str, size: int) -> Self:
         """CreateCollectionInstance operation.
 
@@ -23,6 +25,7 @@ class EntityInstance(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def create_instance(self, field_instance_dot_notation: str, field_dot_notation: str) -> Self:
         """CreateInstance operation.
 
@@ -41,6 +44,7 @@ class EntityInstance(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def from_xml(self, xml: str) -> Self:
         """FromXml operation.
 
@@ -51,6 +55,7 @@ class EntityInstance(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def to_xml(self) -> ClientResult[str]:
         """ToXml operation."""
         return_type = ClientResult(self.context, str())

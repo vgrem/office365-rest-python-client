@@ -9,6 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.viva.announcementstate import AnnouncementState
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class EmployeeExperienceController(Entity):
+    @site_access(SiteLevel.READ)
     def dashboard(
         self, form_factor: str, dashboard_id: str, my_site_url: str
     ) -> ClientResult[ClientValueCollection[DashboardContent]]:
@@ -36,6 +38,7 @@ class EmployeeExperienceController(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_announcements_state(self, my_site_url: str) -> ClientResult[ClientValueCollection[AnnouncementState]]:
         """GetAnnouncementsState operation.
 
@@ -50,6 +53,7 @@ class EmployeeExperienceController(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_dashboard(
         self, employee_experience_dashboard_data: DashboardContent, user_cards: str, my_site_url: str
     ) -> Self:
@@ -78,6 +82,7 @@ class EmployeeExperienceController(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_announcement_state(
         self, announcement_states: ClientValueCollection[AnnouncementState], my_site_url: str
     ) -> Self:

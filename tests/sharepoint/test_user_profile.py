@@ -9,6 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.userprofiles.my_site_links import MySiteLinks
 from office365.sharepoint.userprofiles.people_manager import PeopleManager
+from office365.sharepoint.userprofiles.profile_loader import ProfileLoader
 from office365.sharepoint.userprofiles.user_profile import UserProfile
 from office365.sharepoint.webparts.tile_data import TileData
 
@@ -42,6 +43,7 @@ class TestUserProfile(SPTestCase):
     #    up = ProfileLoader.get_owner_user_profile(self.my_client).execute_query()
     #    self.assertIsNotNone(up.resource_path)
 
+    @requires_call(ProfileLoader.get_user_profile, flow="delegated")
     def test_01_get_profile_loader(self):
         """Get the user profile loader."""
         user_profile = self.my_client.profile_loader.get_user_profile().execute_query()

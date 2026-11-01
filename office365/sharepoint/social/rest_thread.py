@@ -11,6 +11,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.social.thread import SocialThread
 
 if TYPE_CHECKING:
@@ -30,6 +31,7 @@ class SocialRestThread(Entity):
             self._resource_path = StaticPath("SP.Social.SocialRestThread")
         return self._resource_path
 
+    @site_access(SiteLevel.WRITE)
     def like(self, post_id: str) -> Self:
         """The Like method makes the current user a liker of the specified post.
 
@@ -41,6 +43,7 @@ class SocialRestThread(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def unlike(self, post_id: str) -> Self:
         """The Unlike method removes the current user from the list of likers for the specified post.
         If the current is not a liker of the post, this method has no effect.
@@ -75,6 +78,7 @@ class SocialRestThread(Entity):
         """Gets the ID property"""
         return self.properties.get("ID", None)
 
+    @site_access(SiteLevel.WRITE)
     def delete(self, id_: str) -> Self:
         """Delete operation.
 
@@ -86,6 +90,7 @@ class SocialRestThread(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def likers(self, id_: str) -> ClientResult[ClientValueCollection[SocialActor]]:
         """Likers operation.
 

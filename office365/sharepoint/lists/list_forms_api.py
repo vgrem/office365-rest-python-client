@@ -6,12 +6,14 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
 
 
 class ListFormsAPI(Entity):
+    @site_access(SiteLevel.READ)
     def get_form_schema(self, container_guid: str, form_id: str, sharing_url: str) -> ClientResult[str]:
         """GetFormSchema operation.
 
@@ -35,6 +37,7 @@ class ListFormsAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_form_schema_from_sharing_url(self, sharing_url: str) -> ClientResult[str]:
         """GetFormSchemaFromSharingUrl operation.
 
@@ -49,6 +52,7 @@ class ListFormsAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def submit_list_form(
         self,
         container_guid: str,
@@ -84,6 +88,7 @@ class ListFormsAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def submit_list_form_from_sharing_url(
         self, sharing_url: str, form_values: ClientValueCollection[ListItemFormUpdateValue]
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:

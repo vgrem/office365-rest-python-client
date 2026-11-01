@@ -2,12 +2,14 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.sites.communication.creation_request import CommunicationSiteCreationRequest
 from office365.sharepoint.publishing.sites.communication.creation_response import CommunicationSiteCreationResponse
 
@@ -15,6 +17,7 @@ from office365.sharepoint.publishing.sites.communication.creation_response impor
 class CommunicationSite(Entity):
     """Represents a Communication Site."""
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create(
         self, title: str, site_url: str, description: Optional[str] = None
     ) -> ClientResult[CommunicationSiteCreationResponse]:
@@ -41,6 +44,7 @@ class CommunicationSite(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_status(self, site_url: str) -> ClientResult[CommunicationSiteCreationResponse]:
         """
         Retrieves the status of creation of a Communication site.
@@ -69,6 +73,7 @@ class CommunicationSite(Entity):
         self.context.add_query(qry).before_execute(_construct_request)
         return response
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def enable(self, design_package_id) -> Self:
         qry = ServiceOperationQuery(self, "Enable", None, {"designPackageId": design_package_id})
         self.context.add_query(qry)
@@ -78,6 +83,7 @@ class CommunicationSite(Entity):
     def entity_type_name(self):
         return "SP.Publishing.CommunicationSite"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def status(self, url: str) -> ClientResult[CommunicationSiteCreationResponse]:
         """Status operation.
 

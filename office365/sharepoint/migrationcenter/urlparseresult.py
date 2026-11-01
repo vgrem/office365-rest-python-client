@@ -3,11 +3,13 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.migrationcenter.listinformation import SPListInformation
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class UrlParseResult(Entity):
@@ -129,6 +131,7 @@ class UrlParseResult(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Common.UrlParseResult"
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def set_display_url(self, display_url: str) -> Self:
         """SetDisplayUrl operation.
 
@@ -139,6 +142,7 @@ class UrlParseResult(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def set_sp_list_information(self, sp_list_information_list: ClientValueCollection[SPListInformation]) -> Self:
         """SetSPListInformation operation.
 
@@ -151,6 +155,7 @@ class UrlParseResult(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def set_sp_list_information_single(self, sp_list_information: SPListInformation) -> Self:
         """SetSPListInformationSingle operation.
 
@@ -163,6 +168,7 @@ class UrlParseResult(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def update_site_provision_information(
         self,
         sp_list_information: SPListInformation,

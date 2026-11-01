@@ -3,10 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
 if TYPE_CHECKING:
@@ -22,6 +24,7 @@ class DocumentCrawlLog(Entity):
         super().__init__(context, static_path)
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create(context: ClientContext) -> DocumentCrawlLog:
         """"""
         return_type = DocumentCrawlLog(context)
@@ -29,6 +32,7 @@ class DocumentCrawlLog(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_crawled_urls(self, get_count_only=False, max_rows=None, query_string=None, content_source_id=None):
         """Retrieves information about all the contents that were crawled.
 
@@ -50,6 +54,7 @@ class DocumentCrawlLog(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_unsuccesful_crawled_urls(self, display_url: Optional[str] = None) -> ClientResult[SimpleDataTable]:
         """Retrieves information about the contents that failed crawling.
 
@@ -66,6 +71,7 @@ class DocumentCrawlLog(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Administration.DocumentCrawlLog"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_unsuccesful_crawled_urls_for_ediscovery(
         self, display_url: str, start_date_time: datetime, end_date_time: datetime
     ) -> ClientResult[SimpleDataTable]:

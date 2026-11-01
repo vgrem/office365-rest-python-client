@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.rcd_categories_map import RcdCategoriesMap
 from office365.sharepoint.tenant.administration.rcd_category_detail_result import RcdCategoryDetailResult
 from office365.sharepoint.tenant.administration.rcd_group_definition import RcdGroupDefinition
@@ -14,6 +16,7 @@ from office365.sharepoint.tenant.administration.rcd_save_result import RcdSaveRe
 
 
 class CatalogManagementRestrictedContentDiscoveryCollection(Entity):
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_rcd_sites_to_csv(self, group_id: UUID, status_filter: str) -> ClientResult[str]:
         """ExportRcdSitesToCsv operation.
 
@@ -26,6 +29,7 @@ class CatalogManagementRestrictedContentDiscoveryCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_rcd_categories(self) -> ClientResult[RcdCategoriesMap]:
         """GetRcdCategories operation."""
         return_type = ClientResult(self.context, RcdCategoriesMap())
@@ -33,6 +37,7 @@ class CatalogManagementRestrictedContentDiscoveryCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_rcd_group_detail(self, group_id: UUID) -> ClientResult[RcdCategoryDetailResult]:
         """GetRcdGroupDetail operation.
 
@@ -44,6 +49,7 @@ class CatalogManagementRestrictedContentDiscoveryCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def save_rcd_categories(self, categories: ClientValueCollection[RcdGroupDefinition]) -> ClientResult[RcdSaveResult]:
         """SaveRcdCategories operation.
 

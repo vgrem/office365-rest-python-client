@@ -665,6 +665,25 @@ introduced.
   nowhere short of `FULL_CONTROL`, beside two `WRITE`s of the user's own settings. Debt
   542 → 462, and two more live tests derive their precondition - the sharing report and the
   personal-site provision.
+- **The twenty-two owners at four operations each.** 89 methods, and the tier's shape is
+  "one name per verb": `EntityInstance` reads two XML forms and writes the two that build an
+  instance; `FileCollection` writes the three that add a file and reads the published one;
+  `FavoriteListsSubstrate` and `SocialRestThread` read one and write three. Three answers are
+  worth recording. `FieldCollection`, `ViewFieldCollection` and `SiteVersionPolicyManager` are
+  entirely `MANAGE`, because a field, a view's columns and a document's version policy are all
+  list schema rather than content. `DocumentId` stops at `MANAGE` for its resets and reaches
+  `FULL_CONTROL` only to set the site prefix - a site-collection setting, not a library one.
+  `CommunicationSite` creates a site collection, so `create` and `enable` are
+  `FULL_CONTROL` beside the SharePoint Administrator role while the two status reads stay
+  `READ`. Four owners are tenant scope and name the role outright: the migration-center parse
+  result, the catalog management collection (four reads - exporting a catalogue's display
+  names does not write it), the restricted-content-discovery collection and the data-access
+  governability client. `ProfileLoader` reads three profiles and provisions personal sites in
+  bulk at `FULL_CONTROL`. `ActivityLogger` is four writes of telemetry, and
+  `ClientPeoplePickerWebServiceInterface` - both spellings - is five reads of the directory
+  from inside a site. Debt 462 → 373, and three more live tests derive their precondition:
+  the communication site that the suite then operates on, three view-field edits, and the
+  profile loader.
 
 
 

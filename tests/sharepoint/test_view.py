@@ -12,6 +12,7 @@ from office365.sharepoint.views.field_collection import ViewFieldCollection
 from office365.sharepoint.views.view import View
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -137,6 +138,7 @@ class TestView(SPTestCase):
         self.assertIsInstance(result.view_fields, ViewFieldCollection)
         TestView.view_fields_count = len(result.view_fields)
 
+    @requires_call(ViewFieldCollection.add_view_field, flow="application")
     def test_09_add_view_field(self):
         """Add a field to the target view."""
         target_view = TestView.target_view
@@ -152,6 +154,7 @@ class TestView(SPTestCase):
         after_view_fields = target_view.view_fields.get().execute_query()
         self.assertEqual(view_fields_count + 1, len(after_view_fields))
 
+    @requires_call(ViewFieldCollection.move_view_field_to, flow="application")
     def test_10_move_view_field_to(self):
         """Move a view field to a different position."""
         target_view = TestView.target_view
@@ -165,6 +168,7 @@ class TestView(SPTestCase):
         result = target_view.view_fields.get().execute_query()
         self.assertEqual(result[2], target_field.internal_name)
 
+    @requires_call(ViewFieldCollection.remove_view_field, flow="application")
     def test_11_remove_view_field(self):
         """Remove a field from the target view."""
         target_view = TestView.target_view

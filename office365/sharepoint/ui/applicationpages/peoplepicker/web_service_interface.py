@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.type import PrincipalType
 from office365.sharepoint.ui.applicationpages.peoplepicker.entity_information import (
     PickerEntityInformation,
@@ -24,6 +25,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
     """Specifies an interface that can be used to query principals."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_search_results_by_hierarchy(
         context: ClientContext,
         provider_id: Optional[str] = None,
@@ -54,6 +56,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def client_people_picker_resolve_user(context: ClientContext, query_string: str) -> ClientResult[str]:
         """Resolves the principals to a string of JSON representing users in people picker format.
 
@@ -77,6 +80,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def client_people_picker_search_user(
         context: ClientContext, query_string: str, maximum_entity_suggestions: int = 100
     ):
@@ -108,6 +112,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_picker_entity_information(context, email_address: str):
         """Gets information of the specified principal.
 
@@ -138,6 +143,7 @@ class ClientPeoplePickerWebServiceInterface(Entity):
 
 class PeoplePickerWebServiceInterface(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_search_results(
         context,
         search_pattern,

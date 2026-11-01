@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.structuralnavigationcachestate import StructuralNavigationCacheState
 
 
@@ -12,6 +13,7 @@ class StructuralNavigationCacheWrapper(Entity):
     def entity_type_name(self):
         return "SP.Publishing.Navigation.StructuralNavigationCacheWrapper"
 
+    @site_access(SiteLevel.MANAGE)
     def set_site_state(self, state: StructuralNavigationCacheState) -> Self:
         """SetSiteState operation.
 
@@ -22,6 +24,7 @@ class StructuralNavigationCacheWrapper(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_web_state(self, state: StructuralNavigationCacheState) -> Self:
         """SetWebState operation.
 
@@ -32,6 +35,7 @@ class StructuralNavigationCacheWrapper(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def site_state(self) -> ClientResult[StructuralNavigationCacheState]:
         """SiteState operation."""
         return_type = ClientResult(self.context, StructuralNavigationCacheState())
@@ -39,6 +43,7 @@ class StructuralNavigationCacheWrapper(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def web_state(self) -> ClientResult[StructuralNavigationCacheState]:
         """WebState operation."""
         return_type = ClientResult(self.context, StructuralNavigationCacheState())

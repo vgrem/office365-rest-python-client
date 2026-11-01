@@ -7,6 +7,7 @@ from typing import ClassVar, Optional
 
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.publishing.sites.communication.site import CommunicationSite
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
@@ -35,6 +36,7 @@ class TestCommunicationSite(SPTestCase):
         )
         cls.client = ctx
 
+    @requires_call(CommunicationSite.create, flow="delegated")
     def test_01_create_site(self):
         """Create a new communication site."""
         site_alias = f"site{uuid.uuid4().hex}"

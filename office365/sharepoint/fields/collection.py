@@ -23,6 +23,7 @@ from office365.sharepoint.fields.user import FieldUser
 from office365.sharepoint.fields.xmlSchemaFieldCreationInformation import (
     XmlSchemaFieldCreationInformation,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.taxonomy.field import TaxonomyField
 from office365.sharepoint.taxonomy.sets.set import TermSet
 
@@ -363,6 +364,7 @@ class FieldCollection(EntityCollection[Field]):
         """Creates a text field that can contain multiple lines"""
         return self.add_field(FieldCreationInformation(title, FieldType.Note, description), FieldMultiLineText)
 
+    @site_access(SiteLevel.MANAGE)
     def add_dependent_lookup_field(self, display_name: str, primary_lookup_field_id: str, show_field: bool) -> Field:
         """Adds a secondary lookup field to a field collection (target).
         Args:
@@ -415,6 +417,7 @@ class FieldCollection(EntityCollection[Field]):
         payload = {"parameters": parameters}
         return ServiceOperationQuery(self, "AddField", None, payload, None, return_type)
 
+    @site_access(SiteLevel.MANAGE)
     def add_field(self, parameters: FieldCreationInformation, return_type: Union[type[T], T] = Field) -> T:
         """Adds a fields to the fields collection.
 
@@ -428,6 +431,7 @@ class FieldCollection(EntityCollection[Field]):
         self.context.add_query(self._build_add_field_query(parameters, field))
         return field
 
+    @site_access(SiteLevel.MANAGE)
     def create_taxonomy_field(
         self,
         name: str,
@@ -472,6 +476,7 @@ class FieldCollection(EntityCollection[Field]):
         payload = {"parameters": XmlSchemaFieldCreationInformation(schema_xml)}
         return ServiceOperationQuery(self, "CreateFieldAsXml", None, payload, None, return_type)
 
+    @site_access(SiteLevel.MANAGE)
     def create_field_as_xml(self, schema_xml: str, return_type: Union[type[T], T] = Field) -> T:
         """Creates a field based on the values defined in the parameters input parameter.
 

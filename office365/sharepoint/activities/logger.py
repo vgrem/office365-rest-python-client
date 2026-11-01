@@ -6,9 +6,11 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.logger.activityrequest import LogActivityRequest
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ActivityLogger(Entity):
+    @site_access(SiteLevel.WRITE)
     def log_activity(
         self, operation, list_id, list_item_unique_id, affected_resource_url, item_type, audit_creation_time, is_offline
     ):
@@ -38,6 +40,7 @@ class ActivityLogger(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Internal.ActivityLogger"
 
+    @site_access(SiteLevel.WRITE)
     def feedback_direct(
         self,
         operation: str,
@@ -75,6 +78,7 @@ class ActivityLogger(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def feedback_indirect(
         self,
         operation: str,
@@ -112,6 +116,7 @@ class ActivityLogger(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def log_activity_bulk(
         self,
         operation: str,

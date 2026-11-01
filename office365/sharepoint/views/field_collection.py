@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.fields.field import Field
@@ -50,6 +51,7 @@ class ViewFieldCollection(Entity):
         super().set_property(name, value, persist_changes)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def add_view_field(self, field: Union[str, Field]) -> Self:
         """Adds the field with the specified field internal name or display name to the collection.
 
@@ -72,6 +74,7 @@ class ViewFieldCollection(Entity):
             _add_view_field(field)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def move_view_field_to(self, field: Union[str, Field], index: int) -> Self:
         """Moves the field with the specified field internal name to the specified position in the collection
 
@@ -94,12 +97,14 @@ class ViewFieldCollection(Entity):
 
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_all_view_fields(self) -> Self:
         """Removes all the fields from the collection."""
         qry = ServiceOperationQuery(self, "RemoveAllViewFields")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_view_field(self, field: Union[str, Field]) -> Self:
         """Removes the field with the specified field internal name or display name from the collection.
 

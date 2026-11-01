@@ -9,6 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class InteropService(Entity):
@@ -22,6 +23,7 @@ class InteropService(Entity):
     def entity_type_name(self):
         return "SP.WorkflowServices.InteropService"
 
+    @site_access(SiteLevel.WRITE)
     def cancel_workflow(self, instance_id: UUID) -> Self:
         """CancelWorkflow operation.
 
@@ -32,6 +34,7 @@ class InteropService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def disable_events(self, list_id: UUID, item_guid: UUID) -> Self:
         """DisableEvents operation.
 
@@ -43,6 +46,7 @@ class InteropService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def enable_events(self, list_id: UUID, item_guid: UUID) -> Self:
         """EnableEvents operation.
 
@@ -54,6 +58,7 @@ class InteropService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_workflow(
         self, association_name: str, correlation_id: UUID, list_id: UUID, item_guid: UUID, workflow_parameters: dict
     ) -> ClientResult[str]:

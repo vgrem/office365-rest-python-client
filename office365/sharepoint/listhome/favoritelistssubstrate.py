@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 class FavoriteListsSubstrate(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_list(
         context: ClientContext, list_: FavoriteListHomeItem, content_source: str, query: str
     ) -> ClientResult[str]:
@@ -45,6 +47,7 @@ class FavoriteListsSubstrate(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_lists_by(context: ClientContext, site_id: str, list_id: str, page: int) -> ClientResult[str]:
         """GetListsBy operation.
 
@@ -66,6 +69,7 @@ class FavoriteListsSubstrate(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_list(context: ClientContext, site_id: str, list_id: str, web_id: str) -> None:
         """RemoveList operation.
 
@@ -93,6 +97,7 @@ class FavoriteListsSubstrate(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_list(context: ClientContext, list_: FavoriteListHomeItem) -> None:
         """UpdateList operation.
 

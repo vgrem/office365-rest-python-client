@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.insights.reportmetadata import (
@@ -22,6 +24,7 @@ class SPORestrictedContentDiscoverabilityClient(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.SPORestrictedContentDiscoverabilityClient"
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def create_restricted_content_discoverability_report(self) -> ClientResult[SPOInsightsReportMetadata]:
         """CreateRestrictedContentDiscoverabilityReport operation."""
         from office365.sharepoint.tenant.administration.insights.reportmetadata import (
@@ -33,6 +36,7 @@ class SPORestrictedContentDiscoverabilityClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_restricted_content_discoverability_reports(
         self,
     ) -> ClientResult[ClientValueCollection[SPOInsightsReportMetadata]]:
@@ -46,6 +50,7 @@ class SPORestrictedContentDiscoverabilityClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_restrict_content_org_wide_search_usage_insights_report_content(
         self, report_id: UUID
     ) -> ClientResult[ClientValueCollection[SPORestrictedContentDiscoverabilitySiteDetails]]:
@@ -71,6 +76,7 @@ class SPORestrictedContentDiscoverabilityClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_data_access_governance_insight_by_id(self, report_id: UUID) -> ClientResult[SPOInsightsReportMetadata]:
         """GetSPODataAccessGovernanceInsightById operation.
 

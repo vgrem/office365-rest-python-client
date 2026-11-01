@@ -19,6 +19,7 @@ from office365.sharepoint.files.creation_information import FileCreationInformat
 from office365.sharepoint.files.file import File
 from office365.sharepoint.files.publish.status import FileStatus
 from office365.sharepoint.pages.template_file_type import TemplateFileType
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits, ensure_within, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
@@ -62,6 +63,7 @@ class FileCollection(EntityCollection[File]):
     ) -> None:
         super().__init__(context, File, resource_path, parent)
 
+    @site_access(SiteLevel.READ)
     def get_published_file(self, base_file_path: str) -> FileStatus:
         """ """
         return_type = FileStatus(self.context)
@@ -245,6 +247,7 @@ class FileCollection(EntityCollection[File]):
         )
         return first
 
+    @site_access(SiteLevel.WRITE)
     def create_upload_session(
         self,
         file_or_path: IO | str,
@@ -402,6 +405,7 @@ class FileCollection(EntityCollection[File]):
         params = FileCreationInformation(Url=url, Overwrite=overwrite)
         return ServiceOperationQuery(self, "add", params.to_json(), content, None, return_type)  # type: ignore[arg-type]
 
+    @site_access(SiteLevel.WRITE)
     def add(self, url: str, content: Optional[bytes | str] = None, overwrite=False) -> File:
         """Adds a file to the collection based on provided file creation information. A reference to the SP.File that
         was added is returned.
@@ -417,6 +421,7 @@ class FileCollection(EntityCollection[File]):
         self.context.add_query(self._build_upload_query(return_type, url, content, overwrite))
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def add_template_file(self, url_of_file: str, template_file_type: TemplateFileType):
         """Adds a ghosted file to an existing list or document library.
 

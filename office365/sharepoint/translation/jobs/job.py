@@ -9,6 +9,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TranslationJob(Entity):
@@ -20,6 +21,7 @@ class TranslationJob(Entity):
         )
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def is_service_enabled(context: ClientContext, target_language: str) -> ClientResult[bool]:
         """Determines if translation to or from a given language is supported.
 
@@ -55,6 +57,7 @@ class TranslationJob(Entity):
         """Gets the OutputSaveBehavior property"""
         return self.properties.get("OutputSaveBehavior", None)
 
+    @site_access(SiteLevel.WRITE)
     def translate_file(self, input_file: str, output_file: str) -> ClientResult[str]:
         """TranslateFile operation.
 
@@ -69,6 +72,7 @@ class TranslationJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def translate_folder(self, input_folder: str, output_folder: str, recursion: bool) -> ClientResult[str]:
         """TranslateFolder operation.
 
@@ -89,6 +93,7 @@ class TranslationJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def translate_library(self, input_library: str, output_library: str) -> ClientResult[str]:
         """TranslateLibrary operation.
 

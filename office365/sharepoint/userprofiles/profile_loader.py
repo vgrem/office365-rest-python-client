@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.userprofiles.user_profile import UserProfile
 
 if TYPE_CHECKING:
@@ -24,6 +26,7 @@ class ProfileLoader(Entity):
         return self._resource_path
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_profile_loader(context: ClientContext) -> ProfileLoader:
         """
         The GetProfileLoader method returns a profile loader.
@@ -34,6 +37,7 @@ class ProfileLoader(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_owner_user_profile(context: ClientContext) -> UserProfile:
         """
         Gets the user profile for the Site owner.
@@ -51,6 +55,7 @@ class ProfileLoader(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_user_profile(self) -> UserProfile:
         """The GetUserProfile method returns the user profile for the current user."""
         result = UserProfile(self.context, ResourcePath("GetUserProfile", self.resource_path))
@@ -62,6 +67,7 @@ class ProfileLoader(Entity):
     def entity_type_name(self):
         return "SP.UserProfiles.ProfileLoader"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_personal_site_enqueue_bulk(self, email_ids: list[str]) -> ClientResult[StringCollection]:
         """CreatePersonalSiteEnqueueBulk operation.
 
