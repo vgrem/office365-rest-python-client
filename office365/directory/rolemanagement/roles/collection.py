@@ -56,13 +56,20 @@ class DirectoryRoleCollection(DeltaCollection[DirectoryRole]):
         Idempotent — if already activated, the server returns 409 Conflict.
         The caller can catch and ignore it.
 
+        A role the tenant has never activated is only reachable through its template, so a name
+        the directory publishes no template for cannot be activated at all: it fails here, by
+        name, rather than later against a role that does not exist.
+
         Args:
             role_name (str): The display name (e.g. 'Security Administrator')
+        Raises:
+            ValueError: If the directory publishes no role template with that display name
         """
 
         def _assign(templates: DirectoryRoleTemplateCollection) -> None:
             template: DirectoryRoleTemplate | None = next((t for t in templates if t.display_name == role_name), None)
-            assert template is not None and template.id is not None
+            if template is None or template.id is None:
+                raise ValueError(f"this directory publishes no role template named {role_name!r}")
             self.add(roleTemplateId=template.id)
 
         self.context.directory_role_templates.get().after_execute(_assign)

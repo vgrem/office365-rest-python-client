@@ -37,17 +37,19 @@ from tests.graph_case import GraphDelegatedTestCase
 # Common permission set for records management operations
 _RM_READ = ("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
 _RM_WRITE = ("RecordsManagement.ReadWrite.All",)
+# Entra publishes both of these as role templates. "Records Management" is not one: it is a
+# Purview portal role with no directory template, so it can be neither assigned through the
+# directory nor read back from it - naming it made the grant plan name an operation that
+# cannot succeed.
 _RM_ROLES = [
-    DirectoryRole.RecordsManagement,
     DirectoryRole.ComplianceAdministrator,
     DirectoryRole.ComplianceDataAdministrator,
 ]
-_RM_LICENSES = [
-    "SPE_E5",
-    "M365_E5",
-    "SPE_E5_COMPLIANCE",
-    "SPE_E5_INFORMATION_PROTECTION_COMPLIANCE",
-]
+# The capability, not the packaging: Records Management is a service plan, and the retail E5
+# SKUs are only the way it is usually bought. A tenant whose seats come from an E5 developer
+# pack carries the same plan, and naming the SKUs alone skipped these tests for a user who
+# could make every call.
+_RM_LICENSES = ["RECORDS_MANAGEMENT"]
 
 
 class TestRetentionEventTypes(GraphDelegatedTestCase):

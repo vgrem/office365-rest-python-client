@@ -23,6 +23,15 @@ class DirectoryRole(DirectoryObject):
     def __str__(self):
         return f"Name: {self.display_name}"
 
+    @property
+    def entity_type_name(self):
+        # A role is a ``directoryRole``, not the ``directoryObject`` it inherits from: activating one
+        # is a POST to ``directoryRoles``, and the base type name made the server answer
+        # "Invalid payload '@odata.type': 'microsoft.graph.directoryObject' is not a subtype of
+        # 'microsoft.graph.directoryRole'" - a message about the payload, for a call that had none
+        # of the caller's facts in it.
+        return "microsoft.graph.DirectoryRole"
+
     def add_member(self, user_principal_name: str) -> Self:
         """Add a user to this directory role by their user principal name.
 

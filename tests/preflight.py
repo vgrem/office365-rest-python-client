@@ -24,6 +24,7 @@ import importlib
 import json
 import sys
 import textwrap
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from inspect import getmembers, isfunction
@@ -32,6 +33,7 @@ from types import ModuleType
 from typing import Any
 from unittest import TestCase
 
+from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.graph_client import GraphClient
 from office365.permissions import FLOWS as PERMISSION_FLOWS
 from office365.permissions import ResourceName, catalog
@@ -167,8 +169,9 @@ class Grant:
 
     @property
     def grantable(self) -> bool:
-        """Whether this is a permission on the app at all - a directory role or a SKU is not."""
-        return self.flow in PERMISSION_FLOWS
+        """Whether this tool can write it: a permission is granted to the app, a role to the
+        test user, and a license is bought by whoever owns the tenant."""
+        return self.flow in PERMISSION_FLOWS or self.flow == ROLE
 
     def label(self) -> str:
         """The group's label, naming the resource when it is not the default one."""
@@ -217,7 +220,11 @@ def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> li
                 for name in group:
                     counts[name] = counts.get(name, 0) + 1
             candidates = {name: count for name, count in counts.items() if name in preferred} or counts
-            best = max(sorted(candidates), key=candidates.__getitem__)
+            # ``max`` keeps the first of equal candidates in iteration order, which is
+            # declaration order - so a tie is broken by what the suites named first, not by
+            # the alphabet. All three compliance roles cover these tests; the first named is
+            # the narrowest one the suite itself asked for.
+            best = max(candidates, key=candidates.__getitem__)
             chosen.append(best)
             remaining = [group for group in remaining if best not in group]
         plan.append(Grant(flow=label, resource=resource, names=tuple(chosen)))
@@ -230,11 +237,26 @@ def render_plan(plan: list[Grant]) -> str:
     return "\n".join(f"  {grant.label():<{width}} {', '.join(grant.names)}" for grant in plan)
 
 
-#: The requirement kinds a plan can name but not grant: a directory role is assigned to a
-#: person and a license is bought, so applying one would mean guessing who gets it.
+#: The requirement label a directory role carries, as ``Requirement.groups`` spells it.
+ROLE = "directory role"
+
+#: What a refused role assignment needs. Writing to ``directoryRoles`` is one of the few
+#: directory operations ``Directory.ReadWrite.All`` does not cover: it takes
+#: ``RoleManagement.ReadWrite.Directory``, which this app has never been consented for, so the
+#: refusal is the consent set talking and the portal is the shortest way around it.
+_ROLE_HINT = (
+    "(assigning a directory role needs RoleManagement.ReadWrite.Directory; the Entra portal assigns one without it)"
+)
+
+#: How long to wait for a role activated a moment ago to appear in the listing.
+_ROLE_READ_ATTEMPTS = 3
+_ROLE_READ_PAUSE = 1.0
+
+#: The requirement kinds a plan can name but not grant: a license is bought, not assigned, and
+#: this tool has no business choosing who pays for it. A directory role *is* granted - to the
+#: test user, which is who the suites sign in as.
 _MANUAL_HINT = {
-    "directory role": "assign it to the test user in the Entra portal (needs Entra ID P1/P2)",
-    "license": "buy seats, then assign the SKU to the test user",
+    "license": "buy seats, or assign an existing SKU to the test user",
 }
 
 
@@ -248,14 +270,15 @@ def _admin_client() -> GraphClient:
     return client
 
 
-def apply_plan(client: GraphClient, plan: list[Grant], app_id: str) -> tuple[list[str], list[str]]:
+def apply_plan(client: GraphClient, plan: list[Grant], app_id: str, upn: str = "") -> tuple[list[str], list[str]]:
     """Grant what ``plan`` asks for; return (done, failed) as human-readable lines.
 
     A grant already in place is reported rather than made twice, and one whose state cannot
     be read is attempted anyway: applying a grant is idempotent, so a missing read scope must
     not turn into a missing grant. A name the API does not publish is reported and not
     attempted - the directory would accept it, the token would never carry it, and the next
-    ``verify`` would call it met.
+    ``verify`` would call it met. A directory role goes to ``upn``, because a role is held by a
+    person and the suites sign in as one.
     """
     checks = {
         "delegated": client.has_delegated_permission,
@@ -272,6 +295,13 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str) -> tuple[lis
             continue
         for name in grant.names:
             entry = f"{grant.label()} {name}"
+            if grant.flow == ROLE:
+                held, reason = _grant_role(client, name, upn)
+                if held:
+                    done.append(entry)
+                else:
+                    failed.append(f"{entry}: {reason} {_ROLE_HINT}")
+                continue
             if not _published((name,), grant.flow, grant.resource):
                 failed.append(f"{entry}: {grant.resource} does not publish this name")
                 continue
@@ -290,6 +320,59 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str) -> tuple[lis
                 continue
             done.append(entry)
     return done, failed
+
+
+def _grant_role(client: GraphClient, name: str, upn: str) -> tuple[bool, str]:
+    """Assign a directory role to ``upn``; (held afterwards, why it is not).
+
+    ``directoryRoles`` lists only the roles the tenant has *activated*, so one nobody has ever
+    held is absent from it, with no members collection to add to. Activating first is what lets
+    the two steps be one operation - but activation is a *write*, so it can be refused, and a
+    refusal here used to be swallowed: the reader then reported the role as missing and the
+    cause was gone from the trace. Every refusal is now the answer.
+
+    A reason is a sentence, not an exception: this is a plan a person reads, and none of these
+    are bugs in the caller.
+    """
+    refused = ""
+    role = _active_role(client, name)
+    if role is None:
+        try:
+            client.directory_roles.assign(name).execute_query()
+        except ClientRequestException as exc:
+            refused = _first_line(exc)
+        role = _active_role(client, name)
+    if role is None:
+        return False, refused or f"the directory lists no role named {name!r}"
+    try:
+        role.add_member(upn).execute_query()
+    except ClientRequestException as exc:
+        return False, _first_line(exc)
+    held = role.members.get().execute_query()
+    if any(member.get_property("userPrincipalName") == upn for member in held):
+        return True, ""
+    return False, f"{upn} was not a member after the assignment"
+
+
+def _active_role(client: GraphClient, name: str) -> DirectoryRole | None:
+    """The activated role ``name``, waiting briefly for one just activated.
+
+    Activation is one request and the listing is another, and a directory that answers the
+    second before it has finished the first says "no such role" about a role that exists. A few
+    reads turn that race into a pause rather than a failure.
+    """
+    for attempt in range(_ROLE_READ_ATTEMPTS):
+        if attempt:
+            time.sleep(_ROLE_READ_PAUSE)
+        found = next((role for role in client.directory_roles.get().execute_query() if role.display_name == name), None)
+        if found is not None:
+            return found
+    return None
+
+
+def _first_line(exc: Exception) -> str:
+    """The first line of a server message - the rest is advice that names no name."""
+    return str(exc).splitlines()[0] or exc.__class__.__name__
 
 
 def _confirm(prompt: str) -> bool:
@@ -316,7 +399,7 @@ def grant_missing(found: list[Needs], *, yes: bool = False) -> int:
         print("Nothing granted.")
         return 0
 
-    done, failed = apply_plan(_admin_client(), plan, settings.client_id)
+    done, failed = apply_plan(_admin_client(), plan, settings.client_id, settings.username)
     for line in done:
         print(f"  granted: {line}")
     for line in failed:

@@ -36,9 +36,25 @@ from office365.runtime.client_request_exception import ClientRequestException
 
 @lru_cache(maxsize=1)
 def _cached_licenses(client: GraphClient) -> tuple[str, ...]:
-    """The signed-in user's license SKU part numbers (a delegated-token fact only)."""
-    details = client.me.license_details.get().execute_query()
-    return tuple(detail.get_property("skuPartNumber") for detail in details)
+    """The license names the signed-in user holds: SKU part numbers, and the plans inside them.
+
+    A SKU part number is packaging, not capability. ``DEVELOPERPACK_E5`` is a developer seat
+    that carries ``RECORDS_MANAGEMENT`` and ``PURVIEW_DISCOVERY``; a requirement that named only
+    the retail SKUs (``SPE_E5``, ``M365_E5``, ...) answered "not licensed" for a user who could
+    make the call, because the skip decision was built out of a label. Both spellings are
+    returned, so a declaration may name whichever one answers the question it asks - the plan
+    when the fact is a capability, the SKU when the fact is packaging. A plan the tenant has
+    not provisioned is not returned: it is not held yet.
+    """
+    names: list[str] = []
+    for detail in client.me.license_details.get().execute_query():
+        sku = detail.get_property("skuPartNumber")
+        if sku:
+            names.append(sku)
+        for plan in detail.service_plans:
+            if plan.servicePlanName and plan.provisioningStatus == "Success":
+                names.append(plan.servicePlanName)
+    return tuple(names)
 
 
 def forget_cached_tenant_facts() -> None:

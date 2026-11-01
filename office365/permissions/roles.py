@@ -40,7 +40,6 @@ class DirectoryRole(str, Enum):
     PrivilegedRoleAdministrator = "Privileged Role Administrator"
     ComplianceAdministrator = "Compliance Administrator"
     ComplianceDataAdministrator = "Compliance Data Administrator"
-    RecordsManagement = "Records Management"
 
     def __str__(self) -> str:
         return self.value

@@ -80,7 +80,10 @@ def requires_call(
             under this flow raises here rather than skipping for ever.
         bypass_roles: Directory roles - holding one satisfies the whole requirement.
         require_roles: Directory roles - one must be held.
-        require_licenses: SKU part numbers (e.g. ``SPE_E5``) - one must be held.
+        require_licenses: License names - one must be held. A SKU part number
+            (``SPE_E5``) answers "is this packaging assigned", a service plan name
+            (``RECORDS_MANAGEMENT``) answers "is this capability held"; name the one
+            the test actually depends on.
 
     The API resource is derived too, from the declarations: a test may not join a Graph call
     to a SharePoint one, because the same name is a different grant on each.
@@ -110,7 +113,10 @@ def requires_delegated(
         *scopes: Delegated (or application) permission names — any one suffices.
         bypass_roles: Directory roles — holding one satisfies the whole requirement.
         require_roles: Directory roles — one must be held.
-        require_licenses: SKU part numbers (e.g. ``SPE_E5``) — one must be held.
+        require_licenses: License names — one must be held. A SKU part number (``SPE_E5``)
+            answers "is this packaging assigned", a service plan name
+            (``RECORDS_MANAGEMENT``) answers "is this capability held"; name the one the
+            test actually depends on.
         resource: The API the scopes belong to, e.g. ``ResourceName.SharePoint``; a scope name
             is only granted, and only checkable, within the API that defines it.
     """

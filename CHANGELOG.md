@@ -819,6 +819,20 @@ introduced.
 
 **Model**
 
+- **Activating a directory role was refused for the type name in its own payload.**
+  `DirectoryRole` extends `DirectoryObject` and inherited the base `entity_type_name`, so the
+  `POST directoryRoles` every activation builds announced itself as
+  `#microsoft.graph.DirectoryObject` and the server answered "Invalid payload '@odata.type':
+  'microsoft.graph.directoryObject' is not a subtype of 'microsoft.graph.directoryRole'" — a
+  message about the payload, naming nothing the caller passed. It now says
+  `#microsoft.graph.DirectoryRole`. Nothing had ever activated a role, which is why the wrong
+  type could sit there unnoticed.
+- **`DirectoryRoleCollection.assign` failed with no subject.** Activating a role the tenant has
+  never held means posting the id of its template, and a name with no template left the lookup
+  `None` and asserted from inside a response listener — an `AssertionError` naming neither the
+  role nor the caller. It raises `ValueError("this directory publishes no role template named
+  ...")` instead. Found the hard way: `preflight --grant` planned `Records Management`, a Purview
+  portal role with no Entra template, and died on it.
 - **`Team.messaging_settings` read the guest settings.** The getter spelled
   `guestSettings` in its body, so a team that had messaging settings answered as if it
   had none, and writing it back put the guest settings on the wire under a name they
@@ -1031,6 +1045,14 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
 
 **Permissions**
 
+- **Three live suites were skipped for a licence the tenant already had.** They declared four
+  retail E5 SKU part numbers and nothing else, and a SKU part number is packaging rather than
+  capability: the test user's seat is `DEVELOPERPACK_E5`, a developer pack that carries
+  `RECORDS_MANAGEMENT` and `PURVIEW_DISCOVERY` (both `Success`), so the licence group answered
+  "not licensed" for a user who could make every call and 13 tests never ran. The licence fact
+  now reads `me/licenseDetails` for the SKU part number *and* the service plans inside it, and
+  the marker names the plan. Same rule as the catalog: declare the fact the call depends on, not
+  the label it is usually sold under.
 - **The preflight report dropped a whole flow instead of resolving it.** A requirement was
   looked up with a client built for the auth flow the suite uses, and `--verify` could build
   one only for the password and secret flows: every SharePoint suite signs in with the
