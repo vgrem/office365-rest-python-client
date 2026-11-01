@@ -11,6 +11,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.approvals.mediaserviceupdateparameters import (
@@ -36,6 +37,7 @@ class SPWorkflowTask(Entity):
     def entity_type_name(self) -> str:
         return "SP.Workflow.SPWorkflowTask"
 
+    @site_access(SiteLevel.WRITE)
     def break_role_inheritance(self, copy_role_assignments: bool, clear_subscopes: bool) -> Self:
         """BreakRoleInheritance operation.
 
@@ -56,12 +58,14 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def reset_role_inheritance(self) -> Self:
         """ResetRoleInheritance operation."""
         qry = ServiceOperationQuery(self, "ResetRoleInheritance", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def add_thumbnail_field_data(
         self, image_stream: bytes, image_name: str, field_internal_name: str, lock_id: str
     ) -> ClientResult[SPImageItem]:
@@ -96,6 +100,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def archive(self) -> ClientResult[str]:
         """Archive operation."""
         return_type = ClientResult(self.context, str())
@@ -103,6 +108,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete_with_parameters(self, parameters: ListItemDeleteParameters) -> Self:
         """DeleteWithParameters operation.
 
@@ -114,6 +120,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def do_entities_have_access_to_label(
         self, people_picker_input: str
     ) -> ClientResult[ClientValueCollection[LabelAccessControlData]]:
@@ -134,6 +141,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def folder_archive_progress(self) -> ClientResult[str]:
         """FolderArchiveProgress operation."""
         return_type = ClientResult(self.context, str())
@@ -141,6 +149,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def folder_unarchive_progress(self) -> ClientResult[str]:
         """FolderUnarchiveProgress operation."""
         return_type = ClientResult(self.context, str())
@@ -148,6 +157,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_user_effective_permissions(self, user_name: str) -> ClientResult[BasePermissions]:
         """GetUserEffectivePermissions operation.
 
@@ -162,6 +172,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_wopi_frame_url(self, action: int) -> ClientResult[str]:
         """GetWOPIFrameUrl operation.
 
@@ -174,6 +185,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def media_service_update(self, parameters: MediaServiceUpdateParameters) -> Self:
         """MediaServiceUpdate operation.
 
@@ -185,6 +197,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def media_service_update_v2(self, parameters: MediaServiceUpdateParameters, event_firing_enabled: bool) -> Self:
         """MediaServiceUpdateV2 operation.
 
@@ -205,6 +218,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def override_policy_tip(self, user_action: int, justification: str) -> ClientResult[int]:
         """OverridePolicyTip operation.
 
@@ -226,6 +240,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def parse_and_set_field_value(self, field_name: str, value: str) -> Self:
         """ParseAndSetFieldValue operation.
 
@@ -241,6 +256,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def recycle(self) -> ClientResult[UUID]:
         """Recycle operation."""
         return_type = ClientResult(self.context, UUID(int=0))
@@ -248,6 +264,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def recycle_with_parameters(self, parameters: ListItemDeleteParameters) -> ClientResult[UUID]:
         """RecycleWithParameters operation.
 
@@ -260,6 +277,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def render_list_item_data_as_stream(self, options: int) -> ClientResult[bytes]:
         """RenderListItemDataAsStream operation.
 
@@ -272,6 +290,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_comments_disabled(self, value: bool) -> Self:
         """SetCommentsDisabled operation.
 
@@ -283,6 +302,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag(
         self,
         compliance_tag: str,
@@ -326,6 +346,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_explicit_metas_update(
         self, compliance_tag: str, compliance_flags: int, compliance_tag_written_time: datetime, user_email_address: str
     ) -> Self:
@@ -357,6 +378,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_hold(self, compliance_tag: str) -> Self:
         """SetComplianceTagWithHold operation.
 
@@ -370,6 +392,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_meta_info(
         self,
         compliance_tag: str,
@@ -417,6 +440,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_no_hold(self, compliance_tag: str) -> Self:
         """SetComplianceTagWithNoHold operation.
 
@@ -430,6 +454,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_compliance_tag_with_record(self, compliance_tag: str) -> Self:
         """SetComplianceTagWithRecord operation.
 
@@ -443,12 +468,14 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def system_update(self) -> Self:
         """SystemUpdate operation."""
         qry = ServiceOperationQuery(self, "SystemUpdate", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def unarchive(self) -> ClientResult[str]:
         """Unarchive operation."""
         return_type = ClientResult(self.context, str())
@@ -456,6 +483,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def update_ex(self, parameters: ListItemUpdateParameters) -> Self:
         """UpdateEx operation.
 
@@ -467,12 +495,14 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_overwrite_version(self) -> Self:
         """UpdateOverwriteVersion operation."""
         qry = ServiceOperationQuery(self, "UpdateOverwriteVersion", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def validate_update_fetch_list_item(
         self,
         form_values: ClientValueCollection[ListItemFormUpdateValue],
@@ -523,6 +553,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def validate_update_fetch_list_item_in_folder(
         self,
         form_values: ClientValueCollection[ListItemFormUpdateValue],
@@ -569,6 +600,7 @@ class SPWorkflowTask(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def validate_update_list_item(
         self,
         form_values: ClientValueCollection[ListItemFormUpdateValue],

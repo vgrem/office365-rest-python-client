@@ -110,6 +110,13 @@ introduced.
   requirements are unchanged. Two readers that had assumed Graph are fixed: `guard`'s cached
   lookups used `resource` only as a cache key while querying Microsoft Graph, and
   `verify_permissions` hardcoded it.
+- `office365.sharepoint.workflow.task` is gone, with the second `SPWorkflowTask` it declared.
+  Its 25 operations were a strict subset of
+  `office365.sharepoint.workflow.sp_workflow_task.SPWorkflowTask`'s 32, and nothing in the
+  library, the tests or the examples imported either class — two classes wearing one metadata
+  name, which also made the declaration index count the same endpoints twice. The survivor is
+  the one that says what it is (`SP.Workflow.SPWorkflowTask`) rather than inheriting the
+  generic `SP.ListItem`; import from it.
 
 ### Added
 
@@ -419,6 +426,19 @@ introduced.
   is *unprovable*, which passes. Both directions hid the typo. `role=` still takes a plain
   string for a name the enum does not list, since Entra's catalogue is far larger than the
   six. The 444 SharePoint declarations that also need the role now use it.
+- **The six page kinds and the workflow task declare.** The publishing package is one
+  operation set worn six ways: `SitePage` (33 operations), `SitePage3D`, `RepostPage`,
+  `TopicSitePage` (23 each), `FeedVideoPage` (27) and `CampaignPublication` (46) all carry the
+  page actions, and all of them live inside the site collection, so they take a rung and no
+  directory role. 175 declarations, 25 reads and 150 writes, judged one name at a time: nine
+  operations that start with `Get` are POST service operations whose answer is data
+  (`AmplifyHistory`, `LoadMailDraft`, `SPSiteValidator`, the publishing statuses) and declare
+  `READ`, while the co-authoring calls (`StartCoAuth`, `SavePageCoAuth`, `ExtendSessionCoAuth`)
+  look like bookkeeping and declare `WRITE`, because each holds or commits a lock.
+  `SPWorkflowTask` adds 31 (6 reads, 25 writes): the three `ValidateUpdate*` calls persist the
+  item with the validation riding along, and the progress readers only report. Debt
+  1,469 → 1,238, and 1,474 → 1,243 undeclared operations including the 25 the duplicate module
+  had been contributing.
 
 ### Changed
 
