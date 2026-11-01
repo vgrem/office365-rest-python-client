@@ -11,6 +11,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.manager.baaa_request import BAAARequest
 from office365.sharepoint.sites.manager.baaa_response import BAAAResponse
 from office365.sharepoint.sites.manager.documents_data_source import DocumentsDataSource
@@ -31,6 +32,7 @@ class SiteManagerService(Entity):
             self._resource_path = StaticPath("Microsoft.SharePoint.SiteManager.SiteManagerService")
         return self._resource_path
 
+    @site_access(SiteLevel.READ)
     def top_files(self, max_count: Optional[int] = None) -> ClientResult[TopSiteFilesResult]:
         """ """
         return_type = ClientResult(self.context, TopSiteFilesResult())
@@ -43,6 +45,7 @@ class SiteManagerService(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.SiteManager.SiteManagerService"
 
+    @site_access(SiteLevel.MANAGE)
     def add_suggestion_items(self, suggestion_items: ClientValueCollection[SuggestionItem]) -> Self:
         """AddSuggestionItems operation.
 
@@ -53,6 +56,7 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def delete_suggestion_items_by_identifiers(self, card_type: int, identifiers: list[str]) -> Self:
         """DeleteSuggestionItemsByIdentifiers operation.
 
@@ -71,36 +75,42 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_missing_links_list_early_activate_feature(self) -> Self:
         """EnsureMissingLinksListEarlyActivateFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureMissingLinksListEarlyActivateFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_missing_links_list_feature(self) -> Self:
         """EnsureMissingLinksListFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureMissingLinksListFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_redirect_url_list_feature(self) -> Self:
         """EnsureRedirectUrlListFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureRedirectUrlListFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_retire_page_feature(self) -> Self:
         """EnsureRetirePageFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureRetirePageFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def ensure_suggestion_list_feature(self) -> Self:
         """EnsureSuggestionListFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureSuggestionListFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_dismissed_content_gap_suggestions(self) -> ClientResult[ClientValueCollection[SuggestionItem]]:
         """GetDismissedContentGapSuggestions operation."""
         return_type = ClientResult(self.context, ClientValueCollection[SuggestionItem]())
@@ -108,6 +118,7 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def inactive_documents(
         self, top: int, skip_token: str, last_access_days: int, data_sources: ClientValueCollection[DocumentsDataSource]
     ) -> ClientResult[InactiveDocumentsQueryResult]:
@@ -124,6 +135,7 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def log_missing_link(self, referrer_url: str, destination_url: str) -> Self:
         """LogMissingLink operation.
 
@@ -137,6 +149,7 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def perform_baaa(self, baaa_request: BAAARequest) -> ClientResult[BAAAResponse]:
         """PerformBAAA operation.
 
@@ -148,12 +161,14 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def remove_missing_links_list_early_activate_feature(self) -> Self:
         """RemoveMissingLinksListEarlyActivateFeature operation."""
         qry = ServiceOperationQuery(self, "RemoveMissingLinksListEarlyActivateFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def retirable_pages(
         self,
         top: int,
@@ -187,12 +202,14 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def retired_pages_view(self) -> Self:
         """RetiredPagesView operation."""
         qry = FunctionQuery(self, "RetiredPagesView", [], None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_site_manager_signals(self, signals: SiteManagerSignals) -> Self:
         """SetSiteManagerSignals operation.
 
@@ -203,6 +220,7 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def site_manager_signals(self) -> ClientResult[SiteManagerSignals]:
         """SiteManagerSignals operation."""
         return_type = ClientResult(self.context, SiteManagerSignals())
@@ -210,6 +228,7 @@ class SiteManagerService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def top_missing_links(self, max_count: int, snoozed_links: str) -> ClientResult[MissingLinksResult]:
         """TopMissingLinks operation.
 

@@ -6,6 +6,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
@@ -14,6 +15,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.compliance.tags.tag import ComplianceTag
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -28,6 +30,7 @@ class SPPolicyStoreProxy(Entity):
     """
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def check_site_is_deletable_by_id(
         context: ClientContext, site_id: str, return_type: Optional[ClientResult[bool]] = None
     ) -> ClientResult[bool]:
@@ -56,6 +59,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def is_site_deletable(
         context: ClientContext, site_url: str, return_type: Optional[ClientResult[bool]] = None
     ) -> ClientResult[bool]:
@@ -80,6 +84,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def get_available_tags_for_site(
         context: ClientContext,
         site_url: str,
@@ -109,6 +114,7 @@ class SPPolicyStoreProxy(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def get_dynamic_scope_binding_by_site_id(self, site_id: str) -> ClientResult[StringCollection]:
         """
         Gets dynamic scope bindings for a specific site by its ID.
@@ -130,6 +136,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def get_list_compliance_tag(
         context: ClientContext, list_url: str, return_type: Optional[ClientResult[ComplianceTag]] = None
     ) -> ClientResult[ComplianceTag]:
@@ -154,6 +161,7 @@ class SPPolicyStoreProxy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def register_site_hold_event_receiver(
         context: ClientContext, site_url: Optional[str] = None, site_id: Optional[str] = None
     ) -> SPPolicyStoreProxy:
@@ -179,6 +187,7 @@ class SPPolicyStoreProxy(Entity):
         return binding_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def set_list_compliance_tag(
         context: ClientContext,
         list_url: str,
@@ -201,6 +210,7 @@ class SPPolicyStoreProxy(Entity):
         return binding_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def lock_record_item(
         context: ClientContext,
         list_url: str,
@@ -256,6 +266,7 @@ class SPPolicyStoreProxy(Entity):
         """Gets the SupportContentTypeRetention property"""
         return self.properties.get("SupportContentTypeRetention", None)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def bulk_update_dynamic_scope_bindings(
         self, scopes_to_add: StringCollection, scopes_to_remove: StringCollection, site_id: str
     ) -> Self:
@@ -277,6 +288,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def extend_review_items_retention(
         self, item_ids: ClientValueCollection, extension_date: datetime
     ) -> ClientResult[ClientValueCollection[int]]:
@@ -298,6 +310,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def get_site_adaptive_policies(self, site_id: str) -> ClientResult[StringCollection]:
         """GetSiteAdaptivePolicies operation.
 
@@ -309,6 +322,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def get_site_adaptive_policies_v2(self, site_id: str) -> ClientResult[StringCollection]:
         """GetSiteAdaptivePoliciesV2 operation.
 
@@ -320,6 +334,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def mark_review_items_for_deletion(
         self, item_ids: ClientValueCollection
     ) -> ClientResult[ClientValueCollection[int]]:
@@ -333,6 +348,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.ComplianceAdministrator)
     def open_binary_stream_for_original_item(self, item_id: int) -> ClientResult[bytes]:
         """OpenBinaryStreamForOriginalItem operation.
 
@@ -346,6 +362,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def remove_container_retention_policy(self, site_id: str) -> Self:
         """RemoveContainerRetentionPolicy operation.
 
@@ -356,6 +373,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def remove_container_settings(self, external_id: StringCollection) -> Self:
         """RemoveContainerSettings operation.
 
@@ -366,6 +384,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def retag_review_items(
         self,
         item_ids: ClientValueCollection,
@@ -401,6 +420,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def retag_review_items_with_metas(
         self, item_ids: ClientValueCollection, new_tag_name: str, new_tag_metas: StringCollection
     ) -> ClientResult[ClientValueCollection[int]]:
@@ -423,6 +443,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def retag_unified_review_items_with_metas(
         self, item_ids: StringCollection, original_tag_name: str, new_tag_name: str, new_tag_metas: StringCollection
     ) -> ClientResult[StringCollection]:
@@ -451,6 +472,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def set_container_retention_policy(self, site_id: str, default_container_label: UUID) -> Self:
         """SetContainerRetentionPolicy operation.
 
@@ -469,6 +491,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def update_container_setting(self, site_id: str, external_id: str, setting_type: int, setting: str) -> Self:
         """UpdateContainerSetting operation.
 
@@ -489,6 +512,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def update_site_adaptive_policies(
         self, policies_to_add: StringCollection, policies_to_remove: StringCollection, site_id: str
     ) -> Self:
@@ -510,6 +534,7 @@ class SPPolicyStoreProxy(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.ComplianceAdministrator)
     def update_site_adaptive_policies_v2(
         self, policies_to_add: StringCollection, policies_to_remove: StringCollection, site_id: str
     ) -> Self:

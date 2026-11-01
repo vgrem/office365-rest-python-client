@@ -366,6 +366,13 @@ nobody holds, so the requirement is simply never met, and on a client that canno
 all it comes back *unprovable*, which passes. Pass a plain string only for a role the enum does
 not name; it holds the ones this library declares.
 
+A second role qualifies the other way round. The compliance policy store — retention labels,
+holds, adaptive scopes — is administered in Microsoft Purview even though the request goes to
+the site's own `_api/complianceStore`, so `SPPolicyStoreProxy` names
+`DirectoryRole.ComplianceAdministrator` and not the site administrator. The grant still
+satisfies the call on its own; the role is stated because it is the one an operator is likely
+to hold when the label work is theirs.
+
 Use `@require_permission(..., resource=ResourceName.SharePoint)` directly when a call
 needs a name outside that ladder, such as `TermStore.Read.All` or `Sites.Selected`.
 

@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.contentsolution.add_template_fields_request import (
@@ -34,6 +35,7 @@ class TemplateAPI(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.ContentSolution.API.TemplateAPI"
 
+    @site_access(SiteLevel.MANAGE)
     def add_fields(self, request: AddTemplateFieldsRequest) -> ClientResult[ClientValueCollection[DocumentField]]:
         """addFields operation.
 
@@ -48,12 +50,14 @@ class TemplateAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create_document(self) -> Self:
         """createDocument operation."""
         qry = ServiceOperationQuery(self, "createDocument", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def create_template(self, request: CreateTemplateRequest) -> ClientResult[Template]:
         """createTemplate operation.
 
@@ -68,6 +72,7 @@ class TemplateAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def create_template_using_stream(
         self,
         document_folder_id: int,
@@ -122,6 +127,7 @@ class TemplateAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_content_control_standard_content(
         self, template_id: UUID, fetch_conditionals_only: bool
     ) -> ClientResult[ClientValueCollection[ContentControlStdContent]]:
@@ -144,6 +150,7 @@ class TemplateAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_fields(self, template_id: UUID, version_type: int) -> ClientResult[ClientValueCollection[DocumentField]]:
         """getFields operation.
 
@@ -160,6 +167,7 @@ class TemplateAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_template(self, template_id: UUID) -> ClientResult[Template]:
         """getTemplate operation.
 
@@ -174,12 +182,14 @@ class TemplateAPI(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def publish_template(self) -> Self:
         """publishTemplate operation."""
         qry = ServiceOperationQuery(self, "publishTemplate", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def update_field(self, request: UpdateTemplateFieldRequest) -> ClientResult[DocumentField]:
         """updateField operation.
 

@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.home.spreference import SPHSiteReference
 
 if TYPE_CHECKING:
@@ -33,6 +35,7 @@ class SPHSite(Entity):
             resource_path = ResourcePath("SP.SPHSite")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def details(self) -> ClientResult[SPHSiteReference]:
         return_type = ClientResult(self.context, SPHSiteReference())
         qry = ServiceOperationQuery(self, "Details", None, None, None, return_type)
@@ -40,6 +43,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_comm_site(context, site_url, return_value=None):
         """Determines whether a site is a communication site
 
@@ -56,6 +60,7 @@ class SPHSite(Entity):
         return return_value
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_modern_site_with_horizontal_nav(context, site_url, return_type=None):
         """Determines whether a site is a modern site with horizontal navigation
 
@@ -80,6 +85,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_valid_home_site(context, site_url, return_value=None):
         """Determines whether a site is landing site for your intranet.
 
@@ -99,6 +105,7 @@ class SPHSite(Entity):
         return return_value
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def validate_home_site(context, site_url, validation_action_type):
         """Args:
         context (office365.sharepoint.client_context.ClientContext):
@@ -112,6 +119,7 @@ class SPHSite(Entity):
         return sph
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_as_home_site(
         context, site_url, viva_connections_default_start=None, return_value: ClientResult[str] | None = None
     ):
@@ -135,6 +143,7 @@ class SPHSite(Entity):
         context.add_query(qry)
         return return_value
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_home_site(
         self,
         site_url: str,
@@ -178,6 +187,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_org_news_site(context: ClientContext, site_url: str) -> ClientResult[UUID]:
         """AddOrgNewsSite operation.
 
@@ -195,6 +205,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_sp_home_nav_node(context: ClientContext, site_id: UUID) -> ClientResult[bool]:
         """AddSPHomeNavNode operation.
 
@@ -212,6 +223,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def assert_site_in_subscription(context: ClientContext, url: str, context_subscription_id: UUID) -> None:
         """AssertSiteInSubscription operation.
 
@@ -235,6 +247,7 @@ class SPHSite(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_reference_xgeo(context: ClientContext, site_url: str) -> ClientResult[PortalAndOrgNewsSiteReference]:
         """GetSiteReferenceXgeo operation.
 
@@ -255,6 +268,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_title_xgeo(context: ClientContext, site_url: str) -> ClientResult[str]:
         """GetSiteTitleXgeo operation.
 
@@ -272,6 +286,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sph_site_x_geo(context: ClientContext) -> ClientResult[SPHSiteReference]:
         """GetSPHSiteXGeo operation."""
         from office365.sharepoint.sites.home.site import SPHSite
@@ -283,6 +298,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_targeted_sites_details_current_user_can_edit_x_geo(
         context: ClientContext, site_ids: list[UUID], stop_redirect: bool
     ) -> ClientResult[ClientValueCollection[TargetedSiteDetails]]:
@@ -311,6 +327,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_xgeo_home_site_detail(
         context: ClientContext, site_id: UUID, site_url: str
     ) -> ClientResult[HomeSitesDetails]:
@@ -339,6 +356,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_dashboard_feature(context: ClientContext, site_url: str) -> None:
         """RemoveDashboardFeature operation.
 
@@ -353,6 +371,7 @@ class SPHSite(Entity):
         )
         context.add_query(qry)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_sph_site(
         self, site_url: str, viva_connections_default_start: bool, is_in_draft_mode: bool
     ) -> ClientResult[UUID]:
@@ -383,6 +402,7 @@ class SPHSite(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def validate_home_site_candidate(context: ClientContext, site_url: str) -> ClientResult[HomeSiteReference]:
         """ValidateHomeSiteCandidate operation.
 

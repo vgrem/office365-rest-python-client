@@ -10,6 +10,7 @@ from office365.sharepoint.sitedesigns.creation_info import SiteDesignCreationInf
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -19,6 +20,7 @@ class TestSiteDesign(SPTestCase):
     site_design_metadata: ClassVar[Optional[SiteDesignMetadata]] = None
     site_design_count: ClassVar[Optional[int]] = None
 
+    @requires_call(SiteScriptUtility.create_site_design, flow="application")
     def test_01_create(self):
         """Create a new site design."""
         info = SiteDesignCreationInfo(
@@ -31,6 +33,7 @@ class TestSiteDesign(SPTestCase):
         self.assertIsNotNone(result.value)
         TestSiteDesign.site_design_metadata = result.value
 
+    @requires_call(SiteScriptUtility.get_site_designs, flow="application")
     def test_02_list(self):
         """List existing site designs."""
         result = SiteScriptUtility.get_site_designs(self.client).execute_query()
@@ -38,6 +41,7 @@ class TestSiteDesign(SPTestCase):
         self.assertGreater(len(result.value), 0)
         TestSiteDesign.site_design_count = len(result.value)
 
+    @requires_call(SiteScriptUtility.delete_site_design, flow="application")
     def test_03_delete(self):
         """Delete the created site design."""
         site_design_metadata = TestSiteDesign.site_design_metadata

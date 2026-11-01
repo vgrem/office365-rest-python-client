@@ -531,6 +531,24 @@ introduced.
   request names nothing. `onedrive` leaves the ratchet map, the fifth package to do so, and 26
   live tests derive their precondition from the declaration instead of restating the scope by
   hand. Debt 1,461 → 1,399.
+- **Tenant configuration and compliance name their grants, and the policy store speaks for
+  Purview.** 126 methods across eight modules: `SPPolicyStoreProxy` (23 — 8 reads, 15 writes),
+  `SPHSite` (18), `SiteScriptUtility` (17) and the two copies of the data-governance insight
+  client (16 each) are tenant-scope, so they declare `FULL_CONTROL` for the writes and `READ`
+  for the readers with the SharePoint Administrator role beside them — the same reading the
+  administration surface got. Two owners do not reach that far: `SiteManagerService` (18 — 7
+  reads, 11 writes) answers for one site collection, so its eleven writers that activate
+  features and provision lists declare `MANAGE` rather than `FULL_CONTROL`, and the two
+  `TemplateAPI` (9 each) live in a content type hub, which is a site again. The policy store is
+  the exception: retention labels, holds and adaptive scopes are administered in Microsoft
+  Purview although the request goes to the site's own `_api/complianceStore`, so it names
+  `DirectoryRole.ComplianceAdministrator` — the first use of that member — as the role that
+  satisfies it. Two of the eight modules are duplicates nothing imports
+  (`contentcenter/template_api.py`, `tenant/administration/datagovernance/insight_client.py`).
+  They are declared anyway: the ratchet counts the code that is there, and a duplicate that
+  can still be called still asks the tenant for a grant. Debt 1,399 → 1,273, and six live tests
+  (the site design and site script suites) derive their precondition from the declaration
+  instead of running against whatever the tenant happens to allow.
 
 ### Changed
 

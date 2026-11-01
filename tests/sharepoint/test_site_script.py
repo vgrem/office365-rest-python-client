@@ -7,6 +7,7 @@ from typing import ClassVar, Optional
 from office365.sharepoint.sitescripts.metadata import SiteScriptMetadata
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -16,6 +17,7 @@ class TestSiteScript(SPTestCase):
     site_script_meta: ClassVar[Optional[SiteScriptMetadata]] = None
     site_script_count: ClassVar[Optional[int]] = None
 
+    @requires_call(SiteScriptUtility.create_site_script, flow="application")
     def test_01_create(self):
         """Create a new site script."""
         script = {
@@ -29,12 +31,14 @@ class TestSiteScript(SPTestCase):
         self.assertIsNotNone(result.value)
         TestSiteScript.site_script_meta = result.value
 
+    @requires_call(SiteScriptUtility.get_site_scripts, flow="application")
     def test_02_list_site_scripts(self):
         """List existing site scripts."""
         result = SiteScriptUtility.get_site_scripts(self.client).execute_query()
         self.assertIsNotNone(result.value)
         TestSiteScript.site_script_count = len(result.value)
 
+    @requires_call(SiteScriptUtility.delete_site_script, flow="application")
     def test_03_delete_site_script(self):
         """Delete the created site script."""
         site_script_meta = TestSiteScript.site_script_meta

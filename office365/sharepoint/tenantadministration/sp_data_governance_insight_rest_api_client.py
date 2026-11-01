@@ -3,11 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from typing_extensions import Self
 
 if TYPE_CHECKING:
@@ -36,6 +38,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceInsightRestApiClient"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_data_access_governance_report(
         self,
         report_entity: int,
@@ -100,6 +103,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_data_access_governance_report_v2(
         self,
         report_entity: int,
@@ -168,6 +172,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_data_access_governance_report_v3(
         self,
         report_entity: int,
@@ -236,6 +241,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_data_access_governance_report_v4(
         self, request: SPDataGovernanceInsightCreateParameters
     ) -> ClientResult[SPDataGovernanceInsightMetadata]:
@@ -256,6 +262,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def export_spo_data_access_governance_insight(self, report_id: UUID) -> ClientResult[str]:
         """ExportSPODataAccessGovernanceInsight operation.
 
@@ -270,6 +277,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def export_spo_data_access_governance_insight_v2(self, report_id: UUID) -> ClientResult[str]:
         """ExportSPODataAccessGovernanceInsightV2 operation.
 
@@ -284,6 +292,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def export_spo_data_access_governance_insight_v3(self, report_id: UUID) -> ClientResult[str]:
         """ExportSPODataAccessGovernanceInsightV3 operation.
 
@@ -298,6 +307,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_audit_data_collection_for_all_reports(
         self,
     ) -> ClientResult[ClientValueCollection[SPAuditDataCollectionResponse]]:
@@ -311,6 +321,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_audit_data_collection_for_report(
         self, report_entity: int
     ) -> ClientResult[ClientValueCollection[SPAuditDataCollectionResponse]]:
@@ -331,6 +342,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_data_access_governance_insight(
         self, report_entity: int, work_load: int
     ) -> ClientResult[ClientValueCollection[SPDataGovernanceInsightResponse]]:
@@ -358,6 +370,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_data_access_governance_insight_by_id(
         self, report_id: UUID
     ) -> ClientResult[SPDataGovernanceInsightResponse]:
@@ -378,6 +391,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_data_access_governance_insight_v2(
         self, report_entity: int
     ) -> ClientResult[ClientValueCollection[SPDataGovernanceInsightResponse]]:
@@ -398,6 +412,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_data_access_governance_insight_v3(
         self, request: SPDataGovernanceInsightQueryParameters
     ) -> ClientResult[ClientValueCollection[SPDataGovernanceInsightResponse]]:
@@ -418,6 +433,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_data_access_governance_report(self, report_id: UUID) -> Self:
         """RemoveDataAccessGovernanceReport operation.
 
@@ -429,6 +445,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_opt_in_status_for_reports(
         self, report_entity: int, opt_in_status: bool
     ) -> ClientResult[SPAuditDataCollectionResponse]:
@@ -456,6 +473,7 @@ class SPDataGovernanceInsightRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_opt_in_status_for_reports_v2(
         self, request: SPDataGovernanceOptInParameters
     ) -> ClientResult[SPAuditDataCollectionResponse]:

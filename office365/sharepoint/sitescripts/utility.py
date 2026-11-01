@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sitedesigns.creation_info import SiteDesignCreationInfo
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 from office365.sharepoint.sitedesigns.principal import SiteDesignPrincipal
@@ -29,6 +31,7 @@ class SiteScriptUtility(Entity):
         super().__init__(context, path)
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_list_design(context: ClientContext, info: SiteDesignCreationInfo) -> ClientResult[SiteDesignMetadata]:
         """Creates a list design available when users create a list from the SharePoint start page.
 
@@ -44,6 +47,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_list_designs(context: ClientContext, store: str | None = None) -> ClientResult[SiteDesignMetadata]:
         """Gets list designs.
 
@@ -59,6 +63,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_site_design_task(context: ClientContext, web_url: str, site_design_id: str) -> ClientResult[SiteDesignTask]:
         """Schedules a site design for asynchronous application to a site.
 
@@ -75,6 +80,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_script_from_list(
         context: ClientContext,
         list_url: str,
@@ -98,6 +104,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_script_from_web(
         context: ClientContext,
         web_url: str,
@@ -121,6 +128,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_site_script(
         context: ClientContext, title: str, description: str, content: dict[str, Any]
     ) -> ClientResult[SiteScriptMetadata]:
@@ -144,6 +152,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_site_script(context: ClientContext, id_: str) -> SiteScriptUtility:
         """Deletes a site script.
 
@@ -159,6 +168,7 @@ class SiteScriptUtility(Entity):
         return utility
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_scripts(
         context: ClientContext, store: str | None = None
     ) -> ClientResult[ClientValueCollection[SiteScriptMetadata]]:
@@ -177,6 +187,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def execute_site_script_action(
         context: ClientContext, action_definition: str
     ) -> ClientResult[ClientValueCollection[SiteScriptActionResult]]:
@@ -195,6 +206,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_site_design(context: ClientContext, info: SiteDesignCreationInfo) -> ClientResult[SiteDesignMetadata]:
         """Creates a site design available when users create a new site from the SharePoint start page.
 
@@ -210,6 +222,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_site_design(context: ClientContext, update_info: SiteDesignMetadata) -> ClientResult[SiteDesignMetadata]:
         """Updates a site design with new values.
 
@@ -226,6 +239,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_designs(
         context: ClientContext, include_untargeted: bool = True, store: int | None = None
     ) -> ClientResult[ClientValueCollection[SiteDesignMetadata]]:
@@ -245,6 +259,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_design_stages(context: ClientContext, site_design_id: str) -> ClientResult:
         """Gets the stages of a site design.
 
@@ -260,6 +275,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_design_metadata(
         context: ClientContext, _id: str, store: str | None = None
     ) -> ClientResult[SiteDesignMetadata]:
@@ -278,6 +294,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_design_rights(context: ClientContext, id_: str) -> EntityCollection[SiteDesignPrincipal]:
         """Gets principals that have access to a site design.
 
@@ -293,6 +310,7 @@ class SiteScriptUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def grant_site_design_rights(
         context: ClientContext, _id: str, principal_names: list[str], granted_rights: int
     ) -> SiteScriptUtility:
@@ -316,6 +334,7 @@ class SiteScriptUtility(Entity):
         return utility
 
     @staticmethod
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_site_design(context: ClientContext, _id: str) -> SiteScriptUtility:
         """Deletes a site design.
 
