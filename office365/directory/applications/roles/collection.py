@@ -17,6 +17,8 @@ class AppRoleCollection(ClientValueCollection[AppRole]):
         if isinstance(key, str):
             item = self.get_by_value(key)
             if item is None:
-                raise KeyError(key)
+                # the name is the caller's, so the miss is the caller's to read: this is raised
+                # while a response is being handled, where a bare key says nothing about why
+                raise KeyError(f"this API publishes no app role named {key!r}")
             return item
         return super().__getitem__(key)

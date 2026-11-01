@@ -1078,6 +1078,20 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
   cannot be refused by a live test in a way that reads as an error, so the wrong name was
   invisible; `--grant` would have failed on it, and the preflight line named a permission that
   does not exist. Both now name the published form.
+- **A live suite named a permission Microsoft Graph does not publish, and `--grant` died on
+  it.** `tests/directory/test_governance.py` listed `Approve.AppConsentRequests.Read.All`
+  beside `EntitlementManagement.Read.All` as an any-of, which is harmless while the group is
+  merely read: the second name answers. Granting it is where it stopped being harmless — the
+  directory accepts any string, so the planner asked for it, and `app_roles[...]` answered
+  `KeyError` from inside a response listener, which aborted the whole pass after two grants
+  and reported nothing about the other forty. Three changes: the marker names the one
+  permission that exists; `grant_plan` prefers a name its API publishes and keeps an
+  unpublished one only when a group offers nothing else, so the group stays visible instead
+  of vanishing; and `apply_plan` reports a name the API does not publish instead of
+  attempting it — a recorded grant for such a name is one the token never carries, which the
+  next `verify` would call met. `AppRoleCollection.__getitem__` now says what it looked for
+  (`this API publishes no app role named 'Approve.AppConsentRequests.Read.All'`) rather than
+  raising the bare key from a listener, where it read as a crash with no subject.
 
 ## [3.3.0] - 2026-10-18
 

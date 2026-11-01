@@ -14,7 +14,7 @@ from tests.graph_case import GraphApplicationTestCase
 class TestIdentityGovernance(GraphApplicationTestCase):
     """Identity governance — app consent and terms of use."""
 
-    @requires_application("EntitlementManagement.Read.All", "Approve.AppConsentRequests.Read.All")
+    @requires_application("EntitlementManagement.Read.All")
     def test_01_list_app_consent_requests(self):
         """Listing app consent requests returns a valid collection."""
         result = self.client.identity_governance.app_consent.app_consent_requests.get().execute_query()

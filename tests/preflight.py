@@ -34,7 +34,7 @@ from unittest import TestCase
 
 from office365.graph_client import GraphClient
 from office365.permissions import FLOWS as PERMISSION_FLOWS
-from office365.permissions import ResourceName
+from office365.permissions import ResourceName, catalog
 from office365.runtime.client_request_exception import ClientRequestException
 
 from tests.capabilities import (
@@ -175,6 +175,20 @@ class Grant:
         return self.flow if str(self.resource) == str(ResourceName.Graph) else f"{self.flow} on {self.resource}"
 
 
+def _published(names: tuple[str, ...], flow: str, resource: str) -> tuple[str, ...]:
+    """The names the API itself publishes, in the order given.
+
+    A grant is only half the story: the tenant records whatever string it is handed, but the
+    token is minted from the names the API publishes, so a name that is not among them is
+    consented in the directory and absent from every token. Asking for one is therefore a plan
+    that cannot succeed, and it is filtered out before anything is written.
+    """
+    snapshot = catalog(resource)
+    if snapshot is None or flow not in PERMISSION_FLOWS:
+        return names
+    return tuple(name for name in names if snapshot.publishes(name, flow))
+
+
 def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> list[Grant]:
     """The smallest set of permissions that would unblock the suites, group by group.
 
@@ -182,7 +196,9 @@ def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> li
     them would ask for more than any test needs. A name that appears in several unmet
     groups is asked for once, and names on different APIs are never merged, because they are
     not the same grant. Groups this wizard cannot grant are still returned: the caller decides
-    what to do with them, and silence would be a lie.
+    what to do with them, and silence would be a lie. Within a group, a name the API publishes
+    is preferred over one it does not, and only when every name is unpublished does the plan
+    keep one - so the group stays visible instead of quietly disappearing.
     """
     by_group: dict[tuple[str, str], list[tuple[str, ...]]] = {}
     for needs in found:
@@ -193,12 +209,15 @@ def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> li
     for (label, resource), groups in by_group.items():
         remaining = list(groups)
         chosen: list[str] = []
+        offered = tuple({name for group in groups for name in group})
+        preferred = set(_published(offered, label, resource))
         while remaining:
             counts: dict[str, int] = {}
             for group in remaining:
                 for name in group:
                     counts[name] = counts.get(name, 0) + 1
-            best = max(sorted(counts), key=counts.__getitem__)
+            candidates = {name: count for name, count in counts.items() if name in preferred} or counts
+            best = max(sorted(candidates), key=candidates.__getitem__)
             chosen.append(best)
             remaining = [group for group in remaining if best not in group]
         plan.append(Grant(flow=label, resource=resource, names=tuple(chosen)))
@@ -234,7 +253,9 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str) -> tuple[lis
 
     A grant already in place is reported rather than made twice, and one whose state cannot
     be read is attempted anyway: applying a grant is idempotent, so a missing read scope must
-    not turn into a missing grant.
+    not turn into a missing grant. A name the API does not publish is reported and not
+    attempted - the directory would accept it, the token would never carry it, and the next
+    ``verify`` would call it met.
     """
     checks = {
         "delegated": client.has_delegated_permission,
@@ -251,16 +272,19 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str) -> tuple[lis
             continue
         for name in grant.names:
             entry = f"{grant.label()} {name}"
+            if not _published((name,), grant.flow, grant.resource):
+                failed.append(f"{entry}: {grant.resource} does not publish this name")
+                continue
             try:
                 already = checks[grant.flow](name, app_id, resource=grant.resource)
-            except ClientRequestException:
+            except (ClientRequestException, KeyError):
                 already = False
             if already:
                 done.append(f"{entry} (already granted)")
                 continue
             try:
                 grants[grant.flow](app_id, name, resource=grant.resource).execute_query()
-            except ClientRequestException as exc:
+            except (ClientRequestException, KeyError) as exc:
                 reason = str(exc).splitlines()[0] or exc.__class__.__name__
                 failed.append(f"{entry}: {reason}")
                 continue
