@@ -15,6 +15,7 @@ from office365.sharepoint.clientsidecomponent.query_result import SPClientSideCo
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.file import File
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.campaign.campaign import Campaign
 from office365.sharepoint.publishing.file_picker_options import FilePickerOptions
 from office365.sharepoint.publishing.gettyimage import GettyImage
@@ -99,6 +100,7 @@ class SitePageService(Entity):
 
         return self.create_page(title).after_execute(_page_created)
 
+    @site_access(SiteLevel.READ)
     def can_create_page(self) -> ClientResult[bool]:
         """
         Checks if the current user has permission to create a site page on the site pages document library.
@@ -109,6 +111,7 @@ class SitePageService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def can_create_promoted_page(self) -> ClientResult[bool]:
         """
         Checks if the current user has permission to create a site page on the site pages document library.
@@ -120,6 +123,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_current_user_memberships(
         context: ClientContext, scenario: Optional[str] = None
     ) -> ClientResult[StringCollection]:
@@ -130,6 +134,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_time_zone(context: ClientContext, city_name: str) -> PrimaryCityTime:
         """Gets time zone data for specified city.
 
@@ -145,6 +150,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def compute_file_name(context: ClientContext, title: str) -> ClientResult[str]:
         """Args:
         context (office365.sharepoint.client_context.ClientContext): Client context
@@ -158,6 +164,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_available_full_page_applications(context, include_errors=None, project=None):
         return_type = ClientResult(context, ClientValueCollection(SPClientSideComponentQueryResult))
         params = {"includeErrors": include_errors, "project": project}
@@ -168,6 +175,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def is_file_picker_external_image_search_enabled(context: ClientContext) -> ClientResult[bool]:
         return_type = ClientResult[bool](context)
         binding_type = SitePageService(context)
@@ -178,6 +186,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def org_assets(context: ClientContext) -> ClientResult[OrgAssets]:
         return_type = ClientResult(context, OrgAssets())
         svc = SitePageService(context)
@@ -186,6 +195,7 @@ class SitePageService(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def file_picker_tab_options(context: ClientContext) -> ClientResult[FilePickerOptions]:
         return_type = ClientResult(context, FilePickerOptions())
         svc = SitePageService(context)
@@ -193,6 +203,7 @@ class SitePageService(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_image(self, page_name, image_file_name, image_stream):
         """Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
@@ -210,6 +221,7 @@ class SitePageService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_image_from_external_url(self, page_name, image_file_name, external_url, sub_folder_name, page_id):
         """Adds an image to the site assets library of the current web.
         Returns a File object ([MS-CSOMSPT] section 3.2.5.64) that represents the image.
@@ -234,30 +246,35 @@ class SitePageService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def enable_amplify_from_anywhere(self) -> Self:
         """EnableAmplifyFromAnywhere operation."""
         qry = ServiceOperationQuery(self, "EnableAmplifyFromAnywhere", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def enable_announcements(self) -> Self:
         """EnableAnnouncements operation."""
         qry = ServiceOperationQuery(self, "EnableAnnouncements", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def enable_categories(self) -> Self:
         """EnableCategories operation."""
         qry = ServiceOperationQuery(self, "EnableCategories", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def enable_lightweight_campaign(self) -> Self:
         """EnableLightweightCampaign operation."""
         qry = ServiceOperationQuery(self, "EnableLightweightCampaign", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def get_or_create_asset_folder(
         self, page_name: str, create_folder_if_needed: bool, sub_folder_name: str, page_id: int
     ) -> ClientResult[str]:
@@ -286,6 +303,7 @@ class SitePageService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def report_getty_images(self, images: ClientValueCollection[GettyImage], is_timer_job: bool) -> ClientResult[bool]:
         """ReportGettyImages operation.
 

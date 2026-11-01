@@ -28,16 +28,19 @@ class TestPublishing(SPTestCase):
     #    time_zone = SitePageService.get_time_zone(self.client, "Moscow").execute_query()
     #    self.assertIsInstance(time_zone, PrimaryCityTime)
 
+    @requires_call(SitePageService.compute_file_name, flow="application")
     def test_02_compute_file_name(self):
         """Compute file name for a site page."""
         result = SitePageService.compute_file_name(self.client, "Test page").execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SitePageService.file_picker_tab_options, flow="application")
     def test_03_file_picker_tab_options(self):
         """Retrieve file picker tab options."""
         result = SitePageService.file_picker_tab_options(self.client).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SitePageService.org_assets, flow="application")
     def test_04_org_assets(self):
         """Retrieve organization assets.
 
@@ -59,11 +62,13 @@ class TestPublishing(SPTestCase):
         page = self.client.site_pages.pages.find_by_name("Home.aspx", required=True).execute_query()
         self.assertIsNotNone(page.resource_path)
 
+    @requires_call(SitePageService.can_create_page, flow="application")
     def test_07_can_create_page(self):
         """Check if a page can be created."""
         result = self.client.site_pages.can_create_page().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SitePageService.get_current_user_memberships, flow="application")
     def test_08_get_current_user_memberships(self):
         """Get current user memberships via site page service."""
         result = SitePageService.get_current_user_memberships(self.client).execute_query()

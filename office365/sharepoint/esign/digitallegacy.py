@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 class DigitalLegacy(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def accept_nomination(context: ClientContext, benefactor_hex_cid: str) -> ClientResult[bytes]:
         """AcceptNomination operation.
 
@@ -36,6 +38,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def beneficiary_redeem_access_request(context: ClientContext, benefactor_hex_cid: str) -> ClientResult[bool]:
         """BeneficiaryRedeemAccessRequest operation.
 
@@ -59,6 +62,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def check_converge_status(context: ClientContext) -> ClientResult[bool]:
         """CheckConvergeStatus operation."""
         from office365.sharepoint.esign.digitallegacy import DigitalLegacy
@@ -69,6 +73,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_access_code(context: ClientContext, beneficiary_hex_cid: str) -> ClientResult[bytes]:
         """GetAccessCode operation.
 
@@ -92,6 +97,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_converge_status(context: ClientContext, email_address: str) -> ClientResult[bool]:
         """GetConvergeStatus operation.
 
@@ -107,6 +113,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_settings_as_stream(context: ClientContext) -> ClientResult[bytes]:
         """GetSettingsAsStream operation."""
         from office365.sharepoint.esign.digitallegacy import DigitalLegacy
@@ -117,6 +124,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def nominate_beneficiary(context: ClientContext, beneficiary_email: str) -> ClientResult[bytes]:
         """NominateBeneficiary operation.
 
@@ -140,6 +148,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def redeem_access_request(
         context: ClientContext, beneficiary_hex_cid: str, benefactor_hex_cid: str, access_code: str
     ) -> ClientResult[bool]:
@@ -173,6 +182,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def reject_access_request(context: ClientContext, beneficiary_hex_cid: str) -> ClientResult[bytes]:
         """RejectAccessRequest operation.
 
@@ -196,6 +206,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def reject_nomination(context: ClientContext, benefactor_hex_cid: str) -> ClientResult[bytes]:
         """RejectNomination operation.
 
@@ -219,6 +230,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_benefactor(context: ClientContext, benefactor_hex_cid: str) -> ClientResult[bytes]:
         """RemoveBenefactor operation.
 
@@ -242,6 +254,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_beneficiary(context: ClientContext, beneficiary_hex_cid: str) -> ClientResult[bytes]:
         """RemoveBeneficiary operation.
 
@@ -265,6 +278,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def request_access(context: ClientContext, benefactor_hex_cid: str, access_code_string: str) -> ClientResult[bytes]:
         """RequestAccess operation.
 
@@ -290,6 +304,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def set_benefactor_on_nomination(
         context: ClientContext, benefactor_name: str, benefactor_email: str, benefactor_cid: str
     ) -> ClientResult[bool]:
@@ -319,6 +334,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_beneficiary_on_access_request(
         context: ClientContext, beneficiary_hex_cid: str, access_code: str
     ) -> ClientResult[bool]:
@@ -346,6 +362,7 @@ class DigitalLegacy(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_digital_legacy_setting(
         context: ClientContext, object_type: int, user_hex_cid: str, next_state: int
     ) -> ClientResult[bool]:

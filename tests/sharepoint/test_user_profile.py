@@ -19,6 +19,7 @@ from tests import (
     test_user_principal_name,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -32,6 +33,8 @@ class TestUserProfile(SPTestCase):
         cls.my_client = ClientContext(test_team_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
+        # the suite signs in as a user, so this is the client `@requires_call` checks
+        cls.client = cls.my_client
 
     # def test1_get_owner_user_profile(self):
     #    from office365.sharepoint.userprofiles.profile_loader import ProfileLoader
@@ -49,6 +52,7 @@ class TestUserProfile(SPTestCase):
         up = user_profile.create_personal_site_enque(True).execute_query()
         self.assertIsNotNone(up.public_url)
 
+    @requires_call(PeopleManager.get_user_profile_properties, flow="delegated")
     def test_03_get_user_props(self):
         """Get user profile properties for a target user."""
         target_user = self.my_client.web.ensure_user(test_user_principal_name).execute_query()
@@ -57,18 +61,21 @@ class TestUserProfile(SPTestCase):
         result = self.my_client.people_manager.get_user_profile_properties(target_user.login_name).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(PeopleManager.get_properties_for, flow="delegated")
     def test_04_get_properties_for(self):
         """Get profile properties for the current user."""
         me = self.my_client.web.current_user
         properties = self.my_client.people_manager.get_properties_for(me).execute_query()
         self.assertIsNotNone(properties)
 
+    @requires_call(PeopleManager.get_default_document_library, flow="delegated")
     def test_05_get_default_document_library(self):
         """Get the default document library for the current user."""
         me = self.my_client.web.current_user
         result = self.my_client.people_manager.get_default_document_library(me).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(PeopleManager.get_people_followed_by, flow="delegated")
     def test_06_get_people_followed_by(self):
         """Get people followed by the current user."""
         me = self.my_client.web.current_user.get().execute_query()
@@ -76,6 +83,12 @@ class TestUserProfile(SPTestCase):
         result = self.my_client.people_manager.get_people_followed_by(me.login_name).execute_query()
         self.assertIsNotNone(result)
 
+    @requires_call(
+        PeopleManager.follow,
+        PeopleManager.am_i_following,
+        PeopleManager.stop_following,
+        flow="delegated",
+    )
     def test_07_start_stop_following(self):
         """Follow and unfollow a user, observing the state flip.
 
@@ -109,6 +122,7 @@ class TestUserProfile(SPTestCase):
                 continue
         return None
 
+    @requires_call(PeopleManager.get_followers_for, flow="delegated")
     def test_08_get_followers_for(self):
         """Get followers for a target user."""
         target_user = self.my_client.web.ensure_user(test_user_principal_name).execute_query()
@@ -117,11 +131,13 @@ class TestUserProfile(SPTestCase):
         col = self.my_client.people_manager.get_followers_for(target_user.login_name).execute_query()
         self.assertGreaterEqual(len(col), 0)
 
+    @requires_call(PeopleManager.get_my_followers, flow="delegated")
     def test_09_get_my_followers(self):
         """Get followers of the current user."""
         col = self.my_client.people_manager.get_my_followers().execute_query()
         self.assertGreaterEqual(len(col), 0)
 
+    @requires_call(PeopleManager.get_trending_tags, flow="delegated")
     def test_10_get_trending_tags(self):
         """Get trending tags."""
         result = PeopleManager.get_trending_tags(self.my_client).execute_query()

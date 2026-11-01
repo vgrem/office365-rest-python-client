@@ -549,6 +549,23 @@ introduced.
   can still be called still asks the tenant for a grant. Debt 1,399 → 1,273, and six live tests
   (the site design and site script suites) derive their precondition from the declaration
   instead of running against whatever the tenant happens to allow.
+- **Social and site content name their grants, and the brand center is two owners in
+  one class.** 118 methods across six modules: `PeopleManager` (24), `MicrofeedManager`
+  (18), `SocialFeedManager` (17), `SitePageService` (17), `BrandCenter` (26) and the
+  e-sign `DigitalLegacy` (16). Most of them are a site rung — the feed posters and likes
+  declare `WRITE`, the feed readers and profile lookups `READ`, and the publishing
+  service's eight page and image writers stop at `MANAGE` because enabling the categories
+  or creating the asset folder changes one site's pages. `BrandCenter` is not one owner:
+  thirteen of its methods talk about tenant themes and org assets — the `org_assets`
+  lookups, the `*_tenant_theme` reads and writes, the `ensure_*_feature` provisioning —
+  and declare the tenant rung with the SharePoint Administrator role, while the six that
+  add, update, delete or apply a *site* theme and remove a brand font stay on the site.
+  `PeopleManager` splits the same way: `hard_delete_user_profile`, the two OneDrive quota
+  writers and the quota-max read are tenant administration hiding in a profile class.
+  `DigitalLegacy` is a user's own beneficiary settings, so `WRITE`/`READ` and no role.
+  Debt 1,273 → 1,155, and nine live tests (user profile, publishing, client-side
+  components) derive their precondition from the declaration.
+
 
 ### Changed
 

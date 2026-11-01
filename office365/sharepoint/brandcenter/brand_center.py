@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
@@ -11,6 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.brandcenter.configuration import BrandCenterConfiguration
 from office365.sharepoint.brandcenter.theme_data import ThemeData
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.themes import SiteThemes
 
 if TYPE_CHECKING:
@@ -28,6 +30,7 @@ class BrandCenter(Entity):
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.BrandCenter"))
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def configuration(self) -> ClientResult[BrandCenterConfiguration]:
         """ """
         return_type = ClientResult(self.context, BrandCenterConfiguration())
@@ -35,6 +38,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def add_site_theme(self, theme_data: ThemeData) -> ClientResult[ThemeData]:
         """ """
         return_type = ClientResult(self.context, ThemeData())
@@ -43,6 +47,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_site_themes(self) -> ClientResult[SiteThemes]:
         """ """
         return_type = ClientResult(self.context, SiteThemes())
@@ -50,6 +55,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_tenant_theme(self, theme_data: ThemeData) -> ClientResult[ThemeData]:
         """AddTenantTheme operation.
 
@@ -64,6 +70,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def current_branding_configuration(self) -> ClientResult[BrandCenterConfiguration]:
         """CurrentBrandingConfiguration operation."""
         from office365.sharepoint.brandcenter.configuration import (
@@ -75,6 +82,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def delete_site_theme(self, theme_id: int) -> Self:
         """DeleteSiteTheme operation.
 
@@ -86,6 +94,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_tenant_theme(self, theme_id: int) -> Self:
         """DeleteTenantTheme operation.
 
@@ -97,12 +106,14 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def enable_brand_center_public_cdn(self) -> Self:
         """EnableBrandCenterPublicCdn operation."""
         qry = ServiceOperationQuery(self, "EnableBrandCenterPublicCdn", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def ensure_brand_colors_list_feature(self) -> ClientResult[OrgAssets]:
         """EnsureBrandColorsListFeature operation."""
         from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
@@ -112,6 +123,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def ensure_brand_fonts_library_feature(self) -> ClientResult[OrgAssets]:
         """EnsureBrandFontsLibraryFeature operation."""
         from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
@@ -121,6 +133,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def ensure_org_skills_library(self) -> ClientResult[OrgAssets]:
         """EnsureOrgSkillsLibrary operation."""
         from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
@@ -130,6 +143,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_font_stream(self, font_file_url: str) -> ClientResult[bytes]:
         """GetFontStream operation.
 
@@ -142,6 +156,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_site_theme_by_id(self, id_: int) -> ClientResult[ThemeData]:
         """GetSiteThemeById operation.
 
@@ -156,6 +171,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_theme_by_id(self, id_: int) -> ClientResult[ThemeData]:
         """GetTenantThemeById operation.
 
@@ -170,6 +186,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_theme_by_name(self, name: str) -> ClientResult[ThemeData]:
         """GetTenantThemeByName operation.
 
@@ -184,6 +201,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_theme_by_name_xgeo_util(self, name: str) -> ClientResult[ThemeData]:
         """GetTenantThemeByNameXgeoUtil operation.
 
@@ -198,6 +216,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_themes(self) -> ClientResult[TenantThemes]:
         """GetTenantThemes operation."""
         from office365.sharepoint.brandcenter.tenantthemes import TenantThemes
@@ -207,6 +226,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_themes_xgeo_util(self) -> ClientResult[TenantThemes]:
         """GetTenantThemesXgeoUtil operation."""
         from office365.sharepoint.brandcenter.tenantthemes import TenantThemes
@@ -216,6 +236,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def org_assets(self) -> ClientResult[OrgAssets]:
         """OrgAssets operation."""
         from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
@@ -225,6 +246,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def org_assets_with_cache_flag(self, should_use_cache: bool) -> ClientResult[OrgAssets]:
         """OrgAssetsWithCacheFlag operation.
 
@@ -239,6 +261,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def remove_brand_font_file_local(self, file_name: str) -> Self:
         """RemoveBrandFontFileLocal operation.
 
@@ -250,6 +273,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_web_theme(self, name: str, web_url: str) -> ClientResult[str]:
         """SetWebTheme operation.
 
@@ -264,6 +288,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def update_site_theme(self, theme_data: ThemeData) -> ClientResult[ThemeData]:
         """UpdateSiteTheme operation.
 
@@ -278,6 +303,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_tenant_theme(self, theme_data: ThemeData) -> ClientResult[ThemeData]:
         """UpdateTenantTheme operation.
 
@@ -292,6 +318,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def validate_site_theme_name(self, name: str) -> ClientResult[bool]:
         """ValidateSiteThemeName operation.
 
@@ -304,6 +331,7 @@ class BrandCenter(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def validate_tenant_theme_name(self, name: str) -> ClientResult[bool]:
         """ValidateTenantThemeName operation.
 

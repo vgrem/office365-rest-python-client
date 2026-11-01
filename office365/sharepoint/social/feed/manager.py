@@ -11,6 +11,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.social.actor import SocialActor
 from office365.sharepoint.social.attachment import SocialAttachment
 from office365.sharepoint.social.feed.feed import SocialFeed
@@ -30,6 +31,7 @@ class SocialFeedManager(Entity):
             resource_path = ResourcePath("SP.Social.SocialFeedManager")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.WRITE)
     def create_post(self, target_id: Optional[str] = None, creation_data: Optional[SocialPostCreationData] = None):
         """The CreatePost method creates a post in the current user's feed, in the specified user's feed, or in
         the specified thread. This method returns a new or a modified thread.
@@ -48,6 +50,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete_post(self, post_id: str) -> ClientResult[SocialThread]:
         """The DeletePost method deletes the specified post. This method returns a digest of the modified thread.
         If the entire thread is deleted, this method returns null.
@@ -62,6 +65,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_file_attachment(self, name, description, file_data):
         """Creates a file attachment for a future post.
 
@@ -76,6 +80,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_feed(self, feed_type=None, options=None):
         """The GetFeed method returns a feed for the current user. The feed consists of an array of message threads.
         Each thread consists of a root post and an array of reply posts. See section 3.1.5.17 for details on
@@ -112,6 +117,7 @@ class SocialFeedManager(Entity):
     def entity_type_name(self):
         return "SP.Social.SocialFeedManager"
 
+    @site_access(SiteLevel.WRITE)
     def create_image_attachment(self, name: str, description: str, image_data: bytes) -> ClientResult[SocialAttachment]:
         """CreateImageAttachment operation.
 
@@ -137,6 +143,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_all_likers(self, post_id: str) -> ClientResult[ClientValueCollection[SocialActor]]:
         """GetAllLikers operation.
 
@@ -151,6 +158,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_feed_for(self, actor_id: str, options: SocialFeedOptions) -> ClientResult[SocialFeed]:
         """GetFeedFor operation.
 
@@ -169,6 +177,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_full_thread(self, thread_id: str) -> ClientResult[SocialThread]:
         """GetFullThread operation.
 
@@ -183,6 +192,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_mentions(self, clear_unread_mentions: bool, options: SocialFeedOptions) -> ClientResult[SocialFeed]:
         """GetMentions operation.
 
@@ -206,6 +216,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_preview(self, item_url: str) -> ClientResult[SocialAttachment]:
         """GetPreview operation.
 
@@ -220,6 +231,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_preview_image(self, url: str, key: str, iv: str) -> ClientResult[bytes]:
         """GetPreviewImage operation.
 
@@ -236,6 +248,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_unread_mention_count(self) -> ClientResult[int]:
         """GetUnreadMentionCount operation."""
         return_type = ClientResult(self.context, int())
@@ -243,6 +256,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def like_post(self, post_id: str) -> ClientResult[SocialThread]:
         """LikePost operation.
 
@@ -257,6 +271,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def lock_thread(self, thread_id: str) -> ClientResult[SocialThread]:
         """LockThread operation.
 
@@ -271,6 +286,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def suppress_thread_notifications(self, thread_id: str) -> Self:
         """SuppressThreadNotifications operation.
 
@@ -282,6 +298,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def unlike_post(self, post_id: str) -> ClientResult[SocialThread]:
         """UnlikePost operation.
 
@@ -296,6 +313,7 @@ class SocialFeedManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def unlock_thread(self, thread_id: str) -> ClientResult[SocialThread]:
         """UnlockThread operation.
 

@@ -24,6 +24,7 @@ class TestClientSideComponent(SPTestCase):
         result = self.client.web.get_client_side_web_parts().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SitePageService.get_available_full_page_applications, flow="application")
     def test_03_get_available_full_page_applications(self):
         """Get available full-page applications."""
         result = SitePageService.get_available_full_page_applications(self.client).execute_query()

@@ -5,6 +5,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.converters.keyvalue import parse_key_value_collection
 from office365.runtime.paths.v3.static import StaticPath
@@ -14,6 +15,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.userprofiles.hash_tag_col import HashTagCollection
 from office365.sharepoint.userprofiles.person_properties import PersonProperties
@@ -39,6 +41,7 @@ class PeopleManager(Entity):
         return self._resource_path
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_trending_tags(context) -> HashTagCollection:
         """Gets a collection of the 20 (or fewer) most popular hash tags over the past week.
         The returned collection is sorted in descending order of frequency of use.
@@ -52,6 +55,7 @@ class PeopleManager(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_user_onedrive_quota_max(self, account_name: str) -> ClientResult[int]:
         """Args:
         account_name (str): Account name of the specified user.
@@ -62,6 +66,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def am_i_following(self, account_name: str) -> ClientResult[bool]:
         """Checks whether the current user is following the specified user.
 
@@ -74,6 +79,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return result
 
+    @site_access(SiteLevel.READ)
     def get_followers_for(self, account: Union[str, User]) -> EntityCollection[PersonProperties]:
         """Gets the people who are following the specified user.
 
@@ -99,6 +105,7 @@ class PeopleManager(Entity):
             _get_followers_for(account)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_user_information(self, account_name: str, site_id: str) -> ClientResult[dict]:
         """Args:
         account_name (str): Account name of the specified user.
@@ -110,6 +117,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def follow(self, account_name: str) -> Self:
         """Add the specified user to the current user's list of followed users.
 
@@ -121,6 +129,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def stop_following(self, account_name: str) -> Self:
         """Remove the specified user from the current user's list of followed users.
 
@@ -132,6 +141,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def stop_following_tag(self, value: str) -> Self:
         """The StopFollowingTag method sets the current user to no longer be following the specified tag.
 
@@ -143,6 +153,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_user_profile_properties(self, user: Union[str, User]) -> ClientResult[dict]:
         """Gets the specified user profile properties for the specified user.
 
@@ -171,6 +182,7 @@ class PeopleManager(Entity):
         _ensure_user(user, _get_user_profile_properties)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_properties_for(self, account: Union[str, User]) -> PersonProperties:
         """Gets user properties for the specified user.
 
@@ -187,6 +199,7 @@ class PeopleManager(Entity):
         _ensure_user(account, _get_properties_for)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_default_document_library(
         self,
         user: Union[str, User],
@@ -216,6 +229,7 @@ class PeopleManager(Entity):
         _ensure_user(user, _get_default_document_library)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_people_followed_by(self, account_name: str) -> EntityCollection[PersonProperties]:
         """The GetPeopleFollowedBy method returns a  list of PersonProperties objects for people who the specified user
         is following. This method can result in exceptions for conditions such as null arguments or if the specified
@@ -230,6 +244,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_my_followers(self) -> EntityCollection[PersonProperties]:
         """
         This method returns a list of PersonProperties objects for the people who are following the current user.
@@ -239,6 +254,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def follow_tag(self, value: str) -> Self:
         """The FollowTag method sets the current user to be following the specified tag.
 
@@ -250,6 +266,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def hide_suggestion(self, account_name: str) -> Self:
         """The HideSuggestion method adds the specified user to list of rejected suggestions.
 
@@ -261,6 +278,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def reset_user_onedrive_quota_to_default(self, account_name: str) -> ClientResult[str]:
         """Args:
         account_name (str): Specifies the user by account name.
@@ -271,6 +289,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_my_profile_picture(self, picture: bytes) -> Self:
         """The SetMyProfilePicture method uploads and sets the user profile picture. Pictures in bmp, jpg and png formats
         and up to 5,000,000 bytes are supported. A user can upload a picture only to the user's own profile.
@@ -282,6 +301,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_user_onedrive_quota(self, account_name: str, new_quota: int, new_quota_warning: int) -> ClientResult[str]:
         """Args:
         account_name (str):
@@ -298,6 +318,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_multi_valued_profile_property(
         self, account_name: str, property_name: str, property_values: List[str]
     ) -> Self:
@@ -317,6 +338,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_single_value_profile_property(self, account_name: str, property_name: str, property_value: str) -> Self:
         """Sets the value of a user profile property.
 
@@ -350,6 +372,7 @@ class PeopleManager(Entity):
         """Gets the IsMyPeopleListPublic property"""
         return self.properties.get("IsMyPeopleListPublic", None)
 
+    @site_access(SiteLevel.READ)
     def am_i_followed_by(self, account_name: str) -> ClientResult[bool]:
         """AmIFollowedBy operation.
 
@@ -362,6 +385,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_followed_tags(self, ctags_to_fetch: int) -> ClientResult[StringCollection]:
         """GetFollowedTags operation.
 
@@ -374,6 +398,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_user_profile_property_for(self, account_name: str, property_name: str) -> ClientResult[str]:
         """GetUserProfilePropertyFor operation.
 
@@ -388,6 +413,7 @@ class PeopleManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def hard_delete_user_profile(self, account_name: str, user_id: UUID) -> ClientResult[bool]:
         """HardDeleteUserProfile operation.
 
