@@ -14,6 +14,8 @@ The SharePoint REST side of the same two verbs lives here too: the
 from __future__ import annotations
 
 from office365.graph_client import GraphClient
+from office365.onedrive.internal.paths.site import SitePath
+from office365.onedrive.sites.site import Site
 from office365.runtime.http.http_method import HttpMethod
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
@@ -22,7 +24,6 @@ from office365.sharepoint.principal.users.user import User
 from tests import test_site_url
 from tests._scripted_transport import RecordingTransport, RoutingTransport
 
-SITE_ID = "contoso.sharepoint.com,site-guid,web-guid"
 APP_ID = "11111111-1111-1111-1111-111111111111"
 SP_OBJECT_ID = "22222222-2222-2222-2222-222222222222"
 
@@ -34,8 +35,14 @@ def _client(transport: RoutingTransport) -> GraphClient:
     return client
 
 
-def _site(client: GraphClient):
-    return client.sites[SITE_ID]
+def _site(client: GraphClient) -> Site:
+    """The site the helpers are called on, addressed the way a caller reaches one: by URL.
+
+    A site id is a wire form, never something a checkout configures - the test tree has
+    URLs in ``.env`` and no id - so the fixture starts where a caller does and lets the
+    library join the host to the path.
+    """
+    return Site(client, SitePath.from_url(test_site_url))
 
 
 def test_revoke_access_deletes_only_matching_permissions():
