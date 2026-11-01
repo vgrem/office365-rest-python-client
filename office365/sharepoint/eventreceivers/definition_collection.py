@@ -2,6 +2,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition import EventReceiverDefinition
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class EventReceiverDefinitionCollection(EntityCollection[EventReceiverDefinition]):
@@ -16,6 +17,7 @@ class EventReceiverDefinitionCollection(EntityCollection[EventReceiverDefinition
         """
         super().__init__(context, EventReceiverDefinition, resource_path, parent)
 
+    @site_access(SiteLevel.MANAGE)
     def add(
         self,
         receiver_name: str,

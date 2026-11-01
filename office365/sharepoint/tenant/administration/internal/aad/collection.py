@@ -1,7 +1,9 @@
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.internal.aad.permission_grant import SPO3rdPartyAADPermissionGrant
 
 
@@ -9,6 +11,7 @@ class SPO3rdPartyAADPermissionGrantCollection(EntityCollection[SPO3rdPartyAADPer
     def __init__(self, context, resource_path=None):
         super().__init__(context, SPO3rdPartyAADPermissionGrant, resource_path)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add(self, service_principal_id: str, resource: str, scope: str) -> Self:
         payload = {
             "servicePrincipalId": service_principal_id,

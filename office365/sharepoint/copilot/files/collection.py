@@ -6,12 +6,14 @@ from office365.sharepoint.copilot.files.collection_query_result import (
     CopilotFileCollectionQueryResult,
 )
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class CopilotFileCollection(Entity):
     """ """
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_working_set_files(
         context, top: Optional[int] = None, order_by: Optional[str] = None, skip_token: Optional[str] = None
     ) -> ClientResult[CopilotFileCollectionQueryResult]:

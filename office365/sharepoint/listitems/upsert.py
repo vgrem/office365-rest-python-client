@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Any, Mapping, cast
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.listitems.collection import ListItemCollection
@@ -50,6 +51,7 @@ class ListItemUpsertTarget:
             field.set_property("Indexed", True)
             field.update()
 
+    @site_access(SiteLevel.READ)
     def load_keys(self) -> Mapping[str, Any]:
         """Return the existing ``{key: item_id}`` map (paged; key + ``Id`` only)."""
         loaded = self._collection.select([self._key_field, "Id"]).get_all().execute_query()

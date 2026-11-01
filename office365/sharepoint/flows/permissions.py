@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.flows.connector_result import ConnectorResult
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 class FlowPermissions(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_flow_permission_level_on_list(
         context: ClientContext,
         list_name: str,

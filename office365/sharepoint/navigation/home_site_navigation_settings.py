@@ -8,6 +8,7 @@ from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -21,6 +22,7 @@ class HomeSiteNavigationSettings(Entity):
             resource_path = StaticPath("Microsoft.SharePoint.Navigation.REST.HomeSiteNavigationSettings")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def enable_global_navigation(self, is_enabled: bool) -> Self:
         """
         Args:

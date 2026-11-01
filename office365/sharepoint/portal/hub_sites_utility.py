@@ -1,6 +1,7 @@
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.hubsites.collection import HubSiteCollection
 
 
@@ -14,6 +15,7 @@ class SPHubSitesUtility(Entity):
             resource_path = StaticPath("Microsoft.SharePoint.Portal.SPHubSitesUtility")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.READ)
     def get_hub_sites(self) -> HubSiteCollection:
         """Gets information about all hub sites that the current user can access."""
         return_type = HubSiteCollection(self.context)

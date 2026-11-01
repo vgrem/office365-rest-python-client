@@ -5,6 +5,7 @@ from typing import Optional
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TargetApplication(Entity):
@@ -14,6 +15,7 @@ class TargetApplication(Entity):
     """
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create(context: ClientContext, application_id: str, friendly_name: str) -> "TargetApplication":
         """Creates a target application
 

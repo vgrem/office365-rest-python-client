@@ -2,6 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class PhotosMigration(Entity):
@@ -9,6 +10,7 @@ class PhotosMigration(Entity):
         static_path = ResourcePath("Microsoft.SharePoint.Photos.PhotosMigration")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.WRITE)
     def migrate_photos_data(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())

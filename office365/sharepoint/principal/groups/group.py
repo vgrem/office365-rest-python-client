@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
@@ -55,6 +56,7 @@ class Group(Principal):
         self.ensure_property("LoginName").after_execute(lambda _: _expand_to_principals())
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_user_as_owner(self, user: Union[int, Principal]) -> Self:
         """Sets the user as group owner
 

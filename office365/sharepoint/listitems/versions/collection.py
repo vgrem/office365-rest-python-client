@@ -7,6 +7,7 @@ from office365.sharepoint.listitems.versions.get_parameters import (
     GetListItemVersionsParameters,
 )
 from office365.sharepoint.listitems.versions.version import ListItemVersion
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ListItemVersionCollection(EntityCollection[ListItemVersion]):
@@ -23,6 +24,7 @@ class ListItemVersionCollection(EntityCollection[ListItemVersion]):
         """
         return ListItemVersion(self.context, ServiceOperationPath("GetById", [id_], self.resource_path))
 
+    @site_access(SiteLevel.READ)
     def get_versions(
         self, row_limit: Optional[int] = None, sort_descending: Optional[bool] = None
     ) -> "ListItemVersionCollection":

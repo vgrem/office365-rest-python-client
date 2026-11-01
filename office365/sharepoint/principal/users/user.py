@@ -7,6 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.alerts.collection import AlertCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.principal.users.id_info import UserIdInfo
 from office365.sharepoint.userprofiles.person_properties import PersonProperties
@@ -48,6 +49,7 @@ class User(Principal):
         return_type = RecentFileCollection.get_recent_files(self.context, top)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def expire(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "Expire")

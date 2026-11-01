@@ -1,6 +1,7 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AppLauncher(Entity):
@@ -10,6 +11,7 @@ class AppLauncher(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.AppLauncher.AppLauncher"
 
+    @site_access(SiteLevel.READ)
     def get_data(self, suite_version: int, is_mobile_request: bool, locale: str, on_prem_ver: str) -> ClientResult[str]:
         """GetData operation.
 

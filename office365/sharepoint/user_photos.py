@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -19,6 +20,7 @@ class UserPhotos(Entity):
         return self.properties.get("Settings", None)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def set_settings(context: ClientContext, settings: str) -> ClientResult[str]:
         """SetSettings operation.
 

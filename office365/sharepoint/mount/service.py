@@ -8,10 +8,12 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.mount.requests.get_remote_item_Info import (
     GetRemoteItemInfoRequest,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MountService(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_remote_item_info(context: ClientContext, remote_item_unique_ids: List[str]) -> ClientResult[str]:
         """Args:
         context (office365.sharepoint.client_context.ClientContext): client context

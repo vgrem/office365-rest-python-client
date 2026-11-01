@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 class GlutamateController(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_thread_engagement_data(
         context: ClientContext, thread_ids: list[str]
     ) -> ClientResult[ClientValueCollection[ThreadEngagementData]]:

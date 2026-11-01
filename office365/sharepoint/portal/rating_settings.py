@@ -1,10 +1,12 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class RatingSettings(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_list_rating(context, list_id):
         """Args:
         context (office365.sharepoint.client_context.ClientContext):

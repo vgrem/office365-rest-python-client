@@ -1,9 +1,11 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.authpolicy.events.event import SPAuthEvent
 from office365.sharepoint.authpolicy.events.role_assignment_resource_payload import (
     RoleAssignmentResourcePayload,
 )
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
@@ -12,6 +14,7 @@ class SPAuthEventCollection(EntityCollection[SPAuthEvent]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, SPAuthEvent, resource_path, parent)
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def role_assignment_ms_graph_notify(
         self,
         tenant: str,

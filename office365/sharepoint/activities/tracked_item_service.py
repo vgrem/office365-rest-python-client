@@ -5,10 +5,12 @@ from office365.sharepoint.activities.tracked_item_updates_request import (
 )
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TrackedItemService(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_tracked_item_updates_for_user(context: ClientContext) -> ClientResult[str]:
         return_type = ClientResult(context)
         payload = {"request": TrackedItemUpdatesRequest()}

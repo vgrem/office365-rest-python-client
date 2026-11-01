@@ -6,6 +6,7 @@ from uuid import UUID
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.apps.properties import AppProperties
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 
 class AppTileProperties(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_app_properties(
         context: ClientContext,
         app_id: UUID,

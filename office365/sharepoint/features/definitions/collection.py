@@ -3,6 +3,7 @@ from __future__ import annotations
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.features.definitions.definition import FeatureDefinition
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FeatureDefinitionCollection(EntityCollection[FeatureDefinition]):
@@ -11,6 +12,7 @@ class FeatureDefinitionCollection(EntityCollection[FeatureDefinition]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, FeatureDefinition, resource_path, parent)
 
+    @site_access(SiteLevel.READ)
     def get_feature_definition(
         self,
         feature_display_name: str,

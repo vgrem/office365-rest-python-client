@@ -1,11 +1,13 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MySiteDismissStatusText(Entity):
     """Provides methods to dismiss status text for the personal online document library page."""
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def dismiss_status_text(context) -> "MySiteDismissStatusText":
         """Dismiss the status text for the personal online document library page.
 

@@ -3,6 +3,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ProfileImageStore(Entity):
@@ -11,6 +12,7 @@ class ProfileImageStore(Entity):
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.UserProfiles.ProfileImageStore"))
 
+    @site_access(SiteLevel.WRITE)
     def save_uploaded_file(
         self,
         profile_type,

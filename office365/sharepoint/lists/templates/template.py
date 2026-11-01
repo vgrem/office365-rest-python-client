@@ -8,6 +8,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ListTemplate(Entity):
@@ -25,6 +26,7 @@ class ListTemplate(Entity):
     def __repr__(self):
         return self.internal_name or self.entity_type_name or ""
 
+    @site_access(SiteLevel.READ)
     def get_global_schema_xml(self) -> ClientResult[bytes]:
         """Retrieves the global schema.xml file."""
         return_type = ClientResult(self.context)

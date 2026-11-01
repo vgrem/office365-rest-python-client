@@ -1,11 +1,13 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.home.service_context import (
     SharePointHomeServiceContext,
 )
 
 
 class SharePointHomeServiceContextBuilder(Entity):
+    @site_access(SiteLevel.READ)
     def get_context(self):
         return_type = SharePointHomeServiceContext(self.context)
         qry = ServiceOperationQuery(self, "Context", None, None, None, return_type)

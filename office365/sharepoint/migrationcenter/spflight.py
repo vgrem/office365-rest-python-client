@@ -1,6 +1,8 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MigrationSPFlight(Entity):
@@ -8,6 +10,7 @@ class MigrationSPFlight(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationSPFlight"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_flight_enabled(self, flight_name: str) -> ClientResult[bool]:
         """IsFlightEnabled operation.
 

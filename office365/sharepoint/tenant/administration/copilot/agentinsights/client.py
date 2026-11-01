@@ -1,8 +1,10 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.copilot.agentinsights.report_metadata import (
     SPOCopilotAgentInsightsReportMetadata,
 )
@@ -31,6 +33,7 @@ class SPOCopilotAgentInsightsRestApiClient(SPDataGovernanceRestApiClientBase):
         )
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_copilot_agent_insights_reports_metadata(self):
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(SPOCopilotAgentInsightsReportMetadata))

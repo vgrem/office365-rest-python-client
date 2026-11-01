@@ -2,6 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.webparts.tile_data import TileData
 
 
@@ -9,6 +10,7 @@ class SocialAnnouncementManager(Entity):
     """Contains methods related to SharePoint Announcement Tiles"""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_current_announcements(context, url):
         """Gets the currently active announcements for a given site and returns them as a list of TileData objects.
         Announcement details are stored in Title, Description, BackgroundImageLocation, and LinkLocation properties

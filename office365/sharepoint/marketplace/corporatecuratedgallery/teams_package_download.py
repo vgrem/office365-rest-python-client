@@ -1,11 +1,14 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TeamsPackageDownload(Entity):
     """"""
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def download_teams(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context)

@@ -2,16 +2,19 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.site import Site
 
 
 class WebApplication(Entity):
     @staticmethod
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def lookup(context: ClientContext, request_uri: str) -> WebApplication:
         """ """
         return_type = WebApplication(context)

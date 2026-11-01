@@ -1,6 +1,7 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.userprofiles.sharedwithme.document import (
     SharedWithMeDocument,
 )
@@ -12,6 +13,7 @@ class DocumentsSharedWithGroup(Entity):
     """
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_shared_with_group_docs(context, group_id=None):
         """Gets a shared documents for a group.
 

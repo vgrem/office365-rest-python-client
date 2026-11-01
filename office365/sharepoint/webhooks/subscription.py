@@ -9,6 +9,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class Subscription(Entity):
@@ -85,6 +86,7 @@ class Subscription(Entity):
         """Gets the scenarios property"""
         return self.properties.get("scenarios", StringCollection())
 
+    @site_access(SiteLevel.WRITE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)

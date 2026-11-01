@@ -3,6 +3,7 @@ from uuid import UUID
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class WorkflowMessagingService(Entity):
@@ -10,6 +11,7 @@ class WorkflowMessagingService(Entity):
     def entity_type_name(self) -> str:
         return "SP.WorkflowServices.WorkflowMessagingService"
 
+    @site_access(SiteLevel.WRITE)
     def publish_event(self, event_source_id: UUID, event_name: str, payload: dict) -> ClientResult[str]:
         """PublishEvent operation.
 

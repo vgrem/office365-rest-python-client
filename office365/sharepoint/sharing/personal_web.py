@@ -1,5 +1,6 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class PersonalWeb(Entity):
@@ -7,6 +8,7 @@ class PersonalWeb(Entity):
     individual users. Methods act on the users default document library."""
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def fix_permission_inheritance(context):
         """This method fixes the permission inheritance for the default document library of the personal web when
         breakRoleInheritance didn't happen correctly during the default document library creation.

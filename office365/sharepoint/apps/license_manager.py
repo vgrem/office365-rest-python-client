@@ -2,9 +2,11 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.apps.license_collection import AppLicenseCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPAppLicenseManager(Entity):
+    @site_access(SiteLevel.READ)
     def check_license(self, product_id: str) -> ClientResult[AppLicenseCollection]:
         """Args:
         product_id (str):

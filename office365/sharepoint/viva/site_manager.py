@@ -1,7 +1,9 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
 
 
@@ -17,6 +19,7 @@ class VivaSiteManager(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Portal.VivaSiteManager"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def ensure_viva_site(self) -> ClientResult[SPSiteCreationResponse]:
         """EnsureVivaSite operation."""
         return_type = ClientResult(self.context, SPSiteCreationResponse())

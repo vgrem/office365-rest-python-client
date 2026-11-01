@@ -3,6 +3,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.orgnewssite.info import OrgNewsSiteInfo
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class OrgNewsSiteApi(Entity):
@@ -11,6 +12,7 @@ class OrgNewsSiteApi(Entity):
             resource_path = ResourcePath("Microsoft.SharePoint.OrgNewsSite.OrgNewsSiteApi")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.READ)
     def details(self) -> ClientResult[OrgNewsSiteInfo]:
         return_type = ClientResult(self.context, OrgNewsSiteInfo())
         qry = ServiceOperationQuery(self, "Details", None, None, None, return_type)

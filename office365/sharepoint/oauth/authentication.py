@@ -1,6 +1,7 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class Authentication(Entity):
@@ -12,6 +13,7 @@ class Authentication(Entity):
     def entity_type_name(self) -> str:
         return "SP.OAuth.Authentication"
 
+    @site_access(SiteLevel.READ)
     def get_renewal_url(self, redirect_url: str) -> ClientResult[str]:
         """GetRenewalUrl operation.
 

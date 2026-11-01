@@ -10,6 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.types.property_values import PropertyValues
 
 if TYPE_CHECKING:
@@ -148,6 +149,7 @@ class Alert(Entity):
             "AllProperties", PropertyValues(self.context, ResourcePath("AllProperties", self.resource_path))
         )
 
+    @site_access(SiteLevel.WRITE)
     def update_alert(self) -> Self:
         """UpdateAlert operation."""
         qry = ServiceOperationQuery(self, "UpdateAlert", None, {}, None, None)

@@ -1,3 +1,4 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -8,6 +9,7 @@ from office365.sharepoint.multigeo.service.unified_group import UnifiedGroup
 from office365.sharepoint.multigeo.service.user_personal_site_location import (
     UserPersonalSiteLocation,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MultiGeoServices(Entity):
@@ -25,6 +27,7 @@ class MultiGeoServices(Entity):
         static_path = ResourcePath("Microsoft.Online.SharePoint.MultiGeo.Service.MultiGeoServicesBeta")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def user_personal_site_location(self, user_principal_name: str) -> UserPersonalSiteLocation:
         return_type = UserPersonalSiteLocation(self.context)
         qry = ServiceOperationQuery(

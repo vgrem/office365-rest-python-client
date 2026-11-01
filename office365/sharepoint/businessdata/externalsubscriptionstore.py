@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ExternalSubscriptionStore(Entity):
@@ -9,6 +10,7 @@ class ExternalSubscriptionStore(Entity):
     def entity_type_name(self) -> str:
         return "SP.BusinessData.Infrastructure.ExternalSubscriptionStore"
 
+    @site_access(SiteLevel.WRITE)
     def index_store(self) -> Self:
         """IndexStore operation."""
         qry = ServiceOperationQuery(self, "IndexStore", None, {}, None, None)

@@ -720,6 +720,23 @@ introduced.
   `SharingUtility`, `ThemeInfo`, `WorkflowServicesManager` and `PeopleCollection` are pure
   reads. Debt 256 → 130, and two more live tests derive their precondition: the recycle-bin
   restore and the webhook subscription.
+- **The last owner on the list, and the end of the debt.** 130 methods in 128 modules - one
+  each, which is where a harvest stops being a judgment and starts being a spelling: a site
+  group owner, a feature activation, an event receiver, a custom action, a view, a subweb, a
+  document set, an alert, an event receiver registration, a list template read, a term store
+  search. The tenant's remaining surface names the role: `HubSite.delete`, the third-party
+  AAD permission grants, the web-app service principal's permission requests, the malware
+  stream, the ODB license enforcement sweep, the tenant app flag, the SharePoint home
+  acronyms and the copilot insights reports. Four families answer the same way every time -
+  every `Microsoft.Online.SharePoint.MultiGeo` job stop is a `WRITE` with the role and the
+  two site read-only-state setters are `FULL_CONTROL` with it, the four consumer quota
+  migrations are `WRITE` with it, the download-operation plans are three `READ`s that share
+  one method name, and the two pairs of duplicate modules (`DfDeprecationJob`,
+  `MoveSiteROState`) are declared rather than deleted. The ledger is empty: `PENDING` is
+  `{}`, `index(office365).debt()` returns nothing, and every one of the 2,224 public
+  request-issuing operations under `office365/sharepoint` names the grant it needs. Twenty-three
+  commits from the first `SiteLevel` to the last dot-notation read, and the two offline
+  permission tests now guard the whole surface instead of a shrinking remainder.
 
 
 

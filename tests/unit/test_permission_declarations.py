@@ -24,14 +24,13 @@ LIBRARY = index(office365)
 #: markers-before-consumers design, small enough to finish before scaling. Nine more packages
 #: have left the map the same way - ``intune``, ``backuprestore``, ``reports``, ``todo``,
 #: ``planner``, ``booking``, ``security``, ``subscriptions`` and ``common`` name every
-#: operation they own, and ``sharepoint`` is the last package still carrying debt.
+#: operation they own, and ``sharepoint`` closed the map too: all 2,224 of its public
+#: request-issuing operations declare. Nothing is left to pay, and the map is empty.
 #:
 #: The detector counts a method that *submits* a query (``add_query``, ``execute_query``,
 #: ``execute_batch``) and skips one that merely builds a query and returns it, so these are a
 #: floor: the real number is higher, never lower.
-PENDING: dict[str, int] = {
-    "sharepoint": 130,
-}
+PENDING: dict[str, int] = {}
 
 
 class TestTheRatchet(TestCase):

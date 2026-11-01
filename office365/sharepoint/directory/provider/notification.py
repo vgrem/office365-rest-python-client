@@ -1,11 +1,13 @@
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.directory.provider.object_changes import (
     DirectoryObjectChanges,
 )
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class DirectoryNotification(Entity):
@@ -16,6 +18,7 @@ class DirectoryNotification(Entity):
             resource_path = StaticPath("SP.Directory.Provider.DirectoryNotification")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def notify_changes(self, directory_object_changes: DirectoryObjectChanges) -> Self:
         """ """
         payload = {"directoryObjectChanges": directory_object_changes}

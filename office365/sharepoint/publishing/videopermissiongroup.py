@@ -6,6 +6,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 
 
@@ -28,6 +29,7 @@ class VideoPermissionGroup(Entity):
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
+    @site_access(SiteLevel.READ)
     def has_current_user(self) -> ClientResult[bool]:
         """HasCurrentUser operation."""
         return_type = ClientResult(self.context, bool())

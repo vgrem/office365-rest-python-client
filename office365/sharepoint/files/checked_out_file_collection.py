@@ -1,6 +1,7 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.checked_out_file import CheckedOutFile
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class CheckedOutFileCollection(EntityCollection[CheckedOutFile]):
@@ -9,6 +10,7 @@ class CheckedOutFileCollection(EntityCollection[CheckedOutFile]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, CheckedOutFile, resource_path)
 
+    @site_access(SiteLevel.READ)
     def get_by_path(self, decoded_url: str) -> CheckedOutFile:
         """Get a collection of checked-out files at the specified path.
 

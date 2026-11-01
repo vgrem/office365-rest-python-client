@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class InformationRightsManagementSettings(Entity):
@@ -114,6 +115,7 @@ class InformationRightsManagementSettings(Entity):
         """Gets the EnableDocumentBrowserPublishingView property"""
         return self.properties.get("EnableDocumentBrowserPublishingView", None)
 
+    @site_access(SiteLevel.MANAGE)
     def reset(self) -> Self:
         """Reset operation."""
         qry = ServiceOperationQuery(self, "Reset", None, {}, None, None)

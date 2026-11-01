@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FileUrlVirusStatusUpdate(Entity):
@@ -28,6 +29,7 @@ class FileUrlVirusStatusUpdate(Entity):
         """Gets the virusStatus property"""
         return self.properties.get("virusStatus", None)
 
+    @site_access(SiteLevel.WRITE)
     def update_virus_status(self) -> Self:
         """UpdateVirusStatus operation."""
         qry = ServiceOperationQuery(self, "UpdateVirusStatus", None, {}, None, None)

@@ -1,12 +1,14 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.mount.folder_info import MountedFolderInfo
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MountPoint(Entity):
     """"""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_mounted_folder_info(
         context, target_site_id: str, target_web_id: str, target_unique_id: str
     ) -> MountedFolderInfo:

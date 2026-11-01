@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class OdcMetadataCleanedUpApi(Entity):
@@ -9,6 +10,7 @@ class OdcMetadataCleanedUpApi(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Convergence.OdcMetadataCleanedUpApi"
 
+    @site_access(SiteLevel.WRITE)
     def add_state(self) -> Self:
         """AddState operation."""
         qry = ServiceOperationQuery(self, "AddState", None, {}, None, None)

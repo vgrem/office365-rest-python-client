@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 from typing_extensions import Self
 
 from office365.runtime.operations import OperationStats, ProgressCallback, query_progress_hook
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import SAFE_PAGE_SIZE
 
 if TYPE_CHECKING:
@@ -82,6 +83,7 @@ class DownloadResult:
 class _Plan:
     """Resolves the work into ``(file, relative_path)`` pairs at execution time."""
 
+    @site_access(SiteLevel.READ)
     def resolve(self) -> List[_FilePair]:
         raise NotImplementedError
 
@@ -101,6 +103,7 @@ class _FolderPlan(_Plan):
         self._folder.ensure_property("ServerRelativeUrl")
         return self._folder.get_files(recursive=self._recursive, progress=self._scan_progress)
 
+    @site_access(SiteLevel.READ)
     def resolve(self) -> List[_FilePair]:
         col = self._enumerate()
         col.execute_query()
@@ -126,6 +129,7 @@ class _CollectionPlan(_Plan):
             col.get_all(page_size=SAFE_PAGE_SIZE, progress=self._scan_progress)
         return col
 
+    @site_access(SiteLevel.READ)
     def resolve(self) -> List[_FilePair]:
         col = self._enumerate()
         col.execute_query()
@@ -149,6 +153,7 @@ class _FilePlan(_Plan):
         if self._resume and not self._file.is_property_available("Length"):
             self._file.ensure_property("Length")
 
+    @site_access(SiteLevel.READ)
     def resolve(self) -> List[_FilePair]:
         self._ensure_size()
         if self._file.context.has_pending_request:

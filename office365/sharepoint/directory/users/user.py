@@ -14,6 +14,7 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.directory.my_groups_result import MyGroupsResult
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.directory.groups.group import Group
@@ -442,6 +443,7 @@ class User(Entity):
             EntityCollection[Group](self.context, Group, ResourcePath("rankedMembership", self.resource_path)),
         )
 
+    @site_access(SiteLevel.READ)
     def check_member_groups(self, group_ids: str) -> Self:
         """CheckMemberGroups operation.
 

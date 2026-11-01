@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.social.actor import SocialActor
 
 
@@ -39,6 +40,7 @@ class SocialRestActor(Entity):
 
         return self.properties.get("FollowableItemActor", SocialActor())
 
+    @site_access(SiteLevel.READ)
     def unread_mention_count(self) -> ClientResult[int]:
         """UnreadMentionCount operation."""
         return_type = ClientResult(self.context, int())

@@ -1,6 +1,7 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.userprofiles.sharedwithme.document import (
     SharedWithMeDocument,
 )
@@ -10,6 +11,7 @@ class SharedWithMeItems(Entity):
     """"""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def shared_with_me(context):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): Client context

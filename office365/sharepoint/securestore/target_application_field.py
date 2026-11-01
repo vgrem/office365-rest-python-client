@@ -5,6 +5,7 @@ from typing import Optional
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TargetApplicationField(Entity):
@@ -16,6 +17,7 @@ class TargetApplicationField(Entity):
         super().__init__(context, static_path)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create(context, name, masked, credential_type):
         """Creates a credential field
 

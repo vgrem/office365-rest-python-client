@@ -8,6 +8,7 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.file import File
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class PointPublishingPost(Entity):
@@ -83,6 +84,7 @@ class PointPublishingPost(Entity):
             "images", EntityCollection[File](self.context, File, ResourcePath("images", self.resource_path))
         )
 
+    @site_access(SiteLevel.WRITE)
     def add_image_from_url(self, from_image_url: str) -> ClientResult[str]:
         """AddImageFromUrl operation.
 

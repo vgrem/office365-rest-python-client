@@ -9,12 +9,14 @@ from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.lists.list import List
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class DocumentSet(Folder):
     """Represents a set of documents."""
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create(
         context: ClientContext,
         parent_folder: Folder,

@@ -11,6 +11,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.listitems.versions.change import SPListItemVersionChange
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.fields.collection import FieldCollection
@@ -104,6 +105,7 @@ class ListItemVersion(Entity):
 
         return cast(ListItemVersionCollection, self._parent_collection)
 
+    @site_access(SiteLevel.WRITE)
     def recycle(self) -> Self:
         """Recycle operation."""
         qry = ServiceOperationQuery(self, "Recycle", None, {}, None, None)

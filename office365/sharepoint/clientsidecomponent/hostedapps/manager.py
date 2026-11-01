@@ -3,6 +3,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.clientsidecomponent.hostedapps.app import HostedApp
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class HostedAppsManager(Entity):
@@ -20,6 +21,7 @@ class HostedAppsManager(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.ClientSideComponent.HostedAppsManager"
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, web_part_data_as_json: str, host_type: str) -> ClientResult[int]:
         """Add operation.
 

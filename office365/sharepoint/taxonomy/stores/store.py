@@ -4,6 +4,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.taxonomy.groups.collection import TermGroupCollection
 from office365.sharepoint.taxonomy.item import TaxonomyItem
 from office365.sharepoint.taxonomy.item_collection import TaxonomyItemCollection
@@ -40,6 +41,7 @@ class TermStore(TaxonomyItem):
         self.term_groups.get().after_execute(_groups_loaded)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def search_term(
         self,
         label: str,

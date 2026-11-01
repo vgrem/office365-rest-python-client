@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class NonQuotaBackfillApi(Entity):
@@ -11,6 +13,7 @@ class NonQuotaBackfillApi(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.QuotaManagement.Consumer.NonQuotaBackfillApi"
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def backfill_non_quota(self, backfill_userfacts: list[str]) -> ClientResult[str]:
         """BackfillNonQuota operation.
 

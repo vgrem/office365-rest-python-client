@@ -1,6 +1,7 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class DocumentsSharedWithMe(Entity):
@@ -8,6 +9,7 @@ class DocumentsSharedWithMe(Entity):
     All methods in this object are static."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_list_data(context, sort_field_name, is_ascending_sort, offset, row_limit):
         """Gets the JSON string containing the row data for a list that shares documents with the current user on the
         user's personal site.

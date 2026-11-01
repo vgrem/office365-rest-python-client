@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.webs.creation_information import WebCreationInformation
 
 if TYPE_CHECKING:
@@ -25,6 +26,7 @@ class WebCollection(EntityCollection["Web"]):
 
         super().__init__(context, Web, resource_path, parent_web)
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def add(self, web_creation_information: WebCreationInformation) -> Web:
         """
         Create WebSite

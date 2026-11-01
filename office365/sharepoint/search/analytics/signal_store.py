@@ -1,9 +1,11 @@
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.search.analytics.signal import AnalyticsSignal
 
 
@@ -19,6 +21,7 @@ class SignalStore(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Client.Search.Analytics.SignalStore"
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def signals(self, signals: ClientValueCollection[AnalyticsSignal]) -> Self:
         """signals operation.
 

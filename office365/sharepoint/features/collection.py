@@ -7,6 +7,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.features.feature import Feature
 from office365.sharepoint.features.known_list import KnownFeaturesList
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FeatureCollection(EntityCollection[Feature]):
@@ -15,6 +16,7 @@ class FeatureCollection(EntityCollection[Feature]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Feature, resource_path, parent)
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def add(
         self,
         feature_id: Union[KnownFeaturesList, str],

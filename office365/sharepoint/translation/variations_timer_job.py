@@ -5,6 +5,7 @@ from typing import List
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class VariationsTranslationTimerJob(Entity):
@@ -12,6 +13,7 @@ class VariationsTranslationTimerJob(Entity):
     for list items in a variation label."""
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def export_items(
         context: ClientContext,
         list_url: str,

@@ -7,11 +7,13 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ClientWebPart(Entity):
     """Representation of a ClientWebPart. It provides with ClientWebPart metadata and methods to render it."""
 
+    @site_access(SiteLevel.READ)
     def render(self, properties=None):
         """Renders the ClientWebPart.  Returns HTML that can be inserted in a page.
 

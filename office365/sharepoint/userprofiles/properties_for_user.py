@@ -6,6 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class UserProfilePropertiesForUser(Entity):
@@ -19,6 +20,7 @@ class UserProfilePropertiesForUser(Entity):
     instead; this type is kept for CSOM-shaped payloads.
     """
 
+    @site_access(SiteLevel.READ)
     def get_property_names(self) -> ClientResult[StringCollection]:
         """
         The GetPropertyNames method gets an array of strings that specify the user profile property names.

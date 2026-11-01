@@ -6,6 +6,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List
@@ -22,6 +23,7 @@ class RequestContext(Entity):
         site, list, or list item.
     """
 
+    @site_access(SiteLevel.READ)
     def get_remote_context(self) -> "RequestContext":
         """
         Returns the SP.RequestContext for the mounted folder.

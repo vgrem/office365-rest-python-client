@@ -8,6 +8,7 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.navigation.configured_metadata_item_col import (
     ConfiguredMetadataNavigationItemCollection,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -17,6 +18,7 @@ class MetadataNavigationSettings(Entity):
     """Described and allows changes to the meta-data navigation and filtering settings on an SPList."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_configured_settings(
         context: ClientContext,
         url: str,

@@ -7,6 +7,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.video.channel_collection import (
     VideoChannelCollection,
 )
@@ -22,6 +23,7 @@ class VideoServiceManager(Entity):
     def __init__(self, context):
         super().__init__(context, ResourcePath("SP.Publishing.VideoServiceManager"))
 
+    @site_access(SiteLevel.READ)
     def get_channels(self, start_index=0, limit=None) -> VideoChannelCollection:
         return_type = VideoChannelCollection(self.context)
         params = {"startIndex": start_index, "limit": limit}

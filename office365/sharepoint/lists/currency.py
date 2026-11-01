@@ -5,12 +5,14 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.lists.currency_information_collection import (
     CurrencyInformationCollection,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class CurrencyList(Entity):
     """List of supported currencies."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_list(context: ClientContext) -> ClientResult[CurrencyInformationCollection]:
         """Generates a list of all the currencies allowed in SharePoint currency columns.
         The list contains CurrencyInformation objects with display strings and LCIDs for each currency.

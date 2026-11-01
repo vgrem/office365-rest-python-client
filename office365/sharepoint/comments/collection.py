@@ -2,12 +2,14 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.comments.comment import Comment
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class CommentCollection(EntityCollection[Comment]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Comment, resource_path)
 
+    @site_access(SiteLevel.WRITE)
     def delete_all(self) -> ClientResult[bool]:  # type: ignore[reportIncompatibleMethodOverride]
         """Deletes all the comments."""
         return_type = ClientResult(self.context)

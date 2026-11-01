@@ -7,6 +7,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.views.create_information import ViewCreationInformation
 from office365.sharepoint.views.type import ViewType
 from office365.sharepoint.views.view import View
@@ -56,6 +57,7 @@ class ViewCollection(EntityCollection[View]):
     ) -> None:
         super().__init__(context, View, resource_path, parent_list)
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, information: ViewCreationInformation) -> View:
         """Add a new list view to the collection.
 

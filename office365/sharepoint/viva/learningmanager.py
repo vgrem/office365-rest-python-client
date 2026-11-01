@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPVivaLearningManager(Entity):
@@ -9,6 +10,7 @@ class SPVivaLearningManager(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Administration.Claims.SPVivaLearningManager"
 
+    @site_access(SiteLevel.MANAGE)
     def register_list_event_receiver(self) -> Self:
         """RegisterListEventReceiver operation."""
         qry = ServiceOperationQuery(self, "RegisterListEventReceiver", None, {}, None, None)

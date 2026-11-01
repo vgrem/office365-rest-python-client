@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class PointPublishingUser(Entity):
@@ -80,6 +81,7 @@ class PointPublishingUser(Entity):
     def entity_type_name(self):
         return "SP.Publishing.PointPublishingUser"
 
+    @site_access(SiteLevel.MANAGE)
     def delete_user_from_container_group(self) -> Self:
         """DeleteUserFromContainerGroup operation."""
         qry = ServiceOperationQuery(self, "DeleteUserFromContainerGroup", None, {}, None, None)

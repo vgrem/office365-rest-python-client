@@ -1,12 +1,14 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPSocialSwitch(Entity):
     """Provides methods to determine whether certain social features are enabled or disabled."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def is_following_feature_enabled(context):
         """Returns true if the SPSocial follow feature is enabled, taking into account the current context
         as appropriate. Specifically, if there is a SP.Web within the SP.RequestContext, this method will take into
