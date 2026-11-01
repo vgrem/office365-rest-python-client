@@ -12,6 +12,7 @@ from office365.sharepoint.directory.my_groups_result import MyGroupsResult
 from office365.sharepoint.directory.users.user import User
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPHelper(Entity):
@@ -22,6 +23,7 @@ class SPHelper(Entity):
         return self._resource_path
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def is_member_of(
         context: ClientContext,
         principal_name: str,
@@ -42,6 +44,7 @@ class SPHelper(Entity):
         return result
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def check_site_availability(context: ClientContext, site_url: str) -> ClientResult[bool]:
         """ """
         return_type = ClientResult[bool](context)
@@ -58,6 +61,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_membership(context, user_id):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): SharePoint client context
@@ -70,6 +74,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_members_info(context, group_id, row_limit, return_type: MembersInfo | None = None):
         """Args:
         context (office365.sharepoint.client_context.ClientContext): SharePoint context
@@ -88,6 +93,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_my_groups(context, logon_name, offset, length, return_type: MyGroupsResult | None = None):
         """Retrieves information about groups that a user belongs to.
 
@@ -106,6 +112,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_members(context, group_id: str, return_type=None):
         """Args:
         group_id (str): Group identifier
@@ -120,6 +127,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_owners(
         context: ClientContext,
         group_id: str,
@@ -138,6 +146,7 @@ class SPHelper(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def remove_external_members(context: ClientContext, group_id: str) -> SPHelper:
         """Args:
         group_id (str): Group identifier

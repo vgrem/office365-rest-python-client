@@ -617,6 +617,19 @@ introduced.
   manager (tenant themes are tenant state, and a read of them is still tenant state) and
   search settings, whose one writer is `setxssearchpolicy`. Debt 824 → 703, and six live
   utility tests derive their precondition from the declaration.
+- **The eight owners at nine and eight operations each.** 67 methods: the app instance in a
+  site (9), the SharePoint directory provider (9), the tenant administration group (9), the
+  directory helper (8), the crawl-version provider for tenant search administration (8), the
+  two social following managers (8 each) and `MoveCopyUtil` (8). The split is between the
+  tenant's directory and the site's own state: creating an app instance, recycling it,
+  restoring it and upgrading it are `MANAGE` on the site, while `get_app_database_connection_string`
+  only reads; the directory provider and the tenant administration group reach past the site
+  collection and name the SharePoint Administrator role, and the provider's two
+  `get_or_create_unified_group*` calls are directory writes at `FULL_CONTROL`; `SPHelper` reads
+  membership, owners and site availability seven times and `MANAGE`s the one call that removes
+  external members; the two social following managers are one operation set worn twice, as the
+  SharePoint and the REST spelling of the same user's followers; and every `MoveCopyUtil` entry
+  is a write, because copying a file is still writing one. Debt 703 → 636.
 
 
 

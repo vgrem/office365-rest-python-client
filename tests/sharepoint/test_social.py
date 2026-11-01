@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.social.following.manager import SocialFollowingManager
 from office365.sharepoint.social.following.rest_manager import (
     SocialRestFollowingManager,
 )
@@ -15,6 +16,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -27,23 +29,27 @@ class TestSocial(SPTestCase):
         cls.my_client = ClientContext(test_team_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
+        cls.client = cls.my_client
 
     def test_01_is_following_feature_enabled(self):
         """Check if the following feature is enabled."""
         result = SPSocialSwitch.is_following_feature_enabled(self.my_client).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SocialRestFollowingManager.followers, flow="delegated")
     def test_04_get_followers(self):
         """Get followers via SocialRestFollowingManager."""
         manager = SocialRestFollowingManager(self.my_client)
         result = manager.my.followers().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SocialFollowingManager.get_followers, flow="delegated")
     def test_05_get_followers_alt(self):
         """Get followers via social following manager."""
         result = self.my_client.social_following_manager.get_followers().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SocialFollowingManager.get_suggestions, flow="delegated")
     def test_06_get_suggestions(self):
         """Get suggestions from the social following manager."""
         result = self.my_client.social_following_manager.get_suggestions().execute_query()

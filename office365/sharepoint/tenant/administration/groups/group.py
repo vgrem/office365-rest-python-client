@@ -4,10 +4,12 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.groups.info import GroupInfo
 
 
@@ -19,6 +21,7 @@ class SPOGroup(Entity):
             resource_path = StaticPath("Microsoft.Online.SharePoint.TenantAdministration.SPOGroup")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_as_group_owner_and_member(self, group_id: str, user_id: str, user_principal_name: str) -> Self:
         """ """
         payload = {
@@ -30,6 +33,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_group_info(self, group_id):
         """"""
         return_type = ClientResult(self.context, GroupInfo())
@@ -42,6 +46,7 @@ class SPOGroup(Entity):
     def entity_type_name(self):  # type: ignore[override]
         return "Microsoft.Online.SharePoint.TenantAdministration.SPOGroup"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_group_member(self, group_id: UUID, member_id: UUID, member_principal_name: str) -> Self:
         """AddGroupMember operation.
 
@@ -64,6 +69,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_group_owner(self, group_id: UUID, owner_id: UUID, owner_principal_name: str) -> Self:
         """AddGroupOwner operation.
 
@@ -86,6 +92,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_as_group_owner_and_member(self, group_id: UUID, user_id: UUID) -> Self:
         """RemoveAsGroupOwnerAndMember operation.
 
@@ -101,6 +108,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_group_member(self, group_id: UUID, member_id: UUID) -> Self:
         """RemoveGroupMember operation.
 
@@ -116,6 +124,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_group_owner(self, group_id: UUID, owner_id: UUID) -> Self:
         """RemoveGroupOwner operation.
 
@@ -131,6 +140,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_group_properties(self, group_id: UUID, display_name: str) -> Self:
         """UpdateGroupProperties operation.
 
@@ -146,6 +156,7 @@ class SPOGroup(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_group_properties_by_site_id(self, group_id: UUID, site_id: UUID, display_name: str) -> Self:
         """UpdateGroupPropertiesBySiteId operation.
 

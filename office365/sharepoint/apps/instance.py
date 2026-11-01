@@ -10,6 +10,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -106,6 +107,7 @@ class AppInstance(Entity):
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
+    @site_access(SiteLevel.MANAGE)
     def cancel_all_jobs(self) -> ClientResult[bool]:
         """CancelAllJobs operation."""
         return_type = ClientResult(self.context, bool())
@@ -113,6 +115,7 @@ class AppInstance(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_app_database_connection_string(self) -> ClientResult[str]:
         """GetAppDatabaseConnectionString operation."""
         return_type = ClientResult(self.context, str())
@@ -120,6 +123,7 @@ class AppInstance(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def install(self) -> ClientResult[UUID]:
         """Install operation."""
         return_type = ClientResult(self.context, UUID(int=0))
@@ -127,6 +131,7 @@ class AppInstance(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def recycle(self) -> ClientResult[UUID]:
         """Recycle operation."""
         return_type = ClientResult(self.context, UUID(int=0))
@@ -134,6 +139,7 @@ class AppInstance(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def restore(self) -> ClientResult[UUID]:
         """Restore operation."""
         return_type = ClientResult(self.context, UUID(int=0))
@@ -142,6 +148,7 @@ class AppInstance(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def retrieve_app_database_connection_string(context: ClientContext) -> ClientResult[str]:
         """RetrieveAppDatabaseConnectionString operation."""
         from office365.sharepoint.apps.instance import AppInstance
@@ -153,12 +160,14 @@ class AppInstance(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def retry_all_jobs(self) -> Self:
         """RetryAllJobs operation."""
         qry = ServiceOperationQuery(self, "RetryAllJobs", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def uninstall(self) -> ClientResult[UUID]:
         """Uninstall operation."""
         return_type = ClientResult(self.context, UUID(int=0))
@@ -166,6 +175,7 @@ class AppInstance(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def upgrade(self, app_package_stream: bytes) -> Self:
         """Upgrade operation.
 

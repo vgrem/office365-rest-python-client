@@ -4,6 +4,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.v3.static import StaticPath
@@ -11,6 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection
 from office365.sharepoint.directory.provider.object_data import DirectoryObjectData
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SharePointDirectoryProvider(Entity):
@@ -25,6 +27,7 @@ class SharePointDirectoryProvider(Entity):
 
         return SPHelper.check_site_availability(self.context, site_url)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def read_directory_object(self, data: DirectoryObjectData) -> ClientResult[DirectoryObjectData]:
         """"""
         return_type = ClientResult(self.context, DirectoryObjectData())
@@ -37,6 +40,7 @@ class SharePointDirectoryProvider(Entity):
     def entity_type_name(self):
         return "SP.Directory.Provider.SharePointDirectoryProvider"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_directory_object(self, data: DirectoryObjectData) -> ClientResult[DirectoryObjectData]:
         """CreateDirectoryObject operation.
 
@@ -53,6 +57,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_directory_object(self, data: DirectoryObjectData) -> Self:
         """DeleteDirectoryObject operation.
 
@@ -64,6 +69,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def get_or_create_unified_group_tenant_instance_id(
         self, group_id: UUID, tenant_instance_id: UUID
     ) -> ClientResult[UUID]:
@@ -87,6 +93,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def get_or_create_unified_group_with_preferred_data_location(
         self, group_id: UUID, preferred_data_location: str
     ) -> ClientResult[UUID]:
@@ -110,6 +117,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def notify_data_changes(self, data: DirectoryObjectData) -> Self:
         """NotifyDataChanges operation.
 
@@ -121,6 +129,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def read_directory_object_batch(
         self, ids: list[UUID], object_type: int
     ) -> ClientResult[ClientValueCollection[DirectoryObjectData]]:
@@ -148,6 +157,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def update_cache(self, data: DirectoryObjectData) -> Self:
         """UpdateCache operation.
 
@@ -159,6 +169,7 @@ class SharePointDirectoryProvider(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def update_directory_object(self, data: DirectoryObjectData) -> Self:
         """UpdateDirectoryObject operation.
 
