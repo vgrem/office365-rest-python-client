@@ -57,10 +57,10 @@ class EnvFile:
     * blank and ``#`` lines carry nothing; ``export KEY=value`` is ``KEY=value``;
     * quotes are removed, and a value keeps a trailing ``#`` comment only when quoted.
 
-    Nothing here writes. ``.env.example`` is the skeleton a human copies and fills in, and
-    :mod:`tests.setup` prints the lines this checkout still needs rather than editing the
-    file: the program that can rewrite a secret file in place is one program that can
-    truncate one.
+    Nothing here writes. ``.env.example`` is the skeleton a human copies and fills in, the
+    scripts under ``examples/`` print the two values a tenant only tells you once, and no
+    program edits the file: the program that can rewrite a secret file in place is one
+    program that can truncate one.
     """
 
     def __init__(self, path: Path) -> None:
@@ -180,9 +180,9 @@ def derived_urls(prefix: str, root: str = "") -> dict[str, str]:
     """What a tenant name alone determines about its URLs, keyed by ``.env`` name.
 
     ``root`` is an already-resolved root site (an ``.env`` that sets only
-    ``OFFICE365_ROOT_SITE_URL`` still gets consistent children). The wizard writes
-    this dict as the ``.env`` defaults and :meth:`Settings.from_env` reads it as the
-    fallback for the same keys, so the shape is stated once.
+    ``OFFICE365_ROOT_SITE_URL`` still gets consistent children). :meth:`Settings.from_env`
+    reads this dict as the fallback for the keys ``.env`` leaves out, so the shape of a
+    tenant's URLs is stated once.
     """
     root = root or (f"https://{prefix}.sharepoint.com" if prefix else "")
     urls = {"OFFICE365_TENANT_PREFIX": prefix, "OFFICE365_ROOT_SITE_URL": root}
@@ -295,7 +295,7 @@ class Settings:
         if not any(self.is_ready(flow) for flow in FLOWS):
             lines += [
                 "",
-                "  Tip: run `python -m tests.setup` (or copy .env.example), then re-run `tests.doctor`.",
+                "  Tip: copy .env.example to .env and fill it in, then re-run `tests.doctor`.",
                 "  Then see what the live suites need: `python -m tests.preflight --verify`.",
             ]
         return "\n".join(lines)

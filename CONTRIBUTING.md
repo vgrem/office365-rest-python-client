@@ -91,15 +91,14 @@ The offline tests are split by what they describe:
 | --- | --- |
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus the declaration ratchet |
 | `tests/tooling` | the code generator under `generator/` — two files: an end-to-end run, and the in-place editing that rewrites shipped source |
-| `tests/test_settings.py` | the `tests/settings.py` configuration loader and its `.env` grammar |
-| `tests/test_setup.py` | the `tests/setup.py` wizard's decisions (offline, `-y`, no prompts, no `.env` writes) |
 | `tests/test_capabilities.py` | the declared-permission vocabulary: checking, skipping and reporting |
 
 The bootstrap itself has one module per job, and nothing else: `tests/settings.py`
-resolves configuration (`Settings`, the `.env` file, readiness), `tests/setup.py`
-discovers credentials and prints the lines `.env` needs — nothing in the repo writes
-that file — `tests/doctor.py` reports it, and `tests/preflight.py` reports what the
-*live suites* still need from the tenant (permissions, roles, licenses) — see below. A value is spelled once — in the `Settings` dataclass —
+resolves configuration (`Settings`, the `.env` file, readiness), `tests/doctor.py`
+reports it, and `tests/preflight.py` reports what the *live suites* still need from the
+tenant (permissions, roles, licenses) and can grant it with `--grant` — nothing in the
+repo writes `.env`, and the example scripts print the two values a tenant reveals once.
+See below. A value is spelled once — in the `Settings` dataclass —
 and the legacy `tests.site_url` / `tests.test_site_url` spellings are a `__getattr__`
 over its fields, not a list to keep in step.
 
@@ -139,10 +138,10 @@ where a `Requirement` answers `unmet(state)` and `TenantState` fetches *only* th
 requirement names — an app-only token has no `/me` to ask for licenses, so asking would turn
 a skip into a failure.
 
-`python -m tests.setup --grant` turns that matrix into the *smallest* set of grants that
+`python -m tests.preflight --grant` turns that matrix into the *smallest* set of grants that
 would unblock the tree: one name per any-of group, shared names asked for once, a
 confirmation before anything changes, and a re-read of the tenant afterwards. A
-requirement this wizard cannot satisfy — a directory role for the test user, a license
+requirement it cannot satisfy — a directory role for the test user, a license
 that has to be bought — is named rather than dropped.
 
 A permission the tenant does not grant must be visible in three places, and all three

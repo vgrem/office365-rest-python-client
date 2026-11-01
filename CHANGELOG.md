@@ -397,17 +397,22 @@ introduced.
   offline. The skip reason, the session header and `python -m tests.doctor` all name the
   switch instead of assuming a terminal; the flag itself is unchanged, and a runner that
   can hold arguments should still use it.
-- **Nothing writes `.env` any more.** The wizard that discovers credentials and grants what
-  the live suites declare used to merge its findings back into the repo-root `.env`, leaving
-  a `.env.bak` and `chmod`-ing both. It now prints the block instead: the file holds an app
-  secret and the admin account, `.env.example` is already the skeleton, and a program that
-  rewrites a secret file can also truncate one. The old writer had in fact stopped working —
-  its merge helper was removed without its call site, so `python -m tests.setup` raised
-  `NameError` before doing anything, and the certificate/secret provisioning it wrapped was
-  reachable from nowhere. `tests.setup` is once again the one program that creates a
-  certificate, a secret and the grants, and it ends by naming what `.env` needs; `--dry-run`
-  prints the same block without signing in and marks a secret already in `.env` as `<kept>`,
-  so a preview stays safe to paste into an issue.
+- **Nothing writes `.env`, nothing generates it, and the wizard is gone.** The program that
+  discovers credentials and grants what the live suites declare used to merge its findings
+  back into the repo-root `.env`, leaving a `.env.bak` and `chmod`-ing both. That writer had
+  in fact stopped working — its merge helper was removed without its call site, so
+  `python -m tests.setup` raised `NameError` before doing anything. Everything it did that is
+  still worth doing lives where the thing it acts on lives: the certificate and the secret
+  come from the example scripts that create them
+  (`examples/entraid/applications/rotate_cert.py` now prints
+  `OFFICE365_CERT_THUMBPRINT`, `rotate_secret.py` already printed the secret once), and the
+  grant loop moved to `python -m tests.preflight --grant` — the module that already computes
+  the plan, and now applies it, asks before changing anything, and re-reads the tenant
+  afterwards. `tests/setup.py` (428 lines) is deleted; `.env.example` is the skeleton, the
+  file holds an app secret and the admin account, and a program that can rewrite a secret
+  file can also truncate one. Flags that existed only to fill a printed block went with it
+  (`--sites`, `--site`, `--username`, `--username-alt`, `--shared-mailbox`, `--with-password`,
+  `--no-password`, `--pick-users`, `--new-app`, `--dry-run`).
 - **Tenant administration declares what it needs.** The
   three service-wide objects — `Tenant` (284 operations), `SiteMoveService` (86) and
   `Office365Tenant` (43) — now name a rung and, where the permission alone does not decide,

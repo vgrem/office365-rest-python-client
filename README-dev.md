@@ -99,13 +99,13 @@ The admin needs **Global Administrator**, **Privileged Role Administrator** or
 
 ### 3. Grant permissions
 
-Once `.env` exists, the wizard can grant everything the live suites declare and the
-tenant lacks — it reads the requirement matrix, prints the plan, asks, grants, and
+Once `.env` exists, `tests.preflight` can grant everything the live suites declare and
+the tenant lacks — it reads the requirement matrix, prints the plan, asks, grants, and
 re-reads the tenant (see [Grant what the suites need](#grant-what-the-suites-need)):
 
 ```bash
-uv run python -m tests.setup --grant --dry-run   # see the plan first
-uv run python -m tests.setup --grant             # grant it
+uv run python -m tests.preflight --verify    # what is missing, without changing anything
+uv run python -m tests.preflight --grant     # the same, then grant it
 ```
 
 For a single permission, the two scripts below take a name and apply admin consent:
@@ -137,50 +137,29 @@ uv run python examples/entraid/applications/redirect_uris.py
 
 ### 5. App-only
 
-The guided wizard finds the values, prints them, and leaves `.env` to you. It reads
-what is already configured, prompts only for the tenant and sign-in app id when they
-are missing, signs in, reuses or generates one self-signed certificate (valid for both
-Graph and SharePoint), optionally creates a client secret, and derives the SharePoint
-URLs from the tenant name (or the signed-in UPN). Entra reveals a secret's value only
-at creation, so the wizard asks whether to create one (default no) unless a secret is
-already configured:
+Two values a tenant reveals once and never returns again are the certificate thumbprint
+and a client secret. Both come from the scripts that create them, not from a wizard:
 
 ```bash
-uv run python -m tests.setup
+uv run python examples/entraid/applications/rotate_cert.py     # prints OFFICE365_CERT_THUMBPRINT
+uv run python examples/entraid/applications/rotate_secret.py   # prints CLIENT_SECRET, once
 ```
 
-It ends with the block this checkout still needs — the derived URLs commented out, the
-way the skeleton marks them as optional — for you to paste into `.env`, replacing a key
-that is already there. Nothing writes that file: it holds an app secret and the admin
-account, and a program that can rewrite it can also truncate it. Everything else — the
-admin/primary usernames, the optional secondary user and shared mailbox, and the
-`*_SITE_URL` defaults — is discovered or derived. Re-running reuses what is already
-there; `--dry-run` prints the same block without signing in, and marks a secret that is
-already in `.env` as `<kept>` rather than repeating it:
+Those two lines, the URLs, usernames and mailboxes the comments in `.env.example` ask
+for, and the app registration from step 2 are the whole file. Nothing writes it — it
+holds an app secret and the admin account, and a program that can rewrite it can also
+truncate it.
+
+SharePoint has an end-to-end variant that provisions the app, attaches the certificate
+the live suites read (`tests/selfsigncert.crt`), grants `Sites.Selected` plus one role
+per site, and prints the same block:
 
 ```bash
-uv run python -m tests.setup --dry-run
+uv run python examples/sharepoint/getting-started/setup_sharepoint_app.py --site <url>
 ```
 
-Pass `--with-secret` to create one without prompting, or `--no-secret` to never
-create one (`--yes` runs default to no). If `OFFICE365_CLIENT_SECRET` is left
-empty, setup prints how to add it later.
-
-Prerequisite: the app allows public client flows and has the delegated
-`Application.ReadWrite.All` permission with admin consent (steps 2–3). Other
-permissions are granted by `--grant` (step 3). Prefer the individual scripts?
-
-```bash
-# Certificate (Graph)
-uv run python examples/entraid/applications/rotate_cert.py --generate
-
-# SharePoint app-only, full cycle (cert + Sites.Selected + per-site access + values to paste)
-uv run python examples/sharepoint/getting-started/setup_sharepoint_app.py \
-    --site https://contoso.sharepoint.com/sites/project
-
-# Client secret (Graph only — SharePoint REST API v1 rejects secrets)
-uv run python examples/entraid/applications/rotate_secret.py
-```
+A client secret signs in Graph but not the SharePoint REST API v1, which wants a
+certificate — that is why both exist.
 
 Then run tests and examples — missing credentials are skipped, not failed:
 
@@ -243,23 +222,22 @@ rather than just counting.
 
 ### Grant what the suites need
 
-`tests.preflight` answers "what is missing"; the setup wizard can close the gap, because
-it is the one program that already signs in as an administrator:
+`tests.preflight` answers "what is missing"; `--grant` closes the gap, because it is the
+one program that already signs in as an administrator:
 
 ```bash
-uv run python -m tests.setup --grant --dry-run        # the plan, nothing granted
-uv run python -m tests.setup --grant                  # asks, grants, re-reads the tenant
-uv run python -m tests.setup --grant -y               # same, no prompt (CI / scripted)
+uv run python -m tests.preflight --verify            # the plan, nothing granted
+uv run python -m tests.preflight --grant             # asks, grants, re-reads the tenant
+uv run python -m tests.preflight --grant -y           # same, no prompt (scripted)
 ```
 
 The plan is the *smallest* set that would unblock the tree — one name per any-of group,
-shared names asked for once — so the wizard does not request `Mail.ReadWrite` when
-`Mail.Read` is enough. It prints the plan and waits for confirmation; `--dry-run` stops
-there. Sign in with `--admin <upn>` (or `--interactive` for the browser flow) as an
-account holding **Global Administrator** or **Privileged Role Administrator**: delegated
-consent and application-role assignment are tenant-wide changes. Grants are idempotent —
-an already-granted permission is skipped, a refused one is reported and the rest are
-still attempted — and the wizard re-reads the tenant afterwards, so "done" means the
+shared names asked for once — so it does not request `Mail.ReadWrite` when `Mail.Read`
+is enough. It prints the plan and waits for confirmation, then signs in by device code
+as an account holding **Global Administrator** or **Privileged Role Administrator**:
+delegated consent and application-role assignment are tenant-wide changes. Grants are
+idempotent — an already-granted permission is skipped, a refused one is reported and the
+rest are still attempted — and it re-reads the tenant afterwards, so "done" means the
 answer changed, not that the call returned.
 
 Two kinds of requirement are reported but not granted, because they are not permissions

@@ -18,22 +18,45 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import subprocess
 import sys
+from pathlib import Path
 
 from office365.directory.applications.app_ids import MsAppIds
 from office365.directory.applications.application import Application
 from office365.graph_client import GraphClient
 from tests.settings import settings
-from tests.setup import (
-    CERT_PRIVATE,
-    CERT_PUBLIC,
-    PROJECT_ROOT,
-    generate_certificate,
-)
+
+ROOT = Path(__file__).resolve().parents[3]
+CERT_PUBLIC = ROOT / "tests" / "selfsigncert.crt"
+CERT_PRIVATE = ROOT / "tests" / "selfsigncert.pem"
 
 SITES_SELECTED = "Sites.Selected"
 SITES_FULL_CONTROL = "Sites.FullControl.All"
 SITE_ROLES = ("read", "write", "manage", "fullcontrol")
+
+
+def generate_certificate(common_name: str) -> None:
+    """Write the pair the live suites read, ``tests/selfsigncert.{crt,pem}``, with openssl."""
+    CERT_PUBLIC.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["openssl", "genrsa", "-out", str(CERT_PRIVATE), "2048"], check=True)
+    subprocess.run(
+        [
+            "openssl",
+            "req",
+            "-x509",
+            "-new",
+            "-key",
+            str(CERT_PRIVATE),
+            "-out",
+            str(CERT_PUBLIC),
+            "-days",
+            "365",
+            "-subj",
+            f"/CN={common_name}",
+        ],
+        check=True,
+    )
 
 
 def _parse_args() -> argparse.Namespace:
@@ -85,7 +108,7 @@ def _ensure_certificate(app, app_name: str, force: bool) -> str:
     if force or not (CERT_PUBLIC.is_file() and CERT_PRIVATE.is_file()):
         _require_openssl()
         generate_certificate(app_name)
-        print(f"Generated {CERT_PUBLIC.relative_to(PROJECT_ROOT)}")
+        print(f"Generated {CERT_PUBLIC.relative_to(ROOT)}")
     app.ensure_certificate(CERT_PUBLIC, app_name).execute_query()
     print(f"Ensured the certificate on app {app.app_id}.")
     return Application.certificate_thumbprint(CERT_PUBLIC)
@@ -97,7 +120,7 @@ def _print_connection_values(tenant: str, setup_client_id: str, app_id: str, thu
         "OFFICE365_CLIENT_ID": app_id,
         "OFFICE365_SETUP_CLIENT_ID": setup_client_id,
         "OFFICE365_CERT_THUMBPRINT": thumbprint,
-        "OFFICE365_CERT_PATH": CERT_PRIVATE.relative_to(PROJECT_ROOT).as_posix(),
+        "OFFICE365_CERT_PATH": CERT_PRIVATE.relative_to(ROOT).as_posix(),
     }
     print("\nConnection values (add to .env):")
     for key, value in values.items():

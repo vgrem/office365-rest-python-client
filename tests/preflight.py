@@ -11,6 +11,7 @@ app and user.
     python -m tests.preflight --all           # every requirement, not just the blocked ones
     python -m tests.preflight --markdown      # the per-suite matrix
     python -m tests.preflight --report rpt/   # rpt/preflight.md + rpt/preflight.json
+    python -m tests.preflight --grant         # grant the missing ones to the configured app
 
 The matrix is derived from the decorators stamped by :mod:`tests.decorators`; there is
 no list of scopes anywhere in this file to fall out of date.
@@ -34,8 +35,16 @@ from unittest import TestCase
 from office365.graph_client import GraphClient
 from office365.permissions import FLOWS as PERMISSION_FLOWS
 from office365.permissions import ResourceName
+from office365.runtime.client_request_exception import ClientRequestException
 
-from tests.capabilities import Needs, Requirement, TenantState, declared_calls, declared_requirement
+from tests.capabilities import (
+    Needs,
+    Requirement,
+    TenantState,
+    declared_calls,
+    declared_requirement,
+    forget_cached_tenant_facts,
+)
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
 from tests.settings import FLOWS, Settings, settings
 from tests.sharepoint.sharepoint_case import SPTestCase
@@ -125,8 +134,8 @@ def _client(flow: str, cfg: Settings = settings) -> GraphClient | None:
 def verify(found: list[Needs], client_id: str, cfg: Settings = settings) -> dict[Requirement, TenantState]:
     """Resolve every declared requirement against the tenant, once per requirement.
 
-    ``cfg`` is passed by the setup wizard, which has just written ``.env``: the module
-    level :data:`settings` was read before that file existed.
+    ``cfg`` is the configuration to sign in with; it defaults to the module-level
+    :data:`settings`, which every caller without a configuration of its own wants.
     """
     states: dict[Requirement, TenantState] = {}
     for flow in sorted({needs.flow for needs in found}):
@@ -200,6 +209,104 @@ def render_plan(plan: list[Grant]) -> str:
     """The plan as a short list a person can approve, one line per group."""
     width = max([15, *(len(grant.label()) for grant in plan)])
     return "\n".join(f"  {grant.label():<{width}} {', '.join(grant.names)}" for grant in plan)
+
+
+#: The requirement kinds a plan can name but not grant: a directory role is assigned to a
+#: person and a license is bought, so applying one would mean guessing who gets it.
+_MANUAL_HINT = {
+    "directory role": "assign it to the test user in the Entra portal (needs Entra ID P1/P2)",
+    "license": "buy seats, then assign the SKU to the test user",
+}
+
+
+def _admin_client() -> GraphClient:
+    """A signed-in administrator, because a grant is a tenant-wide change and a person owns it."""
+    client = GraphClient(tenant=settings.tenant).with_device_flow(settings.client_id)
+    try:
+        client.require_role("Global Administrator", "Privileged Role Administrator")
+    except SystemExit:
+        print("  (continuing; the admin role could not be verified)")
+    return client
+
+
+def apply_plan(client: GraphClient, plan: list[Grant], app_id: str) -> tuple[list[str], list[str]]:
+    """Grant what ``plan`` asks for; return (done, failed) as human-readable lines.
+
+    A grant already in place is reported rather than made twice, and one whose state cannot
+    be read is attempted anyway: applying a grant is idempotent, so a missing read scope must
+    not turn into a missing grant.
+    """
+    checks = {
+        "delegated": client.has_delegated_permission,
+        "application": client.has_application_permissions,
+    }
+    grants = {
+        "delegated": client.grant_delegated_permissions,
+        "application": client.grant_application_permissions,
+    }
+    done: list[str] = []
+    failed: list[str] = []
+    for grant in plan:
+        if not grant.grantable:
+            continue
+        for name in grant.names:
+            entry = f"{grant.label()} {name}"
+            try:
+                already = checks[grant.flow](name, app_id, resource=grant.resource)
+            except ClientRequestException:
+                already = False
+            if already:
+                done.append(f"{entry} (already granted)")
+                continue
+            try:
+                grants[grant.flow](app_id, name, resource=grant.resource).execute_query()
+            except ClientRequestException as exc:
+                reason = str(exc).splitlines()[0] or exc.__class__.__name__
+                failed.append(f"{entry}: {reason}")
+                continue
+            done.append(entry)
+    return done, failed
+
+
+def _confirm(prompt: str) -> bool:
+    """A yes/no question that defaults to no: a grant is a tenant-wide change."""
+    return input(f"{prompt} [y/N]: ").strip().lower() in ("y", "yes")
+
+
+def grant_missing(found: list[Needs], *, yes: bool = False) -> int:
+    """Read what the suites need, grant what is missing, then read the tenant again."""
+    states = verify(found, settings.client_id)
+    if not states:
+        print("Nothing was verified: no auth flow is ready yet - fill .env from .env.example first.")
+        return 1
+    plan = grant_plan(found, states)
+    if not plan:
+        print(f"Every declared permission is already granted to {settings.client_id}.")
+        return 0
+    print(f"\nPermissions the live suites declare and {settings.client_id} lacks:")
+    print(render_plan(plan))
+    for grant in plan:
+        if not grant.grantable:
+            print(f"  ({grant.label()}: {_MANUAL_HINT.get(grant.flow, 'configure it by hand')})")
+    if not yes and not _confirm(f"Grant these to {settings.client_id} now?"):
+        print("Nothing granted.")
+        return 0
+
+    done, failed = apply_plan(_admin_client(), plan, settings.client_id)
+    for line in done:
+        print(f"  granted: {line}")
+    for line in failed:
+        print(f"  failed:  {line}")
+
+    forget_cached_tenant_facts()
+    remaining = grant_plan(found, verify(found, settings.client_id))
+    if remaining:
+        print("\nStill missing:")
+        print(render_plan(remaining))
+        print("Re-run `python -m tests.preflight --verify` once the rest is in place.")
+        return 1
+    print("\nEvery declared permission is now granted. `python -m tests.preflight --verify` will confirm it.")
+    return 1 if failed else 0
 
 
 def _flow(row: _Row) -> str:
@@ -528,9 +635,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--report", metavar="DIR", help="write preflight.md into DIR (a report for people)")
     parser.add_argument("--json", metavar="DIR", help="write preflight.json into DIR (a report for tools)")
     parser.add_argument("--strict", action="store_true", help="exit 1 when a flow or requirement is not satisfied")
+    parser.add_argument(
+        "--grant",
+        action="store_true",
+        help="grant the missing permissions to the configured app (asks first, then re-reads the tenant)",
+    )
+    parser.add_argument("-y", "--yes", action="store_true", help="do not ask before --grant")
     args = parser.parse_args(argv)
 
     found = suites()
+    if args.grant:
+        return grant_missing(found, yes=args.yes)
     # --strict cannot mean anything without an answer to compare against, so it verifies too.
     states = verify(found, settings.client_id) if (args.verify or args.strict) else {}
     report = Report(found, states)

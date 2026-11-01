@@ -4,7 +4,8 @@ Add a new certificate to an app (rotate its key credential).
 Uploads the *public* certificate (``.crt``); the private key stays local and is
 what the client authenticates with. By default a self-signed pair is generated
 with openssl into a temporary directory; pass ``--cert`` to upload an existing
-certificate instead.
+certificate instead. Either way it prints the thumbprint, which is what
+``.env`` needs as ``OFFICE365_CERT_THUMBPRINT`` and Entra cannot show again.
 
 Usage:
 
@@ -27,6 +28,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from office365.directory.applications.application import Application
 from office365.graph_client import GraphClient
 from tests.settings import admin_username, client_id, tenant
 
@@ -81,6 +83,7 @@ def main() -> None:
     app.add_certificate(cert_path.read_bytes(), args.name).execute_query()
     print(f"Uploaded {cert_path} to {app.display_name}.")
     print(f"Keep the private key at: {key_path}")
+    print(f"\nOFFICE365_CERT_THUMBPRINT={Application.certificate_thumbprint(cert_path)}")
 
 
 if __name__ == "__main__":

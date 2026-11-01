@@ -98,7 +98,7 @@ def pytest_report_header(config: pytest.Config) -> str:
         # Nothing is configured: say what to do, not just what is absent.
         header += (
             "\n  no auth flow is configured, so every live test will be skipped."
-            "\n  next: `python -m tests.setup`, then `python -m tests.preflight --verify`."
+            "\n  next: copy .env.example to .env and fill it in, then `python -m tests.preflight --verify`."
         )
     return header
 
