@@ -11,6 +11,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -22,8 +23,10 @@ class TestHomeSites(SPTestCase):
         client = ClientContext(test_admin_site_url).with_username_and_password(
             test_tenant, test_client_id, test_username, test_password
         )
+        cls.client = client
         cls.tenant = Tenant(client)
 
+    @requires_call(Tenant.get_home_sites, flow="delegated")
     def test_01_get_home_sites(self):
         """Get home sites.
 

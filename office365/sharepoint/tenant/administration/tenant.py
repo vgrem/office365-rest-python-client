@@ -8,6 +8,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -36,6 +37,7 @@ from office365.sharepoint.lists.render_data_parameters import RenderListDataPara
 from office365.sharepoint.lists.render_override_parameters import (
     RenderListDataOverrideParameters,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
 from office365.sharepoint.publishing.portalhealth.status import PortalHealthStatus
 from office365.sharepoint.sites.home.details import HomeSitesDetails
@@ -325,6 +327,7 @@ class Tenant(Entity):
     def __init__(self, context):
         super().__init__(context, StaticPath("Microsoft.Online.SharePoint.TenantAdministration.Tenant"))
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def accept_syntex_repository_terms_of_service(self) -> Self:
         """
         Used to accept the Microsoft Syntex repository terms of service for your organization.
@@ -335,6 +338,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def activate_application_billing_policy(self, billing_policy_id: str) -> ClientResult[SPOAppBillingProperties]:
         """ """
         payload = {"billingPolicyId": billing_policy_id}
@@ -343,6 +347,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_recent_admin_action_report(self) -> ClientResult[RecentAdminActionReport]:
         """Logs recent administrative actions within a SharePoint Online tenant"""
         return_type = ClientResult(self.context, RecentAdminActionReport())
@@ -370,6 +375,7 @@ class Tenant(Entity):
         settings.ensure_property("CorporateCatalogUrl").after_execute(lambda _: _settings_loaded())
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_chat_gpt_response(self) -> ClientResult[ChatGptRequestOptions]:
         """"""
         return_type = ClientResult(self.context)
@@ -378,6 +384,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_copilot_promo_usage_statistics(self) -> ClientResult[SPOCopilotPromoUsage]:
         """ """
         return_type = ClientResult(self.context, SPOCopilotPromoUsage())
@@ -385,6 +392,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_policy_definition(self, item_id: int) -> Self:
         """Deletes a policy definition from a Microsoft 365 tenant.
         Policy definitions may refer to specific settings related to compliance, security,
@@ -397,6 +405,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_recent_admin_action_report(self, report_id: int):
         """Args:
         report_id (int):
@@ -405,6 +414,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_tenant_all_web_templates(self) -> SPOTenantWebTemplateCollection:
         """ """
         return_type = SPOTenantWebTemplateCollection(self.context)
@@ -412,6 +422,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_onedrive_site_sharing_insights(self, query_mode):
         """Retrieves insights or reports related to OneDrive for Business site sharing activities"""
         return_type = ClientResult(self.context, OneDriveSiteSharingInsights())
@@ -420,6 +431,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_collaboration_insights_data(self):
         """"""
         return_type = ClientResult[CollaborationInsightsData](self.context, CollaborationInsightsData())
@@ -427,6 +439,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_collaboration_insights_overview(self) -> ClientResult[CollaborationInsightsOverview]:
         """"""
         return_type = ClientResult(self.context, CollaborationInsightsOverview())
@@ -434,6 +447,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_recent_admin_actions(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context, bytes())
@@ -442,6 +456,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_content_security_policy(self) -> SPOContentSecurityPolicyConfiguration:
         """"""
         return_type = SPOContentSecurityPolicyConfiguration(self.context)
@@ -449,6 +464,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_app_billing_policies(self):
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(SPOAppBillingProperties))
@@ -456,6 +472,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_top_files_sharing_insights(self, query_mode=None):
         """Retrieves a report or data about the most shared files within a SharePoint Online tenant
 
@@ -468,6 +485,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_thumbnail_logo(self, site_url: str) -> ClientResult[AnyStr]:
         """Args:
         site_url (str):
@@ -478,6 +496,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_home_site_url(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
@@ -485,6 +504,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_home_sites(self) -> ClientResult[ClientValueCollection[HomeSitesDetails]]:
         """Retrieves the Home Site that has been designated for your Microsoft 365 tenant."""
         return_type = ClientResult(self.context, ClientValueCollection(HomeSitesDetails))
@@ -492,6 +512,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_home_sites_details(self):
         """Retrieves detailed information about the Home Sites configured in a SharePoint Online tenant."""
         return_type = ClientResult(self.context, ClientValueCollection(HomeSitesDetails))
@@ -499,6 +520,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_home_site(self, home_site_url: str) -> Self:
         """Remove home site
 
@@ -510,6 +532,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def has_valid_education_license(self) -> ClientResult[bool]:
         """"""
         return_type = ClientResult(self.context, bool())
@@ -517,18 +540,21 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_request_content_management_assessment_eligible(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "IsRequestContentManagementAssessmentEligible", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_syntex_repository_terms_of_service_accepted(self) -> ClientResult[bool]:
         return_type = ClientResult(self.context, bool())
         qry = ServiceOperationQuery(self, "IsSyntexRepositoryTermsOfServiceAccepted", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_to_csv(
         self,
         view_xml: Optional[str] = None,
@@ -550,6 +576,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_policy_report(self) -> ClientResult[bytes]:
         """"""
         return_type = ClientResult(self.context, bytes())
@@ -581,6 +608,7 @@ class Tenant(Entity):
         """
         return SPHubSitesUtility(self.context).get_hub_sites()
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_power_apps_environments(self):
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(PowerAppsEnvironment))
@@ -588,6 +616,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ransomware_activities(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context, bytes())
@@ -596,6 +625,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ransomware_events_overview(self) -> ClientResult[bytes]:
         """ """
         return_type = ClientResult(self.context, bytes())
@@ -603,6 +633,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_root_site_url(self) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context, str())
@@ -610,6 +641,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_authorization_code_for_migration(self, endpoint_url: str) -> ClientResult[str]:
         return_type = ClientResult(self.context, str())
         payload = {"endpointUrl": endpoint_url}
@@ -617,6 +649,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_subscription_id(self) -> ClientResult[str]:
         """Returns the site subscription identifier.
 
@@ -629,6 +662,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sp_list_item_count(self, list_name: str) -> ClientResult[int]:
         """ """
         return_type = ClientResult(self.context, int())
@@ -637,6 +671,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sp_list_root_folder_properties(self, list_name: str) -> ClientResult[dict]:
         """ """
         return_type = ClientResult(self.context, dict())
@@ -645,6 +680,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_all_web_templates(
         self, culture_name: Optional[str] = None, compatibility_level: Optional[int] = None
     ) -> SPOTenantWebTemplateCollection:
@@ -655,6 +691,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def check_tenant_intune_license(self) -> ClientResult[bool]:
         """Checks whether a tenant has the Intune license."""
         return_type = ClientResult(self.context, bool())
@@ -662,6 +699,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def check_tenant_licenses(self, licenses: List[str]) -> ClientResult[bool]:
         """Checks whether a tenant has the specified licenses.
 
@@ -677,6 +715,7 @@ class Tenant(Entity):
     def get_site(self, site_url: str) -> ListItem:
         return self._aggregated_site_collections_list.items.single(f"SiteUrl eq '{site_url.rstrip('/')}'").get()
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sites_by_state(self, states: Optional[List[int]] = None):
         """Args:
         states (list[int]):
@@ -700,6 +739,7 @@ class Tenant(Entity):
 
         self.get_sites_by_state(states).after_execute(_after, execute_first=True)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_health_status(self, source_url: str) -> ClientResult[PortalHealthStatus]:
         """Checks the sitehealth of a specific SharePoint site or site collection in their tenant
 
@@ -712,6 +752,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return result
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_administrators(
         self, site_id: str, return_type: Optional[ClientResult[ClientValueCollection[SiteAdministratorsInfo]]] = None
     ):
@@ -741,6 +782,7 @@ class Tenant(Entity):
         self.get_site_properties_by_url(site_url).after_execute(_get_site_administrators_by_site_url)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_secondary_administrators(
         self,
         site_id: str,
@@ -770,6 +812,7 @@ class Tenant(Entity):
         self.get_site_properties_by_url(site_url).after_execute(_get_site_secondary_administrators_by_site_url)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_site_secondary_administrators(
         self, site_id: str, emails: Optional[List[str]] = None, names: Optional[List[str]] = None
     ) -> Self:
@@ -807,6 +850,7 @@ class Tenant(Entity):
         self.get_site_properties_by_url(site_url).after_execute(_clear_site_secondary_administrators)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def register_hub_site(self, site_url: str) -> HubSiteProperties:
         """Registers an existing site as a hub site."""
         return_type = HubSiteProperties(self.context)
@@ -815,6 +859,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unregister_hub_site(self, site_url: str) -> Self:
         """Unregisters a hub site so that it is no longer a hub site."""
         payload = {"siteUrl": site_url}
@@ -822,6 +867,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_policy_definition(self) -> ClientResult[TenantAdminPolicyDefinition]:
         """ """
         return_type = ClientResult(self.context, TenantAdminPolicyDefinition())
@@ -830,6 +876,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_site(self, url: str, owner: str, title: Optional[str] = None) -> SpoOperation:
         """Queues a site collection for creation with the specified properties.
 
@@ -862,6 +909,7 @@ class Tenant(Entity):
         self.create_site(url, owner, title).after_execute(_ensure_status)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_site(self, site_url: str) -> SpoOperation:
         """Deletes the site with the specified URL
 
@@ -882,6 +930,7 @@ class Tenant(Entity):
         self.remove_site(site_url).after_execute(_remove_site_sync)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_deleted_site(self, site_url: str) -> SpoOperation:
         """Permanently removes the specified deleted site from the recycle bin.
 
@@ -907,6 +956,7 @@ class Tenant(Entity):
         _remove_next_deleted_site()
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def reorder_home_sites(
         self, home_sites_site_ids: List[str]
     ) -> ClientResult[ClientValueCollection[HomeSitesDetails]]:
@@ -921,6 +971,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def restore_deleted_site(self, site_url: str):
         """Restores deleted site with the specified URL
 
@@ -932,6 +983,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def restore_deleted_site_by_id(self, site_id: str):
         """Restores deleted site with the specified URL
 
@@ -943,6 +995,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_version_policy_for_library(self, site_url: str, list_params=None):
         """ """
         return_type = ClientResult(self.context, SPOFileVersionPolicySettings())
@@ -951,6 +1004,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_version_batch_delete_job_progress_for_library(self, site_url, list_params):
         """Gets the progress of the file version batch delete job for the specified site and list parameters."""
         return_type = ClientResult(self.context, SPOFileVersionBatchDeleteJobProgress())
@@ -961,6 +1015,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_properties_by_site_id(self, site_id: str, include_detail: bool = False) -> SiteProperties:
         """Gets the site properties for the specified site ID.
 
@@ -976,6 +1031,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_properties_by_url(self, url: str, include_detail: bool = False) -> SiteProperties:
         """Gets the site properties for the specified URL.
 
@@ -991,6 +1047,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_properties_from_sharepoint(
         self, start_index: Optional[str] = None, include_detail: bool = False
     ) -> SitePropertiesCollection:
@@ -1001,6 +1058,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_properties_from_sharepoint_by_filters(
         self, filter_text: Optional[str] = None, start_index: Optional[str] = None, include_detail: bool = False
     ) -> SitePropertiesCollection:
@@ -1011,6 +1069,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_deleted_site_properties(self, start_index: Optional[int] = None) -> EntityCollection[DeletedSiteProperties]:
         """ """
         return_type = EntityCollection(self.context, DeletedSiteProperties)
@@ -1019,6 +1078,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_billing_policy_id_for_app(self, application_id: str) -> ClientResult[str]:
         """ """
         return_type = ClientResult(self.context)
@@ -1027,6 +1087,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def connect_site_to_hub_site_by_id(self, site_url: str, hub_site_id: str) -> Self:
         """Connects Site to Hub Site
 
@@ -1039,12 +1100,14 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def ensure_brand_center_feature(self):
         """Ensures that the Brand Center feature is enabled"""
         qry = ServiceOperationQuery(self, "EnsureBrandCenterFeature")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_unlicensed_one_drive_for_business_list_to_csv(self):
         """Exports a list of OneDrive for Business sites that are associated with unlicensed users into a CSV file"""
         return_type = ClientResult(self.context, str())
@@ -1052,6 +1115,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def send_email(self, site_url: str, activity_event_json: str) -> ClientResult[bool]:
         """Send Email"""
         return_type = ClientResult(self.context, bool())
@@ -1060,6 +1124,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_copilot_promo_optin_status(self, copilot_promo_optin_enabled: bool) -> Self:
         """ """
         payload = {"copilotPromoOptInEnabled": copilot_promo_optin_enabled}
@@ -1067,6 +1132,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_default_view(self, view_id: str, list_name: str) -> Self:
         """ """
         payload = {"viewId": view_id, "listName": list_name}
@@ -1083,6 +1149,7 @@ class Tenant(Entity):
         self.ensure_property("FileVersionPolicyXml").after_execute(lambda _: _get_file_version_policy())
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_file_version_policy(
         self, is_auto_trim_enabled: bool, major_version_limit: int, expire_versions_after_days: int
     ) -> Self:
@@ -1109,12 +1176,14 @@ class Tenant(Entity):
         self.update()
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_site_activity_data(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "UpdateSiteActivityData")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_group_site_properties(
         self,
         group_id: str,
@@ -1393,6 +1462,7 @@ class Tenant(Entity):
         """Gets the serviceInfo property"""
         return self.properties.get("serviceInfo", ClientValueCollection[TenantServiceInfoValue](TenantServiceInfoValue))
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_service_info(self, request_body: dict) -> Self:
         """CreateServiceInfo operation.
 
@@ -3609,6 +3679,7 @@ class Tenant(Entity):
             ),
         )
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_company_home_site(
         self, home_site_url: str, order: int, audiences: list[UUID]
     ) -> ClientResult[TargetedSiteDetails]:
@@ -3636,6 +3707,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_home_site(self, home_site_url: str, order: int, audiences: list[UUID]) -> ClientResult[TargetedSiteDetails]:
         """AddHomeSite operation.
 
@@ -3661,6 +3733,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_pre_auth_allow_deny_list_item_setting(self, allow_pre_auth: bool, new_setting: str) -> Self:
         """AddPreAuthAllowDenyListItemSetting operation.
 
@@ -3681,6 +3754,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_recent_admin_action(self, payload: TenantAdminRecentActionPayload) -> ClientResult[TenantAdminRecentAction]:
         """AddRecentAdminAction operation.
 
@@ -3697,6 +3771,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_recent_admin_actions(
         self, payload: ClientValueCollection[TenantAdminRecentActionPayload]
     ) -> ClientResult[ClientValueCollection[TenantAdminRecentAction]]:
@@ -3715,6 +3790,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_site_to_file_archive_policy(self, policy_id: UUID, site_url: str, is_excluded: bool) -> Self:
         """AddSiteToFileArchivePolicy operation.
 
@@ -3737,6 +3813,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_spo_container_user_role(self, container_id: str, login_name: str, role: str) -> Self:
         """AddSPOContainerUserRole operation.
 
@@ -3759,6 +3836,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_spo_restricted_search_allowed_list(self, site_urls: list[str]) -> Self:
         """AddSPORestrictedSearchAllowedList operation.
 
@@ -3772,6 +3850,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_spo_service_prioritization_app_registration(
         self, app_id: UUID, policy_id: UUID, quota_multiplier: int
     ) -> Self:
@@ -3796,6 +3875,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_syntex_custom_model_setting(self, model_setting: SyntexCustomModelSetting, scenario: int) -> Self:
         """AddSyntexCustomModelSetting operation.
 
@@ -3811,6 +3891,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_to_org_assets_lib_and_cdn_v2(
         self, cdn_type: int, lib_url: str, thumbnail_url: str, org_asset_type: int, default_origin_added: bool
     ) -> Self:
@@ -3845,6 +3926,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_to_org_assets_lib_and_cdn_with_type(
         self, cdn_type: int, lib_url: str, thumbnail_url: str, org_asset_type: int
     ) -> Self:
@@ -3871,6 +3953,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_to_org_assets_lib_with_config(
         self,
         cdn_type: int,
@@ -3914,6 +3997,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def archive_container(self, container_id: str) -> Self:
         """ArchiveContainer operation.
 
@@ -3925,6 +4009,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def bootstrap_policy_automation_resources(self) -> ClientResult[bool]:
         """BootstrapPolicyAutomationResources operation."""
         return_type = ClientResult(self.context, bool())
@@ -3932,6 +4017,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def bulk_remove_resource_as_authoritative(
         self, site_ids: list[UUID]
     ) -> ClientResult[ClientValueCollection[BulkInsertOperationResult]]:
@@ -3952,6 +4038,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def bulk_set_resource_as_authoritative(
         self, site_ids: list[UUID]
     ) -> ClientResult[ClientValueCollection[BulkInsertOperationResult]]:
@@ -3972,6 +4059,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_pre_auth_allow_deny_list_settings(self, should_clear_allow_list: bool) -> Self:
         """ClearPreAuthAllowDenyListSettings operation.
 
@@ -3990,18 +4078,21 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_restricted_access_control_onedrive(self) -> Self:
         """ClearRestrictedAccessControlOneDrive operation."""
         qry = ServiceOperationQuery(self, "ClearRestrictedAccessControlOneDrive", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_restricted_access_control_sharepoint(self) -> Self:
         """ClearRestrictedAccessControlSharePoint operation."""
         qry = ServiceOperationQuery(self, "ClearRestrictedAccessControlSharePoint", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_application_billing_policy_validation(self, application_id: str) -> ClientResult[bool]:
         """CreateApplicationBillingPolicyValidation operation.
 
@@ -4016,6 +4107,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_file_archive_policy(
         self,
         policy_name: str,
@@ -4064,6 +4156,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_spo_service_prioritization_app_registration(self, app_id: UUID) -> Self:
         """DeleteSPOServicePrioritizationAppRegistration operation.
 
@@ -4077,6 +4170,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_spo_service_prioritization_app_registrations_by_policy(self, policy_id: UUID) -> ClientResult[int]:
         """DeleteSPOServicePrioritizationAppRegistrationsByPolicy operation.
 
@@ -4096,6 +4190,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_syntex_custom_model_setting(self, unique_id: str, scenario: int) -> Self:
         """DeleteSyntexCustomModelSetting operation.
 
@@ -4111,6 +4206,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def download_high_volume_component_impacted_assets_report(self, category: int, document_key: str) -> Self:
         """DownloadHighVolumeComponentImpactedAssetsReport operation.
 
@@ -4124,6 +4220,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def download_ransomware_impacted_assets_report(self, drive_id: str, file_name: str, report_name_type: int) -> Self:
         """DownloadRansomwareImpactedAssetsReport operation.
 
@@ -4141,6 +4238,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def download_spo_containers(self, active: bool) -> Self:
         """DownloadSPOContainers operation.
 
@@ -4152,12 +4250,14 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def enable_brand_center_public_cdn(self) -> Self:
         """EnableBrandCenterPublicCdn operation."""
         qry = ServiceOperationQuery(self, "EnableBrandCenterPublicCdn", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def enqueue_insights(
         self, insights_scenario: int, report_id: str, report_data_file: str, report_creation_time: datetime
     ) -> ClientResult[InsightsQueueItem]:
@@ -4194,6 +4294,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def execute_transpiler_request(self, payload: CopilotTranspilerPayload) -> ClientResult[CopilotTranspilerResponse]:
         """ExecuteTranspilerRequest operation.
 
@@ -4210,6 +4311,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_admin_list_to_csv(self, view_xml: str, list_name: str) -> ClientResult[str]:
         """ExportAdminListToCSV operation.
 
@@ -4226,6 +4328,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_containers_to_csv(self) -> ClientResult[str]:
         """ExportContainersToCSV operation."""
         return_type = ClientResult(self.context, str())
@@ -4233,6 +4336,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_csv_file(self, time_zone_id: int) -> ClientResult[str]:
         """ExportCSVFile operation.
 
@@ -4245,6 +4349,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_unlicensed_onedrive_for_business_list_to_csv(self) -> ClientResult[str]:
         """ExportUnlicensedOneDriveForBusinessListToCSV operation."""
         return_type = ClientResult(self.context, str())
@@ -4252,6 +4357,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_admin_report_data(
         self, feature_id: str, dataset_metadata: ClientValueCollection[DatasetMetadataRequestInfo], query: str
     ) -> ClientResult[bytes]:
@@ -4277,6 +4383,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_admin_report_data_json(
         self,
         feature_id: str,
@@ -4312,6 +4419,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_admin_report_metadata(self, dataset: list[str]) -> ClientResult[DatasetMetadataResponse]:
         """GetAdminReportMetadata operation.
 
@@ -4330,6 +4438,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_spo_containers_from_admin_list(
         self, query_params: SPOContainerQueryParams
     ) -> ClientResult[SPContainerCollection]:
@@ -4350,6 +4459,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_archivable_container_types(self) -> ClientResult[ClientValueCollection[SPContainerTypeStatus]]:
         """GetArchivableContainerTypes operation."""
         from office365.sharepoint.tenant.administration.container.type.status import (
@@ -4361,6 +4471,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_authoritative_resources(self) -> ClientResult[ClientValueCollection[AuthoritativeResourceProperties]]:
         """GetAuthoritativeResources operation."""
         from office365.sharepoint.tenant.administration.authoritative_resource_properties import (
@@ -4372,6 +4483,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_baseline_security_mode_pre_auth_settings(self) -> ClientResult[str]:
         """GetBaselineSecurityModePreAuthSettings operation."""
         return_type = ClientResult(self.context, str())
@@ -4379,6 +4491,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_brand_center_configuration(self) -> ClientResult[BrandCenterConfiguration]:
         """GetBrandCenterConfiguration operation."""
         from office365.sharepoint.brandcenter.configuration import (
@@ -4390,6 +4503,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_catalog_management_schema(self) -> ClientResult[CatalogManagementSchema]:
         """GetCatalogManagementSchema operation."""
         from office365.sharepoint.tenant.administration.catalog_management_schema import (
@@ -4401,6 +4515,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_catalog_management_settings(self) -> ClientResult[CatalogManagementSettings]:
         """GetCatalogManagementSettings operation."""
         from office365.sharepoint.tenant.administration.catalog_management_settings import (
@@ -4412,6 +4527,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_catalog_management_status(self) -> ClientResult[CatalogManagementStatus]:
         """GetCatalogManagementStatus operation."""
         from office365.sharepoint.tenant.administration.catalog_management_status import (
@@ -4423,6 +4539,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_container_type_exists(self, billing_type: int) -> ClientResult[bool]:
         """GetContainerTypeExists operation.
 
@@ -4437,6 +4554,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_content_management_assessment_results(self) -> ClientResult[ContentManagementAssessmentResults]:
         """GetContentManagementAssessmentResults operation."""
         from office365.sharepoint.tenant.administration.contentmanagementassessmentresults import (
@@ -4448,6 +4566,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_copilot_promo_opt_in_status(self) -> ClientResult[bool]:
         """GetCopilotPromoOptInStatus operation."""
         return_type = ClientResult(self.context, bool())
@@ -4455,6 +4574,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_archive_policies(
         self, policy_id: UUID
     ) -> ClientResult[ClientValueCollection[SPOFileArchivePolicyInfo]]:
@@ -4473,6 +4593,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_archive_policy_reports(
         self, policy_id: UUID
     ) -> ClientResult[ClientValueCollection[SPOFileArchivePolicyReportInfo]]:
@@ -4493,6 +4614,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_archive_policy_sites(
         self, policy_id: UUID
     ) -> ClientResult[ClientValueCollection[SPOFileArchivePolicySiteInfo]]:
@@ -4511,6 +4633,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_request_branding_profiles(self) -> ClientResult[FileRequestBrandingAssetConfig]:
         """GetFileRequestBrandingProfiles operation."""
         from office365.sharepoint.administration.filerequestbrandingassetconfig import (
@@ -4522,6 +4645,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_version_batch_delete_job_progress(self, site_url: str) -> ClientResult[str]:
         """GetFileVersionBatchDeleteJobProgress operation.
 
@@ -4536,6 +4660,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_version_expiration_report_job_progress(self, site_url: str, report_url: str) -> ClientResult[str]:
         """GetFileVersionExpirationReportJobProgress operation.
 
@@ -4557,6 +4682,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_file_version_expiration_report_job_progress_for_library(
         self, site_url: str, list_params: SPOListParameters, report_url: str
     ) -> ClientResult[SPOFileVersionExpirationReportJobProgress]:
@@ -4586,6 +4712,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_generated_insights_summary(
         self, insights_scenario: int, data_file_name: str, page_index: int
     ) -> ClientResult[InsightsSummaryResponse]:
@@ -4615,6 +4742,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ib_version_for_tenant(self) -> ClientResult[str]:
         """GetIBVersionForTenant operation."""
         return_type = ClientResult(self.context, str())
@@ -4622,6 +4750,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_idle_session_sign_out_for_unmanaged_devices(self) -> ClientResult[str]:
         """GetIdleSessionSignOutForUnmanagedDevices operation."""
         return_type = ClientResult(self.context, str())
@@ -4629,6 +4758,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_insights_summary(
         self,
         insights_scenario: int,
@@ -4681,6 +4811,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_manage_version_policy_job_progress(self, site_url: str) -> ClientResult[str]:
         """GetManageVersionPolicyJobProgress operation.
 
@@ -4695,6 +4826,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_org_assets(self) -> ClientResult[OrgAssets]:
         """GetOrgAssets operation."""
         from office365.sharepoint.administration.orgassets.org_assets import OrgAssets
@@ -4704,6 +4836,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_pre_auth_settings(self) -> ClientResult[str]:
         """GetPreAuthSettings operation."""
         return_type = ClientResult(self.context, str())
@@ -4711,6 +4844,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ransomware_activities_overview(self, event_id: str) -> ClientResult[TenantAdminRansomwareActivitiesOverview]:
         """GetRansomwareActivitiesOverview operation.
 
@@ -4729,6 +4863,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ransomware_events(self, parameters: RenderListDataParameters) -> ClientResult[bytes]:
         """GetRansomwareEvents operation.
 
@@ -4741,6 +4876,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ransomware_site_restore_points(self, parameters: RenderListDataParameters) -> ClientResult[bytes]:
         """GetRansomwareSiteRestorePoints operation.
 
@@ -4755,6 +4891,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sharepoint_setting_data(self, category: int) -> ClientResult[ClientValueCollection[SettingDataProperty]]:
         """GetSharePointSettingData operation.
 
@@ -4771,6 +4908,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_cohorts_summary(self, view: str) -> ClientResult[SiteCohortsSummary]:
         """GetSiteCohortsSummary operation.
 
@@ -4787,6 +4925,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sites_from_substrate(self, search_text: str) -> ClientResult[str]:
         """GetSitesFromSubstrate operation.
 
@@ -4799,6 +4938,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sorted_spo_containers_by_application_id(
         self, owning_application_id: UUID, ascending: bool, paged: bool, paging_token: str, archive_status: int
     ) -> ClientResult[SPContainerCollection]:
@@ -4838,6 +4978,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sph_site_url(self) -> ClientResult[str]:
         """GetSPHSiteUrl operation."""
         return_type = ClientResult(self.context, str())
@@ -4845,6 +4986,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_by_container_id(self, container_id: str) -> ClientResult[SPContainerProperties]:
         """GetSPOContainerByContainerId operation.
 
@@ -4863,6 +5005,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_by_container_site_url(self, container_site_url: str) -> ClientResult[SPContainerProperties]:
         """GetSPOContainerByContainerSiteUrl operation.
 
@@ -4881,6 +5024,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_containers_by_application_id(
         self, owning_application_id: UUID, paged: bool, paging_token: str, archive_status: int
     ) -> ClientResult[SPContainerCollection]:
@@ -4917,6 +5061,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_type_by_id(
         self, container_type_id: UUID, container_tenant_type: int
     ) -> ClientResult[SPContainerTypeProperties]:
@@ -4944,6 +5089,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_type_configuration_by_container_type_id(
         self, container_type_id: UUID
     ) -> ClientResult[SPContainerTypeConfigurationProperties]:
@@ -4969,6 +5115,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_types(
         self, container_tenant_type: int
     ) -> ClientResult[ClientValueCollection[SPContainerTypeProperties]]:
@@ -4989,6 +5136,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_deleted_containers(self) -> ClientResult[ClientValueCollection[SPDeletedContainerProperties]]:
         """GetSPODeletedContainers operation."""
         from office365.sharepoint.tenant.administration.spdeletedcontainerproperties import (
@@ -5000,6 +5148,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_restricted_search_allowed_list(self) -> ClientResult[StringCollection]:
         """GetSPORestrictedSearchAllowedList operation."""
         return_type = ClientResult(self.context, StringCollection())
@@ -5007,6 +5156,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_restricted_search_mode(self) -> ClientResult[int]:
         """GetSPORestrictedSearchMode operation."""
         return_type = ClientResult(self.context, int())
@@ -5014,6 +5164,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_service_prioritization_app_registrations(self) -> ClientResult[SPOServicePrioritizationAppRegistrations]:
         """GetSPOServicePrioritizationAppRegistrations operation."""
         from office365.sharepoint.tenant.administration.sposerviceprioritizationappregistrations import (
@@ -5025,6 +5176,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_service_prioritization_app_registrations_by_policy(
         self, policy_id: UUID
     ) -> ClientResult[SPOServicePrioritizationAppRegistrations]:
@@ -5045,6 +5197,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_service_prioritization_billing_payload(
         self,
         billing_policy_id: str,
@@ -5089,6 +5242,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_service_prioritization_billing_policies(
         self,
     ) -> ClientResult[ClientValueCollection[SPOServicePrioritizationPolicyFromTenantStore]]:
@@ -5102,6 +5256,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_site_creation_sources(self) -> ClientResult[ClientValueCollection[SPOSiteCreationSource]]:
         """GetSPOSiteCreationSources operation."""
         from office365.sharepoint.tenant.administration.spositecreationsource import (
@@ -5113,6 +5268,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_syntex_applications(self) -> ClientResult[ClientValueCollection[SPSyntexApplicationProperties]]:
         """GetSPOSyntexApplications operation."""
         from office365.sharepoint.tenant.administration.syntex.applicationproperties import (
@@ -5124,6 +5280,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_syntex_consuming_applications(
         self, owning_application_id: UUID, application_id: UUID
     ) -> ClientResult[SPSyntexApplicationProperties]:
@@ -5151,6 +5308,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_syntex_custom_model_settings(
         self, scenario: int
     ) -> ClientResult[ClientValueCollection[SyntexCustomModelSetting]]:
@@ -5169,6 +5327,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_targeted_sites_details(self) -> ClientResult[ClientValueCollection[TargetedSiteDetails]]:
         """GetTargetedSitesDetails operation."""
         from office365.sharepoint.viva.targetedsitedetails import TargetedSiteDetails
@@ -5178,6 +5337,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_targeted_sites_details_by_user_id(
         self, user_id: str
     ) -> ClientResult[ClientValueCollection[TargetedSiteDetails]]:
@@ -5194,6 +5354,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_all_or_compatible_ib_segments(
         self, segments: list[UUID]
     ) -> ClientResult[ClientValueCollection[IBSegmentInfo]]:
@@ -5212,6 +5373,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_apply_file_version_policy_job_progress(self) -> ClientResult[str]:
         """GetTenantApplyFileVersionPolicyJobProgress operation."""
         return_type = ClientResult(self.context, str())
@@ -5219,6 +5381,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_send_from_address(self) -> ClientResult[str]:
         """GetTenantSendFromAddress operation."""
         return_type = ClientResult(self.context, str())
@@ -5226,6 +5389,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_site_creation_source(self) -> ClientResult[SiteCreationSource]:
         """GetTenantSiteCreationSource operation."""
         from office365.sharepoint.tenant.administration.sites.creation_source import (
@@ -5237,6 +5401,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_track_view_feature_always_visible(self) -> ClientResult[bool]:
         """GetTrackViewFeatureAlwaysVisible operation."""
         return_type = ClientResult(self.context, bool())
@@ -5244,6 +5409,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_use_graph_url_settings(self) -> ClientResult[str]:
         """GetUseGraphUrlSettings operation."""
         return_type = ClientResult(self.context, str())
@@ -5251,6 +5417,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_version_policy_for_doc_libs_job_progress(self, site_url: str) -> ClientResult[str]:
         """GetVersionPolicyForDocLibsJobProgress operation.
 
@@ -5265,6 +5432,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_version_policy_impact(
         self, version_policy: SPOFileVersionPolicySettings
     ) -> ClientResult[SPOTenantVersionPolicyImpact]:
@@ -5285,6 +5453,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_viva_connections_license(self) -> ClientResult[VivaConnectionsLicense]:
         """GetVivaConnectionsLicense operation."""
         from office365.sharepoint.viva.connections.license import VivaConnectionsLicense
@@ -5294,6 +5463,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def log_sharepoint_embedded_client_log(self, log_properties: SharePointEmbeddedClientLogProperties) -> Self:
         """LogSharePointEmbeddedClientLog operation.
 
@@ -5307,6 +5477,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def new_spo_container_type(
         self, container_type_properties: SPContainerTypeProperties
     ) -> ClientResult[SPContainerTypeProperties]:
@@ -5327,6 +5498,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def purge_container(self, container_id: str) -> Self:
         """PurgeContainer operation.
 
@@ -5338,6 +5510,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def purge_spo_deleted_container_by_container_id(self, container_id: str) -> ClientResult[bool]:
         """PurgeSPODeletedContainerByContainerId operation.
 
@@ -5352,6 +5525,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def purge_spo_deleted_container_by_container_site_url(self, container_site_url: str) -> ClientResult[bool]:
         """PurgeSPODeletedContainerByContainerSiteUrl operation.
 
@@ -5371,6 +5545,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def recent_admin_action_report_is_audit_enabled(self) -> ClientResult[bool]:
         """RecentAdminActionReportIsAuditEnabled operation."""
         return_type = ClientResult(self.context, bool())
@@ -5378,6 +5553,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_container(self, container_id: str) -> Self:
         """RemoveContainer operation.
 
@@ -5389,6 +5565,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_file_archive_policy(self, policy_id: UUID) -> Self:
         """RemoveFileArchivePolicy operation.
 
@@ -5400,6 +5577,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_file_request_branding_profile(self, profile_type: int) -> Self:
         """RemoveFileRequestBrandingProfile operation.
 
@@ -5413,6 +5591,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_file_type_version_policy(self, file_types: list[str]) -> Self:
         """RemoveFileTypeVersionPolicy operation.
 
@@ -5426,6 +5605,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_from_org_assets(self, lib_url: str, list_id: UUID) -> Self:
         """RemoveFromOrgAssets operation.
 
@@ -5441,6 +5621,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_pre_auth_allow_deny_list_item_setting(self, item_id: str) -> Self:
         """RemovePreAuthAllowDenyListItemSetting operation.
 
@@ -5452,6 +5633,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_resource_as_authoritative(self, site_id: UUID) -> Self:
         """RemoveResourceAsAuthoritative operation.
 
@@ -5463,6 +5645,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_site_from_file_archive_policy(self, policy_id: UUID, site_url: str) -> Self:
         """RemoveSiteFromFileArchivePolicy operation.
 
@@ -5478,6 +5661,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_sph_site(self) -> ClientResult[str]:
         """RemoveSPHSite operation."""
         return_type = ClientResult(self.context, str())
@@ -5485,6 +5669,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_sp_list_item(self, list_item_id: int, list_name: str) -> Self:
         """RemoveSPListItem operation.
 
@@ -5500,6 +5685,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_spo_container_by_container_id(self, container_id: str) -> Self:
         """RemoveSPOContainerByContainerId operation.
 
@@ -5513,6 +5699,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_spo_container_by_container_site_url(self, container_site_url: str) -> Self:
         """RemoveSPOContainerByContainerSiteUrl operation.
 
@@ -5526,6 +5713,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_spo_container_type(self, sp_deleted_container_type_properties: SPDeletedContainerTypeProperties) -> Self:
         """RemoveSPOContainerType operation.
 
@@ -5544,6 +5732,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_spo_container_user_role(self, container_id: str, login_name: str, role: str) -> Self:
         """RemoveSPOContainerUserRole operation.
 
@@ -5566,6 +5755,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_spo_restricted_search_allowed_list(self, site_urls: list[str]) -> Self:
         """RemoveSPORestrictedSearchAllowedList operation.
 
@@ -5579,6 +5769,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_targeted_site(self, site_id: UUID) -> Self:
         """RemoveTargetedSite operation.
 
@@ -5590,6 +5781,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_tenant_admin_list_view(self, view_id: str) -> Self:
         """RemoveTenantAdminListView operation.
 
@@ -5601,6 +5793,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_active_containers(self, container_id: str, view_xml: str) -> ClientResult[bytes]:
         """RenderActiveContainers operation.
 
@@ -5617,6 +5810,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_admin_list_data(
         self, parameters: RenderListDataParameters, override_parameters: RenderListDataOverrideParameters, list_name: str
     ) -> ClientResult[bytes]:
@@ -5642,6 +5836,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_containers_admin_applications_data(
         self,
     ) -> ClientResult[ClientValueCollection[SPContainerApplicationProperties]]:
@@ -5655,6 +5850,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_containers_admin_list_data(
         self,
         order_by_columns_list: ClientValueCollection[SPContainerSortOrder],
@@ -5699,6 +5895,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_deleted_containers(self, view_xml: str) -> ClientResult[bytes]:
         """RenderDeletedContainers operation.
 
@@ -5711,6 +5908,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_filtered_admin_list_data(
         self, parameters: RenderListFilterDataParameters, list_name: str
     ) -> ClientResult[bytes]:
@@ -5734,6 +5932,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_filtered_admin_list_data_by_group_id(self, group_id: UUID) -> ClientResult[bytes]:
         """RenderFilteredAdminListDataByGroupId operation.
 
@@ -5748,6 +5947,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_governance_hub_sp_list(
         self, parameters: RenderListDataParameters, override_parameters: RenderListDataOverrideParameters
     ) -> ClientResult[bytes]:
@@ -5771,6 +5971,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_ib_segment_list_filter_data(self, parameters: RenderListFilterDataParameters) -> ClientResult[bytes]:
         """RenderIBSegmentListFilterData operation.
 
@@ -5783,6 +5984,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_ownership_policy_storage_sp_list(
         self, parameters: RenderListDataParameters, override_parameters: RenderListDataOverrideParameters
     ) -> ClientResult[bytes]:
@@ -5806,6 +6008,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_policy_definition_list(
         self, parameters: RenderListDataParameters, override_parameters: RenderListDataOverrideParameters
     ) -> ClientResult[bytes]:
@@ -5829,6 +6032,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_policy_executions_history(
         self, parameters: RenderListDataParameters, override_parameters: RenderListDataOverrideParameters
     ) -> ClientResult[bytes]:
@@ -5851,6 +6055,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def render_recent_admin_action_report(
         self, parameters: RenderListDataParameters, override_parameters: RenderListDataOverrideParameters
     ) -> ClientResult[bytes]:
@@ -5874,6 +6079,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def reorder_targeted_sites(self, site_ids: list[UUID]) -> ClientResult[ClientValueCollection[TargetedSiteDetails]]:
         """ReorderTargetedSites operation.
 
@@ -5890,6 +6096,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def request_content_management_assessment(self) -> ClientResult[ContentManagementAssessmentOperationResult]:
         """RequestContentManagementAssessment operation."""
         from office365.sharepoint.tenant.administration.contentmanagementassessmentoperationresult import (
@@ -5901,6 +6108,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def restore_container(self, container_id: str) -> Self:
         """RestoreContainer operation.
 
@@ -5912,6 +6120,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def restore_spo_deleted_container_by_container_id(self, container_id: str) -> ClientResult[bool]:
         """RestoreSPODeletedContainerByContainerId operation.
 
@@ -5926,6 +6135,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def restore_spo_deleted_container_by_container_site_url(self, container_site_url: str) -> ClientResult[bool]:
         """RestoreSPODeletedContainerByContainerSiteUrl operation.
 
@@ -5945,12 +6155,14 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def run_admin_home_post_load_tasks(self) -> Self:
         """RunAdminHomePostLoadTasks operation."""
         qry = ServiceOperationQuery(self, "RunAdminHomePostLoadTasks", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def save_file_request_branding_asset_config(
         self, asset_library_url: str, logo_file_url: str, background_file_url: str, profile_type: int
     ) -> Self:
@@ -5982,6 +6194,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_baseline_security_mode_pre_auth_settings(self, is_disabled: bool, allow_list: list[str]) -> Self:
         """SetBaselineSecurityModePreAuthSettings operation.
 
@@ -6002,6 +6215,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_catalog_management_type_display_name(
         self, property_type: int, display_name: str
     ) -> ClientResult[CatalogManagementSettings]:
@@ -6029,6 +6243,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_catalog_management_value_display_name(
         self, id_: UUID, display_name: str
     ) -> ClientResult[CatalogManagementSettings]:
@@ -6056,6 +6271,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_copilot_promo_opt_in_status(self, copilot_promo_opt_in_enabled: bool) -> Self:
         """SetCopilotPromoOptInStatus operation.
 
@@ -6074,6 +6290,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_file_archive_policy(
         self,
         policy_id: UUID,
@@ -6138,6 +6355,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_file_type_version_policy(
         self,
         file_types: list[str],
@@ -6173,6 +6391,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_ib_segments_on_site(self, site_id: UUID, segments: list[UUID], ib_mode: str) -> ClientResult[str]:
         """SetIBSegmentsOnSite operation.
 
@@ -6196,6 +6415,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_idle_session_sign_out_for_unmanaged_devices(
         self, enabled: bool, warn_after: _dt.time, sign_out_after: _dt.time
     ) -> ClientResult[bool]:
@@ -6221,6 +6441,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_jit_dlp_policy_data(
         self,
         mark_all_files_as_sensitive_by_default: bool,
@@ -6252,6 +6473,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_org_assets_with_config(
         self, lib_url: str, thumbnail_url: str, org_asset_type: int, config_param: OrgAssetsLibraryConfigParam
     ) -> Self:
@@ -6283,6 +6505,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_org_assets_with_type(self, lib_url: str, thumbnail_url: str, org_asset_type: int) -> Self:
         """SetOrgAssetsWithType operation.
 
@@ -6305,6 +6528,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_pre_auth_is_disabled_setting(self, is_disabled: bool) -> Self:
         """SetPreAuthIsDisabledSetting operation.
 
@@ -6316,6 +6540,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_resource_as_authoritative(self, site_id: UUID) -> ClientResult[AuthoritativeResourceProperties]:
         """SetResourceAsAuthoritative operation.
 
@@ -6332,6 +6557,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_sensitivity_label_container(self, container_id: str, sensitivity_label: UUID) -> Self:
         """SetSensitivityLabelContainer operation.
 
@@ -6352,6 +6578,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_site_administrators(self, site_administrators_fields_data: SiteAdministratorsFieldsData) -> Self:
         """SetSiteAdministrators operation.
 
@@ -6370,6 +6597,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_site_user_groups(self, site_user_groups_data: SiteUserGroupsData) -> Self:
         """SetSiteUserGroups operation.
 
@@ -6383,6 +6611,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_sp_embedded_application_permissions(
         self, sp_syntex_application_properties: SPSyntexApplicationProperties
     ) -> ClientResult[SPSyntexApplicationProperties]:
@@ -6408,6 +6637,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_sp_embedded_application_properties(
         self, sp_syntex_application_properties: SPSyntexApplicationProperties
     ) -> ClientResult[SPSyntexApplicationProperties]:
@@ -6433,6 +6663,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_sph_site(self, sph_site_url: str) -> ClientResult[str]:
         """SetSPHSite operation.
 
@@ -6445,6 +6676,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_sph_site_with_configuration(
         self, sph_site_url: str, configuration: HomeSiteConfigurationParam
     ) -> ClientResult[str]:
@@ -6468,6 +6700,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_container_properties(self, sp_container_properties: SPContainerProperties) -> Self:
         """SetSPOContainerProperties operation.
 
@@ -6481,6 +6714,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_container_type(
         self, container_type_properties: SPContainerTypeProperties
     ) -> ClientResult[SPContainerTypeProperties]:
@@ -6501,6 +6735,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_container_type_configuration(
         self, sp_container_type_configuration_properties: SPContainerTypeConfigurationProperties
     ) -> ClientResult[SPContainerTypeConfigurationProperties]:
@@ -6526,6 +6761,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_restricted_search_mode(self, mode: int) -> Self:
         """SetSPORestrictedSearchMode operation.
 
@@ -6537,6 +6773,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_service_prioritization_app_registration(
         self,
         app_id: UUID,
@@ -6576,6 +6813,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_syntex_applications_clear_override_sharing_capability(self, owning_application_id: UUID) -> Self:
         """SetSPOSyntexApplicationsClearOverrideSharingCapability operation.
 
@@ -6594,6 +6832,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_spo_syntex_applications_sharing_capability(
         self, owning_application_id: UUID, sharing_capability: int, override_tenant_sharing_capability: bool
     ) -> Self:
@@ -6622,6 +6861,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_storage_maximum_level_container(self, container_id: str, storage_maximum_level: int) -> Self:
         """SetStorageMaximumLevelContainer operation.
 
@@ -6642,6 +6882,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_syntex_payg_feature_activation(self, feature_name: str, activation_status: str) -> Self:
         """SetSyntexPaygFeatureActivation operation.
 
@@ -6662,6 +6903,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_tenant_data_loss_prevention_quarantine_settings(self, serialized_value: str) -> Self:
         """SetTenantDataLossPreventionQuarantineSettings operation.
 
@@ -6680,6 +6922,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_track_view_feature_always_visible(self) -> ClientResult[bool]:
         """SetTrackViewFeatureAlwaysVisible operation."""
         return_type = ClientResult(self.context, bool())
@@ -6687,6 +6930,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_use_graph_url_apps_list_setting(self, use_graph_url_apps_list: str) -> Self:
         """SetUseGraphUrlAppsListSetting operation.
 
@@ -6700,6 +6944,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_use_graph_url_is_enabled_setting(self, use_graph_url_is_enabled: bool) -> Self:
         """SetUseGraphUrlIsEnabledSetting operation.
 
@@ -6713,6 +6958,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_use_graph_url_settings(self, use_graph_url_is_enabled: bool, use_graph_url_apps_list: str) -> Self:
         """SetUseGraphUrlSettings operation.
 
@@ -6733,12 +6979,14 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def switch_file_request_branding_profiles(self) -> Self:
         """SwitchFileRequestBrandingProfiles operation."""
         qry = ServiceOperationQuery(self, "SwitchFileRequestBrandingProfiles", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def test_check_if_file_exists_in_adls(
         self, upload_to_adls_type: str, upload_to_adls_subtype: str
     ) -> ClientResult[bool]:
@@ -6762,6 +7010,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def test_generate_report_insights(
         self, insights_scenario: int, report_url: str, model_name: str
     ) -> ClientResult[str]:
@@ -6780,6 +7029,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def test_get_insight_generation_response_async(
         self, job_id: str, report_url: str, model_name: str
     ) -> ClientResult[str]:
@@ -6798,6 +7048,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def test_get_insight_generation_status_async(
         self, job_id: str, report_url: str, model_name: str
     ) -> ClientResult[str]:
@@ -6816,6 +7067,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def test_queue_insight_generation_async(
         self, insights_scenario: int, report_url: str, model_name: str, max_token_size: int
     ) -> ClientResult[str]:
@@ -6841,6 +7093,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def test_resync_to_adls(self, skip_validation: bool) -> Self:
         """TestResyncToADLS operation.
 
@@ -6852,6 +7105,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def test_upload_file_to_adls(self, upload_to_adls_type: str, upload_to_adls_subtype: str) -> Self:
         """TestUploadFileToADLS operation.
 
@@ -6872,6 +7126,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def test_upload_test_report_file_to_adls(
         self, file_url: str, upload_to_adls_type: str, upload_to_adls_subtype: str
     ) -> Self:
@@ -6900,6 +7155,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def transfer_container_principal_owner(self, container_id: str, new_principal_owner_upn: str) -> Self:
         """TransferContainerPrincipalOwner operation.
 
@@ -6920,6 +7176,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def trigger_owner_odb_provisioning(self, user_object_id: UUID) -> ClientResult[int]:
         """TriggerOwnerOdbProvisioning operation.
 
@@ -6934,6 +7191,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def un_archive_container(self, container_id: str) -> Self:
         """UnArchiveContainer operation.
 
@@ -6945,6 +7203,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unarchive_odb_by_id(self, site_id: UUID, keep_unarchived_until: datetime) -> Self:
         """UnarchiveOdbById operation.
 
@@ -6960,6 +7219,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unlock_sensitivity_label_encrypted_file(self, file_url: str, justification_text: str) -> Self:
         """UnlockSensitivityLabelEncryptedFile operation.
 
@@ -6980,6 +7240,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_file_search_visibility(self, url: str, is_hidden: bool) -> ClientResult[bool]:
         """UpdateFileSearchVisibility operation.
 
@@ -6996,6 +7257,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_jobs_work_items(self, job_ids: list[UUID]) -> Self:
         """UpdateJobsWorkItems operation.
 
@@ -7007,6 +7269,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_policy_definition(
         self, item_id: int, policy_input_parameters: CreatePolicyRequest, policy_operation: str
     ) -> Self:
@@ -7031,6 +7294,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_ransomware_activity(
         self, list_item_id: int, column_values: ClientValueCollection[TenantAdminListItemColumnValue], category: int
     ) -> ClientResult[TenantAdminRansomwareActivity]:
@@ -7060,6 +7324,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_ransomware_event(
         self,
         list_item_id: int,
@@ -7100,6 +7365,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_spo_container_user_role(self, container_id: str, login_name: str, role: str) -> Self:
         """UpdateSPOContainerUserRole operation.
 
@@ -7122,6 +7388,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_syntex_custom_model_setting(self, model_setting: SyntexCustomModelSetting, scenario: int) -> Self:
         """UpdateSyntexCustomModelSetting operation.
 
@@ -7142,6 +7409,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_targeted_site(
         self, site_url: str, configuration_param: HomeSiteConfigurationParam
     ) -> ClientResult[TargetedSiteDetails]:
@@ -7167,6 +7435,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_tenant_admin_list_item(
         self, list_item_id: int, column_values: ClientValueCollection[TenantAdminListItemColumnValue], list_name: str
     ) -> Self:
@@ -7191,6 +7460,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_tenant_admin_list_view(self, view_id: str, view_xml: str) -> Self:
         """UpdateTenantAdminListView operation.
 
@@ -7206,6 +7476,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_unlicensed_odb_active_storage_date_by_id(self, site_id: UUID, keep_unarchived_until: datetime) -> Self:
         """UpdateUnlicensedOdbActiveStorageDateById operation.
 
@@ -7226,6 +7497,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def validate_home_site(self, validation_action_type: int, site_url: str) -> Self:
         """ValidateHomeSite operation.
 
@@ -7246,6 +7518,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def validate_multiple_home_sites_parameter_exists(self, has_parameters: bool) -> Self:
         """ValidateMultipleHomeSitesParameterExists operation.
 
@@ -7288,6 +7561,7 @@ class Tenant(Entity):
         """Gets the SmartWikiEntrySiteList property"""
         return self.properties.get("SmartWikiEntrySiteList", GuidCollection())
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_onedrives_summary_metrics_data(self) -> ClientResult[OneDrivesSummaryMetrics]:
         """GetOneDrivesSummaryMetricsData operation."""
         from office365.sharepoint.tenant.administration.onedrives_summary_metrics import (
@@ -7299,6 +7573,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_type_file_version_policy_job_impact(
         self, container_type_id: UUID, version_policy: SPOFileVersionPolicySettings
     ) -> ClientResult[SPOTenantVersionPolicyImpact]:
@@ -7326,6 +7601,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_container_type_file_version_policy_job_progress(self, container_type_id: UUID) -> ClientResult[str]:
         """GetSPOContainerTypeFileVersionPolicyJobProgress operation.
 
@@ -7345,6 +7621,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_smart_wiki_entry_settings(self, scope: int, site_ids: list[UUID]) -> Self:
         """SetSmartWikiEntrySettings operation.
 
@@ -7366,6 +7643,7 @@ class Tenant(Entity):
         """Gets the IsTenantAdminReadOnlyAdvanceNoticeEnabled property"""
         return self.properties.get("IsTenantAdminReadOnlyAdvanceNoticeEnabled", None)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_restricted_app_access_control_site_policy_by_site_id(self, site_id: UUID) -> Self:
         """ClearRestrictedAppAccessControlSitePolicyBySiteId operation.
 
@@ -7379,6 +7657,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_restricted_app_access_control_site_policy_by_url(self, site_url: str) -> Self:
         """ClearRestrictedAppAccessControlSitePolicyByUrl operation.
 
@@ -7392,12 +7671,14 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_restricted_app_access_control_tenant_policy(self) -> Self:
         """ClearRestrictedAppAccessControlTenantPolicy operation."""
         qry = ServiceOperationQuery(self, "ClearRestrictedAppAccessControlTenantPolicy", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_restricted_app_access_control_site_policy_by_site_id(
         self, site_id: UUID
     ) -> ClientResult[SPORestrictedAppAccessControlSitePolicy]:
@@ -7418,6 +7699,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_restricted_app_access_control_site_policy_by_url(
         self, site_url: str
     ) -> ClientResult[SPORestrictedAppAccessControlSitePolicy]:
@@ -7438,6 +7720,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_restricted_app_access_control_tenant_policy(self) -> ClientResult[SPORestrictedAppAccessControlTenantPolicy]:
         """GetRestrictedAppAccessControlTenantPolicy operation."""
         from office365.sharepoint.tenantadministration.spo_restricted_app_access_control_tenant_policy import (
@@ -7449,6 +7732,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_restricted_app_access_control_site_policy_by_site_id(
         self, site_id: UUID, enabled: bool, active_mode: str, allow_list: list[UUID], deny_list: list[UUID]
     ) -> Self:
@@ -7483,6 +7767,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_restricted_app_access_control_site_policy_by_url(
         self, site_url: str, enabled: bool, active_mode: str, allow_list: list[UUID], deny_list: list[UUID]
     ) -> Self:
@@ -7517,6 +7802,7 @@ class Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_restricted_app_access_control_tenant_policy(self, enabled: bool, restricted_app_ids: list[UUID]) -> Self:
         """SetRestrictedAppAccessControlTenantPolicy operation.
 

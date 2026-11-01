@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.permissions import DirectoryRole
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.security.labels.retention.actionafterretentionperiod import (
     ActionAfterRetentionPeriod,
@@ -36,9 +37,9 @@ from tests.graph_case import GraphDelegatedTestCase
 _RM_READ = ("RecordsManagement.Read.All", "RecordsManagement.ReadWrite.All")
 _RM_WRITE = ("RecordsManagement.ReadWrite.All",)
 _RM_ROLES = [
-    "Records Management",
-    "Compliance Administrator",
-    "Compliance Data Administrator",
+    DirectoryRole.RecordsManagement,
+    DirectoryRole.ComplianceAdministrator,
+    DirectoryRole.ComplianceDataAdministrator,
 ]
 _RM_LICENSES = [
     "SPE_E5",
@@ -57,7 +58,7 @@ class TestRetentionEventTypes(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_01_list_retention_event_types(self):
         """Retrieving all retention event types returns a collection with a valid path."""
@@ -69,7 +70,7 @@ class TestRetentionEventTypes(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_02_filter_event_types_by_display_name(self):
         """Filtering event types by display name narrows results to matching items."""
@@ -90,7 +91,7 @@ class TestRetentionEventTypes(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_03_paginate_event_types(self):
         """Requesting with $top=5 limits the result set."""
@@ -108,7 +109,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_01_list_labels_empty_result_graceful(self):
         """Listing retention labels when none exist returns a valid collection (not None)."""
@@ -121,7 +122,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_WRITE,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_02_create_retention_label_no_duration(self):
         """Creating a label without retention duration uses 'mark as record' behavior only."""
@@ -147,7 +148,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_WRITE,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_03_create_retention_label_full(self):
         """Creating a full retention label with 365-day retention, record behavior, and delete action."""
@@ -169,7 +170,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_04_get_label_by_id(self):
         """Retrieving a retention label by its ID returns the expected label."""
@@ -185,7 +186,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_05_filter_labels_by_display_name(self):
         """Filtering retention labels by display name with $filter works correctly."""
@@ -202,7 +203,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_06_paginate_labels(self):
         """Requesting with $top=3 limits retention label results."""
@@ -214,7 +215,7 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         *_RM_READ,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_07_label_has_expected_properties(self):
         """A retention label exposes retentionTrigger, behaviorDuringRetentionPeriod, etc."""
@@ -245,7 +246,7 @@ class TestRetentionLabelNegativeCases(GraphDelegatedTestCase):
         *_RM_WRITE,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_01_empty_display_name_rejected(self):
         """Creating a label with an empty display name should raise an error."""
@@ -263,7 +264,7 @@ class TestRetentionLabelNegativeCases(GraphDelegatedTestCase):
         *_RM_WRITE,
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_02_zero_duration_rejected(self):
         """Creating a label with zero retention days should be rejected by the API."""
@@ -288,7 +289,7 @@ class TestRetentionLabelFilePlan(GraphDelegatedTestCase):
         *("RecordsManagement.Read.All",),
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
-        bypass_roles=["Global Administrator"],
+        bypass_roles=[DirectoryRole.GlobalAdministrator],
     )
     def test_01_list_file_plan_descriptors(self):
         """File plan descriptor collections exist and return valid results."""

@@ -18,6 +18,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -77,6 +78,7 @@ class TestCommunicationSite(SPTestCase):
     #    result = self.client.home_site.details().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.register_hub_site, flow="delegated")
     def test_05_register_hub_site(self):
         """Register the site as a hub site."""
         target = TestCommunicationSite.target_site
@@ -91,6 +93,7 @@ class TestCommunicationSite(SPTestCase):
         site = target.get().execute_query()
         self.assertTrue(site.is_hub_site)
 
+    @requires_call(Tenant.unregister_hub_site, flow="delegated")
     def test_06_unregister_hub_site(self):
         """Unregister the site as a hub site."""
         target = TestCommunicationSite.target_site

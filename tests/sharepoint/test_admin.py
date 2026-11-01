@@ -12,6 +12,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -45,6 +46,7 @@ class TestAdmin(SPTestCase):
     #    result = self.tenant.render_recent_admin_actions().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.set_file_version_policy, flow="delegated")
     def test_02_set_file_version_policy(self):
         """Set file version policy on the tenant."""
         result = self.tenant.set_file_version_policy(True, 100, 10).execute_query()
@@ -65,6 +67,7 @@ class TestAdmin(SPTestCase):
     #    result = self.tenant.get_ransomware_activities().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.get_root_site_url, flow="delegated")
     def test_05_get_root_site_url(self):
         """Get root site URL from the tenant."""
         result = self.tenant.get_root_site_url().execute_query()

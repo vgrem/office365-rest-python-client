@@ -27,6 +27,7 @@ from tests import (
     test_team_site_url,
     test_tenant,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -65,6 +66,7 @@ class TestTenant(SPTestCase):
     #    self.tenant.execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.get_site_health_status, flow="delegated")
     def test_04_get_site_health_status(self):
         """Get site health status for a team site."""
         result = self.tenant.get_site_health_status(test_team_site_url).execute_query()
@@ -80,11 +82,13 @@ class TestTenant(SPTestCase):
         self.tenant.execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.get_site_properties_from_sharepoint_by_filters, flow="delegated")
     def test_06_list_sites(self):
         """List site properties from SharePoint."""
         result = self.tenant.get_site_properties_from_sharepoint_by_filters().execute_query()
         self.assertIsInstance(result, SitePropertiesCollection)
 
+    @requires_call(Tenant.get_site_secondary_administrators, flow="delegated")
     def test_07_get_site_secondary_administrators(self):
         """Get secondary administrators for a site."""
         target_site = self.client.site.select(["Id"]).get().execute_query()
@@ -108,6 +112,7 @@ class TestTenant(SPTestCase):
     #    self.client.execute_query()
     #    self.assertIsNotNone(site_props)
 
+    @requires_call(Tenant.get_site_properties_by_url, flow="delegated")
     def test_09_get_site_by_url(self):
         """Get site properties by URL."""
         site_props = self.tenant.get_site_properties_by_url(test_site_url, True).execute_query()
@@ -115,6 +120,7 @@ class TestTenant(SPTestCase):
         # self.assertIsNotNone(site_props.resource_path)
         TestTenant.target_site_props = site_props
 
+    @requires_call(Tenant.get_site_properties_by_url, flow="delegated")
     def test_10_update_site(self):
         """Update sharing capability for a site."""
         target_site_props = TestTenant.target_site_props
@@ -134,24 +140,28 @@ class TestTenant(SPTestCase):
     #    self.tenant.remove_site(site_url)
     #    self.client.execute_query()
 
+    @requires_call(Office365Tenant.get_all_tenant_themes, flow="delegated")
     def test_11_get_all_tenant_themes(self):
         """Get all tenant themes."""
         tenant = Office365Tenant(self.client)
         result = tenant.get_all_tenant_themes().execute_query()
         self.assertIsNotNone(result)
 
+    @requires_call(Office365Tenant.get_external_users, flow="delegated")
     def test_12_get_external_users(self):
         """Get external users of the tenant."""
         tenant = Office365Tenant(self.client)
         result = tenant.get_external_users().execute_query()
         self.assertIsNotNone(result)
 
+    @requires_call(Office365Tenant.get_tenant_cdn_enabled, flow="delegated")
     def test_13_get_tenant_cdn_enabled(self):
         """Check if tenant CDN is enabled."""
         tenant = Office365Tenant(self.client)
         result = tenant.get_tenant_cdn_enabled(0).execute_query()
         self.assertIsInstance(result.value, bool)
 
+    @requires_call(Office365Tenant.get_tenant_cdn_policies, flow="delegated")
     def test_14_get_tenant_cdn_policies(self):
         """Get tenant CDN policies."""
         tenant = Office365Tenant(self.client)
@@ -168,6 +178,7 @@ class TestTenant(SPTestCase):
         result = self.tenant.admin_settings.get_tenant_sharing_status().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.get_site_thumbnail_logo, flow="delegated")
     def test_17_get_site_thumbnail_logo(self):
         """Get site thumbnail logo."""
         result = self.tenant.get_site_thumbnail_logo(test_site_url).execute_query()
@@ -186,6 +197,7 @@ class TestTenant(SPTestCase):
     #    result = self.tenant.get_home_site_url().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.get_spo_tenant_all_web_templates, flow="delegated")
     def test_19_get_tenant_all_web_templates(self):
         """Get all tenant web templates."""
         result = self.tenant.get_spo_tenant_all_web_templates().execute_query()
@@ -200,6 +212,7 @@ class TestTenant(SPTestCase):
         result = PerformanceData(self.client).get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(Tenant.get_power_apps_environments, flow="delegated")
     def test_21_get_power_apps_environments(self):
         """Get Power Apps environments."""
         result = self.tenant.get_power_apps_environments().execute_query()
@@ -209,6 +222,7 @@ class TestTenant(SPTestCase):
     #    result = self.tenant.get_ransomware_activities().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(Tenant.get_spo_all_web_templates, flow="delegated")
     def test_22_get_spo_all_web_templates(self):
         """Get all SharePoint web templates."""
         result = self.tenant.get_spo_all_web_templates().execute_query()

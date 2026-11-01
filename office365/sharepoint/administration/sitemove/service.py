@@ -6,6 +6,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -14,6 +15,7 @@ from office365.sharepoint.administration.sitemove.systemsitelockexpres import (
     SystemSiteLockExpirationResult,
 )
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -42,6 +44,7 @@ class SiteMoveService(Entity):
         )
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def acquire_system_site_lock(
         self, lock_requestor: str, lock_type: int, lease_duration_in_minutes: int
     ) -> ClientResult[SystemSiteLockExpirationResult]:
@@ -60,6 +63,7 @@ class SiteMoveService(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.SiteMove.Service.SiteMoveService"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def apply_replica_site_map_for_move(self) -> ClientResult[int]:
         """ApplyReplicaSiteMapForMove operation."""
         return_type = ClientResult(self.context, int())
@@ -67,6 +71,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def check_sp_site_content_database(self, site_id: str) -> ClientResult[bool]:
         """CheckSPSiteContentDatabase operation.
 
@@ -78,12 +83,14 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def clear_site_relocation_marker(self) -> Self:
         """ClearSiteRelocationMarker operation."""
         qry = ServiceOperationQuery(self, "ClearSiteRelocationMarker", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def extend_system_site_lock_expiration(
         self, lease_duration_in_minute: int
     ) -> ClientResult[SystemSiteLockExpirationResult]:
@@ -104,6 +111,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_docs_incremental_rows(self, serialized_document_ids: str) -> ClientResult[str]:
         """GetAllDocsIncrementalRows operation.
 
@@ -122,6 +130,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_docs_incremental_rows_stream(self, serialized_document_ids: str) -> ClientResult[bytes]:
         """GetAllDocsIncrementalRowsStream operation.
 
@@ -140,6 +149,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_sites_deleted_and_bit_flags(self) -> ClientResult[str]:
         """GetAllSitesDeletedAndBitFlags operation."""
         return_type = ClientResult(self.context, str())
@@ -147,6 +157,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_app_principals_for_site_xml(self) -> ClientResult[str]:
         """GetAppPrincipalsForSiteXml operation."""
         return_type = ClientResult(self.context, str())
@@ -154,6 +165,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_blob_deletion_hold_until(self) -> ClientResult[str]:
         """GetBlobDeletionHoldUntil operation."""
         return_type = ClientResult(self.context, str())
@@ -161,6 +173,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_cps_change_token(self) -> ClientResult[int]:
         """GetCPSChangeToken operation."""
         return_type = ClientResult(self.context, int())
@@ -168,6 +181,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_cps_site_delete_reason(self) -> ClientResult[int]:
         """GetCPSSiteDeleteReason operation."""
         return_type = ClientResult(self.context, int())
@@ -175,6 +189,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_crawl_queue_batch_count(self, include_crawl_url_join: bool) -> ClientResult[int]:
         """GetCrawlQueueBatchCount operation.
 
@@ -188,6 +203,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_database_properties(self) -> ClientResult[str]:
         """GetDatabaseProperties operation."""
         return_type = ClientResult(self.context, str())
@@ -195,6 +211,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_chunk(self, table_name: str, schema_name: str) -> ClientResult[str]:
         """GetDataChunk operation.
 
@@ -209,6 +226,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_chunks(self) -> ClientResult[str]:
         """GetDataChunks operation."""
         return_type = ClientResult(self.context, str())
@@ -216,6 +234,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_chunks_iterator(self) -> ClientResult[str]:
         """GetDataChunksIterator operation."""
         return_type = ClientResult(self.context, str())
@@ -223,6 +242,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_chunks_iterator_stream(self) -> ClientResult[bytes]:
         """GetDataChunksIteratorStream operation."""
         return_type = ClientResult(self.context, bytes())
@@ -230,6 +250,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_reader(self, sql_command_text: str) -> ClientResult[str]:
         """GetDataReader operation.
 
@@ -241,6 +262,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data_reader_stream(self, sql_command_text: str) -> ClientResult[bytes]:
         """GetDataReaderStream operation.
 
@@ -254,6 +276,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_db_activities(self) -> ClientResult[str]:
         """GetDBActivities operation."""
         return_type = ClientResult(self.context, str())
@@ -261,6 +284,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_checksum_stats_json(self, lower_bound: int, upper_bound: int) -> ClientResult[str]:
         """GetEventCacheChecksumStatsJson operation.
 
@@ -280,6 +304,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_data_chunk(self, last_copied_id: int, search_change_token: int) -> ClientResult[str]:
         """GetEventCacheDataChunk operation.
 
@@ -299,6 +324,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_data_chunk_iterator(self, last_copied_id: int, search_change_token: int) -> ClientResult[str]:
         """GetEventCacheDataChunkIterator operation.
 
@@ -318,6 +344,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_data_chunk_iterator_stream(
         self, last_copied_id: int, search_change_token: int
     ) -> ClientResult[bytes]:
@@ -339,6 +366,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ex_checksum_stats_json(self, lower_bound: int, upper_bound: int) -> ClientResult[str]:
         """GetEventCacheExChecksumStatsJson operation.
 
@@ -358,6 +386,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ex_columns(self) -> ClientResult[str]:
         """GetEventCacheExColumns operation."""
         return_type = ClientResult(self.context, str())
@@ -365,6 +394,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ex_data_chunk(self, last_copied_id: int) -> ClientResult[str]:
         """GetEventCacheExDataChunk operation.
 
@@ -378,6 +408,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ex_data_chunk_iterator(self, last_copied_id: int) -> ClientResult[str]:
         """GetEventCacheExDataChunkIterator operation.
 
@@ -391,6 +422,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ex_data_chunk_iterator_stream(self, last_copied_id: int) -> ClientResult[bytes]:
         """GetEventCacheExDataChunkIteratorStream operation.
 
@@ -404,6 +436,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ids(self, last_copied_id: int) -> ClientResult[str]:
         """GetEventCacheIds operation.
 
@@ -415,6 +448,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_event_cache_ids_stream(self, last_copied_id: int) -> ClientResult[bytes]:
         """GetEventCacheIdsStream operation.
 
@@ -428,6 +462,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_extension_schema_row_counts_json(self) -> ClientResult[str]:
         """GetExtensionSchemaRowCountsJson operation."""
         return_type = ClientResult(self.context, str())
@@ -435,6 +470,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_farm_properties(self) -> ClientResult[str]:
         """GetFarmProperties operation."""
         return_type = ClientResult(self.context, str())
@@ -442,6 +478,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_marker(self) -> ClientResult[str]:
         """GetMarker operation."""
         return_type = ClientResult(self.context, str())
@@ -449,6 +486,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_per_column_checksums(self, schema_name: str, table_name: str) -> ClientResult[str]:
         """GetPerColumnChecksums operation.
 
@@ -463,6 +501,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_post_lock_event_summary_json(self, watermark: int) -> ClientResult[str]:
         """GetPostLockEventSummaryJson operation.
 
@@ -476,6 +515,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_random_access_data_chunk(self, table_name: str, schema_name: str) -> ClientResult[str]:
         """GetRandomAccessDataChunk operation.
 
@@ -495,6 +535,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_replica_farm_targets(self) -> ClientResult[str]:
         """GetReplicaFarmTargets operation."""
         return_type = ClientResult(self.context, str())
@@ -502,6 +543,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_scalar_value(self, sql_command_text: str) -> ClientResult[int]:
         """GetScalarValue operation.
 
@@ -515,6 +557,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_scp_events_in_processing_count(self) -> ClientResult[int]:
         """GetScpEventsInProcessingCount operation."""
         return_type = ClientResult(self.context, int())
@@ -522,6 +565,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_service_version(self) -> ClientResult[int]:
         """GetServiceVersion operation."""
         return_type = ClientResult(self.context, int())
@@ -529,6 +573,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_deletion_restorable_and_migration_flags(self) -> ClientResult[str]:
         """GetSiteDeletionRestorableAndMigrationFlags operation."""
         return_type = ClientResult(self.context, str())
@@ -536,6 +581,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_deletion_time(self) -> ClientResult[str]:
         """GetSiteDeletionTime operation."""
         return_type = ClientResult(self.context, str())
@@ -543,6 +589,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_ip_label_tooltip_xml(self) -> ClientResult[str]:
         """GetSiteIpLabelTooltipXml operation."""
         return_type = ClientResult(self.context, str())
@@ -550,6 +597,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_move_state(self) -> ClientResult[str]:
         """GetSiteMoveState operation."""
         return_type = ClientResult(self.context, str())
@@ -557,6 +605,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_properties(self) -> ClientResult[str]:
         """GetSiteProperties operation."""
         return_type = ClientResult(self.context, str())
@@ -564,6 +613,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_relocation_compatible_schema_version(self) -> ClientResult[str]:
         """GetSiteRelocationCompatibleSchemaVersion operation."""
         return_type = ClientResult(self.context, str())
@@ -571,6 +621,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sp_deleted_site_relocation_status(self, check_lock_time: bool) -> ClientResult[str]:
         """GetSPDeletedSiteRelocationStatus operation.
 
@@ -584,6 +635,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_table_data_chunk(self, table_name: str, schema_name: str) -> ClientResult[str]:
         """GetTableDataChunk operation.
 
@@ -598,6 +650,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_table_data_chunk_iterator(self, table_name: str, schema_name: str) -> ClientResult[str]:
         """GetTableDataChunkIterator operation.
 
@@ -617,6 +670,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_table_data_chunk_iterator_stream(self, table_name: str, schema_name: str) -> ClientResult[bytes]:
         """GetTableDataChunkIteratorStream operation.
 
@@ -636,6 +690,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_table_row_count(self, schema_name: str, table_name: str) -> ClientResult[int]:
         """GetTableRowCount operation.
 
@@ -650,6 +705,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_workflows(self) -> ClientResult[StringCollection]:
         """GetTenantWorkflows operation."""
         return_type = ClientResult(self.context, StringCollection())
@@ -657,6 +713,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_validation_chunks(self) -> ClientResult[str]:
         """GetValidationChunks operation."""
         return_type = ClientResult(self.context, str())
@@ -664,6 +721,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_work_item(self) -> ClientResult[str]:
         """GetWorkItem operation."""
         return_type = ClientResult(self.context, str())
@@ -671,6 +729,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def has_event_cache_duplicate_time(self, target_ident_current: int, source_count: int) -> ClientResult[bool]:
         """HasEventCacheDuplicateTime operation.
 
@@ -690,6 +749,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def hold_blob_deletion_on_source(self, hold_days: int) -> Self:
         """HoldBlobDeletionOnSource operation.
 
@@ -700,6 +760,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_db_read_only(self) -> ClientResult[bool]:
         """IsDbReadOnly operation."""
         return_type = ClientResult(self.context, bool())
@@ -707,6 +768,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_system_site_locked(self, lock_requester: str) -> ClientResult[bool]:
         """IsSystemSiteLocked operation.
 
@@ -720,6 +782,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def lock_site(self) -> ClientResult[int]:
         """LockSite operation."""
         return_type = ClientResult(self.context, int())
@@ -727,6 +790,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def pause_crawling(self, original_cps_delete_reason: int) -> Self:
         """PauseCrawling operation.
 
@@ -739,18 +803,21 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def process_storage_metrics_changes(self) -> Self:
         """ProcessStorageMetricsChanges operation."""
         qry = ServiceOperationQuery(self, "ProcessStorageMetricsChanges", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def pulse_heartbeat(self) -> Self:
         """PulseHeartbeat operation."""
         qry = ServiceOperationQuery(self, "PulseHeartbeat", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def release_system_site_lock(self, lock_requester: str) -> ClientResult[int]:
         """ReleaseSystemSiteLock operation.
 
@@ -764,12 +831,14 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_site_map_entry(self) -> Self:
         """RemoveSiteMapEntry operation."""
         qry = ServiceOperationQuery(self, "RemoveSiteMapEntry", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_site_map_entry_clear_cache(self, site_path: str) -> Self:
         """RemoveSiteMapEntry_ClearCache operation.
 
@@ -780,6 +849,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def resume_crawling(self, original_cps_delete_reason: int) -> Self:
         """ResumeCrawling operation.
 
@@ -792,6 +862,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_site_move_state(self, state: int) -> Self:
         """SetSiteMoveState operation.
 
@@ -802,6 +873,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def source_cleanup_after_move(self, is_deleted: bool) -> Self:
         """SourceCleanupAfterMove operation.
 
@@ -812,18 +884,21 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def start_snapshot_isolation(self) -> Self:
         """StartSnapshotIsolation operation."""
         qry = ServiceOperationQuery(self, "StartSnapshotIsolation", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def stop_session_token(self) -> Self:
         """StopSessionToken operation."""
         qry = ServiceOperationQuery(self, "StopSessionToken", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unlock_site_on_failure(self, original_lock_flags: int) -> Self:
         """UnlockSiteOnFailure operation.
 
@@ -836,12 +911,14 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_abs_blob_dates(self) -> Self:
         """UpdateAbsBlobDates operation."""
         qry = ServiceOperationQuery(self, "UpdateAbsBlobDates", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def verify_replica_site_map_for_move(self) -> ClientResult[int]:
         """VerifyReplicaSiteMapForMove operation."""
         return_type = ClientResult(self.context, int())
@@ -849,6 +926,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_telemetry_only_work_item(self) -> ClientResult[bool]:
         """DeleteTelemetryOnlyWorkItem operation."""
         return_type = ClientResult(self.context, bool())
@@ -856,6 +934,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_perms_incremental_rows(self, serialized_scope_ids: str) -> ClientResult[str]:
         """GetPermsIncrementalRows operation.
 
@@ -870,6 +949,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_perms_incremental_rows_stream(self, serialized_scope_ids: str) -> ClientResult[bytes]:
         """GetPermsIncrementalRowsStream operation.
 
@@ -884,6 +964,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_changes(
         self, from_change_number: int, to_change_number: int, has_to_change_number: bool, max_changes: int
     ) -> ClientResult[str]:
@@ -916,6 +997,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_scp_status_json(self) -> ClientResult[str]:
         """GetScpStatusJson operation."""
         return_type = ClientResult(self.context, str())
@@ -923,6 +1005,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def complete_site_move_history(self, work_item_id: UUID, completed_time_utc: datetime) -> Self:
         """CompleteSiteMoveHistory operation.
 
@@ -943,6 +1026,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_or_update_in_progress_site_move_history_record(self, serialized_record: str) -> Self:
         """CreateOrUpdateInProgressSiteMoveHistoryRecord operation.
 
@@ -961,6 +1045,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_in_progress_site_move_history(self, work_item_id: UUID) -> Self:
         """DeleteInProgressSiteMoveHistory operation.
 
@@ -974,6 +1059,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_move_history(self, work_item_id: UUID) -> ClientResult[str]:
         """GetSiteMoveHistory operation.
 
@@ -986,6 +1072,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def list_site_move_history(self) -> ClientResult[str]:
         """ListSiteMoveHistory operation."""
         return_type = ClientResult(self.context, str())
@@ -993,6 +1080,7 @@ class SiteMoveService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def record_site_move_history_copy_done(self, work_item_id: UUID, copy_done_time_utc: datetime) -> Self:
         """RecordSiteMoveHistoryCopyDone operation.
 

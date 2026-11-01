@@ -6,6 +6,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -23,6 +24,7 @@ from office365.sharepoint.brandcenter.orgassetslibraryconfigparam import (
 )
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
     SiteInfoForSitePicker,
@@ -74,6 +76,7 @@ class Office365Tenant(Entity):
     def ai_builder_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         return self.properties.get("AIBuilderSiteInfoList", ClientValueCollection(SiteInfoForSitePicker))
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_tenant_cdn_origin(self, cdn_type: int, origin_url: str) -> Self:
         """Configures a new origin to public or private CDN, on either Tenant level or on a single Site level.
         Effectively, a tenant admin points out to a document library, or a folder in the document library
@@ -92,6 +95,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def disable_sharing_for_non_owners_of_site(self, site_url: str) -> Self:
         """Disables Sharing For Non Owners
 
@@ -103,6 +107,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_cdn_enabled(self, cdn_type: int) -> ClientResult[bool]:
         """Returns whether Public content delivery network (CDN) or Private CDN is enabled on the tenant level.
 
@@ -118,6 +123,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_block_download_file_type_policy_data(
         self,
         block_download_file_type_policy: bool,
@@ -134,6 +140,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_tenant_cdn_enabled(self, cdn_type: int, is_enabled: bool) -> Self:
         """Enables or disables Public content delivery network (CDN) or Private CDN on the tenant level.
 
@@ -149,6 +156,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_tenant_cdn_origin(self, cdn_type: int, origin_url: str) -> Self:
         """Removes a new origin from the Public or Private content delivery network (CDN).
 
@@ -165,6 +173,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_cdn_policies(self, cdn_type: int) -> ClientResult[ClientValueCollection[str]]:
         """Get the public or private Policies applied on your SharePoint Online Tenant.
 
@@ -179,6 +188,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_tenant_cdn_policy(self, cdn_type, policy, policy_value):
         """Sets the content delivery network (CDN) policies at the tenant level.
 
@@ -195,12 +205,14 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def sync_aadb2b_management_policy(self) -> Self:
         """ """
         qry = ServiceOperationQuery(self, "SyncAadB2BManagementPolicy")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def revoke_all_user_sessions(self, user: Union[str, User]) -> SPOUserSessionRevocationResult:
         """Provides IT administrators the ability to invalidate a particular users' O365 sessions across all their
         devices.
@@ -226,6 +238,7 @@ class Office365Tenant(Entity):
             _revoke_all_user_sessions(user)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_external_users(self, position=0, page_size=50, _filter=None, sort_order=0):
         """Returns external users in the tenant.
 
@@ -245,6 +258,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_external_users(self, unique_ids: Optional[List[str]] = None) -> RemoveExternalUsersResults:
         """Removes a collection of external users from the tenancy's folder.
 
@@ -258,6 +272,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_all_tenant_themes(self) -> EntityCollection[ThemeProperties]:
         """
         Get all themes from tenant
@@ -267,6 +282,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
         """Adds a new theme to a tenant.
 
@@ -280,6 +296,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_tenant_theme(self, name: str) -> Self:
         """Removes a theme from tenant
 
@@ -291,6 +308,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def queue_import_profile_properties(
         self, id_type: int, source_data_id_property: str, property_map: str, source_uri: str
     ) -> ClientResult[str]:
@@ -1468,6 +1486,7 @@ class Office365Tenant(Entity):
         """Gets the MassDeleteNotificationDisabledForSPO property"""
         return self.properties.get("MassDeleteNotificationDisabledForSPO", None)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_public_cdn_origin(self, origin: str) -> Self:
         """AddPublicCdnOrigin operation.
 
@@ -1478,6 +1497,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_sdn_provider(self, identifier: str, license_: str) -> Self:
         """AddSdnProvider operation.
 
@@ -1491,6 +1511,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_to_org_assets_lib_and_cdn(
         self,
         cdn_type: int,
@@ -1525,6 +1546,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_to_org_assets_with_config(
         self,
         cdn_type: int,
@@ -1562,6 +1584,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_tenant_cdn_default_origins(self, cdn_type: int) -> Self:
         """CreateTenantCdnDefaultOrigins operation.
 
@@ -1572,6 +1595,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_import_profile_properties_job(self, job_id: UUID) -> ClientResult[bool]:
         """DeleteImportProfilePropertiesJob operation.
 
@@ -1583,6 +1607,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_custom_fonts_minor_version(self, lib_url: ResourcePath) -> ClientResult[int]:
         """GetCustomFontsMinorVersion operation.
 
@@ -1594,6 +1619,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_hide_default_themes(self) -> ClientResult[bool]:
         """GetHideDefaultThemes operation."""
         return_type = ClientResult(self.context, bool())
@@ -1601,6 +1627,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_idle_session_sign_out_for_unmanaged_devices(self) -> ClientResult[str]:
         """GetIdleSessionSignOutForUnmanagedDevices operation."""
         return_type = ClientResult(self.context, str())
@@ -1608,6 +1635,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_cdn_origins(self, cdn_type: int) -> ClientResult[StringCollection]:
         """GetTenantCdnOrigins operation.
 
@@ -1619,6 +1647,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def increment_custom_fonts_minor_version(self, lib_url: ResourcePath) -> Self:
         """IncrementCustomFontsMinorVersion operation.
 
@@ -1629,6 +1658,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def is_sharing_disabled_for_non_owners_of_site(self, site_url: str) -> ClientResult[bool]:
         """IsSharingDisabledForNonOwnersOfSite operation.
 
@@ -1642,6 +1672,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def log_custom_fonts_large_upload(self, num_catalogs: int, num_fonts: int, total_expected_files: int) -> Self:
         """LogCustomFontsLargeUpload operation.
 
@@ -1661,6 +1692,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_from_org_assets(self, lib_url: ResourcePath, list_id: UUID) -> Self:
         """RemoveFromOrgAssets operation.
 
@@ -1674,6 +1706,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_from_org_assets_and_cdn(self, remove: bool, cdn_type: int, lib_url: ResourcePath) -> Self:
         """RemoveFromOrgAssetsAndCdn operation.
 
@@ -1693,6 +1726,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_previous_custom_font_upload(self, maj_versions: list[str], lib_url: ResourcePath) -> Self:
         """RemovePreviousCustomFontUpload operation.
 
@@ -1711,6 +1745,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_public_cdn_origin(self, origin_id: str) -> Self:
         """RemovePublicCdnOrigin operation.
 
@@ -1721,12 +1756,14 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def remove_sdn_provider(self) -> Self:
         """RemoveSdnProvider operation."""
         qry = ServiceOperationQuery(self, "RemoveSdnProvider", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_block_download_file_type_policy_exclusion_list(self, excluded_block_download_group_ids: list[UUID]) -> Self:
         """SetBlockDownloadFileTypePolicyExclusionList operation.
 
@@ -1744,6 +1781,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_hide_default_themes(self, hide_default_themes: bool) -> ClientResult[bool]:
         """SetHideDefaultThemes operation.
 
@@ -1757,6 +1795,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_idle_session_sign_out_for_unmanaged_devices(
         self, enabled: bool, warn_after: time, sign_out_after: time
     ) -> ClientResult[bool]:
@@ -1779,6 +1818,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_jit_dlp_policy_data(
         self,
         mark_all_files_as_sensitive_by_default: bool,
@@ -1807,6 +1847,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_org_assets_lib(self, lib_url: ResourcePath, thumbnail_url: ResourcePath, org_asset_type: int) -> Self:
         """SetOrgAssetsLib operation.
 
@@ -1826,6 +1867,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_org_assets_lib_with_config(
         self,
         lib_url: ResourcePath,
@@ -1857,12 +1899,14 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def sync_aad_b2_b_management_policy(self) -> Self:
         """SyncAadB2BManagementPolicy operation."""
         qry = ServiceOperationQuery(self, "SyncAadB2BManagementPolicy", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
         """UpdateTenantTheme operation.
 
@@ -1877,6 +1921,7 @@ class Office365Tenant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def upload_custom_fonts_and_catalog_lib(
         self, custom_font_files: ClientValueCollection[CustomFontsResource], lib_url: ResourcePath
     ) -> ClientResult[bool]:

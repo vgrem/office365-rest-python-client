@@ -353,9 +353,18 @@ also be a SharePoint administrator. `site_access` takes that role as the alterna
 so it is checked but never added to the list of things to grant:
 
 ```python
-@site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+from office365.permissions import DirectoryRole
+
+
+@site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
 def register_hub_site(self): ...
 ```
+
+The role is a `DirectoryRole` member rather than a string because it is compared against the
+`displayName` the tenant's directory answers. Misspelled it does not fail — it names a role
+nobody holds, so the requirement is simply never met, and on a client that cannot read roles at
+all it comes back *unprovable*, which passes. Pass a plain string only for a role the enum does
+not name; it holds the ones this library declares.
 
 Use `@require_permission(..., resource=ResourceName.SharePoint)` directly when a call
 needs a name outside that ladder, such as `TermStore.Read.All` or `Sites.Selected`.

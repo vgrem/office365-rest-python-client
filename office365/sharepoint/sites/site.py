@@ -7,6 +7,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -129,7 +130,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_copy_job(self, export_object_uris, destination_uri, options=None) -> ClientResult[CopyMigrationInfo]:
         """"""
         return_type = ClientResult(self.context, CopyMigrationInfo())
@@ -138,7 +139,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_migration_ingestion_job(
         self,
         g_web_id: Union[str, UUID],
@@ -171,7 +172,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_migration_job(
         self,
         g_web_id: Union[str, UUID] | None = None,
@@ -201,7 +202,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_migration_job_encrypted(
         self,
         g_web_id: Union[str, UUID],
@@ -238,7 +239,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_migration_job_progress(self, job_id: str, next_token: str = "0") -> ClientResult[MigrationJobProgress]:
         """Retrieves a page of migration job progress events.
 
@@ -256,7 +257,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def provision_migration_containers(self) -> ClientResult[ProvisionedMigrationContainersInfo]:
         """Provisions SharePoint-provided Azure containers for migration content and manifest.
 
@@ -269,7 +270,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def provision_migration_queue(self) -> ClientResult[ProvisionedMigrationQueueInfo]:
         """Provisions a SharePoint-provided Azure queue for migration job progress."""
         return_type = ClientResult(self.context, ProvisionedMigrationQueueInfo())
@@ -370,7 +371,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_migration_status(self) -> EntityCollection[SPMigrationJobStatus]:
         """"""
         return_type = EntityCollection(self.context, SPMigrationJobStatus)
@@ -378,7 +379,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_copy_job_progress(self, copy_job_info=None) -> ClientResult[CopyJobProgress]:
         """Args:
         copy_job_info: Optional copyJobInfo object.
@@ -667,7 +668,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def provision_temporary_azure_container(self) -> ClientResult[ProvisionedTemporaryAzureContainerInfo]:
         """"""
         return_type = ClientResult(self.context, ProvisionedTemporaryAzureContainerInfo())
@@ -675,7 +676,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def process_storage_metrics_changes(self) -> Self:
         """"""
         qry = ServiceOperationQuery(self, "ProcessStorageMetricsChanges")
@@ -694,7 +695,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def register_hub_site(self, create_info: Optional[HubSiteCreationInformation] = None) -> Self:
         """Registers an existing site as a hub site.
 
@@ -725,7 +726,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def unregister_hub_site(self) -> Self:
         """Disables the hub site feature on a site."""
         qry = ServiceOperationQuery(self, "UnRegisterHubSite")
@@ -1410,7 +1411,7 @@ class Site(Entity):
             super().set_property(name, value, persist_changes)
         return self
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_copy_jobs(
         self, export_object_uris: list[str], destination_uri: str, options: CopyMigrationOptions
     ) -> ClientResult[ClientValueCollection[CopyMigrationInfo]]:
@@ -1451,7 +1452,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_sp_async_read_job(
         self,
         url: str,
@@ -1487,7 +1488,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_sp_async_read_job_with_multi_url(
         self,
         urls: list[str],
@@ -1523,7 +1524,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_migration_job(self, id_: UUID) -> ClientResult[bool]:
         """DeleteMigrationJob operation.
 
@@ -1535,7 +1536,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def enqueue_apply_sensitivity_label_work(
         self, work_item_information: AutoLabellingWorkInformation
     ) -> ClientResult[EnqueueJobInformation]:
@@ -1556,7 +1557,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_bring_your_own_key_recovery_key_mode(self) -> ClientResult[int]:
         """GetBringYourOwnKeyRecoveryKeyMode operation."""
         return_type = ClientResult(self.context, int())
@@ -1564,7 +1565,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_bring_your_own_key_site_status(self) -> ClientResult[CustomerKeyStatusInfo]:
         """GetBringYourOwnKeySiteStatus operation."""
         return_type = ClientResult(self.context, CustomerKeyStatusInfo())
@@ -1572,7 +1573,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_bring_your_own_key_tenant_status(self) -> ClientResult[CustomerKeyStatusInfo]:
         """GetBringYourOwnKeyTenantStatus operation."""
         return_type = ClientResult(self.context, CustomerKeyStatusInfo())
@@ -1581,7 +1582,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ebar_protection_units_exist_by_ids(
         context: ClientContext, site_subscription_id: UUID, protection_unit_ids: list[UUID]
     ) -> ClientResult[dict]:
@@ -1602,7 +1603,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ebar_restore_session_exists_by_id(
         context: ClientContext, site_subscription_id: UUID, restore_session_id: UUID
     ) -> ClientResult[bool]:
@@ -1627,7 +1628,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_migration_job_status(self, id_: UUID) -> ClientResult[int]:
         """GetMigrationJobStatus operation.
 
@@ -1694,7 +1695,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sites_exist_by_site_ids(
         context: ClientContext, site_subscription_id: UUID, site_ids: list[UUID]
     ) -> ClientResult[dict]:
@@ -1712,7 +1713,7 @@ class Site(Entity):
         return return_type
 
     @staticmethod
-    @site_access(SiteLevel.READ, role="SharePoint Administrator")
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_sites_exist_by_site_urls(
         context: ClientContext, site_subscription_id: UUID, urls: list[str]
     ) -> ClientResult[dict]:
@@ -1729,7 +1730,7 @@ class Site(Entity):
         context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def multi_geo_copy_job(self, job_id: UUID, user_id: int, binary_payload: bytes) -> Self:
         """MultiGeoCopyJob operation.
 
@@ -1762,7 +1763,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def onboard_tenant_for_bring_your_own_key(self, key_info: CustomerKeyInfo) -> ClientResult[CustomerKeyStatusInfo]:
         """OnboardTenantForBringYourOwnKey operation.
 
@@ -1816,7 +1817,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def recover_tenant_for_bring_your_own_key(self, key_info: CustomerKeyInfo) -> ClientResult[CustomerKeyStatusInfo]:
         """RecoverTenantForBringYourOwnKey operation.
 
@@ -1830,7 +1831,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return return_type
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def roll_tenant_bring_your_own_key(
         self, key_type: int, key_vault_info: CustomerKeyVaultInfo
     ) -> ClientResult[CustomerKeyStatusInfo]:
@@ -2007,7 +2008,7 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_inactive_site_properties(self, operation: str, execution_id: int) -> ClientResult[UpdateCard]:
         """UpdateInactiveSiteProperties operation.
 

@@ -38,6 +38,7 @@ from office365.permissions.declaration import PermissionRequirement, declared, r
 from office365.permissions.index import Index, Operation, index
 from office365.permissions.requirement import FLOWS, Requirement, TenantFacts
 from office365.permissions.resource import ResourceName
+from office365.permissions.roles import DirectoryRole
 from office365.permissions.token import TokenClaims
 
 __all__ = [
@@ -45,6 +46,7 @@ __all__ = [
     "DELEGATED",
     "FLOWS",
     "Catalog",
+    "DirectoryRole",
     "Index",
     "Operation",
     "PermissionRequirement",

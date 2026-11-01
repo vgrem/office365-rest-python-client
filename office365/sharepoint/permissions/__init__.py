@@ -22,10 +22,10 @@ on a tenant that could have run it.
 
 A few operations reach past one site collection - the migration API, bring-your-own-key, hub
 site registration - and no rung covers them on its own: they also want the caller to be a
-SharePoint Administrator. Those pass ``role="SharePoint Administrator"``, which declares the
-role as the alternative it is rather than as another name to grant:
+SharePoint Administrator. Those pass ``role=DirectoryRole.SharePointAdministrator``, which
+declares the role as the alternative it is rather than as another name to grant:
 
-    @site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
 """
 
 from __future__ import annotations
@@ -75,7 +75,9 @@ def site_access(level: SiteLevel, role: Optional[str] = None) -> Callable[[F], F
     ``role`` names an Entra ID directory role that also satisfies the call - the escape hatch
     for an operation that reaches past the site collection, where the permission alone does not
     decide. Holding it satisfies the whole declaration, so it is stated as an alternative and
-    never as a name to grant.
+    never as a name to grant. Pass a :class:`~office365.permissions.roles.DirectoryRole` member:
+    the name is compared against the directory's own spelling, and a misspelled one names a role
+    nobody holds, which reads as an unmet requirement rather than an error.
 
     Thin on purpose: it fills in the two flow names and the resource, and hands the rest to
     :func:`~office365.permissions.declaration.require_permission`, which owns what a

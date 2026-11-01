@@ -401,6 +401,24 @@ introduced.
   certificate, a secret and the grants, and it ends by naming what `.env` needs; `--dry-run`
   prints the same block without signing in and marks a secret already in `.env` as `<kept>`,
   so a preview stays safe to paste into an issue.
+- **Tenant administration declares what it needs.** The
+  three service-wide objects — `Tenant` (284 operations), `SiteMoveService` (86) and
+  `Office365Tenant` (43) — now name a rung and, where the permission alone does not decide,
+  the SharePoint Administrator role: 413 declarations, 183 of them reads and 230 writes, and
+  nothing left undeclared in those modules. This half of the SharePoint harvest needs no
+  per-method judgement, because every operation is tenant-scope: a read takes
+  `Sites.Read.All`, a write `Sites.FullControl.All`, and both take the role. 18 live tests
+  derive their preconditions from those markers, and the package's debt moves 1,882 → 1,469.
+- **A directory role is named once instead of spelled by hand.** `office365.permissions` exports
+  `DirectoryRole`, a `str` enum carrying Entra's own `displayName` for the roles this library
+  and its tests mention — `SharePointAdministrator`, `GlobalAdministrator`,
+  `PrivilegedRoleAdministrator`, `ComplianceAdministrator`, `ComplianceDataAdministrator`,
+  `RecordsManagement`. The declaration side compares that string against the tenant's
+  directory, and a misspelling there does not fail: it names a role nobody holds, so the
+  requirement is simply never met, and on a client that cannot read roles at all the answer
+  is *unprovable*, which passes. Both directions hid the typo. `role=` still takes a plain
+  string for a name the enum does not list, since Entra's catalogue is far larger than the
+  six. The 444 SharePoint declarations that also need the role now use it.
 
 ### Changed
 
