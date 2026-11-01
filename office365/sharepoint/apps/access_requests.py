@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -14,6 +15,7 @@ class AccessRequests(Entity):
     """ """
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def change_request_status(
         context: ClientContext, item_id: int, new_status: int, conv_str: str, perm_type: str, permission_level: int
     ) -> None:
@@ -51,6 +53,7 @@ class AccessRequests(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def change_request_status_bulk(context: ClientContext, request_ids: list[int], new_status: int) -> None:
         """ChangeRequestStatusBulk operation.
 

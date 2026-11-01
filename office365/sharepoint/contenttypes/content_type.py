@@ -13,6 +13,7 @@ from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCol
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.fields.collection import FieldCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.translation.user_resource import UserResource
 
 if TYPE_CHECKING:
@@ -62,6 +63,7 @@ class ContentType(Entity):
     def __repr__(self):
         return self.string_id or str(self.id) or self.entity_type_name
 
+    @site_access(SiteLevel.MANAGE)
     def reorder_fields(self, field_names: List[str]) -> Self:
         """The ReorderFields method is called to change the order in which fields appear in a content type.
 
@@ -121,6 +123,7 @@ class ContentType(Entity):
         root_folder.ensure_properties(["ContentTypeOrder", "UniqueContentTypeOrder"]).after_execute(_reorder)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def update(self, *args: Any, update_children: bool = False) -> Self:
         """Updates the content type, and any child objects  of the content type if specified,
         with any changes made to the content type.

@@ -12,6 +12,7 @@ from office365.sharepoint.directory.helper import SPHelper
 from office365.sharepoint.directory.members_info import MembersInfo
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.principal import Principal
 
 if TYPE_CHECKING:
@@ -143,6 +144,7 @@ class Group(Entity):
             "Users", EntityCollection[User](self.context, User, ResourcePath("Users", self.resource_path))
         )
 
+    @site_access(SiteLevel.MANAGE)
     def set_user_as_owner(self, owner_id: int) -> Self:
         """SetUserAsOwner operation.
 
@@ -281,6 +283,7 @@ class Group(Entity):
             "owners", EntityCollection[User](self.context, User, ResourcePath("owners", self.resource_path))
         )
 
+    @site_access(SiteLevel.MANAGE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)

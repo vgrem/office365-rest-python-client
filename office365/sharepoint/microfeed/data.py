@@ -6,6 +6,7 @@ from typing_extensions import Self
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MicrofeedData(Entity):
@@ -55,6 +56,7 @@ class MicrofeedData(Entity):
         """Gets the Version property"""
         return self.properties.get("Version", None)
 
+    @site_access(SiteLevel.WRITE)
     def add_attachment(self, name: str, bytes_: bytes) -> Self:
         """AddAttachment operation.
 
@@ -66,6 +68,7 @@ class MicrofeedData(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def system_update(self) -> Self:
         """SystemUpdate operation."""
         qry = ServiceOperationQuery(self, "SystemUpdate", None, {}, None, None)

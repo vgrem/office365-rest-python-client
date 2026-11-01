@@ -12,6 +12,7 @@ from office365.sharepoint.attachments.creation_information import (
     AttachmentCreationInformation,
 )
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AttachmentCollection(EntityCollection[Attachment]):
@@ -28,6 +29,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         """
         super().__init__(context, Attachment, resource_path, parent)
 
+    @site_access(SiteLevel.WRITE)
     def add(self, attachment_file_information: Union[AttachmentCreationInformation, Dict]) -> Attachment:
         """Adds the attachment represented by the file name and stream in the specified parameter to the list item.
 
@@ -57,6 +59,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def add_using_path(self, decoded_url: str, content_stream: bytes) -> Attachment:
         """
         Adds an attachment using a decoded URL path.

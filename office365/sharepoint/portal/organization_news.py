@@ -8,6 +8,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -22,6 +23,7 @@ class OrganizationNewsSiteReference(ClientValue):
 
 
 class OrganizationNews(Entity):
+    @site_access(SiteLevel.READ)
     def sites_reference(self):
         return_type = ClientResult(self.context, ClientValueCollection(OrganizationNewsSiteReference))
         qry = ServiceOperationQuery(self, "SitesReference", None, None, None, return_type)
@@ -29,6 +31,7 @@ class OrganizationNews(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_site_reference(
         context: ClientContext, org_news_site_url: str, validate: bool
     ) -> ClientResult[OrganizationNewsSiteReference]:

@@ -3,6 +3,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sitedesigns.webpartmodel import WebPartModel
 
 
@@ -11,6 +12,7 @@ class SectionDesignIdeasApi(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.SectionDesignIdeas.SectionDesignIdeasApi"
 
+    @site_access(SiteLevel.READ)
     def get_section_design_ideas(self, title: str, sub_title: str) -> ClientResult[ClientValueCollection[WebPartModel]]:
         """GetSectionDesignIdeas operation.
 
@@ -25,6 +27,7 @@ class SectionDesignIdeasApi(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def ping(self) -> ClientResult[str]:
         """Ping operation."""
         return_type = ClientResult(self.context, str())

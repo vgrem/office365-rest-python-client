@@ -4,6 +4,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.search.query.reordering_rule import ReorderingRule
 
 
@@ -20,6 +21,7 @@ class ReorderingRuleCollection(Entity):
         """Gets the Items property"""
         return self.properties.get("Items", ClientValueCollection[ReorderingRule](ReorderingRule))
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, match_type: int, match_value: str, boost: int) -> Self:
         """Add operation.
 
@@ -34,6 +36,7 @@ class ReorderingRuleCollection(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def clear(self) -> Self:
         """Clear operation."""
         qry = ServiceOperationQuery(self, "Clear", None, {}, None, None)

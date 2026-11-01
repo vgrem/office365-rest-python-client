@@ -6,12 +6,14 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.workflow.instances.instance import WorkflowInstance
 
 
 class WorkflowInstanceService(Entity):
     """Manages and reads workflow instances from the workflow host."""
 
+    @site_access(SiteLevel.READ)
     def enumerate_instances_for_site(self):
         """
         Returns the site workflow instances for the current site.
@@ -33,6 +35,7 @@ class WorkflowInstanceService(Entity):
             "Current", WorkflowInstanceService(self.context, ResourcePath("Current", self.resource_path))
         )
 
+    @site_access(SiteLevel.WRITE)
     def start_workflow_on_list_item_by_subscription_id(
         self, subscription_id: UUID, item_id: int, payload: dict
     ) -> ClientResult[str]:

@@ -7,6 +7,7 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.businessdata.entityfield import EntityField
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class EntityView(Entity):
@@ -35,6 +36,7 @@ class EntityView(Entity):
             EntityCollection[EntityField](self.context, EntityField, ResourcePath("Fields", self.resource_path)),
         )
 
+    @site_access(SiteLevel.READ)
     def get_type(self, field_dot_notation: str) -> ClientResult[str]:
         """GetType operation.
 
@@ -46,6 +48,7 @@ class EntityView(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_xml_schema(self) -> ClientResult[str]:
         """GetXmlSchema operation."""
         return_type = ClientResult(self.context, str())

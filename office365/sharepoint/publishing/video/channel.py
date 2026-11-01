@@ -10,12 +10,14 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.search import Search
 from office365.sharepoint.publishing.spotlightvideo import SpotlightVideo
 from office365.sharepoint.publishing.video.item import VideoItem
 
 
 class VideoChannel(Entity):
+    @site_access(SiteLevel.READ)
     def get_video_count(self):
         return_type = ClientResult(self.context)
         qry = ServiceOperationQuery(self, "GetVideoCount", None, None, None, return_type)
@@ -135,6 +137,7 @@ class VideoChannel(Entity):
             "Videos", EntityCollection[VideoItem](self.context, VideoItem, ResourcePath("Videos", self.resource_path))
         )
 
+    @site_access(SiteLevel.READ)
     def get_channel_page_url(self, view_mode: int) -> ClientResult[str]:
         """GetChannelPageUrl operation.
 

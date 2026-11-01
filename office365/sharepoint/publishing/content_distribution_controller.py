@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.news_distribution_settings import NewsDistributionSettings
 
 
@@ -14,6 +15,7 @@ class ContentDistributionController(Entity):
     def entity_type_name(self) -> str:
         return "SP.Publishing.ContentDistributionController"
 
+    @site_access(SiteLevel.READ)
     def get_news_distribution_settings(self) -> ClientResult[NewsDistributionSettings]:
         """GetNewsDistributionSettings operation."""
         return_type = ClientResult(self.context, NewsDistributionSettings())
@@ -21,6 +23,7 @@ class ContentDistributionController(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_news_distribution_settings(self, community_id: str) -> Self:
         """SetNewsDistributionSettings operation.
 

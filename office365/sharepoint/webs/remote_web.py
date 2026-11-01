@@ -7,12 +7,14 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.webs.web import Web
 
 
 class RemoteWeb(Entity):
     """Specifies a remote web that might be on a different domain."""
 
+    @site_access(SiteLevel.READ)
     def get_list_by_server_relative_url(self, server_relative_url):
         """Returns the list that is associated with the specified server-relative URL.
 
@@ -32,6 +34,7 @@ class RemoteWeb(Entity):
         return target_list
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create(context, request_url: str) -> "RemoteWeb":
         """Args:
         context (ClientContext):

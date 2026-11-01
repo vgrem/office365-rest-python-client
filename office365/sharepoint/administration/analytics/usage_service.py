@@ -5,6 +5,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.administration.usageentry import UsageEntry
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SPAnalyticsUsageService(Entity):
@@ -14,6 +15,7 @@ class SPAnalyticsUsageService(Entity):
         static_path = ResourcePath("Microsoft.SharePoint.Administration.SPAnalyticsUsageService")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.WRITE)
     def log_event(self, event_type_id, scope_id, item_id, site=None, user=None):
         """Used to log events.
 
@@ -33,6 +35,7 @@ class SPAnalyticsUsageService(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Administration.SPAnalyticsUsageService"
 
+    @site_access(SiteLevel.WRITE)
     def logevent(self, usage_entry: UsageEntry) -> Self:
         """logevent operation.
 

@@ -8,6 +8,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.webhooks.subscription import Subscription
 from office365.sharepoint.webhooks.subscription_information import (
     SubscriptionInformation,
@@ -24,6 +25,7 @@ class SubscriptionCollection(EntityCollection[Subscription]):
         """Gets the subscription with the specified ID."""
         return Subscription(self.context, ServiceOperationPath("getById", [_id], self.resource_path))
 
+    @site_access(SiteLevel.WRITE)
     def add(self, notification_url: str, expiration_date_time: datetime):
         """Args:
         notification_url (str): notification string
@@ -47,6 +49,7 @@ class SubscriptionCollection(EntityCollection[Subscription]):
 
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def remove(self, subscription_id: str) -> Self:
         """Removes the subscription with the specified subscriptionId from the collection.
 

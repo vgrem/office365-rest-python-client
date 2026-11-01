@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.spdatagovernancesarstartsitereviewresponse import (
@@ -22,6 +24,7 @@ class SPDataGovernanceSARRestApiClient(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.SPDataGovernanceSARRestApiClient"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_spo_site_review(
         self, report_entity: int, site_reviewtatus: int, site_review_id: UUID, site_id: UUID
     ) -> ClientResult[ClientValueCollection[SPDataGovernanceSiteReviewsResponse]]:
@@ -58,6 +61,7 @@ class SPDataGovernanceSARRestApiClient(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def start_spo_site_review(
         self, detailed_source_report_id: UUID, site_id: UUID, admin_comment: str
     ) -> ClientResult[SPDataGovernanceSARStartSiteReviewResponse]:

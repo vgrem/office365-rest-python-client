@@ -702,6 +702,24 @@ introduced.
   and the portal navigation cache wrapper is three `MANAGE`s that mirror the structural
   navigation one. Debt 373 → 256, and three more live tests derive their precondition: adding
   a user to a site group, reading a role definition, and the sharing report capabilities.
+- **The sixty-three owners at two operations each.** 126 methods, and the pair is usually one
+  word apart: `like`/`unlike` on a comment, `restore`/`move_to_second_stage` in the recycle
+  bin, `get`/`set` on a site logo, a news-distribution setting, a spotlight configuration or a
+  workflow's external variable. The tenant keeps naming the role where it reaches past a site
+  collection - hub sites, tenant admin settings, the site-collection management service, site
+  properties, tenant CDN, tenant insights reports, and the two copies of the data-governance
+  SAR client that the same class is published under twice. `GeoExperience` is two
+  `FULL_CONTROL`s of a multi-geo tenant mode switch. The migration-center storage and the
+  performance data read with the role and the storage does not read at all. Four answers worth
+  keeping: a query's `SortCollection` is two reads because a sort shapes a read;
+  `DocumentId`-style site furniture is not the only `MANAGE` family - custom actions, role
+  assignments, content-type field links, multilingual settings and hosted-app web part data
+  are all `MANAGE` too, while a user's own first-run experience, their followed items and
+  their AI tokens are `WRITE`; `RecycleBinItem.restore` is a `WRITE` and
+  `move_to_second_stage` a `MANAGE`, the split the collection already had; and
+  `SharingUtility`, `ThemeInfo`, `WorkflowServicesManager` and `PeopleCollection` are pure
+  reads. Debt 256 → 130, and two more live tests derive their precondition: the recycle-bin
+  restore and the webhook subscription.
 
 
 

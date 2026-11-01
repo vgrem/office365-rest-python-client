@@ -10,6 +10,7 @@ from office365.sharepoint.folders.coloring_information import (
 )
 from office365.sharepoint.folders.colors import FolderColors
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
@@ -23,6 +24,7 @@ class FolderCollection(EntityCollection[Folder]):
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, Folder, resource_path, parent)
 
+    @site_access(SiteLevel.WRITE)
     def add_using_path(self, decoded_url: str, overwrite: bool) -> Folder:
         """Adds the folder located at the specified path to the collection.
 
@@ -56,6 +58,7 @@ class FolderCollection(EntityCollection[Folder]):
             folder = folder.add(name)
         return folder
 
+    @site_access(SiteLevel.WRITE)
     def add(self, name: str, color_hex: Optional[FolderColors] = None) -> Folder:
         """Adds the folder that is located at the specified URL to the collection.
 

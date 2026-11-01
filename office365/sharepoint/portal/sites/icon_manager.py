@@ -2,6 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class SiteIconManager(Entity):
@@ -12,6 +13,7 @@ class SiteIconManager(Entity):
             resource_path = ResourcePath("SiteIconManager")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def get_site_logo(self, site_url: str, target=None, _type=None, return_type=None) -> ClientResult[bytes]:
         payload = {"siteUrl": site_url, "target": target, "type": _type}
         if return_type is None:
@@ -20,6 +22,7 @@ class SiteIconManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_site_logo(
         self,
         relative_logo_url,

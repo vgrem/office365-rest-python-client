@@ -3,12 +3,14 @@ from typing import Optional
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class Reputation(Entity):
     """The Reputation static type includes methods to set the reputation properties on a list item."""
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def set_rating(
         context,
         list_id: str,
@@ -38,6 +40,7 @@ class Reputation(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def set_like(
         context,
         list_id: str,

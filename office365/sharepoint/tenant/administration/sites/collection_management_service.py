@@ -1,7 +1,9 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.sites.creation_source import (
     SiteCreationSource,
 )
@@ -12,6 +14,7 @@ class SiteCollectionManagementService(ClientObject):
         path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.SiteCollectionManagementService")
         super().__init__(context, path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_csv_file(self, view_xml):
         return_type = ClientResult(self.context, str())
         payload = {"viewXml": view_xml}
@@ -19,6 +22,7 @@ class SiteCollectionManagementService(ClientObject):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_creation_source(self):
         return_type = ClientResult(self.context, SiteCreationSource())
         qry = ServiceOperationQuery(self, "GetSiteCreationSource", None, None, None, return_type)

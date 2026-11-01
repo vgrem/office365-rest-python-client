@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -15,6 +16,7 @@ class OutOfBoxFontPackageSettings(Entity):
     """"""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_hide_out_of_box_font_packages(context: ClientContext) -> ClientResult[bool]:
         """GetHideOutOfBoxFontPackages operation."""
         from office365.sharepoint.fontpackages.oob_settings import (
@@ -27,6 +29,7 @@ class OutOfBoxFontPackageSettings(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def set_hide_out_of_box_font_packages(context: ClientContext, hide_oob_font_packages: bool) -> ClientResult[bool]:
         """SetHideOutOfBoxFontPackages operation.
 

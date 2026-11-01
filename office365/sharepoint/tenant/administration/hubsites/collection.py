@@ -1,7 +1,9 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.hubsites.hub_site import HubSite
 
 
@@ -19,6 +21,7 @@ class HubSiteCollection(EntityCollection[HubSite]):
         """
         return HubSite(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_connected_hubs(self, hub_site_id, option):
         """Args:
         hub_site_id (str):
@@ -30,6 +33,7 @@ class HubSiteCollection(EntityCollection[HubSite]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_url_by_hub_site_id(self, hub_site_id):
         """Args:
         hub_site_id (str):

@@ -2,6 +2,7 @@ from typing import Optional
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -9,6 +10,7 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.migrationcenter.storagesettings import MigrationStorageSettings
 from office365.sharepoint.migrationcenter.taskschedulerinformation import TaskSchedulerInformation
 from office365.sharepoint.migrationcenter.tasksettings import MigrationTaskSettings
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MigrationCenterStorage(Entity):
@@ -95,6 +97,7 @@ class MigrationCenterStorage(Entity):
     def entity_type_name(self):
         return "Microsoft.Online.SharePoint.MigrationCenter.Service.MigrationCenterStorage"
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def create(self, config: MigrationStorageSettings) -> Self:
         """Create operation.
 
@@ -105,6 +108,7 @@ class MigrationCenterStorage(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def file(self, folder_name: str, file_name: str, file: bytes, overwrite: bool) -> Self:
         """File operation.
 

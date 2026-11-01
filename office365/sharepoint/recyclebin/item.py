@@ -10,6 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
@@ -20,12 +21,14 @@ class RecycleBinItem(Entity):
     def __str__(self):
         return self.title or self.entity_type_name
 
+    @site_access(SiteLevel.WRITE)
     def restore(self) -> Self:
         """Restores the Recycle Bin item to its original location."""
         qry = ServiceOperationQuery(self, "Restore")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def move_to_second_stage(self) -> Self:
         """
         Moves the Recycle Bin item from the first-stage Recycle Bin to the second-stage Recycle Bin if the

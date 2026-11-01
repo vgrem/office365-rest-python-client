@@ -1,11 +1,13 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AppPrincipalCredential(Entity):
     """Represents a credential belonging to an app principal."""
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def create_from_symmetric_key(context, symmetric_key, not_before, not_after=None):
         """Create an instance of SP.AppPrincipalCredential that wraps a symmetric key.
 
@@ -27,6 +29,7 @@ class AppPrincipalCredential(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def create_from_key_group(context, key_group_identifier):
         """Create an instance of SP.AppPrincipalCredential that wraps a key group identifier.
 

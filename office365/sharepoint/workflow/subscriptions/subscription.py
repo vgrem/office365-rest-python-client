@@ -8,6 +8,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class WorkflowSubscription(Entity):
@@ -75,6 +76,7 @@ class WorkflowSubscription(Entity):
         """Gets the Id property"""
         return self.properties.get("Id", None)
 
+    @site_access(SiteLevel.READ)
     def get_external_variable(self, name: str) -> ClientResult[str]:
         """GetExternalVariable operation.
 
@@ -86,6 +88,7 @@ class WorkflowSubscription(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_external_variable(self, name: str, value: str) -> Self:
         """SetExternalVariable operation.
 

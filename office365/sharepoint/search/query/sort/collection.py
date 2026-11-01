@@ -2,12 +2,14 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.search.query.sort.sort import Sort
 
 
 class SortCollection(Entity):
     """Contains information about how to sort the search results."""
 
+    @site_access(SiteLevel.READ)
     def add(self, property_name: str, direction: int):
         """Adds a new element of type Microsoft.SharePoint.Client.Search.Query.Sort to the collection and returns
         a reference to the added Microsoft.SharePoint.Client.Search.Query.Sort.
@@ -29,6 +31,7 @@ class SortCollection(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def clear(self):
         """Deletes all the elements in the collection."""
         qry = ServiceOperationQuery(self, "Clear")

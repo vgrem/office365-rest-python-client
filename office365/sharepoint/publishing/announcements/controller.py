@@ -6,6 +6,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.announcements.data import AnnouncementsData
 
 
@@ -19,6 +20,7 @@ class AnnouncementsController(Entity):
     def entity_type_name(self):
         return "SP.Publishing.AnnouncementsController"
 
+    @site_access(SiteLevel.READ)
     def active(self) -> ClientResult[ClientValueCollection[AnnouncementsData]]:
         """Active operation."""
         return_type = ClientResult(self.context, ClientValueCollection[AnnouncementsData]())
@@ -26,6 +28,7 @@ class AnnouncementsController(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def flw_property_filtering_mapping(self, flw_property_filtering_mapping: str) -> Self:
         """FlwPropertyFilteringMapping operation.
 

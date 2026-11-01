@@ -5,6 +5,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.translation.item_info import TranslationItemInfo
 
 
@@ -20,6 +21,7 @@ class SyncTranslator(Entity):
             context, ServiceOperationPath("SP.Translation.SyncTranslator", {"targetLanguage": target_language})
         )
 
+    @site_access(SiteLevel.WRITE)
     def translate(self, input_file: str, output_file: str) -> ClientResult[TranslationItemInfo]:
         """Submits an immediate translation job to the protocol server.
 
@@ -46,6 +48,7 @@ class SyncTranslator(Entity):
     def entity_type_name(self) -> str:
         return "SP.Translation.SyncTranslator"
 
+    @site_access(SiteLevel.WRITE)
     def translate_stream(self, input_file: bytes, file_extension: str) -> ClientResult[bytes]:
         """TranslateStream operation.
 

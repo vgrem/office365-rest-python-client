@@ -1,6 +1,7 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AppCollection(Entity):
@@ -8,6 +9,7 @@ class AppCollection(Entity):
     def entity_type_name(self):
         return "Microsoft.AppServices.AppCollection"
 
+    @site_access(SiteLevel.READ)
     def get_apps_from_store(self, add_in_type: str, query_string: str) -> ClientResult[str]:
         """GetAppsFromStore operation.
 
@@ -20,6 +22,7 @@ class AppCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_by_type(self, type_: str) -> ClientResult[str]:
         """GetByType operation.
 

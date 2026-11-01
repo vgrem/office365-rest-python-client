@@ -1,3 +1,4 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -8,6 +9,7 @@ from office365.sharepoint.migrationcenter.service.performance.dashboard_data imp
 from office365.sharepoint.migrationcenter.service.performance.entity_data import (
     MigrationPerformanceEntityData,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class PerformanceData(MigrationPerformanceEntityData):
@@ -29,6 +31,7 @@ class PerformanceDataCollection(EntityCollection[PerformanceData]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, PerformanceData, resource_path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_perf_data_test(self, start_time=None, end_time=None, agent_id=None):
         """ """
         return_type = ClientResult(self.context, PerformanceDashboardData())
@@ -41,6 +44,7 @@ class PerformanceDataCollection(EntityCollection[PerformanceData]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_data(self, start_time=None, end_time=None, agent_id=None, time_unit=None):
         """ """
         return_type = ClientResult(self.context, PerformanceDashboardData())

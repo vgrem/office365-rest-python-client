@@ -2,6 +2,7 @@ from typing_extensions import Self
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class HostedApp(Entity):
@@ -9,12 +10,14 @@ class HostedApp(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.ClientSideComponent.HostedApp"
 
+    @site_access(SiteLevel.MANAGE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def update_web_part_data(self, web_part_data_as_json: str) -> Self:
         """UpdateWebPartData operation.
 

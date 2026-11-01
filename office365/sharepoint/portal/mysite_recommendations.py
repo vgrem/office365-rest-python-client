@@ -1,6 +1,7 @@
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MySiteRecommendations(Entity):
@@ -8,6 +9,7 @@ class MySiteRecommendations(Entity):
     stop following a particular item."""
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def follow_item(context, uri, personal_site_uri, category):
         """The FollowItem method adds the specified document or site to the list of followed content (as described in
         [MS-SOCCSOM] section 3.1.5.38.2.1.1). FollowItem MUST return TRUE if successful or FALSE if not successful.
@@ -31,6 +33,7 @@ class MySiteRecommendations(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def stop_following_item(context, uri, personal_site_uri, category):
         """The StopFollowingItem method removes the specified document or site from list of followed content (as
             described

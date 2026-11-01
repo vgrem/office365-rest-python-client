@@ -1,11 +1,13 @@
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class AnalyticsUsageEntry(Entity):
     """Specifies an analytics usage entry to log user or system events"""
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def log_analytics_event(context, event_type_id, item_id):
         """Creates and logs an analytics event into the analytics pipeline.
 
@@ -24,6 +26,7 @@ class AnalyticsUsageEntry(Entity):
         return binding_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def log_analytics_app_event2(context, app_event_type_id, item_id, rollup_scope_id, site_id, user_id):
         """Creates and logs an analytics event into the analytics pipeline with additional parameters.
 

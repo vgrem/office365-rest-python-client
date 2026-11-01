@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sharing.user_directory_info import UserDirectoryInfo
 
 if TYPE_CHECKING:
@@ -19,6 +20,7 @@ class SharingUtility(Entity):
         super().__init__(context, ResourcePath("SharingUtility"))
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_user_directory_info_by_email(context: ClientContext, email: str) -> ClientResult[UserDirectoryInfo]:
         """Get user information by the user’s email address in directory.
 
@@ -35,6 +37,7 @@ class SharingUtility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def validate_same_user_emails(
         context, primary_email: str, other_email: str, principal_name: str
     ) -> ClientResult[bool]:

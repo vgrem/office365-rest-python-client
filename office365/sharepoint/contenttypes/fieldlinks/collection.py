@@ -10,6 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.contenttypes.fieldlinks.field_link import FieldLink
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.fields.field import Field
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class FieldLinkCollection(EntityCollection[FieldLink]):
@@ -18,6 +19,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, FieldLink, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def add(self, field: Union[str, Field]) -> FieldLink:
         """Add a field link with the specified link information to the collection.
         A reference to the SP.Field that was added is returned.
@@ -50,6 +52,7 @@ class FieldLinkCollection(EntityCollection[FieldLink]):
         """
         return FieldLink(self.context, ServiceOperationPath("GetById", [_id], self.resource_path))
 
+    @site_access(SiteLevel.MANAGE)
     def reorder(self, internal_names: list[str]) -> Self:
         """Rearranges the collection of field links in the order in which field internal names are specified.
 

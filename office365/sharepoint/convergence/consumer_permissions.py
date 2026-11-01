@@ -3,6 +3,7 @@ from typing_extensions import Self
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class ConsumerPermissions(Entity):
@@ -15,12 +16,14 @@ class ConsumerPermissions(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Convergence.ConsumerPermissions"
 
+    @site_access(SiteLevel.MANAGE)
     def grant_consumer_site_permissions(self) -> Self:
         """GrantConsumerSitePermissions operation."""
         qry = ServiceOperationQuery(self, "GrantConsumerSitePermissions", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def revoke_consumer_site_permissions(self) -> Self:
         """RevokeConsumerSitePermissions operation."""
         qry = ServiceOperationQuery(self, "RevokeConsumerSitePermissions", None, {}, None, None)

@@ -5,12 +5,14 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.workflow.instances.service import WorkflowInstanceService
 
 
 class WorkflowServicesManager(Entity):
     """Describes the workflow host configuration states and provides service objects that interact with the workflow."""
 
+    @site_access(SiteLevel.READ)
     def get_workflow_instance_service(self):
         """Returns the WorkflowInstanceService (manages and reads workflow instances from the workflow host),
         which manages workflow instances."""
@@ -68,6 +70,7 @@ class WorkflowServicesManager(Entity):
         """Gets the Workflow2013Retired property"""
         return self.properties.get("Workflow2013Retired", None)
 
+    @site_access(SiteLevel.READ)
     def is_integrated_app(self) -> ClientResult[bool]:
         """IsIntegratedApp operation."""
         return_type = ClientResult(self.context, bool())

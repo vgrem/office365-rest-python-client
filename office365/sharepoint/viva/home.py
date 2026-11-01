@@ -3,6 +3,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.viva.home_title_region import VivaHomeTitleRegion
 from office365.sharepoint.viva.targetedsitedetails import TargetedSiteDetails
 
@@ -12,6 +13,7 @@ class VivaHome(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.EmployeeEngagement.VivaHome"
 
+    @site_access(SiteLevel.READ)
     def title_region(self, viva_home_title_region: VivaHomeTitleRegion) -> Self:
         """TitleRegion operation.
 
@@ -24,6 +26,7 @@ class VivaHome(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_go_to_vc_button_flag(
         self, is_go_back_to_connections_button_disabled: bool
     ) -> ClientResult[TargetedSiteDetails]:

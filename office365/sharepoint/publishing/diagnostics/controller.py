@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.diagnostics.page_diagnostics import PageDiagnostics
 
 
@@ -12,6 +13,7 @@ class PageDiagnosticsController(Entity):
         static_path = ResourcePath("SP.Publishing.PageDiagnosticsController")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.READ)
     def by_page(self, page_relative_file_path):
         """Args:
         page_relative_file_path (str):
@@ -26,6 +28,7 @@ class PageDiagnosticsController(Entity):
     def entity_type_name(self):
         return "SP.Publishing.PageDiagnosticsController"
 
+    @site_access(SiteLevel.MANAGE)
     def save(self, page_diagnostics_result: str) -> Self:
         """Save operation.
 

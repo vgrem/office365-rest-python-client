@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.viva.knowledgehubsitereference import (
@@ -16,6 +17,7 @@ if TYPE_CHECKING:
 
 
 class KnowledgeHub(Entity):
+    @site_access(SiteLevel.WRITE)
     def add_or_update_site_reference(self, knowledge_hub_site_url: str) -> Self:
         """AddOrUpdateSiteReference operation.
 
@@ -29,6 +31,7 @@ class KnowledgeHub(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def site_reference(self) -> ClientResult[KnowledgeHubSiteReference]:
         """SiteReference operation."""
         from office365.sharepoint.viva.knowledgehubsitereference import (

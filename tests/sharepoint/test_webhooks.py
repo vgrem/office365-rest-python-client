@@ -7,7 +7,9 @@ from typing import ClassVar, Optional
 
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.webhooks.subscription import Subscription
+from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -27,6 +29,7 @@ class TestSPWebHooks(SPTestCase):
     def tearDownClass(cls):
         pass
 
+    @requires_call(SubscriptionCollection.add, flow="application")
     def test_01_create_subscription(self):
         """Create a new webhook subscription."""
         target_list = TestSPWebHooks.target_list

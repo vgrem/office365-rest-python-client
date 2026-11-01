@@ -1,11 +1,13 @@
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.insights.reports.metadata import SPTenantIBInsightsReportMetadata
 
 
@@ -16,6 +18,7 @@ class SPTenantIBInsightsReportManager(Entity):
         static_path = StaticPath("Microsoft.SharePoint.Insights.SPTenantIBInsightsReportManager")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.WRITE, role=DirectoryRole.SharePointAdministrator)
     def create_report(self) -> SPTenantIBInsightsReportMetadata:
         """"""
         return_type = SPTenantIBInsightsReportMetadata(self.context)
@@ -27,6 +30,7 @@ class SPTenantIBInsightsReportManager(Entity):
     def entity_type_name(self):
         return "Microsoft.SharePoint.Insights.SPTenantIBInsightsReportManager"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_report_data(
         self, report_id: UUID, site_type: str, section: str, is_full_details: str
     ) -> ClientResult[StringCollection]:

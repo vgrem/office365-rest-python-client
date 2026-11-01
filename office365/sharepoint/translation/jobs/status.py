@@ -6,6 +6,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.translation.item_info import TranslationItemInfo
 from office365.sharepoint.translation.jobs.info import TranslationJobInfo
 
@@ -17,6 +18,7 @@ class TranslationJobStatus(Entity):
     """
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_all_jobs(context, return_type=None):
         if return_type is None:
             return_type = ClientResult(context, ClientValueCollection(TranslationJobInfo))
@@ -70,6 +72,7 @@ class TranslationJobStatus(Entity):
         """Gets the Succeeded property"""
         return self.properties.get("Succeeded", None)
 
+    @site_access(SiteLevel.READ)
     def get_all_items(self) -> ClientResult[ClientValueCollection[TranslationItemInfo]]:
         """GetAllItems operation."""
         return_type = ClientResult(self.context, ClientValueCollection[TranslationItemInfo]())

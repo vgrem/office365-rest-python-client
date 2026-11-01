@@ -2,6 +2,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.roles.assignments.assignment import RoleAssignment
 
 
@@ -32,6 +33,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
             ServiceOperationPath("GetByPrincipalId", [principal_id], self.resource_path),
         )
 
+    @site_access(SiteLevel.MANAGE)
     def add_role_assignment(self, principal_id: int, role_def_id: int):
         """Adds a role assignment to the role assignment collection.
 
@@ -44,6 +46,7 @@ class RoleAssignmentCollection(EntityCollection[RoleAssignment]):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def remove_role_assignment(self, principal_id: int, role_def_id: int):
         """Removes the role assignment with the specified principal and role definition from the collection.
 

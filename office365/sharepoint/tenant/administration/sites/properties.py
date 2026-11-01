@@ -4,12 +4,14 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.deny_add_and_customize_pages_status import (
     DenyAddAndCustomizePagesStatus,
 )
@@ -30,6 +32,7 @@ class SiteProperties(Entity):
         return self.url or self.entity_type_name
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE, role=DirectoryRole.SharePointAdministrator)
     def clear_sharing_lock_down(context: ClientContext, site_url: str) -> SiteProperties:
         payload = {"siteUrl": site_url}
         binding_type = SiteProperties(context)
@@ -37,6 +40,7 @@ class SiteProperties(Entity):
         context.add_query(qry)
         return binding_type
 
+    @site_access(SiteLevel.MANAGE, role=DirectoryRole.SharePointAdministrator)
     def update_ex(self) -> SpoOperation:
         """Updates the site collection properties with the new properties specified in the SiteProperties object."""
         return_type = SpoOperation(self.context)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -9,6 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.commentsonsitepagesdisabled import CommentsOnSitePagesDisabled
 from office365.sharepoint.tenant.administration.customformurl import CustomFormUrl
 from office365.sharepoint.tenant.administration.includeataglanceinshareemails import IncludeAtAGlanceInShareEmails
@@ -60,6 +62,7 @@ class TenantAdminSettingsService(Entity):
         static_path = ResourcePath("Microsoft.Online.SharePoint.TenantAdministration.TenantAdminSettingsService")
         super().__init__(context, static_path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_sharing_status(self) -> ClientResult[int]:
         """Retrieves the current state of sharing settings for a tenant"""
         return_type = ClientResult(self.context, int())
@@ -246,6 +249,7 @@ class TenantAdminSettingsService(Entity):
         """Gets the SPListModernUXOff property"""
         return self.properties.get("SPListModernUXOff", SPListModernUXOff())
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_admin_sharepoint_settings_data(
         self, category: int
     ) -> ClientResult[ClientValueCollection[SettingDataProperty]]:

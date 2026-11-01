@@ -3,6 +3,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.translation.status import TranslationStatus
 from office365.sharepoint.translation.status_set_request import (
     TranslationStatusSetRequest,
@@ -13,6 +14,7 @@ class TranslationStatusCollection(Entity):
     def __init__(self, context, resource_path=None):
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.WRITE)
     def set(self):
         return_type = TranslationStatusCollection(self.context)
         request = TranslationStatusSetRequest()
@@ -20,6 +22,7 @@ class TranslationStatusCollection(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def update_translation_languages(self):
         qry = ServiceOperationQuery(self, "UpdateTranslationLanguages")
         self.context.add_query(qry)

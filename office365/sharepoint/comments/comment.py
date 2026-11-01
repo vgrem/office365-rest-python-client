@@ -15,6 +15,7 @@ from office365.sharepoint.comments.contentanchor import ContentAnchor
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.likes.user_entity import UserEntity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sharing.principal import Principal
 
 if TYPE_CHECKING:
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
 
 
 class Comment(Entity):
+    @site_access(SiteLevel.WRITE)
     def like(self) -> Self:
         """
         The Like method makes the current user a liker of the comment.
@@ -30,6 +32,7 @@ class Comment(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def unlike(self) -> Self:
         """
         The Unlike method removes the current user from the list of likers for the comment.

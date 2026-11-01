@@ -6,6 +6,7 @@ from random import randint
 from typing import ClassVar, Optional
 
 from office365.sharepoint.files.file import File
+from office365.sharepoint.recyclebin.item import RecycleBinItem
 from office365.sharepoint.recyclebin.item_collection import RecycleBinItemCollection
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.webs.web import Web
@@ -52,6 +53,7 @@ class TestSharePointRecycleBin(SPTestCase):
         items = self.client.site.recycle_bin.filter(f"LeafName eq '{file_name}'").get().execute_query()
         self.assertGreater(len(items), 0)
 
+    @requires_call(RecycleBinItem.restore, flow="application")
     def test_03_restore_file(self):
         """Restore a file from the web recycle bin."""
         items = self.client.web.recycle_bin.get().execute_query()

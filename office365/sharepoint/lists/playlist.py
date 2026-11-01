@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 
 class SPPlaylist(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def subscribe(context: ClientContext, list_id: str) -> None:
         """Subscribe operation.
 
@@ -24,6 +26,7 @@ class SPPlaylist(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def unsubscribe(context: ClientContext, list_id: str) -> None:
         """Unsubscribe operation.
 

@@ -3,6 +3,7 @@ from typing import Optional
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.usercustomactions.action import UserCustomAction
 
 
@@ -11,6 +12,7 @@ class UserCustomActionCollection(EntityCollection[UserCustomAction]):
         """Specifies a collection of custom actions."""
         super().__init__(context, UserCustomAction, resource_path)
 
+    @site_access(SiteLevel.MANAGE)
     def add(
         self,
         title: str,
@@ -49,6 +51,7 @@ class UserCustomActionCollection(EntityCollection[UserCustomAction]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def clear(self):
         """
         Deletes all custom actions in the collection.
