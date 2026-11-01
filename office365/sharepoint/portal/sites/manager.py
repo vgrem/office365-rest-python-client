@@ -5,6 +5,7 @@ from uuid import UUID
 
 from typing_extensions import Self
 
+from office365.permissions import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
@@ -14,6 +15,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.groups.moveoperation import GroupMoveOperation
 from office365.sharepoint.portal.sites.creation_request import SPSiteCreationRequest
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
@@ -33,6 +35,7 @@ class SPSiteManager(Entity):
             resource_path = ResourcePath("SPSiteManager")
         super().__init__(context, resource_path)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create(
         self, title: str, site_url: str, owner: Optional[Union[User, str]] = None
     ) -> ClientResult[SPSiteCreationResponse]:
@@ -61,6 +64,7 @@ class SPSiteManager(Entity):
             _create(owner)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete(self, site_id: str) -> Self:
         """When executing this method server MUST put the SharePoint site into recycle bin according to
         the parameter passed in the siteId, if the SharePoint site of giving siteId exists and the site has
@@ -74,6 +78,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_status(self, site_url: str) -> ClientResult[SPSiteCreationResponse]:
         """When executing this method server SHOULD return a SharePoint site status in the format
         of a SPSiteCreationResponse according to the parameter passed in the url.
@@ -91,6 +96,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry).before_execute(_construct_request)
         return response
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_url(self, site_id: str) -> ClientResult[str]:
         """Args:
         site_id (str): The GUID to uniquely identify a SharePoint site.
@@ -100,6 +106,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_team_channel_site_owner(self, site_id: str) -> ClientResult[GetTeamChannelSiteOwnerResponse]:
         """Args:
         site_id (str): The GUID to uniquely identify a SharePoint site.
@@ -109,6 +116,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def viva_backend_site_url_from_name(self, site_name: str) -> ClientResult[VivaSiteRequestInfo]:
         """Args:
         site_name (str):
@@ -123,6 +131,7 @@ class SPSiteManager(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.Portal.SPSiteManager"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def archive_team_channel_site(self, site_id: UUID, archive: bool) -> Self:
         """ArchiveTeamChannelSite operation.
 
@@ -136,6 +145,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def archive_team_connected_site(
         self,
         site_id: UUID,
@@ -167,6 +177,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def are_segments_compatible(self, segments: list[UUID]) -> ClientResult[bool]:
         """AreSegmentsCompatible operation.
 
@@ -178,6 +189,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def can_create_hub_joined_site(self, hub_site_id: UUID) -> ClientResult[bool]:
         """CanCreateHubJoinedSite operation.
 
@@ -189,6 +201,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_compatible_segments(self, segments: list[UUID]) -> ClientResult[ClientValueCollection[IBSegmentInfo]]:
         """GetCompatibleSegments operation.
 
@@ -200,6 +213,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_ib_segment_labels(self, ib_segments: list[UUID]) -> ClientResult[ClientValueCollection[IBSegmentInfo]]:
         """GetIBSegmentLabels operation.
 
@@ -211,6 +225,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def landing_site_url_from_name(self, site_name: str) -> ClientResult[VivaSiteRequestInfo]:
         """LandingSiteUrlFromName operation.
 
@@ -222,6 +237,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def restore_teams_channel_site(self, site_id: UUID, related_group_id: UUID) -> Self:
         """RestoreTeamsChannelSite operation.
 
@@ -235,6 +251,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_ib_segments(self, ib_segments: list[UUID]) -> Self:
         """SetIBSegments operation.
 
@@ -245,6 +262,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_team_channel_site_owner(
         self, site_id: UUID, logon_name: str, secondary_logon_name: str, object_id: str, tenant_id: str
     ) -> Self:
@@ -274,6 +292,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def site_url(self, site_id: UUID) -> ClientResult[str]:
         """SiteUrl operation.
 
@@ -285,6 +304,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def status(self, url: str) -> ClientResult[SPSiteCreationResponse]:
         """Status operation.
 
@@ -296,6 +316,7 @@ class SPSiteManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_workflow2013_endpoint(self, workflow_service_address: str, workflow_hostname: str) -> Self:
         """UpdateWorkflow2013Endpoint operation.
 

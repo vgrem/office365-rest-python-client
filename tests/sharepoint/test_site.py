@@ -8,6 +8,7 @@ from typing import ClassVar, Optional
 from office365.runtime.exceptions import AccessDeniedException
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
+from office365.sharepoint.portal.sites.manager import SPSiteManager
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site
 
@@ -82,6 +83,7 @@ class TestSite(SPTestCase):
     #    result = self.client.site_linking_manager.get_site_links().execute_query()
     #    self.assertIsNotNone(result.value)
 
+    @requires_call(SPSiteManager.create, flow="application")
     def test_09_create_site(self):
         """Create a new communication site."""
         site_url = f"{test_site_url}/sites/{uuid.uuid4().hex}"
@@ -89,6 +91,7 @@ class TestSite(SPTestCase):
         self.assertIsNotNone(result.value)
         TestSite.site_response = result.value
 
+    @requires_call(SPSiteManager.get_status, flow="application")
     def test_10_get_site_status(self):
         """Get the status of the newly created site."""
         site_response = TestSite.site_response
@@ -100,6 +103,7 @@ class TestSite(SPTestCase):
         self.assertIsNotNone(result.value.SiteStatus)
         self.assertTrue(result.value.SiteStatus != SiteStatus.Error)
 
+    @requires_call(SPSiteManager.get_site_url, flow="application")
     def test_11_get_site_url(self):
         """Get the site URL by site ID."""
         site_response = TestSite.site_response
@@ -116,6 +120,7 @@ class TestSite(SPTestCase):
         result = self.client.site.is_deletable().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SPSiteManager.delete, flow="application")
     def test_13_delete_site(self):
         """Delete the created communication site.
 

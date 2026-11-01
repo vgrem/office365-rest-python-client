@@ -436,8 +436,11 @@ introduced.
   `READ`, while the co-authoring calls (`StartCoAuth`, `SavePageCoAuth`, `ExtendSessionCoAuth`)
   look like bookkeeping and declare `WRITE`, because each holds or commits a lock.
   `SPWorkflowTask` adds 31 (6 reads, 25 writes): the three `ValidateUpdate*` calls persist the
-  item with the validation riding along, and the progress readers only report. Debt
-  1,469 → 1,238, and 1,474 → 1,243 undeclared operations including the 25 the duplicate module
+  item with the validation riding along, and the progress readers only report. The two portal
+  managers are tenant-scope like the administration surface, so `GroupSiteManager` (36) and
+  `SPSiteManager` (19) declare 34 reads and 21 writes with the Administrator role as an
+  alternative — they are reached from `ClientContext` and create site collections. Debt
+  1,469 → 1,183, and 1,474 → 1,188 undeclared operations including the 25 the duplicate module
   had been contributing.
 
 ### Changed

@@ -6,6 +6,7 @@ import uuid
 from typing import ClassVar, Optional
 
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.portal.groups.site_manager import GroupSiteManager
 from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.sites.site import Site
 
@@ -16,6 +17,7 @@ from tests import (
     test_tenant,
     test_username,
 )
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -32,6 +34,7 @@ class TestTeamSite(SPTestCase):
         )
         cls.client = client
 
+    @requires_call(GroupSiteManager.can_user_create_group, flow="delegated")
     def test_01_can_user_create_group(self):
         """Check if the user can create a group."""
         result = self.client.group_site_manager.can_user_create_group().execute_query()
@@ -44,6 +47,7 @@ class TestTeamSite(SPTestCase):
         self.assertIsNotNone(site.url)
         TestTeamSite.target_site = site
 
+    @requires_call(GroupSiteManager.get_status, flow="delegated")
     def test_03_get_site_status(self):
         """Get the status of the created team site."""
         target_site = TestTeamSite.target_site
@@ -70,11 +74,13 @@ class TestTeamSite(SPTestCase):
             self.skipTest("No target site from previous test")
         target_site.delete_object().execute_query()
 
+    @requires_call(GroupSiteManager.get_current_user_joined_teams, flow="delegated")
     def test_05_get_current_user_joined_teams(self):
         """Get the list of teams the current user has joined."""
         result = self.client.group_site_manager.get_current_user_joined_teams().execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(GroupSiteManager.get_group_creation_context, flow="delegated")
     def test_06_get_group_creation_context(self):
         """Get the group creation context."""
         result = self.client.group_site_manager.get_group_creation_context().execute_query()
