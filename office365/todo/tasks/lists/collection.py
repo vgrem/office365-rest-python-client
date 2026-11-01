@@ -1,4 +1,5 @@
 from office365.delta_collection import DeltaCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.todo.tasks.lists.list import TodoTaskList
@@ -18,6 +19,10 @@ class TodoTaskListCollection(DeltaCollection[TodoTaskList]):
         """
         return super().add(displayName=display_name)
 
+    @require_permission(
+        delegated=["Tasks.ReadWrite"],
+        application=["Tasks.ReadWrite.All"],
+    )
     def ensure(self, display_name: str) -> TodoTaskList:
         """Ensure a Task List with the given name exists (idempotent)."""
         return_type = TodoTaskList(self.context, EntityPath(None, self.resource_path))

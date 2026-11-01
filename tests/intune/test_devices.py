@@ -14,8 +14,9 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.device import Device
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -46,8 +47,9 @@ class TestDevices(GraphDelegatedTestCase):
         result = self.client.devices.delta.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated(
-        "Directory.AccessAsUser.All",
+    @requires_call(
+        DeviceCollection.add,
+        flow="delegated",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_03_create_device(self):

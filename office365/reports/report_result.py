@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, cast
 
 from typing_extensions import Self
 
+from office365.permissions import require_permission
 from office365.reports.report import Report
 from office365.runtime.client_result import ClientResult
 
@@ -46,6 +47,10 @@ class ReportResult(ClientResult[Report]):
         """Parses the CSV report content into row dicts keyed by column name."""
         return list(csv.DictReader(io.StringIO(self.to_text())))
 
+    @require_permission(
+        delegated=["Reports.Read.All"],
+        application=["Reports.Read.All"],
+    )
     def execute_query(self) -> Self:
         """Submit the deferred query and return this result for chaining."""
         return cast(Self, super().execute_query())

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
@@ -45,6 +46,10 @@ class Security(Entity):
     """The security resource is the entry point for the Security object model. It returns a singleton security resource.
     It doesn't contain any usable properties."""
 
+    @require_permission(
+        delegated=["ThreatHunting.Read.All"],
+        application=["ThreatHunting.Read.All"],
+    )
     def run_hunting_query(self, query: str) -> ClientResult[HuntingQueryResults]:
         """Queries a specified set of event, activity, or entity data supported by Microsoft 365 Defender
         to proactively look for specific threats in your environment.

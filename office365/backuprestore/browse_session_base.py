@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.backuprestore.restoresessions.browse_session_status import BrowseSessionStatus
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -22,6 +23,10 @@ if TYPE_CHECKING:
 
 
 class BrowseSessionBase(Entity):
+    @require_permission(
+        delegated=["BackupRestore-Restore.Read.All"],
+        application=["BackupRestore-Restore.Read.All"],
+    )
     def browse(
         self,
         browse_location_item_key: str,

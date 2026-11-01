@@ -7,6 +7,7 @@ from os import PathLike
 from typing import IO, Optional, Union
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.queries.client_query import ClientQuery
@@ -45,6 +46,10 @@ class AttachmentSession(Entity):
         upload should begin."""
         return self.properties.get("nextExpectedRanges", StringCollection())
 
+    @require_permission(
+        delegated=["Tasks.ReadWrite"],
+        application=["Tasks.ReadWrite.All"],
+    )
     def upload(
         self,
         source: Union[str, PathLike, bytes, bytearray, IO],

@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.converters.scalars import iso_z, parse_datetime
 from office365.runtime.odata.json_format import JsonProfile
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -13,6 +14,10 @@ from office365.runtime.types.odata_property import odata
 class Subscription(Entity):
     """A subscription allows a client app to receive change notifications about changes to data in Microsoft Graph"""
 
+    @require_permission(
+        delegated=["Subscription.Read.All"],
+        notes="Renewal uses the watched resource's app-only grant, not a subscription permission.",
+    )
     def reauthorize(self):
         """Reauthorize a subscription when you receive a reauthorizationRequired challenge."""
         qry = ServiceOperationQuery(self, "reauthorize")

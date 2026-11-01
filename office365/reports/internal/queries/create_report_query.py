@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from office365.permissions import require_permission
 from office365.reports.report_result import ReportResult
 from office365.runtime.queries.function import FunctionQuery
 
@@ -9,6 +10,10 @@ if TYPE_CHECKING:
     from office365.reports.root import ReportRoot
 
 
+@require_permission(
+    delegated=["Reports.Read.All"],
+    application=["Reports.Read.All"],
+)
 def create_report_query(
     report_root: ReportRoot,
     report_name: str,

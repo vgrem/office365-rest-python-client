@@ -31,6 +31,7 @@ from office365.intune.devices.management.managed.partnerreportedhealthstate impo
     ManagedDevicePartnerReportedHealthState,
 )
 from office365.intune.devices.registrationstate import DeviceRegistrationState
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -48,12 +49,20 @@ if TYPE_CHECKING:
 class ManagedDevice(Entity):
     """Devices that are managed or pre-enrolled through Intune"""
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def locate_device(self) -> Self:
         """Locate a device"""
         qry = ServiceOperationQuery(self, "locateDevice")
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def wipe(self) -> Self:
         """Wipe a device (factory reset — removes all data).
 
@@ -63,6 +72,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def retire(self) -> Self:
         """Retire a device (removes company data only).
 
@@ -72,6 +85,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def sync_device(self) -> Self:
         """Sync a device (force it to check in with Intune).
 
@@ -81,6 +98,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def reboot_now(self) -> Self:
         """Reboot a device.
 
@@ -90,6 +111,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def remote_lock(self) -> Self:
         """Lock a device remotely.
 
@@ -99,6 +124,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def shut_down(self) -> Self:
         """Shut down a device.
 
@@ -108,6 +137,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def set_primary_user(self, user_id: str) -> Self:
         """Set the primary user of a device.
 
@@ -121,6 +154,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def remove_primary_user(self, user_id: str) -> Self:
         """Remove a user from a device.
 

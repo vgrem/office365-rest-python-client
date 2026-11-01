@@ -20,6 +20,7 @@ from office365.security.labels.retention.actionafterretentionperiod import (
 from office365.security.labels.retention.behaviorduringretentionperiod import (
     BehaviorDuringRetentionPeriod,
 )
+from office365.security.labels.retention.collection import RetentionLabelCollection
 from office365.security.labels.retention.defaultrecordbehavior import (
     DefaultRecordBehavior,
 )
@@ -30,7 +31,7 @@ from office365.security.labels.retention.label import RetentionLabel
 from office365.security.labels.retention.trigger import RetentionTrigger
 from office365.security.triggertypes.event_type import RetentionEventType
 
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 # Common permission set for records management operations
@@ -118,8 +119,9 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         # We don't assert on the number of items; the collection is valid regardless
 
-    @requires_delegated(
-        *_RM_WRITE,
+    @requires_call(
+        RetentionLabelCollection.add,
+        flow="delegated",
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
         bypass_roles=[DirectoryRole.GlobalAdministrator],
@@ -144,8 +146,9 @@ class TestRetentionLabels(GraphDelegatedTestCase):
         except Exception as e:
             self.skipTest(f"Minimal label creation not allowed by tenant policy: {e}")
 
-    @requires_delegated(
-        *_RM_WRITE,
+    @requires_call(
+        RetentionLabelCollection.add,
+        flow="delegated",
         require_roles=_RM_ROLES,
         require_licenses=_RM_LICENSES,
         bypass_roles=[DirectoryRole.GlobalAdministrator],

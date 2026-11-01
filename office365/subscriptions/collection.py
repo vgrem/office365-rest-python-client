@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional, Union
 
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.converters.scalars import iso_z
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -16,6 +17,10 @@ class SubscriptionCollection(EntityCollection[Subscription]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Subscription, resource_path)
 
+    @require_permission(
+        delegated=["Subscription.Read.All"],
+        notes="An app-only token watches a resource it was granted: no subscription permission is published.",
+    )
     def add(
         self,
         change_type: str,

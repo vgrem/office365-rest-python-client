@@ -19,10 +19,13 @@ from typing import ClassVar, Optional
 
 from office365.directory.groups.group import Group
 from office365.planner.buckets.bucket import PlannerBucket
+from office365.planner.buckets.collection import PlannerBucketCollection
+from office365.planner.plans.collection import PlannerPlanCollection
 from office365.planner.plans.plan import PlannerPlan
+from office365.planner.tasks.collection import PlannerTaskCollection
 from office365.planner.tasks.task import PlannerTask
 from tests import create_unique_name
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -40,11 +43,7 @@ class TestPlanner(GraphDelegatedTestCase):
         groups = cls.client.groups.filter("groupTypes/any(a:a eq 'unified')").top(1).get().execute_query()
         cls.target_group = groups[0] if len(groups) > 0 else None
 
-    @requires_delegated(
-        "Group.ReadWrite.All",
-        "Tasks.ReadWrite",
-        bypass_roles=["Global Administrator"],
-    )
+    @requires_call(PlannerPlanCollection.add, flow="delegated", bypass_roles=["Global Administrator"])
     def test_01_create_plan(self):
         """Creating a planner plan for an M365 group should succeed."""
         group = TestPlanner.target_group
@@ -81,10 +80,7 @@ class TestPlanner(GraphDelegatedTestCase):
         plans = self.client.me.planner.plans.get().execute_query()
         self.assertIsNotNone(plans.resource_path)
 
-    @requires_delegated(
-        "Tasks.ReadWrite",
-        bypass_roles=["Global Administrator"],
-    )
+    @requires_call(PlannerBucketCollection.add, flow="delegated", bypass_roles=["Global Administrator"])
     def test_04_create_bucket(self):
         """Creating a bucket in the plan should succeed."""
         plan = TestPlanner.target_plan
@@ -99,10 +95,7 @@ class TestPlanner(GraphDelegatedTestCase):
         except AttributeError:
             self.skipTest("Buckets.add not available in this SDK version")
 
-    @requires_delegated(
-        "Tasks.ReadWrite",
-        bypass_roles=["Global Administrator"],
-    )
+    @requires_call(PlannerTaskCollection.add, flow="delegated", bypass_roles=["Global Administrator"])
     def test_05_create_task(self):
         """Creating a planner task in the plan should succeed."""
         plan = TestPlanner.target_plan
@@ -114,10 +107,7 @@ class TestPlanner(GraphDelegatedTestCase):
         self.assertEqual(task.title, "Update client list")
         TestPlanner.target_task = task
 
-    @requires_delegated(
-        "Tasks.ReadWrite",
-        bypass_roles=["Global Administrator"],
-    )
+    @requires_call(PlannerTaskCollection.add, flow="delegated", bypass_roles=["Global Administrator"])
     def test_06_create_task_in_bucket(self):
         """Creating a task in a specific bucket should succeed."""
         plan = TestPlanner.target_plan

@@ -7,7 +7,8 @@ Tests cover:
 
 from __future__ import annotations
 
-from tests.decorators import requires_delegated
+from office365.reports.root import ReportRoot
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -44,8 +45,9 @@ class TestIntuneReports(GraphDelegatedTestCase):
         except Exception as e:
             self.skipTest(f"Cannot get enrollment failure details: {e}")
 
-    @requires_delegated(
-        "DeviceManagementManagedDevices.Read.All",
+    @requires_call(
+        ReportRoot.managed_device_enrollment_top_failures,
+        flow="delegated",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_04_managed_device_enrollment_top_failures(self):

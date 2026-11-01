@@ -1,6 +1,7 @@
 from typing import Optional
 
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -24,6 +25,10 @@ class RetentionLabelCollection(EntityCollection[RetentionLabel]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, RetentionLabel, resource_path)
 
+    @require_permission(
+        delegated=["RecordsManagement.ReadWrite.All"],
+        application=["RecordsManagement.ReadWrite.All"],
+    )
     def add(
         self,
         display_name: str,

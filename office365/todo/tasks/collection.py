@@ -7,6 +7,7 @@ from office365.delta_collection import DeltaCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.item_body import ItemBody
+from office365.permissions import require_permission
 from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -33,6 +34,10 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
         """
         return self._find_by_filter(f"title eq '{escape_odata_string(title)}'", required=required)
 
+    @require_permission(
+        delegated=["Tasks.ReadWrite"],
+        application=["Tasks.ReadWrite.All"],
+    )
     def ensure(self, title: str) -> TodoTask:
         """Return the task with the given title, creating it when absent (idempotent).
 
@@ -63,6 +68,10 @@ class TodoTaskCollection(DeltaCollection[TodoTask]):
         self.get().filter(f"title eq '{escape_odata_string(title)}'").after_execute(_ensure)
         return return_type
 
+    @require_permission(
+        delegated=["Tasks.ReadWrite"],
+        application=["Tasks.ReadWrite.All"],
+    )
     def add(
         self,
         title: str,

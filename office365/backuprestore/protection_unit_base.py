@@ -9,12 +9,17 @@ from office365.directory.identity_set import IdentitySet
 from office365.directory.protection.source import ProtectionSource
 from office365.directory.protection.unitstatus import ProtectionUnitStatus
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.types.public_error import PublicError
 
 
 class ProtectionUnitBase(Entity):
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"],
+        application=["BackupRestore-Control.ReadWrite.All"],
+    )
     def offboard(self) -> Self:
         """Remove the protection unit from its protection policy.
 
@@ -25,6 +30,10 @@ class ProtectionUnitBase(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"],
+        application=["BackupRestore-Control.ReadWrite.All"],
+    )
     def cancel_offboard(self) -> Self:
         """Cancel a pending offboard request for the protection unit."""
         qry = ServiceOperationQuery(self, "cancelOffboard", return_type=self)

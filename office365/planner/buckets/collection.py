@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional, Union
 
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.planner.buckets.bucket import PlannerBucket
 from office365.planner.internal.paths.collections import PlannerCollectionPath
 from office365.planner.plans.plan import PlannerPlan
@@ -40,6 +41,10 @@ class PlannerBucketCollection(EntityCollection[PlannerBucket]):
         """
         return self._find_by_predicate(lambda b: b.name == name, f"name eq '{name}'", required=required)
 
+    @require_permission(
+        delegated=["Tasks.ReadWrite"],
+        application=["Tasks.ReadWrite.All"],
+    )
     def add(
         self,
         name: str,

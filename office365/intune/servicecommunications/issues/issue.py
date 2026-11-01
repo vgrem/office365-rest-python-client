@@ -11,6 +11,7 @@ from office365.intune.servicecommunications.health.types import (
     ServiceHealthClassificationType,
 )
 from office365.intune.servicecommunications.service_health_issue_post import ServiceHealthIssuePost
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
@@ -51,6 +52,10 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
         """The description of the service issue impact."""
         return self.properties.get("impactDescription", None)
 
+    @require_permission(
+        delegated=["ServiceHealth.Read.All"],
+        application=["ServiceHealth.Read.All"],
+    )
     def incident_report(self) -> ClientResult[bytes]:
         """
         Provide the Post-Incident Review (PIR) document of a specified service issue for tenant.

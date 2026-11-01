@@ -25,6 +25,7 @@ from office365.intune.devices.management.virtualendpoint.virtual_endpoint import
     VirtualEndpoint,
 )
 from office365.intune.devices.management.windows_malware_overview import WindowsMalwareOverview
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -172,6 +173,10 @@ class DeviceManagement(Entity):
     configuration.
     """
 
+    @require_permission(
+        delegated=["DeviceManagementRBAC.Read.All"],
+        application=["DeviceManagementRBAC.Read.All"],
+    )
     def get_effective_permissions(self, scope=None) -> ClientResult[ClientValueCollection[RolePermission]]:
         """Retrieves the effective permissions of the currently authenticated user"""
         return_type = ClientResult(self.context, ClientValueCollection(RolePermission))

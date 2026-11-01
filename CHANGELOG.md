@@ -580,6 +580,26 @@ introduced.
   `Folder` is ten writes and four reads, and the Viva surface is eleven reads and the two
   like/unlike writes plus dashboard personalization. Debt 1,155 → 1,040, and thirteen live
   tests (folder, search, Viva, teams) derive their precondition from the declaration.
+- **The last nine product packages leave the ratchet map.** 38 methods across 24 modules:
+  Intune's nine remote actions (`wipe`, `retire`, `remote_lock`, `reboot_now`,
+  `locate_device`, `shut_down`, `sync_device`, `set_primary_user`, `remove_primary_user`),
+  device registration, effective permissions, the two audit enumerations and
+  `incidentReport`; the BackupRestore verbs `browse`, `offboard`, `cancel_offboard`,
+  `search` and the two service-app switches, plus the common `RestoreSessionBase.activate`;
+  four report readers and report submission; retention-label creation; the hunting query;
+  the two subscription verbs; four Todo writes; three Planner creates; and two Bookings
+  calls. Two of them corrected a plausible guess. `client.devices` registers a *directory*
+  device (`microsoft.graph.Device`), so it declares `Directory.AccessAsUser.All` delegated
+  and `Device.ReadWrite.All` app-only, not an Intune grant; and `getEffectivePermissions`
+  reads the RBAC configuration, so it declares `DeviceManagementRBAC.Read.All` rather than
+  the trio that governs the audit endpoints. `office365.subscriptions` is the one place the
+  two columns disagree about existence: Graph publishes delegated subscription scopes and no
+  application scope, because an app-only token watches a resource it was already granted, so
+  those two methods declare the delegated column and leave the application one empty with a
+  note saying why. Debt 1,040 → 824, and twelve live tests (todo, planner, intune, booking,
+  defender, Purview) derive their precondition from the declaration instead of restating the
+  scope by hand. `sharepoint` is the only package still carrying debt, so the ratchet map is
+  one line.
 
 
 

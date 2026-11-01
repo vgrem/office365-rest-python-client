@@ -16,7 +16,7 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.booking.business.business import BookingBusiness
-from tests.decorators import requires_delegated
+from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
@@ -80,10 +80,7 @@ class TestBusiness(GraphDelegatedTestCase):
         self.assertIsNotNone(business.address)
         self.assertIsNotNone(business.business_hours)
 
-    @requires_delegated(
-        "Bookings.Manage.All",
-        bypass_roles=["Global Administrator"],
-    )
+    @requires_call(BookingBusiness.publish, flow="delegated", bypass_roles=["Global Administrator"])
     def test_05_publish_business(self):
         """Publishing a business scheduling page should succeed."""
         business = TestBusiness.target_business

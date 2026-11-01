@@ -9,12 +9,17 @@ from office365.backuprestore.serviceapps.status import ServiceAppStatus
 from office365.directory.identity_set import IdentitySet
 from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.converters.scalars import iso_z
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
 class ServiceApp(Entity):
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"],
+        application=["BackupRestore-Control.ReadWrite.All"],
+    )
     def activate(self, effective_date_time: datetime) -> Self:
         """Activate a third-party backup service app for the tenant.
 
@@ -26,6 +31,10 @@ class ServiceApp(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["BackupRestore-Control.ReadWrite.All"],
+        application=["BackupRestore-Control.ReadWrite.All"],
+    )
     def deactivate(self) -> Self:
         """Deactivate a third-party backup service app for the tenant."""
         qry = ServiceOperationQuery(self, "deactivate", return_type=self)

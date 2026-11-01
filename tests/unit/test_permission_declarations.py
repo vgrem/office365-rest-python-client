@@ -21,22 +21,16 @@ LIBRARY = index(office365)
 #: a harvest lowers a number here, and a declaration removed anywhere raises one. Both
 #: directions fail until the number is recorded, which is the point - a debt nobody writes down
 #: is a debt nobody pays. ``outlook`` is absent because it is closed: it is the pilot for the
-#: markers-before-consumers design, small enough to finish before scaling.
+#: markers-before-consumers design, small enough to finish before scaling. Nine more packages
+#: have left the map the same way - ``intune``, ``backuprestore``, ``reports``, ``todo``,
+#: ``planner``, ``booking``, ``security``, ``subscriptions`` and ``common`` name every
+#: operation they own, and ``sharepoint`` is the last package still carrying debt.
 #:
 #: The detector counts a method that *submits* a query (``add_query``, ``execute_query``,
 #: ``execute_batch``) and skips one that merely builds a query and returns it, so these are a
 #: floor: the real number is higher, never lower.
 PENDING: dict[str, int] = {
-    "backuprestore": 6,
-    "booking": 2,
-    "common": 1,
-    "intune": 14,
-    "planner": 3,
-    "reports": 4,
-    "security": 2,
     "sharepoint": 824,
-    "subscriptions": 2,
-    "todo": 4,
 }
 
 

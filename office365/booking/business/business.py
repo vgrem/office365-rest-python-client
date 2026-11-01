@@ -17,6 +17,7 @@ from office365.booking.work_hours import BookingWorkHours
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.physical_address import PhysicalAddress
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -29,6 +30,10 @@ class BookingBusiness(Entity):
     It contains business information and related business objects such as appointments, customers, services,
     and staff members."""
 
+    @require_permission(
+        delegated=["Bookings.Read.All", "Bookings.ReadWrite.All", "Bookings.Manage.All"],
+        application=["Bookings.Read.All"],
+    )
     def get_staff_availability(
         self,
         staff_ids: Optional[List[str]] = None,
@@ -52,6 +57,10 @@ class BookingBusiness(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Bookings.Manage.All"],
+        application=["Bookings.Manage.All"],
+    )
     def publish(self) -> Self:
         """
         Make the scheduling page of a business available to external customers.

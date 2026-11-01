@@ -2,6 +2,7 @@ from typing import Union
 
 from office365.directory.groups.group import Group
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.planner.plans.plan import PlannerPlan
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -10,6 +11,11 @@ class PlannerPlanCollection(EntityCollection[PlannerPlan]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, PlannerPlan, resource_path)
 
+    @require_permission(
+        delegated=["Tasks.ReadWrite", "Group.ReadWrite.All"],
+        application=["Tasks.ReadWrite.All"],
+        notes="A plan lives on a group, so the group's write grant also creates one.",
+    )
     def add(self, title: str, container: Union[str, Group]) -> PlannerPlan:
         """Creates a new plannerPlan.
 

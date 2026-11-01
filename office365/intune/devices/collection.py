@@ -7,6 +7,7 @@ import uuid
 from office365.delta_collection import DeltaCollection
 from office365.intune.devices.alternative_security_id import AlternativeSecurityId
 from office365.intune.devices.device import Device
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -17,6 +18,11 @@ class DeviceCollection(DeltaCollection[Device]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Device, resource_path)
 
+    @require_permission(
+        delegated=["Directory.AccessAsUser.All"],
+        application=["Device.ReadWrite.All"],
+        notes="The object is a directory device, not an Intune-managed one: registration is a directory write.",
+    )
     def add(
         self,
         display_name: str,

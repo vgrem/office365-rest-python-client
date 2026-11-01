@@ -10,12 +10,17 @@ from office365.backuprestore.restoresessions.artifact_count import RestoreSessio
 from office365.backuprestore.restoresessions.status import RestoreSessionStatus
 from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.types.public_error import PublicError
 
 
 class RestoreSessionBase(Entity):
+    @require_permission(
+        delegated=["BackupRestore-Restore.ReadWrite.All"],
+        application=["BackupRestore-Restore.ReadWrite.All"],
+    )
     def activate(self) -> Self:
         """Activate the restore session so the restore job starts.
 

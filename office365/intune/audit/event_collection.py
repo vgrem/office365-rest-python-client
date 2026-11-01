@@ -1,5 +1,6 @@
 from office365.entity_collection import EntityCollection
 from office365.intune.audit.event import AuditEvent
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
@@ -9,6 +10,18 @@ class AuditEventCollection(EntityCollection[AuditEvent]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, AuditEvent, resource_path)
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementManagedDevices.Read.All",
+        ],
+        application=[
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementManagedDevices.Read.All",
+        ],
+    )
     def get_audit_categories(self) -> ClientResult[StringCollection]:
         """Not yet documented"""
         return_type = ClientResult(self.context, StringCollection())
@@ -16,6 +29,18 @@ class AuditEventCollection(EntityCollection[AuditEvent]):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementManagedDevices.Read.All",
+        ],
+        application=[
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementManagedDevices.Read.All",
+        ],
+    )
     def get_audit_activity_types(self, category) -> ClientResult[StringCollection]:
         """Not yet documented"""
         return_type = ClientResult(self.context, StringCollection())

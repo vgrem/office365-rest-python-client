@@ -105,6 +105,10 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Reports.Read.All"],
+        application=["Reports.Read.All"],
+    )
     def managed_device_enrollment_top_failures(self, period: Optional[str] = None) -> ReportResult:
         """
         Note: The Microsoft Graph API for Intune requires an active Intune license for the tenant.
@@ -201,6 +205,10 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Reports.Read.All"],
+        application=["Reports.Read.All"],
+    )
     def get_m365_app_user_detail(self, period_or_date: Optional[Union[date, str]] = None) -> ReportResult:
         """
         Get a report that provides the details about which apps and platforms users have used.
