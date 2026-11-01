@@ -958,6 +958,15 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
   `select_all()` could not name it and `odata_name("canvas_content")` raised. The
   duplicate is deleted, and a differential over `select_all()` names,
   `expand_all()` and a hydrated `to_json()` is byte-identical.
+- **A copy job addresses its objects by absolute URL, and reports progress only for a real
+  job.** `create_copy_jobs` wrapped `exportObjectUris` in the `{"results": [...]}` envelope
+  the collection types serialize to, which the service rejects, and typed
+  `CopyMigrationInfo.SourceListItemUniqueIds` as a plain list, so the ids it answered parsed
+  to nothing — both round-trip now, and `get_copy_job_progress` takes the job
+  `create_copy_jobs` returned instead of defaulting to an empty one: without it the service
+  answers *"The copy or move job queue URI is not supported."* `CreateCopyJob` is retired
+  server-side (*"obsoleted, please use CreateCopyJobs instead"*) and its docstring says so;
+  `CopyJobProgress.JobState` is the `Edm.Int32` the service sends, not a string.
 - Two endpoints that cannot work over REST say so: `UserProfilePropertiesForUser`
   is CSOM-only (`PeopleManager.get_user_profile_properties` is the reader), and
   `Tenant.get_site_subscription_id` raises `System.NotSupportedException`.

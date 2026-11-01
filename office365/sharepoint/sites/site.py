@@ -10,6 +10,7 @@ from typing_extensions import Self
 from office365.permissions import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.http.url import get_absolute_url
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
@@ -130,11 +131,30 @@ class Site(Entity):
         self.context.add_query(qry)
         return self
 
+    def _absolute_uri(self, uri: str) -> str:
+        """Copy jobs address their export objects and their destination by absolute URL.
+
+        A server-relative URL (``/sites/project/Shared Documents/file.docx``) is resolved
+        against the tenant, since that is how the rest of the library names an item.
+        """
+        if uri.startswith("/"):
+            return get_absolute_url(self.context.service_root_url) + uri
+        return uri
+
     @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_copy_job(self, export_object_uris, destination_uri, options=None) -> ClientResult[CopyMigrationInfo]:
-        """"""
+        """Queues a single copy job.
+
+        The service retired this operation and answers ``Function CreateCopyJob is obsoleted.
+        Please use CreateCopyJobs instead``; it stays declared rather than deleted, because
+        the ratchet counts the code that is there.
+        """
         return_type = ClientResult(self.context, CopyMigrationInfo())
-        payload = {"exportObjectUris": export_object_uris, "destinationUri": destination_uri, "options": options}
+        payload = {
+            "exportObjectUris": [self._absolute_uri(uri) for uri in export_object_uris],
+            "destinationUri": self._absolute_uri(destination_uri),
+            "options": options,
+        }
         qry = ServiceOperationQuery(self, "CreateCopyJob", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
@@ -380,9 +400,13 @@ class Site(Entity):
         return return_type
 
     @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
-    def get_copy_job_progress(self, copy_job_info=None) -> ClientResult[CopyJobProgress]:
-        """Args:
-        copy_job_info: Optional copyJobInfo object.
+    def get_copy_job_progress(self, copy_job_info: CopyMigrationInfo) -> ClientResult[CopyJobProgress]:
+        """Reports what happened to a queued copy job.
+
+        Args:
+            copy_job_info (CopyMigrationInfo): The job exactly as ``create_copy_jobs`` returned
+                it. The service reads the queue URI out of it, so an empty payload is not a
+                progress read: it answers ``The copy or move job queue URI is not supported``.
         """
         payload = {"copyJobInfo": copy_job_info}
         return_type = ClientResult(self.context, CopyJobProgress())
@@ -1422,14 +1446,16 @@ class Site(Entity):
             destination_uri (str): destinationUri parameter
             options (CopyMigrationOptions): options parameter
         """
-        return_type = ClientResult(self.context, ClientValueCollection[CopyMigrationInfo]())
+        return_type = ClientResult(self.context, ClientValueCollection(CopyMigrationInfo))
         qry = ServiceOperationQuery(
             self,
             "CreateCopyJobs",
             None,
             {
-                "exportObjectUris": StringCollection(export_object_uris),
-                "destinationUri": destination_uri,
+                # A bare array: the service binds this parameter itself and rejects the verbose
+                # ``{"results": ...}`` wrapper that the collection types serialize to.
+                "exportObjectUris": [self._absolute_uri(uri) for uri in export_object_uris],
+                "destinationUri": self._absolute_uri(destination_uri),
                 "options": options,
             },
             None,

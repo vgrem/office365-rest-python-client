@@ -8,5 +8,5 @@ from office365.runtime.types.collections import StringCollection
 
 @dataclass
 class CopyJobProgress(ClientValue):
-    JobState: str | None = None
+    JobState: int | None = None
     Logs: StringCollection = field(default_factory=StringCollection)
