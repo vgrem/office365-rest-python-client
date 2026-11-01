@@ -9,6 +9,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sharing.links.info import SharingLinkInfo
 from office365.sharepoint.sharing.object_sharing_information_user import (
     ObjectSharingInformationUser,
@@ -22,6 +23,7 @@ class ObjectSharingInformation(Entity):
     """Provides information about the sharing state of a securable object."""
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def can_current_user_share(context: ClientContext, doc_id: str) -> ClientResult[int]:
         """Indicates whether the current user can share the document identified by docId.
 
@@ -37,6 +39,7 @@ class ObjectSharingInformation(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def can_current_user_share_remote(context: ClientContext, doc_id: str) -> ClientResult[int]:
         """Indicates whether the current user can share the document identified by docId, from a remote context.
 
@@ -60,6 +63,7 @@ class ObjectSharingInformation(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_web_sharing_information(
         context: ClientContext,
         exclude_current_user=None,
@@ -109,6 +113,7 @@ class ObjectSharingInformation(Entity):
         context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_shared_with_users(self):
         """Returns an array that contains the users with whom a securable object is shared."""
         return_type = EntityCollection(self.context, ObjectSharingInformationUser)
@@ -117,6 +122,7 @@ class ObjectSharingInformation(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_list_item_sharing_information(
         context: ClientContext,
         list_id: str,

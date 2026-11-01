@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.viva.resource_link import VivaResourceLink
 
 
@@ -12,6 +13,7 @@ class VivaResources(Entity):
     def entity_type_name(self) -> str:
         return "Microsoft.SharePoint.EmployeeEngagement.VivaResources"
 
+    @site_access(SiteLevel.WRITE)
     def add_link(self, new_link: VivaResourceLink) -> ClientResult[int]:
         """AddLink operation.
 
@@ -23,6 +25,7 @@ class VivaResources(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def remove_link(self, id_: int) -> Self:
         """RemoveLink operation.
 
@@ -33,6 +36,7 @@ class VivaResources(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def reorder_link(self, link_id: int, prev_link_id: int) -> Self:
         """ReorderLink operation.
 
@@ -46,6 +50,7 @@ class VivaResources(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_link(self, updated_link: VivaResourceLink) -> Self:
         """UpdateLink operation.
 
@@ -56,6 +61,7 @@ class VivaResources(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_links(self, links: ClientValueCollection[VivaResourceLink]) -> Self:
         """UpdateLinks operation.
 

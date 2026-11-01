@@ -648,6 +648,23 @@ introduced.
   `Microsoft.Online.SharePoint.TenantAdministration`, so all three carry the role, and their
   report *creators* are `WRITE`. Debt 636 → 542, and the recycle-bin suite's last test derives
   its precondition from the declaration.
+- **The sixteen owners at five operations each.** 80 methods, and this tier is where the
+  "one class, one answer" shortcut stops working entirely. Business data splits three ways:
+  `TypeDescriptor` is five reads of BDC metadata, `EntityFieldValueDictionary` reads two and
+  writes the two that build an entity instance, and `AppBdcCatalog` (previous batch) sets
+  connections with `MANAGE`. The list home is three helpers of the signed-in user - favorites,
+  pinned items and recommendations - so each reads one and writes four. `Field` is five
+  `MANAGE`s, because a field's index and its presence on a form are list schema, not content.
+  `ObjectSharingInformation` is five reads: it asks what the current user *may* do and who a
+  thing is shared with, it does not share. `WebPartDefinition` is five `MANAGE`s on a page.
+  `WorkflowSubscriptionService` is five `WRITE`s - unregistering interest is still writing.
+  Three carry the SharePoint Administrator role: `SPOWebAppServicePrincipal` (five
+  `FULL_CONTROL`s of SPFx secrets and third-party app ids), the site properties collection
+  (five tenant reads, so the lock state and the archive check do not invent a write), and
+  `UserProfile`, whose three personal-site creators provision a site collection and stop
+  nowhere short of `FULL_CONTROL`, beside two `WRITE`s of the user's own settings. Debt
+  542 → 462, and two more live tests derive their precondition - the sharing report and the
+  personal-site provision.
 
 
 

@@ -106,6 +106,7 @@ class TestSharePointSharing(SPTestCase):
         result = self.client.web.unshare().execute_query()
         self.assertIsInstance(result, SharingResult)
 
+    @requires_call(ObjectSharingInformation.get_web_sharing_information, flow="delegated")
     def test_09_get_web_sharing_information(self):
         """Get web sharing information."""
         result = ObjectSharingInformation.get_web_sharing_information(self.client).execute_query()

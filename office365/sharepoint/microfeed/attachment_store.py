@@ -6,6 +6,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.microfeed.link import MicrofeedLink
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MicrofeedAttachmentStore(Entity):
@@ -16,6 +17,7 @@ class MicrofeedAttachmentStore(Entity):
     def entity_type_name(self) -> str:
         return "SP.Microfeed.MicrofeedAttachmentStore"
 
+    @site_access(SiteLevel.WRITE)
     def delete_pre_processed_attachment(self, attachment_uri: str) -> Self:
         """DeletePreProcessedAttachment operation.
 
@@ -28,6 +30,7 @@ class MicrofeedAttachmentStore(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_image(self, image_url: str, key: str, iv: str) -> ClientResult[bytes]:
         """GetImage operation.
 
@@ -43,6 +46,7 @@ class MicrofeedAttachmentStore(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def pre_process_attachment(self, link: MicrofeedLink) -> ClientResult[MicrofeedLink]:
         """PreProcessAttachment operation.
 
@@ -54,6 +58,7 @@ class MicrofeedAttachmentStore(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def put_file(self, original_file_name: str, file_data: bytes) -> ClientResult[StringCollection]:
         """PutFile operation.
 
@@ -68,6 +73,7 @@ class MicrofeedAttachmentStore(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def put_image(self, image_data: bytes) -> ClientResult[StringCollection]:
         """PutImage operation.
 

@@ -5,10 +5,12 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class MicroServiceManager(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_microservice_work_item(context, payload, minutes, properties):
         """Args:
         context (office365.sharepoint.client_context.ClientContext):
@@ -27,6 +29,7 @@ class MicroServiceManager(Entity):
     def entity_type_name(self):
         return "SP.MicroService.MicroServiceManager"
 
+    @site_access(SiteLevel.WRITE)
     def delete_microservice_work_item(self, work_item_id: UUID) -> ClientResult[bool]:
         """DeleteMicroserviceWorkItem operation.
 
@@ -40,6 +43,7 @@ class MicroServiceManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete_microservice_work_item_by_content_db_id(
         self, content_database_id: UUID, site_id: UUID, work_item_id: UUID
     ) -> ClientResult[bool]:
@@ -62,6 +66,7 @@ class MicroServiceManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_service_internal_urls(self, service: str) -> ClientResult[StringCollection]:
         """GetServiceInternalUrls operation.
 
@@ -73,6 +78,7 @@ class MicroServiceManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_service_urls(self, service: str) -> ClientResult[StringCollection]:
         """GetServiceUrls operation.
 

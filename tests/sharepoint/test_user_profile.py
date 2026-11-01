@@ -9,6 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.userprofiles.my_site_links import MySiteLinks
 from office365.sharepoint.userprofiles.people_manager import PeopleManager
+from office365.sharepoint.userprofiles.user_profile import UserProfile
 from office365.sharepoint.webparts.tile_data import TileData
 
 from tests import (
@@ -46,6 +47,7 @@ class TestUserProfile(SPTestCase):
         user_profile = self.my_client.profile_loader.get_user_profile().execute_query()
         self.assertIsNotNone(user_profile.account_name)
 
+    @requires_call(UserProfile.create_personal_site_enque, flow="delegated")
     def test_02_create_personal_site(self):
         """Create a personal site for the current user."""
         user_profile = self.my_client.profile_loader.get_user_profile()

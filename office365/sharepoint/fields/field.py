@@ -12,6 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.type import FieldType
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.translation.user_resource import UserResource
 
@@ -172,6 +173,7 @@ class Field(Entity):
         """
         return self.type_as_string == "URL"
 
+    @site_access(SiteLevel.MANAGE)
     def enable_index(self) -> ClientResult[bool]:
         """
         Enables the index for a field
@@ -182,6 +184,7 @@ class Field(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def disable_index(self) -> ClientResult[bool]:
         """
         Disables the index for a field
@@ -191,6 +194,7 @@ class Field(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def set_show_in_display_form(self, flag) -> Self:
         """Sets the value of the ShowInDisplayForm property for this fields.
 
@@ -201,6 +205,7 @@ class Field(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.MANAGE)
     def set_show_in_edit_form(self, flag):
         """Sets the value of the ShowInEditForm property for this fields.
 
@@ -210,6 +215,7 @@ class Field(Entity):
         qry = ServiceOperationQuery(self, "setShowInEditForm", [flag])
         self.context.add_query(qry)
 
+    @site_access(SiteLevel.MANAGE)
     def set_show_in_new_form(self, flag: bool) -> Self:
         """Sets the value of the ShowInNewForm property for this fields.
 

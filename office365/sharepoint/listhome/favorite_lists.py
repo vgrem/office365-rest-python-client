@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -19,6 +20,7 @@ class FavoriteLists(Entity):
         return "SP.FavoriteLists"
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_list(context: ClientContext, favorite_list: FavoriteListHomeItem) -> ClientResult[FavoriteListHomeItem]:
         """AddList operation.
 
@@ -37,6 +39,7 @@ class FavoriteLists(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_lists_by(
         context: ClientContext, site_id: str, list_id: str, page: int
     ) -> ClientResult[ClientValueCollection[FavoriteListHomeItem]]:
@@ -59,6 +62,7 @@ class FavoriteLists(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_list(
         context: ClientContext, site_id: str, list_id: str, web_id: str
     ) -> ClientResult[FavoriteListHomeItem]:
@@ -89,6 +93,7 @@ class FavoriteLists(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def reorder_list(
         context: ClientContext,
         list_to_reorder: FavoriteListHomeItem,
@@ -119,6 +124,7 @@ class FavoriteLists(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_list(context: ClientContext, favorite_list: FavoriteListHomeItem) -> ClientResult[FavoriteListHomeItem]:
         """UpdateList operation.
 

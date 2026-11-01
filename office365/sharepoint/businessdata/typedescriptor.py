@@ -4,6 +4,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
 class TypeDescriptor(Entity):
@@ -41,6 +42,7 @@ class TypeDescriptor(Entity):
     def entity_type_name(self):
         return "SP.BusinessData.TypeDescriptor"
 
+    @site_access(SiteLevel.READ)
     def contains_localized_display_name(self) -> ClientResult[bool]:
         """ContainsLocalizedDisplayName operation."""
         return_type = ClientResult(self.context, bool())
@@ -48,6 +50,7 @@ class TypeDescriptor(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_default_display_name(self) -> ClientResult[str]:
         """GetDefaultDisplayName operation."""
         return_type = ClientResult(self.context, str())
@@ -55,6 +58,7 @@ class TypeDescriptor(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_localized_display_name(self) -> ClientResult[str]:
         """GetLocalizedDisplayName operation."""
         return_type = ClientResult(self.context, str())
@@ -62,6 +66,7 @@ class TypeDescriptor(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def is_leaf(self) -> ClientResult[bool]:
         """IsLeaf operation."""
         return_type = ClientResult(self.context, bool())
@@ -69,6 +74,7 @@ class TypeDescriptor(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def is_root(self) -> ClientResult[bool]:
         """IsRoot operation."""
         return_type = ClientResult(self.context, bool())

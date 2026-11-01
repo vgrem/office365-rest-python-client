@@ -1,7 +1,9 @@
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.tenant.administration.site_user_group_info import (
     SiteUserGroupInfo,
 )
@@ -17,6 +19,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, SiteProperties, resource_path)
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_by_id(self, site_id: str) -> SiteProperties:
         """Args:
         site_id (str): Site identifier
@@ -26,6 +29,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_lock_state_by_id(self, site_id: str) -> ClientResult[int]:
         """Args:
         site_id (str): Site identifier
@@ -35,6 +39,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_state_properties(self, site_id: str) -> ClientResult[SiteStateProperties]:
         """Gets site state properties.
 
@@ -46,6 +51,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_site_user_groups(self, site_id: str) -> ClientResult[ClientValueCollection[SiteUserGroupInfo]]:
         """Gets site user groups.
 
@@ -57,6 +63,7 @@ class SitePropertiesCollection(EntityCollection[SiteProperties]):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def check_site_is_archived_by_id(self, site_id: str) -> ClientResult[bool]:
         """Args:
         site_id (str): Site identifier

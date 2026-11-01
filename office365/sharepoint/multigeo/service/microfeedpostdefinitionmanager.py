@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.microfeed.posts.definition import MicrofeedPostDefinition
@@ -16,6 +17,7 @@ class MicrofeedPostDefinitionManager(Entity):
     def entity_type_name(self) -> str:
         return "SP.Microfeed.MicrofeedPostDefinitionManager"
 
+    @site_access(SiteLevel.MANAGE)
     def delete_microfeed_post_definition(self, post_definition: MicrofeedPostDefinition) -> ClientResult[bool]:
         """DeleteMicrofeedPostDefinition operation.
 
@@ -30,6 +32,7 @@ class MicrofeedPostDefinitionManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_microfeed_post_definition(self, definition_name: str) -> ClientResult[MicrofeedPostDefinition]:
         """GetMicrofeedPostDefinition operation.
 
@@ -48,6 +51,7 @@ class MicrofeedPostDefinitionManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_microfeed_post_definitions(self) -> ClientResult[ClientValueCollection[MicrofeedPostDefinition]]:
         """GetMicrofeedPostDefinitions operation."""
         from office365.sharepoint.microfeed.posts.definition import (
@@ -59,6 +63,7 @@ class MicrofeedPostDefinitionManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def new_microfeed_post_definition(self, definition_name: str) -> ClientResult[MicrofeedPostDefinition]:
         """NewMicrofeedPostDefinition operation.
 
@@ -77,6 +82,7 @@ class MicrofeedPostDefinitionManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.MANAGE)
     def update_microfeed_post_definition(
         self, post_definition: MicrofeedPostDefinition
     ) -> ClientResult[MicrofeedPostDefinition]:

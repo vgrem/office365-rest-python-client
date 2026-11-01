@@ -7,6 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
 
 class PinnedItems(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def add_item(context: ClientContext, pinned_item: FavoriteListHomeItem) -> ClientResult[FavoriteListHomeItem]:
         """AddItem operation.
 
@@ -33,6 +35,7 @@ class PinnedItems(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_items_by(
         context: ClientContext, site_id: str, list_id: str
     ) -> ClientResult[ClientValueCollection[FavoriteListHomeItem]]:
@@ -53,6 +56,7 @@ class PinnedItems(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def remove_item(
         context: ClientContext, site_id: str, list_id: str, web_id: str
     ) -> ClientResult[FavoriteListHomeItem]:
@@ -83,6 +87,7 @@ class PinnedItems(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def reorder_list(
         context: ClientContext,
         item_to_reorder: FavoriteListHomeItem,
@@ -113,6 +118,7 @@ class PinnedItems(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def update_item(context: ClientContext, pinned_item: FavoriteListHomeItem) -> ClientResult[FavoriteListHomeItem]:
         """UpdateItem operation.
 

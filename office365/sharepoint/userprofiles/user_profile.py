@@ -4,11 +4,13 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.sites.site import Site
 from office365.sharepoint.userprofiles.followed_content import FollowedContent
 
@@ -149,6 +151,7 @@ class UserProfile(Entity):
             Site(self.context, ResourcePath("PersonalSite", self.resource_path)),
         )
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_personal_site(self, lcid):
         """The CreatePersonalSite method creates a personal site (2) for this user, which can be used to share documents,
         web pages, and other files.
@@ -161,6 +164,7 @@ class UserProfile(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_personal_site_enque(self, is_interactive):
         """Enqueues creating a personal site for this user, which can be used to share documents, web pages,
         and other files.
@@ -174,6 +178,7 @@ class UserProfile(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_my_site_first_run_experience(self, value):
         """Sets the personal site First Run flag for the user.
 
@@ -185,6 +190,7 @@ class UserProfile(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def share_all_social_data(self, share_all):
         """The ShareAllSocialData method specifies whether the current user's social data is to be shared.
 
@@ -248,6 +254,7 @@ class UserProfile(Entity):
         """Gets the SipAddress property"""
         return self.properties.get("SipAddress", None)
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def create_personal_site_from_work_item(self, work_item_type: UUID) -> ClientResult[int]:
         """CreatePersonalSiteFromWorkItem operation.
 
