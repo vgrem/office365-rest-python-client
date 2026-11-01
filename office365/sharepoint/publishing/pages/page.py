@@ -13,6 +13,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.documents.coauthconfiguration import CoAuthConfiguration
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
 from office365.sharepoint.publishing.amplify.history import AmplifyPublishingHistory
@@ -43,24 +44,28 @@ class SitePage(SitePageMetadata):
     # the projection.
     _unselectable = ("TemplateScope",)
 
+    @site_access(SiteLevel.WRITE)
     def checkout_page(self) -> Self:
         """Checks out the current Site Page if it is available to be checked out."""
         qry = ServiceOperationQuery(self, "CheckoutPage", None, None, None, self)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def copy(self) -> Self:
         """Creates a copy of the current Site Page and returns the resulting new SitePage."""
         qry = ServiceOperationQuery(self, "Copy")
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def discard_page(self) -> Self:
         """Discards the current checked out version of the Site Page.  Returns the resulting SitePage after discard."""
         qry = ServiceOperationQuery(self, "DiscardPage", return_type=self)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_dependency_metadata(self) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
         """ """
         return_type = ClientResult(self.context, ClientValueCollection(SitePageDependencyMetadata))
@@ -68,6 +73,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_version(self, version_id: str) -> "SitePage":
         """ """
         return_type = SitePage(self.context, self.resource_path)
@@ -75,6 +81,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_page(
         self,
         title: str,
@@ -97,6 +104,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def save_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
         """Updates the Site Page with the provided sitePage metadata and checks in a minor version if the page library
         has minor versions enabled.
@@ -115,6 +123,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_page_as_draft(self, title, canvas_content=None, banner_image_url=None, topic_header=None):
         """Updates the Site Page with the provided pageStream content and checks in a minor version if the page library
         has minor versions enabled.
@@ -133,6 +142,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_page_as_template(self) -> "SitePage":
         """ """
         return_type = SitePage(self.context)
@@ -140,6 +150,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_page_co_auth(self, page_stream):
         """ """
         return_type = ClientResult(self.context, SitePageCoAuthState())
@@ -148,6 +159,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def demote_from_news(self):
         """
         Updates the promoted state of the site page to 0. On success MUST return true.
@@ -161,6 +173,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return result
 
+    @site_access(SiteLevel.WRITE)
     def promote_to_news(self):
         """
         Updates the promoted state of the site page to 1 if the site page has not been published yet.
@@ -175,6 +188,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return result
 
+    @site_access(SiteLevel.WRITE)
     def publish(self) -> ClientResult[bool]:
         """
         Publishes a major version of the current Site Page.  Returns TRUE on success, FALSE otherwise.
@@ -184,6 +198,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def schedule_publish(self, publish_start_date):
         """Schedules the page publication for a certain date
 
@@ -196,6 +211,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return result
 
+    @site_access(SiteLevel.WRITE)
     def share_page_preview_by_email(self, message: str, recipient_emails: list[str]) -> Self:
         """Args:
         message (str):
@@ -206,6 +222,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_co_auth(self):
         """"""
         return_type = SitePage(self.context, self.resource_path)
@@ -443,6 +460,7 @@ class SitePage(SitePageMetadata):
         """
         return self.properties.get("OData__ModerationStatus", None)
 
+    @site_access(SiteLevel.WRITE)
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
         """Amplify operation.
 
@@ -454,6 +472,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def amplify_history(self) -> ClientResult[AmplifyPublishingHistory]:
         """AmplifyHistory operation."""
         return_type = ClientResult(self.context, AmplifyPublishingHistory())
@@ -461,6 +480,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def amplify_send_test_email_message(self, content_stream: bytes) -> ClientResult[ClientAmplifyResults]:
         """AmplifySendTestEmailMessage operation.
 
@@ -474,6 +494,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def amplify_send_test_teams_message(
         self, audience_id: str, group_id: UUID, transpile_content: str, channel_name: str, team_name: str
     ) -> ClientResult[ClientAmplifyResults]:
@@ -504,6 +525,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def boost_news(self, site_page_boost: BoostFieldsData) -> Self:
         """BoostNews operation.
 
@@ -514,6 +536,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def check_out(self) -> ClientResult[bool]:
         """CheckOut operation."""
         return_type = ClientResult(self.context, bool())
@@ -521,6 +544,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def extend_session_co_auth(
         self, authoring_metadata: SitePageAuthoringMetadata, connectivity_update_reason: int
     ) -> ClientResult[SitePageCoAuthState]:
@@ -542,6 +566,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_latest_versions_in_descending_order(
         self, num_versions: int
     ) -> ClientResult[ClientValueCollection[SitePageVersionInfoCollection]]:
@@ -555,6 +580,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def publish_co_auth(self, page_stream: bytes) -> ClientResult[SitePageCoAuthState]:
         """PublishCoAuth operation.
 
@@ -566,6 +592,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def restore_by_label(self, versionlabel: str) -> Self:
         """RestoreByLabel operation.
 
@@ -576,6 +603,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def save_streams(self, content_stream: bytes, shared_lock_id: str, scenario: int) -> Self:
         """SaveStreams operation.
 
@@ -595,6 +623,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def send_test_email(
         self, transpile_content: str, subject: str, sensitivity_label_id: str
     ) -> ClientResult[SendTestEmailResponse]:
@@ -617,6 +646,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def send_test_email_stream(self, content_stream: bytes) -> ClientResult[SendTestEmailResponse]:
         """SendTestEmailStream operation.
 
@@ -630,6 +660,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def send_test_teams_message(
         self, audience_id: str, transpile_content: str
     ) -> ClientResult[SendTestTeamsMessageResponse]:
@@ -651,6 +682,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def start_exclusive_authoring(self) -> ClientResult[bool]:
         """StartExclusiveAuthoring operation."""
         return_type = ClientResult(self.context, bool())
@@ -658,6 +690,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def try_process_source_page_after_page_move_publish(self) -> ClientResult[bool]:
         """TryProcessSourcePageAfterPageMovePublish operation."""
         return_type = ClientResult(self.context, bool())
@@ -665,6 +698,7 @@ class SitePage(SitePageMetadata):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def try_process_source_page_before_page_move_publish(self) -> ClientResult[bool]:
         """TryProcessSourcePageBeforePageMovePublish operation."""
         return_type = ClientResult(self.context, bool())

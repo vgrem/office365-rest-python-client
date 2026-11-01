@@ -8,6 +8,7 @@ from office365.sharepoint.publishing.pages.collection import SitePageCollection
 from office365.sharepoint.publishing.pages.page import SitePage
 
 from tests import create_unique_name
+from tests.decorators import requires_call
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -29,6 +30,7 @@ class TestSitePages(SPTestCase):
         self.assertIsInstance(result, SitePageCollection)
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(SitePage.publish, flow="application")
     def test_03_publish_site_page(self):
         """Publish a site page."""
         target_page = TestSitePages.target_page

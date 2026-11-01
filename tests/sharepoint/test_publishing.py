@@ -5,6 +5,7 @@ from __future__ import annotations
 from urllib.parse import urlparse
 
 from office365.sharepoint.lists.list import List
+from office365.sharepoint.publishing.pages.page import SitePage
 from office365.sharepoint.publishing.pages.service import SitePageService
 from office365.sharepoint.publishing.video.service_discoverer import (
     VideoServiceDiscoverer,
@@ -80,6 +81,7 @@ class TestPublishing(SPTestCase):
         result = self.client.page_diagnostics.by_page(page_path).execute_query()
         self.assertIsNotNone(result.value)
 
+    @requires_call(SitePage.checkout_page, flow="application")
     def test_10_checkout_page(self):
         """Check out a site page."""
         page = self.client.site_pages.pages.find_by_name("Home.aspx", required=True)
@@ -94,6 +96,7 @@ class TestPublishing(SPTestCase):
         result = pages_list.get_checked_out_files().execute_query()
         self.assertIsNotNone(result.resource_path)
 
+    @requires_call(SitePage.discard_page, flow="application")
     def test_12_discard_page(self):
         """Discard check-out on a site page."""
         page = self.client.site_pages.pages.find_by_name("Home.aspx", required=True)

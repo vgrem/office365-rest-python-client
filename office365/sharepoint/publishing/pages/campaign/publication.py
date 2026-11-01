@@ -13,6 +13,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import (
     ClientAmplifyAnywhereResults,
 )
@@ -76,6 +77,7 @@ from office365.sharepoint.publishing.validations.response import (
 class CampaignPublication(SitePage):
     """ """
 
+    @site_access(SiteLevel.READ)
     def get_highlights_info(self):
         """ """
         return_type = HighlightsInfo(self.context)
@@ -123,6 +125,7 @@ class CampaignPublication(SitePage):
         """Gets the YammerEndpoint property"""
         return self.properties.get("YammerEndpoint", None)
 
+    @site_access(SiteLevel.WRITE)
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:
         """Amplify operation.
 
@@ -134,6 +137,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def amplify_history(self) -> ClientResult[AmplifyPublishingHistory]:
         """AmplifyHistory operation."""
         return_type = ClientResult(self.context, AmplifyPublishingHistory())
@@ -141,6 +145,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def amplify_send_test_email_message(self, content_stream: bytes) -> ClientResult[ClientAmplifyResults]:
         """AmplifySendTestEmailMessage operation.
 
@@ -154,6 +159,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def boost_news(self, site_page_boost: BoostFieldsData) -> Self:
         """BoostNews operation.
 
@@ -164,6 +170,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def check_out(self) -> ClientResult[bool]:
         """CheckOut operation."""
         return_type = ClientResult(self.context, bool())
@@ -171,12 +178,14 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete(self) -> Self:
         """Delete operation."""
         qry = ServiceOperationQuery(self, "Delete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def demote_from_news(self) -> ClientResult[bool]:
         """DemoteFromNews operation."""
         return_type = ClientResult(self.context, bool())
@@ -184,6 +193,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def extend_session_co_auth(
         self, authoring_metadata: SitePageAuthoringMetadata, connectivity_update_reason: int
     ) -> ClientResult[SitePageCoAuthState]:
@@ -205,6 +215,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_dependency_metadata(self) -> ClientResult[ClientValueCollection[SitePageDependencyMetadata]]:
         """GetDependencyMetadata operation."""
         return_type = ClientResult(self.context, ClientValueCollection[SitePageDependencyMetadata]())
@@ -212,6 +223,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_latest_versions_in_descending_order(
         self, num_versions: int
     ) -> ClientResult[ClientValueCollection[SitePageVersionInfoCollection]]:
@@ -225,6 +237,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def promote_to_news(self) -> ClientResult[bool]:
         """PromoteToNews operation."""
         return_type = ClientResult(self.context, bool())
@@ -232,6 +245,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def publish(self) -> ClientResult[bool]:
         """Publish operation."""
         return_type = ClientResult(self.context, bool())
@@ -239,6 +253,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def publish_co_auth(self, page_stream: bytes) -> ClientResult[SitePageCoAuthState]:
         """PublishCoAuth operation.
 
@@ -250,6 +265,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def restore_by_label(self, versionlabel: str) -> Self:
         """RestoreByLabel operation.
 
@@ -260,6 +276,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def save_page_co_auth(self, page_stream: bytes) -> ClientResult[SitePageCoAuthState]:
         """SavePageCoAuth operation.
 
@@ -271,6 +288,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_streams(self, content_stream: bytes, shared_lock_id: str, scenario: int) -> Self:
         """SaveStreams operation.
 
@@ -290,6 +308,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def send_test_email_stream(self, content_stream: bytes) -> ClientResult[SendTestEmailResponse]:
         """SendTestEmailStream operation.
 
@@ -303,6 +322,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def send_test_teams_message(
         self, audience_id: str, transpile_content: str
     ) -> ClientResult[SendTestTeamsMessageResponse]:
@@ -324,6 +344,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def share_page_preview_by_email(self, message: str, recipient_emails: list[str]) -> Self:
         """SharePagePreviewByEmail operation.
 
@@ -342,6 +363,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def start_exclusive_authoring(self) -> ClientResult[bool]:
         """StartExclusiveAuthoring operation."""
         return_type = ClientResult(self.context, bool())
@@ -349,6 +371,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def try_process_source_page_after_page_move_publish(self) -> ClientResult[bool]:
         """TryProcessSourcePageAfterPageMovePublish operation."""
         return_type = ClientResult(self.context, bool())
@@ -356,6 +379,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def try_process_source_page_before_page_move_publish(self) -> ClientResult[bool]:
         """TryProcessSourcePageBeforePageMovePublish operation."""
         return_type = ClientResult(self.context, bool())
@@ -363,6 +387,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def amplify_cancel_schedule(self) -> ClientResult[ClientAmplifyResults]:
         """AmplifyCancelSchedule operation."""
         return_type = ClientResult(self.context, ClientAmplifyResults())
@@ -370,6 +395,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def amplify_publish(self) -> ClientResult[ClientAmplifyResults]:
         """AmplifyPublish operation."""
         return_type = ClientResult(self.context, ClientAmplifyResults())
@@ -377,6 +403,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def amplify_schedule(self, publish_start_date: datetime) -> ClientResult[ClientAmplifyResults]:
         """AmplifySchedule operation.
 
@@ -390,6 +417,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def amplify_validate(self) -> ClientResult[ClientAmplifyResults]:
         """AmplifyValidate operation."""
         return_type = ClientResult(self.context, ClientAmplifyResults())
@@ -397,6 +425,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def approve_approval_request(self, comment: str) -> ClientResult[ApprovalRequestResponse]:
         """ApproveApprovalRequest operation.
 
@@ -408,6 +437,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def cancel_approval_request(self) -> ClientResult[ApprovalRequestResponse]:
         """CancelApprovalRequest operation."""
         return_type = ClientResult(self.context, ApprovalRequestResponse())
@@ -415,6 +445,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def cancel_schedule_publication(self) -> ClientResult[SchedulePublicationResponse]:
         """CancelSchedulePublication operation."""
         return_type = ClientResult(self.context, SchedulePublicationResponse())
@@ -422,6 +453,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def create_approval_request(
         self, creation_info: ApprovalRequestCreationInfo
     ) -> ClientResult[ApprovalRequestResponse]:
@@ -437,6 +469,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def delete_publication(self) -> ClientResult[UUID]:
         """DeletePublication operation."""
         return_type = ClientResult(self.context, uuid.UUID(int=0))
@@ -444,6 +477,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_pre_publish_validation_status(self) -> ClientResult[PrePublishValidationsResponse]:
         """GetPrePublishValidationStatus operation."""
         return_type = ClientResult(self.context, PrePublishValidationsResponse())
@@ -451,6 +485,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_publishing_status(self) -> ClientResult[PublishingStatusResponse]:
         """GetPublishingStatus operation."""
         return_type = ClientResult(self.context, PublishingStatusResponse())
@@ -458,6 +493,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def load_mail_draft(
         self, request_param: CampaignPublicationLoadMailDraftParam
     ) -> ClientResult[CampaignPublicationMailDraftData]:
@@ -471,6 +507,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def publish_as_bot(
         self, tenant_id: str, channel_ids: list[str], content: str, title: str, headline: str
     ) -> ClientResult[str]:
@@ -501,6 +538,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def publish_publication(self) -> ClientResult[PublishPublicationResponse]:
         """PublishPublication operation."""
         return_type = ClientResult(self.context, PublishPublicationResponse())
@@ -508,6 +546,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def reject_approval_request(self, comment: str) -> ClientResult[ApprovalRequestResponse]:
         """RejectApprovalRequest operation.
 
@@ -519,6 +558,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def repair_missing_share_point_destination_web_ids(
         self, repair_items: ClientValueCollection[MissingSharePointDestinationWebIdRepairItem]
     ) -> Self:
@@ -533,6 +573,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def reset_endpoint(self, request_param: CampaignPublicationResetEndpointParam) -> ClientResult[bool]:
         """ResetEndpoint operation.
 
@@ -544,6 +585,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def save_mail_draft(
         self, request_param: CampaignPublicationSaveMailDraftParam
     ) -> ClientResult[CampaignPublicationMailDraftData]:
@@ -557,6 +599,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def schedule_publication(self, publish_start_date: datetime) -> ClientResult[SchedulePublicationResponse]:
         """SchedulePublication operation.
 
@@ -570,6 +613,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def sp_site_validator(self, site_url: str) -> ClientResult[ClientValueCollection[int]]:
         """SPSiteValidator operation.
 
@@ -581,6 +625,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def update_share_point_publishing_status(
         self,
         destination_site_id: str,
@@ -619,6 +664,7 @@ class CampaignPublication(SitePage):
         """Gets the SharePointEndpoint property"""
         return self.properties.get("SharePointEndpoint", None)
 
+    @site_access(SiteLevel.WRITE)
     def repair_missing_sharepoint_destination_web_ids(
         self, repair_items: ClientValueCollection[MissingSharePointDestinationWebIdRepairItem]
     ) -> Self:
@@ -634,6 +680,7 @@ class CampaignPublication(SitePage):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_sharepoint_publishing_status(
         self,
         destination_site_id: str,
