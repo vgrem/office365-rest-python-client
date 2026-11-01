@@ -7,12 +7,14 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.workflow.definition import WorkflowDefinition
 
 
 class WorkflowDeploymentService(Entity):
     """"""
 
+    @site_access(SiteLevel.READ)
     def get_definition(self, definition_id):
         """Returns a WorkflowDefinition from the workflow store."""
         return_type = WorkflowDefinition(self.context)
@@ -21,6 +23,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def enumerate_definitions(self, published_only=False):
         """Returns the WorkflowDefinition objects from the workflow store that match the specified parameters."""
         return_type = EntityCollection(self.context, WorkflowDefinition)
@@ -33,6 +36,7 @@ class WorkflowDeploymentService(Entity):
     def entity_type_name(self):
         return "SP.WorkflowServices.WorkflowDeploymentService"
 
+    @site_access(SiteLevel.WRITE)
     def delete_collateral(self, workflow_definition_id: UUID, leaf_file_name: str) -> Self:
         """DeleteCollateral operation.
 
@@ -51,6 +55,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_definition(self, definition_id: UUID) -> Self:
         """DeleteDefinition operation.
 
@@ -61,6 +66,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def deprecate_definition(self, definition_id: UUID) -> Self:
         """DeprecateDefinition operation.
 
@@ -71,6 +77,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def get_activity_signatures(self, last_changed: datetime) -> ClientResult[dict]:
         """GetActivitySignatures operation.
 
@@ -84,6 +91,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_collateral_uri(self, workflow_definition_id: UUID, leaf_file_name: str) -> ClientResult[str]:
         """GetCollateralUri operation.
 
@@ -103,6 +111,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def is_integrated_app(self) -> ClientResult[bool]:
         """IsIntegratedApp operation."""
         return_type = ClientResult(self.context, bool())
@@ -110,6 +119,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def package_definition(
         self, definition_id: UUID, package_default_filename: str, package_title: str, package_description: str
     ) -> ClientResult[str]:
@@ -138,6 +148,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def publish_definition(self, definition_id: UUID) -> Self:
         """PublishDefinition operation.
 
@@ -148,6 +159,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def save_collateral(self, workflow_definition_id: UUID, leaf_file_name: str, file_content: bytes) -> Self:
         """SaveCollateral operation.
 
@@ -171,6 +183,7 @@ class WorkflowDeploymentService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def validate_activity(self, activity_xaml: str) -> ClientResult[str]:
         """ValidateActivity operation.
 

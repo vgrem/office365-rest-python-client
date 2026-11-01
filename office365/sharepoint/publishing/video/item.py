@@ -15,6 +15,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.publishing.itemviewsanalyticsdata import (
     ItemViewsAnalyticsData,
@@ -25,6 +26,7 @@ from office365.sharepoint.publishing.viewprogressanalyticsdata import (
 
 
 class VideoItem(Entity):
+    @site_access(SiteLevel.READ)
     def get_video_embed_code(self, width, height, autoplay=True, show_info=True, make_responsive=True):
         """Args:
         width (int):
@@ -45,6 +47,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_video_owner(self, owner_id):
         """Args:
         owner_id (int):
@@ -193,6 +196,7 @@ class VideoItem(Entity):
             EntityCollection[User](self.context, User, ResourcePath("PeopleInMedia", self.resource_path)),
         )
 
+    @site_access(SiteLevel.READ)
     def custom_thumbnail(self) -> ClientResult[bytes]:
         """CustomThumbnail operation."""
         return_type = ClientResult(self.context, bytes())
@@ -200,6 +204,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_playback_url(self, video_format: int) -> ClientResult[str]:
         """GetPlaybackUrl operation.
 
@@ -211,6 +216,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_streaming_key_access_token(self) -> ClientResult[str]:
         """GetStreamingKeyAccessToken operation."""
         return_type = ClientResult(self.context, str())
@@ -218,6 +224,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_video_detailed_view_count(self) -> ClientResult[ItemViewsAnalyticsData]:
         """GetVideoDetailedViewCount operation."""
         return_type = ClientResult(self.context, ItemViewsAnalyticsData())
@@ -225,6 +232,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_video_view_progress_count(self) -> ClientResult[ClientValueCollection[ViewProgressAnalyticsData]]:
         """GetVideoViewProgressCount operation."""
         return_type = ClientResult(self.context, ClientValueCollection[ViewProgressAnalyticsData]())
@@ -232,6 +240,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def increment_video_view_progress_count(self, percentage_viewed: int) -> Self:
         """IncrementVideoViewProgressCount operation.
 
@@ -244,6 +253,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def increment_view_count(self, view_origin: int) -> Self:
         """IncrementViewCount operation.
 
@@ -254,6 +264,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def set_people_in_media(self, login_names: list[str]) -> Self:
         """SetPeopleInMedia operation.
 
@@ -266,6 +277,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.READ)
     def thumbnail_stream(self, preferred_width: int) -> ClientResult[bytes]:
         """ThumbnailStream operation.
 
@@ -277,6 +289,7 @@ class VideoItem(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def upload_custom_thumbnail(self, file_extension: str, custom_video_thumbnail: bytes) -> Self:
         """UploadCustomThumbnail operation.
 

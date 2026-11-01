@@ -1,10 +1,12 @@
 from typing import Optional
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.v3.static import StaticPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.search.promoted_results_operations_result import PromotedResultsOperationsResult
 from office365.sharepoint.search.query.configuration import QueryConfiguration
 from office365.sharepoint.search.reports.base import ReportBase
@@ -21,6 +23,7 @@ class SearchSetting(Entity):
             self._resource_path = StaticPath("Microsoft.Office.Server.Search.REST.SearchSetting")
         return self._resource_path
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_query_configuration(
         self,
         call_local_search_farms_only: bool = True,
@@ -46,6 +49,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def export_search_reports(
         self, tenant_id, report_type=None, interval=None, start_date=None, end_date=None, site_collection_id=None
     ) -> ClientResult[ReportBase]:
@@ -70,6 +74,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def ping_admin_endpoint(self) -> ClientResult[bool]:
         """ """
         return_type = ClientResult[bool](self.context)
@@ -77,6 +82,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_promoted_result_query_rules(
         self,
         site_collection_level: Optional[bool] = None,
@@ -106,6 +112,7 @@ class SearchSetting(Entity):
     def entity_type_name(self):
         return "Microsoft.Office.Server.Search.REST.SearchSetting"
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def getpromotedresultqueryrules(
         self, site_collection_level: bool, offset: int, number_of_rules: int
     ) -> ClientResult[PromotedResultsOperationsResult]:
@@ -123,6 +130,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def getqueryconfiguration(
         self, call_local_search_farms_only: bool, skip_group_object_id_lookup: bool, throw_on_remote_api_check: bool
     ) -> ClientResult[QueryConfiguration]:
@@ -143,6 +151,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def getxssearchpolicy(self) -> ClientResult[XSSearchPolicy]:
         """getxssearchpolicy operation."""
         return_type = ClientResult(self.context, XSSearchPolicy())
@@ -150,6 +159,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def pingadminendpoint(self) -> ClientResult[bool]:
         """pingadminendpoint operation."""
         return_type = ClientResult(self.context, bool())
@@ -157,6 +167,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def scspartialupdateendpointinfo(self) -> ClientResult[ScsEndpoint]:
         """scspartialupdateendpointinfo operation."""
         return_type = ClientResult(self.context, ScsEndpoint())
@@ -164,6 +175,7 @@ class SearchSetting(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def setxssearchpolicy(self, policy: str) -> ClientResult[XSSearchPolicy]:
         """setxssearchpolicy operation.
 

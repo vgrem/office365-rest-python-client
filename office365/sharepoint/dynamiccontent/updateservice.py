@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.dynamiccontent.add_raw_questions_payload import (
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
 
 
 class DynamicContentUpdateService(Entity):
+    @site_access(SiteLevel.WRITE)
     def add_faq_user_submitted_questions(self, data: AddRawQuestionsPayload) -> Self:
         """AddFAQUserSubmittedQuestions operation.
 
@@ -54,6 +56,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def add_or_update_faq_content_update_suggestion(self, suggestion: SuggestionItemParameters) -> Self:
         """AddOrUpdateFAQContentUpdateSuggestion operation.
 
@@ -67,6 +70,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_faq_aggregated_question(self, data: DeleteAggregatedQuestionsPayload) -> Self:
         """DeleteFAQAggregatedQuestion operation.
 
@@ -78,6 +82,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def delete_faq_content_update_suggestion(self, suggestion: SuggestionItemParameters) -> Self:
         """DeleteFAQContentUpdateSuggestion operation.
 
@@ -91,12 +96,14 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL)
     def ensure_dynamic_content_update_list_feature(self) -> Self:
         """EnsureDynamicContentUpdateListFeature operation."""
         qry = ServiceOperationQuery(self, "EnsureDynamicContentUpdateListFeature", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def ensure_faq_aggregated_questions_list_item(self, data: FAQRequestPayload) -> ClientResult[EnsureListItemResult]:
         """EnsureFAQAggregatedQuestionsListItem operation.
 
@@ -115,6 +122,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def ensure_file_change_detect_work_item(self, request: SourceFileRquest) -> ClientResult[bool]:
         """EnsureFileChangeDetectWorkItem operation.
 
@@ -129,6 +137,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def faq_aggregated_questions(
         self, page_list_item_id: int, web_part_instance_id: UUID, unique_id: UUID
     ) -> ClientResult[AggregatedQuestionsResult]:
@@ -153,6 +162,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def faq_content_update_suggestions(
         self, max_item_count: int, snoozed_identifiers: str
     ) -> ClientResult[ClientValueCollection[FaqSuggestionItem]]:
@@ -173,6 +183,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def faq_user_submitted_questions(
         self, page_list_item_id: int, web_part_instance_id: UUID, unique_id: UUID
     ) -> ClientResult[RawQuestionsResult]:
@@ -197,6 +208,7 @@ class DynamicContentUpdateService(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def update_faq_aggregated_questions(self, aggregated_data: AggregatedQuestionsPayload) -> Self:
         """UpdateFAQAggregatedQuestions operation.
 

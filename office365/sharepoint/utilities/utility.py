@@ -13,6 +13,7 @@ from office365.sharepoint.files.file import File
 from office365.sharepoint.pages.wiki_page_creation_information import (
     WikiPageCreationInformation,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.source import PrincipalSource
 from office365.sharepoint.principal.type import PrincipalType
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
@@ -36,6 +37,7 @@ class Utility(Entity):
         return self._resource_path
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def create_email_body_for_invitation(context: ClientContext, page_address: str) -> ClientResult[str]:
         """Creates the contents of the e-mail message used to invite users to a document or resource in a site
 
@@ -59,6 +61,7 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_current_user_email_addresses(context: ClientContext) -> ClientResult[str]:
         """Returns the email addresses of the current user. If more than one email address exists for the current user,
         returns a list of email addresses separated by semicolons.
@@ -74,6 +77,7 @@ class Utility(Entity):
         return result
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_user_permission_levels(
         context: ClientContext,
     ) -> ClientResult[StringCollection]:
@@ -87,6 +91,7 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def search_principals_using_context_web(
         context: ClientContext,
         s_input: str,
@@ -123,6 +128,7 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create_wiki_page_in_context_web(
         context: ClientContext,
         parameters: WikiPageCreationInformation,
@@ -148,6 +154,7 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def send_email(context: ClientContext, properties: EmailProperties) -> Utility:
         """This method is a static method.
 
@@ -162,6 +169,7 @@ class Utility(Entity):
         return utility
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def unmark_discussion_as_featured(context: ClientContext, list_id: str, topic_ids: str) -> Utility:
         """This method is a static method.
 
@@ -177,6 +185,7 @@ class Utility(Entity):
         return utility
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def expand_groups_to_principals(
         context: ClientContext,
         inputs: List[str],
@@ -201,6 +210,7 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def log_custom_app_error(context: ClientContext, error: str) -> ClientResult[int]:
         """Logs an error from a SharePoint Add-in. The return value indicates the success or failure of this operation.
         These errors are of interest to administrators who monitor such apps (2).
@@ -220,6 +230,7 @@ class Utility(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def resolve_principal_in_current_context(
         context: ClientContext,
         string_input: str,

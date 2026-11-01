@@ -600,6 +600,23 @@ introduced.
   defender, Purview) derive their precondition from the declaration instead of restating the
   scope by hand. `sharepoint` is the only package still carrying debt, so the ratchet map is
   one line.
+- **The eleven largest SharePoint owners declare their rungs.** 121 methods: the followed
+  content of the current user (13), the publishing video item (12), the workflow deployment
+  service (12), the dynamic-content update service (11), the tenant app catalog accessor
+  (11), the theme manager (11), the personal cache (11), approvals (10), the navigation REST
+  service (10), search settings (10) and `SP.Utilities.Utility` (10). The judgment is
+  per method, not per class: `FollowedContent` reads status and lists with `READ` but
+  `follow_item`, `stop_following`, `set_item_pin_state` and `refresh_followed_item` write;
+  `VideoItem` returns embed codes, playback URLs and view counts with `READ` while the two
+  counters, the owner, the people and the custom thumbnail are writes; the navigation service
+  reads eight values and `MANAGE`s the two that save them, because navigation is a
+  site-collection setting; and `Approvals` splits creating, approving, rejecting and
+  cancelling a request (`WRITE`) from enabling the service, its notifications and its
+  properties (`MANAGE`). Three owners reach past their own site collection and name the
+  SharePoint Administrator role beside the rung: the tenant app catalog accessor, the theme
+  manager (tenant themes are tenant state, and a read of them is still tenant state) and
+  search settings, whose one writer is `setxssearchpolicy`. Debt 824 → 703, and six live
+  utility tests derive their precondition from the declaration.
 
 
 

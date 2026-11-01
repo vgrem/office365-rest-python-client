@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
+from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -11,6 +12,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.utilities.jsontheme import JsonTheme
 from office365.sharepoint.utilities.themingoptions import ThemingOptions
 
@@ -26,6 +28,7 @@ class ThemeManager(Entity):
     def entity_type_name(self):
         return "SP.Utilities.ThemeManager"
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
         """Adds a new theme to a tenant.
 
@@ -39,6 +42,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def delete_tenant_theme(self, name: str) -> Self:
         """
         Removes a theme.
@@ -48,6 +52,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def add_tenant_theme_advanced(self, name: str, theme_json: str, should_parse_color_pair: bool) -> ClientResult[bool]:
         """AddTenantThemeAdvanced operation.
 
@@ -68,6 +73,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def apply_theme(self, name: str, theme_json: str) -> ClientResult[str]:
         """ApplyTheme operation.
 
@@ -80,6 +86,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_available_themes(self) -> ClientResult[ClientValueCollection[JsonTheme]]:
         """GetAvailableThemes operation."""
         return_type = ClientResult(self.context, ClientValueCollection[JsonTheme]())
@@ -87,6 +94,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_hide_default_themes(self) -> ClientResult[bool]:
         """GetHideDefaultThemes operation."""
         return_type = ClientResult(self.context, bool())
@@ -94,6 +102,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_theme(self, name: str) -> ClientResult[JsonTheme]:
         """GetTenantTheme operation.
 
@@ -105,6 +114,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_tenant_theming_options(self) -> ClientResult[ThemingOptions]:
         """GetTenantThemingOptions operation."""
         return_type = ClientResult(self.context, ThemingOptions())
@@ -112,6 +122,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def set_hide_default_themes(self, hide_default_themes: bool) -> ClientResult[bool]:
         """SetHideDefaultThemes operation.
 
@@ -125,6 +136,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_tenant_theme(self, name: str, theme_json: str) -> ClientResult[bool]:
         """UpdateTenantTheme operation.
 
@@ -139,6 +151,7 @@ class ThemeManager(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def update_tenant_theme_advanced(
         self, name: str, theme_json: str, should_parse_color_pair: bool
     ) -> ClientResult[bool]:

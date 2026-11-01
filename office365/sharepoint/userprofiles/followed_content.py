@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.userprofiles.follow_result import FollowResult
 from office365.sharepoint.userprofiles.followed_item import FollowedItem
 
@@ -17,6 +18,7 @@ from office365.sharepoint.userprofiles.followed_item import FollowedItem
 class FollowedContent(Entity):
     """The FollowedContent class provides access to followed content items."""
 
+    @site_access(SiteLevel.WRITE)
     def follow_item(self, item: FollowedItem) -> ClientResult[FollowResult]:
         """The FollowItem method is reserved for server-to-server use only.
         The server sets the specified item to be followed by the current user. This method cannot be called
@@ -31,6 +33,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_followed_status(self, url: str) -> ClientResult[int]:
         """The GetFollowedStatus method retrieves the followed status of the specified document or site.
         An item can be followed if the url parameter identifies a document or site that the current user has access to.
@@ -60,6 +63,7 @@ class FollowedContent(Entity):
     def entity_type_name(self):
         return "SP.UserProfiles.FollowedContent"
 
+    @site_access(SiteLevel.WRITE)
     def find_and_update_followed_group(self, group_id: UUID) -> ClientResult[FollowedItem]:
         """FindAndUpdateFollowedGroup operation.
 
@@ -74,6 +78,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def find_and_update_followed_item(self, url: str) -> ClientResult[FollowedItem]:
         """FindAndUpdateFollowedItem operation.
 
@@ -88,6 +93,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_groups(self, row_limit: int) -> ClientResult[ClientValueCollection[FollowedItem]]:
         """GetGroups operation.
 
@@ -102,6 +108,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_item(self, url: str) -> ClientResult[FollowedItem]:
         """GetItem operation.
 
@@ -116,6 +123,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def get_items(self, options: int, subtype: int) -> ClientResult[ClientValueCollection[FollowedItem]]:
         """GetItems operation.
 
@@ -132,6 +140,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def has_group_membership_changed_and_sync_changes(self) -> ClientResult[bool]:
         """HasGroupMembershipChangedAndSyncChanges operation."""
         return_type = ClientResult(self.context, bool())
@@ -139,6 +148,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.READ)
     def is_followed(self, url: str) -> ClientResult[bool]:
         """IsFollowed operation.
 
@@ -151,6 +161,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def refresh_followed_item(self, item: FollowedItem) -> ClientResult[FollowedItem]:
         """RefreshFollowedItem operation.
 
@@ -165,6 +176,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def set_item_pin_state(self, uri: str, group_id: UUID, pin_state: int) -> ClientResult[FollowResult]:
         """SetItemPinState operation.
 
@@ -185,6 +197,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     def stop_following(self, url: str) -> Self:
         """StopFollowing operation.
 
@@ -196,6 +209,7 @@ class FollowedContent(Entity):
         self.context.add_query(qry)
         return self
 
+    @site_access(SiteLevel.WRITE)
     def update_followed_group_for_user(self, context_uri: str, group_id: UUID, login_name: str) -> Self:
         """UpdateFollowedGroupForUser operation.
 

@@ -6,6 +6,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.approvals.createrequestparameters import (
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
 
 class Approvals(Entity):
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def approve_item_request(
         context: ClientContext, list_id: str, item_id: str, url: str, version: str, approval_id: str, comments: str
     ) -> None:
@@ -57,6 +59,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def cancel_item_request(
         context: ClientContext, list_id: str, item_id: str, url: str, version: str, approval_id: str
     ) -> None:
@@ -88,6 +91,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def create_item_request(
         context: ClientContext, creation_info: ApprovalsCreateRequestParameters
     ) -> ClientResult[str]:
@@ -107,6 +111,7 @@ class Approvals(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def disable(context: ClientContext, list_id: str, view_id: str, reset_all: bool) -> None:
         """Disable operation.
 
@@ -132,6 +137,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def disable_notifications(context: ClientContext, list_id: str) -> None:
         """DisableNotifications operation.
 
@@ -147,6 +153,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def enable(
         context: ClientContext, list_id: str, add_fields_to_default_view: bool, extra_view_to_enable: str
     ) -> None:
@@ -178,6 +185,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def enable_notifications(context: ClientContext, list_id: str) -> None:
         """EnableNotifications operation.
 
@@ -193,6 +201,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.READ)
     def get_properties(context: ClientContext, list_id: str) -> ClientResult[ApprovalsProperties]:
         """GetProperties operation.
 
@@ -209,6 +218,7 @@ class Approvals(Entity):
         return return_type
 
     @staticmethod
+    @site_access(SiteLevel.WRITE)
     def reject_item_request(
         context: ClientContext, list_id: str, item_id: str, url: str, version: str, approval_id: str, comments: str
     ) -> None:
@@ -249,6 +259,7 @@ class Approvals(Entity):
         context.add_query(qry)
 
     @staticmethod
+    @site_access(SiteLevel.MANAGE)
     def set_properties(context: ClientContext, list_id: str, properties: ApprovalsProperties) -> None:
         """SetProperties operation.
 
