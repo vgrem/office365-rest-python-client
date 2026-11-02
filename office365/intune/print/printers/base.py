@@ -18,10 +18,11 @@ if TYPE_CHECKING:
 class PrinterBase(Entity):
     """Represents a base type for printer and printerShare entity types."""
 
+    @odata(name="capabilities")
     @property
-    def capabilities(self):
+    def capabilities(self) -> PrinterCapabilities:
         """The capabilities of the printer/printerShare."""
-        return self.properties.get("", PrinterCapabilities())
+        return self.properties.get("capabilities", PrinterCapabilities())
 
     @odata(name="defaults")
     @property

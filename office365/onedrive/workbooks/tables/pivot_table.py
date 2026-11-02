@@ -29,10 +29,11 @@ class WorkbookPivotTable(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="name")
     @property
     def name(self) -> Optional[str]:
         """Name of the PivotTable."""
-        return self.properties.get("Name", None)
+        return self.properties.get("name", None)
 
     @odata(name="worksheet", navigation=True)
     @property

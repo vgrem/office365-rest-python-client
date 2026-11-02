@@ -27,10 +27,11 @@ class FileAttachment(Attachment):
         """The ID of the attachment in the Exchange store."""
         return self.properties.get("contentId", None)
 
+    @odata(name="contentLocation")
     @property
     def content_location(self) -> Optional[str]:
-        """ """
-        return self.properties.get("content_location", None)
+        """The location in the Exchange store of the attachment."""
+        return self.properties.get("contentLocation", None)
 
     @odata(name="contentBytes")
     @property

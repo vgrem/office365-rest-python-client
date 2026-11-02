@@ -67,11 +67,12 @@ class WorkbookChart(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="axes", navigation=True)
     @property
     def axes(self) -> WorkbookChartAxes:
         """Represents chart axes."""
         return self.properties.get(
-            "protection",
+            "axes",
             WorkbookChartAxes(self.context, ResourcePath("axes", self.resource_path)),
         )
 

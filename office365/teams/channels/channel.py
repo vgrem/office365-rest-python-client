@@ -110,10 +110,11 @@ class Channel(Entity):
         """
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> str | None:
         """Optional textual description for the channel."""
-        return self.properties.get("Description")
+        return self.properties.get("description")
 
     @odata(name="displayName")
     @property

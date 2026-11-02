@@ -58,10 +58,11 @@ class DirectoryRole(DirectoryObject):
         self.context.users.get_by_principal_name(user_principal_name).get().after_execute(_remove)
         return self
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """The description for the directory role."""
-        return self.properties.get("Description", None)
+        return self.properties.get("description", None)
 
     @odata(name="displayName")
     @property

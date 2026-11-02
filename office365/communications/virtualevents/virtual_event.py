@@ -24,10 +24,11 @@ class VirtualEvent(Entity):
     """Represents an abstract base type for a virtual event.
     Base type of virtualEventTownhall and virtualEventWebinar."""
 
+    @odata(name="description")
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> ItemBody:
         """A description of the virtual event."""
-        return self.properties.get("Description", ItemBody())
+        return self.properties.get("description", ItemBody())
 
     @odata(name="presenters", navigation=True)
     @property
