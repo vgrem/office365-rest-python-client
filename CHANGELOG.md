@@ -865,6 +865,12 @@ introduced.
 
 **Model**
 
+- **The term store refused every type cast the payload carried.** `/termStore` is served by
+  SharePoint's own model, and it answers `[termSetModel] The specified type named
+  microsoft.graph.termStore.localizedName is not recognized` for a set, `[termModel] …` for a
+  term and `[termGroupModel] …` for a group — in either case, with or without the leading “#”,
+  while the plain object is accepted (`201`). `LocalizedName` and `LocalizedLabel` no longer
+  declare a type name, so creating a set, a term or a group sends what the service takes.
 - **A flags combination is a value the enum cannot spell, and the collection dropped it.** Graph
   returns one `authenticationMethodModes` item as `"password,softwareOath"` — a combination no member
   names — so `ClientValueCollection.add` refused it and reading a strength policy raised `TypeError`

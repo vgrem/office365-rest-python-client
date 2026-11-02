@@ -87,7 +87,7 @@ class TestTermStore(GraphDelegatedTestCase):
         assert TestTermStore.target_group is not None
         sets = TestTermStore.target_group.sets.get().execute_query()
         self.assertIsNotNone(sets.resource_path)
-        self.assertGreaterEqual(1, len(sets))
+        self.assertGreaterEqual(len(sets), 1)
 
     @requires_delegated(
         "Sites.Read.All",
@@ -112,7 +112,7 @@ class TestTermStore(GraphDelegatedTestCase):
         assert TestTermStore.target_set is not None
         terms = TestTermStore.target_set.terms.get().execute_query()
         self.assertIsNotNone(terms.resource_path)
-        self.assertGreaterEqual(1, len(terms))
+        self.assertGreaterEqual(len(terms), 1)
 
     @requires_delegated(
         "Sites.Read.All",
