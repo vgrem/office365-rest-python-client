@@ -12,6 +12,9 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.security.attacksimulations.simulationattacktechnique import SimulationAttackTechnique
+from office365.security.attacksimulations.simulationstatus import SimulationStatus
+
 from tests.decorators import requires_application, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -55,15 +58,16 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
     )
     def test_04_filter_simulations_by_status(self):
         """Filtering simulations by status works correctly."""
+        status = SimulationStatus.succeeded
         result = (
-            self.client.security.attack_simulation.simulations.filter("status eq 'completed'")
+            self.client.security.attack_simulation.simulations.filter(f"status eq '{status.name}'")
             .top(5)
             .get()
             .execute_query()
         )
         self.assertIsNotNone(result.resource_path)
         for sim in result:
-            self.assertEqual(sim.get_property("status"), "completed")
+            self.assertEqual(sim.get_property("status"), status)
 
     @requires_delegated(
         *_SIM_READ,
@@ -80,7 +84,7 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
         for sim in result:
             technique = sim.get_property("attackTechnique")
-            self.assertEqual(technique, "credentialHarvesting")
+            self.assertEqual(technique, SimulationAttackTechnique.credentialHarvesting)
 
     @requires_delegated(
         *_SIM_READ,

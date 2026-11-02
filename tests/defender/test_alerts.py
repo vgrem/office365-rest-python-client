@@ -11,6 +11,9 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.security.alerts.severity import AlertSeverity
+from office365.security.alerts.status import AlertStatus
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -38,10 +41,15 @@ class TestAlerts(GraphDelegatedTestCase):
     )
     def test_02_filter_alerts_by_severity(self):
         """Filtering alerts by severity reduces the result set."""
-        result = self.client.security.alerts_v2.filter("severity eq 'high'").top(5).get().execute_query()
+        result = (
+            self.client.security.alerts_v2.filter(f"severity eq '{AlertSeverity.high.name}'")
+            .top(5)
+            .get()
+            .execute_query()
+        )
         self.assertIsNotNone(result.resource_path)
         for alert in result:
-            self.assertEqual(alert.get_property("severity"), "high")
+            self.assertEqual(alert.get_property("severity"), AlertSeverity.high)
 
     @requires_delegated(
         *_ALERT_READ,
@@ -49,9 +57,8 @@ class TestAlerts(GraphDelegatedTestCase):
     )
     def test_03_filter_alerts_by_status(self):
         """Filtering alerts by status returns only alerts in that state."""
-        for status in ("newAlert", "inProgress", "resolved"):
-            result = self.client.security.alerts_v2.filter(f"status eq '{status}'").top(3).get().execute_query()
-            # Assert — no crash, valid collection
+        for status in (AlertStatus.new, AlertStatus.inProgress, AlertStatus.resolved):
+            result = self.client.security.alerts_v2.filter(f"status eq '{status.name}'").top(3).get().execute_query()
             self.assertIsNotNone(result.resource_path)
             for alert in result:
                 self.assertEqual(alert.get_property("status"), status)

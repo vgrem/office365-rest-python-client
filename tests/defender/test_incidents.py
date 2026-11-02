@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.security.alerts.severity import AlertSeverity
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -120,8 +122,13 @@ class TestIncidents(GraphDelegatedTestCase):
     )
     def test_07_filter_incidents_by_severity(self):
         """Filtering incidents by severity returns only matching results."""
-        for severity in ("high", "medium", "low", "informational"):
-            result = self.client.security.incidents.filter(f"severity eq '{severity}'").top(3).get().execute_query()
+        for severity in (
+            AlertSeverity.high,
+            AlertSeverity.medium,
+            AlertSeverity.low,
+            AlertSeverity.informational,
+        ):
+            result = self.client.security.incidents.filter(f"severity eq '{severity.name}'").top(3).get().execute_query()
             self.assertIsNotNone(result.resource_path)
             for inc in result:
                 self.assertEqual(inc.get_property("severity"), severity)

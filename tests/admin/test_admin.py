@@ -11,6 +11,7 @@ Tests cover:
 
 from __future__ import annotations
 
+from office365.intune.servicecommunications.health.status import ServiceHealthStatus
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -208,8 +209,20 @@ class TestServiceAnnouncement(GraphDelegatedTestCase):
             self.assertIsNotNone(h.get_property("service"))
             service_status = h.get_property("status")
             if service_status:
-                known = {"serviceOperational", "investigating", "restoringService", "degraded"}
-                self.assertIn(service_status, known, f"Unexpected health status '{service_status}'")
+                # The status hydrates to a member of ``ServiceHealthStatus``; comparing it to
+                # its wire name compared an enum to a string and always failed.
+                self.assertIsInstance(service_status, ServiceHealthStatus)
+                self.assertIn(
+                    service_status,
+                    {
+                        ServiceHealthStatus.serviceOperational,
+                        ServiceHealthStatus.investigating,
+                        ServiceHealthStatus.restoringService,
+                        ServiceHealthStatus.serviceRestored,
+                        ServiceHealthStatus.serviceDegradation,
+                    },
+                    f"Unexpected health status '{service_status}'",
+                )
             break
 
 
