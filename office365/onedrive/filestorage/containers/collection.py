@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from office365.entity_collection import EntityCollection
 from office365.onedrive.filestorage.containers.container import FileStorageContainer
 from office365.permissions import require_permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
@@ -39,10 +44,14 @@ class FileStorageContainerCollection(EntityCollection[FileStorageContainer]):
         self.context.add_query(qry)
         return return_type
 
-    def get_by_container_type_id(self, container_type_id: str) -> FileStorageContainer:
-        """Retrieve a container by its container type ID.
+    def by_container_type_id(self, container_type_id: str) -> Self:
+        """Narrow the collection to the containers of one container type.
+
+        The endpoint answers a *list* - ``GET /storage/fileStorage/containers`` with
+        ``$filter=containerTypeId eq {id}`` - so a tenant that owns none of that type
+        answers an empty collection, not a miss.
 
         Args:
             container_type_id (str): The identifier of the container type.
         """
-        return super().single(f"containerTypeId eq {container_type_id}")
+        return self.filter(f"containerTypeId eq {container_type_id}")

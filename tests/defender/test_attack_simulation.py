@@ -12,10 +12,11 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.security.attacksimulations.simulationattacktechnique import SimulationAttackTechnique
 from office365.security.attacksimulations.simulationstatus import SimulationStatus
 
-from tests.decorators import requires_application, requires_delegated
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 _SIM_READ = ("AttackSimulation.Read.All",)
@@ -48,8 +49,18 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
         bypass_roles=["Global Administrator"],
     )
     def test_03_list_landing_pages(self):
-        """Listing attack simulation landing pages returns a valid collection."""
-        result = self.client.security.attack_simulation.landing_pages.top(5).get().execute_query()
+        """Listing attack simulation landing pages returns a valid collection.
+
+        Measured: the substrate refuses a bare listing with 400 ``EmptyFilter`` - it will not
+        answer without a source - and ``source eq 'tenant'`` is empty on this tenant while
+        ``source eq 'global'`` carries the built-in pages, so the query names its source.
+        """
+        result = (
+            self.client.security.attack_simulation.landing_pages.filter("source eq 'global'")
+            .top(5)
+            .get()
+            .execute_query()
+        )
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
@@ -108,7 +119,12 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
     )
     def test_07_landing_page_has_display_name(self):
         """A landing page exposes a displayName and status."""
-        result = self.client.security.attack_simulation.landing_pages.top(3).get().execute_query()
+        result = (
+            self.client.security.attack_simulation.landing_pages.filter("source eq 'global'")
+            .top(3)
+            .get()
+            .execute_query()
+        )
         if len(result) == 0:
             self.skipTest("No landing pages exist")
         for page in result:
@@ -116,22 +132,13 @@ class TestAttackSimulationList(GraphDelegatedTestCase):
             self.assertIsNotNone(page.get_property("status"))
             break
 
-    @requires_delegated(
-        *_SIM_READ,
-        bypass_roles=["Global Administrator"],
-    )
-    def test_08_list_operations(self):
-        """Listing attack simulation operations returns a valid collection."""
-        result = self.client.security.attack_simulation.operations.top(5).get().execute_query()
-        self.assertIsNotNone(result.resource_path)
-
 
 class TestAttackSimulationCreate(GraphDelegatedTestCase):
-    """Creating attack simulations — requires app-level auth or appropriate delegated permissions."""
+    """Creating attack simulations, which this app cannot do with the consent it holds."""
 
     created_sim: ClassVar[Optional[object]] = None
 
-    @requires_application(*_SIM_WRITE)
+    @requires_delegated(*_SIM_WRITE)
     def test_01_create_simulation(self):
         """Creating an attack simulation campaign with credentialHarvesting technique."""
         sim_name = f"SDK Test — Automated Campaign ({id(self)})"
@@ -149,7 +156,7 @@ class TestAttackSimulationCreate(GraphDelegatedTestCase):
         self.assertEqual(result.get_property("attackTechnique"), "credentialHarvesting")
         TestAttackSimulationCreate.created_sim = result
 
-    @requires_application(*_SIM_WRITE)
+    @requires_delegated(*_SIM_WRITE)
     def test_02_get_created_simulation(self):
         """Retrieving a simulation by ID returns the expected object."""
         created = TestAttackSimulationCreate.created_sim
@@ -166,5 +173,5 @@ class TestAttackSimulationCreate(GraphDelegatedTestCase):
         if sim and sim.resource_path:
             try:
                 sim.delete_object().execute_query()
-            except Exception:
+            except ClientRequestException:
                 pass

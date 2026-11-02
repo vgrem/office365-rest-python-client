@@ -2,7 +2,6 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.article import Article
 from office365.security.audit.whois_history_record import WhoisHistoryRecord
 from office365.security.audit.whois_record import WhoisRecord
 from office365.security.intelligence_profile_indicator import IntelligenceProfileIndicator
@@ -10,6 +9,7 @@ from office365.security.passive_dns_record import PassiveDnsRecord
 from office365.security.ssl_certificate import SslCertificate
 from office365.security.subdomain import Subdomain
 from office365.security.threatintelligence.article_indicator import ArticleIndicator
+from office365.security.threatintelligence.articles.collection import ArticleCollection
 from office365.security.threatintelligence.host import Host
 from office365.security.threatintelligence.host_component import HostComponent
 from office365.security.threatintelligence.host_cookie import HostCookie
@@ -48,10 +48,10 @@ class ThreatIntelligence(Entity):
 
     @odata(name="articles", navigation=True)
     @property
-    def articles(self) -> EntityCollection[Article]:
+    def articles(self) -> ArticleCollection:
         """Gets the articles property"""
         return self.properties.get(
-            "articles", EntityCollection[Article](self.context, Article, ResourcePath("articles", self.resource_path))
+            "articles", ArticleCollection(self.context, ResourcePath("articles", self.resource_path))
         )
 
     @odata(name="hostComponents", navigation=True)

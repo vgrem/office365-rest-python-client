@@ -9,6 +9,8 @@ Tests cover:
 
 from __future__ import annotations
 
+from office365.runtime.query_capabilities import QueryOptionNotSupportedError
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -48,33 +50,23 @@ class TestThreatIntelligenceArticles(GraphDelegatedTestCase):
         bypass_roles=["Global Administrator"],
     )
     def test_03_filter_articles_by_tag(self):
-        """Filtering articles by tags returns articles with matching tags."""
-        # Use a common tag that many intel articles carry
-        result = (
-            self.client.security.threat_intelligence.articles.filter("tags/any(t:t eq 'malware')")
-            .top(5)
-            .get()
-            .execute_query()
-        )
-        self.assertIsNotNone(result.resource_path)
+        """The feed refuses $filter, so articles are filtered on their tags client-side.
 
-    @requires_delegated(
-        *_TI_READ,
-        bypass_roles=["Global Administrator"],
-    )
-    def test_04_search_articles(self):
-        """Searching articles by keyword returns relevant results."""
-        # Not all APIs support search; this validates the endpoint is reachable
-        try:
-            result = (
-                self.client.security.threat_intelligence.articles.filter("contains(tolower(title), 'phishing')")
-                .top(3)
-                .get()
-                .execute_query()
-            )
-            self.assertIsNotNone(result.resource_path)
-        except Exception:
-            self.skipTest("Article search not supported or no matching articles")
+        Measured: ``tags/any(t:t eq 'malware')``, ``contains(tags,'malware')`` and even
+        ``createdDateTime ge ...`` all answer 400 ``invalidRequest`` on this endpoint while
+        ``$top`` and ``$select`` answer 200 - so the refusal is declared on the collection and
+        the tag match is evaluated here.
+        """
+        articles = self.client.security.threat_intelligence.articles
+        with self.assertRaises(QueryOptionNotSupportedError):
+            articles.filter("tags/any(t:t eq 'malware')")
+
+        result = self.client.security.threat_intelligence.articles.select(["id", "title", "tags"]).top(50).get()
+        self.assertIsNotNone(result.execute_query().resource_path)
+        tagged = [article for article in result if article.get_property("tags")]
+        if not tagged:
+            self.skipTest("No threat intel articles carry tags")
+        self.assertTrue(any(tag for article in tagged for tag in article.get_property("tags")))
 
 
 class TestThreatIntelligenceIndicators(GraphDelegatedTestCase):

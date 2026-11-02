@@ -20,17 +20,33 @@ Tests cover:
 from __future__ import annotations
 
 import os
+import shutil
+import tempfile
 import uuid
 from datetime import datetime, timedelta
+from pathlib import Path as FilePath
 from typing import ClassVar, Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.lists.template_type import ListTemplateType
 from office365.runtime.transfer import UPLOAD_CHUNK_MAX, UPLOAD_CHUNK_UNIT
-from tests import DATA_DIR, create_unique_name
+from tests import DATA_DIR, create_unique_file_name, create_unique_name
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
+
+
+def _unique_upload_copy(name: str) -> str:
+    """A local copy of a fixture under a name no other run can collide with.
+
+    Measured: a resumable upload to a fixed name fails with ``resourceModified`` when an
+    earlier run left a session open on that item, so each run brings its own name - and
+    deletes what it uploaded.
+    """
+    source = FilePath(DATA_DIR) / name
+    target = FilePath(tempfile.mkdtemp(prefix="o365-upload-")) / create_unique_file_name("chunk_", source.suffix[1:])
+    shutil.copyfile(source, target)
+    return str(target)
 
 
 class TestFile(GraphDelegatedTestCase):
@@ -176,10 +192,11 @@ class TestFile(GraphDelegatedTestCase):
         if not drive:
             self.skipTest("No target drive available")
 
-        name = "big_buck_bunny.mp4"
-        path = str(DATA_DIR / f"{name}")
+        path = _unique_upload_copy("big_buck_bunny.mp4")
         file_item = drive.root.resumable_upload(path).get().execute_query()
         self.assertIsNotNone(file_item.web_url)
+        self.assertEqual(file_item.size, os.path.getsize(path))
+        file_item.delete_object().execute_query()
 
     @requires_call(
         DriveItem.resumable_upload, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
@@ -190,7 +207,7 @@ class TestFile(GraphDelegatedTestCase):
         if not drive:
             self.skipTest("No target drive available")
 
-        path = str(DATA_DIR / "big_buck_bunny.mp4")
+        path = _unique_upload_copy("big_buck_bunny.mp4")
         for bad in (0, -UPLOAD_CHUNK_UNIT, UPLOAD_CHUNK_UNIT + 1, UPLOAD_CHUNK_MAX + UPLOAD_CHUNK_UNIT):
             with self.assertRaises(ValueError):
                 drive.root.resumable_upload(path, chunk_size=bad)
@@ -204,6 +221,7 @@ class TestFile(GraphDelegatedTestCase):
         self.assertIsNotNone(file_item.web_url)
         self.assertTrue(uploaded)
         self.assertEqual(file_item.size, os.path.getsize(path))
+        file_item.delete_object().execute_query()
 
     @requires_call(
         DriveItem.get_content, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
