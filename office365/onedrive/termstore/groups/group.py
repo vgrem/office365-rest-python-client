@@ -10,6 +10,7 @@ from office365.onedrive.termstore.groups.scope import TermGroupScope
 from office365.onedrive.termstore.sets.collection import SetCollection
 from office365.onedrive.termstore.sets.set import Set
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import odata
 
 
 class Group(Entity):
@@ -37,16 +38,19 @@ class Group(Entity):
     def __str__(self) -> str:
         return self.display_name or ""
 
+    @odata(name="displayName")
     @property
     def display_name(self) -> str | None:
         """Name of the group."""
         return self.properties.get("displayName", None)
 
+    @odata(name="parentSiteId")
     @property
     def parent_site_id(self) -> str | None:
         """ID of the parent site of this group."""
         return self.properties.get("parentSiteId", None)
 
+    @odata(name="sets", navigation=True)
     @property
     def sets(self) -> SetCollection:
         """Collection of all sets available in the term store."""
@@ -59,16 +63,19 @@ class Group(Entity):
     def entity_type_name(self) -> str:
         return None  # type: ignore
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="description")
     @property
     def description(self) -> Optional[str]:
         """Gets the description property"""
         return self.properties.get("description", None)
 
+    @odata(name="scope")
     @property
     def scope(self) -> TermGroupScope:
         """Gets the scope property"""
