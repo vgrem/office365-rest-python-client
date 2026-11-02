@@ -95,11 +95,13 @@ class UserActivity(Entity):
         """Gets the contentUrl property"""
         return self.properties.get("contentUrl", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_date_time(self) -> Optional[datetime]:
         """Gets the expirationDateTime property"""

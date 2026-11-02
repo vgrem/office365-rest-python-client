@@ -420,6 +420,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("assignedLicenses", ClientValueCollection(AssignedLicense))
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""

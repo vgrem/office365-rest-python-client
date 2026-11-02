@@ -51,6 +51,7 @@ class AuditLogRoot(Entity):
             EntityCollection(self.context, ProvisioningObjectSummary, ResourcePath("provisioning", self.resource_path)),
         )
 
+    @odata(name="signIns", navigation=True)
     @property
     def sign_ins(self) -> EntityCollection[SignIn]:
         """Gets the signIns property"""

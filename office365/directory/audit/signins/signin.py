@@ -159,6 +159,7 @@ class SignIn(Entity):
         """Gets the conditionalAccessStatus property"""
         return self.properties.get("conditionalAccessStatus", ConditionalAccessStatus.success)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""

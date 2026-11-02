@@ -13,13 +13,15 @@ class SpoOperation(ClientObject):
         """Gets a value that indicates whether the maximum wait time for the operation has been exceeded."""
         return self.properties.get("HasTimedout", None)
 
+    @odata(name="IsComplete")
     @property
-    def is_complete(self):
+    def is_complete(self) -> Optional[bool]:
         """Gets a value that indicates whether the operation has completed."""
         if self.is_property_available("IsComplete"):
             return bool(self.properties["IsComplete"])
         return None
 
+    @odata(name="PollingInterval")
     @property
     def polling_interval_secs(self):
         """Gets the recommended interval to poll for the IsComplete property."""

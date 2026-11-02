@@ -121,6 +121,7 @@ class ApplicationTemplate(Entity):
         """Gets the riskScore property"""
         return self.properties.get("riskScore", ApplicationRiskScore())
 
+    @odata(name="supportedSingleSignOnModes")
     @property
     def supported_single_sign_on_modes(self) -> StringCollection:
         """Gets the supportedSingleSignOnModes property"""

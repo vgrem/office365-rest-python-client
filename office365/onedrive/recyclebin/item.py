@@ -28,6 +28,7 @@ class RecycleBinItem(BaseItem):
         """Size of the item in bytes."""
         return self.properties.get("size", None)
 
+    @odata(name="deletedDateTime")
     @property
     def deleted_date_time(self) -> datetime:
         """Gets the deletedDateTime property"""

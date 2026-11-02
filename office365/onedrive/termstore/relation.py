@@ -50,6 +50,7 @@ class Relation(Entity):
 
         return self.properties.get("set", Set(self.context, ResourcePath("set", self.resource_path)))
 
+    @odata(name="set", navigation=True)
     @property
     def set_(self) -> Set:
         from office365.onedrive.termstore.sets.set import Set

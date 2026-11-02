@@ -66,6 +66,7 @@ class AppRoleAssignment(DirectoryObject):
         Required on create."""
         return self.properties.get("resourceId", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""

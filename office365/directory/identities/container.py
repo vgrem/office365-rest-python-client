@@ -166,6 +166,7 @@ class IdentityContainer(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.IdentityContainer"
 
+    @odata(name="authenticationEventsFlows", navigation=True)
     @property
     def authentication_events_flows(self) -> EntityCollection[AuthenticationEventsFlow]:
         """Gets the authenticationEventsFlows property"""
@@ -180,6 +181,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="customAuthenticationExtensions", navigation=True)
     @property
     def custom_authentication_extensions(self) -> EntityCollection[CustomAuthenticationExtension]:
         """Gets the customAuthenticationExtensions property"""
@@ -196,6 +198,7 @@ class IdentityContainer(Entity):
             ),
         )
 
+    @odata(name="riskPrevention", navigation=True)
     @property
     def risk_prevention(self) -> RiskPreventionContainer:
         """Gets the riskPrevention property"""
@@ -207,6 +210,7 @@ class IdentityContainer(Entity):
             "riskPrevention", RiskPreventionContainer(self.context, ResourcePath("riskPrevention", self.resource_path))
         )
 
+    @odata(name="verifiedId", navigation=True)
     @property
     def verified_id(self) -> IdentityVerifiedIdRoot:
         """Gets the verifiedId property"""

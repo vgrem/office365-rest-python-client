@@ -681,6 +681,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="lastPasswordChangeDateTime")
     @property
     def last_password_change_datetime(self) -> Optional[datetime]:
         """
@@ -1278,6 +1279,7 @@ class User(DirectoryObject):
         """Gets the country property"""
         return self.properties.get("country", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""

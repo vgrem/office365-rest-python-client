@@ -629,6 +629,7 @@ class Application(DirectoryObject):
         """Gets the servicePrincipalLockConfiguration property"""
         return self.properties.get("servicePrincipalLockConfiguration", ServicePrincipalLockConfiguration())
 
+    @odata(name="signInAudience")
     @property
     def sign_in_audience(self) -> Optional[str]:
         """Gets the signInAudience property"""

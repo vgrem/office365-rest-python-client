@@ -23,6 +23,7 @@ class DocumentSetVersion(ListItemVersion):
         """User who captured the version."""
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> datetime:
         """Date and time when this version was created."""

@@ -1599,6 +1599,7 @@ class DriveItem(BaseItem):
         """Gets the video property"""
         return self.properties.get("video", Video())
 
+    @odata(name="listItem", navigation=True)
     @property
     def list_item(self) -> ListItem:
         """Gets the listItem property"""

@@ -67,11 +67,13 @@ class FileStorageContainerType(Entity):
         """Configuration settings for this container type. Optional."""
         return self.properties.get("settings", None)
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="expirationDateTime")
     @property
     def expiration_date_time(self) -> datetime:
         """Gets the expirationDateTime property"""

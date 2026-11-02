@@ -38,6 +38,7 @@ class ItemActivityStat(Entity):
         """Statistics about the edit actions in this interval."""
         return self.properties.get("edit", ItemActionStat())
 
+    @odata(name="endDateTime")
     @property
     def end_datetime(self) -> datetime:
         """When the interval ends. Read-only."""

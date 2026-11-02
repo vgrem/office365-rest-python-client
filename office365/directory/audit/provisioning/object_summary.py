@@ -53,6 +53,7 @@ class ProvisioningObjectSummary(Entity):
         """Represents the service principal used for provisioning."""
         return self.properties.get("servicePrincipal", ProvisioningServicePrincipal())
 
+    @odata(name="activityDateTime")
     @property
     def activity_date_time(self) -> Optional[datetime]:
         """Gets the activityDateTime property"""

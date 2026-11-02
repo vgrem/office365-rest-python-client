@@ -133,6 +133,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """Gets the creationDateTime property"""
         return self.properties.get("creationDateTime", datetime.min)
 
+    @odata(name="endDateTime")
     @property
     def end_date_time(self) -> Optional[datetime]:
         """Gets the endDateTime property"""
@@ -156,6 +157,7 @@ class OnlineMeeting(OnlineMeetingBase):
         """Gets the meetingTemplateId property"""
         return self.properties.get("meetingTemplateId", None)
 
+    @odata(name="startDateTime")
     @property
     def start_date_time(self) -> Optional[datetime]:
         """Gets the startDateTime property"""

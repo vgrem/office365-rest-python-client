@@ -71,6 +71,7 @@ class SharedDriveItem(BaseItem):
             "permission", Permission(self.context, ResourcePath("permission", self.resource_path))
         )
 
+    @odata(name="list", navigation=True)
     @property
     def list_(self) -> List:
         """Gets the list property"""

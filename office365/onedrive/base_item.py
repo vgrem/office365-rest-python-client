@@ -62,11 +62,13 @@ class BaseItem(Entity):
             "lastModifiedByUser", User(self.context, ResourcePath("lastModifiedByUser", self.resource_path))
         )
 
+    @odata(name="createdDateTime")
     @property
     def created_datetime(self) -> Optional[datetime]:
         """Gets date and time of item creation."""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_datetime(self) -> Optional[datetime]:
         """Gets date and time the item was last modified."""
@@ -111,6 +113,7 @@ class BaseItem(Entity):
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="eTag")
     @property
     def e_tag(self) -> Optional[str]:
         """Gets the eTag property"""

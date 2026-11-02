@@ -240,6 +240,7 @@ class Drive(BaseItem):
             "special", DriveItemCollection(self.context, ResourcePath("special", self.resource_path))
         )
 
+    @odata(name="list", navigation=True)
     @property
     def list_(self) -> List:
         """Gets the list property"""

@@ -38,11 +38,13 @@ class ChangeTrackedEntity(Entity):
         """Gets the createdBy property"""
         return self.properties.get("createdBy", IdentitySet())
 
+    @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> datetime:
         """Gets the createdDateTime property"""
         return self.properties.get("createdDateTime", datetime.min)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""
