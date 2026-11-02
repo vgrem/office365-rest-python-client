@@ -377,17 +377,16 @@ introduced.
   with the tenant. An alternative that cannot be checked is not a permission that is missing,
   and the names still decide; a role or SKU the requirement *holds* is part of the answer, so
   failing to read that is still unverifiable rather than unmet.
-- **A blocker now says which calls asked for it.** The preflight row for a requirement carries
-  the model methods behind it — the 40 SharePoint tests blocked on `Sites.Read.All (+3)` read
-  `(via 35 declared calls)` — because a grant twelve tests need and a grant *one endpoint*
-  brings are different decisions: the first is an administrator's problem, the second is a
-  call we could stop making. `@requires_call` stamps the calls as `module:qualname`, the
-  identity `Operation` is keyed by, so a row names an operation the declaration index can be
-  asked about; `--all` spells them (`Web.get_catalog`, `Site.exists`, `File.copyto`) instead
-  of counting them, `--markdown` puts them in a column of the suite table, and `--json` adds
-  them as a list. The provenance is kept *beside* the requirement rather than on it: two tests
-  that need the same grant are one row however many methods each of them exercised, and a
-  requirement stated by hand with `@requires_delegated` names no call and shows none.
+- **A blocker now says which calls asked for it.** The written preflight report gives a
+  requirement a `via` column — the 40 SharePoint tests blocked on `Sites.Read.All` name
+  `Web.get_catalog`, `Site.exists`, `File.copyto` — because a grant twelve tests need and a
+  grant *one endpoint* brings are different decisions: the first is an administrator's
+  problem, the second is a call we could stop making. `@requires_call` stamps the calls as
+  `module:qualname`, the identity `Operation` is keyed by, so a row names an operation the
+  declaration index can be asked about; `--markdown` prints the column and `--json` lists the
+  same names as `calls`. The provenance is kept *beside* the requirement rather than on it:
+  two tests that need the same grant are one row however many methods each of them exercised,
+  and a requirement stated by hand with `@requires_delegated` names no call and shows none.
 - **A checkout can answer "run live" for itself.** An IDE's test runner is handed a path,
   not a command line, so a suite selected in VS Code's test tree or PyCharm's was skipped
   with `live tests are opt-in: pass --live to run them` and nowhere to pass it.

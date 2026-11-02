@@ -1,10 +1,9 @@
 """What the live suites need from a tenant, and what this one is missing.
 
-The offline gate runs with no tenant at all, so every credentialed suite is skipped
-with nothing to say what it would have needed. This module makes that known
-*before* a test run: it reads the requirements the tests declare, groups them by
-suite and by auth flow, and — with ``--verify`` — resolves them against the signed-in
-app and user.
+The offline gate runs with no tenant at all, so every credentialed suite is skipped with
+nothing to say what it would have needed. This module reads the requirements the tests
+declare and, with ``--verify``, resolves them against the signed-in app and user - before a
+test run rather than during one.
 
     python -m tests.preflight                 # what is blocking the most tests
     python -m tests.preflight --verify        # ... and what this tenant grants
@@ -13,8 +12,8 @@ app and user.
     python -m tests.preflight --report rpt/   # rpt/preflight.md + rpt/preflight.json
     python -m tests.preflight --grant         # grant the missing ones to the configured app
 
-The matrix is derived from the decorators stamped by :mod:`tests.decorators`; there is
-no list of scopes anywhere in this file to fall out of date.
+The matrix is derived from the decorators stamped by :mod:`tests.decorators`; no list of
+scopes lives in this file to fall out of date.
 """
 
 from __future__ import annotations
@@ -23,7 +22,6 @@ import argparse
 import importlib
 import json
 import sys
-import textwrap
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -54,8 +52,8 @@ from tests.sharepoint.sharepoint_case import SPTestCase
 TESTS = Path(__file__).resolve().parent
 ROOT = TESTS.parent
 
-#: The auth flow a test class runs under — the same mapping `tests/conftest.py` skips on.
-#: ``GraphApplicationTestCase`` subclasses ``GraphDelegatedTestCase``, so it is checked first.
+# The flow a test class runs under - the same mapping `tests/conftest.py` skips on.
+# `GraphApplicationTestCase` subclasses `GraphDelegatedTestCase`, so it is checked first.
 _FLOW_OF_BASE = (
     (GraphApplicationTestCase, "app-only"),
     (GraphDelegatedTestCase, "delegated-ropc"),
@@ -64,28 +62,17 @@ _FLOW_OF_BASE = (
 
 
 def flow_of(test_class: type) -> str | None:
-    """The auth flow a live test class needs, or ``None`` when it is an offline test."""
-    for base, flow in _FLOW_OF_BASE:
-        if issubclass(test_class, base):
-            return flow
-    return None
-
-
-def _module_name(path: Path) -> str:
-    return ".".join(path.relative_to(ROOT).with_suffix("").parts)
-
-
-def _import(path: Path) -> ModuleType:
-    return importlib.import_module(_module_name(path))
-
-
-def _ordered(requirement: Requirement) -> tuple[str, ...]:
-    """A stable sort key: the widest group first, then alphabetical."""
-    return tuple(f"{label}:{','.join(names)}" for label, names, _ in requirement.groups())
+    """The flow a live test class needs, or ``None`` for an offline test."""
+    return next((flow for base, flow in _FLOW_OF_BASE if issubclass(test_class, base)), None)
 
 
 def needs_of(path: Path, module: ModuleType) -> Needs | None:
-    """The requirements the test classes defined in ``module`` declare."""
+    """The requirements the live test classes in ``module`` declare.
+
+    Tests are counted as pytest collects them, test *methods*, because ``dir()`` would also
+    hand back a ``@property def test_site(self)`` - and a suite that claims 15 tests when
+    pytest runs 13 is a report nobody trusts.
+    """
     needs: Needs | None = None
     for name, obj in vars(module).items():
         if not (isinstance(obj, type) and issubclass(obj, TestCase) and obj.__module__ == module.__name__):
@@ -93,32 +80,30 @@ def needs_of(path: Path, module: ModuleType) -> Needs | None:
         flow = flow_of(obj)
         if flow is None:
             continue
-        # Count what pytest collects -- test *methods*, in a class pytest would collect.
-        # ``dir()`` would also hand back a ``@property def test_site(self)``, and a
-        # suite that says it has 15 tests when pytest runs 13 is a report nobody trusts.
-        test_names = [attr for attr, member in getmembers(obj, isfunction) if attr.startswith("test")]
+        tests = [attr for attr, member in getmembers(obj, isfunction) if attr.startswith("test")]
         if needs is None:
             needs = Needs(suite=path.relative_to(ROOT).as_posix(), flow=flow)
-        needs.tests += len(test_names)
-        for test_name in test_names:
-            requirement = declared_requirement(getattr(obj, test_name))
+        needs.tests += len(tests)
+        for test in tests:
+            requirement = declared_requirement(getattr(obj, test))
             if requirement is not None:
-                needs.add(requirement, f"{name}.{test_name}", declared_calls(getattr(obj, test_name)))
+                needs.add(requirement, f"{name}.{test}", declared_calls(getattr(obj, test)))
     return needs
 
 
 def suites(root: Path = TESTS) -> list[Needs]:
-    """Every live suite under ``root`` and what it declares, sorted by path."""
+    """Every live suite under ``root`` and what it declares, by path."""
     found: list[Needs] = []
     for path in sorted(root.rglob("test_*.py")):
-        needs = needs_of(path, _import(path))
+        module = importlib.import_module(".".join(path.relative_to(ROOT).with_suffix("").parts))
+        needs = needs_of(path, module)
         if needs is not None:
             found.append(needs)
     return found
 
 
 def _client(flow: str, cfg: Settings = settings) -> GraphClient | None:
-    """A signed-in Graph client for ``flow``, or ``None`` when it cannot be built here."""
+    """A signed-in client for ``flow``, or ``None`` when that flow is not configured here."""
     if not cfg.is_ready(flow):
         return None
     client = GraphClient(tenant=cfg.tenant)
@@ -127,17 +112,17 @@ def _client(flow: str, cfg: Settings = settings) -> GraphClient | None:
     if flow == "app-only":
         return client.with_client_secret(cfg.client_id, cfg.client_secret)
     if flow == "app-only-cert":
-        # The certificate is an app credential like any other: Graph accepts it, and the grants
-        # to check belong to the app that presents it, so the report must sign in as that app.
+        # A certificate is an app credential like any other, and the grants to check belong
+        # to the app that presents it - so the report signs in as that app.
         return client.with_certificate(cfg.client_id, cfg.cert_thumbprint, Path(cfg.cert_path).read_text())
     return None
 
 
 def verify(found: list[Needs], client_id: str, cfg: Settings = settings) -> dict[Requirement, TenantState]:
-    """Resolve every declared requirement against the tenant, once per requirement.
+    """Resolve every declared requirement against ``cfg``'s tenant, once per requirement.
 
-    ``cfg`` is the configuration to sign in with; it defaults to the module-level
-    :data:`settings`, which every caller without a configuration of its own wants.
+    A flow that cannot sign in marks its requirements ``unverifiable`` instead of raising:
+    one bad flow must not cost the report its other answers.
     """
     states: dict[Requirement, TenantState] = {}
     for flow in sorted({needs.flow for needs in found}):
@@ -146,22 +131,34 @@ def verify(found: list[Needs], client_id: str, cfg: Settings = settings) -> dict
             client = _client(flow, cfg)
             if client is None:
                 continue
-            for requirement in required:
-                states[requirement] = TenantState.of(client, client_id, requirement)
+            states.update({requirement: TenantState.of(client, client_id, requirement) for requirement in required})
         except Exception as error:  # noqa: BLE001 - a report must survive one bad flow, not die on it
-            failure = TenantState(unverifiable=f"signing in failed: {error}")
-            states.update(dict.fromkeys(required, failure))
+            states.update(dict.fromkeys(required, TenantState(unverifiable=f"signing in failed: {error}")))
     return states
+
+
+#: The requirement label a directory role carries, as ``Requirement.groups`` spells it.
+ROLE = "directory role"
+
+#: What a refused role assignment needs. Writing to ``directoryRoles`` is one of the few
+#: directory operations ``Directory.ReadWrite.All`` does not cover: it takes
+#: ``RoleManagement.ReadWrite.Directory``, which this app was never consented for.
+_ROLE_HINT = (
+    "(assigning a directory role needs RoleManagement.ReadWrite.Directory; the Entra portal assigns one without it)"
+)
+
+#: How long to wait for a role activated a moment ago to appear in the listing.
+_ROLE_READ_ATTEMPTS = 3
+_ROLE_READ_PAUSE = 1.0
+
+#: The kinds a plan can name but not grant: a licence is bought, not assigned, and this tool
+#: has no business choosing who pays for it. A directory role *is* granted - to the test user.
+_MANUAL_HINT = {"license": "buy seats, or assign an existing SKU to the test user"}
 
 
 @dataclass(frozen=True)
 class Grant:
-    """What a person is asked to approve: one flow's names on the API that defines them.
-
-    The resource is part of the grant and not a detail of applying it: ``Sites.FullControl.All``
-    on the SharePoint service principal is a different grant from Graph's, and a wizard that
-    dropped the resource would grant - or report - one under the other's name.
-    """
+    """One flow's names on the API that defines them - a grant does not transfer across APIs."""
 
     flow: str
     resource: str
@@ -169,22 +166,23 @@ class Grant:
 
     @property
     def grantable(self) -> bool:
-        """Whether this tool can write it: a permission is granted to the app, a role to the
-        test user, and a license is bought by whoever owns the tenant."""
+        """Whether this tool can write it: a permission is granted, a role assigned."""
         return self.flow in PERMISSION_FLOWS or self.flow == ROLE
 
     def label(self) -> str:
         """The group's label, naming the resource when it is not the default one."""
         return self.flow if str(self.resource) == str(ResourceName.Graph) else f"{self.flow} on {self.resource}"
 
+    def __str__(self) -> str:
+        return f"{self.label()}: {', '.join(self.names)}"
+
 
 def _published(names: tuple[str, ...], flow: str, resource: str) -> tuple[str, ...]:
     """The names the API itself publishes, in the order given.
 
-    A grant is only half the story: the tenant records whatever string it is handed, but the
-    token is minted from the names the API publishes, so a name that is not among them is
-    consented in the directory and absent from every token. Asking for one is therefore a plan
-    that cannot succeed, and it is filtered out before anything is written.
+    The tenant records whatever string it is handed, but the token is minted from the names
+    the API publishes - so a name that is not among them is consented in the directory and
+    absent from every token. Asking for one is a plan that cannot succeed.
     """
     snapshot = catalog(resource)
     if snapshot is None or flow not in PERMISSION_FLOWS:
@@ -195,13 +193,11 @@ def _published(names: tuple[str, ...], flow: str, resource: str) -> tuple[str, .
 def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> list[Grant]:
     """The smallest set of permissions that would unblock the suites, group by group.
 
-    Every group is an any-of, so granting *one* of its names is enough — granting all of
-    them would ask for more than any test needs. A name that appears in several unmet
-    groups is asked for once, and names on different APIs are never merged, because they are
-    not the same grant. Groups this wizard cannot grant are still returned: the caller decides
-    what to do with them, and silence would be a lie. Within a group, a name the API publishes
-    is preferred over one it does not, and only when every name is unpublished does the plan
-    keep one - so the group stays visible instead of quietly disappearing.
+    Every group is an any-of, so granting *one* of its names is enough; a name that appears
+    in several groups is asked for once, and names on different APIs are never merged. Groups
+    this tool cannot grant are still returned - the caller decides what to do with them, and
+    silence would be a lie. Within a group a published name is preferred, and only when every
+    name is unpublished does the plan keep one, so the group stays visible.
     """
     by_group: dict[tuple[str, str], list[tuple[str, ...]]] = {}
     for needs in found:
@@ -231,37 +227,8 @@ def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> li
     return plan
 
 
-def render_plan(plan: list[Grant]) -> str:
-    """The plan as a short list a person can approve, one line per group."""
-    width = max([15, *(len(grant.label()) for grant in plan)])
-    return "\n".join(f"  {grant.label():<{width}} {', '.join(grant.names)}" for grant in plan)
-
-
-#: The requirement label a directory role carries, as ``Requirement.groups`` spells it.
-ROLE = "directory role"
-
-#: What a refused role assignment needs. Writing to ``directoryRoles`` is one of the few
-#: directory operations ``Directory.ReadWrite.All`` does not cover: it takes
-#: ``RoleManagement.ReadWrite.Directory``, which this app has never been consented for, so the
-#: refusal is the consent set talking and the portal is the shortest way around it.
-_ROLE_HINT = (
-    "(assigning a directory role needs RoleManagement.ReadWrite.Directory; the Entra portal assigns one without it)"
-)
-
-#: How long to wait for a role activated a moment ago to appear in the listing.
-_ROLE_READ_ATTEMPTS = 3
-_ROLE_READ_PAUSE = 1.0
-
-#: The requirement kinds a plan can name but not grant: a license is bought, not assigned, and
-#: this tool has no business choosing who pays for it. A directory role *is* granted - to the
-#: test user, which is who the suites sign in as.
-_MANUAL_HINT = {
-    "license": "buy seats, or assign an existing SKU to the test user",
-}
-
-
 def _admin_client() -> GraphClient:
-    """A signed-in administrator, because a grant is a tenant-wide change and a person owns it."""
+    """A signed-in administrator: a grant is a tenant-wide change and a person owns it."""
     client = GraphClient(tenant=settings.tenant).with_device_flow(settings.client_id)
     try:
         client.require_role("Global Administrator", "Privileged Role Administrator")
@@ -271,23 +238,14 @@ def _admin_client() -> GraphClient:
 
 
 def apply_plan(client: GraphClient, plan: list[Grant], app_id: str, upn: str = "") -> tuple[list[str], list[str]]:
-    """Grant what ``plan`` asks for; return (done, failed) as human-readable lines.
+    """Grant what ``plan`` asks for; return (done, failed) as lines a person reads.
 
-    A grant already in place is reported rather than made twice, and one whose state cannot
-    be read is attempted anyway: applying a grant is idempotent, so a missing read scope must
-    not turn into a missing grant. A name the API does not publish is reported and not
-    attempted - the directory would accept it, the token would never carry it, and the next
-    ``verify`` would call it met. A directory role goes to ``upn``, because a role is held by a
-    person and the suites sign in as one.
+    A grant whose state cannot be read is attempted anyway, because applying one is
+    idempotent and a missing read scope must not become a missing grant. A name the API does
+    not publish is reported and not attempted. A directory role goes to ``upn``.
     """
-    checks = {
-        "delegated": client.has_delegated_permission,
-        "application": client.has_application_permissions,
-    }
-    grants = {
-        "delegated": client.grant_delegated_permissions,
-        "application": client.grant_application_permissions,
-    }
+    checks = {"delegated": client.has_delegated_permission, "application": client.has_application_permissions}
+    grants = {"delegated": client.grant_delegated_permissions, "application": client.grant_application_permissions}
     done: list[str] = []
     failed: list[str] = []
     for grant in plan:
@@ -297,10 +255,7 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str, upn: str = "
             entry = f"{grant.label()} {name}"
             if grant.flow == ROLE:
                 held, reason = _grant_role(client, name, upn)
-                if held:
-                    done.append(entry)
-                else:
-                    failed.append(f"{entry}: {reason} {_ROLE_HINT}")
+                (done if held else failed).append(entry if held else f"{entry}: {reason} {_ROLE_HINT}")
                 continue
             if not _published((name,), grant.flow, grant.resource):
                 failed.append(f"{entry}: {grant.resource} does not publish this name")
@@ -315,8 +270,7 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str, upn: str = "
             try:
                 grants[grant.flow](app_id, name, resource=grant.resource).execute_query()
             except (ClientRequestException, KeyError) as exc:
-                reason = str(exc).splitlines()[0] or exc.__class__.__name__
-                failed.append(f"{entry}: {reason}")
+                failed.append(f"{entry}: {_first_line(exc)}")
                 continue
             done.append(entry)
     return done, failed
@@ -325,14 +279,9 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str, upn: str = "
 def _grant_role(client: GraphClient, name: str, upn: str) -> tuple[bool, str]:
     """Assign a directory role to ``upn``; (held afterwards, why it is not).
 
-    ``directoryRoles`` lists only the roles the tenant has *activated*, so one nobody has ever
-    held is absent from it, with no members collection to add to. Activating first is what lets
-    the two steps be one operation - but activation is a *write*, so it can be refused, and a
-    refusal here used to be swallowed: the reader then reported the role as missing and the
-    cause was gone from the trace. Every refusal is now the answer.
-
-    A reason is a sentence, not an exception: this is a plan a person reads, and none of these
-    are bugs in the caller.
+    ``directoryRoles`` lists only the roles the tenant has *activated*, so one nobody has
+    ever held has no members collection to add to; activating first makes the two steps one
+    operation. Activation is a write and can be refused, and the reason is the answer.
     """
     refused = ""
     role = _active_role(client, name)
@@ -355,12 +304,7 @@ def _grant_role(client: GraphClient, name: str, upn: str) -> tuple[bool, str]:
 
 
 def _active_role(client: GraphClient, name: str) -> DirectoryRole | None:
-    """The activated role ``name``, waiting briefly for one just activated.
-
-    Activation is one request and the listing is another, and a directory that answers the
-    second before it has finished the first says "no such role" about a role that exists. A few
-    reads turn that race into a pause rather than a failure.
-    """
+    """The activated role ``name``, waiting out the lag between activating one and listing it."""
     for attempt in range(_ROLE_READ_ATTEMPTS):
         if attempt:
             time.sleep(_ROLE_READ_PAUSE)
@@ -375,11 +319,6 @@ def _first_line(exc: Exception) -> str:
     return str(exc).splitlines()[0] or exc.__class__.__name__
 
 
-def _confirm(prompt: str) -> bool:
-    """A yes/no question that defaults to no: a grant is a tenant-wide change."""
-    return input(f"{prompt} [y/N]: ").strip().lower() in ("y", "yes")
-
-
 def grant_missing(found: list[Needs], *, yes: bool = False) -> int:
     """Read what the suites need, grant what is missing, then read the tenant again."""
     states = verify(found, settings.client_id)
@@ -391,112 +330,83 @@ def grant_missing(found: list[Needs], *, yes: bool = False) -> int:
         print(f"Every declared permission is already granted to {settings.client_id}.")
         return 0
     print(f"\nPermissions the live suites declare and {settings.client_id} lacks:")
-    print(render_plan(plan))
     for grant in plan:
-        if not grant.grantable:
-            print(f"  ({grant.label()}: {_MANUAL_HINT.get(grant.flow, 'configure it by hand')})")
-    if not yes and not _confirm(f"Grant these to {settings.client_id} now?"):
+        hint = "" if grant.grantable else f" ({_MANUAL_HINT.get(grant.flow, 'configure it by hand')})"
+        print(f"  {grant}{hint}")
+    if not yes and input(f"Grant these to {settings.client_id} now? [y/N]: ").strip().lower() not in ("y", "yes"):
         print("Nothing granted.")
         return 0
 
     done, failed = apply_plan(_admin_client(), plan, settings.client_id, settings.username)
-    for line in done:
-        print(f"  granted: {line}")
-    for line in failed:
-        print(f"  failed:  {line}")
-
+    print("\n".join([f"  granted: {line}" for line in done] + [f"  failed:  {line}" for line in failed]))
     forget_cached_tenant_facts()
     remaining = grant_plan(found, verify(found, settings.client_id))
     if remaining:
         print("\nStill missing:")
-        print(render_plan(remaining))
+        print("\n".join(f"  {grant}" for grant in remaining))
         print("Re-run `python -m tests.preflight --verify` once the rest is in place.")
         return 1
     print("\nEvery declared permission is now granted. `python -m tests.preflight --verify` will confirm it.")
     return 1 if failed else 0
 
 
-def _flow(row: _Row) -> str:
-    """The column value: the flow, and the API when it is not Microsoft Graph.
-
-    ``label()`` spells the resource out in full, which is right in a sentence and 41 columns
-    wide in a table; the short name is the enum member, so no second table of names exists.
-    """
-    requirement = row.requirement
-    flow = "delegated" if requirement.delegated else "application"
-    try:
-        api = ResourceName(requirement.resource).name
-    except ValueError:
-        return requirement.label(flow)
-    return flow if api == ResourceName.Graph.name else f"{flow} ({api})"
-
-
-def _article(word: str) -> str:
-    """``a`` or ``an``, so the alternative reads as a sentence fragment and not a template."""
-    return "an" if word[:1].lower() in "aeiou" else "a"
-
-
-def _group(label: str, names: tuple[str, ...], show_all: bool) -> str:
-    """One any-of group as a cell: the names, or the one name to grant and how many others."""
-    if show_all:
-        spelled = ", ".join(names)
-    else:
-        spelled = names[0] + (f" (+{len(names) - 1})" if len(names) > 1 else "")
-    return spelled if label.startswith(PERMISSION_FLOWS) else f"{label}: {spelled}"
-
-
-def _tests(count: int) -> str:
-    """A count with its noun: ``1 test`` is a measurement, ``1 tests`` is a typo."""
-    return f"{count} test" if count == 1 else f"{count} tests"
-
-
-def _calls(count: int) -> str:
-    """The same, for the model methods a requirement was derived from."""
-    return f"{count} declared call" if count == 1 else f"{count} declared calls"
-
-
-def _short(fqn: str) -> str:
-    """``office365.outlook.user:Message.send`` -> ``Message.send``: the method, not where it lives."""
-    return fqn.rpartition(":")[2]
-
-
 @dataclass(frozen=True)
-class _Row:
-    """One requirement, the tests that declared it, and what this tenant answers.
+class Row:
+    """One declared requirement: what unblocks it, what this tenant answers, and what it came from.
 
-    ``sources`` is the provenance: the declared model methods those tests exercise, so the row
-    says not only how many tests a grant unblocks but what in the library asks for it - the
-    difference between "a scope nobody can avoid" and "one endpoint we could stop calling".
+    ``calls`` is the provenance - the model methods the declaring tests exercise - so a row
+    says not only how many tests a grant unblocks but what in the library asks for it.
     """
 
     requirement: Requirement
-    tests: tuple[str, ...]
-    state: str
+    flow: str
+    tests: int
     facts: TenantState | None
-    sources: tuple[str, ...] = ()
+    calls: tuple[str, ...] = ()
 
     @property
-    def via(self) -> str:
-        """The provenance collapsed to a count, for a line that only has to say what to grant."""
-        return f"via {_calls(len(self.sources))}"
+    def state(self) -> str:
+        """One of ``met``, ``missing``, ``unverified`` - the only three answers there are."""
+        if self.facts is None or self.facts.unverifiable:
+            return "unverified"
+        return "met" if self.requirement.satisfied_by(self.facts) else "missing"
+
+    @property
+    def needs(self) -> str:
+        """The delta - the groups this tenant leaves unmet - or the whole rule when there is no answer."""
+        if self.facts is None:
+            return self.requirement.describe()
+        needs = " and ".join(self.requirement.unmet(self.facts)) or "met"
+        roles = self.requirement.bypass_roles
+        # A bypass role is an alternative to everything above it, so it is worth naming
+        # until the row is satisfied on its own terms.
+        return f"{needs} (or {', '.join(roles)})" if roles and self.state != "met" else needs
+
+    def __str__(self) -> str:
+        # A met row has no delta, so it prints the rule it satisfies instead of the word.
+        return f"{self.tests:>4}  {self.requirement.describe() if self.state == 'met' else self.needs}"
+
+    def json(self) -> dict[str, Any]:
+        return {
+            "requirement": self.requirement.describe(),
+            "flow": self.flow,
+            "tests": self.tests,
+            "state": self.state,
+            "needs": self.needs,
+            "calls": list(self.calls),
+        }
 
 
 class Report:
     """One measurement of the tree and the tenant, in three renderings.
 
-    ``found`` is what the suites declare; ``states`` is what this tenant answered, and
-    is empty when nothing was verified. The screen and the file want different things
-    from the same facts: a table of 147 suites by 192 requirements is a report, not
-    something to read, so the terminal view deduplicates requirements, ranks them by
-    the tests they unblock, and collapses the satisfied ones to a count.
+    ``found`` is what the suites declare; ``states`` is what this tenant answered, and is
+    empty when nothing was verified. The rows are the whole report - the terminal view prints
+    the ones that need something, the file prints all of them, and a tool gets them as JSON.
     """
 
-    #: How many requirement lines a screen shows. The rest affect fewer tests, and a
-    #: person reading this wants the ones that matter, not all 149.
+    #: How many rows a screen shows: a person reads the ones that unblock the most tests.
     SHOWN = 10
-
-    #: Where a long list of alternatives wraps, hanging under the column it belongs to.
-    WIDTH = 120
 
     def __init__(self, found: list[Needs], states: dict[Requirement, TenantState]):
         self.found = found
@@ -505,147 +415,53 @@ class Report:
         self.flows = {flow: settings.missing_for(flow) for flow in FLOWS}
         self.suites = len(found)
         self.tests = sum(needs.tests for needs in found)
-        self.declared = sum(len(needs.requirements) for needs in found)
-        totals: dict[Requirement, list[str]] = {}
-        sources: dict[Requirement, list[str]] = {}
+        tests: dict[Requirement, list[str]] = {}
+        calls: dict[Requirement, list[str]] = {}
         for needs in found:
-            for requirement, tests in needs.requirements.items():
-                totals.setdefault(requirement, []).extend(tests)
-                calls = sources.setdefault(requirement, [])
-                calls.extend(call for call in needs.calls.get(requirement, ()) if call not in calls)
+            for requirement, declared in needs.requirements.items():
+                tests.setdefault(requirement, []).extend(declared)
+                known = calls.setdefault(requirement, [])
+                known.extend(call for call in needs.calls.get(requirement, ()) if call not in known)
         self.rows = [
-            _Row(
+            Row(
                 requirement,
-                tuple(totals[requirement]),
-                self.state(requirement),
-                self.states.get(requirement),
-                tuple(sorted(sources[requirement])),
+                requirement.label("delegated" if requirement.delegated else "application"),
+                len(tests[requirement]),
+                states.get(requirement),
+                tuple(sorted(calls[requirement])),
             )
-            for requirement in sorted(totals, key=lambda item: (-len(totals[item]), item.describe()))
+            for requirement in sorted(tests, key=lambda item: (-len(tests[item]), item.describe()))
         ]
 
-    def state(self, requirement: Requirement) -> str:
-        """One of ``met``, ``missing``, ``unverified`` -- the only three answers there are."""
-        state = self.states.get(requirement)
-        if state is None or state.unverifiable:
-            return "unverified"
-        return "met" if requirement.satisfied_by(state) else "missing"
-
-    def status(self, requirement: Requirement) -> str:
-        """The same answer in prose, for the report a person reads about a tenant."""
-        state = self.states.get(requirement)
-        if state is None:
-            return "not verified"
-        if state.unverifiable:
-            return f"not verified ({state.unverifiable})"
-        unmet = requirement.unmet(state)
-        return "met" if not unmet else "missing " + " and ".join(unmet)
-
     @property
-    def counts(self) -> dict[str, int]:
-        return {word: sum(1 for row in self.rows if row.state == word) for word in ("met", "missing", "unverified")}
-
-    @property
-    def blocking(self) -> list[_Row]:
+    def blocking(self) -> list[Row]:
         """The requirements that need something, in the order they are worth fixing."""
         return [row for row in self.rows if row.state != "met"]
-
-    @staticmethod
-    def _needs(row: _Row, show_all: bool) -> list[str]:
-        """The groups this tenant leaves unmet, one string each: the delta, not the whole rule.
-
-        A requirement is a conjunction of any-of groups, and spelling all of it hides the
-        point: a row blocked on a directory role and a licence does not need its scope named
-        again, because that half is already granted. Only the unmet groups are listed, and
-        the flow they belong to is a column, so the name is not repeated either.
-
-        ``--all`` spells every alternative; otherwise each group collapses to the first name
-        and a count, because a line only has to say what to grant.
-        """
-        requirement = row.requirement
-        if row.facts is None or row.state in ("met", "unverified"):
-            # Nothing was left out or nothing can be: either way the whole rule is the answer,
-            # and its groups still fit under the columns instead of in one 130-column sentence.
-            groups = [(label, names) for label, names, _ in requirement.groups()]
-        else:
-            groups = requirement.shortfall(row.facts)
-        return [_group(label, names, show_all) for label, names in groups] or [requirement.describe()]
-
-    def _suffix(self, row: _Row, show_all: bool) -> str:
-        """What rides at the end of a row: the alternative to granting, and where it came from.
-
-        The bypass role is an alternative to *everything* listed above it, so it comes first;
-        the calls are what the affected tests exercise, so it comes last. ``--all`` spells the
-        calls on a line of their own instead of counting them.
-        """
-        parts: list[str] = []
-        roles = row.requirement.bypass_roles
-        if roles and row.state != "met":
-            parts.append(f"or {_article(roles[0])} {' / '.join(roles)} role")
-        if row.sources and not show_all:
-            parts.append(row.via)
-        return f"({'; '.join(parts)})" if parts else ""
-
-    def _table(self, rows: list[_Row], show_all: bool, heading: str = "to add") -> list[str]:
-        """The rows as a table: tests, the flow, and what is missing under a ``+``.
-
-        ``+`` is the line that has to be added to the tenant, and an unprefixed line is a
-        requirement already met - the two markers a diff uses, for the same reason. A role
-        that satisfies a whole requirement rides at the end of its first line, where it is
-        the alternative to everything listed under it.
-        """
-        if not rows:
-            # Everything is met, or everything met was collapsed to a count: a table with no
-            # rows is not an empty table, it is no table - the summary above already said so.
-            return []
-        width = max(len(_flow(row)) for row in rows)
-        hanging = " " * (11 + width + 2)
-        lines = [f"  {'tests':>7}  {'flow':<{width}}  {heading if self.states else 'needs'}"]
-        for row in rows:
-            marker = {"missing": "+ ", "unverified": "? "}.get(row.state, "")
-            indent = hanging + "   " * bool(marker)
-            wrapped: list[list[str]] = []
-            for index, cell in enumerate(self._needs(row, show_all)):
-                lead = hanging if index else f"  {len(row.tests):>7}  {_flow(row):<{width}}  "
-                wrapped.append(textwrap.wrap(f"{lead}{marker}{cell}", width=self.WIDTH, subsequent_indent=indent))
-            suffix = self._suffix(row, show_all)
-            if suffix:
-                last = wrapped[0][-1]
-                if len(last) + len(suffix) + 2 <= self.WIDTH:
-                    wrapped[0][-1] = f"{last}  {suffix}"
-                else:
-                    wrapped[0].append(f"{indent}{suffix}")
-            if show_all and row.sources:
-                spelled = ", ".join(_short(source) for source in row.sources)
-                wrapped.append(textwrap.wrap(f"{indent}via {spelled}", width=self.WIDTH, subsequent_indent=indent))
-            lines.extend(line for group in wrapped for line in group)
-        return lines
 
     def text(self, *, show_all: bool = False) -> str:
         """The terminal view: the counts, the flows that are not ready, and the delta."""
         lines = [
             f"Live-test preflight - {self.tenant or 'no tenant configured'}",
-            f"{self.suites} suites, {_tests(self.tests)}, {self.declared} requirements ({len(self.rows)} distinct)",
+            f"{self.suites} suites, {self.tests} tests, {sum(len(needs.requirements) for needs in self.found)}"
+            f" requirements ({len(self.rows)} distinct)",
             "",
             "Flows",
         ]
-        unconfigured = {flow: missing for flow, missing in self.flows.items() if missing}
-        for flow, missing in unconfigured.items():
-            lines.append(f"  {flow:<15} not configured (missing: {', '.join(missing)})")
-        if not unconfigured:
+        missing = {flow: gaps for flow, gaps in self.flows.items() if gaps}
+        if missing:
+            lines += [f"  {flow}: missing {', '.join(gaps)}" for flow, gaps in missing.items()]
+        else:
             lines.append(f"  all {len(self.flows)} configured")
-        summary = ", ".join(f"{count} {word}" for word, count in self.counts.items() if count) or "none declared"
+        counts = {word: [row for row in self.rows if row.state == word] for word in ("met", "missing", "unverified")}
+        summary = ", ".join(f"{len(rows)} {word}" for word, rows in counts.items() if rows) or "none declared"
         lines += ["", f"Requirements   {summary}"]
         if not self.states:
             lines.append("  not verified: --verify resolves them against this tenant")
-        shown = self.blocking if show_all else self.blocking[: self.SHOWN]
-        lines += self._table(shown, show_all)
+        shown = self.rows if show_all else self.blocking[: self.SHOWN]
+        lines += [f"  {row}" for row in shown]
         hidden = len(self.blocking) - len(shown)
-        if hidden:
-            lines.append(f"  ... {hidden} with fewer tests; --all spells every alternative")
-        met = [row for row in self.rows if row.state == "met"]
-        if show_all and met:
-            lines += ["", f"  met ({len(met)})", *self._table(met, show_all, heading="granted")]
+        if hidden > 0:
+            lines.append(f"  ... {hidden} more; --all lists every requirement")
         if self.states and not self.blocking:
             lines.append("  every declared requirement is met")
         return "\n".join(lines) + "\n"
@@ -662,15 +478,13 @@ class Report:
             "| flow | state |",
             "| --- | --- |",
         ]
-        for flow, missing in self.flows.items():
-            state = f"not configured (missing: {', '.join(missing)})" if missing else "configured"
+        for flow, gaps in self.flows.items():
+            state = f"not configured: {', '.join(gaps)}" if gaps else "ok"
             lines.append(f"| {FLOWS[flow].label} (`{flow}`) | {state} |")
-
+        rows = {row.requirement: row for row in self.rows}
         lines += [
             "",
-            f"{self.suites} live suites, {self.tests} live tests, {self.declared} declared permission requirements.",
-            "",
-            "## Suites",
+            f"{self.suites} live suites, {self.tests} live tests, {len(self.rows)} declared permission requirements.",
             "",
             "`via` names the model methods each test derived its requirement from; a requirement",
             "stated by hand with `@requires_delegated`/`@requires_application` is a `-`.",
@@ -683,59 +497,31 @@ class Report:
                 lines.append(
                     f"| `{needs.suite}` | `{needs.flow}` | {needs.tests} | none declared | - | credentials only |"
                 )
-                continue
-            for requirement in sorted(needs.requirements, key=_ordered):
-                tests = len(needs.requirements[requirement])
-                calls = ", ".join(_short(call) for call in needs.calls.get(requirement, ())) or "-"
+            for requirement in sorted(needs.requirements, key=Requirement.describe):
+                row = rows[requirement]
+                calls = ", ".join(call.rpartition(":")[2] for call in needs.calls.get(requirement, ())) or "-"
                 lines.append(
-                    f"| `{needs.suite}` | `{needs.flow}` | {tests} | "
-                    f"{requirement.describe()} | {calls} | {self.status(requirement)} |"
+                    f"| `{needs.suite}` | `{needs.flow}` | {len(needs.requirements[requirement])} |"
+                    f" {requirement.describe()} | {calls} | {row.state} |"
                 )
-
         lines += ["", "## Missing", ""]
         if not self.states:
             lines.append("Not verified: run with `--verify` (needs credentials) to resolve these against the tenant.")
+        elif not self.blocking:
+            lines.append("Every declared requirement is met.")
         else:
-            missing = [row for row in self.blocking]
-            if not missing:
-                lines.append("Every declared requirement is met.")
-            for row in missing:
-                via = f", {row.via}" if row.sources else ""
-                lines.append(f"- {row.requirement.describe()} - {_tests(len(row.tests))}, {row.state}{via}")
+            lines += [f"- {str(row).strip()}" for row in self.blocking]
         return "\n".join(lines) + "\n"
 
     def json(self) -> str:
-        """The same report for CI: flows, suites, requirements and their status."""
-        payload: dict[str, Any] = {
+        """The same report for CI: flows, and every requirement with its state."""
+        payload = {
             "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "tenant": self.tenant,
-            "flows": {flow: {"label": FLOWS[flow].label, "missing": missing} for flow, missing in self.flows.items()},
-            "suites": [
-                {
-                    "suite": needs.suite,
-                    "flow": needs.flow,
-                    "tests": needs.tests,
-                    "requirements": [
-                        {
-                            "declared": requirement.describe(),
-                            "status": self.status(requirement),
-                            "calls": list(needs.calls.get(requirement, ())),
-                            "tests": needs.requirements[requirement],
-                        }
-                        for requirement in sorted(needs.requirements, key=_ordered)
-                    ],
-                }
-                for needs in self.found
-            ],
+            "flows": {flow: {"label": FLOWS[flow].label, "missing": gaps} for flow, gaps in self.flows.items()},
+            "rows": [row.json() for row in self.rows],
         }
         return json.dumps(payload, indent=2) + "\n"
-
-
-def _write(report_dir: Path, text: str, name: str) -> Path:
-    report_dir.mkdir(parents=True, exist_ok=True)
-    path = report_dir / name
-    path.write_text(text, encoding="utf-8")
-    return path
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -746,11 +532,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--report", metavar="DIR", help="write preflight.md into DIR (a report for people)")
     parser.add_argument("--json", metavar="DIR", help="write preflight.json into DIR (a report for tools)")
     parser.add_argument("--strict", action="store_true", help="exit 1 when a flow or requirement is not satisfied")
-    parser.add_argument(
-        "--grant",
-        action="store_true",
-        help="grant the missing permissions to the configured app (asks first, then re-reads the tenant)",
-    )
+    parser.add_argument("--grant", action="store_true", help="grant the missing permissions to the app (asks first)")
     parser.add_argument("-y", "--yes", action="store_true", help="do not ask before --grant")
     args = parser.parse_args(argv)
 
@@ -762,20 +544,18 @@ def main(argv: list[str] | None = None) -> int:
     report = Report(found, states)
     if not (args.report or args.json):
         sys.stdout.write(report.markdown() if args.markdown else report.text(show_all=args.all))
-    if args.report:
-        print(f"Wrote {_write(Path(args.report), report.markdown(), 'preflight.md')}")
-    if args.json:
-        print(f"Wrote {_write(Path(args.json), report.json(), 'preflight.json')}")
-
+    artifacts = ((args.report, report.markdown, "preflight.md"), (args.json, report.json, "preflight.json"))
+    for directory, render, name in artifacts:
+        if not directory:
+            continue
+        path = Path(directory) / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(render(), encoding="utf-8")
+        print(f"Wrote {path}")
     if not args.strict:
         return 0
     unconfigured = [flow for flow in FLOWS if settings.missing_for(flow)]
-    unmet = [
-        requirement
-        for needs in found
-        for requirement in needs.requirements
-        if (state := states.get(requirement)) is not None and not requirement.satisfied_by(state)
-    ]
+    unmet = [row for row in report.rows if row.state != "met" and row.facts is not None]
     return 1 if unconfigured or unmet else 0
 
 
