@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import os.path
 from io import BytesIO
 from typing import ClassVar, Optional
 
 from office365.sharepoint.attachments.attachment import Attachment
 from office365.sharepoint.listitems.listitem import ListItem
 
-from tests import create_unique_name
+from tests import DATA_DIR, create_unique_name
 from tests.sharepoint.sharepoint_case import SPTestCase
 
 
@@ -16,7 +15,7 @@ class TestListItemAttachment(SPTestCase):
 
     attachment_file_name = "Sample.txt"
     target_item: ClassVar[Optional[ListItem]] = None
-    attachment_path = f"{os.path.dirname(__file__)}/../data/{attachment_file_name}"
+    attachment_path = str(DATA_DIR / f"{attachment_file_name}")
     target_attachment: ClassVar[Optional[Attachment]] = None
 
     @classmethod

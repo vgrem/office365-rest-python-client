@@ -25,9 +25,10 @@ from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
+from office365.onedrive.driveitems.upload_limits import UPLOAD_CHUNK_MAX, UPLOAD_CHUNK_UNIT
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.lists.template_type import ListTemplateType
-from tests import create_unique_name
+from tests import DATA_DIR, create_unique_name
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -100,7 +101,7 @@ class TestFile(GraphDelegatedTestCase):
             self.skipTest("No target drive available")
 
         name = "SharePoint User Guide.docx"
-        path = f"{os.path.dirname(__file__)}/../data/{name}"
+        path = str(DATA_DIR / f"{name}")
         file_item = drive.root.upload_file(path).execute_query()
         self.assertIsNotNone(file_item.name)
         self.assertIsNotNone(file_item.web_url)
@@ -176,9 +177,33 @@ class TestFile(GraphDelegatedTestCase):
             self.skipTest("No target drive available")
 
         name = "big_buck_bunny.mp4"
-        path = f"{os.path.dirname(__file__)}/../data/{name}"
+        path = str(DATA_DIR / f"{name}")
         file_item = drive.root.resumable_upload(path).get().execute_query()
         self.assertIsNotNone(file_item.web_url)
+
+    @requires_call(
+        DriveItem.resumable_upload, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]
+    )
+    def test_08_resumable_upload_chunk_size(self):
+        """Resumable upload honors a valid explicit chunk size and rejects invalid ones before any request."""
+        drive = TestFile.target_drive
+        if not drive:
+            self.skipTest("No target drive available")
+
+        path = str(DATA_DIR / "big_buck_bunny.mp4")
+        for bad in (0, -UPLOAD_CHUNK_UNIT, UPLOAD_CHUNK_UNIT + 1, UPLOAD_CHUNK_MAX + UPLOAD_CHUNK_UNIT):
+            with self.assertRaises(ValueError):
+                drive.root.resumable_upload(path, chunk_size=bad)
+
+        uploaded = []
+        file_item = (
+            drive.root.resumable_upload(path, chunk_size=5 * UPLOAD_CHUNK_UNIT, chunk_uploaded=uploaded.append)
+            .get()
+            .execute_query()
+        )
+        self.assertIsNotNone(file_item.web_url)
+        self.assertTrue(uploaded)
+        self.assertEqual(file_item.size, os.path.getsize(path))
 
     @requires_call(
         DriveItem.get_content, flow="delegated", bypass_roles=["Global Administrator", "SharePoint Administrator"]

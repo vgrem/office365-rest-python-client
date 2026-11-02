@@ -22,9 +22,11 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
 from office365.outlook.mail.messages.internet_header import InternetMessageHeader
 from office365.outlook.mail.recipient import Recipient
+from office365.outlook.quotas import OUTLOOK_UPLOAD
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import ensure_within
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -131,9 +133,13 @@ class Message(OutlookItem):
         Args:
             file_path (str):
             chunk_uploaded ((int)->None): Upload action
+
+        Raises:
+            ValueError: If the file is larger than the Outlook attachment limit (150 MB).
         """
         max_upload_chunk = 1000000 * 3
         file_size = os.stat(file_path).st_size
+        ensure_within(OUTLOOK_UPLOAD, file_size, context="Outlook attachment")
         if file_size > max_upload_chunk:
 
             def _message_loaded():
@@ -143,7 +149,7 @@ class Message(OutlookItem):
         else:
             with open(file_path, "rb") as file_object:
                 content = file_object.read()
-            self.attachments.add_file(os.path.basename(file_object.name), content.decode("utf-8"))
+            self.attachments.add_file(os.path.basename(file_object.name), content)
         return self
 
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])

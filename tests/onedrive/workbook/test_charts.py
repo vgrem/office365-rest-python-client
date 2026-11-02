@@ -1,9 +1,9 @@
-import os
 from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.charts.chart import WorkbookChart
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
+from tests import PROJECT_ROOT
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -16,7 +16,7 @@ class TestExcelCharts(GraphDelegatedTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        path = f"{os.path.dirname(__file__)}/../../../examples/data/templates/Weight loss tracker.xlsx"
+        path = str(PROJECT_ROOT / "examples" / "data" / "templates" / "Weight loss tracker.xlsx")
         cls.excel_file = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.excel_file.resource_path is not None
         cls.worksheet = cls.excel_file.workbook.worksheets["Weight loss tracker"].get().execute_query()

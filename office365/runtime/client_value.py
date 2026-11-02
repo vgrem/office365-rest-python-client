@@ -110,7 +110,8 @@ class ClientValue:
             elif isinstance(val, ClientValueCollection) and len(val) == 0:
                 return False
             elif isinstance(val, ClientValue):
-                if not any(v is not None for v in vars(val).values()):
+                # A nested value with nothing to send (all members unset or empty) is omitted.
+                if not any(_is_valid_value(v) for v in vars(val).values()):
                     return False
             return True
 

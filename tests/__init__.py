@@ -8,12 +8,17 @@ they are resolved from the object rather than restated, so a field added to
 
 import random
 import string
+from pathlib import Path
 
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.user_credential import UserCredential
 
 from tests.settings import Settings
 from tests.settings import settings as _settings
+
+TESTS_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = TESTS_DIR.parent
+DATA_DIR = TESTS_DIR / "data"
 
 #: ``test_<name>`` names the settings field is not spelled like.
 _RENAMED = {

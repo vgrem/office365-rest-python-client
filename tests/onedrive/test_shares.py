@@ -1,6 +1,4 @@
-import os
-
-from tests import test_team_site_url
+from tests import DATA_DIR, test_team_site_url
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -11,7 +9,7 @@ class TestShares(GraphDelegatedTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
+        path = str(DATA_DIR / "Financial Sample.xlsx")
         cls.file_item = cls.client.sites.get_by_url(test_team_site_url).drive.root.upload_file(path).execute_query()
         assert cls.file_item.resource_path is not None
 

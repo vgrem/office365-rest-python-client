@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from typing import ClassVar, Optional
 
 from office365.runtime.client_request_exception import ClientRequestException
@@ -13,6 +12,7 @@ from office365.sharepoint.marketplace.tenant.appcatalog.accessor import (
 )
 
 from tests import (
+    DATA_DIR,
     test_admin_site_url,
     test_client_id,
     test_password,
@@ -48,7 +48,7 @@ class TestApp(SPTestCase):
 
     def test_03_add_app(self):
         """Add an app package to the tenant app catalog."""
-        app_path = f"{os.path.dirname(__file__)}/../data/react-banner.sppkg"
+        app_path = str(DATA_DIR / "react-banner.sppkg")
         app_file = self.tenant_app_catalog.app_from_path(app_path, True).execute_query()
         self.assertIsNotNone(app_file.resource_path)
 

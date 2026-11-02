@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
@@ -7,12 +6,13 @@ from office365.onedrive.workbooks.tables.collection import WorkbookTableCollecti
 from office365.onedrive.workbooks.tables.columns.collection import WorkbookTableColumnCollection
 from office365.onedrive.workbooks.tables.rows.collection import WorkbookTableRowCollection
 from office365.onedrive.workbooks.tables.table import WorkbookTable
+from tests import DATA_DIR
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 def upload_excel(target_drive: Drive) -> DriveItem:
-    path = f"{os.path.dirname(__file__)}/../data/Financial Sample.xlsx"
+    path = str(DATA_DIR / "Financial Sample.xlsx")
     return target_drive.root.upload_file(path).execute_query()
 
 

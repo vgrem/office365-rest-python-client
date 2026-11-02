@@ -33,6 +33,7 @@ from office365.onedrive.driveitems.remote_item import RemoteItem
 from office365.onedrive.driveitems.retention_label import ItemRetentionLabel
 from office365.onedrive.driveitems.special_folder import SpecialFolder
 from office365.onedrive.driveitems.thumbnail_set import ThumbnailSet
+from office365.onedrive.driveitems.upload_limits import UPLOAD_CHUNK_DEFAULT, check_chunk_size
 from office365.onedrive.driveitems.uploadable_properties import (
     DriveItemUploadableProperties,
 )
@@ -565,7 +566,7 @@ class DriveItem(BaseItem):
     def resumable_upload(
         self,
         source_path: str,
-        chunk_size: int = 2000000,
+        chunk_size: int = UPLOAD_CHUNK_DEFAULT,
         chunk_uploaded: Callable[[int], None] | None = None,
     ) -> DriveItem:
         """Create an upload session to allow your app to upload files up to the maximum file size.
@@ -579,8 +580,12 @@ class DriveItem(BaseItem):
         Args:
             chunk_uploaded:
             source_path (str): File path
-            chunk_size (int): chunk size
+            chunk_size (int): bytes per chunk; positive multiple of 320 KiB, at most 60 MiB (default 10 MiB)
+
+        Raises:
+            ValueError: If ``chunk_size`` is not a positive multiple of 320 KiB or exceeds 60 MiB.
         """
+        check_chunk_size(chunk_size)
 
         def _start_upload(result: Response) -> None:
             with open(source_path, "rb") as local_file:
@@ -601,7 +606,7 @@ class DriveItem(BaseItem):
     async def resumable_upload_async(
         self,
         source_path: str,
-        chunk_size: int = 2000000,
+        chunk_size: int = UPLOAD_CHUNK_DEFAULT,
         chunk_uploaded: Callable[[int], None] | None = None,
         progress: ProgressCallback | None = None,
     ) -> DriveItem:
@@ -619,7 +624,7 @@ class DriveItem(BaseItem):
         Args:
             source_path (str): Local file path to upload.
             chunk_size (int): Number of bytes per chunk. Graph requires a
-                multiple of 320 KiB, which the default (2 MB) satisfies.
+                positive multiple of 320 KiB, at most 60 MiB; the default is 10 MiB.
             chunk_uploaded: Optional ``(bytes_uploaded) -> None`` callback invoked
                 after each accepted chunk.
             progress: Optional ``ProgressCallback`` invoked per chunk with a
@@ -628,7 +633,11 @@ class DriveItem(BaseItem):
 
         Returns:
             DriveItem: The uploaded item.
+
+        Raises:
+            ValueError: If ``chunk_size`` is not a positive multiple of 320 KiB or exceeds 60 MiB.
         """
+        check_chunk_size(chunk_size)
         file_name = os.path.basename(source_path)
         return_type = DriveItem(self.context, UrlPath(file_name, self.resource_path))
 

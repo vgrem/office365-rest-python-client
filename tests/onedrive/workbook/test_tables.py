@@ -1,4 +1,3 @@
-import os
 from typing import Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
@@ -6,6 +5,7 @@ from office365.onedrive.workbooks.sort_field import WorkbookSortField
 from office365.onedrive.workbooks.tables.sort import WorkbookTableSort
 from office365.onedrive.workbooks.tables.table import WorkbookTable
 from office365.onedrive.workbooks.worksheets.worksheet import WorkbookWorksheet
+from tests import DATA_DIR
 from tests.decorators import requires_call
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -18,7 +18,7 @@ class TestExcelTables(GraphDelegatedTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        path = f"{os.path.dirname(__file__)}/../../data/Financial Sample.xlsx"
+        path = str(DATA_DIR / "Financial Sample.xlsx")
         cls.excel_file = cls.client.me.drive.root.upload_file(path).execute_query()
         assert cls.excel_file.resource_path is not None
         cls.worksheet = cls.excel_file.workbook.worksheets["Sheet1"].get().execute_query()

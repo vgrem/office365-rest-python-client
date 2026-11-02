@@ -12,6 +12,7 @@ from office365.sharepoint.tenant.administration.sharing_capabilities import Shar
 from office365.sharepoint.tenant.administration.tenant import Tenant
 
 from tests import (
+    DATA_DIR,
     create_unique_name,
     test_admin_site_url,
     test_cert_path,
@@ -64,7 +65,7 @@ class TestSharePointFile(SPTestCase):
         """Upload a file as binary content"""
         folder = TestSharePointFile.folder_from
         assert folder is not None
-        path = f"{os.path.dirname(__file__)}/../data/Sample.txt"
+        path = str(DATA_DIR / "Sample.txt")
         uploaded_file = folder.files.upload(path).execute_query()
         self.assertEqual(uploaded_file.name, os.path.basename(path))
         self.assertIsNotNone(uploaded_file.resource_path)
@@ -242,7 +243,7 @@ class TestSharePointFile(SPTestCase):
         """Upload large file via upload session"""
         folder = TestSharePointFile.folder_from
         assert folder is not None
-        path = f"{os.path.dirname(__file__)}/../data/big_buck_bunny.mp4"
+        path = str(DATA_DIR / "big_buck_bunny.mp4")
         file_size = os.path.getsize(path)
         size_1mb = 1000000
         file = folder.files.create_upload_session(path, size_1mb).execute_query()
