@@ -11,7 +11,10 @@ from __future__ import annotations
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
-_SCORE_READ = ("SecureScore.Read.All",)
+#: Microsoft Secure Score is served from the SecurityEvents family: Graph publishes no
+#: ``SecureScore.*`` delegated scope at all, so a requirement naming one can never be met
+#: by the wire, however the tenant's grant list reads.
+_SCORE_READ = ("SecurityEvents.Read.All",)
 
 
 class TestSecureScore(GraphDelegatedTestCase):

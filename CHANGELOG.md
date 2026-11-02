@@ -862,6 +862,13 @@ introduced.
   The navigation is declared on the derived `sitePage`, so the path has to say so:
   `pages/{id}/microsoft.graph.sitePage/webParts` returns the collection. `canvas_layout` beside it is
   still unverified — the cast alone does not make that one answer.
+- **A permission name the API does not publish was counted as a grant.** A directory records whatever
+  string a grant names, so this tenant holds `BackupRestore.Read.All` — a name Microsoft Graph never
+  minted — and a token can be minted carrying it; every request declared against it answered 403
+  while the preflight counted the requirement as met. `Requirement` now asks the committed catalogue
+  and reports such a name as unmeetable (`… is not a name Microsoft Graph publishes`) instead of
+  matching it against the tenant's grant list, and the seven live suites that declared one — plus
+  `SecureScore.Read.All`, which Graph does not publish either — now name the published scope.
 
 **Model**
 

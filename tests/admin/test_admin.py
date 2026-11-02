@@ -230,7 +230,7 @@ class TestAdminM365Apps(GraphDelegatedTestCase):
     """Microsoft 365 apps admin configuration."""
 
     @requires_delegated(
-        "OrgSettings.Read.All",
+        "OrgSettings-AppsAndServices.Read.All",
         bypass_roles=["Reports Administrator", "Global Administrator", "Global Reader"],
     )
     def test_01_get_microsoft365_apps(self):
@@ -239,7 +239,7 @@ class TestAdminM365Apps(GraphDelegatedTestCase):
         self.assertIsNotNone(result.resource_path)
 
     @requires_delegated(
-        "OrgSettings.Read.All",
+        "OrgSettings-AppsAndServices.Read.All",
         bypass_roles=["Reports Administrator", "Global Administrator", "Global Reader"],
     )
     def test_02_microsoft365_apps_has_properties(self):
@@ -252,8 +252,8 @@ class TestAdminPeople(GraphDelegatedTestCase):
     """People admin settings — profile card properties."""
 
     @requires_delegated(
-        "UserProfile.Read.All",
-        "OrgSettings.Read.All",
+        "User.Read.All",
+        "OrgSettings-AppsAndServices.Read.All",
         bypass_roles=["Global Administrator", "Global Reader"],
     )
     def test_01_list_profile_card_properties(self):
@@ -265,8 +265,8 @@ class TestAdminPeople(GraphDelegatedTestCase):
             self.skipTest(f"Cannot list profile card properties: {e}")
 
     @requires_delegated(
-        "UserProfile.Read.All",
-        "OrgSettings.Read.All",
+        "User.Read.All",
+        "OrgSettings-AppsAndServices.Read.All",
         bypass_roles=["Global Administrator", "Global Reader"],
     )
     def test_02_profile_card_property_has_directory_name(self):

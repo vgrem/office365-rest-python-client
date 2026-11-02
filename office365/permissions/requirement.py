@@ -147,19 +147,41 @@ class Requirement:
         """A group's label, naming the resource when it is not the default one."""
         return group if str(self.resource) == str(ResourceName.Graph) else f"{group} on {self.resource}"
 
+    def unpublished(self) -> tuple[str, ...]:
+        """The declared names this API does not publish, so no grant of them is possible.
+
+        A directory records whatever string it is handed, so a tenant can hold a grant of a name
+        the API never minted: a token is requested for it, the token carries it, and every call
+        it was declared for still answers 403. Measured on one tenant -
+        ``BackupRestore.Read.All`` minted a token and refused every request.
+        """
+        from office365.permissions.catalog import catalog
+
+        snapshot = catalog(str(self.resource))
+        if snapshot is None:
+            return ()
+        declared = [(name, "delegated") for name in self.delegated]
+        declared += [(name, "application") for name in self.application]
+        return tuple(name for name, kind in declared if not snapshot.publishes(name, kind))
+
     def shortfall(self, state: TenantFacts) -> list[tuple[str, tuple[str, ...]]]:
         """The declared groups ``state`` leaves unmet, as (label, names) - empty when it may run."""
         if state.unverifiable or (self.bypass_roles and set(self.bypass_roles) & state.roles):
             return []
+        unpublished = set(self.unpublished())
         return [
-            (label, names) for label, names, attribute in self.groups() if not set(names) & getattr(state, attribute)
+            (label, names)
+            for label, names, attribute in self.groups()
+            # A name the API does not publish is not a grant, whatever the directory says.
+            if not (set(names) - unpublished) & getattr(state, attribute)
         ]
 
     def unmet(self, state: TenantFacts) -> list[str]:
         """The declared groups ``state`` does not satisfy - empty when the call may run."""
         if state.unverifiable:
             return [state.unverifiable]
-        return [f"{self.label(label)}: any of {', '.join(names)}" for label, names in self.shortfall(state)]
+        missing = [f"{self.label(label)}: any of {', '.join(names)}" for label, names in self.shortfall(state)]
+        return missing + [f"{name} is not a name {self.resource} publishes" for name in self.unpublished()]
 
     def satisfied_by(self, state: TenantFacts) -> bool:
         """Whether ``state`` meets this requirement."""

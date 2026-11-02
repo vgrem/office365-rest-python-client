@@ -56,6 +56,18 @@ class TestRequirement(TestCase):
         state = TenantState(unverifiable="the permission lookup needs a scope this token does not have")
         self.assertEqual(_MAIL.unmet(state), ["the permission lookup needs a scope this token does not have"])
 
+    def test_a_name_the_api_does_not_publish_never_satisfies_the_group(self):
+        """A directory records whatever string a grant names; the API is what decides."""
+        requirement = Requirement(delegated=("BackupRestore.Read.All",))
+        state = TenantState(delegated=frozenset({"BackupRestore.Read.All"}))
+        self.assertEqual(
+            requirement.unmet(state),
+            [
+                "delegated: any of BackupRestore.Read.All",
+                "BackupRestore.Read.All is not a name Microsoft Graph publishes",
+            ],
+        )
+
     def test_an_undeclared_requirement_is_always_met(self):
         self.assertEqual(Requirement().describe(), "no declared permission")
         self.assertEqual(Requirement().unmet(TenantState()), [])

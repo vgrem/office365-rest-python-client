@@ -196,6 +196,12 @@ scopes alone, so `Teams Administrator` does not carry `VirtualEvent.Read` — me
 virtual-events suite skipped on the scope once the role was taken away, because every call
 had answered 403 with the role still declared.
 
+Name only permissions the API publishes. A directory records whatever string a grant
+names, so a tenant can hold `BackupRestore.Read.All` — a name Microsoft Graph never
+minted — and mint a token carrying it, while every request that declared the name answers
+403. `catalog(ResourceName.Graph).publishes(name, kind)` is the check, and a requirement
+that names something unpublished is reported as unmet however the tenant's grants read.
+
 Add `flow="application"` to `@requires_call` for an app-only suite. The declared
 requirements are read off the test tree, so what a tenant must grant is known before a
 run and never kept in a second list. A requirement names the API it is granted on, so a

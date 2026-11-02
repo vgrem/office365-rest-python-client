@@ -21,7 +21,7 @@ _TEST_TENANT_ID = "af6a80a4-8b4b-4879-88af-42ff8a545211"
 class TestBackupRestoreServiceStatus(GraphDelegatedTestCase):
     """Reading and verifying the M365 Backup service status."""
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_01_get_service_status(self):
         """Reading the backup restore service status returns a valid status object."""
         result = self.client.solutions.backup_restore.get().execute_query()
@@ -29,7 +29,7 @@ class TestBackupRestoreServiceStatus(GraphDelegatedTestCase):
         # The status should have an id
         self.assertIsNotNone(result.get_property("id"))
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_02_service_status_has_expected_properties(self):
         """The backup restore service status exposes serviceStatus and serviceAppStatus."""
         result = self.client.solutions.backup_restore.get().execute_query()
@@ -37,7 +37,7 @@ class TestBackupRestoreServiceStatus(GraphDelegatedTestCase):
         if service_status is not None:
             self.assertIsInstance(service_status, (str, int))
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_03_service_status_is_valid_enum(self):
         """The serviceStatus should be one of the known BackupServiceStatus values."""
         result = self.client.solutions.backup_restore.get().execute_query()
@@ -52,7 +52,7 @@ class TestBackupRestoreServiceStatus(GraphDelegatedTestCase):
                 f"Service status '{raw_str}' not in known values {known_statuses}",
             )
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_04_get_backup_restore_without_enabling(self):
         """Reading backup restore status does not require enabling first."""
         # This test verifies read-only access works independently of enable()
@@ -94,7 +94,7 @@ class TestBackupRestoreEnable(GraphDelegatedTestCase):
         except Exception:
             self.skipTest("Double-enable not allowed or unavailable")
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_03_service_status_changes_after_enable(self):
         """After enabling, the service status should reflect the enabled state."""
         result = self.client.solutions.backup_restore.get().execute_query()
@@ -107,7 +107,7 @@ class TestBackupRestoreEnable(GraphDelegatedTestCase):
 class TestBackupRestoreProtectionPolicies(GraphDelegatedTestCase):
     """Backup protection policies — defining what to protect, when, and for how long."""
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_01_list_one_drive_policies(self):
         """Listing OneDrive for Business protection policies returns a valid collection."""
         result = (
@@ -115,7 +115,7 @@ class TestBackupRestoreProtectionPolicies(GraphDelegatedTestCase):
         )
         self.assertIsNotNone(result.resource_path)
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_02_policy_has_expected_properties(self):
         """A protection policy exposes displayName, createdDateTime, status, and createdBy."""
         result = (
@@ -130,7 +130,7 @@ class TestBackupRestoreProtectionPolicies(GraphDelegatedTestCase):
             self.assertIsNotNone(policy.get_property("status"))
             break
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_03_policy_filter_by_status(self):
         """Filtering protection policies by status works."""
         result = (
@@ -143,7 +143,7 @@ class TestBackupRestoreProtectionPolicies(GraphDelegatedTestCase):
         for policy in result:
             self.assertEqual(policy.get_property("status"), "active")
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_04_policy_has_drive_inclusion_rules(self):
         """A protection policy may have drive inclusion rules."""
         result = (
@@ -159,7 +159,7 @@ class TestBackupRestoreProtectionPolicies(GraphDelegatedTestCase):
             except Exception:
                 continue
 
-    @requires_delegated("BackupRestore.Read.All", bypass_roles=["Global Administrator"])
+    @requires_delegated("BackupRestore-Control.Read.All", bypass_roles=["Global Administrator"])
     def test_05_get_policy_by_id(self):
         """Retrieving a protection policy by its ID returns the same policy."""
         result = (

@@ -59,7 +59,6 @@ class TestGraphTeam(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Team.ReadBasic.All",
-        "Team.Read.All",
         bypass_roles=["Global Administrator", "Teams Administrator"],
     )
     def test_03_list_joined_teams(self):

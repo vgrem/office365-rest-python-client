@@ -186,7 +186,7 @@ class TestPlanner(GraphDelegatedTestCase):
 
     @requires_delegated(
         "Group.ReadWrite.All",
-        "Tasks.ReadWrite.All",
+        "Tasks.ReadWrite",
         bypass_roles=["Global Administrator"],
     )
     def test_11_delete_plan(self):
