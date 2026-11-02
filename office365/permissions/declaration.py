@@ -2,9 +2,10 @@
 
 ``@require_permission(delegated=[...], application=[...])`` marks the method, and the mark is
 the only thing anyone reads: a live test derives its precondition from it, the runtime names
-it when a request is denied, and a report lists it beside the endpoint. Nothing calls the
-method to learn what it needs, so the declaration cannot drift from the code by being wrong at
-the wrong time - it is either there or it is not.
+it when a request is denied, and a report lists it beside the endpoint. A wrapper around
+another declared method borrows its mark with ``@derived_from`` instead of restating it.
+Nothing calls the method to learn what it needs, so the declaration cannot drift from the code
+by being wrong at the wrong time - it is either there or it is not.
 
 The decorator does three things, one helper each:
 
@@ -192,6 +193,30 @@ def require_permission(
     return decorate
 
 
+def derived_from(callee: Callable[..., Any]) -> Callable[[F], F]:
+    """Declare the decorated method as needing exactly what ``callee`` needs.
+
+    For a wrapper whose request is a call to another declared method: the requirement is read
+    from that method rather than restated, so one method owns the declaration and the other
+    borrows it - there is no second copy to go stale. The docstring names the owner, because
+    the columns shown below it describe the callee's request and not the wrapper's own.
+
+    Args:
+        callee: The declared method this one drives, e.g. ``Site.create_migration_ingestion_job``.
+
+    Raises:
+        ValueError: If ``callee`` names no permission - borrowing silence would produce an
+            empty requirement, which is the one outcome worth failing at import time.
+    """
+    source = declared(callee)
+
+    def decorate(func: F) -> F:
+        stamped = _tag_query(_stamp(func, source), source)
+        return _document(stamped, source, header=f"Requires what {_name(callee)} requires:")
+
+    return decorate
+
+
 def _stamp(func: F, declaration: PermissionRequirement) -> F:
     """Attach the declaration to the function, where :func:`declared` reads it back."""
     setattr(func, STAMP, declaration)
@@ -219,12 +244,15 @@ def _tag_query(func: F, declaration: PermissionRequirement) -> F:
     return cast(F, wrapper)
 
 
-def _document(func: F, declaration: PermissionRequirement) -> F:
-    """Append what the method requires to its docstring, so ``help()`` shows it."""
+def _document(func: F, declaration: PermissionRequirement, header: str = "Requires permissions:") -> F:
+    """Append what the method requires to its docstring, so ``help()`` shows it.
+
+    Applied to the decorated callable, not to the function it wraps: a wrapper made by
+    :func:`_tag_query` copies ``__doc__`` when it is created, so a later write to the inner
+    function lands somewhere nobody reads.
+    """
     if declaration.describe():
-        func.__doc__ = (
-            f"{func.__doc__ or ''}\n\nRequires permissions:\n{textwrap.indent(declaration.describe(), '    ')}"
-        )
+        func.__doc__ = f"{func.__doc__ or ''}\n\n{header}\n{textwrap.indent(declaration.describe(), '    ')}"
     return func
 
 

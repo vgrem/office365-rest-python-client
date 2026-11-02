@@ -34,7 +34,7 @@ them. This package is the vocabulary a caller uses, not a service namespace.
 """
 
 from office365.permissions.catalog import APPLICATION, DELEGATED, Catalog, catalog, catalog_resources
-from office365.permissions.declaration import PermissionRequirement, declared, require_permission
+from office365.permissions.declaration import PermissionRequirement, declared, derived_from, require_permission
 from office365.permissions.index import Index, Operation, index
 from office365.permissions.requirement import FLOWS, Requirement, TenantFacts
 from office365.permissions.resource import ResourceName
@@ -57,6 +57,7 @@ __all__ = [
     "catalog",
     "catalog_resources",
     "declared",
+    "derived_from",
     "index",
     "require_permission",
 ]

@@ -53,7 +53,6 @@ from office365.migration.manifest import Manifest
 from office365.migration.map import ContentTypeMap
 from office365.migration.report import MigrationReport, build_report, export_reports
 from office365.migration.runner import MigrationRunner
-from office365.migration.server_job import MigrationJobWait, MigrationServerJob
 from office365.migration.session import MigrationSession, SessionTask
 from office365.migration.settings import MigrationSettings
 from office365.migration.tasks import MigrationTask
@@ -74,6 +73,7 @@ if TYPE_CHECKING:
         MailImportOptions,
         OutlookOptions,
     )
+    from office365.migration.server_job import MigrationJobWait, MigrationServerJob
     from office365.migration.sharepoint import (
         SHAREPOINT_SCANS,
         MigrationAssessor,
@@ -86,6 +86,10 @@ if TYPE_CHECKING:
     )
 
 _LAZY_EXPORTS = {
+    # The server-side job borrows its permissions from the SharePoint methods it drives
+    # (``@derived_from``), so importing it pulls that model tree in with it.
+    "MigrationJobWait": "office365.migration.server_job",
+    "MigrationServerJob": "office365.migration.server_job",
     "MigrationAssessor": "office365.migration.sharepoint",
     "MigrationTenantAssessor": "office365.migration.sharepoint",
     "SHAREPOINT_SCANS": "office365.migration.sharepoint",

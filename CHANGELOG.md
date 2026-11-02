@@ -293,6 +293,17 @@ introduced.
 
 **Permissions**
 
+- **A wrapper borrows the declaration of the method it drives.** `@derived_from(callee)` stamps a
+  method with the *same* `PermissionRequirement` the callee carries — read once at import — so a
+  one-line pass-through has no second copy of the rung to drift from, and `help()` names the
+  method whose request the columns describe. The three server-side migration calls are the
+  motivation: `MigrationServerJob.submit`, `submit_encrypted` and `progress` declare nothing
+  themselves, they call `Site.create_migration_ingestion_job`,
+  `create_migration_job_encrypted` and `get_migration_job_progress`. Borrowing *silence* fails at
+  decoration instead of yielding an empty requirement every check would pass. The exactness is
+  not free: it ties `server_job`'s import to the SharePoint model tree, so `MigrationServerJob`
+  and `MigrationJobWait` joined `office365.migration`'s lazy re-exports — that import stays 56
+  modules, none of them SharePoint.
 - **A permission check can read the token itself.** `office365.permissions.TokenClaims`
   parses a JWT's payload and answers one requirement: the audience says which API the token
   was issued for, `scp` names the delegated permissions, `roles` the application ones. The
