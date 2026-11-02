@@ -1377,11 +1377,12 @@ class Tenant(Entity):
         """The tenant's root site url"""
         return self.properties.get("RootSiteUrl", None)
 
+    @odata(name="Sites", navigation=True)
     @property
     def sites(self) -> SitePropertiesCollection:
         """Gets a collection of sites."""
         return self.properties.get(
-            "sites", SitePropertiesCollection(self.context, ResourcePath("sites", self.resource_path))
+            "Sites", SitePropertiesCollection(self.context, ResourcePath("Sites", self.resource_path))
         )
 
     @odata(name="TotalTenantArchiveFileSizeAggregation", navigation=True)

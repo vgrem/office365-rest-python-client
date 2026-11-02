@@ -37,10 +37,11 @@ class SitePageService(Entity):
             resource_path = ResourcePath("SP.Publishing.SitePageService")
         super().__init__(context, resource_path)
 
+    @odata(name="Pages", navigation=True)
     @property
     def pages(self) -> SitePageCollection:
         """Gets the SitePageCollection for the current web."""
-        return self.properties.get("pages", SitePageCollection(self.context, ResourcePath("pages", self.resource_path)))
+        return self.properties.get("Pages", SitePageCollection(self.context, ResourcePath("Pages", self.resource_path)))
 
     @odata(name="CommunicationSite", navigation=True, beta=True)
     @property

@@ -13,7 +13,7 @@ class Principal(Entity):
         return self.title or self.entity_type_name
 
     def __repr__(self) -> str:
-        return self.user_principal_name or self.login_name or str(self.id or "") or self.entity_type_name
+        return self.login_name or str(self.id or "") or self.entity_type_name
 
     @property
     def id(self) -> Optional[int]:
@@ -34,11 +34,6 @@ class Principal(Entity):
     def login_name(self) -> Optional[str]:
         """Gets the login name of the principal."""
         return self.properties.get("LoginName", None)
-
-    @property
-    def user_principal_name(self) -> Optional[str]:
-        """Gets the UPN of the principal."""
-        return self.properties.get("UserPrincipalName", None)
 
     @property
     def is_hidden_in_ui(self) -> Optional[bool]:

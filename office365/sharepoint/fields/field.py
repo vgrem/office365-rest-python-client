@@ -342,12 +342,13 @@ class Field(Entity):
     def client_validation_formula(self) -> Optional[str]:
         return self.properties.get("ClientValidationFormula", None)
 
+    @odata(name="EnforceUniqueValues")
     @property
     def enforce_unique_values(self) -> Optional[bool]:
         """
         Specifies whether the field enforces unique values.
         """
-        return self.properties.get("enforceUniqueValues", None)
+        return self.properties.get("EnforceUniqueValues", None)
 
     @odata(name="Filterable")
     @property
