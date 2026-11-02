@@ -51,6 +51,7 @@ class Alert(Entity):
             f"title={self.title!r}, severity={self.severity.name}, status={self.status.name})"
         )
 
+    @odata(name="activityGroupName")
     @property
     def activity_group_name(self) -> Optional[str]:
         """"""
@@ -73,7 +74,7 @@ class Alert(Entity):
         """Collection of evidence related to the alert."""
         return self.properties.get("evidence", ClientValueCollection(AlertEvidence))
 
-    @odata(name="historyStates", system=True)
+    @odata(name="historyStates")
     @property
     def history_states(self) -> ClientValueCollection[AlertHistoryState]:
         """Collection of changes for the alert."""
@@ -275,66 +276,79 @@ class Alert(Entity):
         """Gets the serviceSource property"""
         return self.properties.get("serviceSource", ServiceSource.unknown)
 
+    @odata(name="alertDetections")
     @property
     def alert_detections(self) -> ClientValueCollection[AlertDetection]:
         """Gets the alertDetections property"""
         return self.properties.get("alertDetections", ClientValueCollection[AlertDetection](AlertDetection))
 
+    @odata(name="azureSubscriptionId")
     @property
     def azure_subscription_id(self) -> Optional[str]:
         """Gets the azureSubscriptionId property"""
         return self.properties.get("azureSubscriptionId", None)
 
+    @odata(name="azureTenantId")
     @property
     def azure_tenant_id(self) -> Optional[str]:
         """Gets the azureTenantId property"""
         return self.properties.get("azureTenantId", None)
 
+    @odata(name="closedDateTime")
     @property
     def closed_date_time(self) -> Optional[datetime]:
         """Gets the closedDateTime property"""
         return self.properties.get("closedDateTime", datetime.min)
 
+    @odata(name="cloudAppStates")
     @property
     def cloud_app_states(self) -> ClientValueCollection[CloudAppSecurityState]:
         """Gets the cloudAppStates property"""
         return self.properties.get("cloudAppStates", ClientValueCollection[CloudAppSecurityState](CloudAppSecurityState))
 
+    @odata(name="confidence")
     @property
     def confidence(self) -> Optional[int]:
         """Gets the confidence property"""
         return self.properties.get("confidence", None)
 
+    @odata(name="detectionIds")
     @property
     def detection_ids(self) -> StringCollection:
         """Gets the detectionIds property"""
         return self.properties.get("detectionIds", StringCollection())
 
+    @odata(name="eventDateTime")
     @property
     def event_date_time(self) -> Optional[datetime]:
         """Gets the eventDateTime property"""
         return self.properties.get("eventDateTime", datetime.min)
 
+    @odata(name="feedback")
     @property
     def feedback(self) -> AlertFeedback:
         """Gets the feedback property"""
         return self.properties.get("feedback", AlertFeedback.unknown)
 
+    @odata(name="fileStates")
     @property
     def file_states(self) -> ClientValueCollection[FileSecurityState]:
         """Gets the fileStates property"""
         return self.properties.get("fileStates", ClientValueCollection[FileSecurityState](FileSecurityState))
 
+    @odata(name="hostStates")
     @property
     def host_states(self) -> ClientValueCollection[HostSecurityState]:
         """Gets the hostStates property"""
         return self.properties.get("hostStates", ClientValueCollection[HostSecurityState](HostSecurityState))
 
+    @odata(name="incidentIds")
     @property
     def incident_ids(self) -> StringCollection:
         """Gets the incidentIds property"""
         return self.properties.get("incidentIds", StringCollection())
 
+    @odata(name="investigationSecurityStates")
     @property
     def investigation_security_states(self) -> ClientValueCollection[InvestigationSecurityState]:
         """Gets the investigationSecurityStates property"""
@@ -342,21 +356,25 @@ class Alert(Entity):
             "investigationSecurityStates", ClientValueCollection[InvestigationSecurityState](InvestigationSecurityState)
         )
 
+    @odata(name="lastEventDateTime")
     @property
     def last_event_date_time(self) -> Optional[datetime]:
         """Gets the lastEventDateTime property"""
         return self.properties.get("lastEventDateTime", datetime.min)
 
+    @odata(name="lastModifiedDateTime")
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
+    @odata(name="malwareStates")
     @property
     def malware_states(self) -> ClientValueCollection[MalwareState]:
         """Gets the malwareStates property"""
         return self.properties.get("malwareStates", ClientValueCollection[MalwareState](MalwareState))
 
+    @odata(name="messageSecurityStates")
     @property
     def message_security_states(self) -> ClientValueCollection[MessageSecurityState]:
         """Gets the messageSecurityStates property"""
@@ -364,41 +382,49 @@ class Alert(Entity):
             "messageSecurityStates", ClientValueCollection[MessageSecurityState](MessageSecurityState)
         )
 
+    @odata(name="networkConnections")
     @property
     def network_connections(self) -> ClientValueCollection[NetworkConnection]:
         """Gets the networkConnections property"""
         return self.properties.get("networkConnections", ClientValueCollection[NetworkConnection](NetworkConnection))
 
+    @odata(name="processes")
     @property
     def processes(self) -> ClientValueCollection[Process]:
         """Gets the processes property"""
         return self.properties.get("processes", ClientValueCollection[Process](Process))
 
+    @odata(name="registryKeyStates")
     @property
     def registry_key_states(self) -> ClientValueCollection[RegistryKeyState]:
         """Gets the registryKeyStates property"""
         return self.properties.get("registryKeyStates", ClientValueCollection[RegistryKeyState](RegistryKeyState))
 
+    @odata(name="securityResources")
     @property
     def security_resources(self) -> ClientValueCollection[SecurityResource]:
         """Gets the securityResources property"""
         return self.properties.get("securityResources", ClientValueCollection[SecurityResource](SecurityResource))
 
+    @odata(name="sourceMaterials")
     @property
     def source_materials(self) -> StringCollection:
         """Gets the sourceMaterials property"""
         return self.properties.get("sourceMaterials", StringCollection())
 
+    @odata(name="tags")
     @property
     def tags(self) -> StringCollection:
         """Gets the tags property"""
         return self.properties.get("tags", StringCollection())
 
+    @odata(name="triggers")
     @property
     def triggers(self) -> ClientValueCollection[AlertTrigger]:
         """Gets the triggers property"""
         return self.properties.get("triggers", ClientValueCollection[AlertTrigger](AlertTrigger))
 
+    @odata(name="uriClickSecurityStates")
     @property
     def uri_click_security_states(self) -> ClientValueCollection[UriClickSecurityState]:
         """Gets the uriClickSecurityStates property"""
@@ -406,16 +432,19 @@ class Alert(Entity):
             "uriClickSecurityStates", ClientValueCollection[UriClickSecurityState](UriClickSecurityState)
         )
 
+    @odata(name="userStates")
     @property
     def user_states(self) -> ClientValueCollection[UserSecurityState]:
         """Gets the userStates property"""
         return self.properties.get("userStates", ClientValueCollection[UserSecurityState](UserSecurityState))
 
+    @odata(name="vendorInformation")
     @property
     def vendor_information(self) -> SecurityVendorInformation:
         """Gets the vendorInformation property"""
         return self.properties.get("vendorInformation", SecurityVendorInformation())
 
+    @odata(name="vulnerabilityStates")
     @property
     def vulnerability_states(self) -> ClientValueCollection[VulnerabilityState]:
         """Gets the vulnerabilityStates property"""
