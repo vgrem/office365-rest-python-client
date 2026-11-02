@@ -30,6 +30,8 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Dict, List, Optional
 from urllib.parse import urlsplit
 
+from office365.sharepoint.permissions import SiteLevel, site_access
+
 if TYPE_CHECKING:
     from office365.sharepoint.webs.web import Web
 
@@ -105,6 +107,7 @@ class WebBranding:
     themed_css_folder_url: Optional[str] = None
 
     @classmethod
+    @site_access(SiteLevel.READ)
     def capture(cls, web: "Web") -> "WebBranding":
         """Read a web's branding (one GET projecting the carried properties)."""
         properties = web.select(list(_CAPTURED)).get().execute_query().properties
@@ -190,6 +193,7 @@ def _exists_on_target(web: "Web", path: str, kind: str) -> bool:
     return True
 
 
+@site_access(SiteLevel.WRITE)
 def apply_web_branding(source_web: "Web", target_web: "Web", *, preserve: bool = True) -> WebBrandingReport:
     """Copy a web's branding onto the target, skipping what the target has no asset for.
 

@@ -40,6 +40,7 @@ from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.user_value import FieldUserValue
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.type import PrincipalType
 
 if TYPE_CHECKING:
@@ -710,6 +711,7 @@ class _TargetPrincipals:
         """Canonical principal name (default groups collapse to ``default:<Kind>``)."""
         return self._defaults.normalize(name)
 
+    @site_access(SiteLevel.MANAGE)
     def user(self, login: str | None):
         """Ensure a user login on the target site and return its ``User`` object."""
         if not login:
@@ -725,6 +727,7 @@ class _TargetPrincipals:
         self._users[login] = obj
         return obj
 
+    @site_access(SiteLevel.MANAGE)
     def principal(self, name: str):
         """Resolve a source principal (user or group) to a target principal object."""
         if not name:
@@ -748,6 +751,7 @@ class _TargetPrincipals:
         self._warnings.append(f"could not resolve principal {name!r} on the target")
         return None
 
+    @site_access(SiteLevel.MANAGE)
     def role(self, name: str) -> "RoleDefinition | None":
         """Resolve (and cache) a target role definition by name."""
         if self._roles is None:
@@ -2169,6 +2173,7 @@ class SharePointListTarget:
                     paths.append(f"{value}/{name}")
         return paths
 
+    @site_access(SiteLevel.READ)
     def list_paths(self) -> list[str]:
         if not self._identity_field:
             return [str(i.id) for i in self._list.items.get().execute_query()]
@@ -2252,6 +2257,7 @@ class SharePointListTarget:
             return None
         return self._find_by_identity(item.dest_path)
 
+    @site_access(SiteLevel.WRITE)
     def apply_timestamps(self, item: MigrationItem) -> None:
         """Best-effort: restore ``Created``/``Modified`` on the written item.
 
@@ -2315,6 +2321,7 @@ class SharePointListTarget:
         form_values.update(self._pending_approval.get(item.dest_path, {}))
         self._pending_authorship[item.dest_path] = dict(form_values)
 
+    @site_access(SiteLevel.WRITE)
     def finalize_fidelity(self, item: MigrationItem) -> None:
         """Write the fidelity values that were only cached for this item.
 
@@ -2335,6 +2342,7 @@ class SharePointListTarget:
         ).execute_query()
         _report_rejected_fields(result, self.warnings, f"authorship {item.dest_path}")
 
+    @site_access(SiteLevel.MANAGE)
     def apply_permissions(self, item: MigrationItem, permissions: list[PermissionEntry]) -> None:
         """Best-effort: replay the source item's unique ACLs onto the target item.
 
@@ -2451,6 +2459,7 @@ class SharePointLibrarySource:
     def label(self) -> str:
         return f"library:{self._folder.server_relative_url}"
 
+    @site_access(SiteLevel.READ)
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         # The root folder's URL may not be loaded yet (e.g. via
         # ``list.root_folder``); fetch it so destinations stay library-relative
@@ -2569,6 +2578,7 @@ class SharePointLibrarySource:
             f"preserved): {shown}"
         )
 
+    @site_access(SiteLevel.READ)
     def read(self, item: MigrationItem) -> object:
         if item.item_type == "folder":
             # A folder's payload is its column values (empty when it carries none).
@@ -2586,6 +2596,7 @@ class SharePointLibrarySource:
         file.download_session(buffer, chunk_downloaded=_chunk_downloaded).execute_query()
         return buffer.getvalue()
 
+    @site_access(SiteLevel.READ)
     def read_version_history(self, item: MigrationItem) -> tuple[str | None, list[tuple[str, bytes]]]:
         """Read the file's current version label and its older versions.
 
@@ -2964,6 +2975,7 @@ class SharePointLibraryTarget:
     def _url(self, item: MigrationItem) -> str:
         return f"{(self._folder.server_relative_url or '').rstrip('/')}/{str(item.dest_path).strip('/')}"
 
+    @site_access(SiteLevel.READ)
     def exists(self, item: MigrationItem) -> bool:
         url = self._url(item)
         try:
@@ -2984,6 +2996,7 @@ class SharePointLibraryTarget:
         self._folder.ensure_folders(paths)
         self._folder.context.execute_query()
 
+    @site_access(SiteLevel.WRITE)
     def write(self, item: MigrationItem, payload: object) -> None:
         if item.item_type == "folder":
             self._ensure_folders([item])
@@ -3078,6 +3091,7 @@ class SharePointLibraryTarget:
             )
         return failures
 
+    @site_access(SiteLevel.READ)
     def list_paths(self) -> list[str]:
         root = (self._folder.server_relative_url or "").rstrip("/")
         extra = _site_assets_scaffolding(self._folder)
@@ -3092,6 +3106,7 @@ class SharePointLibraryTarget:
         # carry a trailing slash; target folder paths mirror that.
         return [p for p in paths if p != "/" and not _is_system_path(p, extra)]
 
+    @site_access(SiteLevel.READ)
     def read(self, item: MigrationItem) -> bytes:
         """Download the written item's bytes (used by verification for Office files)."""
         if item.item_type == "folder":
@@ -3117,6 +3132,7 @@ class SharePointLibraryTarget:
         list_item = self._securable(item).select(columns).get().execute_query()
         return _folder_record_values(dict(list_item.properties))
 
+    @site_access(SiteLevel.READ)
     def modified(self, item: MigrationItem) -> str:
         """Last-modified of the target file (for incremental migration)."""
         if item.item_type == "folder":
@@ -3124,6 +3140,7 @@ class SharePointLibraryTarget:
         file = self._folder.context.web.get_file_by_server_relative_url(self._url(item)).get().execute_query()
         return iso_or_none(file.time_last_modified) or ""
 
+    @site_access(SiteLevel.WRITE)
     def apply_timestamps(self, item: MigrationItem) -> None:
         """Best-effort: restore ``Created``/``Modified`` on the written item.
 
@@ -3182,6 +3199,7 @@ class SharePointLibraryTarget:
             form_values["Editor"] = FieldUserValue(editor.id, editor.login_name)
         self._pending_authorship[item.dest_path] = dict(form_values)
 
+    @site_access(SiteLevel.WRITE)
     def finalize_fidelity(self, item: MigrationItem) -> None:
         """Write the fidelity values that were only cached for this item.
 
@@ -3203,6 +3221,7 @@ class SharePointLibraryTarget:
         ).execute_query()
         _report_rejected_fields(result, self.warnings, f"authorship {item.dest_path}")
 
+    @site_access(SiteLevel.MANAGE)
     def apply_permissions(self, item: MigrationItem, permissions: list[PermissionEntry]) -> None:
         """Best-effort: replay a file's or folder's unique ACLs onto the target item.
 
@@ -3216,6 +3235,7 @@ class SharePointLibraryTarget:
         _replay_role_assignments(securable, self._principals(), permissions, self.warnings, item.dest_path)
         securable.context.execute_query()
 
+    @site_access(SiteLevel.WRITE)
     def apply_item_state(self, item: MigrationItem, state: dict) -> None:
         """Best-effort: restore a migrated file's content-approval state.
 
@@ -3243,6 +3263,7 @@ class SharePointLibraryTarget:
             return
         _report_rejected_fields(result, self.warnings, f"approval state {item.dest_path}")
 
+    @site_access(SiteLevel.READ)
     def read_metadata(self, item: MigrationItem) -> dict | None:
         """Comparable attributes of the written item (for the metadata diff)."""
         if item.item_type == "folder":

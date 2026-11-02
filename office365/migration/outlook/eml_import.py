@@ -42,6 +42,7 @@ from office365.migration.outlook.models import MAX_IMPORT_MIME_BYTES, MailImport
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.messages.collection import MessageCollection
 from office365.outlook.mail.messages.message import Message
+from office365.permissions import derived_from, require_permission
 from office365.runtime.paths.v4.entity import EntityPath
 
 #: The id properties an import needs to recognise a message it already delivered.
@@ -123,6 +124,7 @@ class MailboxTarget(DataTarget):
 
     # -- target contract -------------------------------------------------------
 
+    @require_permission(delegated=["Mail.Read"], application=["Mail.Read"])
     def exists(self, item: MigrationItem) -> bool:
         """Whether this message was already delivered to its folder.
 
@@ -147,6 +149,11 @@ class MailboxTarget(DataTarget):
         self._present[item.dest_path] = message
         return True
 
+    @require_permission(
+        delegated=["Mail.ReadWrite"],
+        application=["Mail.ReadWrite"],
+        notes="Imports the RFC 822 document and replays the envelope flags",
+    )
     def write(self, item: MigrationItem, payload: Any) -> None:
         """Create the message from its RFC 822 bytes, then replay the envelope flags."""
         data = payload if isinstance(payload, bytes) else bytes(payload)
@@ -172,6 +179,7 @@ class MailboxTarget(DataTarget):
         """
         return sorted(self._present)
 
+    @derived_from(Message.get_content)
     def checksum(self, item: MigrationItem) -> str:
         """Content fingerprint of the message as the mailbox returns it."""
         message = self._present.get(item.dest_path)

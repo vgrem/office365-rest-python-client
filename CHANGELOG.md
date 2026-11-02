@@ -293,6 +293,26 @@ introduced.
 
 **Permissions**
 
+- **The migration layer names what it needs, and the ledger has no package left to exempt.**
+  The 54 public request-issuing operations under `office365.migration` declare their grant: the
+  37 SharePoint ones as a `@site_access` rung (`capture_*`/`read*` are `READ`,
+  `apply_*`/`provision_*`/`write` are `WRITE`, `copy_site_pages`, `apply_navigation`,
+  `apply_site_security` and `apply_permissions` are `MANAGE`), the Outlook ones as Graph names,
+  and the two thin wrappers (`MailboxTarget.checksum`, `MigrationServerJob.progress_async`)
+  borrow theirs with `@derived_from`. `migration` left `UNTRACKED`, so
+  `index(office365).debt()` is `{}` for every package rather than `{}` for the packages that
+  were asked. Two shapes have no single name to give and say so in `notes` instead of inventing
+  one: `MigrationJob.assess` submits whatever assessor it was handed, and
+  `TeamsArchiveSource.read` fans out across endpoints whose own declarations name them.
+- **The request detector counts the async twins.** `_SUBMIT` now includes
+  `execute_query_async` and `execute_batch_async`, which made ten tracked operations visible
+  for the first time (three of them methods on private download-plan classes). Most were already
+  covered by the rung of the synchronous twin they mirror — `File.download_session_async`,
+  `File.get_content_stream_async`, `FileCollection.create_upload_session_async`,
+  `Entity.execute_batch_async` and `ClientContext.execute_batch_async` — and two needed a
+  declaration of their own. Widening belongs in this batch rather than after it: declaring
+  `MigrationServerJob.progress` while the identically-bodied `progress_async` stayed uncounted
+  would have put the ratchet's hole exactly where an awaitable caller stands.
 - **A wrapper borrows the declaration of the method it drives.** `@derived_from(callee)` stamps a
   method with the *same* `PermissionRequirement` the callee carries — read once at import — so a
   one-line pass-through has no second copy of the rung to drift from, and `help()` names the

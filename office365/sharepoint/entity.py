@@ -84,6 +84,7 @@ class Entity(ClientObject):
         return self
 
     @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+    @site_access(SiteLevel.WRITE)
     async def execute_batch_async(
         self,
         items_per_batch: int = Limits.BATCH_ITEMS.value,

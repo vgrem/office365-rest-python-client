@@ -32,6 +32,7 @@ from typing import Any, Iterable
 from office365.graph_client import GraphClient
 from office365.migration.adapters import DataSource, DataTarget, MigrationProgress, checksum
 from office365.migration.base import MigrationItem
+from office365.permissions import require_permission
 from office365.teams.channels.channel import Channel
 from office365.teams.chats.messages.message import ChatMessage
 
@@ -161,6 +162,15 @@ class TeamsArchiveSource(DataSource):
                     items.append(MigrationItem(source_path=rel, dest_path=rel, item_type="files"))
         return items
 
+    @require_permission(
+        delegated=["ChannelMessage.Read.All", "Chat.Read"],
+        application=["ChannelMessage.Read.All", "ChatMessage.Read.All"],
+        notes=(
+            "Reads the channel messages and the content attached to them; the team structure behind them needs "
+            "Team.ReadBasic.All, TeamMember.Read.All, TeamsAppInstallation.ReadForTeam and TeamsTab.Read.All as "
+            "well, and the files item downloads through SharePoint, which the folder it drives declares"
+        ),
+    )
     def read(self, item: MigrationItem) -> Any:
         team_id, _, remainder = item.source_path.partition("/")
         data = self._data(team_id)

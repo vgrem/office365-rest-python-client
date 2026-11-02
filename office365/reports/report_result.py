@@ -55,6 +55,7 @@ class ReportResult(ClientResult[Report]):
         """Submit the deferred query and return this result for chaining."""
         return cast(Self, super().execute_query())
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     async def execute_query_async(self) -> Self:
         """Submit the deferred query and return this result for chaining."""
         return cast(Self, await super().execute_query_async())

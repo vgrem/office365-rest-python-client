@@ -55,6 +55,7 @@ from typing import TYPE_CHECKING, Iterable, Optional
 
 from office365.migration.offline import offline_context
 from office365.sharepoint.lists.templates.type import ListTemplateType
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS
 from office365.sharepoint.publishing.pages.page import SitePage
 
@@ -231,6 +232,7 @@ def capture_page(item: "ListItem") -> Optional[SitePage]:
     return _copyable(_page(item.properties))
 
 
+@site_access(SiteLevel.READ)
 def capture_site_pages(sp_list: "SPList") -> list[SitePage]:
     """The copyable pages of a page library (one projected read; read-only)."""
     items = sp_list.items.select(list(PAGE_FIELDS)).get().execute_query()
@@ -458,6 +460,7 @@ def _copy_library(
     _verify(report, target_list, written)
 
 
+@site_access(SiteLevel.MANAGE)
 def copy_site_pages(
     source_web: "Web",
     target_web: "Web",
@@ -532,6 +535,7 @@ def _gap_notes(report: "PageCopyReport") -> list[str]:
     return notes
 
 
+@site_access(SiteLevel.READ)
 def capture_home_page(web: "Web") -> Optional[str]:
     """A web's home page as a web-relative path (``SitePages/Home.aspx``), or ``None`` (read-only)."""
     web = web.select(["WelcomePage"]).get().execute_query()
@@ -552,6 +556,7 @@ def _target_refs(target_web: "Web") -> dict:
     }
 
 
+@site_access(SiteLevel.WRITE)
 def apply_home_page(
     source_web: "Web",
     target_web: "Web",
@@ -617,6 +622,7 @@ def _home_page_notes(source_web: "Web", target_web: "Web", source_pages: list, t
     ]
 
 
+@site_access(SiteLevel.READ)
 def verify_page_copy(source_web: "Web", target_web: "Web") -> list[str]:
     """Notes for the pages a copy did not deliver (read-only).
 

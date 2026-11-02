@@ -36,6 +36,7 @@ from office365.migration.sharepoint.adapters import (
     _read_role_assignments,
     _TargetPrincipals,
 )
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
 #: Group properties copied verbatim when they differ on the target group.
@@ -105,6 +106,7 @@ class ListSecurityReport:
         return {"restricted": list(self.restricted), "applied": list(self.applied)}
 
 
+@site_access(SiteLevel.READ)
 def capture_permission_levels(web) -> list[PermissionLevel]:
     """Read a web's permission levels — the grants a role assignment can name.
 
@@ -172,6 +174,7 @@ def _apply_permission_levels(levels: list[PermissionLevel], target_web, warnings
     return created
 
 
+@site_access(SiteLevel.READ)
 def capture_site_groups(web) -> list[SiteGroup]:
     """Read a web's site groups (flags for all; membership for custom groups only)."""
     defaults = _DefaultGroups(web)
@@ -267,6 +270,7 @@ def _apply_group_members(target_group, group: SiteGroup, principals: _TargetPrin
     return added
 
 
+@site_access(SiteLevel.MANAGE)
 def apply_site_security(source_web, target_web, warnings: list[str]) -> None:
     """Re-create the source web's site groups and web-level role assignments on the target.
 
@@ -321,6 +325,7 @@ def _normalize(securable):
     return _DefaultGroups(securable.context.web).normalize
 
 
+@site_access(SiteLevel.READ)
 def capture_list_security(securable) -> Optional[list[PermissionEntry]]:
     """A list's own role assignments, or ``None`` when it simply inherits the web's.
 
@@ -472,6 +477,7 @@ def _level_gaps(source_web, target_web) -> list[str]:
     return issues
 
 
+@site_access(SiteLevel.READ)
 def verify_site_security(source_web, target_web) -> list[str]:
     """Reconcile a migrated web's permission levels, site groups and assignments.
 

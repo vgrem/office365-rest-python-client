@@ -155,6 +155,7 @@ def _web_url(web: "Web") -> str:
     return str(getattr(getattr(web, "context", None), "base_url", "") or "")
 
 
+@site_access(SiteLevel.WRITE)
 def apply_web_settings(source_web: "Web", target_web: "Web", *, preserve: bool = True) -> WebSettingsReport:
     """Copy the carried web settings from ``source_web`` onto ``target_web``.
 

@@ -72,6 +72,7 @@ from office365.migration.outlook.records import slug
 from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.mail.messages.eventtype import EventType
+from office365.permissions import require_permission
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.prefer import prefer_outlook_timezone
 from office365.runtime.http.request_options import RequestOptions
@@ -107,6 +108,7 @@ class CalendarSource(ServiceSource[Event]):
         name = self._options.root_name or getattr(self._calendar, "name", None) or self._calendar.id
         return f"calendar:{name}"
 
+    @require_permission(delegated=["Calendars.Read"], application=["Calendars.Read"])
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         root = self._options.root_name or slug(getattr(self._calendar, "name", None)) or "calendar"
         display = getattr(self._calendar, "name", None) or root
@@ -232,6 +234,7 @@ class CalendarTarget(DataTarget):
         self._present[item.dest_path] = candidates[claimed]
         return True
 
+    @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def write(self, item: MigrationItem, payload: Any) -> None:
         """Create the event from its sidecar record.
 
@@ -273,6 +276,7 @@ class CalendarTarget(DataTarget):
         """
         return sorted(self._present)
 
+    @require_permission(delegated=["Calendars.Read"], application=["Calendars.Read"])
     def checksum(self, item: MigrationItem) -> str:
         """Fingerprint of the event as the target calendar returns it.
 

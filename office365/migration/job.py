@@ -20,6 +20,7 @@ from office365.migration.delta import DeltaReport, compute_delta
 from office365.migration.logging import log_event
 from office365.migration.manifest import Manifest
 from office365.migration.runner import MigrationRunner
+from office365.permissions import require_permission
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
@@ -184,6 +185,7 @@ class MigrationJob:
 
     # ── Lifecycle ────────────────────────────────────────────────
 
+    @require_permission(notes="Submits the assessor's own query, so the assessor names what it needs")
     def assess(self, progress: Callable[["Progress"], None] | None = None) -> object | None:
         """Run the pre-migration assessment (the "scan" phase).
 

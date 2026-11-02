@@ -67,6 +67,7 @@ from office365.migration.outlook.records import slug
 from office365.migration.outlook.restore import withheld
 from office365.outlook.contacts.contact import Contact
 from office365.outlook.contacts.folders.folder import ContactFolder
+from office365.permissions import require_permission
 from office365.runtime.operations import emit_progress
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -250,6 +251,7 @@ class ContactTarget(DataTarget):
         self._present[item.dest_path] = index[key][claimed]
         return True
 
+    @require_permission(delegated=["Contacts.ReadWrite"], application=["Contacts.ReadWrite"])
     def write(self, item: MigrationItem, payload: Any) -> None:
         """Create the contact from its sidecar record.
 
@@ -286,6 +288,7 @@ class ContactTarget(DataTarget):
         """
         return sorted(self._present)
 
+    @require_permission(delegated=["Contacts.Read"], application=["Contacts.Read"])
     def checksum(self, item: MigrationItem) -> str:
         """Fingerprint of the contact as the target folder returns it."""
         contact = self._present.get(item.dest_path)

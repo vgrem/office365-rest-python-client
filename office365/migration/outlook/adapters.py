@@ -54,6 +54,7 @@ from office365.migration.outlook.models import MailExportOptions, MessageRecord
 from office365.migration.outlook.records import SidecarRecord, slug
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.messages.message import Message
+from office365.permissions import require_permission
 from office365.runtime.converters.scalars import parse_datetime
 from office365.runtime.operations import emit_progress
 
@@ -156,6 +157,11 @@ class MailFolderSource(ServiceSource[Message]):
             metadata=record.to_json(),
         )
 
+    @require_permission(
+        delegated=["Mail.Read"],
+        application=["Mail.Read"],
+        notes="Reads the message body ($value); resolving the folder it sits in needs the same grant",
+    )
     def read(self, item: MigrationItem) -> bytes:
         """The message's RFC 822 bytes (``GET /messages/{id}/$value``)."""
         data = self._handle(item).get_content().execute_query().value

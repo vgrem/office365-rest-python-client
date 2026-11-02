@@ -27,8 +27,10 @@ from office365.sharepoint.navigation.nodes.creationinformation import (
     NavigationNodeCreationInformation,
 )
 from office365.sharepoint.navigation.nodes.node import NavigationNode
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 
+@site_access(SiteLevel.READ)
 def capture_navigation(web) -> Navigation:
     """Read a web's navigation — both bars with their whole tree — as the model's own tree."""
     return web.navigation.get_tree().execute_query()
@@ -82,6 +84,7 @@ def _sync_nodes(
     return added
 
 
+@site_access(SiteLevel.MANAGE)
 def apply_navigation(source_web, target_web, warnings: list[str]) -> None:
     """Copy the source web's Quick Launch and top navigation onto the target (additive).
 

@@ -67,6 +67,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCollection
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.field import is_taxonomy_column, schema_property
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.sharepoint.contenttypes.content_type import ContentType
@@ -412,6 +413,7 @@ def load_list_structure(path: str | Path) -> ListStructure:
     return ListStructure.from_dict(data)
 
 
+@site_access(SiteLevel.READ)
 def capture_list_structure(sp_list: SPList) -> ListStructure:
     """Read a SharePoint list's structure into a :class:`ListStructure` snapshot.
 
@@ -693,6 +695,7 @@ def _view_definition(view: View, field_names: Iterable[str]) -> ViewDefinition:
     )
 
 
+@site_access(SiteLevel.MANAGE)
 def provision_list_structure(
     sp_list: SPList,
     structure: ListStructure,

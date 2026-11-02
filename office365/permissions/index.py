@@ -35,13 +35,14 @@ if TYPE_CHECKING:
 #: The calls that put a query on the wire. A method that makes one issues a request; a method
 #: that only constructs a query and hands it back is not counted, so the answer is a floor
 #: rather than a census - the safe direction for a debt ledger, since an uncounted request
-#: cannot be reported as declared.
-_SUBMIT = frozenset({"add_query", "execute_query", "execute_batch"})
+#: cannot be reported as declared. The async twins count too: a hole in the detector is a hole
+#: exactly where an awaitable path would stand.
+_SUBMIT = frozenset({"add_query", "execute_query", "execute_batch", "execute_query_async", "execute_batch_async"})
 
-#: Packages that are not asked to name a permission: the transport and the migration layer
-#: orchestrate requests that model methods already declare, and a root-level base class cannot
-#: know the type it creates (``Entity.get`` serves every entity there is).
-UNTRACKED = frozenset({"runtime", "migration", "."})
+#: Packages that are not asked to name a permission: the transport orchestrates requests that
+#: model methods already declare, and a root-level base class cannot know the type it creates
+#: (``Entity.get`` serves every entity there is).
+UNTRACKED = frozenset({"runtime", "."})
 
 
 @dataclass(frozen=True)

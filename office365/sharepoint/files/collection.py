@@ -303,6 +303,7 @@ class FileCollection(EntityCollection[File]):
         self.context.add_query(query)
         return return_type
 
+    @site_access(SiteLevel.WRITE)
     async def create_upload_session_async(
         self,
         file_or_path: IO | str,

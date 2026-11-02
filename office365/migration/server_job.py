@@ -240,6 +240,7 @@ class MigrationServerJob:
         events = [json.loads(line) for line in (value.Logs or [])]
         return events, value.NextToken or next_token
 
+    @derived_from(Site.get_migration_job_progress)
     async def progress_async(self, job_id: str, next_token: str = "0") -> tuple[list[dict], str]:
         """Async twin of :meth:`progress` — awaits the progress GET off the loop."""
         result = await self._site.get_migration_job_progress(job_id, next_token).execute_query_async()

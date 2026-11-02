@@ -87,6 +87,7 @@ class _Plan:
     def resolve(self) -> List[_FilePair]:
         raise NotImplementedError
 
+    @site_access(SiteLevel.READ)
     async def resolve_async(self) -> List[_FilePair]:
         raise NotImplementedError
 
@@ -109,6 +110,7 @@ class _FolderPlan(_Plan):
         col.execute_query()
         return _pairs(col, self._folder.server_relative_url)
 
+    @site_access(SiteLevel.READ)
     async def resolve_async(self) -> List[_FilePair]:
         col = self._enumerate()
         await col.execute_query_async()
@@ -135,6 +137,7 @@ class _CollectionPlan(_Plan):
         col.execute_query()
         return _pairs(col, col.parent.server_relative_url)
 
+    @site_access(SiteLevel.READ)
     async def resolve_async(self) -> List[_FilePair]:
         col = self._enumerate()
         await col.execute_query_async()
@@ -160,6 +163,7 @@ class _FilePlan(_Plan):
             self._file.context.execute_query()
         return [(self._file, "")]
 
+    @site_access(SiteLevel.READ)
     async def resolve_async(self) -> List[_FilePair]:
         self._ensure_size()
         if self._file.context.has_pending_request:

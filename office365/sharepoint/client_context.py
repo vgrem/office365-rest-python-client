@@ -25,6 +25,7 @@ from office365.runtime.transport.base import NoTimeoutType
 from office365.runtime.transport.requests_transport import DEFAULT_POOL_CONNECTIONS, DEFAULT_POOL_MAXSIZE
 from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.exceptions import SecurityValidationException
+from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
 from office365.sharepoint.portal.sites.creation_response import SPSiteCreationResponse
@@ -356,6 +357,7 @@ class ClientContext(ClientRuntimeContext):
         return self
 
     @limit(Limits.BATCH_ITEMS, arg="items_per_batch")
+    @site_access(SiteLevel.WRITE)
     async def execute_batch_async(
         self,
         items_per_batch: int = Limits.BATCH_ITEMS.value,

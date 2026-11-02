@@ -996,6 +996,7 @@ class File(AbstractFile):
             self.ensure_property("ServerRelativeUrl").after_execute(lambda _: _download_as_stream())
         return self
 
+    @site_access(SiteLevel.READ)
     async def download_session_async(
         self,
         file_object: IO,
@@ -1069,6 +1070,7 @@ class File(AbstractFile):
             raise error from e
         return self
 
+    @site_access(SiteLevel.READ)
     async def get_content_stream_async(
         self,
         chunk_size: int = 1024 * 1024,
