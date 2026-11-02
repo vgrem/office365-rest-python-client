@@ -13,7 +13,6 @@ from office365.sharepoint.directory.members_info import MembersInfo
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.principal.principal import Principal
 
 if TYPE_CHECKING:
     from office365.sharepoint.directory.users.user import User
@@ -76,73 +75,6 @@ class Group(Entity):
     @property
     def entity_type_name(self):
         return "SP.Directory.Group"
-
-    @property
-    def allow_members_edit_membership(self) -> Optional[bool]:
-        """Gets the AllowMembersEditMembership property"""
-        return self.properties.get("AllowMembersEditMembership", None)
-
-    @property
-    def allow_request_to_join_leave(self) -> Optional[bool]:
-        """Gets the AllowRequestToJoinLeave property"""
-        return self.properties.get("AllowRequestToJoinLeave", None)
-
-    @property
-    def auto_accept_request_to_join_leave(self) -> Optional[bool]:
-        """Gets the AutoAcceptRequestToJoinLeave property"""
-        return self.properties.get("AutoAcceptRequestToJoinLeave", None)
-
-    @property
-    def can_current_user_edit_membership(self) -> Optional[bool]:
-        """Gets the CanCurrentUserEditMembership property"""
-        return self.properties.get("CanCurrentUserEditMembership", None)
-
-    @property
-    def can_current_user_manage_group(self) -> Optional[bool]:
-        """Gets the CanCurrentUserManageGroup property"""
-        return self.properties.get("CanCurrentUserManageGroup", None)
-
-    @property
-    def can_current_user_view_membership(self) -> Optional[bool]:
-        """Gets the CanCurrentUserViewMembership property"""
-        return self.properties.get("CanCurrentUserViewMembership", None)
-
-    @property
-    def contains_current_user(self) -> Optional[bool]:
-        """Gets the ContainsCurrentUser property"""
-        return self.properties.get("ContainsCurrentUser", None)
-
-    @property
-    def description(self) -> Optional[str]:
-        """Gets the Description property"""
-        return self.properties.get("Description", None)
-
-    @property
-    def only_allow_members_view_membership(self) -> Optional[bool]:
-        """Gets the OnlyAllowMembersViewMembership property"""
-        return self.properties.get("OnlyAllowMembersViewMembership", None)
-
-    @property
-    def owner_title(self) -> Optional[str]:
-        """Gets the OwnerTitle property"""
-        return self.properties.get("OwnerTitle", None)
-
-    @property
-    def request_to_join_leave_email_setting(self) -> Optional[str]:
-        """Gets the RequestToJoinLeaveEmailSetting property"""
-        return self.properties.get("RequestToJoinLeaveEmailSetting", None)
-
-    @property
-    def owner(self) -> Principal:
-        """Gets the Owner property"""
-        return self.properties.get("Owner", Principal(self.context, ResourcePath("Owner", self.resource_path)))
-
-    @property
-    def users(self) -> EntityCollection[User]:
-        """Gets the Users property"""
-        return self.properties.get(
-            "Users", EntityCollection[User](self.context, User, ResourcePath("Users", self.resource_path))
-        )
 
     @site_access(SiteLevel.MANAGE)
     def set_user_as_owner(self, owner_id: int) -> Self:
