@@ -185,7 +185,10 @@ class TestOutlookMessages(GraphDelegatedTestCase):
                     sent.download(f).execute_query()
                 self.assertGreater(os.path.getsize(file_path), 0)
         finally:
-            sent.delete_object().execute_query()
+            # The sent copy is indexed after the send; deleting it immediately can answer
+            # ``ErrorItemNotFound ... failed to get the correct properties``. The download
+            # is what this test asserts, so cleanup tolerates the copy already being gone.
+            sent.delete_object(ignore_missing=True).execute_query()
 
     @requires_delegated(
         "Mail.ReadWrite",

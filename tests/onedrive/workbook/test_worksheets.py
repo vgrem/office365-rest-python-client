@@ -26,7 +26,9 @@ class TestExcelWorksheets(GraphDelegatedTestCase):
     @classmethod
     def tearDownClass(cls):
         assert cls.excel_file is not None
-        cls.excel_file.delete_object().execute_query_retry()
+        # Opening the workbook leaves the file shared-locked for a while, and a shared lock
+        # cannot be waited out within a test run; this file is a throwaway.
+        cls.excel_file.delete_object(bypass_shared_lock=True).execute_query_retry()
 
     @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_add_worksheet(self):

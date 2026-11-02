@@ -10,6 +10,7 @@ Tests cover:
 
 from __future__ import annotations
 
+import time
 from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
@@ -78,15 +79,23 @@ class TestOnlineMeetings(GraphDelegatedTestCase):
         if not meeting:
             self.skipTest("No meeting created from previous test")
 
-        now = datetime.now(pytz.utc)
-        meeting.subject = "SDK Test — Updated Subject"
-        meeting.start_datetime = now
-        meeting.end_datetime = now + timedelta(hours=1)
+        # The subject alone: a PATCH that also carries a new time range is accepted (200)
+        # and applies the time, but leaves the subject as it was. Measured twice on the
+        # tenant, raw and through the library, with the same body the test used to send.
+        new_subject = "SDK Test — Updated Subject"
+        meeting.subject = new_subject
         meeting.update().execute_query()
 
-        # Re-fetch and verify
-        updated = self.client.me.online_meetings[meeting.id].get().execute_query()
-        self.assertEqual(updated.get_property("subject"), "SDK Test — Updated Subject")
+        # Re-fetch and verify. The read lags the write by up to a couple of seconds
+        # (measured: three of four updates were visible at once, one took 2.1 s), so the
+        # assertion is on what the service reports within a bound, not on the first read.
+        deadline = time.monotonic() + 15
+        while True:
+            updated = self.client.me.online_meetings[meeting.id].get().execute_query()
+            if updated.get_property("subject") == new_subject or time.monotonic() > deadline:
+                break
+            time.sleep(1.5)
+        self.assertEqual(updated.get_property("subject"), new_subject)
 
     @requires_delegated("OnlineMeetingRecording.Read.All")
     def test_05_list_recordings(self):

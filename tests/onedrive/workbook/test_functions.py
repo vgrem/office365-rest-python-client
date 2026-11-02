@@ -23,7 +23,7 @@ class TestExcelFunctions(GraphDelegatedTestCase):
     @classmethod
     def tearDownClass(cls):
         assert cls.target_item is not None
-        cls.target_item.delete_object().execute_query_retry()
+        cls.target_item.delete_object(bypass_shared_lock=True).execute_query_retry()
 
     @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_get_abs(self):

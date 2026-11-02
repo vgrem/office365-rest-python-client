@@ -22,10 +22,15 @@ class TestCallRecords(GraphApplicationTestCase):
     """Call records require application-level permissions (CallRecords.Read.All)."""
 
     @requires_application("CallRecords.Read.All")
-    def test_01_list_call_records_paginated(self):
-        """Listing recent call records with $top=3 returns a valid collection."""
-        records = self.client.communications.call_records.top(3).get().execute_query()
-        self.assertIsNotNone(records)
+    def test_01_list_call_records(self):
+        """Listing recent call records returns a valid collection.
+
+        The feed refuses ``$top`` outright ("Query option 'Top' is not allowed"), so the
+        first page is the only page this test can ask for; ``query_capabilities`` raises
+        before the request rather than letting the service return that error.
+        """
+        records = self.client.communications.call_records.get().execute_query()
+        self.assertIsNotNone(records.resource_path)
 
     @requires_call(CallRecordCollection.get_direct_routing_calls, flow="application")
     def test_02_get_direct_routing_calls_default(self):
@@ -56,7 +61,7 @@ class TestCallRecords(GraphApplicationTestCase):
     @requires_application("CallRecords.Read.All")
     def test_05_call_record_has_expected_properties(self):
         """A call record exposes id, startDateTime, endDateTime, and type."""
-        records = self.client.communications.call_records.top(3).get().execute_query()
+        records = self.client.communications.call_records.get().execute_query()
         if len(records) == 0:
             self.skipTest("No call records found")
 
@@ -70,7 +75,7 @@ class TestCallRecords(GraphApplicationTestCase):
     @requires_application("CallRecords.Read.All")
     def test_06_call_record_has_sessions(self):
         """A call record exposes a sessions collection."""
-        records = self.client.communications.call_records.top(3).get().execute_query()
+        records = self.client.communications.call_records.get().execute_query()
         if len(records) == 0:
             self.skipTest("No call records found")
 
@@ -102,7 +107,7 @@ class TestCallRecords(GraphApplicationTestCase):
     @requires_application("CallRecords.Read.All")
     def test_08_call_record_has_modality(self):
         """A call record has a modalities field indicating audio/video."""
-        records = self.client.communications.call_records.top(5).get().execute_query()
+        records = self.client.communications.call_records.get().execute_query()
         if len(records) == 0:
             self.skipTest("No call records found")
 

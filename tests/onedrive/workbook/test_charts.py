@@ -25,7 +25,7 @@ class TestExcelCharts(GraphDelegatedTestCase):
     @classmethod
     def tearDownClass(cls):
         assert cls.excel_file is not None
-        cls.excel_file.delete_object().execute_query_retry()
+        cls.excel_file.delete_object(bypass_shared_lock=True).execute_query_retry()
 
     @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_list_charts(self):

@@ -11,6 +11,7 @@ from typing import ClassVar, Optional
 
 from office365.directory.domains.domain import Domain
 
+from tests import test_tenant
 from tests.decorators import requires_application
 from tests.graph_case import GraphApplicationTestCase
 
@@ -22,11 +23,16 @@ class TestDomain(GraphApplicationTestCase):
 
     @requires_application("Domain.Read.All")
     def test_01_list_domains(self):
-        """Listing top 1 domain returns a valid collection."""
-        domains = self.client.domains.top(1).get().execute_query()
-        self.assertIsNotNone(domains.resource_path)
-        self.assertEqual(len(domains), 1)
-        TestDomain.target_domain = domains[0]
+        """The tenant's own domain is in the list, and a domain can be picked for later tests.
+
+        ``$top`` was asked for once and the service answered with two entries, so the
+        count is not the fact worth pinning; the tenant domain being present is.
+        """
+        domains = self.client.domains.get().execute_query()
+        self.assertGreater(len(domains), 0)
+        self.assertIn(test_tenant, [d.id for d in domains])
+        default = [d for d in domains if d.get_property("isDefault")]
+        TestDomain.target_domain = default[0] if default else domains[0]
 
     @requires_application("Domain.Read.All")
     def test_02_domain_has_properties(self):

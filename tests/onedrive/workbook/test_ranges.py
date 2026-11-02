@@ -4,6 +4,8 @@ from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.workbooks.names.collection import WorkbookNamedItemCollection
 from office365.onedrive.workbooks.names.named_item import WorkbookNamedItem
 from office365.onedrive.workbooks.ranges.range import WorkbookRange
+from office365.runtime.exceptions import ObjectNotFoundException
+from office365.runtime.retry import retry_on
 from tests import create_unique_name
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
@@ -25,7 +27,7 @@ class TestExcelRanges(GraphDelegatedTestCase):
     @classmethod
     def tearDownClass(cls):
         assert cls.excel_file is not None
-        cls.excel_file.delete_object().execute_query_retry()
+        cls.excel_file.delete_object(bypass_shared_lock=True).execute_query_retry()
 
     @requires_call(
         WorkbookNamedItemCollection.add,
@@ -45,7 +47,12 @@ class TestExcelRanges(GraphDelegatedTestCase):
     def test2_names_get(self):
         """Get a named item"""
         assert TestExcelRanges.named_item is not None
-        result = TestExcelRanges.named_item.get().execute_query_retry(2)
+        # A named item is not readable the instant it is created: the GET answers
+        # ``ItemNotFound`` and starts answering a few seconds later (measured 0.5 s -> 5.9 s),
+        # and a 404 is permanent as far as the default retry policy goes.
+        result = TestExcelRanges.named_item.get().execute_query_retry(
+            max_retry=6, timeout_secs=2, is_retriable=retry_on(ObjectNotFoundException)
+        )
         self.assertIsNotNone(result.resource_path)
 
     @requires_call(

@@ -6,14 +6,22 @@ from office365.onedrive.workbooks.tables.collection import WorkbookTableCollecti
 from office365.onedrive.workbooks.tables.columns.collection import WorkbookTableColumnCollection
 from office365.onedrive.workbooks.tables.rows.collection import WorkbookTableRowCollection
 from office365.onedrive.workbooks.tables.table import WorkbookTable
-from tests import DATA_DIR
+from tests import DATA_DIR, create_unique_file_name
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 def upload_excel(target_drive: Drive) -> DriveItem:
-    path = str(DATA_DIR / "Financial Sample.xlsx")
-    return target_drive.root.upload_file(path).execute_query()
+    """Upload the sample workbook as a file of its own.
+
+    The name is unique per call on purpose. With a fixed name every run writes the same drive
+    item, and an editing session left open by one run keeps that item shared-locked
+    (``notAllowed: The resource you are attempting to access is locked``) for the next one, so
+    a rerun could never recover. A fresh item always starts unlocked.
+    """
+    path = DATA_DIR / "Financial Sample.xlsx"
+    name = create_unique_file_name("Financial Sample", "xlsx")
+    return target_drive.root.upload(name, path.read_bytes()).execute_query()
 
 
 class TestExcel(GraphDelegatedTestCase):
@@ -31,7 +39,7 @@ class TestExcel(GraphDelegatedTestCase):
     @classmethod
     def tearDownClass(cls):
         assert cls.target_item is not None
-        cls.target_item.delete_object().execute_query_retry()
+        cls.target_item.delete_object(bypass_shared_lock=True).execute_query_retry()
 
     @requires_delegated("Files.ReadWrite", bypass_roles=["Global Administrator", "SharePoint Administrator"])
     def test1_get_workbook(self):

@@ -75,17 +75,26 @@ class TestGraphGroup(GraphDelegatedTestCase):
         group = TestGraphGroup.target_group
         if not group:
             self.skipTest("No target group created from previous test")
-        group.owners.add(owner).execute_query()
+        owners = group.owners.get().execute_query()
+        if owner.id not in [o.id for o in owners]:
+            group.owners.add(owner).execute_query()
         TestGraphGroup.target_user = users[0]
 
     @requires_delegated("Group.Read.All", bypass_roles=["Groups Administrator", "Global Administrator"])
     def test_06_list_group_owners(self):
-        """Listing group owners returns at least one owner."""
+        """Listing group owners returns the owner test 05 added.
+
+        The listing is the assertion: ``owners.add`` is idempotent in test 05 precisely
+        because a second add is refused with "One or more added object references
+        already exist", and that refusal is not what either test is about.
+        """
         group = TestGraphGroup.target_group
         if not group:
             self.skipTest("No target group created from previous test")
         owners = group.owners.get().execute_query()
         self.assertGreater(len(owners), 0)
+        if TestGraphGroup.target_user:
+            self.assertIn(TestGraphGroup.target_user.id, [o.id for o in owners])
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
     def test_07_remove_group_owner(self):
@@ -99,7 +108,12 @@ class TestGraphGroup(GraphDelegatedTestCase):
         owner_id = target_user.id
         if not owner_id:
             self.skipTest("Target user has no ID")
+        owners = group.owners.get().execute_query()
+        if [o.id for o in owners] == [owner_id]:
+            self.skipTest("The added owner is the group's only owner; Graph keeps at least one")
         group.owners.remove(owner_id).execute_query()
+        owners = group.owners.get().execute_query()
+        self.assertNotIn(owner_id, [o.id for o in owners])
 
     @requires_delegated("Group.ReadWrite.All", bypass_roles=["Groups Administrator", "Global Administrator"])
     def test_08_add_group_member(self):
