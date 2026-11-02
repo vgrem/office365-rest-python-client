@@ -859,6 +859,12 @@ introduced.
 
 **Model**
 
+- **A flags combination is a value the enum cannot spell, and the collection dropped it.** Graph
+  returns one `authenticationMethodModes` item as `"password,softwareOath"` — a combination no member
+  names — so `ClientValueCollection.add` refused it and reading a strength policy raised `TypeError`
+  with the response lost. The collection keeps the wire spelling now (`parse_enum` already answers a
+  combination with the string it was given) and serialises it back byte-identical; a value that is
+  neither a member nor a combination of members is still refused.
 - **A Teams schedule entity sent the service's timestamps back.** `ChangeTrackedEntity` declares
   `id` and `lastModifiedBy` readonly, but `createdDateTime` and `lastModifiedDateTime` were still
   writable, while the CSDL marks both `Org.OData.Core.V1.Computed` — so a shift, a time-off or an

@@ -61,10 +61,18 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
             Self: For method chaining
 
         Raises:
-            TypeError: If value doesn't match collection type
+            TypeError: If value doesn't match collection type and is not a flags
+                combination the item type cannot spell
         """
         if self._item_type is not None and not isinstance(value, self._item_type):
-            raise TypeError(f"Expected {self._item_type}, got {type(value)}")
+            # An enum cannot spell a combined flags value, so a collection of them keeps
+            # the wire spelling: Graph returns one ``authenticationMethodModes`` item as
+            # "password,softwareOath", and ``parse_enum`` answers that combination with
+            # the string it was given (``_parse_flags``). Refusing it here dropped the
+            # whole response — a strength policy, for instance, cannot be read at all.
+            item_type = self._item_type
+            if not (isinstance(value, str) and issubclass(item_type, Enum) and parse_enum(item_type, value) == value):
+                raise TypeError(f"Expected {item_type}, got {type(value)}")
         self._data.append(value)
         return self
 
