@@ -190,6 +190,12 @@ test exercises instead of restating it:
 @requires_application("Sites.Read.All")   # an app role, by name
 ```
 
+`bypass_roles` is the weaker alternative: it is answered from the tenant's directory roles,
+which is not the same fact as a scope in the token. Graph mints a token from consented
+scopes alone, so `Teams Administrator` does not carry `VirtualEvent.Read` — measured, the
+virtual-events suite skipped on the scope once the role was taken away, because every call
+had answered 403 with the role still declared.
+
 Add `flow="application"` to `@requires_call` for an app-only suite. The declared
 requirements are read off the test tree, so what a tenant must grant is known before a
 run and never kept in a second list. A requirement names the API it is granted on, so a
