@@ -1408,6 +1408,22 @@ from office365.runtime.http.throttling import RateLimiter
 RateLimiter(min_interval=0.25).bind(target_ctx)  # at most 4 requests/second, fleet-wide
 ```
 
+`migration_client` is the one call that does both for a run: it installs pacing and,
+on a Graph client, sends `x-ms-throttle-priority: low`, so the tenant defers the run
+instead of deferring the interactive users it competes with:
+
+```python
+from office365.migration import migration_client
+
+client = migration_client(GraphClient(tenant=tenant).with_client_secret(client_id, secret))
+# paced; every request carries x-ms-throttle-priority: low
+```
+
+Configure the client before the run starts and pass it in — the call changes the client
+it is given, as every `with_...` does. The header is Graph-only: a SharePoint
+`ClientContext` gets pacing and no header, because it signals load with
+`X-SharePointHealthScore`, which the same limiter reads.
+
 Resume from the **checkpoint and manifest files**, never from a log: those are the
 authoritative record of what has been copied, and a log is best-effort.
 

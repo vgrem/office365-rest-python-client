@@ -39,6 +39,7 @@ from office365.migration.base import (
     conflict_to_on_conflict,
 )
 from office365.migration.checkpoint import Checkpoint
+from office365.migration.clients import migration_client
 from office365.migration.delta import DeltaReport, MovedItem, compute_delta
 from office365.migration.fidelity import FidelityReport, FidelityStatus, describe_fidelity
 from office365.migration.identity import IdentityMap, UnmappedPolicy, UnmappedPrincipalError
@@ -148,6 +149,7 @@ __all__ = [
     "conflict_to_on_conflict",
     "describe_fidelity",
     "log_event",
+    "migration_client",
     "FidelityStatus",
     "export_reports",
     "scan_pairs",

@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from office365.migration import MigrationJob
+from office365.migration import MigrationJob, migration_client
 from office365.migration.teams import TeamsArchiveSource, TeamsArchiveTarget, TeamsExportOptions
 from tests.settings import client_id, client_secret, tenant
 
@@ -75,7 +75,8 @@ def main():
     if not args.team and not args.all:
         parser.error("pass --team <id> (repeatable) or --all")
 
-    client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
+    # Bulk export: low priority, and paced by the server's own throttle signal.
+    client = migration_client(GraphClient(tenant=tenant).with_client_secret(client_id, client_secret))
     _execute(_build_job(client, args), args.resume, with_files=args.files)
     print(f"Archive: {args.output}")
 

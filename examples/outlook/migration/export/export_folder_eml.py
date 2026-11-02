@@ -23,7 +23,7 @@ import tempfile
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from office365.migration import MigrationJob, MigrationOptions
+from office365.migration import MigrationJob, MigrationOptions, migration_client
 from office365.migration.outlook import MailExportOptions, MailExportTarget, MailFolderSource
 from tests.settings import client_id, password, tenant, username
 
@@ -37,7 +37,8 @@ def main():
     parser.add_argument("--preserve-timestamps", action="store_true", help="stamp each .eml with its modified time")
     args = parser.parse_args()
 
-    client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
+    # Bulk export: low priority, and paced by the server's own throttle signal.
+    client = migration_client(GraphClient(tenant=tenant).with_username_and_password(client_id, username, password))
     folder = client.me.mail_folders[args.folder].get().execute_query()
     output = Path(args.output or tempfile.mkdtemp(prefix="mail-export-"))
 

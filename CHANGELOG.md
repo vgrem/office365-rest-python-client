@@ -120,6 +120,16 @@ introduced.
 
 ### Added
 
+**Migration**
+
+- `migration_client(client)` (`office365.migration`) applies the background-workload
+  policy in one call: a shared `RateLimiter` on the context's transport, plus
+  `x-ms-throttle-priority: low` on a Graph client, so a bulk export or import is
+  throttled last and paces on the server's own signal instead of discovering the
+  limit through `429`s. `priority=None` leaves the header off, `pace=False` skips the
+  limiter, and a SharePoint context gets pacing only — it signals load with
+  `X-SharePointHealthScore` instead.
+
 **Model metadata**
 
 - A field can declare what the service treats as the same value:
