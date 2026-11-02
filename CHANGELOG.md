@@ -857,6 +857,12 @@ introduced.
 
 ### Fixed
 
+- **A page's web parts were requested without the cast that names the type.** `SitePage.web_parts` asked
+  for `pages/{id}/webParts` and the service answered `Resource not found for the segment 'webParts'`.
+  The navigation is declared on the derived `sitePage`, so the path has to say so:
+  `pages/{id}/microsoft.graph.sitePage/webParts` returns the collection. `canvas_layout` beside it is
+  still unverified — the cast alone does not make that one answer.
+
 **Model**
 
 - **A flags combination is a value the enum cannot spell, and the collection dropped it.** Graph

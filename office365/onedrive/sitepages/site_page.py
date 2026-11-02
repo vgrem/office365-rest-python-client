@@ -134,8 +134,15 @@ class SitePage(BaseSitePage):
     @property
     def web_parts(self) -> EntityCollection[WebPart]:
         """Collection of webparts on the SharePoint page."""
+        # ``webParts`` is declared on the derived ``sitePage``, so a request for it has to
+        # name that type: ``pages/{id}/webParts`` is answered with "Resource not found for
+        # the segment 'webParts'", ``pages/{id}/microsoft.graph.sitePage/webParts`` returns
+        # the collection. ``publish`` below spells the same cast for the same reason.
         return self.properties.get(
-            "webParts", EntityCollection(self.context, WebPart, ResourcePath("webParts", self.resource_path))
+            "webParts",
+            EntityCollection(
+                self.context, WebPart, ResourcePath("microsoft.graph.sitePage/webParts", self.resource_path)
+            ),
         )
 
     @odata(name="reactions")
