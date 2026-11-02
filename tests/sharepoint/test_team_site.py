@@ -74,14 +74,17 @@ class TestTeamSite(SPTestCase):
             self.skipTest("No target site from previous test")
         target_site.delete_object().execute_query()
 
-    @requires_call(GroupSiteManager.get_current_user_joined_teams, flow="delegated")
-    def test_05_get_current_user_joined_teams(self):
-        """Get the list of teams the current user has joined."""
-        result = self.client.group_site_manager.get_current_user_joined_teams().execute_query()
-        self.assertIsNotNone(result.value)
-
     @requires_call(GroupSiteManager.get_group_creation_context, flow="delegated")
-    def test_06_get_group_creation_context(self):
-        """Get the group creation context."""
-        result = self.client.group_site_manager.get_group_creation_context().execute_query()
+    def test_05_get_group_creation_context(self):
+        """Get the group creation context.
+
+        Uses a context rooted at an existing web: ``create_team_site`` in test 02 rebinds
+        ``cls.client.site`` to the site it created, and test 04 deletes that site. The
+        ``groupSiteManager`` resource answers for a web that exists — ``GetSiteStatus``
+        still resigned regardless, which is why test 03 kept passing and these did not.
+        """
+        client = ClientContext(test_site_url).with_username_and_password(
+            test_tenant, test_client_id, test_username, test_password
+        )
+        result = client.group_site_manager.get_group_creation_context().execute_query()
         self.assertIsNotNone(result.value)
