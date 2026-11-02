@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Optional
 
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.security.subjectrightsrequests.data_subject import DataSubject
 from office365.security.subjectrightsrequests.request import (
     SubjectRightsRequest,
@@ -25,13 +26,27 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
 
     created_request: ClassVar[Optional[SubjectRightsRequest]] = None
 
+    def _fetch(self, collection):
+        """Run the collection's GET, or skip when this tenant has no privacy endpoint.
+
+        Measured: ``/security/subjectRightsRequests`` answers ``HostNotFound``, "Target
+        'privacy.trafficmanager.net' is not found." - the tenant's privacy service was never
+        provisioned, so the endpoint is missing for every caller, granted scope included.
+        """
+        try:
+            return collection.get().execute_query()
+        except ClientRequestException as error:
+            if "privacy.trafficmanager.net" not in str(error):
+                raise
+            self.skipTest(f"the tenant has no privacy service endpoint: {error}")
+
     @requires_delegated(
         *_SR_PERM_READ,
         bypass_roles=["Global Administrator"],
     )
     def test_01_list_requests(self):
         """Listing subject rights requests returns a valid collection."""
-        result = self.client.security.subject_rights_requests.top(10).get().execute_query()
+        result = self._fetch(self.client.security.subject_rights_requests.top(10))
         self.assertIsNotNone(result.resource_path)
         # Collection may be empty — that's fine, just verify no error
 
@@ -41,7 +56,7 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
     )
     def test_02_filter_requests_by_type(self):
         """Filtering subject rights requests by type narrows to 'export' or 'delete' types."""
-        result = self.client.security.subject_rights_requests.filter("type eq 'export'").top(5).get().execute_query()
+        result = self._fetch(self.client.security.subject_rights_requests.filter("type eq 'export'").top(5))
         self.assertIsNotNone(result.resource_path)
         for req in result:
             req_type = req.get_property("type")
@@ -53,7 +68,7 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
     )
     def test_03_requests_have_expected_properties(self):
         """A subject rights request exposes type, status, createdDateTime, and dataSubject."""
-        result = self.client.security.subject_rights_requests.top(5).get().execute_query()
+        result = self._fetch(self.client.security.subject_rights_requests.top(5))
         if len(result) == 0:
             self.skipTest("No subject rights requests exist to inspect")
         for req in result:
@@ -70,7 +85,7 @@ class TestSubjectRightsRequests(GraphDelegatedTestCase):
     )
     def test_04_pagination_limit_works(self):
         """Requesting with $top=3 truncates results as expected."""
-        result = self.client.security.subject_rights_requests.top(3).get().execute_query()
+        result = self._fetch(self.client.security.subject_rights_requests.top(3))
         self.assertIsNotNone(result.resource_path)
         self.assertLessEqual(len(result), 3, "Expected at most 3 results with $top=3")
 
