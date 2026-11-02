@@ -14,6 +14,7 @@ import io
 import os
 import tempfile
 import unittest
+import zipfile
 
 import pytest
 from office365.graph_client import GraphClient
@@ -24,6 +25,7 @@ from office365.sharepoint.files.collection import _stream_size
 from office365.sharepoint.files.file import File
 from requests import Response
 from tests import test_site_url
+from tests._scripted_transport import RecordingTransport
 
 
 class _CaptureTransport(BaseTransport):
@@ -129,38 +131,33 @@ def test_all_base64_padding_is_removed():
     assert token == _reference(url)
 
 
-class _FolderChild:
-    def __init__(self, name: str, is_file: bool = True):
-        self.name = name
-        self.is_file = is_file
-        self.downloaded = False
-
-    def get_content(self):
-        child = self
-
-        class _Result:
-            def after_execute(self_inner, _action):
-                child.downloaded = True
-                return self_inner
-
-        return _Result()
-
-
-def test_download_folder_paginates_children():
-    """#881: every child is queued for download, not just the first Graph page."""
+def test_download_folder_paginates_children(tmp_path):
+    """#881: download children from every Graph page exactly once."""
+    next_page = "https://graph.microsoft.com/v1.0/me/drive/root/children?$skiptoken=next"
+    transport = RecordingTransport(
+        [
+            {"@odata.nextLink": next_page, "value": [{"id": "a", "name": "a.txt", "file": {}}]},
+            {"value": [{"id": "b", "name": "b.txt", "file": {}}]},
+            b"first page",
+            b"second page",
+        ]
+    )
     client = GraphClient()
+    client.pending_request().beforeExecute.clear()
+    client.pending_request().transport = transport
     folder = client.me.drive.root
-    pages = [[_FolderChild("a.txt")], [_FolderChild("b.txt")]]
+    archive = tmp_path / "folder.zip"
+    downloaded = []
 
-    class _Children(list):
-        def get_all(self, page_size=None, page_loaded=None, progress=None):
-            accumulated: list = []
-            for page in pages:
-                accumulated = accumulated + page
-                page_loaded(accumulated)
-            return self
+    with archive.open("wb") as target:
+        folder.download_folder(target, after_file_downloaded=lambda item: downloaded.append(item.name), recursive=False)
+        assert transport.calls == 0
+        folder.execute_query()
 
-    folder._properties["children"] = _Children()
-    folder.download_folder(io.BytesIO(), recursive=False)
-
-    assert all(child.downloaded for page in pages for child in page)
+    assert next_page in transport.urls
+    assert len(transport.urls) == len(transport.requests) == 4  # noqa: PLR2004
+    assert downloaded == ["a.txt", "b.txt"]
+    with zipfile.ZipFile(archive) as result:
+        assert result.namelist() == ["a.txt", "b.txt"]
+        assert result.read("a.txt") == b"first page"
+        assert result.read("b.txt") == b"second page"

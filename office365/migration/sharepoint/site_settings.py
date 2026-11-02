@@ -38,6 +38,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from office365.sharepoint.permissions import SiteLevel, site_access
+
 if TYPE_CHECKING:
     from office365.sharepoint.webs.web import Web
 
@@ -94,6 +96,7 @@ class WebSettings:
     description: Optional[str] = None
 
     @classmethod
+    @site_access(SiteLevel.READ)
     def capture(cls, web: "Web") -> "WebSettings":
         """Read a web's carried settings (one GET projecting ``Title``/``Description``)."""
         properties = web.select(list(_CARRIED)).get().execute_query().properties

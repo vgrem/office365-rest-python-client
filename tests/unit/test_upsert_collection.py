@@ -8,7 +8,9 @@ after the upsert still runs after the resource exists.
 
 from __future__ import annotations
 
+import pytest
 from office365.graph_client import GraphClient
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.odata.literals import odata_literal
 from tests._scripted_transport import RecordingTransport
@@ -46,6 +48,7 @@ def test_upsert_creates_when_missing():
     client, transport = _client([{"value": []}, _CREATED])
 
     group = client.groups.upsert("uniqueName", "Group157", displayName="Group157", description="Team site")
+    assert transport.calls == 0
     group.execute_query()
 
     assert _methods(transport) == [HttpMethod.Get, HttpMethod.Post]
@@ -86,11 +89,25 @@ def test_upsert_updates_changed_properties():
 def test_upsert_is_write_idempotent_when_state_matches():
     client, transport = _client([{"value": [_EXISTING]}])
 
-    group = client.groups.upsert("uniqueName", "Group157", description="Old").execute_query()
+    group = client.groups.upsert("uniqueName", "Group157", description="Old")
+    assert transport.calls == 0
+    group.execute_query()
 
     assert _methods(transport) == [HttpMethod.Get]
     assert group.id == "g1"
     assert group.description == "Old"
+
+
+def test_upsert_propagates_forbidden_lookup_without_creating():
+    client, transport = _client(
+        [{"http_status": 403, "body": {"error": {"code": "Forbidden", "message": "Access is denied."}}}]
+    )
+
+    group = client.groups.upsert("uniqueName", "Group157")
+    with pytest.raises(ClientRequestException):
+        group.execute_query()
+
+    assert _methods(transport) == [HttpMethod.Get]
 
 
 # ── upsert: identity formatting ──────────────────────────────────

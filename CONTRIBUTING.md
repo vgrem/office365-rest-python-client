@@ -131,9 +131,8 @@ def test_01_list_messages(self): ...
 `tests/decorators.py` stamps the requirement on the test it returns — and, for
 `@requires_call`, the model methods it was derived from — so `tests/preflight.py` reads the
 whole matrix off the test tree without running anything. `python -m tests.preflight` needs no
-credentials, `--verify` resolves each requirement against the signed-in app and user, and
-`--report tests-report` writes `preflight.md` (add `--json tests-report` for
-`preflight.json`). Both the guard and the report call the same `tests/capabilities.py`,
+credentials, and `--verify` resolves each requirement against the signed-in app and user.
+The console summary, guard, and decorators use the same `tests/capabilities.py`,
 where a `Requirement` answers `unmet(state)` and `TenantState` fetches *only* the facts the
 requirement names — an app-only token has no `/me` to ask for licenses, so asking would turn
 a skip into a failure.
@@ -146,8 +145,8 @@ that has to be bought — is named rather than dropped.
 
 A permission the tenant does not grant must be visible in three places, and all three
 read from the same object: the skip reason (`missing delegated: any of Mail.Read`), the
-`pytest` summary (`N  delegated: any of …`), and the report file. Add the requirement
-to the test, not to a list in the report.
+`pytest` summary (`N  delegated: any of …`), and the console preflight summary. Add the
+requirement to the test, not to a separate list.
 
 Within a file, a test also has to earn its place: it must execute a line, or make
 an assertion, that no other test in that file makes. Where a richer test already

@@ -56,6 +56,24 @@ def test_warn_if_exceeds():
         assert warn_if_exceeds(LIST_VIEW, 10) is False
 
 
+@pytest.mark.parametrize("offset", [-1, 0])
+def test_limit_accepts_values_at_or_below_boundary(offset):
+    value = LIST_VIEW.value + offset
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert not warn_if_exceeds(LIST_VIEW, value)
+        ensure_within(LIST_VIEW, value)
+
+
+def test_limit_rejects_first_value_above_boundary():
+    value = LIST_VIEW.value + 1
+    with pytest.warns(UserWarning, match="list view threshold"):
+        assert warn_if_exceeds(LIST_VIEW, value)
+    with pytest.raises(LimitExceededError) as error:
+        ensure_within(LIST_VIEW, value)
+    assert error.value.value == value
+
+
 def test_ensure_within_raises_by_default():
     with pytest.raises(LimitExceededError) as exc:
         ensure_within(LIST_VIEW, 9000, context="query")

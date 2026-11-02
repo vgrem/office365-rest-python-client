@@ -35,8 +35,10 @@ import uuid
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
+from office365.permissions import DirectoryRole
 from office365.runtime.operation import Operation, OperationStatus
 from office365.runtime.operations import emit_progress
+from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
@@ -172,6 +174,7 @@ class MigrationServerJob:
     def __init__(self, site) -> None:
         self._site = site
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def submit(
         self,
         g_web_id,
@@ -198,6 +201,7 @@ class MigrationServerJob:
         )
         return result.execute_query().value
 
+    @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
     def submit_encrypted(
         self,
         g_web_id,
@@ -220,6 +224,7 @@ class MigrationServerJob:
         )
         return result.execute_query().value
 
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def progress(self, job_id: str, next_token: str = "0") -> tuple[list[dict], str]:
         """Fetch a page of progress events and the next paging token.
 

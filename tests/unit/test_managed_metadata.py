@@ -11,14 +11,15 @@ too — export reads a store tree, import replays it into queued creates.
 
 from __future__ import annotations
 
-from office365.onedrive.termstore.store import Store
+from office365.graph_client import GraphClient
+from office365.runtime.http.http_method import HttpMethod
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.taxonomy.create_xml_parameters import TaxonomyFieldCreateXmlParameters
 from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValue
 from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
 from tests import test_site_url
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import RecordingTransport, ScriptedTransport
 
 
 def _ctx(payloads):
@@ -64,78 +65,6 @@ def test_set_taxonomy_collection_writes_note_companion():
 # --- The term store: export reads a tree, import replays it ------------------------------------------------
 
 
-class _FakeTerms:
-    def __init__(self, items=None):
-        self.items = list(items or [])
-
-    def get(self):
-        return self
-
-    def after_execute(self, callback):
-        callback(self.items)
-        return self
-
-    def ensure(self, name):
-        node = _FakeTerm(name)
-        self.items.append(node)
-        return node
-
-
-class _FakeTerm:
-    def __init__(self, name, children=None):
-        self.display_name = name
-        self.children = children or _FakeTerms()
-
-
-class _FakeSets:
-    def __init__(self, items=None):
-        self.items = list(items or [])
-
-    def get(self):
-        return self
-
-    def after_execute(self, callback):
-        callback(self.items)
-        return self
-
-    def ensure(self, name):
-        node = _FakeSet(name)
-        self.items.append(node)
-        return node
-
-
-class _FakeSet:
-    def __init__(self, name, children=None):
-        self.display_name = name
-        self.children = children or _FakeTerms()
-
-
-class _FakeGroups:
-    def __init__(self, items=None):
-        self.items = list(items or [])
-
-    def get(self):
-        return self
-
-    def after_execute(self, callback):
-        callback(self.items)
-        return self
-
-    def ensure(self, name):
-        node = _FakeGroup(name)
-        self.items.append(node)
-        return node
-
-
-class _FakeGroup:
-    def __init__(self, name, sets=None):
-        self.display_name = name
-        self.sets = sets or _FakeSets()
-
-    def ensure_set(self, name):
-        return self.sets.ensure(name)
-
-
 EXPECTED_TREE = [
     {
         "name": "G",
@@ -149,34 +78,65 @@ EXPECTED_TREE = [
 ]
 
 
-def _store_with(groups):
-    store = Store(object())
-    store._properties["groups"] = groups
-    return store
+def _graph_store(payloads):
+    client = GraphClient()
+    client.pending_request().beforeExecute.clear()
+    transport = RecordingTransport(payloads)
+    client.pending_request().transport = transport
+    return client.sites["site-id"].term_store, transport
 
 
-def _sample_tree():
-    """Group G -> set S -> term T -> child T2."""
-    term = _FakeTerm("T", _FakeTerms([_FakeTerm("T2")]))
-    term_set = _FakeSet("S", _FakeTerms([term]))
-    group = _FakeGroup("G", _FakeSets([term_set]))
-    return _FakeGroups([group])
+def _term(term_id, name):
+    return {"id": term_id, "labels": [{"name": name, "languageTag": "en-US", "isDefault": True}]}
 
 
-def test_store_export_tree_delegates_to_manager():
-    store = _store_with(_sample_tree())
+def test_store_export_tree_traverses_real_graph_objects():
+    store, transport = _graph_store(
+        [
+            {"value": [{"id": "g", "displayName": "G"}]},
+            {"value": [{"id": "s", "localizedNames": [{"name": "S", "languageTag": "en-US"}]}]},
+            {"value": [_term("t", "T")]},
+            {"value": [_term("t2", "T2")]},
+            {"value": []},
+        ]
+    )
 
-    assert store.export_tree().value == EXPECTED_TREE
+    result = store.export_tree()
+    assert transport.calls == 0
+    assert result.value == []
+    result.execute_query()
+
+    assert result.value == EXPECTED_TREE
+    assert [request.method for request in transport.requests] == [HttpMethod.Get] * 5
+    assert transport.urls[0].endswith("/termStore/groups")
+    assert "/groups/g/sets" in transport.urls[1]
+    assert "/sets/s/children" in transport.urls[2]
+    assert "/terms/t/children" in transport.urls[3]
+    assert "/terms/t2/children" in transport.urls[4]
 
 
 def test_store_import_tree_creates_queued_nodes():
-    store = _store_with(_FakeGroups())
-    data = [{"name": "G", "sets": [{"name": "S", "children": [{"name": "T"}]}]}]
+    store, transport = _graph_store(
+        [
+            {"id": "g", "displayName": "G"},
+            {"id": "s", "localizedNames": [{"name": "S", "languageTag": "en-US"}]},
+            _term("t", "T"),
+            _term("t2", "T2"),
+        ]
+    )
 
-    returned = store.import_tree(data)
+    returned = store.import_tree(EXPECTED_TREE)
 
     assert returned is store
-    assert [g.display_name for g in store.groups.items] == ["G"]
-    group = store.groups.items[0]
-    assert [s.display_name for s in group.sets.items] == ["S"]
-    assert [t.display_name for t in group.sets.items[0].children.items] == ["T"]
+    assert transport.calls == 0
+    store.execute_query()
+
+    assert [request.method for request in transport.requests] == [HttpMethod.Post] * 4
+    assert transport.urls[0].endswith("/termStore/groups")
+    assert "/groups/g/sets" in transport.urls[1]
+    assert "/sets/s/children" in transport.urls[2]
+    assert "/terms/t/children" in transport.urls[3]
+    assert transport.requests[0].data["displayName"] == "G"
+    assert transport.requests[1].data["localizedNames"][0]["name"] == "S"
+    assert transport.requests[2].data["labels"][0]["name"] == "T"
+    assert transport.requests[3].data["labels"][0]["name"] == "T2"

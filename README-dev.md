@@ -189,7 +189,6 @@ SharePoint test and a Graph test never compare one API's grants against the othe
 uv run python -m tests.preflight                      # what is blocking the most tests
 uv run python -m tests.preflight --verify             # ... and what this tenant grants
 uv run python -m tests.preflight --all                # every requirement, not just the blockers
-uv run python -m tests.preflight --verify --report tests-report
 ```
 
 `--verify` signs in once per configured flow — including the certificate — and asks each
@@ -201,20 +200,9 @@ ready, and the ten requirements that unblock the most tests — one row each, pr
 SharePoint Administrator)`. `--all` lists every requirement instead, met ones included, and
 still ranks them by the tests they unblock.
 
-The `via` column of the written report is the row's provenance: `@requires_call` stamps the
-model methods a test derived its requirement from, so the report says not just how many tests
-a grant unblocks but which calls ask for it — a grant twelve tests need and a grant one
-endpoint brings are different decisions. A requirement stated by hand with
-`@requires_delegated` names no call and shows `-`.
-
-`--report` writes `tests-report/preflight.md`: the table per suite (flow, tests,
-declared permission, `via` calls, `met` / `missing` / `unverified`), which is what you want when the
-question is about one suite rather than "what next". `--markdown` prints that table instead
-of the summary. `--json tests-report` writes the same rows as `preflight.json` for a tool
-to read; nothing in the repo consumes it yet, so it is opt-in rather than something every run
-pays for. Both files describe *a tenant*, not the library, so `tests-report/` is
-gitignored. `--strict` exits non-zero when a flow is not configured or a declared
-requirement is not met.
+The model-method provenance behind `@requires_call` remains on the declarations. The console
+summary focuses on grants that unblock the most tests rather than exporting a per-suite matrix.
+`--strict` exits non-zero when a flow is not configured or a declared requirement is not met.
 
 A skipped test run says the same thing in its summary — `2 tests skipped: application:
 any of Domain.Read.All` — so a green-but-skipped run names what it did not exercise

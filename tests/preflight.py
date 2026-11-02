@@ -8,8 +8,6 @@ test run rather than during one.
     python -m tests.preflight                 # what is blocking the most tests
     python -m tests.preflight --verify        # ... and what this tenant grants
     python -m tests.preflight --all           # every requirement, not just the blocked ones
-    python -m tests.preflight --markdown      # the per-suite matrix
-    python -m tests.preflight --report rpt/   # rpt/preflight.md + rpt/preflight.json
     python -m tests.preflight --grant         # grant the missing ones to the configured app
 
 The matrix is derived from the decorators stamped by :mod:`tests.decorators`; no list of
@@ -20,15 +18,12 @@ from __future__ import annotations
 
 import argparse
 import importlib
-import json
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from inspect import getmembers, isfunction
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 from unittest import TestCase
 
 from office365.directory.rolemanagement.roles.role import DirectoryRole
@@ -352,17 +347,11 @@ def grant_missing(found: list[Needs], *, yes: bool = False) -> int:
 
 @dataclass(frozen=True)
 class Row:
-    """One declared requirement: what unblocks it, what this tenant answers, and what it came from.
-
-    ``calls`` is the provenance - the model methods the declaring tests exercise - so a row
-    says not only how many tests a grant unblocks but what in the library asks for it.
-    """
+    """One requirement, how many tests it unblocks, and what this tenant answers."""
 
     requirement: Requirement
-    flow: str
     tests: int
     facts: TenantState | None
-    calls: tuple[str, ...] = ()
 
     @property
     def state(self) -> str:
@@ -386,49 +375,29 @@ class Row:
         # A met row has no delta, so it prints the rule it satisfies instead of the word.
         return f"{self.tests:>4}  {self.requirement.describe() if self.state == 'met' else self.needs}"
 
-    def json(self) -> dict[str, Any]:
-        return {
-            "requirement": self.requirement.describe(),
-            "flow": self.flow,
-            "tests": self.tests,
-            "state": self.state,
-            "needs": self.needs,
-            "calls": list(self.calls),
-        }
-
 
 class Report:
-    """One measurement of the tree and the tenant, in three renderings.
-
-    ``found`` is what the suites declare; ``states`` is what this tenant answered, and is
-    empty when nothing was verified. The rows are the whole report - the terminal view prints
-    the ones that need something, the file prints all of them, and a tool gets them as JSON.
-    """
+    """A concise console summary of the requirements and tenant state."""
 
     #: How many rows a screen shows: a person reads the ones that unblock the most tests.
     SHOWN = 10
 
     def __init__(self, found: list[Needs], states: dict[Requirement, TenantState]):
-        self.found = found
         self.states = states
         self.tenant = settings.tenant
         self.flows = {flow: settings.missing_for(flow) for flow in FLOWS}
         self.suites = len(found)
         self.tests = sum(needs.tests for needs in found)
+        self.requirements = sum(len(needs.requirements) for needs in found)
         tests: dict[Requirement, list[str]] = {}
-        calls: dict[Requirement, list[str]] = {}
         for needs in found:
             for requirement, declared in needs.requirements.items():
                 tests.setdefault(requirement, []).extend(declared)
-                known = calls.setdefault(requirement, [])
-                known.extend(call for call in needs.calls.get(requirement, ()) if call not in known)
         self.rows = [
             Row(
                 requirement,
-                requirement.label("delegated" if requirement.delegated else "application"),
                 len(tests[requirement]),
                 states.get(requirement),
-                tuple(sorted(calls[requirement])),
             )
             for requirement in sorted(tests, key=lambda item: (-len(tests[item]), item.describe()))
         ]
@@ -442,8 +411,7 @@ class Report:
         """The terminal view: the counts, the flows that are not ready, and the delta."""
         lines = [
             f"Live-test preflight - {self.tenant or 'no tenant configured'}",
-            f"{self.suites} suites, {self.tests} tests, {sum(len(needs.requirements) for needs in self.found)}"
-            f" requirements ({len(self.rows)} distinct)",
+            f"{self.suites} suites, {self.tests} tests, {self.requirements} requirements ({len(self.rows)} distinct)",
             "",
             "Flows",
         ]
@@ -466,71 +434,11 @@ class Report:
             lines.append("  every declared requirement is met")
         return "\n".join(lines) + "\n"
 
-    def markdown(self) -> str:
-        """The report: what every live suite needs, and what this environment answers."""
-        lines = [
-            "# Live-test preflight",
-            "",
-            f"Generated by `python -m tests.preflight` for tenant `{self.tenant or '<none>'}`.",
-            "",
-            "## Auth flows",
-            "",
-            "| flow | state |",
-            "| --- | --- |",
-        ]
-        for flow, gaps in self.flows.items():
-            state = f"not configured: {', '.join(gaps)}" if gaps else "ok"
-            lines.append(f"| {FLOWS[flow].label} (`{flow}`) | {state} |")
-        rows = {row.requirement: row for row in self.rows}
-        lines += [
-            "",
-            f"{self.suites} live suites, {self.tests} live tests, {len(self.rows)} declared permission requirements.",
-            "",
-            "`via` names the model methods each test derived its requirement from; a requirement",
-            "stated by hand with `@requires_delegated`/`@requires_application` is a `-`.",
-            "",
-            "| suite | flow | tests | declared | via | status |",
-            "| --- | --- | ---: | --- | --- | --- |",
-        ]
-        for needs in self.found:
-            if not needs.requirements:
-                lines.append(
-                    f"| `{needs.suite}` | `{needs.flow}` | {needs.tests} | none declared | - | credentials only |"
-                )
-            for requirement in sorted(needs.requirements, key=Requirement.describe):
-                row = rows[requirement]
-                calls = ", ".join(call.rpartition(":")[2] for call in needs.calls.get(requirement, ())) or "-"
-                lines.append(
-                    f"| `{needs.suite}` | `{needs.flow}` | {len(needs.requirements[requirement])} |"
-                    f" {requirement.describe()} | {calls} | {row.state} |"
-                )
-        lines += ["", "## Missing", ""]
-        if not self.states:
-            lines.append("Not verified: run with `--verify` (needs credentials) to resolve these against the tenant.")
-        elif not self.blocking:
-            lines.append("Every declared requirement is met.")
-        else:
-            lines += [f"- {str(row).strip()}" for row in self.blocking]
-        return "\n".join(lines) + "\n"
-
-    def json(self) -> str:
-        """The same report for CI: flows, and every requirement with its state."""
-        payload = {
-            "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "tenant": self.tenant,
-            "flows": {flow: {"label": FLOWS[flow].label, "missing": gaps} for flow, gaps in self.flows.items()},
-            "rows": [row.json() for row in self.rows],
-        }
-        return json.dumps(payload, indent=2) + "\n"
-
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Report what the live test suites need from a tenant.")
+    parser = argparse.ArgumentParser(description="Show what the live test suites need from a tenant.")
     parser.add_argument("--verify", action="store_true", help="resolve the requirements against the signed-in tenant")
     parser.add_argument("--all", action="store_true", help="list every requirement, not just the ones needing action")
-    parser.add_argument("--markdown", action="store_true", help="print the per-suite report instead of the summary")
-    parser.add_argument("--report", metavar="DIR", help="write preflight.md into DIR (a report for people)")
-    parser.add_argument("--json", metavar="DIR", help="write preflight.json into DIR (a report for tools)")
     parser.add_argument("--strict", action="store_true", help="exit 1 when a flow or requirement is not satisfied")
     parser.add_argument("--grant", action="store_true", help="grant the missing permissions to the app (asks first)")
     parser.add_argument("-y", "--yes", action="store_true", help="do not ask before --grant")
@@ -542,16 +450,7 @@ def main(argv: list[str] | None = None) -> int:
     # --strict cannot mean anything without an answer to compare against, so it verifies too.
     states = verify(found, settings.client_id) if (args.verify or args.strict) else {}
     report = Report(found, states)
-    if not (args.report or args.json):
-        sys.stdout.write(report.markdown() if args.markdown else report.text(show_all=args.all))
-    artifacts = ((args.report, report.markdown, "preflight.md"), (args.json, report.json, "preflight.json"))
-    for directory, render, name in artifacts:
-        if not directory:
-            continue
-        path = Path(directory) / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(render(), encoding="utf-8")
-        print(f"Wrote {path}")
+    sys.stdout.write(report.text(show_all=args.all))
     if not args.strict:
         return 0
     unconfigured = [flow for flow in FLOWS if settings.missing_for(flow)]

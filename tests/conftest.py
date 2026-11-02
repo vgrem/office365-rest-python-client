@@ -37,8 +37,8 @@ _READINESS = settings.readiness()
 _SKIPPED_FLOWS: pytest.StashKey[set[str]] = pytest.StashKey()
 
 
-#: How the report is produced; quoted in the summary so the command is copy-pasteable.
-_PREFLIGHT = "python -m tests.preflight --verify --report tests-report"
+#: How to check the live grants; quoted in the summary so the command is copy-pasteable.
+_PREFLIGHT = "python -m tests.preflight --verify"
 
 
 def _flow_for(item: pytest.Item) -> str | None:
@@ -156,4 +156,4 @@ def _report_permission_skips(terminalreporter: pytest.TerminalReporter, config: 
         terminalreporter.write_sep("=", "permissions this tenant did not grant")
         for declared, count in sorted(reasons.items(), key=lambda item: (-item[1], item[0])):
             terminalreporter.write_line(f"{count:4d}  {declared}")
-        terminalreporter.write_line(f"Full matrix and remediation: `{_PREFLIGHT}`")
+        terminalreporter.write_line(f"Preflight and remediation: `{_PREFLIGHT}`")
