@@ -849,6 +849,10 @@ introduced.
 
 **Model**
 
+- **A Teams schedule entity sent the service's timestamps back.** `ChangeTrackedEntity` declares
+  `id` and `lastModifiedBy` readonly, but `createdDateTime` and `lastModifiedDateTime` were still
+  writable, while the CSDL marks both `Org.OData.Core.V1.Computed` — so a shift, a time-off or an
+  open-shift update could carry the two stamps it had just been told.
 - **Three upload sessions sent a range the service refuses.** Graph requires every
   upload-session range to be a positive multiple of 320 KiB; `AttachmentCollection.resumable_upload`
   defaulted to `chunk_size=1000000` and `Message.upload_attachment` to `1000000 * 3`, and
