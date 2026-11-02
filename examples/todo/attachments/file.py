@@ -27,7 +27,7 @@ import tempfile
 
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.todo.tasks.task import MAX_SIMPLE_ATTACHMENT_BYTES
+from office365.runtime.transfer import INLINE_ATTACHMENT_MAX
 from tests.settings import client_id, password, tenant, username
 
 LIST_NAME = "SDK Tasks Demo"
@@ -58,7 +58,7 @@ def main() -> None:
     client = _client()
     try:
         name, content, content_type = _source(args)
-        if len(content) > MAX_SIMPLE_ATTACHMENT_BYTES:
+        if len(content) > INLINE_ATTACHMENT_MAX:
             print(f"{name} is {len(content)} bytes; To Do only supports inline attachments up to 3 MB.")
             return
 

@@ -30,6 +30,7 @@ from office365.runtime.limits import ensure_within
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.transfer import INLINE_ATTACHMENT_MAX, UPLOAD_CHUNK_DEFAULT
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
@@ -137,13 +138,12 @@ class Message(OutlookItem):
         Raises:
             ValueError: If the file is larger than the Outlook attachment limit (150 MB).
         """
-        max_upload_chunk = 1000000 * 3
         file_size = os.stat(file_path).st_size
         ensure_within(OUTLOOK_UPLOAD, file_size, context="Outlook attachment")
-        if file_size > max_upload_chunk:
+        if file_size > INLINE_ATTACHMENT_MAX:
 
             def _message_loaded():
-                self.attachments.resumable_upload(file_path, max_upload_chunk, chunk_uploaded)
+                self.attachments.resumable_upload(file_path, UPLOAD_CHUNK_DEFAULT, chunk_uploaded)
 
             self.ensure_property("id").after_execute(lambda _: _message_loaded())
         else:

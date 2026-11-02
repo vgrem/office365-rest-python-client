@@ -16,6 +16,7 @@ from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.transfer import INLINE_ATTACHMENT_MAX, UPLOAD_CHUNK_DEFAULT
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.todo.attachments.collection import AttachmentBaseCollection
@@ -27,9 +28,6 @@ from office365.todo.tasks.taskstatus import TaskStatus
 
 if TYPE_CHECKING:
     from office365.common.single_value_extended_property import SingleValueExtendedProperty
-
-DEFAULT_ATTACHMENT_CHUNK_SIZE = 4 * 1024 * 1024
-MAX_SIMPLE_ATTACHMENT_BYTES = 3 * 1024 * 1024
 
 
 def _stream_size(stream: IO) -> int:
@@ -211,7 +209,7 @@ class TodoTask(Entity):
         source: Union[str, PathLike, bytes, bytearray, IO],
         name: Optional[str] = None,
         content_type: Optional[str] = None,
-        chunk_size: int = DEFAULT_ATTACHMENT_CHUNK_SIZE,
+        chunk_size: int = UPLOAD_CHUNK_DEFAULT,
         progress=None,
     ) -> TaskFileAttachment:
         """Attach a file to the task, dispatching by size.
@@ -223,7 +221,8 @@ class TodoTask(Entity):
             source: Path, raw bytes, or a binary stream.
             name (str): Display name of the attachment (defaults to the file name).
             content_type (str): MIME type of the attachment.
-            chunk_size (int): Upload-session chunk size (4 MB by default).
+            chunk_size (int): Upload-session chunk size; a multiple of 320 KiB, at most 60 MiB
+                (default 10 MiB).
             progress: Optional per-chunk ``Progress`` hook for session uploads.
         """
         stream: Optional[IO] = None
@@ -242,7 +241,7 @@ class TodoTask(Entity):
             default_name = os.path.basename(getattr(stream, "name", "") or "")
 
         attachment_name = name or default_name or "attachment"
-        if size is not None and size <= MAX_SIMPLE_ATTACHMENT_BYTES:
+        if size is not None and size <= INLINE_ATTACHMENT_MAX:
             if content is None:
                 if stream is None:
                     with open(str(source), "rb") as file_object:

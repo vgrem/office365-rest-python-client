@@ -11,11 +11,10 @@ from office365.permissions import require_permission
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.transfer import UPLOAD_CHUNK_DEFAULT, check_chunk_size
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.todo.attachments.task_file import TaskFileAttachment
-
-DEFAULT_CHUNK_SIZE = 4 * 1024 * 1024
 
 
 class AttachmentSession(Entity):
@@ -53,7 +52,7 @@ class AttachmentSession(Entity):
     def upload(
         self,
         source: Union[str, PathLike, bytes, bytearray, IO],
-        chunk_size: int = DEFAULT_CHUNK_SIZE,
+        chunk_size: int = UPLOAD_CHUNK_DEFAULT,
         progress: Optional[ProgressCallback] = None,
     ) -> TaskFileAttachment:
         """Upload a file (path, bytes, or stream) to this session and return the created attachment.
@@ -63,9 +62,14 @@ class AttachmentSession(Entity):
 
         Args:
             source: Path, raw bytes, or a binary stream.
-            chunk_size: Maximum bytes per ``PUT`` (4 MB by default).
+            chunk_size: Maximum bytes per ``PUT``; positive multiple of 320 KiB, at most
+                60 MiB (default 10 MiB).
             progress: Optional hook invoked per chunk with a ``Progress`` snapshot.
+
+        Raises:
+            ValueError: If ``chunk_size`` is not a positive multiple of 320 KiB or exceeds 60 MiB.
         """
+        check_chunk_size(chunk_size)
         auto_close = False
         if isinstance(source, (str, PathLike)):
             file_object: IO = open(source, "rb")

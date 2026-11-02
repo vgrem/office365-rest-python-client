@@ -25,9 +25,9 @@ from datetime import datetime, timedelta
 from typing import ClassVar, Optional
 
 from office365.onedrive.driveitems.driveItem import DriveItem
-from office365.onedrive.driveitems.upload_limits import UPLOAD_CHUNK_MAX, UPLOAD_CHUNK_UNIT
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.lists.template_type import ListTemplateType
+from office365.runtime.transfer import UPLOAD_CHUNK_MAX, UPLOAD_CHUNK_UNIT
 from tests import DATA_DIR, create_unique_name
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase

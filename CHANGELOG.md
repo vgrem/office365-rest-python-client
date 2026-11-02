@@ -849,6 +849,13 @@ introduced.
 
 **Model**
 
+- **Three upload sessions sent a range the service refuses.** Graph requires every
+  upload-session range to be a positive multiple of 320 KiB; `AttachmentCollection.resumable_upload`
+  defaulted to `chunk_size=1000000` and `Message.upload_attachment` to `1000000 * 3`, and
+  `Task.upload_attachment` to 4 MiB — none is a multiple, and neither of the first two validated the
+  value at all. All three now default to 10 MiB (32 x 320 KiB) and raise `ValueError` before the
+  session is created, from one module (`office365.runtime.transfer`) that also owns the 3 MiB
+  threshold at which a mail or To Do attachment stops being posted in a single request.
 - **Activating a directory role was refused for the type name in its own payload.**
   `DirectoryRole` extends `DirectoryObject` and inherited the base `entity_type_name`, so the
   `POST directoryRoles` every activation builds announced itself as

@@ -33,7 +33,6 @@ from office365.onedrive.driveitems.remote_item import RemoteItem
 from office365.onedrive.driveitems.retention_label import ItemRetentionLabel
 from office365.onedrive.driveitems.special_folder import SpecialFolder
 from office365.onedrive.driveitems.thumbnail_set import ThumbnailSet
-from office365.onedrive.driveitems.upload_limits import UPLOAD_CHUNK_DEFAULT, check_chunk_size
 from office365.onedrive.driveitems.uploadable_properties import (
     DriveItemUploadableProperties,
 )
@@ -73,6 +72,7 @@ from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.transfer import UPLOAD_CHUNK_DEFAULT, check_chunk_size
 from office365.runtime.transport.base import HeadersCallback
 from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 from office365.runtime.types.odata_property import odata

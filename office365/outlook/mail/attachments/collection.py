@@ -18,6 +18,7 @@ from office365.runtime.odata.v4.upload_session import UploadSession
 from office365.runtime.odata.v4.upload_session_request import UploadSessionRequest
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.upload_session import UploadSessionQuery
+from office365.runtime.transfer import UPLOAD_CHUNK_DEFAULT, check_chunk_size
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
@@ -84,7 +85,7 @@ class AttachmentCollection(EntityCollection[Attachment]):
     def resumable_upload(
         self,
         source_path: str,
-        chunk_size: int = 1000000,
+        chunk_size: int = UPLOAD_CHUNK_DEFAULT,
         chunk_uploaded: Callable[[int], None] | None = None,
     ):
         """Create an upload session to allow your app to upload files up to the maximum file size.
@@ -93,9 +94,13 @@ class AttachmentCollection(EntityCollection[Attachment]):
 
         Args:
             source_path (str): Local file path
-            chunk_size (int): File chunk size
+            chunk_size (int): bytes per chunk; positive multiple of 320 KiB, at most 60 MiB (default 10 MiB)
             chunk_uploaded ((int)->None): Upload action
+
+        Raises:
+            ValueError: If ``chunk_size`` is not a positive multiple of 320 KiB or exceeds 60 MiB.
         """
+        check_chunk_size(chunk_size)
         from office365.outlook.mail.attachments.attachment_item import AttachmentItem
         from office365.outlook.mail.attachments.file import FileAttachment
 
