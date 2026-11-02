@@ -20,6 +20,8 @@ from office365.runtime.query_capabilities import (
     query_capabilities,
     query_capabilities_of,
 )
+from office365.security.labels.retention.collection import RetentionLabelCollection
+from office365.security.triggertypes.collection import RetentionEventTypeCollection
 from tests._scripted_transport import RecordingTransport
 
 
@@ -29,6 +31,22 @@ def test_call_records_declares_top_unsupported():
     assert capability.supports("filter")
     assert not capability.supports("top")
     assert not capability.supports("$Top")  # normalized
+
+
+def test_retention_feeds_refuse_every_standard_option():
+    """Both Purview retention feeds answer 400 to each option, so the guard runs before the request.
+
+    Measured against the two endpoints rather than inferred: the bare GET is the only request
+    those feeds accept, and it is gated by Purview RBAC, which is why no live test can see this.
+    """
+    event_types = RetentionEventTypeCollection(GraphClient())
+    labels = RetentionLabelCollection(GraphClient())
+    for collection in (event_types, labels):
+        with pytest.raises(QueryOptionNotSupportedError) as error:
+            collection.top(3)
+        assert "learn.microsoft.com" in str(error.value)
+        with pytest.raises(QueryOptionNotSupportedError):
+            collection.filter("displayName eq 'x'")
 
 
 def test_paged_and_get_all_are_guarded():
