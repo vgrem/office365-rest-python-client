@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.thresholds import Limits, limit
@@ -15,6 +16,7 @@ from office365.sharepoint.utilities.principal_info import PrincipalInfo
 
 if TYPE_CHECKING:
     from office365.sharepoint.principal.groups.collection import GroupCollection
+    from office365.sharepoint.principal.users.collection import UserCollection
 
 
 #: How many users one SharePoint group may hold.
@@ -82,58 +84,69 @@ class Group(Principal):
 
         return cast(GroupCollection, self._parent_collection)
 
+    @odata(name="AllowMembersEditMembership")
     @property
     def allow_members_edit_membership(self) -> Optional[bool]:
         """Specifies whether a member of the group can add and remove members from the group"""
         return self.properties.get("AllowMembersEditMembership", None)
 
+    @odata(name="AllowRequestToJoinLeave")
     @property
     def allow_request_to_join_leave(self) -> Optional[bool]:
         """Specifies whether to allow users to request to join or leave in the group."""
         return self.properties.get("AllowRequestToJoinLeave", None)
 
+    @odata(name="AutoAcceptRequestToJoinLeave")
     @property
     def auto_accept_request_to_join_leave(self) -> Optional[bool]:
         """Specifies whether requests to join or leave the group are automatically accepted"""
         return self.properties.get("AutoAcceptRequestToJoinLeave", None)
 
+    @odata(name="CanCurrentUserEditMembership")
     @property
     def can_current_user_edit_membership(self) -> Optional[bool]:
         """Specifies whether the current user can add and remove members from the group."""
         return self.properties.get("CanCurrentUserEditMembership", None)
 
+    @odata(name="CanCurrentUserManageGroup")
     @property
     def can_current_user_manage_group(self) -> Optional[bool]:
         """Gets a Boolean value that indicates whether the current user can manage the group."""
         return self.properties.get("CanCurrentUserManageGroup", None)
 
+    @odata(name="CanCurrentUserViewMembership")
     @property
     def can_current_user_view_membership(self) -> Optional[bool]:
         """Specifies whether the current user can view the membership of the group."""
         return self.properties.get("CanCurrentUserViewMembership", None)
 
+    @odata(name="OnlyAllowMembersViewMembership")
     @property
     def only_allow_members_view_membership(self) -> Optional[bool]:
         """Specifies whether viewing the membership of the group is restricted to members of the group."""
         return self.properties.get("OnlyAllowMembersViewMembership", None)
 
+    @odata(name="OwnerTitle")
     @property
     def owner_title(self) -> Optional[str]:
         """Specifies the name of the owner of the group."""
         return self.properties.get("OwnerTitle", None)
 
+    @odata(name="RequestToJoinLeaveEmailSetting")
     @property
     def request_to_join_leave_email_setting(self) -> Optional[str]:
         """Specifies the e-mail address to which requests to join or leave the group are sent."""
         return self.properties.get("RequestToJoinLeaveEmailSetting", None)
 
+    @odata(name="Owner", navigation=True)
     @property
     def owner(self) -> Principal:
         """Specifies the owner of the group."""
         return self.properties.get("Owner", Principal(self.context, ResourcePath("Owner", self.resource_path)))
 
+    @odata(name="Users", navigation=True)
     @property
-    def users(self):
+    def users(self) -> UserCollection:
         """Gets a collection of user objects that represents all of the members in the group."""
         from office365.sharepoint.principal.users.collection import UserCollection
 
@@ -142,11 +155,13 @@ class Group(Principal):
             UserCollection(self.context, ResourcePath("Users", self.resource_path)),
         )
 
+    @odata(name="ContainsCurrentUser")
     @property
     def contains_current_user(self) -> Optional[bool]:
         """Gets the ContainsCurrentUser property"""
         return self.properties.get("ContainsCurrentUser", None)
 
+    @odata(name="Description")
     @property
     def description(self) -> Optional[str]:
         """Gets the Description property"""

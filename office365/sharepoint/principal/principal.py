@@ -15,11 +15,13 @@ class Principal(Entity):
     def __repr__(self) -> str:
         return self.login_name or str(self.id or "") or self.entity_type_name
 
+    @odata(name="Id")
     @property
     def id(self) -> Optional[int]:
         """Gets a value that specifies the member identifier for the user or group."""
         return self.properties.get("Id", None)
 
+    @odata(name="Title")
     @property
     def title(self) -> Optional[str]:
         """Gets a value that specifies the name of the principal."""
@@ -30,11 +32,13 @@ class Principal(Entity):
         """Sets a value that specifies the name of the principal."""
         self.set_property("Title", value)
 
+    @odata(name="LoginName")
     @property
     def login_name(self) -> Optional[str]:
         """Gets the login name of the principal."""
         return self.properties.get("LoginName", None)
 
+    @odata(name="IsHiddenInUI")
     @property
     def is_hidden_in_ui(self) -> Optional[bool]:
         """Gets the login name of the principal."""
