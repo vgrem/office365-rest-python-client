@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING, Optional, Union
 from uuid import UUID
 
@@ -11,6 +12,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.lro import OperationTimeoutError
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -33,12 +35,20 @@ from office365.sharepoint.portal.orglabels.context_list import OrgLabelsContextL
 from office365.sharepoint.portal.parentgroup import ParentGroup
 from office365.sharepoint.portal.pintoteamparams import PinToTeamParams
 from office365.sharepoint.portal.pintoteamresponse import PinToTeamResponse
+from office365.sharepoint.portal.sites.status import SiteStatus
 from office365.sharepoint.portal.teams.recent_and_joined_response import (
     RecentAndJoinedTeamsResponse,
 )
 
 if TYPE_CHECKING:
     from office365.sharepoint.sites.site import Site
+
+
+#: Seconds between ``GetSiteStatus`` polls while a group site finishes provisioning.
+SITE_POLL_INTERVAL = 5.0
+
+#: How long a group-site creation waits for its site before giving up, in seconds.
+SITE_PROVISIONING_TIMEOUT = 300.0
 
 
 class GroupSiteManager(ClientObject):
@@ -121,6 +131,40 @@ class GroupSiteManager(ClientObject):
         qry = ServiceOperationQuery(self, "GetGroupCreationContext", None, None, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
+    def await_site(self, info: GroupSiteInfo) -> GroupSiteInfo:
+        """Follow a group-site creation to a ready site, or raise.
+
+        ``CreateGroupEx`` returns as soon as the group exists - ``Provisioning``, with no url
+        at all - and the site answers nothing until the tenant finishes provisioning it. The
+        group id is the only handle available in the meantime, so ``GetSiteStatus`` is polled
+        by id, on whatever web this manager is bound to (the caller's, which exists).
+
+        Args:
+            info (GroupSiteInfo): the ``CreateGroupEx`` answer to follow.
+
+        Raises:
+            ValueError: the service reported ``Error``, or answered ready with no url.
+            OperationTimeoutError: provisioning did not finish within
+                :data:`SITE_PROVISIONING_TIMEOUT` seconds.
+        """
+        if info.SiteStatus == SiteStatus.Error:
+            raise ValueError(info.ErrorMessage or "Site creation failed")
+        group_id = info.GroupId
+        if group_id is None:
+            raise ValueError("Site creation returned no group id")
+        deadline = time.monotonic() + SITE_PROVISIONING_TIMEOUT
+        while info.SiteStatus != SiteStatus.Ready:
+            if time.monotonic() > deadline:
+                raise OperationTimeoutError(SITE_PROVISIONING_TIMEOUT)
+            time.sleep(SITE_POLL_INTERVAL)
+            info = self.get_status(group_id).execute_query().value
+            if info.SiteStatus == SiteStatus.Error:
+                raise ValueError(info.ErrorMessage or "Site creation failed")
+        if not info.SiteUrl:
+            raise ValueError("Site creation reported ready without a site url")
+        return info
 
     @site_access(SiteLevel.READ, role=DirectoryRole.SharePointAdministrator)
     def get_status(self, group: Union[str, Site]) -> ClientResult[GroupSiteInfo]:

@@ -690,6 +690,11 @@ class ClientContext(ClientRuntimeContext):
     ) -> Site:
         """Creates a modern SharePoint Team site
 
+        Provisioning runs asynchronously: ``CreateGroupEx`` answers ``Provisioning`` with no
+        url, and the site answers no request until the tenant finishes. The call waits it out
+        (:meth:`GroupSiteManager.await_site`) so the returned ``Site`` is usable, and raises
+        :class:`~office365.runtime.lro.OperationTimeoutError` when it does not finish.
+
         Args:
             alias (str): Site alias which defines site url, e.g. https://contoso.sharepoint.com/teams/{alias}
             title (str): Site title
@@ -698,10 +703,7 @@ class ClientContext(ClientRuntimeContext):
         return_type = Site(self)
 
         def _after_site_created(result: ClientResult[GroupSiteInfo]) -> None:
-            if result.value.SiteStatus == SiteStatus.Error:
-                raise ValueError(result.value.ErrorMessage)
-            elif result.value.SiteStatus == SiteStatus.Ready:
-                return_type.set_property("__siteUrl", result.value.SiteUrl)
+            return_type.set_property("__siteUrl", self.group_site_manager.await_site(result.value).SiteUrl)
 
         opt_params = GroupCreationParams(Owners=StringCollection(owners or []))
         self.group_site_manager.create_group_ex(title, alias, is_public, opt_params).after_execute(_after_site_created)
@@ -722,8 +724,7 @@ class ClientContext(ClientRuntimeContext):
         ) -> None:
             if result.value.SiteStatus == SiteStatus.Error:
                 raise ValueError("Site creation error")
-            elif result.value.SiteStatus == SiteStatus.Ready:
-                return_type.set_property("__siteUrl", result.value.SiteUrl)
+            return_type.set_property("__siteUrl", result.value.SiteUrl or site_url)
 
         self.site_pages.communication_site.create(title, site_url).after_execute(_after_site_created)
         return return_type

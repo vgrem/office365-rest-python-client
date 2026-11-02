@@ -857,6 +857,16 @@ introduced.
 
 ### Fixed
 
+- **A team site was returned before it existed, and at a url the alias does not spell.**
+  `create_team_site` answered `Provisioning` with `SiteUrl = None` on this tenant, and the
+  library filled the gap with `{base}/teams/{alias}` — a guess: the tenant served the site at
+  `/sites/TeamSite<hex>`, so every follow-up request went to a 404, and a caller had no way to
+  ask whether provisioning had finished. `CreateGroupEx` does return the group id, though, so
+  `GroupSiteManager.await_site` polls `GetSiteStatus` by that id (5 s apart, 300 s bound) —
+  measured ready in 5.7 s — and `create_team_site` now waits there and sets the *tenant's* url,
+  raising `OperationTimeoutError` when the bound passes. The wait is inside the call because
+  the method reads as synchronous; the site it returns answers a request.
+
 - **A page's web parts were requested without the cast that names the type.** `SitePage.web_parts` asked
   for `pages/{id}/webParts` and the service answered `Resource not found for the segment 'webParts'`.
   The navigation is declared on the derived `sitePage`, so the path has to say so:
