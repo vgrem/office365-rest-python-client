@@ -619,15 +619,6 @@ class _TargetPrincipals:
         return self._roles.get(name)
 
 
-def _find_site_group(web: Any, title: str) -> Any:
-    """The site group with this title (case-insensitive), or ``None``."""
-    key = title.casefold()
-    for group in web.site_groups.get().execute_query():
-        if (group.title or "").casefold() == key:
-            return group
-    return None
-
-
 def _resolve_group_ownership(
     web: Any,
     title: str,
@@ -649,11 +640,9 @@ def _resolve_group_ownership(
     current = title
     for _ in range(_MAX_GROUP_OWNER_DEPTH):
         try:
-            group = _find_site_group(web, current)
-            if group is None:
-                break
+            group = web.site_groups.get_by_name(current).get().execute_query()
             owner = group.owner.get().execute_query()
-        except Exception:  # noqa: BLE001 - best-effort: an unresolved owner is reported, not raised
+        except Exception:  # noqa: BLE001 - best-effort: a title the site does not have ends the chain
             break
         if _principal_kind(owner) == "user":
             principal = resolve(getattr(owner, "id", None)) if resolve is not None else None
