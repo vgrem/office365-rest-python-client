@@ -46,8 +46,6 @@ from office365.sharepoint.publishing.pages.page import SitePage
 from office365.sharepoint.webs.web import Web
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-#: Packages whose columns are expected to declare their value type today.
-_SERVED = ("office365/outlook",)
 
 
 def _service_roots() -> list[tuple[str, str]]:
@@ -305,11 +303,14 @@ def test_odata_name_answers_for_an_attribute_and_refuses_an_unknown_one():
         Event.odata_name("i_cal_u_id")
 
 
-def test_no_served_module_has_a_column_without_a_declared_type():
+def test_no_package_has_a_column_without_a_declared_type():
     # A $select answers only the columns it names, so a column whose type does not
-    # resolve hydrates a bare dict where the model promises a value object.
+    # resolve hydrates a bare dict where the model promises a value object. This used to
+    # be served for ``office365/outlook`` alone, because that was the only tree that
+    # passed; every package does now, so the allow-list is gone and the next regression
+    # lands on the package that caused it instead of on a list nobody extended.
     untyped = []
-    for root in _SERVED:
+    for _, root in _SERVICE_ROOTS:
         package = root.replace("/", ".")
         for info in pkgutil.walk_packages([str(_REPO_ROOT / root)], prefix=f"{package}."):
             module = importlib.import_module(info.name)
