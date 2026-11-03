@@ -1,10 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, cast
 from uuid import UUID
 
+from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.url_value import FieldUrlValue
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 
 
 class UserInfoItem(ListItem):
@@ -364,9 +366,12 @@ class UserInfoItem(ListItem):
 
     @odata(name="OData__ModerationStatus")
     @property
-    def o_data___moderation_status(self) -> Optional[int]:
-        """Gets the OData__ModerationStatus property"""
-        return self.properties.get("OData__ModerationStatus", None)
+    def o_data___moderation_status(self) -> Optional[SPModerationStatusType]:
+        """The item's approval status (the column declares its own values)."""
+        value = self.properties.get("OData__ModerationStatus", None)
+        if value is None or isinstance(value, SPModerationStatusType):
+            return value
+        return cast("Optional[SPModerationStatusType]", parse_enum(SPModerationStatusType, value))
 
     @odata(name="Edit")
     @property

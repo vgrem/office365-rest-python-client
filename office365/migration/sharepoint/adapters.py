@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import io
 from collections.abc import Callable
+from enum import Enum
 from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypeAlias
@@ -42,6 +43,7 @@ from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, PERMI
 from office365.sharepoint.exceptions import SPFieldValidationException
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.type import PrincipalType
 
@@ -99,17 +101,13 @@ _PERSON_EXCLUDED = frozenset(name[: -len("Id")] for name in ListItem.select_face
 
 #: Moderation columns of a list item. They only exist on a list whose
 #: ``EnableModeration`` is on, so selecting them unconditionally fails outright.
-#: They are ordinary record content, yet the system update that restores timestamps
-#: re-approves an item, so captured state rides in that same write (live-probed: both
-#: fields are accepted there, and no version is created).
+#: They are ordinary record content: a list item takes a moderation change in the same
+#: system update as its timestamps (a document refuses it — see ``apply_item_state``),
+#: so captured state rides in that one write and no version is created.
 _MODERATION_FIELDS = ListItem.select_facet(MODERATION)
 
 #: The moderation column carrying the approval status; its sibling carries the comment.
 _MODERATION_STATUS = ListItem.odata_name("moderation_status")
-
-#: Approval status of an approved item (0 = draft/pending, 1 = rejected, 2 = approved).
-#: A freshly uploaded document is approved, so only the other states are worth writing.
-_APPROVED_STATUS = 2
 
 #: How many paths a per-run warning names before it summarizes the rest.
 _WARNING_SAMPLE = 5
@@ -324,9 +322,18 @@ def _report_rejected_fields(result, warnings: list[str], label: str) -> None:
             warnings.append(f"{label}: {value.FieldName} rejected ({value.ErrorMessage})")
 
 
+def _wire_value(value: Any) -> Any:
+    """A value as the wire spells it: a declared enum is the number it carries."""
+    return value.value if isinstance(value, Enum) else value
+
+
 def _moderation_state(properties: dict) -> dict:
-    """The approval fields a list item carries; a blank comment is not one of them."""
-    return {name: properties[name] for name in _MODERATION_FIELDS if properties.get(name) not in (None, "")}
+    """The approval fields a list item carries; a blank comment is not one of them.
+
+    A hydrated model hands out enum members (``SPModerationStatusType``); the state is a
+    payload to write back, so it carries the numbers the column stores.
+    """
+    return {name: _wire_value(properties[name]) for name in _MODERATION_FIELDS if properties.get(name) not in (None, "")}
 
 
 #: SiteAssets is the one library that also holds per-site infrastructure — the
@@ -1333,7 +1340,7 @@ class SharePointListTarget:
     supports_typed_values = True
 
     # Marks this target as replaying a list item's approval state (its moderation status
-    # and comment) in the metadata write, which a system update would otherwise reset.
+    # and comment) in the metadata write, which is the only write a list item takes it in.
     # Check-out and draft-version state are still not carried.
     supports_item_state = True
 
@@ -2168,8 +2175,7 @@ class SharePointListTarget:
 
         The last hook wins the write: with timestamps preserved that is
         :meth:`apply_timestamps`; without them it is this method, so the item still
-        gets one system update instead of one per property group. It runs before
-        the approval write, which has to stay last (a system update re-approves).
+        gets one system update instead of one per property group.
         """
         form_values = self._pending_authorship.pop(item.dest_path, {})
         form_values.update(self._pending_approval.pop(item.dest_path, {}))
@@ -2645,8 +2651,9 @@ class SharePointLibrarySource:
     def read_item_state(self, item: MigrationItem) -> dict | None:
         """Approval state that a fresh upload would not reproduce.
 
-        An uploaded document starts out *approved*, so only a draft/pending or
-        rejected source file carries state, together with its approval comments.
+        A copy arrives approved on a list without moderation and pending on one with it,
+        so a pending source says nothing the copy does not already say; a draft, rejected
+        or scheduled one does, together with its approval comments.
         """
         if item.item_type == "folder" or self._list_source is None:
             return None
@@ -2655,7 +2662,7 @@ class SharePointLibrarySource:
         if not state:
             return None
         status = state.get(_MODERATION_STATUS)
-        if status is None or status == _APPROVED_STATUS:
+        if status is None or status == SPModerationStatusType.Pending.value:
             return None
         return state
 
@@ -3068,13 +3075,14 @@ class SharePointLibraryTarget:
     def apply_item_state(self, item: MigrationItem, state: dict) -> None:
         """Best-effort: restore a migrated file's content-approval state.
 
-        An uploaded file starts out approved, and the timestamp/authorship system
-        updates approve it again, so a source draft or rejected file would
-        otherwise silently become visible. Documents reject a moderation change
-        combined with other properties (``You cannot change moderation status and
-        set other item properties at that same time.``), hence a separate write,
-        applied last. A library without moderation enabled has no such fields: the
-        write fails and is reported, never fatal.
+        A fresh document is pending on a moderated library and approved on one without
+        it, so a draft or rejected source file would otherwise silently become visible.
+        Documents reject a moderation change combined with other properties (``You
+        cannot change moderation status and set other item properties at that same
+        time.``), which is why a list item carries its state in its other system update
+        and a file needs this write of its own, applied last. A library without
+        moderation enabled has no such fields: the write fails and is reported, never
+        fatal.
         """
         if item.item_type == "folder" or not state:
             return
@@ -3124,7 +3132,7 @@ class SharePointLibraryTarget:
         except Exception:  # noqa: BLE001 — a library without moderation has no such column
             return None
         status = securable.moderation_status
-        return None if status is None else str(status)
+        return None if status is None else str(status.value)
 
     def read_permissions(self, item: MigrationItem) -> list[PermissionEntry]:
         """Read the written item's *unique* role assignments (for the permission diff)."""

@@ -5,6 +5,7 @@ import unittest
 from office365.migration.offline import offline_context
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.publishing.pages.fields import PAGE_FIELDS
 from office365.sharepoint.publishing.pages.page import SitePage
 
@@ -29,7 +30,7 @@ class TestSitePageDeclarations(unittest.TestCase):
         page = _page({"FileLeafRef": "x.aspx", "WikiField": "<div>wiki</div>", "OData__ModerationStatus": 0})
         self.assertEqual(page.file_leaf_ref, "x.aspx")
         self.assertEqual(page.wiki, "<div>wiki</div>")
-        self.assertEqual(page.moderation_status, 0)
+        self.assertEqual(page.moderation_status, SPModerationStatusType.Approved)
 
 
 class TestPageFields(unittest.TestCase):

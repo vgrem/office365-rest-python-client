@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import json
+from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 from uuid import UUID
 
@@ -34,6 +35,7 @@ from office365.sharepoint.files.system_object_type import FileSystemObjectType
 from office365.sharepoint.likes.liked_by_information import LikedByInformation
 from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
 from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.listitems.update_parameters import ListItemUpdateParameters
 from office365.sharepoint.listitems.versions.collection import ListItemVersionCollection
 from office365.sharepoint.lists.templates.type import ListTemplateType
@@ -87,8 +89,8 @@ def _system_field_name(name: str) -> str:
 def _system_field_value(value: Any) -> Any:
     """A form value in the shape ``ValidateUpdateListItem`` takes it.
 
-    ``datesInUTC`` reads a date as a ``...Z`` UTC string, a user is its lookup value,
-    and a string is already whatever the caller meant it to be.
+    ``datesInUTC`` reads a date as a ``...Z`` UTC string, a user is its lookup value, a
+    declared enum the number the column stores, and a string is whatever the caller meant.
     """
     from office365.sharepoint.fields.lookup_value import FieldLookupValue
     from office365.sharepoint.fields.user_value import FieldUserValue
@@ -96,6 +98,8 @@ def _system_field_value(value: Any) -> Any:
 
     if isinstance(value, datetime.datetime):
         return iso_z(value)
+    if isinstance(value, Enum):
+        return str(value.value)
     if isinstance(value, User):
         return FieldUserValue(value.id, value.login_name)
     if isinstance(value, FieldLookupValue):
@@ -1509,9 +1513,16 @@ class ListItem(SecurableObject):
 
     @odata(name="OData__ModerationStatus", system=True, readonly=True, facet=MODERATION)
     @property
-    def moderation_status(self) -> Optional[int]:
-        """Gets the OData__ModerationStatus property"""
-        return self.properties.get("OData__ModerationStatus", None)
+    def moderation_status(self) -> Optional[SPModerationStatusType]:
+        """The item's approval status.
+
+        The column declares its own values (``SPModerationStatusType``); the wire sends
+        the number, so the getter converts rather than handing the raw integer out.
+        """
+        value = self.properties.get("OData__ModerationStatus", None)
+        if value is None or isinstance(value, SPModerationStatusType):
+            return value
+        return cast("Optional[SPModerationStatusType]", parse_enum(SPModerationStatusType, value))
 
     @odata(name="OData__ModerationComments", system=True, facet=MODERATION)
     @property

@@ -125,6 +125,14 @@ introduced.
   the one that says what it is (`SP.Workflow.SPWorkflowTask`) rather than inheriting the
   generic `SP.ListItem`; import from it.
 
+- `ListItem.moderation_status`, `SitePage.moderation_status` and
+  `UserInfoItem.o_data___moderation_status` answer an `SPModerationStatusType` member
+  instead of the raw integer. The column's own `CHOICES` are `0;#Approved`,
+  `1;#Rejected`, `2;#Pending`, `3;#Draft`, `4;#Scheduled` — so a comparison against a
+  literal reads false now, and the one the migration layer made against `2` for
+  "approved" was backwards. `SitePage.moderation_status` is `readonly` as well: the
+  column states `ReadOnly="TRUE"`.
+
 ### Added
 
 **Migration**
@@ -205,6 +213,12 @@ introduced.
   `new_document_update=True` takes the CSOM `UpdateOverwriteVersion` path, so a document
   keeps its version count. A field the service refuses comes back on the result
   (`ListItemFormUpdateValue.HasException` / `ErrorMessage`) instead of being dropped.
+
+- `SPModerationStatusType` (`office365.sharepoint.listitems.moderation_status`) spells the
+  approval column's five values, and the three getters that read the column answer it.
+  `_ModerationStatus` is `0` on a list without moderation and `2` on one with it — a
+  fresh item on a moderated list is *pending*, and a system update does not approve it, so
+  a caller replaying approval state writes it.
 
 **Outlook mail**
 

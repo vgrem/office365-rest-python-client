@@ -12,6 +12,7 @@ import datetime
 
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from tests import test_site_url
 from tests._scripted_transport import RecordingTransport
 
@@ -92,7 +93,16 @@ def test_a_moderation_column_is_written_without_its_escape_prefix():
     ctx, transport = _sp([_accepted()])
 
     _item(ctx).set_system_metadata({"OData__ModerationStatus": 0}, new_document_update=True).execute_query()
+    assert _form_values(_sent(transport)) == {"_ModerationStatus": "0"}
 
+
+def test_a_declared_enum_is_written_as_its_wire_value():
+    """A caller who has the enum the column declares writes the number it stands for."""
+    ctx, transport = _sp([_accepted()])
+
+    _item(ctx).set_system_metadata(
+        {"OData__ModerationStatus": SPModerationStatusType.Approved}, new_document_update=True
+    ).execute_query()
     assert _form_values(_sent(transport)) == {"_ModerationStatus": "0"}
 
 

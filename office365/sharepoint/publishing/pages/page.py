@@ -1,18 +1,20 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, cast
 from uuid import UUID
 
 from typing_extensions import Self
 
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.documents.coauthconfiguration import CoAuthConfiguration
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.amplify.clientamplifyanywhereresults import ClientAmplifyAnywhereResults
 from office365.sharepoint.publishing.amplify.clientamplifyresults import ClientAmplifyResults
@@ -449,16 +451,19 @@ class SitePage(SitePageMetadata):
         """
         return self.properties.get("WikiField", None)
 
-    @odata(name="OData__ModerationStatus", system=True)
+    @odata(name="OData__ModerationStatus", system=True, readonly=True)
     @property
-    def moderation_status(self) -> Optional[int]:
-        """Gets the OData__ModerationStatus property
+    def moderation_status(self) -> Optional[SPModerationStatusType]:
+        """The page's approval status.
 
-        The item's approval status: 0 draft or pending, 1 rejected, 2 approved. REST
-        spells a field whose internal name starts with ``_`` as ``OData_`` + that name.
-        An item row spells this column; the metadata does not (``system=True``).
+        The column declares its own values (``SPModerationStatusType``) and is read-only;
+        REST spells a field whose internal name starts with ``_`` as ``OData_`` + that
+        name. An item row spells this column; the metadata does not (``system=True``).
         """
-        return self.properties.get("OData__ModerationStatus", None)
+        value = self.properties.get("OData__ModerationStatus", None)
+        if value is None or isinstance(value, SPModerationStatusType):
+            return value
+        return cast("Optional[SPModerationStatusType]", parse_enum(SPModerationStatusType, value))
 
     @site_access(SiteLevel.WRITE)
     def amplify(self, request: AmplifyRequestParams) -> ClientResult[ClientAmplifyAnywhereResults]:

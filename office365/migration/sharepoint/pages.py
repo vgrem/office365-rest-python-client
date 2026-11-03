@@ -54,6 +54,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Iterable, Optional
 
 from office365.migration.offline import offline_context
+from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS
@@ -242,11 +243,12 @@ def capture_site_pages(sp_list: "SPList") -> list[SitePage]:
 def _publishes(page: SitePage) -> bool:
     """Whether the copy publishes itself, as the source item stands.
 
-    ``OData__ModerationStatus`` is unset on a library without approval and ``0`` on a page
-    served as edited; either is copied published. An approved or rejected page keeps its
-    own approval state, so the copy is not published over it.
+    ``OData__ModerationStatus`` is unset on a library without approval and ``Approved`` on
+    a page served as edited; either is copied published. A page the service holds back —
+    rejected, pending, draft or scheduled — keeps that state, so the copy is not published
+    over it.
     """
-    return page.moderation_status in (None, 0, "0")
+    return page.moderation_status in (None, SPModerationStatusType.Approved)
 
 
 def apply_page_payload(item: "ListItem", page: SitePage) -> None:
