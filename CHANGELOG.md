@@ -230,6 +230,19 @@ introduced.
   keeps its version count. A field the service refuses comes back on the result
   (`ListItemFormUpdateValue.HasException` / `ErrorMessage`) instead of being dropped.
 
+- `ListItem.restore_fidelity(created, modified, author, editor, approval,
+  new_document_update=False, web_local_dates=False)` writes what a copy of an item cannot
+  carry in its payload — the dates, the authorship and the approval columns — in one
+  `ValidateUpdateListItem` request, because a system update re-approves the item and a
+  second write would undo the approval state the first one set. `approval` is the
+  approval columns as the source declared them (the status and the comments beside it),
+  not a lone enum. `web_local_dates=True` states that the timestamps already name the
+  web's wall clock and must be sent verbatim; an item of a document library needs that,
+  because its form ignores `datesInUTC` and refuses a trailing `Z` ("You must specify a
+  valid date within the range of 1/1/1900 and 12/31/8900.") while a list item takes the
+  `...Z` form and restores the same instant from it. `set_system_metadata` grew the same
+  grammar switch as `dates_in_utc=True`.
+
 - `SPModerationStatusType` (`office365.sharepoint.listitems.moderation_status`) spells the
   approval column's five values, and the three getters that read the column answer it.
   `_ModerationStatus` is `0` on a list without moderation and `2` on one with it — a
@@ -1164,6 +1177,21 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
 
 **Migration (client-side)**
 
+- **The fidelity quartet is one verb, and its grammar is the item's.** The list target
+  and the library target each carried the same three hooks — `apply_timestamps`,
+  `apply_authorship`, `finalize_fidelity` — over one form payload: one built
+  `{"Created": iso_z(...), "Modified": ..., **pending}`, another merged the approval dict
+  in at two different points, and the library target kept its own UTC→local converter
+  with a per-value cache that the list target did not need. Both targets now resolve authors and approval into a pending record and hand it
+  to `ListItem.restore_fidelity`, once, with `web_local_dates=True` on the library side
+  — so which grammar an item speaks is one flag at one call site instead of two copies
+  of the payload that happen to agree. `_utc_to_local` (with its `_time_zone` memo and
+  `_local_cache`) is gone; `_web_local_texts` converts every instant of a write in one
+  server-side `TimeZone.UTCToLocalTime` request. Live-verified on a moderated list, a
+  file and a folder: one write restores the exact instant together with the resolved
+  `Author`/`Editor` and the approval status, a document refuses every `...Z` date with
+  "You must specify a valid date within the range of 1/1/1900 and 12/31/8900." and keeps
+  its wall clock, and a value the service refuses discards the rest of the same write.
 - **The SharePoint assessment reads a list item's columns through the item**
   (`item.file_ref`, `is_file`, `has_unique_role_assignments`) instead of the JSON
   bag, through one named projection per load. A request-level differential over 252

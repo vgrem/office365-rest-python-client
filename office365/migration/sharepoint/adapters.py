@@ -58,6 +58,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
+    from office365.sharepoint.webs.web import Web
 
 
 def _cloned_context(obj):
@@ -276,6 +277,27 @@ def _report_rejected_fields(result, warnings: list[str], label: str) -> None:
 def _wire_value(value: Any) -> Any:
     """A value as the wire spells it: a declared enum is the number it carries."""
     return value.value if isinstance(value, Enum) else value
+
+
+def _web_local_texts(web: "Web", *values: Any) -> list[str | None]:
+    """The wall-clock texts a document's item form parses, one per instant given.
+
+    A document's ``ValidateUpdateListItem`` ignores ``datesInUTC``, parses the web's
+    locale and refuses a trailing ``Z`` (live-verified on a file and on a folder), so an
+    instant has to reach it as the web's own wall clock. That conversion runs server-side
+    (``TimeZone.UTCToLocalTime``) so DST is right, and one request converts every value.
+    A value that is not an instant is passed on as given, so the service rejection names
+    what the caller held instead of this layer having dropped it.
+    """
+    zone = web.regional_settings.time_zone
+    instants = {index: parse_datetime(iso_z(value)) for index, value in enumerate(values) if value}
+    converted = {index: zone.utc_to_local_time(instant) for index, instant in instants.items() if instant is not None}
+    if converted:
+        web.context.execute_query()
+    return [
+        wall_clock_text(converted[index].value) if index in converted else (str(value) if value else None)
+        for index, value in enumerate(values)
+    ]
 
 
 def _moderation_state(properties: dict) -> dict:
@@ -2031,16 +2053,31 @@ class SharePointListTarget:
         Authorship and approval state resolved for the same item are folded in, so all of
         them land atomically in one system update.
         """
+        self._restore_fidelity(item, timestamps=True)
+
+    def _restore_fidelity(self, item: MigrationItem, timestamps: bool) -> None:
+        """One system update carrying every fidelity value this item has.
+
+        ``timestamps=False`` is the write :meth:`finalize_fidelity` makes when the item's
+        dates are not preserved: the values are already absent, so what is left is the
+        authorship and approval state, and they still cost one request rather than two.
+        """
         target_item = self._target_item(item)
         if target_item is None:
             return
-        pending = dict(self._pending_authorship.pop(item.dest_path, {}))
-        pending.update(self._pending_approval.pop(item.dest_path, {}))
-        if not (item.created or item.modified or pending):
+        authorship = self._pending_authorship.pop(item.dest_path, {})
+        approval = self._pending_approval.pop(item.dest_path, {})
+        created = iso_z(item.created) if timestamps else None
+        modified = iso_z(item.modified) if timestamps else None
+        if not (created or modified or authorship or approval):
             return
         self._fresh_reads.pop(str(item.dest_path), None)
-        result = target_item.set_system_metadata(
-            {"Created": iso_z(item.created), "Modified": iso_z(item.modified), **pending},
+        result = target_item.restore_fidelity(
+            created=created,
+            modified=modified,
+            author=authorship.get("Author"),
+            editor=authorship.get("Editor"),
+            approval=approval,
             new_document_update=True,
         ).execute_query()
         _report_rejected_fields(result, self.warnings, f"timestamps {item.dest_path}")
@@ -2066,17 +2103,12 @@ class SharePointListTarget:
             author = None
         if editor is not None and editor.is_service_account:
             editor = None
-        if author is None and editor is None and not self._pending_approval.get(item.dest_path):
+        if author is None and editor is None:
             return
-        form_values: dict = {}
-        if author is not None:
-            form_values["Author"] = author
-        if editor is not None:
-            form_values["Editor"] = editor
-        # Replay the approval state here too: this write is itself a system update, so
-        # on a run that restores authorship without timestamps it is the last one.
-        form_values.update(self._pending_approval.get(item.dest_path, {}))
-        self._pending_authorship[item.dest_path] = dict(form_values)
+        self._pending_authorship[item.dest_path] = {
+            "Author": author,
+            "Editor": editor,
+        }
 
     @site_access(SiteLevel.WRITE)
     def finalize_fidelity(self, item: MigrationItem) -> None:
@@ -2086,15 +2118,7 @@ class SharePointListTarget:
         :meth:`apply_timestamps`; without them it is this method, so the item still
         gets one system update instead of one per property group.
         """
-        form_values = self._pending_authorship.pop(item.dest_path, {})
-        form_values.update(self._pending_approval.pop(item.dest_path, {}))
-        if not form_values:
-            return
-        target_item = self._target_item(item)
-        if target_item is None:
-            return
-        result = target_item.set_system_metadata(form_values, new_document_update=True).execute_query()
-        _report_rejected_fields(result, self.warnings, f"authorship {item.dest_path}")
+        self._restore_fidelity(item, timestamps=False)
 
     @site_access(SiteLevel.MANAGE)
     def apply_permissions(self, item: MigrationItem, permissions: list[PermissionEntry]) -> None:
@@ -2639,58 +2663,10 @@ class SharePointLibraryTarget:
         self.warnings: list[str] = []
         self._login_cache: dict[int, str | None] = {}
         self._principals_cache: _TargetPrincipals | None = None
-        # Author/Editor values written by ``apply_authorship`` and folded into the
+        # Author/Editor values resolved by ``apply_authorship`` and folded into the
         # final timestamp write so ``Editor`` isn't reset by the latter.
         self._pending_authorship: dict[str, dict] = {}
-        # Target web time zone (lazily loaded) and a UTC->local conversion cache.
-        self._time_zone = None
-        self._local_cache: dict[str, str] = {}
         self._field_scan: SharePointListSource | None = None
-
-    def _utc_to_local(self, *values: str | None) -> list[str | None]:
-        """Convert UTC timestamp strings to web-local wall-clock (one round trip).
-
-        Document items parse form dates in the web's locale, so the desired UTC
-        instant must be converted to local wall-clock first. The conversion runs
-        server-side (``TimeZone.UTCToLocalTime``) so DST is handled correctly.
-        Results are cached by the exact UTC value.
-        """
-        if self._time_zone is None:
-            self._time_zone = self._folder.context.web.regional_settings.time_zone
-        outputs: list[str | None] = [None] * len(values)
-        pending: dict[str, object] = {}
-        assignments: list[tuple[int, str]] = []
-        for index, value in enumerate(values):
-            if not value:
-                continue
-            utc = iso_z(value)
-            if utc is None:
-                continue
-            if not utc.endswith("Z"):
-                # Unparseable value: pass it through unchanged so the service names the
-                # value instead of this layer having dropped it.
-                outputs[index] = str(value)
-                continue
-            cached = self._local_cache.get(utc)
-            if cached is not None:
-                outputs[index] = cached
-                continue
-            instant = parse_datetime(utc)
-            if instant is None:
-                outputs[index] = str(value)
-                continue
-            if utc not in pending:
-                pending[utc] = self._time_zone.utc_to_local_time(instant)
-            assignments.append((index, utc))
-        if pending:
-            self._folder.context.execute_query()
-            for utc, result in pending.items():
-                local = wall_clock_text(getattr(result, "value", None))
-                if local is not None:
-                    self._local_cache[utc] = local
-            for index, utc in assignments:
-                outputs[index] = self._local_cache.get(utc)
-        return outputs
 
     def _principals(self) -> _TargetPrincipals:
         """The (lazily built) target principal/role resolver."""
@@ -2893,27 +2869,39 @@ class SharePointLibraryTarget:
     def apply_timestamps(self, item: MigrationItem) -> None:
         """Best-effort: restore ``Created``/``Modified`` on the written item.
 
-        Uses ``ValidateUpdateListItem``, the only REST path that can set these
-        system fields. For files it runs as a system update
-        (``bNewDocumentUpdate=True``, the CSOM ``UpdateOverwriteVersion`` path) so
-        the metadata lands without creating a new version; folders have no version
-        history. ``preserve_versions`` still needs the server-side API. Authorship
-        values resolved for the same item ride along in this write.
+        ``ValidateUpdateListItem`` is the only REST path that can set these system
+        fields. For files it runs as a system update (``bNewDocumentUpdate=True``, the
+        CSOM ``UpdateOverwriteVersion`` path) so the metadata lands without creating a
+        new version; folders have no version history. ``preserve_versions`` still needs
+        the server-side API. Authorship values resolved for the same item ride along in
+        this write.
         """
-        form_values: dict = {}
-        created, modified = self._utc_to_local(item.created, item.modified)
-        if created:
-            form_values["Created"] = created
-        if modified:
-            form_values["Modified"] = modified
-        form_values.update(self._pending_authorship.pop(item.dest_path, {}))
-        if not form_values:
-            return
+        self._restore_fidelity(item, timestamps=True)
+
+    def _restore_fidelity(self, item: MigrationItem, timestamps: bool) -> None:
+        """One system update carrying every fidelity value this item has.
+
+        A document's item form reads its dates in the web's locale rather than the UTC
+        a caller holds, so the timestamps are converted first (see
+        :func:`_web_local_texts`); the approval state is a write of its own and stays
+        last — see :meth:`apply_item_state`.
+        """
         securable = self._securable(item)
         if securable is None:
             return
-        result = securable.set_system_metadata(
-            form_values, new_document_update=item.item_type != "folder"
+        created = modified = None
+        if timestamps:
+            created, modified = _web_local_texts(self._folder.context.web, item.created, item.modified)
+        authorship = self._pending_authorship.pop(item.dest_path, {})
+        if not (created or modified or authorship):
+            return
+        result = securable.restore_fidelity(
+            created=created,
+            modified=modified,
+            author=authorship.get("Author"),
+            editor=authorship.get("Editor"),
+            new_document_update=item.item_type != "folder",
+            web_local_dates=True,
         ).execute_query()
         _report_rejected_fields(result, self.warnings, f"timestamps {item.dest_path}")
 
@@ -2939,12 +2927,7 @@ class SharePointLibraryTarget:
             editor = None
         if author is None and editor is None:
             return
-        form_values: dict[str, object] = {}
-        if author is not None:
-            form_values["Author"] = author
-        if editor is not None:
-            form_values["Editor"] = editor
-        self._pending_authorship[item.dest_path] = dict(form_values)
+        self._pending_authorship[item.dest_path] = {"Author": author, "Editor": editor}
 
     @site_access(SiteLevel.WRITE)
     def finalize_fidelity(self, item: MigrationItem) -> None:
@@ -2955,16 +2938,7 @@ class SharePointLibraryTarget:
         one system update instead of one per property group. Runs before the
         approval write, which must stay last.
         """
-        form_values = self._pending_authorship.pop(item.dest_path, {})
-        if not form_values:
-            return
-        securable = self._securable(item)
-        if securable is None:
-            return
-        result = securable.set_system_metadata(
-            form_values, new_document_update=item.item_type != "folder"
-        ).execute_query()
-        _report_rejected_fields(result, self.warnings, f"authorship {item.dest_path}")
+        self._restore_fidelity(item, timestamps=False)
 
     @site_access(SiteLevel.MANAGE)
     def apply_permissions(self, item: MigrationItem, permissions: list[PermissionEntry]) -> None:
@@ -2999,7 +2973,7 @@ class SharePointLibraryTarget:
         if securable is None:
             return
         try:
-            result = securable.set_system_metadata(dict(state), new_document_update=True).execute_query()
+            result = securable.restore_fidelity(approval=dict(state), new_document_update=True).execute_query()
         except Exception as e:  # noqa: BLE001 — approval state is best-effort
             self.warnings.append(f"approval state for {item.dest_path!r} could not be restored: {e}")
             return
@@ -3075,7 +3049,6 @@ class SharePointLibraryTarget:
 
     def commit(self, options=None) -> None:
         self._pending_authorship.clear()
-        self._local_cache.clear()
 
     def close(self) -> None:
         pass

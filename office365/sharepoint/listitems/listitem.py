@@ -71,6 +71,7 @@ if TYPE_CHECKING:
     )
     from office365.sharepoint.listitems.updateresults import ListItemUpdateResults
     from office365.sharepoint.lists.list import List
+    from office365.sharepoint.principal.users.user import User
     from office365.sharepoint.webs.spimageitem import SPImageItem
     from office365.sharepoint.workflow.labelaccesscontroldata import (
         LabelAccessControlData,
@@ -462,7 +463,7 @@ class ListItem(SecurableObject):
 
     @site_access(SiteLevel.WRITE)
     def set_system_metadata(
-        self, values: Dict[str, Any], new_document_update: bool = False
+        self, values: Dict[str, Any], new_document_update: bool = False, dates_in_utc: bool = True
     ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
         """Write system fields of the item in one request.
 
@@ -474,13 +475,58 @@ class ListItem(SecurableObject):
         Every value rides in one request because a system update re-approves the item: a
         second write would discard the approval state the first one set. ``new_document_update``
         (the CSOM ``UpdateOverwriteVersion`` path) keeps a document's version count.
+        ``dates_in_utc`` names the grammar the item's form parses: a list item honours it, an
+        item of a document library ignores it and parses the web's locale (see
+        :meth:`restore_fidelity`).
         """
         form_values = {
             _system_field_name(name): _system_field_value(value) for name, value in values.items() if value is not None
         }
         if not form_values:
             return ClientResult(self.context, ClientValueCollection(ListItemFormUpdateValue))
-        return self.validate_update_list_item(form_values, new_document_update=new_document_update, dates_in_utc=True)
+        return self.validate_update_list_item(
+            form_values, new_document_update=new_document_update, dates_in_utc=dates_in_utc
+        )
+
+    @site_access(SiteLevel.WRITE)
+    def restore_fidelity(
+        self,
+        created: Optional[Union[datetime.datetime, str]] = None,
+        modified: Optional[Union[datetime.datetime, str]] = None,
+        author: Optional["User"] = None,
+        editor: Optional["User"] = None,
+        approval: Optional[Dict[str, Any]] = None,
+        new_document_update: bool = False,
+        web_local_dates: bool = False,
+    ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
+        """Write what a copy of this item cannot carry in its payload, in one request.
+
+        ``Created``/``Modified``, ``Author``/``Editor`` and the approval columns reach an
+        item only through ``ValidateUpdateListItem``, and all of them share one request: a
+        system update re-approves the item, so a second write would undo the approval state
+        the first one set. ``approval`` is the approval columns as the source declared them
+        (the status, and the comments beside it) — a dict because the service stores more
+        than the status, merged into the same write so a list item still costs one request.
+        A *document* refuses a moderation change combined with other properties ("You cannot
+        change moderation status and set other item properties at that same time."), so it is
+        written by a call of its own, last.
+
+        ``web_local_dates`` says the timestamps already name the web's wall clock: send them
+        verbatim and let the form read them in its locale. An item of a document library — a
+        file or a folder, live-verified — needs that, because its form ignores ``datesInUTC``
+        and refuses a trailing ``Z`` entirely ("You must specify a valid date within the range
+        of 1/1/1900 and 12/31/8900."); a list item takes the ``...Z`` UTC form and restores the
+        same instant from it.
+
+        The service applies the whole request or none of it: one value it refuses discards
+        the others with it (live-verified — a wrong ``Author`` left ``Created`` at the
+        copy's own stamp), so a rejection means nothing this write carried has landed.
+        """
+        values: Dict[str, Any] = dict(approval or {})
+        values.update({"Created": created, "Modified": modified, "Author": author, "Editor": editor})
+        return self.set_system_metadata(
+            values, new_document_update=new_document_update, dates_in_utc=not web_local_dates
+        )
 
     @site_access(SiteLevel.WRITE)
     def validate_update_list_item(

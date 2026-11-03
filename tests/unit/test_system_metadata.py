@@ -106,6 +106,29 @@ def test_a_declared_enum_is_written_as_its_wire_value():
     assert _form_values(_sent(transport)) == {"_ModerationStatus": "0"}
 
 
+def test_restore_fidelity_rides_in_one_write():
+    """A list item carries approval state in the same system update — a second write
+    re-approves it. ``web_local_dates`` picks the grammar the item's form parses."""
+    ctx, transport = _sp([_accepted()])
+
+    _item(ctx).restore_fidelity(
+        created="2020-01-02 05:04:05",
+        modified="2020-01-02 05:04:05",
+        approval={"OData__ModerationStatus": SPModerationStatusType.Pending},
+        new_document_update=True,
+        web_local_dates=True,
+    ).execute_query()
+
+    body = _sent(transport)
+    assert len(transport.requests) == 1
+    assert body["datesInUTC"] is False
+    assert _form_values(body) == {
+        "Created": "2020-01-02 05:04:05",
+        "Modified": "2020-01-02 05:04:05",
+        "_ModerationStatus": "2",
+    }
+
+
 def test_nothing_to_write_queues_no_request():
     ctx, transport = _sp([])
 
