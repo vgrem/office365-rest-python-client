@@ -101,16 +101,22 @@ class FileVersion(Entity):
         """Gets a value that specifies whether the file version is the current version."""
         return self.properties.get("IsCurrentVersion", None)
 
-    @odata(name="CheckInComment")
+    @odata(name="CheckInComment", readonly=True)
     @property
     def checkin_comment(self) -> Optional[str]:
-        """Gets a value that specifies the check-in comment."""
+        """Gets a value that specifies the check-in comment.
+
+        The service records the comment when the file is checked in (``readonly``).
+        """
         return self.properties.get("CheckInComment", None)
 
-    @odata(name="CheckInComment")
+    @odata(name="CheckInComment", readonly=True)
     @property
     def check_in_comment(self) -> Optional[str]:
-        """Gets the CheckInComment property"""
+        """Gets the CheckInComment property.
+
+        The service records the comment when the file is checked in (``readonly``).
+        """
         return self.properties.get("CheckInComment", None)
 
     @odata(name="ExpirationDate", beta=True)
