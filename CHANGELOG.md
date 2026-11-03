@@ -192,6 +192,10 @@ introduced.
   one scalar — and `ClientValueCollection.values()` is the same list once the model
   already holds the value. A dict that is neither a container nor positional is one
   value object, not a list of its fields.
+- `ListItem.value_column(name)` and `ListItem.string_value_column(name)` spell the item
+  columns a Lookup/Person value travels under -- `<name>Id`, and the read-only
+  `<name>StringId` a user column reports. `set_property`'s shadow write and the
+  migration layer's nineteen hand-appended suffixes now read the one declaration.
 - `@odata(..., system=True)` records provenance: the metadata declares no such
   name, the service spells it on the item payload. `ListItem.author_id`,
   `editor_id`, `created`, `modified`, `SitePage`'s three item columns and

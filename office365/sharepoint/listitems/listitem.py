@@ -921,6 +921,28 @@ class ListItem(SecurableObject):
         """Document ID fora document"""
         return self.properties.get("OData__dlc_DocIdUrl", None)
 
+    @staticmethod
+    def value_column(name: str) -> str:
+        """The item column a Lookup/Person column's value travels under (``<name>Id``).
+
+        The payload carries a lookup as the foreign item id, and a person as the
+        site-user id, under the field's internal name with ``Id`` appended --
+        live-verified on Lookup, LookupMulti, User and UserMulti columns the collection
+        created. A managed metadata column is the exception: its value goes to the note
+        companion :meth:`_set_taxonomy_field_value` resolves.
+        """
+        return f"{name}Id"
+
+    @staticmethod
+    def string_value_column(name: str) -> str:
+        """The read-only text companion a user column reports (``<name>StringId``).
+
+        Live-verified: a User and a UserMulti column report one, a Lookup column and the
+        built-in ``Author``/``Editor`` do not, and only an *unfiltered* read returns it
+        (a ``$select`` narrows it away, ``select_all()`` included). Nothing writes it.
+        """
+        return f"{name}StringId"
+
     def get_property(self, name, default_value=None) -> Any:
         value = super().get_property(name, default_value)
         if self.is_property_available(name[:-2]):
@@ -939,10 +961,10 @@ class ListItem(SecurableObject):
                 super().set_property(name, json.dumps(value.to_json()), persist_changes)
             elif isinstance(value, (FieldMultiLookupValue, FieldMultiUserValue)):
                 collection = ClientValueCollection(int, [v.LookupId for v in value])
-                super().set_property(f"{name}Id", collection)
+                super().set_property(self.value_column(name), collection)
                 super().set_property(name, value, False)
             elif isinstance(value, FieldLookupValue):
-                super().set_property(f"{name}Id", value.LookupId)
+                super().set_property(self.value_column(name), value.LookupId)
                 super().set_property(name, value, False)
             else:
                 super().set_property(name, value, persist_changes)

@@ -11,7 +11,7 @@ Lazy imports keep the migration core client-agnostic.
 from __future__ import annotations
 
 import io
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from enum import Enum
 from typing import TYPE_CHECKING, Any, cast
 
@@ -43,11 +43,13 @@ from office365.runtime.operations import emit_progress
 from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, PERMISSIONS
 from office365.sharepoint.exceptions import SPFieldValidationException
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
+from office365.sharepoint.fields.lookup import FieldLookup
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.type import PrincipalType
+from office365.sharepoint.taxonomy.field import TaxonomyField
 
 if TYPE_CHECKING:
     from office365.migration.map import ContentTypeMap
@@ -199,6 +201,11 @@ def _folder_record_values(record: dict) -> dict:
     return {
         key: value for key, value in record.items() if key not in _FOLDER_RECORD_EXCLUDED and value not in (None, "")
     }
+
+
+def _typed_keys(names: Iterable[str]) -> set[str]:
+    """The companions a Lookup/Person column's value is carried in, for each column."""
+    return {key for name in names for key in (ListItem.value_column(name), ListItem.string_value_column(name))}
 
 
 def _taxonomy_terms(value: Any) -> list[dict[str, str]]:
@@ -711,7 +718,7 @@ class SharePointListSource:
             # multi-person ids only inconsistently); select each ``<name>Id``
             # explicitly so the values are not silently lost.
             for name in self._multi_columns():
-                key = f"{name}Id"
+                key = ListItem.value_column(name)
                 if key not in columns:
                     columns.append(key)
             # Expand attachments so they can be migrated alongside their item.
@@ -811,7 +818,7 @@ class SharePointListSource:
         dropped: set[str] = set()
         navigations: set[str] = {name for item in loaded for name in type(item)._schema.navigations}
         multi = self._multi_columns()
-        multi_keys = {f"{name}Id" for name in multi} | {f"{name}StringId" for name in multi}
+        multi_keys = _typed_keys(multi)
         choices = self._multi_choice_columns()
         taxonomy = self._taxonomy_columns()
         value_objects = self._value_object_columns()
@@ -839,7 +846,7 @@ class SharePointListSource:
         # than fail the create on an unknown column.
         skipped = self._skipped_columns()
         if skipped:
-            skipped_keys = {f"{name}Id" for name in skipped} | {f"{name}StringId" for name in skipped}
+            skipped_keys = _typed_keys(skipped)
             for record in records:
                 for key in skipped_keys:
                     record.pop(key, None)
@@ -905,7 +912,7 @@ class SharePointListSource:
             if field.internal_name and field.is_lookup and not field.is_multi_valued
         }
         for name in sorted((single_lookups | self._user_columns() | set(self._multi_columns())) & writable):
-            key = f"{name}Id"
+            key = ListItem.value_column(name)
             if key not in columns:
                 columns.append(key)
         for note in self._taxonomy_note_columns():
@@ -946,9 +953,9 @@ class SharePointListSource:
         """
         fields = self._source_fields()
         by_id = {normalize_guid(field.id): field.internal_name for field in fields}
-        # ``TextField`` is declared on ``TaxonomyField``, and the projection covers every
-        # typed column class, so only a managed metadata column carries one.
-        notes = (normalize_guid(field.properties.get("TextField")) for field in fields)
+        # ``TextField`` is declared on ``TaxonomyField``; a read of the mixed collection
+        # answers the typed class, so the declaration is reachable by a cast.
+        notes = (normalize_guid(cast(TaxonomyField, field).text_field_id) for field in fields)
         return {name for name in (by_id.get(note) for note in notes) if name}
 
     def _project_taxonomy_values(self, records: list[dict]) -> None:
@@ -1039,8 +1046,8 @@ class SharePointListSource:
                 # ``<name>StringId`` is a read-only text companion holding the user
                 # id; leaving it in the payload makes REST ignore the remapped
                 # ``<name>Id`` and keep the source id.
-                record.pop(f"{name}StringId", None)
-                key = f"{name}Id"
+                record.pop(ListItem.string_value_column(name), None)
+                key = ListItem.value_column(name)
                 user_id = parse_int(record.get(key))
                 if user_id is None:
                     continue
@@ -1065,8 +1072,8 @@ class SharePointListSource:
             return
         for record in records:
             for name, field_type in multi.items():
-                record.pop(f"{name}StringId", None)
-                key = f"{name}Id"
+                record.pop(ListItem.string_value_column(name), None)
+                key = ListItem.value_column(name)
                 ids = values_of(record.get(key))
                 parsed: list[int] = []
                 for value in ids or []:
@@ -1472,7 +1479,7 @@ class SharePointListTarget:
     def _multi_id_keys(self) -> set[str]:
         """The ``...Id`` record keys of the multi-value Lookup/Person columns."""
         names = (*self._multi_lookup_columns(), *self._multi_user_columns())
-        return {f"{name}Id" for name in names}
+        return {ListItem.value_column(name) for name in names}
 
     def _multi_value_payload(self, record: dict) -> dict:
         """Reshape multi-value columns for the wire (``{"results": [...]}``).
@@ -1557,7 +1564,7 @@ class SharePointListTarget:
                 # The companion note column that actually carries the write payload
                 # has an unpredictable name; resolve it through the column's
                 # ``TextField`` id.
-                note_name = by_id.get(normalize_guid(field.properties.get("TextField")))
+                note_name = by_id.get(normalize_guid(cast(TaxonomyField, field).text_field_id))
                 taxonomy[internal_name] = (field.is_multi_valued, note_name)
             elif field.is_person or field.is_lookup:
                 multiple = field.is_multi_valued
@@ -1567,7 +1574,7 @@ class SharePointListTarget:
                     else:
                         users.add(internal_name)
                 else:
-                    list_id = normalize_guid(field.properties.get("LookupList"))
+                    list_id = normalize_guid(cast(FieldLookup, field).lookup_list)
                     if not list_id:
                         continue
                     if multiple:
@@ -1622,7 +1629,7 @@ class SharePointListTarget:
             return
         for record in records:
             for internal_name, target_list_id in columns.items():
-                key = f"{internal_name}Id"
+                key = ListItem.value_column(internal_name)
                 source_id = parse_int(record.get(key))
                 if source_id is None:
                     continue
@@ -1640,7 +1647,7 @@ class SharePointListTarget:
             return
         for record in records:
             for internal_name in columns:
-                key = f"{internal_name}Id"
+                key = ListItem.value_column(internal_name)
                 login = record.get(key)
                 if not isinstance(login, str) or not login:
                     continue
@@ -1657,7 +1664,7 @@ class SharePointListTarget:
             return
         for record in records:
             for internal_name, target_list_id in columns.items():
-                key = f"{internal_name}Id"
+                key = ListItem.value_column(internal_name)
                 source_ids = values_of(record.get(key))
                 if not source_ids:
                     continue
@@ -1682,7 +1689,7 @@ class SharePointListTarget:
             return
         for record in records:
             for internal_name in columns:
-                key = f"{internal_name}Id"
+                key = ListItem.value_column(internal_name)
                 logins = record.get(key)
                 if not isinstance(logins, (list, tuple)) or not logins:
                     continue
@@ -1785,7 +1792,7 @@ class SharePointListTarget:
         the two like for like instead of reporting a false mismatch.
         """
         for internal_name, target_list_id in self._lookup_columns().items():
-            key = f"{internal_name}Id"
+            key = ListItem.value_column(internal_name)
             target_id = parse_int(properties.get(key))
             if target_id is None:
                 continue
@@ -1794,7 +1801,7 @@ class SharePointListTarget:
             if source_id is not None:
                 properties[key] = source_id
         for internal_name, target_list_id in self._multi_lookup_columns().items():
-            key = f"{internal_name}Id"
+            key = ListItem.value_column(internal_name)
             target_ids = values_of(properties.get(key))
             if not target_ids:
                 continue
@@ -1810,7 +1817,7 @@ class SharePointListTarget:
         columns = self._user_columns()
         logins = self._target_user_logins() if columns or self._multi_user_columns() else {}
         for internal_name in columns:
-            key = f"{internal_name}Id"
+            key = ListItem.value_column(internal_name)
             user_id = parse_int(properties.get(key))
             if user_id is None:
                 continue
@@ -1818,7 +1825,7 @@ class SharePointListTarget:
             if login is not None:
                 properties[key] = login
         for internal_name in self._multi_user_columns():
-            key = f"{internal_name}Id"
+            key = ListItem.value_column(internal_name)
             user_ids = values_of(properties.get(key))
             if not user_ids:
                 continue
@@ -1971,8 +1978,8 @@ class SharePointListTarget:
         extra.update(note for _, note in self._taxonomy_columns().values() if note)
         # The target derives its own ``<name>StringId`` companion; it is not part of
         # the source's canonical content.
-        extra.update(f"{name}StringId" for name in self._user_columns())
-        extra.update(f"{name}StringId" for name in self._multi_user_columns())
+        extra.update(ListItem.string_value_column(name) for name in self._user_columns())
+        extra.update(ListItem.string_value_column(name) for name in self._multi_user_columns())
         return _content_checksum(properties, frozenset(extra))
 
     def _attachment_checksum(self, item: MigrationItem) -> str:
