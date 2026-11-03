@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Optional, Type, Union
+from typing import Dict, List, Optional, Type, Union
 
 from typing_extensions import Self
 
@@ -62,6 +62,50 @@ def is_taxonomy_column(type_as_string: Optional[str], schema_xml: Optional[str])
 
 #: What a column may hold: the length of a single line of text, and how many terms a managed
 #: metadata column is expected to carry before downstream experiences stop being guaranteed.
+def _known_field_types() -> Dict[FieldType, Type["Field"]]:
+    """The typed column classes a collection can answer with, keyed by the kind that picks them."""
+    from office365.sharepoint.fields.calculated import FieldCalculated
+    from office365.sharepoint.fields.choice import FieldChoice
+    from office365.sharepoint.fields.computed import FieldComputed
+    from office365.sharepoint.fields.currency import FieldCurrency
+    from office365.sharepoint.fields.date_time import FieldDateTime
+    from office365.sharepoint.fields.guid import FieldGuid
+    from office365.sharepoint.fields.lookup import FieldLookup
+    from office365.sharepoint.fields.multi_choice import FieldMultiChoice
+    from office365.sharepoint.fields.multi_line_text import FieldMultiLineText
+    from office365.sharepoint.fields.text import FieldText
+    from office365.sharepoint.fields.url import FieldUrl
+    from office365.sharepoint.fields.user import FieldUser
+
+    return {
+        FieldType.Text: FieldText,
+        FieldType.Calculated: FieldCalculated,
+        FieldType.Choice: FieldChoice,
+        FieldType.MultiChoice: FieldMultiChoice,
+        FieldType.Lookup: FieldLookup,
+        FieldType.User: FieldUser,
+        FieldType.Computed: FieldComputed,
+        FieldType.URL: FieldUrl,
+        FieldType.Guid: FieldGuid,
+        FieldType.Currency: FieldCurrency,
+        FieldType.Note: FieldMultiLineText,
+        FieldType.DateTime: FieldDateTime,
+    }
+
+
+def _field_variants() -> List[Type["Field"]]:
+    """Every typed column class a read can answer with.
+
+    Most are picked by ``FieldTypeKind``; a managed metadata column reads back as
+    ``Invalid`` by kind and is named by ``TypeAsString``, so completeness is a fact about
+    the list rather than about the kind map alone.
+    """
+    from office365.sharepoint.fields.thumbnail import FieldThumbnail
+    from office365.sharepoint.taxonomy.field import TaxonomyField
+
+    return [*_known_field_types().values(), TaxonomyField, FieldThumbnail]
+
+
 @limit(Limits.TEXT_COLUMN, Limits.DEFAULT_TERMS)
 class Field(Entity):
     """A container for metadata within a SharePoint list and associated list items."""
@@ -74,34 +118,10 @@ class Field(Entity):
 
     @staticmethod
     def resolve_field_type(type_id_or_name: Union[str, int, FieldType]) -> Type[Field]:
-        from office365.sharepoint.fields.calculated import FieldCalculated
-        from office365.sharepoint.fields.choice import FieldChoice
-        from office365.sharepoint.fields.computed import FieldComputed
-        from office365.sharepoint.fields.currency import FieldCurrency
-        from office365.sharepoint.fields.date_time import FieldDateTime
-        from office365.sharepoint.fields.guid import FieldGuid
-        from office365.sharepoint.fields.lookup import FieldLookup
-        from office365.sharepoint.fields.multi_choice import FieldMultiChoice
-        from office365.sharepoint.fields.multi_line_text import FieldMultiLineText
-        from office365.sharepoint.fields.text import FieldText
-        from office365.sharepoint.fields.url import FieldUrl
-        from office365.sharepoint.fields.user import FieldUser
-        from office365.sharepoint.taxonomy.field import TaxonomyField
+        from office365.sharepoint.fields.thumbnail import FieldThumbnail
 
-        field_known_types: dict[FieldType, Type[Field]] = {
-            FieldType.Text: FieldText,
-            FieldType.Calculated: FieldCalculated,
-            FieldType.Choice: FieldChoice,
-            FieldType.MultiChoice: FieldMultiChoice,
-            FieldType.Lookup: FieldLookup,
-            FieldType.User: FieldUser,
-            FieldType.Computed: FieldComputed,
-            FieldType.URL: FieldUrl,
-            FieldType.Guid: FieldGuid,
-            FieldType.Currency: FieldCurrency,
-            FieldType.Note: FieldMultiLineText,
-            FieldType.DateTime: FieldDateTime,
-        }
+        field_known_types = _known_field_types()
+
         if isinstance(type_id_or_name, FieldType):
             return field_known_types.get(type_id_or_name, Field)
         if isinstance(type_id_or_name, int):
@@ -110,13 +130,29 @@ class Field(Entity):
                 return field_known_types.get(type_enum, Field)  # type: ignore[arg-type]
             return Field
         elif type_id_or_name in {"TaxonomyFieldType", "TaxonomyFieldTypeMulti"}:
+            from office365.sharepoint.taxonomy.field import TaxonomyField
+
             return TaxonomyField
         elif type_id_or_name == "Thumbnail":
-            from office365.sharepoint.fields.thumbnail import FieldThumbnail
-
             return FieldThumbnail
         else:
             return Field
+
+    @classmethod
+    def scan_columns(cls) -> List[str]:
+        """Every column a read of a mixed collection must project.
+
+        A collection answers each column with the class its ``FieldTypeKind`` names, so a
+        projection built from ``select_all()`` alone drops the members only a typed column
+        carries. Two of them decide how a column is written: a lookup or person column whose
+        schema says ``Mult="TRUE"`` reports the single-value spelling and stores the truth in
+        ``AllowMultipleValues``, and a managed-metadata column names the note that carries its
+        payload in ``TextField``. Asking for a name no column of that type has is accepted.
+        """
+        names = set(cls.select_all())
+        for typed in _field_variants():
+            names |= set(typed.select_all())
+        return sorted(names)
 
     @property
     def is_taxonomy(self) -> bool:

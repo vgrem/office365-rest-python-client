@@ -130,23 +130,6 @@ _MODERATION_FIELDS = tuple(_APPROVAL_FIELDS)
 #: How many paths a per-run warning names before it summarizes the rest.
 _WARNING_SAMPLE = 5
 
-#: Properties the source column scans need. Selecting them explicitly keeps the read
-#: independent of whatever ``$select`` a previous caller left on the shared
-#: ``fields`` collection — ``List.fields`` survives a ``capture_list_structure``
-#: read (which selects a different, narrower set), and a field payload that omits
-#: ``AllowMultipleValues`` makes a multi-value column look single-value.
-_SOURCE_FIELD_SELECT = [
-    "Id",
-    "InternalName",
-    "TypeAsString",
-    "FieldTypeKind",
-    "SchemaXml",
-    "Hidden",
-    "ReadOnlyField",
-    "TextField",
-    "AllowMultipleValues",
-]
-
 
 def _scalar_mapping(value: Any) -> dict | None:
     """A value object as a plain mapping with scalar members, or ``None``.
@@ -1119,12 +1102,16 @@ class SharePointListSource:
         return columns
 
     def _source_fields(self) -> list[Field]:
-        """The source list's field definitions, read once and shared by every scan."""
+        """The source list's field definitions, read once and shared by every scan.
+
+        The projection is the columns of every typed column class, so the read does not
+        depend on whatever ``$select`` a previous caller left on the shared ``fields``
+        collection -- ``List.fields`` survives a ``capture_list_structure`` read, which
+        selects a narrower set.
+        """
         if self._source_fields_cache is None:
             try:
-                self._source_fields_cache = list(
-                    self._list.fields.select(list(_SOURCE_FIELD_SELECT)).get().execute_query()
-                )
+                self._source_fields_cache = list(self._list.fields.select(Field.scan_columns()).get().execute_query())
             except Exception as e:  # noqa: BLE001 — values stay un-remapped, never fatal
                 self.warnings.append(f"could not read the list's columns for typed-value remapping: {e}")
                 self._source_fields_cache = []
@@ -1147,8 +1134,8 @@ class SharePointListSource:
         """
         fields = self._source_fields()
         by_id = {normalize_guid(field.id): field.internal_name for field in fields}
-        # ``TextField`` is the bag name the projection selects; it is not a declared
-        # member of ``Field``, because only a taxonomy column carries one.
+        # ``TextField`` is declared on ``TaxonomyField``, and the projection covers every
+        # typed column class, so only a managed metadata column carries one.
         notes = (normalize_guid(field.properties.get("TextField")) for field in fields)
         return {name for name in (by_id.get(note) for note in notes) if name}
 
@@ -1748,13 +1735,7 @@ class SharePointListTarget:
         taxonomy: dict[str, tuple[bool, str | None]] = {}
         multi_choices: set[str] = set()
         try:
-            fields = (
-                self._list.fields.select(
-                    ["InternalName", "TypeAsString", "LookupList", "Id", "TextField", "AllowMultipleValues"]
-                )
-                .get()
-                .execute_query()
-            )
+            fields = self._list.fields.select(Field.scan_columns()).get().execute_query()
         except Exception as e:  # noqa: BLE001 — without columns we cannot remap; content still migrates
             self.warnings.append(f"could not read target columns for typed-value remapping: {e}")
             return lookups, users, multi_lookups, multi_users, taxonomy, multi_choices
