@@ -22,32 +22,6 @@ if TYPE_CHECKING:
     )
 
 
-def _content_type_order_ids(order: Any) -> List[str]:
-    """Extract the content-type id strings from a list folder's order value.
-
-    The server returns an order as ``Collection(SP.ContentTypeId)``. Depending
-    on how the folder property is typed it reaches us either as a
-    ``ClientValueCollection`` of ``ContentTypeId`` or as a single
-    ``ContentTypeId`` that flattened the array under numeric keys.
-    """
-    if order is None:
-        return []
-    source = vars(order) if not isinstance(order, dict) else order
-    indexed = sorted((k for k in source if str(k).isdigit()), key=int)
-    if indexed:
-        items: List[Any] = [source[k] for k in indexed]
-    elif isinstance(order, dict):
-        items = [order]
-    else:
-        items = list(order) if hasattr(order, "__iter__") else [order]
-    result: List[str] = []
-    for item in items:
-        value = item.get("StringValue") if isinstance(item, dict) else getattr(item, "StringValue", None)
-        if value:
-            result.append(value)
-    return result
-
-
 class ContentType(Entity):
     """
     Specifies a content type.
@@ -107,8 +81,8 @@ class ContentType(Entity):
         root_folder = parent.root_folder
 
         def _reorder(_folder: Any) -> None:
-            explicit = _content_type_order_ids(root_folder.properties.get("UniqueContentTypeOrder"))
-            order = explicit or _content_type_order_ids(root_folder.properties.get("ContentTypeOrder"))
+            explicit = [ct.StringValue for ct in root_folder.unique_content_type_order]
+            order = explicit or [ct.StringValue for ct in root_folder.content_type_order]
             order = [content_type_id for content_type_id in order if content_type_id != target_id]
             if value:
                 order.insert(0, target_id)

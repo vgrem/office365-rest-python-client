@@ -880,7 +880,7 @@ class Folder(Entity):
         """Gets a Boolean value that indicates whether the folder exists."""
         return self.properties.get("Exists", None)
 
-    @odata(name="WelcomePage")
+    @odata(name="WelcomePage", readonly=True)
     @property
     def welcome_page(self) -> Optional[str]:
         """Specifies the server-relative URL for the list folder Welcome page."""
@@ -888,15 +888,15 @@ class Folder(Entity):
 
     @odata(name="UniqueContentTypeOrder")
     @property
-    def unique_content_type_order(self) -> ContentTypeId:
+    def unique_content_type_order(self) -> ClientValueCollection[ContentTypeId]:
         """Specifies the content type order for the list folder."""
-        return self.properties.get("UniqueContentTypeOrder", ContentTypeId())
+        return self.properties.get("UniqueContentTypeOrder") or ClientValueCollection[ContentTypeId](ContentTypeId)
 
     @odata(name="ContentTypeOrder")
     @property
-    def content_type_order(self) -> ContentTypeId:
+    def content_type_order(self) -> ClientValueCollection[ContentTypeId]:
         """Specifies the content type order for the list folder."""
-        return self.properties.get("ContentTypeOrder", ContentTypeId())
+        return self.properties.get("ContentTypeOrder") or ClientValueCollection[ContentTypeId](ContentTypeId)
 
     @odata(name="TimeLastModified", readonly=True)
     @property
