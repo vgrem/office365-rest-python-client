@@ -139,6 +139,7 @@ _SOURCE_FIELD_SELECT = [
     "Id",
     "InternalName",
     "TypeAsString",
+    "FieldTypeKind",
     "SchemaXml",
     "Hidden",
     "ReadOnlyField",
@@ -166,10 +167,6 @@ def _scalar_mapping(value: Any) -> dict | None:
 #: which a faithful copy preserves.
 _CONTENT_EXCLUDED = frozenset(ListItem._schema.readonly) | frozenset(ListItem._schema.navigations)
 
-#: Field types whose value is server-derived: a computed column (a link filename, a
-#: doc icon) is a view of the item's identity, not metadata a folder carries.
-_FOLDER_COMPUTED_TYPES = frozenset({"Attachments", "Computed", "File", "WorkflowStatus"})
-
 
 def _folder_value_columns(fields: list[Any]) -> set[str]:
     """The columns a folder's own metadata can live in (writable, non-system).
@@ -187,7 +184,7 @@ def _folder_value_columns(fields: list[Any]) -> set[str]:
         and not field.internal_name.startswith("_")
         and not field.hidden
         and not field.read_only_field
-        and field.type_as_string not in _FOLDER_COMPUTED_TYPES
+        and not field.field_type_kind.is_server_assigned
         and field.internal_name not in _FOLDER_RECORD_EXCLUDED
     }
 

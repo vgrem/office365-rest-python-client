@@ -99,3 +99,17 @@ class FieldType(Enum):
     OutcomeChoice = 32
 
     MaxItems = 33
+
+    @property
+    def is_server_assigned(self) -> bool:
+        """Whether the service derives this column's value rather than the item carrying it.
+
+        A link filename, a doc icon, an attachment count and a workflow status are views
+        of the item's identity and of state the service keeps elsewhere: a copy restates
+        them by creating the file or by running the workflow, never by writing the column.
+        """
+        return self in _SERVER_ASSIGNED
+
+
+#: The field types whose value the service derives (see :attr:`FieldType.is_server_assigned`).
+_SERVER_ASSIGNED = frozenset({FieldType.Attachments, FieldType.Computed, FieldType.File, FieldType.WorkflowStatus})
