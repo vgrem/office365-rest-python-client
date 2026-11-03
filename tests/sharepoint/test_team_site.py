@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import ClassVar, Optional
 
+from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.lro import OperationTimeoutError
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.portal.groups.site_manager import GroupSiteManager
@@ -55,6 +56,25 @@ class TestTeamSite(SPTestCase):
             self.skipTest(f"The tenant did not finish provisioning the site: {e}")
         self.assertIsNotNone(site.url)
         TestTeamSite.target_site = site
+        self.addClassCleanup(self._delete_leftover_site, site)
+
+    @classmethod
+    def _delete_leftover_site(cls, site: Site) -> None:
+        """Delete the site this run created, unless test 04 already did.
+
+        Sixteen ``TeamSite<hex>`` sites were left behind by runs that failed or skipped
+        between the create and the delete; the tenant's site list is not the place to
+        keep a test's history. ``test_04`` clears the attribute once it has deleted the
+        site, so this never deletes twice (the second delete is not a no-op — it answers
+        ``Elevated context should be used only to create service asserted level PoP``).
+        """
+        if cls.target_site is None:
+            return
+        try:
+            cls.target_site.delete_object().execute_query()
+        except ClientRequestException:
+            pass
+        cls.target_site = None
 
     @requires_call(GroupSiteManager.get_status, flow="delegated")
     def test_03_get_site_status(self):
@@ -82,6 +102,7 @@ class TestTeamSite(SPTestCase):
         if not target_site:
             self.skipTest("No target site from previous test")
         target_site.delete_object().execute_query()
+        TestTeamSite.target_site = None
 
     @requires_call(GroupSiteManager.get_group_creation_context, flow="delegated")
     def test_05_get_group_creation_context(self):
