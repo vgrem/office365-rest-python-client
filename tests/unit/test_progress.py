@@ -5,6 +5,7 @@ import sys
 import types
 import unittest
 
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.operations import Progress
 from office365.runtime.progress import progress_bar
 from office365.runtime.transport.base import BaseTransport
@@ -84,7 +85,7 @@ class _ScriptedTransport(BaseTransport):
 
 class TestScanProgress(unittest.TestCase):
     def _context(self, transport: _ScriptedTransport) -> ClientContext:
-        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        ctx = offline_sharepoint_context()
         ctx.pending_request().beforeExecute.clear()  # no auth handler during offline build
         ctx.pending_request().transport = transport
         return ctx
@@ -103,7 +104,7 @@ class TestNavigationGetAll(unittest.TestCase):
     ]
 
     def _walk(self, progress=None) -> tuple[NavigationNodeCollection, list]:
-        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        ctx = offline_sharepoint_context()
         ctx.pending_request().beforeExecute.clear()
         ctx.pending_request().transport = _ScriptedTransport(self._PAYLOADS)
         seen = []

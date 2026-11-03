@@ -6,6 +6,7 @@ import unittest
 import uuid
 
 from office365.graph_client import GraphClient
+from office365.migration.offline import offline_sharepoint_context
 from office365.onedrive.internal.paths.url import UrlPath
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
@@ -177,7 +178,7 @@ def test_a_web_addresses_itself_at_web_not_at_the_collection_it_came_from():
     """
     from office365.sharepoint.webs.web import Web
 
-    ctx = ClientContext("https://contoso.sharepoint.com/sites/project")
+    ctx = offline_sharepoint_context()
 
     assert str(Web(ctx).resource_path) == "/Web"
     assert str(ctx.web.webs.create_typed_object().resource_path) == "/Web"

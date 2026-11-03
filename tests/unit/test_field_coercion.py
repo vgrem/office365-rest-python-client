@@ -53,10 +53,10 @@ def test_scalar_coercions():
 
 
 def test_listitem_persists_multi_user_and_lookup_ids():
-    from office365.sharepoint.client_context import ClientContext
+    from office365.migration.offline import offline_sharepoint_context
     from office365.sharepoint.listitems.listitem import ListItem
 
-    item = ListItem(ClientContext("https://contoso.sharepoint.com/sites/x"))
+    item = ListItem(offline_sharepoint_context())
     item.set_property("MultiOwner", FieldMultiUserValue([FieldUserValue(12), FieldUserValue(7)]))
     item.set_property("MultiDept", FieldMultiLookupValue([FieldLookupValue(2), FieldLookupValue(3)]))
 

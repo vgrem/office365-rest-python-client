@@ -11,10 +11,10 @@ import asyncio
 import pytest
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.converters import registry
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.record_collection import RecordCollection
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.lists.list import List
 from tests._scripted_transport import ScriptedTransport
 
@@ -93,7 +93,7 @@ def _sp_page(records):
 
 
 def _list_context(payloads):
-    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx = offline_sharepoint_context()
     ctx.pending_request().beforeExecute.clear()
     transport = ScriptedTransport(payloads)
     ctx.pending_request().transport = transport

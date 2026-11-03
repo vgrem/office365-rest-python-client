@@ -516,11 +516,11 @@ def test_aiter_yields_the_collection_and_drives_execution():
 
 def test_execute_query_async_uses_the_native_async_terminal():
     """A real context + async-only transport proves no worker thread is used."""
+    from office365.migration.offline import offline_sharepoint_context
     from office365.runtime.queries.read_entity import ReadEntityQuery
-    from office365.sharepoint.client_context import ClientContext
     from tests._scripted_transport import AsyncScriptedTransport
 
-    ctx = ClientContext("https://contoso.sharepoint.com/sites/dev")
+    ctx = offline_sharepoint_context()
     ctx.pending_request().beforeExecute.clear()
     transport = AsyncScriptedTransport([{"d": {"Title": "ok"}}] * 3)
     ctx.pending_request().transport = transport

@@ -9,8 +9,8 @@ when it has nothing actionable to say.
 from __future__ import annotations
 
 import pytest
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.caml import Caml, CamlQuery
 from office365.sharepoint.listitems.caml.guard import threshold_warnings, warn_if_unpaged
 from office365.sharepoint.lists.list import List
@@ -53,7 +53,7 @@ def test_warn_if_unpaged_emits_one_user_warning():
 
 
 def _list(item_count: int) -> List:
-    context = ClientContext("https://contoso.sharepoint.com/sites/team")
+    context = offline_sharepoint_context()
     lst = List(context, ResourcePath("lists/getByTitle('Tasks')"))
     lst.set_property("ItemCount", item_count)
     return lst

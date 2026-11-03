@@ -13,6 +13,7 @@ from unittest import mock
 import pytest
 import requests
 from office365.graph_client import GraphClient
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.throttling import (
@@ -70,7 +71,7 @@ def _make_context(outcomes: list[Exception | None]) -> tuple[ClientContext, mock
     ``None`` signals a successful execution; an exception is raised as-is.
     Attempts are read from ``execute_query.call_count``.
     """
-    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx = offline_sharepoint_context()
     execute_query = mock.Mock(side_effect=outcomes)
     ctx.execute_query = execute_query  # type: ignore[method-assign]
     return ctx, execute_query
@@ -191,7 +192,7 @@ class TestContextStateAfterRetryFailure(unittest.TestCase):
     def test_exhausted_retries_leave_queue_clean(self):
         from office365.runtime.queries.client_query import ClientQuery
 
-        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx = offline_sharepoint_context()
         qry = ClientQuery(ctx)
         ctx.add_query(qry)
         attempts = {"n": 0}
@@ -295,7 +296,7 @@ class TestRateLimiter(unittest.TestCase):
         self.assertLess(elapsed, 2.0)
 
     def test_bind_wraps_transport_and_reports_to_limiter(self):
-        ctx = ClientContext("https://contoso.sharepoint.com/sites/x")
+        ctx = offline_sharepoint_context()
         ctx.pending_request().beforeExecute.clear()
         inner = _ScriptedTransport([{"status": 429, "retry_after": 2, "body": {}}])
         ctx.pending_request().transport = inner
@@ -550,7 +551,7 @@ class TestThreadSafety(unittest.TestCase):
         self.assertTrue(all(req.headers.get("X-RequestDigest") == "digest" for req in requests_with_header))
 
     def test_split_batches_preserves_order_and_drains_queue(self):
-        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx = offline_sharepoint_context()
         for _ in range(250):
             ctx.add_query(ClientQuery(ctx))
 
@@ -561,7 +562,7 @@ class TestThreadSafety(unittest.TestCase):
         self.assertIsNone(ctx._current_query)
 
     def test_clone_shares_auth_and_transport(self):
-        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx = offline_sharepoint_context()
         ctx.add_query(ClientQuery(ctx))
         source_request = ctx.pending_request()
 
@@ -581,7 +582,7 @@ class TestThreadSafety(unittest.TestCase):
         self.assertEqual(source_request.service_root_url, "https://contoso.sharepoint.com/_api")
 
     def test_clone_keeps_pending_queries(self):
-        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx = offline_sharepoint_context()
         for _ in range(3):
             ctx.add_query(ClientQuery(ctx))
 

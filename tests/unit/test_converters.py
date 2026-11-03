@@ -5,7 +5,6 @@ from __future__ import annotations
 import unittest
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import cast
 
 from office365.booking.appointment import BookingAppointment
 from office365.communications.callrecords.call_record import CallRecord
@@ -20,10 +19,10 @@ from office365.directory.policies.conditionalaccess.grant_controls import Condit
 from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
+from office365.migration.offline import offline_context
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
-from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.records import iter_records
 from office365.runtime.converters.scalars import (
@@ -190,7 +189,7 @@ class TestScalarConverters(unittest.TestCase):
 
 
 def _new_user(properties: dict) -> User:
-    col = ClientObjectCollection(cast(ClientRuntimeContext, None), User, None)
+    col = ClientObjectCollection(offline_context(), User, None)
     return col.create_typed_object(properties)
 
 
@@ -284,7 +283,7 @@ class TestDeclaredType(unittest.TestCase):
         # ``CallRecord.type`` is exposed as ``type_`` (a reserved word), which
         # ``to_snake_case`` cannot derive — the trailing-underscore fallback must.
         self.assertIs(declared_type(CallRecord, "type"), CallType)
-        record = CallRecord(cast(ClientRuntimeContext, None))
+        record = CallRecord(offline_context())
         record.set_property("type", "groupCall")
         self.assertIs(record.type_, CallType.groupCall)
 
@@ -313,7 +312,7 @@ class TestClientResultCoercion(unittest.TestCase):
 
 
 def _collection(properties: list[dict]) -> ClientObjectCollection:
-    col = ClientObjectCollection(cast(ClientRuntimeContext, None), User, None)
+    col = ClientObjectCollection(offline_context(), User, None)
     for props in properties:
         col.add_child(col.create_typed_object(props))
     return col

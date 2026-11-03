@@ -5,11 +5,11 @@ from __future__ import annotations
 import unittest
 import uuid
 from dataclasses import dataclass
-from typing import Any, Optional, cast
+from typing import Any, Optional
 
 from office365.directory.users.user import User
+from office365.migration.offline import offline_context
 from office365.runtime.client_object_collection import ClientObjectCollection
-from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.display import MAX_ITEMS
@@ -17,7 +17,7 @@ from office365.runtime.types.collections import GuidCollection, StringCollection
 
 
 def _user_collection() -> ClientObjectCollection[User]:
-    return ClientObjectCollection(cast(ClientRuntimeContext, None), User, None)
+    return ClientObjectCollection(offline_context(), User, None)
 
 
 @dataclass

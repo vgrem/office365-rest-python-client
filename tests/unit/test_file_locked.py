@@ -11,10 +11,10 @@ import unittest
 from unittest import mock
 
 from office365.graph_client import GraphClient
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.exceptions import FileLockedException
 from office365.runtime.transport.base import BaseTransport
-from office365.sharepoint.client_context import ClientContext
 from requests import Response
 
 SHAREPOINT_LOCK_BODY = (
@@ -59,7 +59,7 @@ class TestFileLockedClassification(unittest.TestCase):
 
 class TestFileLockedRetry(unittest.TestCase):
     def _context(self, outcomes):
-        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx = offline_sharepoint_context()
         execute_query = mock.Mock(side_effect=outcomes)
         ctx.execute_query = execute_query  # type: ignore[method-assign]
         return ctx, execute_query
@@ -76,7 +76,7 @@ class TestFileLockedRetry(unittest.TestCase):
 
 class TestBypassSharedLockHeader(unittest.TestCase):
     def test_sharepoint_delete_sends_prefer_header(self):
-        ctx = ClientContext("https://contoso.sharepoint.com")
+        ctx = offline_sharepoint_context()
         transport = _CaptureTransport()
         ctx.pending_request().beforeExecute.clear()
         ctx.pending_request().transport = transport

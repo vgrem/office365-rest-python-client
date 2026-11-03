@@ -11,6 +11,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from office365.graph_client import GraphClient
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.exceptions import AccessDeniedException
 from office365.sharepoint.client_context import ClientContext
 from tests._scripted_transport import ScriptedTransport
@@ -30,7 +31,7 @@ def _graph(payloads) -> GraphClient:
 
 
 def _sharepoint(payloads) -> ClientContext:
-    context = ClientContext("https://contoso.sharepoint.com/sites/team")
+    context = offline_sharepoint_context()
     context.pending_request().beforeExecute.clear()
     context.pending_request().transport = ScriptedTransport(payloads)
     return context

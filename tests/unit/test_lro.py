@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import pytest
+from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.lro import (
@@ -56,7 +57,7 @@ class _Clock:
 
 
 def _ctx() -> ClientContext:
-    ctx = ClientContext("https://contoso.sharepoint.com")
+    ctx = offline_sharepoint_context()
     ctx.pending_request().beforeExecute.clear()
     return ctx
 
