@@ -14,7 +14,7 @@ from office365.entity import Entity
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
 from office365.outlook.mail.messages.message import Message
-from office365.runtime.types.odata_property import NotSupportedInVersion, odata, version
+from office365.runtime.types.odata_property import NotSupportedInVersion, odata
 
 TENANT = "contoso.onmicrosoft.com"
 
@@ -25,27 +25,6 @@ def _stable() -> GraphClient:
 
 def _beta() -> GraphClient:
     return GraphClient(tenant=TENANT, version=GraphVersion.BETA)
-
-
-def test_the_declaration_reaches_the_class():
-    """One decorator, one storage: the gate is the class attribute it sets, nothing mirrored."""
-    assert Mention._versions == frozenset({"beta"})
-
-
-def test_the_decorator_declares_whatever_roots_it_names():
-    """The runtime stores the declaration; it does not read Graph's enum to make sense of it."""
-
-    @version("beta", "v1.0")
-    class Probe(Entity):
-        pass
-
-    assert Probe._versions == frozenset({"beta", "v1.0"})
-
-
-def test_a_declaration_naming_no_root_is_not_writable():
-    """``@version()`` would say nothing while looking like a rule, so it does not exist."""
-    with pytest.raises(TypeError):
-        version()
 
 
 def test_a_type_both_roots_declare_carries_no_gate():

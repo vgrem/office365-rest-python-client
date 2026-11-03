@@ -1,4 +1,8 @@
-"""Merged unit tests (consolidated; see git history for originals)."""
+"""Reading a response, and writing a payload the service will accept.
+
+Shapes the tenant cannot be asked about offline: a body that is not JSON, a raw-content
+query, ``@odata.type`` casting, a delta token, and the profile-spelled query body.
+"""
 
 from __future__ import annotations
 
@@ -30,6 +34,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.exceptions import SPQueryThrottledException
+from office365.sharepoint.search.query.sort.sort import Sort
 from requests import Response
 from tests import test_site_url
 
@@ -256,36 +261,16 @@ class TestClientMetadata(unittest.TestCase):
     """Entity type-name resolution, query-option building and ClientResult wrapping."""
 
     def test_query_options_apply_to(self):
-        class _Target:
-            def select(self, names):
-                self._select = names
+        web = ClientContext(test_site_url).web
+        QueryOptions(select=["Title"], expand=["Fields"]).apply_to(web)
 
-            def expand(self, names):
-                self._expand = names
+        self.assertEqual(web.query_options.select, ["Title"])
+        self.assertEqual(web.query_options.expand, ["Fields"])
 
-        options = QueryOptions(select=["Title"], expand=["Fields"])
-        target = _Target()
-        options.apply_to(target)
-        self.assertEqual(target._select, ["Title"])
-        self.assertEqual(target._expand, ["Fields"])
-
-        empty = QueryOptions()
-        untouched = _Target()
-        empty.apply_to(untouched)
-        self.assertFalse(hasattr(untouched, "_select"))
-        self.assertFalse(hasattr(untouched, "_expand"))
-
-
-class TestRequireLicense(unittest.TestCase):
-    def _make_client(self) -> GraphClient:
-        return GraphClient(tenant="contoso.onmicrosoft.com")
-
-
-class TestRequireDelegatedPermission(unittest.TestCase):
-    def _make_client(self) -> GraphClient:
-        ctx = GraphClient(tenant="contoso.onmicrosoft.com")
-        ctx.pending_request().authentication_context._client_id = "app-id"
-        return ctx
+        untouched = ClientContext(test_site_url).web
+        QueryOptions().apply_to(untouched)
+        self.assertEqual(untouched.query_options.select, [])
+        self.assertEqual(untouched.query_options.expand, [])
 
 
 class _MeetingMode(Enum):
@@ -325,34 +310,18 @@ class TestQueryPayloadSerialization(unittest.TestCase):
         self.assertNotIn("absent", payload)
 
 
-class _SortValue:
-    """A value that declares a type, spelled the way a ``ClientValue`` would."""
-
-    entity_type_name = "SP.Search.Query.Sort"
-
-    def __init__(self, name: str) -> None:
-        self.name = name
-
-    def to_json(self, json_format=None):
-        payload = {"name": self.name}
-        return json_format.wrap(self, payload) if json_format is not None else payload
-
-
 class TestBuildPayload(unittest.TestCase):
     """A query body is built by the profile, so it is always spelled for the
     service that will read it — no second, marker-less serializer in the request."""
 
     def test_collection_items_are_spelled_the_way_the_dialect_spells_them(self):
-        collection = ClientValueCollection(_SortValue, [_SortValue("Modified")])
+        collection = ClientValueCollection(Sort, [Sort(Property="Modified")])
+        typename = "Microsoft.SharePoint.Client.Search.Query.Sort"
+
         payload = JsonLightFormat().build_payload({"SortList": collection})
-        self.assertEqual(
-            payload["SortList"]["results"],
-            [{"name": "Modified", "__metadata": {"type": "SP.Search.Query.Sort"}}],
-        )
-        self.assertEqual(
-            payload["SortList"]["__metadata"],
-            {"type": "Collection(SP.Search.Query.Sort)"},
-        )
+
+        self.assertEqual(payload["SortList"]["results"], [{"Property": "Modified", "__metadata": {"type": typename}}])
+        self.assertEqual(payload["SortList"]["__metadata"], {"type": f"Collection({typename})"})
 
 
 class _Drafted(Entity):

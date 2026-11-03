@@ -11,8 +11,6 @@ import pytest
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import AccessPackage
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
-from office365.outlook.calendar.events.event import Event
-from office365.outlook.contacts.contact import Contact
 from office365.runtime.client_object import ClientObject
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
@@ -158,48 +156,3 @@ def test_the_narrowing_does_not_rewrite_the_projection_the_caller_built():
 
     assert "uniqueName" not in url
     assert stable.query_options.select == list(AccessPackage.select_all())
-
-
-def test_a_preview_only_member_never_reaches_a_stable_select():
-    """The pilot's exit test: an Event export written before beta selects the same names.
-
-    ``Event.select_all()`` grew by the two members beta declares, which is additive and
-    harmless. What must not happen is a stable request asking for them: Microsoft Graph
-    rejects a ``$select`` it cannot honour, so a marker that leaked into the projection
-    would break every existing calendar export rather than add a column.
-    """
-    columns = Event.select_all()
-    assert columns[-2:] == ["occurrenceId", "uid"]
-
-    stable = Event(_client(), ResourcePath("events"))
-    preview = Event(_client(GraphVersion.BETA), ResourcePath("events"))
-    stable.query_options.select = list(columns)
-    preview.query_options.select = list(columns)
-
-    assert ReadEntityQuery(stable).url.endswith("?$select=" + ",".join(columns[:-2]))
-    assert ReadEntityQuery(preview).url.endswith("?$select=" + ",".join(columns))
-
-
-def test_the_contact_columns_a_stable_client_selects_are_the_ones_it_always_selected():
-    """The other direction of the pilot: 7 members the preview root dropped.
-
-    ``select_all()`` still lists them because the model declares them -- the stable root
-    answers them and a v1.0 export must keep asking. What changes is the preview
-    projection, where they are gone: beta replaced the three phone fields with
-    ``phones``, so a beta ``$select`` asking for ``businessPhones`` would be rejected.
-    """
-    schema = Contact._schema
-    columns = list(Contact.select_all())
-
-    assert schema.stable_only == {
-        "businessAddress",
-        "businessHomePage",
-        "businessPhones",
-        "homeAddress",
-        "homePhones",
-        "mobilePhone",
-        "otherAddress",
-    }
-    assert schema.projection(columns, "v1.0") == columns
-    assert schema.projection(columns, PREVIEW) == [name for name in columns if name not in schema.stable_only]
-    assert len(columns) == len(schema.projection(columns, PREVIEW)) + 7

@@ -1,4 +1,4 @@
-"""Merged unit tests (consolidated; see git history for originals)."""
+"""Retry, throttling and pacing: what is transient, how long to wait, what the limiter learns."""
 
 from __future__ import annotations
 

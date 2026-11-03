@@ -1,25 +1,20 @@
 """A read of a column is not a write to the record.
 
-The record — ``properties`` — is what ``to_json`` and the export pipeline serialize, so
-reading one column may not grow it. ``ListItem.get_property`` used to resolve a handful of
-names through a table it built on every call, which evaluated every navigation on every
-read; ``parent_list`` caches itself in ``properties`` as soon as it is touched, so reading
-``FileRef`` added a ``ParentList`` stub to the record and to the payload.
-
-Every name the table special-cased is declared with ``@odata(name=...)`` on its getter, so
-the declaration is all ``get_property`` needs: the base class resolves the wire name to the
-attribute and calls it.
+The record -- ``properties`` -- is what ``to_json`` and the export pipeline serialize, so
+reading one column may not grow it. Every column is declared with ``@odata(name=...)`` on
+its getter, so ``get_property`` resolves the wire name to the attribute and calls it;
+a navigation is the exception, since asking for one is what materializes it.
 """
 
 from __future__ import annotations
 
-from office365.sharepoint.client_context import ClientContext
+from office365.migration.offline import offline_context
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 
 
 def _item(**properties: object) -> ListItem:
-    item = ListItem(ClientContext("https://contoso.sharepoint.com/sites/x"))
+    item = ListItem(offline_context())
     item.properties.update(properties)
     return item
 

@@ -1,4 +1,4 @@
-"""Merged unit tests (consolidated; see git history for originals)."""
+"""Where a request is addressed: path segments, alternate keys, and OData literals."""
 
 from __future__ import annotations
 

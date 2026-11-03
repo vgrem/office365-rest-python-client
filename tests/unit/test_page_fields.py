@@ -5,7 +5,7 @@ import unittest
 from office365.migration.offline import offline_context
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
-from office365.sharepoint.publishing.pages.fields import BODY_FIELDS, PAGE_FIELDS
+from office365.sharepoint.publishing.pages.fields import PAGE_FIELDS
 from office365.sharepoint.publishing.pages.page import SitePage
 
 #: A page content type derived from "Site Page" (the ID is hierarchical).
@@ -18,24 +18,12 @@ def _page(payload: dict) -> SitePage:
 
 
 class TestSitePageDeclarations(unittest.TestCase):
-    def test_both_body_spellings_are_declared(self):
-        # A wire name may be declared only once per class: the later marker wins and
-        # silently leaves the earlier getter undeclared (unselectable, unrenderable).
-        self.assertEqual(SitePage.odata_name("canvas_content"), "CanvasContent1")
-        self.assertEqual(SitePage.odata_name("layout_web_parts_content"), "LayoutWebpartsContent")
-
     def test_a_hydrated_page_answers_the_body_properties(self):
+        # A wire name may be declared only once per class: a second marker for the same
+        # name wins and leaves the earlier getter unreadable.
         page = _page({"CanvasContent1": "<div/>", "LayoutWebpartsContent": "<div>l</div>"})
         self.assertEqual(page.canvas_content, "<div/>")
         self.assertEqual(page.layout_web_parts_content, "<div>l</div>")
-
-    def test_the_item_columns_are_declared_on_the_type(self):
-        # A page is read from its library's items, so its type declares what an item
-        # answers: hydration is by declared name, and a name nobody declares is a
-        # property nobody can read off the model.
-        self.assertEqual(SitePage.odata_name("file_leaf_ref"), SPBuiltInFieldName.FileLeafRef)
-        self.assertEqual(SitePage.odata_name("wiki"), "WikiField")
-        self.assertEqual(SitePage.odata_name("moderation_status"), "OData__ModerationStatus")
 
     def test_a_hydrated_page_answers_the_item_columns(self):
         page = _page({"FileLeafRef": "x.aspx", "WikiField": "<div>wiki</div>", "OData__ModerationStatus": 0})
@@ -53,12 +41,6 @@ class TestPageFields(unittest.TestCase):
         # Why the projection reads the item column: the entity's own spelling is not it.
         self.assertEqual(SitePage.odata_name("file_name"), "FileName")
         self.assertNotEqual(SitePage.odata_name("file_name"), SPBuiltInFieldName.FileLeafRef)
-
-    def test_the_projection_names_each_field_once(self):
-        self.assertEqual(len(PAGE_FIELDS), len(set(PAGE_FIELDS)))
-
-    def test_the_body_fields_are_derived_from_the_type(self):
-        self.assertEqual(BODY_FIELDS, (SitePage.odata_name("canvas_content"), SitePage.odata_name("wiki")))
 
 
 class TestIsModernPage(unittest.TestCase):

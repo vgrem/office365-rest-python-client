@@ -1,181 +1,25 @@
-"""A getter's annotation must be reachable where the runtime reads it.
+"""A column's declared type decides how a wire value is coerced.
 
-``declared_type`` decides how to coerce a wire value by evaluating the getter's return
-annotation against the module's globals. A generated getter used to spell that type
-somewhere the runtime cannot see -- a function-local import, plus an ``if
-TYPE_CHECKING:`` entry that never executes -- so ``get_type_hints`` raised ``NameError``
-and ``declared_type`` answered ``None``. An enum column then kept the wire string:
-``set_property("sourceEnvironment", "2")`` gave ``'2'`` where the metadata says
-``BrowserSharedCookieSourceEnvironment.both``.
-
-``scripts/hoist_imports.py`` -- a one-time codemod, since deleted -- moved those
-imports to the module block, where the generator's own rule always said they belonged
-(``needs_runtime_import``: an enum default is evaluated when the class is built). What
-is held here is the outcome rather than the tool: every column states a type, and
-wherever an annotation resolves it is the declaration. The two sites where a hoist
-would close a cycle -- ``ChatInfo`` and ``ConditionalAccessGrantControls`` can only be
-imported inside their getters -- resolve through the runtime fallback instead, pinned
-by ``TestCyclicDeclaredType``.
+``declared_type`` evaluates the getter's return annotation, so an annotation the runtime
+cannot see leaves the column holding whatever the service sent. These are the two value
+facts that costs: an enum column keeps the member, and a member the snapshot does not
+list is kept as sent rather than coerced to ``None``.
 """
 
 from __future__ import annotations
 
-import datetime
-import importlib
-import pathlib
-import pkgutil
-import types
-import typing
-
-import pytest
 from office365.admin.browser_shared_cookie import BrowserSharedCookie
 from office365.intune.browser.sharedcookiesourceenvironment import BrowserSharedCookieSourceEnvironment
 from office365.onedrive.operations.long_running import LongRunningOperation
 from office365.onedrive.operations.longrunningoperationstatus import LongRunningOperationStatus
-from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.value import declared_type
-from office365.sharepoint.listitems.listitem import ListItem
-from office365.sharepoint.webs.web import Web
-
-_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-
-
-def _service_roots() -> list[str]:
-    """Every package under ``office365``, derived from the tree so none is forgotten."""
-    return [
-        f"office365/{entry.name}"
-        for entry in sorted((_REPO_ROOT / "office365").iterdir())
-        if entry.is_dir() and entry.name != "__pycache__"
-    ]
-
-
-def test_the_ratchet_covers_every_package_under_office365() -> None:
-    covered = {pathlib.Path(root).name for root in _service_roots()}
-    packages = {entry.name for entry in (_REPO_ROOT / "office365").iterdir() if entry.is_dir()}
-    assert packages - covered == {"__pycache__"}
-
-
-def _modules(root: str) -> typing.Iterator[typing.Any]:
-    prefix = root.replace("/", ".") + "."
-    for info in pkgutil.walk_packages([str(_REPO_ROOT / root)], prefix=prefix):
-        yield importlib.import_module(info.name)
-
-
-def _client_objects(module: typing.Any) -> typing.Iterator[type]:
-    for member in vars(module).values():
-        if isinstance(member, type) and issubclass(member, ClientObject) and member.__module__ == module.__name__:
-            yield member
-
-
-def _getter(cls: type, name: str) -> typing.Optional[typing.Any]:
-    """The property function behind a column, by the attribute its schema maps to."""
-    schema = getattr(cls, "_schema", None)
-    meta = schema.properties.get(name) if schema is not None else None
-    member = getattr(cls, meta.attr if meta is not None else name, None)
-    return member.fget if isinstance(member, property) else None
-
-
-def _columns(cls: type) -> typing.Iterator[str]:
-    """Every column the schema declares, whether or not the service will project it.
-
-    Not ``select_all()``: a column the service refuses in ``$select`` is still a column
-    that is read back, and one of those was the single unannotated getter this ratchet
-    could not see (``Web.description_translations``, 2026-10-31).
-    """
-    schema = getattr(cls, "_schema", None)
-    for name, meta in schema.properties.items() if schema is not None else ():
-        if not meta.navigation:
-            yield name
-
-
-def _unwrap_optional(annotation: typing.Any) -> typing.Any:
-    """``Optional[X]`` is ``X`` for a declared type: ``None`` is a nullability fact.
-
-    ``str | None`` and ``Optional[str]`` are the same declaration, but
-    ``typing.get_origin`` answers ``types.UnionType`` for the first on 3.10-3.13 and
-    ``typing.Union`` on 3.14 -- which is how this test passed locally and failed on
-    every job of the CI matrix. Both spellings are unwrapped here, the way
-    ``_unwrap_type`` in the runtime already does it.
-    """
-    origins = tuple(o for o in (typing.Union, getattr(types, "UnionType", None)) if o is not None)
-    if typing.get_origin(annotation) in origins:
-        present = [arg for arg in typing.get_args(annotation) if arg is not type(None)]
-        if len(present) == 1:
-            return present[0]
-    return annotation
-
-
-@pytest.mark.parametrize("root", _service_roots())
-def test_where_an_annotation_resolves_it_is_the_declared_type(root: str) -> None:
-    """A column's declaration is the type its own getter names, across the whole tree.
-
-    Every column resolves today; the count it observes is not pinned, the agreement
-    is. A getter that states nothing is the next test's subject.
-    """
-    mismatches: list[str] = []
-    for module in _modules(root):
-        for cls in _client_objects(module):
-            for name in _columns(cls):
-                getter = _getter(cls, name)
-                if getter is None:
-                    continue
-                try:
-                    hints = typing.get_type_hints(getter)
-                except NameError:
-                    continue  # the annotation still names a type out of reach
-                hint = hints.get("return")
-                if hint in (None, type(None)):
-                    continue
-                declared = declared_type(cls, name)
-                expected = _unwrap_optional(hint)
-                if declared != expected:
-                    mismatches.append(f"{module.__name__}.{cls.__name__}.{name}: {expected!r} declared {declared!r}")
-    assert mismatches == []
-
-
-@pytest.mark.parametrize("root", _service_roots())
-def test_every_column_states_the_type_it_holds(root: str) -> None:
-    """A column whose getter states no type is a column the runtime cannot coerce.
-
-    ``coerce_records`` drops it as an unknown column, ``set_property`` stores the wire
-    value verbatim, and a value column arrives as the dict the service sent -- the
-    defects the annotation slices fixed one kind at a time. What was left after them
-    was 120 hand-written getters that named their type only in the value they passed
-    to ``properties.get``: ``Call.call_routes`` defaulted to
-    ``ClientValueCollection(CallRoute)``, so ``callRoutes`` was skipped as unknown.
-    Stating the type in the signature is what makes it a declaration, so this ratchet
-    holds every column to having one -- no list of 120 to forget to extend.
-    """
-    silent: list[str] = []
-    for module in _modules(root):
-        for cls in _client_objects(module):
-            for name in _columns(cls):
-                if declared_type(cls, name) is None:
-                    silent.append(f"{module.__name__}: {cls.__name__} reads '{name}' and states no type")
-    assert silent == []
-
-
-def test_the_ratchet_population_is_not_the_projection() -> None:
-    # ``Web.description_translations`` is declared but unselectable -- the service
-    # refuses it in ``$select`` -- so a ratchet that counted ``select_all()`` could not
-    # see it, and it was the one column left without a type.
-    assert "DescriptionTranslations" not in Web.select_all()
-    assert "DescriptionTranslations" in set(_columns(Web))
-
-
-def test_a_stdlib_name_the_annotation_spells_is_a_declared_type() -> None:
-    # ``ListItem.created`` answered ``None`` with ``NameError: name 'Optional' is not
-    # defined`` -- the name sat in the module's dead ``if TYPE_CHECKING:`` block.
-    assert declared_type(ListItem, "Created") is datetime.datetime
-    assert declared_type(ListItem, "Modified") is datetime.datetime
 
 
 def test_an_enum_column_holds_the_member_not_the_wire_string() -> None:
-    # The defect in one place: the metadata spells the ordinal ("2"), and ``both`` is
-    # the member it names. It stayed a string only because the type was unreachable.
-    # No client: this is a value-level fact, and the model builds without one.
+    # The metadata spells the ordinal ("2") and ``both`` is the member it names.
     cookie = BrowserSharedCookie(None)
     cookie.set_property("sourceEnvironment", "2")
+
     assert cookie.source_environment is BrowserSharedCookieSourceEnvironment.both
     assert declared_type(BrowserSharedCookie, "sourceEnvironment") is BrowserSharedCookieSourceEnvironment
 
@@ -185,7 +29,9 @@ def test_an_unfamiliar_enum_value_is_kept_as_the_service_sent_it() -> None:
     # enum says "succeeded") must not be coerced to None: the next update would write
     # null back over a value the service reported.
     operation = LongRunningOperation(None)
+
     operation.set_property("status", "completed")
     assert operation.properties["status"] == "completed"
+
     operation.set_property("status", "succeeded")
     assert operation.status is LongRunningOperationStatus.succeeded

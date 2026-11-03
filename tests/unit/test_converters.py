@@ -1,4 +1,4 @@
-"""Merged unit tests (consolidated; see git history for originals)."""
+"""Wire value in, model value out: the scalar, duration, datetime and declared-type parsers."""
 
 from __future__ import annotations
 

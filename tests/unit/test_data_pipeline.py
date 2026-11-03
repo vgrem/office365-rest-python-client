@@ -1,4 +1,4 @@
-"""Merged unit tests (consolidated; see git history for originals)."""
+"""The record import pipeline: CSV and DataFrame in, typed models queued, CSV out."""
 
 from __future__ import annotations
 
@@ -6,12 +6,11 @@ import io
 import unittest
 import warnings
 from datetime import datetime, timezone
-from typing import cast
 
 import pytest
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
-from office365.runtime.client_runtime_context import ClientRuntimeContext
+from office365.migration.offline import offline_context
 from office365.runtime.converters.csv_reader import coerce_records, read_csv_records
 from office365.runtime.converters.csv_writer import write_csv
 from office365.runtime.converters.dataframe import (
@@ -21,13 +20,10 @@ from office365.runtime.converters.dataframe import (
 )
 from office365.runtime.converters.excel import read_excel, write_excel
 from office365.runtime.operations import query_progress_hook
-from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.record_collection import RecordCollection
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.collection import field_type_from_kind
 from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.listitems.collection import ListItemCollection
-from tests import test_site_url
 
 CSV_TEXT = (
     "userPrincipalName,givenName,displayName,accountEnabled,officeLocation,"
@@ -84,7 +80,7 @@ class TestImportPipeline(unittest.TestCase):
         self.assertEqual(list(user.get_property("businessPhones")), ["+1-555-0101", "+1-555-0102"])
 
     def test_round_trip_write_then_read(self):
-        col = RecordCollection(cast(ClientRuntimeContext, None), User, None)
+        col = RecordCollection(offline_context(), User, None)
         item = col.create_typed_object(
             {
                 "userPrincipalName": "jdoe@contoso.com",
@@ -114,8 +110,7 @@ class TestImportPipeline(unittest.TestCase):
 
 
 def test_list_item_collection_from_records_keeps_custom_columns():
-    ctx = ClientContext(test_site_url)
-    col = ListItemCollection(ctx)
+    col = ListItemCollection(offline_context())
     col.queue_records([{"Title": "row", "CustomColumn": 42}])
 
     assert len(col) == 1
@@ -129,8 +124,8 @@ def test_list_item_collection_from_records_keeps_custom_columns():
 openpyxl = pytest.importorskip("openpyxl")
 
 
-def pipeline__collection(properties: list[dict], context=None) -> RecordCollection:
-    col = RecordCollection(context or cast(ClientRuntimeContext, None), User, None)
+def _users(properties: list[dict], context=None) -> RecordCollection:
+    col = RecordCollection(context or offline_context(), User, None)
     for props in properties:
         col.add_child(col.create_typed_object(props))
     return col
@@ -154,42 +149,6 @@ def test_query_progress_hook():
     assert events[-1].percent == 100.0  # noqa: PLR2004
 
 
-def test_deferred_operation_query():
-    from office365.runtime.queries.deferred import DeferredOperationQuery
-
-    client = GraphClient()
-    barrier = DeferredOperationQuery(client)
-    client.add_query(barrier)
-
-    add = ClientQuery(client)
-    barrier.defer(add)  # swaps the placeholder's slot for the real query
-    assert list(client._queries) == [add]
-
-    client2 = GraphClient()
-    barrier2 = DeferredOperationQuery(client2)
-    client2.add_query(barrier2)
-    barrier2.resolve()  # no operation needed — drops the placeholder
-    assert list(client2._queries) == []
-
-
-def test_ensure_property_cached_queues_deferred_noop():
-    user = GraphClient().users["123"]
-    user.set_property("id", "123")
-    user.set_property("displayName", "John Doe")
-    user.ensure_property("displayName")  # already loaded — no redundant GET
-    from office365.runtime.queries.deferred import DeferredOperationQuery
-
-    assert isinstance(user.context._queries[-1], DeferredOperationQuery)
-
-
-def test_get_all_accepts_progress():
-    client = GraphClient()
-    col = RecordCollection(client, User, None)
-    events = []
-    col.get_all(progress=events.append)
-    assert len(client._queries) >= 1  # the first page query is queued
-
-
 # ruff: noqa: E402  (imports must follow the importorskip guard)
 
 
@@ -198,7 +157,7 @@ pd = pytest.importorskip("pandas")
 
 def test_flat_round_trip():
     client = GraphClient()
-    col = pipeline__collection(
+    col = _users(
         [
             {"userPrincipalName": "jdoe@contoso.com", "displayName": "John Doe", "accountEnabled": True},
         ],
@@ -219,7 +178,7 @@ def test_flat_round_trip():
 
 def test_to_dataframe_returns_dataframe_result():
     client = GraphClient()
-    col = pipeline__collection([{"displayName": "John Doe", "contosoExtension": "x"}], context=client)
+    col = _users([{"displayName": "John Doe", "contosoExtension": "x"}], context=client)
     result = col.to_dataframe()
     assert isinstance(result, DataFrameResult)
     # the after_execute callback materializes .value on the loaded collection

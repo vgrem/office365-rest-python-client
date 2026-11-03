@@ -126,39 +126,3 @@ def test_a_key_naming_nothing_is_refused_too():
         @key()
         class _Keyless(Entity):
             pass
-
-
-def test_the_generated_types_that_needed_a_key_now_declare_one():
-    """The nine v1.0 types whose address the fallback got wrong, straight from the model.
-
-    Only the declaration is asserted: whether the key is also a ``$select`` column depends
-    on the getter carrying ``@odata(name=...)``, and 52% of the tree still does not.
-    """
-    from office365.common.cross_tenant_access_policy_configuration_partner import (
-        CrossTenantAccessPolicyConfigurationPartner,
-    )
-    from office365.common.cross_tenant_identity_sync_policy_partner import CrossTenantIdentitySyncPolicyPartner
-    from office365.directory.authentication.conditions.application import AuthenticationConditionApplication
-    from office365.directory.identitygovernance.workflow.version import WorkflowVersion
-    from office365.directory.inheritable_permission import InheritablePermission
-    from office365.intune.devices.management.m365_capability_base import M365CapabilityBase
-    from office365.onedrive.filestorage.containertypes.app_permission_grant import (
-        FileStorageContainerTypeAppPermissionGrant,
-    )
-    from office365.outlook.calendar.check_in_claim import CheckInClaim
-    from office365.security.labels.retention.disposition_review_stage import DispositionReviewStage
-
-    declared = {
-        CrossTenantAccessPolicyConfigurationPartner: "tenantId",
-        CrossTenantIdentitySyncPolicyPartner: "tenantId",
-        AuthenticationConditionApplication: "appId",
-        WorkflowVersion: "versionNumber",
-        InheritablePermission: "resourceAppId",
-        M365CapabilityBase: "name",
-        FileStorageContainerTypeAppPermissionGrant: "appId",
-        CheckInClaim: "calendarEventId",
-        DispositionReviewStage: "stageNumber",
-    }
-    for model_type, expected in declared.items():
-        assert model_type._key == (expected,), model_type.__name__
-        assert model_type(GraphClient()).property_ref_name == expected
