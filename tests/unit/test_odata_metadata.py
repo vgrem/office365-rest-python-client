@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+from unittest import mock
 
 import pytest
 from office365.directory.identity_set import IdentitySet
@@ -23,6 +24,7 @@ from office365.planner.assignment import PlannerAssignment
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.odata.v4.json_format import V4JsonFormat
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta, field_declarations, odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
@@ -124,14 +126,15 @@ def test_a_link_the_service_will_not_follow_on_its_own_is_not_expandable():
     assert "attachments" in Event.expand_all()
 
 
-def test_a_column_the_service_assigns_never_travels_back():
-    item = ListItem(ClientContext("https://contoso.sharepoint.com/sites/x"))
-    item.set_property("HasUniqueRoleAssignments", True)
-    item.set_property("ID", 7)
+def test_a_read_only_column_never_travels_back():
+    """A hydrated item is re-read once and written back somewhere else, so what the model
+    calls read-only has to leave the payload without leaving the read."""
+    item = ListItem(mock.MagicMock(), ResourcePath("Items"))
+    item.hydrate(dict.fromkeys(ListItem._schema.readonly))
 
-    assert item.to_json(V4JsonFormat("none")) == {"ID": 7}  # a request may not carry it
-    assert item.to_json()["HasUniqueRoleAssignments"] is True  # a response reports it
-    assert item.has_unique_role_assignments is True
+    assert item.to_json(V4JsonFormat("none")) == {}
+    assert set(item.to_json()) == set(ListItem._schema.readonly)
+    assert set(ListItem._schema.readonly) <= set(ListItem.select_all())
 
 
 def test_a_fact_no_consumer_enforces_is_not_accepted():

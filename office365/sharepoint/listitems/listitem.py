@@ -732,13 +732,13 @@ class ListItem(SecurableObject):
         will not be set for the item."""
         return self.properties.get("IconOverlay", None)
 
-    @odata(name="Id")
+    @odata(name="Id", readonly=True)
     @property
     def id(self) -> Optional[int]:
         """Gets a value that specifies the list item identifier."""
         return self.properties.get("Id", None)
 
-    @odata(name="AuthorId", system=True)
+    @odata(name="AuthorId", system=True, readonly=True)
     @property
     def author_id(self) -> Optional[int]:
         """The site user id of the item's creator.
@@ -747,7 +747,7 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("AuthorId", None)
 
-    @odata(name="EditorId", system=True)
+    @odata(name="EditorId", system=True, readonly=True)
     @property
     def editor_id(self) -> Optional[int]:
         """The site user id of whoever last edited the item.
@@ -756,7 +756,7 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("EditorId", None)
 
-    @odata(name="Created", system=True)
+    @odata(name="Created", system=True, readonly=True)
     @property
     def created(self) -> Optional[datetime.datetime]:
         """When the item was created.
@@ -765,7 +765,7 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("Created", None)
 
-    @odata(name="Modified", system=True)
+    @odata(name="Modified", system=True, readonly=True)
     @property
     def modified(self) -> Optional[datetime.datetime]:
         """When the item was last edited.
@@ -774,14 +774,14 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("Modified", None)
 
-    @odata(name="ServerRedirectedEmbedUri")
+    @odata(name="ServerRedirectedEmbedUri", readonly=True)
     @property
     def server_redirected_embed_uri(self) -> Optional[str]:
         """Returns the path for previewing a document in the browser, often in an interactive way, if
         that feature exists."""
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
-    @odata(name="ServerRedirectedEmbedUri")
+    @odata(name="ServerRedirectedEmbedUri", readonly=True)
     @property
     def server_redirected_embed_url(self) -> Optional[str]:
         """Returns the URL for previewing a document in the browser, often in an interactive way, if that feature
@@ -1634,7 +1634,7 @@ class ListItem(SecurableObject):
         """Gets the OData__UIVersion property"""
         return self.properties.get("OData__UIVersion", None)
 
-    @odata(name="OData__UIVersionString", system=True)
+    @odata(name="OData__UIVersionString", system=True, readonly=True)
     @property
     def ui_version_string(self) -> Optional[str]:
         """Gets the OData__UIVersionString property"""
@@ -1652,7 +1652,7 @@ class ListItem(SecurableObject):
         """Gets the Order property"""
         return self.properties.get("Order", None)
 
-    @odata(name="GUID", system=True)
+    @odata(name="GUID", system=True, readonly=True)
     @property
     def guid(self) -> Optional[UUID]:
         """Gets the GUID property"""
