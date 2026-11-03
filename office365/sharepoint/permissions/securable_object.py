@@ -230,7 +230,7 @@ class SecurableObject(Entity):
             RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
 
-    @odata(name="ShieldAddRoleAssignmentPushdown")
+    @odata(name="ShieldAddRoleAssignmentPushdown", readonly=True)
     @property
     def shield_add_role_assignment_pushdown(self) -> Optional[bool]:
         """Gets the ShieldAddRoleAssignmentPushdown property"""

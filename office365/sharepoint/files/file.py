@@ -1136,20 +1136,20 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    @odata(name="ActivityCapabilities")
+    @odata(name="ActivityCapabilities", readonly=True)
     @property
     def activity_capabilities(self) -> ActivityCapabilities:
         """"""
         return self.properties.get("ActivityCapabilities", ActivityCapabilities())
 
-    @odata(name="CheckInComment")
+    @odata(name="CheckInComment", readonly=True)
     @property
     def checkin_comment(self) -> Optional[str]:
         """Specifies the comment used when a document is checked into a document library.
         Its length MUST be equal to or less than 1023."""
         return self.properties.get("CheckInComment", None)
 
-    @odata(name="ContentTag")
+    @odata(name="ContentTag", readonly=True)
     @property
     def content_tag(self) -> Optional[str]:
         """Returns internal version of content, used to validate document equality for read purposes."""
@@ -1170,12 +1170,12 @@ class File(AbstractFile):
             User(self.context, ResourcePath("CheckedOutByUser", self.resource_path)),
         )
 
-    @odata(name="CheckOutType")
+    @odata(name="CheckOutType", readonly=True)
     @property
     def check_out_type(self) -> Optional[int]:
         return self.properties.get("CheckOutType", None)
 
-    @odata(name="ExpirationDate")
+    @odata(name="ExpirationDate", readonly=True)
     @property
     def expiration_date(self) -> Optional[datetime]:
         """Specifies the date and time when the file expires."""
@@ -1274,31 +1274,31 @@ class File(AbstractFile):
             User(self.context, ResourcePath("LockedByUser", self.resource_path)),
         )
 
-    @odata(name="ServerRelativeUrl")
+    @odata(name="ServerRelativeUrl", readonly=True)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the relative URL of the file based on the URL for the server."""
         return self.properties.get("ServerRelativeUrl", None)
 
-    @odata(name="ServerRelativePath")
+    @odata(name="ServerRelativePath", readonly=True)
     @property
     def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the list folder."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
-    @odata(name="Length")
+    @odata(name="Length", readonly=True)
     @property
     def length(self) -> Optional[int]:
         """Gets the file size."""
         return int(self.properties.get("Length", 0))
 
-    @odata(name="Exists")
+    @odata(name="Exists", readonly=True)
     @property
     def exists(self) -> Optional[bool]:
         """Specifies whether the file exists."""
         return self.properties.get("Exists", None)
 
-    @odata(name="IrmEnabled")
+    @odata(name="IrmEnabled", readonly=True)
     @property
     def irm_enabled(self) -> Optional[bool]:
         """Specifies whether or not Information Rights Management (IRM) is enabled at the file level.
@@ -1306,19 +1306,19 @@ class File(AbstractFile):
         """
         return self.properties.get("IrmEnabled", None)
 
-    @odata(name="Level")
+    @odata(name="Level", readonly=True)
     @property
     def level(self) -> Optional[str]:
         """Specifies the publishing level of the file."""
         return self.properties.get("Level", None)
 
-    @odata(name="LinkingUri")
+    @odata(name="LinkingUri", readonly=True)
     @property
     def linking_uri(self) -> Optional[str]:
         """Specifies the URL that is suitable for durable linking to the file."""
         return self.properties.get("LinkingUri", None)
 
-    @odata(name="Name")
+    @odata(name="Name", readonly=True)
     @property
     def name(self) -> Optional[str]:
         """Specifies the file name including the extension.
@@ -1326,55 +1326,55 @@ class File(AbstractFile):
         """
         return self.properties.get("Name", None)
 
-    @odata(name="ListId")
+    @odata(name="ListId", readonly=True)
     @property
     def list_id(self) -> Optional[str]:
         """Gets the GUID that identifies the List containing the file."""
         return self.properties.get("ListId", None)
 
-    @odata(name="SiteId")
+    @odata(name="SiteId", readonly=True)
     @property
     def site_id(self) -> Optional[str]:
         """Gets the GUID that identifies the site collection containing the file."""
         return self.properties.get("SiteId", None)
 
-    @odata(name="WebId")
+    @odata(name="WebId", readonly=True)
     @property
     def web_id(self) -> Optional[str]:
         """Gets the GUID for the site containing the file."""
         return self.properties.get("WebId", None)
 
-    @odata(name="TimeCreated")
+    @odata(name="TimeCreated", readonly=True)
     @property
     def time_created(self) -> Optional[datetime]:
         """Gets a value that specifies when the file was created."""
         return self.properties.get("TimeCreated", datetime.min)
 
-    @odata(name="TimeLastModified")
+    @odata(name="TimeLastModified", readonly=True)
     @property
     def time_last_modified(self) -> Optional[datetime]:
         """Specifies when the file was last modified."""
         return self.properties.get("TimeLastModified", datetime.min)
 
-    @odata(name="MinorVersion")
+    @odata(name="MinorVersion", readonly=True)
     @property
     def minor_version(self) -> Optional[int]:
         """Gets a value that specifies the minor version of the file."""
         return self.properties.get("MinorVersion", None)
 
-    @odata(name="MajorVersion")
+    @odata(name="MajorVersion", readonly=True)
     @property
     def major_version(self) -> Optional[int]:
         """Gets a value that specifies the major version of the file."""
         return self.properties.get("MajorVersion", None)
 
-    @odata(name="UniqueId")
+    @odata(name="UniqueId", readonly=True)
     @property
     def unique_id(self) -> Optional[str]:
         """Gets a value that specifies the a file unique identifier"""
         return self.properties.get("UniqueId", None)
 
-    @odata(name="CustomizedPageStatus")
+    @odata(name="CustomizedPageStatus", readonly=True)
     @property
     def customized_page_status(self) -> Optional[CustomizedPageStatus]:
         """Specifies the customization status of the file."""
@@ -1421,97 +1421,97 @@ class File(AbstractFile):
                 self._resource_path = self.context.web.get_file_by_server_relative_path(value).resource_path
         return self
 
-    @odata(name="Archived")
+    @odata(name="Archived", readonly=True)
     @property
     def archived(self) -> Optional[bool]:
         """Gets the Archived property"""
         return self.properties.get("Archived", None)
 
-    @odata(name="CheckInComment")
+    @odata(name="CheckInComment", readonly=True)
     @property
     def check_in_comment(self) -> Optional[str]:
         """Gets the CheckInComment property"""
         return self.properties.get("CheckInComment", None)
 
-    @odata(name="ComplianceInfo")
+    @odata(name="ComplianceInfo", readonly=True)
     @property
     def compliance_info(self) -> ListItemComplianceInfo:
         """Gets the ComplianceInfo property"""
         return self.properties.get("ComplianceInfo", ListItemComplianceInfo())
 
-    @odata(name="ETag")
+    @odata(name="ETag", readonly=True)
     @property
     def e_tag(self) -> Optional[str]:
         """Gets the ETag property"""
         return self.properties.get("ETag", None)
 
-    @odata(name="ExistsAllowThrowForPolicyFailures")
+    @odata(name="ExistsAllowThrowForPolicyFailures", readonly=True)
     @property
     def exists_allow_throw_for_policy_failures(self) -> Optional[bool]:
         """Gets the ExistsAllowThrowForPolicyFailures property"""
         return self.properties.get("ExistsAllowThrowForPolicyFailures", None)
 
-    @odata(name="ExistsWithException")
+    @odata(name="ExistsWithException", readonly=True)
     @property
     def exists_with_exception(self) -> Optional[bool]:
         """Gets the ExistsWithException property"""
         return self.properties.get("ExistsWithException", None)
 
-    @odata(name="HasAlternateContentStreams")
+    @odata(name="HasAlternateContentStreams", readonly=True)
     @property
     def has_alternate_content_streams(self) -> Optional[bool]:
         """Gets the HasAlternateContentStreams property"""
         return self.properties.get("HasAlternateContentStreams", None)
 
-    @odata(name="LinkingUrl")
+    @odata(name="LinkingUrl", readonly=True)
     @property
     def linking_url(self) -> Optional[str]:
         """Gets the LinkingUrl property"""
         return self.properties.get("LinkingUrl", None)
 
-    @odata(name="PageRenderType")
+    @odata(name="PageRenderType", readonly=True)
     @property
     def page_render_type(self) -> Optional[int]:
         """Gets the PageRenderType property"""
         return self.properties.get("PageRenderType", None)
 
-    @odata(name="ServerRedirectedUrl")
+    @odata(name="ServerRedirectedUrl", readonly=True)
     @property
     def server_redirected_url(self) -> Optional[str]:
         """Gets the ServerRedirectedUrl property"""
         return self.properties.get("ServerRedirectedUrl", None)
 
-    @odata(name="SuppressExpirationNotification")
+    @odata(name="SuppressExpirationNotification", readonly=True)
     @property
     def suppress_expiration_notification(self) -> Optional[bool]:
         """Gets the SuppressExpirationNotification property"""
         return self.properties.get("SuppressExpirationNotification", None)
 
-    @odata(name="Title")
+    @odata(name="Title", readonly=True)
     @property
     def title(self) -> Optional[str]:
         """Gets the Title property"""
         return self.properties.get("Title", None)
 
-    @odata(name="UIVersion")
+    @odata(name="UIVersion", readonly=True)
     @property
     def ui_version(self) -> Optional[int]:
         """Gets the UIVersion property"""
         return self.properties.get("UIVersion", None)
 
-    @odata(name="UIVersionLabel")
+    @odata(name="UIVersionLabel", readonly=True)
     @property
     def ui_version_label(self) -> Optional[str]:
         """Gets the UIVersionLabel property"""
         return self.properties.get("UIVersionLabel", None)
 
-    @odata(name="VroomDriveID")
+    @odata(name="VroomDriveID", readonly=True)
     @property
     def vroom_drive_id(self) -> Optional[str]:
         """Gets the VroomDriveID property"""
         return self.properties.get("VroomDriveID", None)
 
-    @odata(name="VroomItemID")
+    @odata(name="VroomItemID", readonly=True)
     @property
     def vroom_item_id(self) -> Optional[str]:
         """Gets the VroomItemID property"""

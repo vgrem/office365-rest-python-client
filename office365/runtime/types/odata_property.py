@@ -158,7 +158,10 @@ class odata(dict):
     ``readonly=True`` marks a value the service assigns -- its id, its audit stamps,
     the organizer it resolved, the response it recorded: a response carries it, a
     request must not. (``Org.OData.Core.V1`` spells the same fact ``Computed`` or
-    ``Immutable``; a CSOM type declares neither, so here it is curated.)
+    ``Immutable``; a CSOM type declares neither, so here it is curated.) For the
+    document-library types the curation is a measurement: each member was written by
+    a ``MERGE`` and read back, and one that came back unchanged is a name the service
+    owns (``File``, ``Folder``, ``ListItem``, ``Field``, ``ContentType``).
     ``navigation=True`` marks a CSDL ``NavigationProperty``, after the element that
     declares it: it is reached with ``$expand`` and cannot appear in ``$select``.
     ``expandable=False`` narrows that to the links ``$expand`` will not follow on its own

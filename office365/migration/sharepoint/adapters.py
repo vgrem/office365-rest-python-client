@@ -86,8 +86,6 @@ _TypedColumns: TypeAlias = (
 
 # Always-projected system metadata (reliable author/editor identity).
 _METADATA_SELECT = ["AuthorId", "EditorId", "HasUniqueRoleAssignments"]
-#: Projected system metadata that is read-only and must not be written back.
-_NON_WRITABLE_SELECT = frozenset({"HasUniqueRoleAssignments"})
 
 #: Navigation properties a ``*`` read returns that carry no scalar content and can
 #: never be written back; they are dropped silently. A genuine typed value we
@@ -127,7 +125,7 @@ _APPROVED_STATUS = "2"
 
 #: Moderation columns of a list item. They only exist on a list whose
 #: ``EnableModeration`` is on, so selecting them unconditionally fails outright.
-_MODERATION_FIELDS = ("OData__ModerationStatus", "OData__ModerationComments")
+_MODERATION_FIELDS = tuple(_APPROVAL_FIELDS)
 
 #: How many paths a per-run warning names before it summarizes the rest.
 _WARNING_SAMPLE = 5
@@ -164,14 +162,9 @@ def _scalar_mapping(value: Any) -> dict | None:
 
 
 #: Record columns a faithful copy does not compare: what ``ListItem`` declares
-#: server-assigned or reachable by ``$expand``, the content type the target remaps, and
-#: the object kind a copy states by creating a file or a folder rather than by writing
-#: a column. What remains is the item's *content*, which a faithful copy preserves.
-_CONTENT_EXCLUDED = (
-    frozenset({"ContentTypeId", "FileSystemObjectType"})
-    | frozenset(ListItem._schema.readonly)
-    | frozenset(ListItem._schema.navigations)
-)
+#: server-assigned or reachable by ``$expand``. What remains is the item's *content*,
+#: which a faithful copy preserves.
+_CONTENT_EXCLUDED = frozenset(ListItem._schema.readonly) | frozenset(ListItem._schema.navigations)
 
 #: Field types whose value is server-derived: a computed column (a link filename, a
 #: doc icon) is a view of the item's identity, not metadata a folder carries.
@@ -199,17 +192,13 @@ def _folder_value_columns(fields: list[Any]) -> set[str]:
     }
 
 
-#: Folder (document library) record columns that never travel to the target: the
-#: server-assigned identity and path columns, system metadata (restored by the
-#: fidelity steps), and the folder-specific bookkeeping a read projects. A
-#: ``ContentTypeId`` is kept — a document set's content type is part of what makes
-#: the folder what it is.
+#: Folder (document library) record columns that never travel to the target, beyond
+#: what the model declares server-assigned: the name a copy states by uploading the
+#: file rather than by writing a column, and three library-only bookkeeping columns
+#: that no model type declares. A ``ContentTypeId`` is kept — a document set's content
+#: type is part of what makes the folder what it is.
 _FOLDER_RECORD_EXCLUDED = (_CONTENT_EXCLUDED - {"ContentTypeId"}) | {
-    "FileRef",
-    "FileDirRef",
     "FileLeafRef",
-    "FSObjType",
-    "UniqueId",
     "SortBehavior",
     "SMTotalFileStreamSize",
     "SMTotalFileCount",
@@ -1019,7 +1008,7 @@ class SharePointListSource:
         # navigation property (objects, not a scalar column) and is excluded; the
         # target writes attachments separately.
         select = sorted(
-            {key for item in loaded for key in item.properties if key != "AttachmentFiles"} - _NON_WRITABLE_SELECT
+            {key for item in loaded for key in item.properties if key != "AttachmentFiles"} - ListItem._schema.readonly
         )
         records = records_from_items(list(loaded), select, set(), raw=True)
         # A REST item create accepts scalar column values only. A full read also

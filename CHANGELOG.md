@@ -48,6 +48,13 @@ introduced.
   nothing, and what guards them now is a test that reads each declaration against the
   getter it sits above — one `created_by` in the SharePoint half carried its
   neighbour's name, so `CreatedBy` was unmapped and `expand_all()` never asked for it.
+- A write payload no longer carries a value the service assigns: 116 SharePoint
+  columns are declared `readonly` from a live probe that wrote each one and read it
+  back. That is all 37 `File` columns — the service refuses every `MERGE` on
+  `SP.File`, so a file's metadata is written through `ListItemAllFields` — and 43 more
+  on `ListItem` (which leaves 7 writable columns out of 62), 12 on `Folder`, 17 on
+  `Field`, 6 on `ContentType`. `to_json(profile)` drops them, so a request that used
+  to echo a server-owned value back no longer does.
 - An enum-typed Graph column returns the member, not the wire string: 386 type
   imports in 241 modules moved from the getter's own body (and the dead
   `if TYPE_CHECKING:` entry beside it) to the module block — 403 columns, because

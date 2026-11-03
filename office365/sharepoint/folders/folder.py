@@ -841,31 +841,31 @@ class Folder(Entity):
             "ParentFolder", Folder(self.context, ResourcePath("ParentFolder", self.resource_path))
         )
 
-    @odata(name="Name")
+    @odata(name="Name", readonly=True)
     @property
     def name(self) -> Optional[str]:
         """Specifies the list folder name."""
         return self.properties.get("Name", None)
 
-    @odata(name="IsWOPIEnabled")
+    @odata(name="IsWOPIEnabled", readonly=True)
     @property
     def is_wopi_enabled(self) -> Optional[bool]:
         """Indicates whether the folder is enabled for WOPI default action."""
         return self.properties.get("IsWOPIEnabled", None)
 
-    @odata(name="ProgID")
+    @odata(name="ProgID", readonly=True)
     @property
     def prog_id(self) -> Optional[str]:
         """Gets the identifier (ID) of the application in which the folder was created."""
         return self.properties.get("ProgID", None)
 
-    @odata(name="UniqueId")
+    @odata(name="UniqueId", readonly=True)
     @property
     def unique_id(self) -> Optional[str]:
         """Gets the unique ID of the folder."""
         return self.properties.get("UniqueId", None)
 
-    @odata(name="Exists")
+    @odata(name="Exists", readonly=True)
     @property
     def exists(self) -> Optional[bool]:
         """Gets a Boolean value that indicates whether the folder exists."""
@@ -889,25 +889,25 @@ class Folder(Entity):
         """Specifies the content type order for the list folder."""
         return self.properties.get("ContentTypeOrder", ContentTypeId())
 
-    @odata(name="TimeLastModified")
+    @odata(name="TimeLastModified", readonly=True)
     @property
     def time_last_modified(self) -> Optional[datetime]:
         """Gets the last time this folder or a direct child was modified in UTC."""
         return self.properties.get("TimeLastModified", datetime.min)
 
-    @odata(name="TimeCreated")
+    @odata(name="TimeCreated", readonly=True)
     @property
     def time_created(self) -> Optional[datetime]:
         """Gets when the folder was created in UTC."""
         return self.properties.get("TimeCreated", datetime.min)
 
-    @odata(name="ServerRelativeUrl")
+    @odata(name="ServerRelativeUrl", readonly=True)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the server-relative URL of the list folder."""
         return self.properties.get("ServerRelativeUrl", None)
 
-    @odata(name="ServerRelativePath")
+    @odata(name="ServerRelativePath", readonly=True)
     @property
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the list folder."""
@@ -928,19 +928,19 @@ class Folder(Entity):
                 self._resource_path = self.context.web.get_folder_by_server_relative_path(value).resource_path
         return self
 
-    @odata(name="ExistsAllowThrowForPolicyFailures")
+    @odata(name="ExistsAllowThrowForPolicyFailures", readonly=True)
     @property
     def exists_allow_throw_for_policy_failures(self) -> Optional[bool]:
         """Gets the ExistsAllowThrowForPolicyFailures property"""
         return self.properties.get("ExistsAllowThrowForPolicyFailures", None)
 
-    @odata(name="ExistsWithException")
+    @odata(name="ExistsWithException", readonly=True)
     @property
     def exists_with_exception(self) -> Optional[bool]:
         """Gets the ExistsWithException property"""
         return self.properties.get("ExistsWithException", None)
 
-    @odata(name="ItemCount")
+    @odata(name="ItemCount", readonly=True)
     @property
     def item_count(self) -> Optional[int]:
         """Gets the ItemCount property"""

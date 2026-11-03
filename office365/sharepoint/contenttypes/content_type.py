@@ -201,19 +201,19 @@ class ContentType(Entity):
         """
         return self.properties.get("Id", ContentTypeId())
 
-    @odata(name="Scope")
+    @odata(name="Scope", readonly=True)
     @property
     def scope(self) -> Optional[str]:
         """Specifies a server-relative path to the content type scope of the content type."""
         return self.properties.get("Scope", None)
 
-    @odata(name="Sealed")
+    @odata(name="Sealed", readonly=True)
     @property
     def sealed(self) -> Optional[bool]:
         """Specifies whether the content type can be changed."""
         return self.properties.get("Sealed", None)
 
-    @odata(name="StringId")
+    @odata(name="StringId", readonly=True)
     @property
     def string_id(self) -> Optional[str]:
         """A string representation of the value of the Id"""
@@ -271,7 +271,7 @@ class ContentType(Entity):
         """
         return self.properties.get("DocumentTemplate", None)
 
-    @odata(name="DocumentTemplateUrl")
+    @odata(name="DocumentTemplateUrl", readonly=True)
     @property
     def document_template_url(self) -> Optional[str]:
         """Specifies the URL of the document template assigned to the content type."""
@@ -302,7 +302,7 @@ class ContentType(Entity):
         """Specifies whether the content type is unavailable for creation or usage directly from a user interface."""
         return self.properties.get("Hidden", None)
 
-    @odata(name="JSLink")
+    @odata(name="JSLink", readonly=True)
     @property
     def js_link(self) -> Optional[str]:
         """Gets or sets the JSLink for the content type custom form template"""
@@ -323,7 +323,7 @@ class ContentType(Entity):
             UserResource(self.context, ResourcePath("NameResource", self.resource_path)),
         )
 
-    @odata(name="SchemaXml")
+    @odata(name="SchemaXml", readonly=True)
     @property
     def schema_xml(self) -> Optional[str]:
         """Specifies the XML schema that represents the content type."""

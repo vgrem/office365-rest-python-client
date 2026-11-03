@@ -226,13 +226,13 @@ class Field(Entity):
         self.context.add_query(qry)
         return self
 
-    @odata(name="Id")
+    @odata(name="Id", readonly=True)
     @property
     def id(self) -> Optional[str]:
         """Gets a value that specifies the field identifier."""
         return self.properties.get("Id", None)
 
-    @odata(name="AutoIndexed")
+    @odata(name="AutoIndexed", readonly=True)
     @property
     def auto_indexed(self) -> Optional[bool]:
         """Gets a Boolean value that specifies whether the field is auto-indexed."""
@@ -315,13 +315,13 @@ class Field(Entity):
         """Sets a value that specifies the field group."""
         self.set_property("Group", val)
 
-    @odata(name="InternalName")
+    @odata(name="InternalName", readonly=True)
     @property
     def internal_name(self) -> Optional[str]:
         """Gets a value that specifies the field internal name."""
         return self.properties.get("InternalName", None)
 
-    @odata(name="CanBeDeleted")
+    @odata(name="CanBeDeleted", readonly=True)
     @property
     def can_be_deleted(self) -> Optional[bool]:
         """Gets a value that specifies whether the field can be deleted"""
@@ -350,7 +350,7 @@ class Field(Entity):
         """
         return self.properties.get("EnforceUniqueValues", None)
 
-    @odata(name="Filterable")
+    @odata(name="Filterable", readonly=True)
     @property
     def filterable(self) -> Optional[bool]:
         """
@@ -358,7 +358,7 @@ class Field(Entity):
         """
         return self.properties.get("Filterable", None)
 
-    @odata(name="FromBaseType")
+    @odata(name="FromBaseType", readonly=True)
     @property
     def from_base_type(self) -> Optional[bool]:
         """
@@ -366,7 +366,7 @@ class Field(Entity):
         """
         return self.properties.get("FromBaseType", None)
 
-    @odata(name="JSLink")
+    @odata(name="JSLink", readonly=True)
     @property
     def js_link(self) -> Optional[str]:
         """
@@ -390,7 +390,7 @@ class Field(Entity):
         """
         self.set_property("Hidden", val)
 
-    @odata(name="NoCrawl")
+    @odata(name="NoCrawl", readonly=True)
     @property
     def no_crawl(self) -> Optional[bool]:
         """
@@ -443,7 +443,7 @@ class Field(Entity):
             _enable()
         return self
 
-    @odata(name="TypeDisplayName")
+    @odata(name="TypeDisplayName", readonly=True)
     @property
     def type_display_name(self) -> Optional[str]:
         """
@@ -460,7 +460,7 @@ class Field(Entity):
             UserResource(self.context, ResourcePath("TitleResource", self.resource_path)),
         )
 
-    @odata(name="TypeShortDescription")
+    @odata(name="TypeShortDescription", readonly=True)
     @property
     def type_short_description(self) -> Optional[str]:
         """
@@ -509,19 +509,19 @@ class Field(Entity):
         """Gets the Direction property"""
         return self.properties.get("Direction", None)
 
-    @odata(name="EntityPropertyName")
+    @odata(name="EntityPropertyName", readonly=True)
     @property
     def entity_property_name(self) -> Optional[str]:
         """Gets the EntityPropertyName property"""
         return self.properties.get("EntityPropertyName", None)
 
-    @odata(name="IndexStatus")
+    @odata(name="IndexStatus", readonly=True)
     @property
     def index_status(self) -> Optional[int]:
         """Gets the IndexStatus property"""
         return self.properties.get("IndexStatus", None)
 
-    @odata(name="IsModern")
+    @odata(name="IsModern", readonly=True)
     @property
     def is_modern(self) -> Optional[bool]:
         """Gets the IsModern property"""
@@ -539,13 +539,13 @@ class Field(Entity):
         """Gets the Required property"""
         return self.properties.get("Required", None)
 
-    @odata(name="SchemaXmlWithResourceTokens")
+    @odata(name="SchemaXmlWithResourceTokens", readonly=True)
     @property
     def schema_xml_with_resource_tokens(self) -> Optional[str]:
         """Gets the SchemaXmlWithResourceTokens property"""
         return self.properties.get("SchemaXmlWithResourceTokens", None)
 
-    @odata(name="Scope")
+    @odata(name="Scope", readonly=True)
     @property
     def scope(self) -> Optional[str]:
         """Gets the Scope property"""
@@ -557,13 +557,13 @@ class Field(Entity):
         """Gets the Sealed property"""
         return self.properties.get("Sealed", None)
 
-    @odata(name="ShowInFiltersPane", beta=True)
+    @odata(name="ShowInFiltersPane", beta=True, readonly=True)
     @property
     def show_in_filters_pane(self) -> Optional[int]:
         """Gets the ShowInFiltersPane property"""
         return self.properties.get("ShowInFiltersPane", None)
 
-    @odata(name="Sortable")
+    @odata(name="Sortable", readonly=True)
     @property
     def sortable(self) -> Optional[bool]:
         """Gets the Sortable property"""
