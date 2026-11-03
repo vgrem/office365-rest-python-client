@@ -738,6 +738,15 @@ class ListItem(SecurableObject):
         """Gets a value that specifies the list item identifier."""
         return self.properties.get("Id", None)
 
+    @odata(name="ID", system=True, readonly=True)
+    @property
+    def id_(self) -> Optional[int]:
+        """The item identifier under the second spelling a read returns.
+
+        An item read sends ``ID`` beside ``Id``: one value, two names.
+        """
+        return self.properties.get("ID", None)
+
     @odata(name="AuthorId", system=True, readonly=True)
     @property
     def author_id(self) -> Optional[int]:
@@ -781,13 +790,13 @@ class ListItem(SecurableObject):
         that feature exists."""
         return self.properties.get("ServerRedirectedEmbedUri", None)
 
-    @odata(name="ServerRedirectedEmbedUri", readonly=True)
+    @odata(name="ServerRedirectedEmbedUrl", system=True, readonly=True)
     @property
     def server_redirected_embed_url(self) -> Optional[str]:
         """Returns the URL for previewing a document in the browser, often in an interactive way, if that feature
         exists. This is currently used in the hovering panel of search results and document library.
         """
-        return self.properties.get("ServerRedirectedEmbedUri", None)
+        return self.properties.get("ServerRedirectedEmbedUrl", None)
 
     @odata(name="Client_Title")
     @property

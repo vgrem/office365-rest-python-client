@@ -40,6 +40,7 @@ from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.user_value import FieldUserValue
+from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.type import PrincipalType
 
@@ -48,7 +49,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.fields.field import Field
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.folder import Folder
-    from office365.sharepoint.listitems.listitem import ListItem
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 
@@ -163,30 +163,14 @@ def _scalar_mapping(value: Any) -> dict | None:
     return dict(value)
 
 
-#: Record columns excluded from the content checksum: server-assigned identity
-#: (``Id``/``GUID``), facets verified separately (timestamps, authorship,
-#: permissions), values the target remaps (``ContentTypeId``), and bookkeeping
-#: (version label, server-derived embed URLs, the navigation ``ParentList``). What
-#: remains is the item's *content* columns, which a faithful copy preserves.
-_CONTENT_EXCLUDED = frozenset(
-    {
-        "Id",
-        "ID",
-        "GUID",
-        "FileSystemObjectType",
-        "Created",
-        "Modified",
-        "AuthorId",
-        "EditorId",
-        "HasUniqueRoleAssignments",
-        "ContentTypeId",
-        "OData__UIVersionString",
-        "_UIVersionString",
-        "ServerRedirectedEmbedUri",
-        "ServerRedirectedEmbedUrl",
-        "ParentList",
-        "AttachmentFiles",
-    }
+#: Record columns a faithful copy does not compare: what ``ListItem`` declares
+#: server-assigned or reachable by ``$expand``, the content type the target remaps, and
+#: the object kind a copy states by creating a file or a folder rather than by writing
+#: a column. What remains is the item's *content*, which a faithful copy preserves.
+_CONTENT_EXCLUDED = (
+    frozenset({"ContentTypeId", "FileSystemObjectType"})
+    | frozenset(ListItem._schema.readonly)
+    | frozenset(ListItem._schema.navigations)
 )
 
 #: Field types whose value is server-derived: a computed column (a link filename, a
